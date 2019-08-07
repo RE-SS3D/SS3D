@@ -7,7 +7,7 @@ public class TempMovement : NetworkBehaviour
     [SyncVar]
     private float gravity = 10f;
     [SyncVar]
-    private float speed = 10f;
+    public float speed = 10f;
     [SyncVar]
     private float acceleration = 10f;
 

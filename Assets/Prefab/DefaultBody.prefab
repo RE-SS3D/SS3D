@@ -1460,7 +1460,7 @@ Transform:
   m_GameObject: {fileID: 2933389151239950429}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.87, y: 0.87, z: 0.87}
   m_Children:
   - {fileID: 2933389151239916671}
   - {fileID: 2933389151239916665}
@@ -1519,7 +1519,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 1
   m_AssetId: 
-  m_SceneId: 3786588957
+  m_SceneId: 3278647609
 --- !u!114 &2272006338020045735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1533,6 +1533,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.02
+  speed: 6
 --- !u!114 &6702861030878089436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1645,6 +1646,7 @@ SkinnedMeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
