@@ -4757,12 +4757,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 166878228}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &168652856 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3416750307375504707, guid: 5be55558c05c36149832fbaba61c6a22,
-    type: 3}
-  m_PrefabInstance: {fileID: 194612460}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &179851662
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4946,11 +4940,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1043478807}
     m_Modifications:
-    - target: {fileID: 1815484555784892240, guid: 5be55558c05c36149832fbaba61c6a22,
-        type: 3}
-      propertyPath: m_Name
-      value: cockroach (1)
-      objectReference: {fileID: 0}
     - target: {fileID: 3416750307375504707, guid: 5be55558c05c36149832fbaba61c6a22,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5021,6 +5010,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.64597684
       objectReference: {fileID: 0}
+    - target: {fileID: 1815484555784892240, guid: 5be55558c05c36149832fbaba61c6a22,
+        type: 3}
+      propertyPath: m_Name
+      value: cockroach (1)
+      objectReference: {fileID: 0}
     - target: {fileID: 3767673820982599997, guid: 5be55558c05c36149832fbaba61c6a22,
         type: 3}
       propertyPath: m_SceneId
@@ -5028,6 +5022,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5be55558c05c36149832fbaba61c6a22, type: 3}
+--- !u!4 &194612461 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 194612460}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &197572521
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25869,7 +25868,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 168652856}
+  - {fileID: 194612461}
   m_Father: {fileID: 1010577674}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
