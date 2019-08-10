@@ -6,34 +6,20 @@ public class CameraFollow : MonoBehaviour
 {
     public GameObject target = null;
     
-    //the offset
-    public float height = 7f;
-    public float distance = 5f;
-    public float angle = 0f;
+    // the offset
+    public float height = 7f; // height from the target
+    public float distance = 5f; // distance from the target
+    public float angle = 0f; // and the camera angle
 
-    private enum CardinalDirection{North, East, South, West};
-
-    private CardinalDirection cardinalDirection;
-
-    // scroll speed multiplier
-    public float scrollSpeed = 2f;
-
-    // the scroll wheel
-
-    public bool snapping = false;
-    private bool rotation = false;
-    private float mouseX;
-    private float scrollWheel;    
-
-
-    private void Start() 
-    {
-        cardinalDirection = CardinalDirection.South;
-    }
-
+    // the input
+    public float scrollSpeed = 2f; // scroll speed multiplier
+    private bool rotation = false; // the rotation bool
+    private float mouseX; // the previous X mouse position
+    private float scrollWheel; // the scroll wheel
+    
     private void LateUpdate() 
     {
-        mouseX = Input.mousePosition.x;
+        mouseX = Input.mousePosition.x; // stores the previous X mouse position
     }
 
     void Update()
@@ -45,65 +31,31 @@ public class CameraFollow : MonoBehaviour
         }
             // input handling
             scrollWheel = Input.GetAxisRaw("Mouse ScrollWheel");
-            rotation = Input.GetButton("Camera Rotation");
-            snapping = Input.GetButton("Snapping");
+            rotation = Input.GetButton("Camera Rotation"); 
 
 
-
-            if (rotation)
+            if (rotation) // is the Middle Mouse button pressed
             {
-                if (Input.mousePosition.x != mouseX)
+                if(Input.mousePosition.x != mouseX) // did the mouse move from the last position                  
                 {
-                    if(snapping)
-                    {
-
-                        switch(cardinalDirection)
-                        {
-                            case CardinalDirection.South:
-                                angle = 0;
-                                cardinalDirection = CardinalDirection.East;
-                            break;
-                                
-                            case CardinalDirection.East:
-                                angle = 270;
-                                cardinalDirection = CardinalDirection.North;
-                            break;
-
-                            case CardinalDirection.North:
-                                angle = 180;
-                                cardinalDirection = CardinalDirection.West;
-                            break;
-
-                            case CardinalDirection.West:
-                                angle = 90;
-                                cardinalDirection = CardinalDirection.South;
-                            break;
-                        }
-                        
-                    }
-                    else
-                    {
-                        angle += (Input.mousePosition.x - mouseX) * 10f * Time.deltaTime;                        
-                    }
-
+                    angle += (Input.mousePosition.x - mouseX) * 10f * Time.deltaTime; // recalculate the angle                        
                 }
-
             }
 
+            ZoomCap(); // limits the zoom
 
-            //limits the zoom
-            ZoomCap();
-
+            //zooms in and out based on the scroll wheel
             distance -= scrollWheel * scrollSpeed;
             height -= scrollWheel * scrollSpeed;
 
-            Vector3 worldPos = (Vector3.forward * -distance) + (Vector3.up * height);
-            Vector3 camAngle = Quaternion.AngleAxis(angle, Vector3.up) * worldPos;
-
+            Vector3 worldPos = (Vector3.forward * -distance) + (Vector3.up * height); // calculates the camera position
+            Vector3 camAngle = Quaternion.AngleAxis(angle, Vector3.up) * worldPos; // calculates the camera angle
+            
+            // gets the flat position of the target 
             Vector3 flatTargetPos = new Vector3(target.transform.position.x, 0f, target.transform.position.z);
-
-            Vector3 finalPos = flatTargetPos + camAngle;
-
+            Vector3 finalPos = flatTargetPos + camAngle; // the final camera position 
+            
+            // smoothly goes to the final position
             this.transform.position = Vector3.Lerp(this.transform.position, finalPos, Time.deltaTime * 8f);
             this.transform.eulerAngles = new Vector3(62f, angle , 0f);
     }
@@ -111,7 +63,6 @@ public class CameraFollow : MonoBehaviour
     //limits the zoom
     private void ZoomCap()
     {
-
             float minHeight = 3f; // the minimum height limit variable
             float maxHeight = 11f; // the maximum height limit variable
 
@@ -138,5 +89,6 @@ public class CameraFollow : MonoBehaviour
                 distance = maxDistance;
             }
     }
+
 
 }
