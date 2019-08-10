@@ -2,7 +2,7 @@
 using Mirror;
 
 [RequireComponent(typeof(CharacterController))]
-public class TempMovement : NetworkBehaviour
+public class HumanMovement : NetworkBehaviour
 {
     [SyncVar]
     private float gravity = 10f;
