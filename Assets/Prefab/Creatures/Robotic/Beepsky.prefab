@@ -12,11 +12,11 @@ GameObject:
   - component: {fileID: 6461604686510771238}
   - component: {fileID: 3850837304085773293}
   - component: {fileID: 8646330663914348753}
-  - component: {fileID: 1201602779852344391}
   - component: {fileID: 6864540185277948049}
   - component: {fileID: 8923693856633983524}
   - component: {fileID: 5171076814696096391}
-  - component: {fileID: 7625048676843754107}
+  - component: {fileID: 7979810242129043956}
+  - component: {fileID: 4086231143406890009}
   m_Layer: 0
   m_Name: Beepsky
   m_TagString: Untagged
@@ -94,22 +94,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 5d743ca582431ea4f95323497ddd0f99
-  m_SceneId: 0
---- !u!114 &1201602779852344391
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 107348771024343887}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c41952d36715b3a43b1c3c009e83fb0a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncInterval: 0.1
-  speed: 10
+  m_AssetId: 
+  m_SceneId: 191025772
 --- !u!114 &6864540185277948049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,7 +138,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1
---- !u!114 &7625048676843754107
+--- !u!114 &7979810242129043956
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -165,7 +151,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1
-  animator: {fileID: 0}
+  animator: {fileID: 6461604686510771238}
+--- !u!114 &4086231143406890009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 107348771024343887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3efa57f7de3b8d44982dc618446dddf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncInterval: 0.1
+  speed: 10
 --- !u!1 &245495772612994700
 GameObject:
   m_ObjectHideFlags: 0
@@ -222,6 +222,7 @@ SkinnedMeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -310,6 +311,7 @@ SkinnedMeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -395,6 +397,7 @@ SkinnedMeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -665,6 +668,7 @@ SkinnedMeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0

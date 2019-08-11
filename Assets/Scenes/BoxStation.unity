@@ -25648,7 +25648,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: -0.046875, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 0, y: 2.3509887e-38, z: -2.306054e+18, w: 2.1175824e-22}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -38185,80 +38185,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1021852144}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &1022041285
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 1043478807}
-    m_Modifications:
-    - target: {fileID: 107348771024343887, guid: 5d743ca582431ea4f95323497ddd0f99,
-        type: 3}
-      propertyPath: m_Name
-      value: Beepsky (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 3973926374513434972, guid: 5d743ca582431ea4f95323497ddd0f99,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -6.397874
-      objectReference: {fileID: 0}
-    - target: {fileID: 3973926374513434972, guid: 5d743ca582431ea4f95323497ddd0f99,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 5.025957
-      objectReference: {fileID: 0}
-    - target: {fileID: 3973926374513434972, guid: 5d743ca582431ea4f95323497ddd0f99,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -7.8282933
-      objectReference: {fileID: 0}
-    - target: {fileID: 3973926374513434972, guid: 5d743ca582431ea4f95323497ddd0f99,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3973926374513434972, guid: 5d743ca582431ea4f95323497ddd0f99,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3973926374513434972, guid: 5d743ca582431ea4f95323497ddd0f99,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3973926374513434972, guid: 5d743ca582431ea4f95323497ddd0f99,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3973926374513434972, guid: 5d743ca582431ea4f95323497ddd0f99,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3973926374513434972, guid: 5d743ca582431ea4f95323497ddd0f99,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3973926374513434972, guid: 5d743ca582431ea4f95323497ddd0f99,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3973926374513434972, guid: 5d743ca582431ea4f95323497ddd0f99,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8646330663914348753, guid: 5d743ca582431ea4f95323497ddd0f99,
-        type: 3}
-      propertyPath: m_SceneId
-      value: 1740476829
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 5d743ca582431ea4f95323497ddd0f99, type: 3}
 --- !u!1001 &1024026261
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39100,8 +39026,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1449046325}
+  m_Children: []
   m_Father: {fileID: 1010577674}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -54763,12 +54688,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 193336917525199781, guid: 70769fa8b90b4314fae1860f822abc9a,
     type: 3}
   m_PrefabInstance: {fileID: 1447632446}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1449046325 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3973926374513434972, guid: 5d743ca582431ea4f95323497ddd0f99,
-    type: 3}
-  m_PrefabInstance: {fileID: 1022041285}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1449917121
 PrefabInstance:
