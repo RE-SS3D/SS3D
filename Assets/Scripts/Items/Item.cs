@@ -7,7 +7,7 @@ public class Item : MonoBehaviour
 {
     public Sprite Sprite;
 
-    public SlotTypes compatibleSlots;
+    public SlotTypes compatibleSlots = SlotTypes.Hand;
 
     private Vector3 defaultScale;
 
