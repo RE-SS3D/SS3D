@@ -1445,6 +1445,7 @@ GameObject:
   - component: {fileID: 407514154497380142}
   - component: {fileID: 3017705709253908061}
   - component: {fileID: -3017745137611230683}
+  - component: {fileID: -8827542739568419126}
   m_Layer: 0
   m_Name: DefaultBody
   m_TagString: Untagged
@@ -1605,6 +1606,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1
+--- !u!114 &-8827542739568419126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2933389151239950429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 956948e101a136345853d71269ed5233, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Slots:
+    LeftHand: {fileID: 0}
+    LeftHandTransform: {fileID: 2933389151239916589}
+    RightHand: {fileID: 0}
+    RightHandTransform: {fileID: 2933389151239916591}
+    Helmet: {fileID: 0}
+    Gloves: {fileID: 0}
+    Ears: {fileID: 0}
+    SuitStorage: {fileID: 0}
+    Vest: {fileID: 0}
+    Mask: {fileID: 0}
+    Shoes: {fileID: 0}
+    Glasses: {fileID: 0}
+    Shirt: {fileID: 0}
+    Card: {fileID: 0}
+    Belt: {fileID: 0}
+    Backpack: {fileID: 0}
+    PocketLeft: {fileID: 0}
+    PocketRight: {fileID: 0}
+  HumanInventoryUiPrefab: {fileID: 2164020338074798218, guid: f86d70d91f583f44e95c5a20aea0fa31,
+    type: 3}
 --- !u!1 &2933389151239950431
 GameObject:
   m_ObjectHideFlags: 0
