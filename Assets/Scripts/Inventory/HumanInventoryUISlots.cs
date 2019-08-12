@@ -9,9 +9,9 @@ public class HumanInventoryUISlots
     public Sprite defaultImage;
 
     [Header("Hands")]
-    public Image itemLeftHand;
+    public ItemSlot slotLeftHand;
 
-    public Image itemRightHand;
+    public ItemSlot slotRightHand;
 
     public Image LeftHandActiveMarker;
     public Image RightHandActiveMarker;
@@ -19,21 +19,21 @@ public class HumanInventoryUISlots
     [Header("Body")]
     public Image bodyPanel;
 
-    public Image itemHelmet;
-    public Image itemGloves;
-    public Image itemEars;
-    public Image itemSuitStorage;
-    public Image itemVest;
-    public Image itemMask;
-    public Image itemShoes;
-    public Image itemGlasses;
-    public Image itemShirt;
+    public ItemSlot slotHelmet;
+    public ItemSlot slotGloves;
+    public ItemSlot slotEars;
+    public ItemSlot slotSuitStorage;
+    public ItemSlot slotVest;
+    public ItemSlot slotMask;
+    public ItemSlot slotShoes;
+    public ItemSlot slotGlasses;
+    public ItemSlot slotShirt;
 
     [Header("Quick Access")]
-    public Image itemCard;
+    public ItemSlot slotCard;
 
-    public Image itemBelt;
-    public Image itemBackpack;
-    public Image itemPocketLeft;
-    public Image itemPocketRight;
+    public ItemSlot slotBelt;
+    public ItemSlot slotBackpack;
+    public ItemSlot slotPocketLeft;
+    public ItemSlot slotPocketRight;
 }

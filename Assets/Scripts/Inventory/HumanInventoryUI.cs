@@ -1,9 +1,27 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
+using UnityEngine.UI;
 
-public class HumanInventoryUI : MonoBehaviour
+public class HumanInventoryUI : NetworkBehaviour
 {
     [SerializeField]
     private HumanInventoryUISlots slots;
+
+    [SerializeField]
+    private HumanInventory inventory;
+
+    [SerializeField]
+    private UiItem uiItemPrefab;
+
+    public void Initialize(HumanInventory inv)
+    {
+        inventory = inv;
+    }
+
+    public HumanInventoryUISlots GetSlots()
+    {
+        return slots;
+    }
 
     public void SwitchActiveHand(int activeHand)
     {
@@ -18,89 +36,22 @@ public class HumanInventoryUI : MonoBehaviour
         slots.RightHandActiveMarker.gameObject.SetActive(true);
     }
 
+    public void ClearSlotUiItem(ItemSlot slot)
+    {
+        Destroy(slot.transform.GetChild(slot.transform.childCount - 1).gameObject);
+    }
+
+    public void SetSlotUiItem(ItemSlot slot, Item item)
+    {
+        UiItem uiItem = Instantiate(uiItemPrefab, slot.transform);
+        slot.uiItem = uiItem;
+        uiItem.Initialize(item);
+        slot.PutItemInSlot(uiItem);
+    }
+
     public void ToggleBodyPanel()
     {
         slots.bodyPanel.transform.localScale =
             slots.bodyPanel.transform.localScale == Vector3.zero ? Vector3.one : Vector3.zero;
-    }
-
-    public void SetHelmetSlotImage(Sprite sprite)
-    {
-        slots.itemHelmet.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetLeftHandSlotImage(Sprite sprite)
-    {
-        slots.itemLeftHand.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetRightHandSlotImage(Sprite sprite)
-    {
-        slots.itemRightHand.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetGlovesSlotImage(Sprite sprite)
-    {
-        slots.itemGloves.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetEarsSlotImage(Sprite sprite)
-    {
-        slots.itemEars.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetSuitStorageSlotImage(Sprite sprite)
-    {
-        slots.itemSuitStorage.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetVestSlotImage(Sprite sprite)
-    {
-        slots.itemVest.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetMaskSlotImage(Sprite sprite)
-    {
-        slots.itemMask.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetShoesSlotImage(Sprite sprite)
-    {
-        slots.itemShoes.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetGlassesSlotImage(Sprite sprite)
-    {
-        slots.itemGlasses.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetShirtSlotImage(Sprite sprite)
-    {
-        slots.itemShirt.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetCardSlotImage(Sprite sprite)
-    {
-        slots.itemCard.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetBeltSlotImage(Sprite sprite)
-    {
-        slots.itemBelt.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetBackpackSlotImage(Sprite sprite)
-    {
-        slots.itemBackpack.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetPocketLeftSlotImage(Sprite sprite)
-    {
-        slots.itemPocketLeft.sprite = sprite ? sprite : slots.defaultImage;
-    }
-
-    public void SetPocketRightSlotImage(Sprite sprite)
-    {
-        slots.itemPocketRight.sprite = sprite ? sprite : slots.defaultImage;
     }
 }

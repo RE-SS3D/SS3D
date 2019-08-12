@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class ContainerUI : MonoBehaviour
@@ -10,25 +11,62 @@ public class ContainerUI : MonoBehaviour
     private GridLayoutGroup slotContainer;
 
     [SerializeField]
-    private RectTransform SlotPrefab;
+    private ItemSlot SlotPrefab;
+
+    [SerializeField]
+    private UiItem uiItemPrefab;
+
+    [SerializeField]
+    private CanvasGroup canvasGroup;
 
     public bool visible;
 
     private Transform containerTransform;
 
-    public void Initialize(int size, Transform container)
+    private void OnEnable()
+    {
+        visible = false;
+        canvasGroup.alpha = 0;
+    }
+
+    public void Initialize(int size, int columns, Transform container, List<Transform> spots)
+    {
+        Initialize(size, columns, container, new List<Item>(), spots);
+    }
+
+    public void Initialize(int size, int columns, Transform container, List<Item> items,
+        List<Transform> visualItemSpots)
     {
         bounds.anchoredPosition = RectTransformUtility.WorldToScreenPoint(Camera.main, container.position);
-
         containerTransform = container;
-
-        slotContainer.constraintCount = size >= 4 ? 4 : size;
-
-        visible = true;
+        slotContainer.constraintCount = columns;
 
         for (int i = 0; i < size; i++)
         {
-            Instantiate(SlotPrefab, slotContainer.transform);
+            ItemSlot slot = Instantiate(SlotPrefab, slotContainer.transform);
+
+            // Items on spawn
+            if (i < items.Count)
+            {
+                UiItem item = Instantiate(uiItemPrefab, slot.transform);
+                item.Initialize(items[i]);
+                slot.PutItemInSlot(item);
+            }
+
+            if (i < visualItemSpots.Count) slot.physicalItemLocation = visualItemSpots[i];
+        }
+    }
+
+    public void ToggleVisible()
+    {
+        visible = !visible;
+        if (visible)
+        {
+            canvasGroup.alpha = 1;
+        }
+        else
+        {
+            canvasGroup.alpha = 0;
         }
     }
 

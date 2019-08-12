@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.29411766, g: 0.29411766, b: 0.29411766, a: 0.78431374}
+  m_Color: {r: 0.29411766, g: 0.29411766, b: 0.29411766, a: 0.29411766}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -174,6 +174,7 @@ GameObject:
   - component: {fileID: 335854699328865210}
   - component: {fileID: 335854699328865211}
   - component: {fileID: 6242282437158038604}
+  - component: {fileID: -5654035436742873581}
   m_Layer: 5
   m_Name: ContainerUI
   m_TagString: Untagged
@@ -275,8 +276,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bounds: {fileID: 335854698133915243}
   slotContainer: {fileID: 335854698086978469}
-  SlotPrefab: {fileID: 6817250292868560531, guid: 28b1ef9a3d2ee354aafa7f8cb7782ae0,
+  SlotPrefab: {fileID: 6717756415899413891, guid: 28b1ef9a3d2ee354aafa7f8cb7782ae0,
     type: 3}
+  uiItemPrefab: {fileID: 236411278976419200, guid: b218006fe61b1054997470d7b6e28be0,
+    type: 3}
+  canvasGroup: {fileID: -5654035436742873581}
+  visible: 0
+--- !u!225 &-5654035436742873581
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335854699328865208}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &335854699729183132
 GameObject:
   m_ObjectHideFlags: 0
@@ -335,7 +352,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.29411766, g: 0.29411766, b: 0.29411766, a: 0.78431374}
+  m_Color: {r: 0.29411766, g: 0.29411766, b: 0.29411766, a: 0.29411766}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
