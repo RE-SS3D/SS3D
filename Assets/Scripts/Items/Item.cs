@@ -28,7 +28,7 @@ public class Item : MonoBehaviour
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
 
-//        rigidBody.isKinematic = true;
+        rigidBody.isKinematic = true;
         transform.localScale = Vector3.one * 0.01f;
         Held = true;
     }
@@ -36,7 +36,7 @@ public class Item : MonoBehaviour
     public void CmdRelease()
     {
         transform.SetParent(null);
-//        rigidBody.isKinematic = false;
+        rigidBody.isKinematic = false;
         transform.localScale = defaultScale;
         Held = false;
     }
