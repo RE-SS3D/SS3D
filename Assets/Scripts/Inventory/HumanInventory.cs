@@ -11,9 +11,22 @@ public class HumanInventory : NetworkBehaviour
     [SerializeField]
     private HumanInventoryUI inventoryUI;
 
-    private void Awake()
+    [SerializeField]
+    private NetworkIdentity networkIdentity;
+
+    [SerializeField]
+    private NetworkTransformChild LeftHandNetworkTransformChild;
+
+    [SerializeField]
+    private NetworkTransformChild RightHandNetworkTransformChild;
+
+    private void Start()
     {
-        
+        if (!isLocalPlayer)
+        {
+            Destroy(this);
+            Destroy(inventoryUI.gameObject);
+        }
     }
 
     private void Update()
@@ -37,13 +50,14 @@ public class HumanInventory : NetworkBehaviour
             {
                 Debug.Log(hit.collider.gameObject.name);
                 Item item = hit.collider.GetComponent<Item>();
-                if (item != null) PickUp(item);
+                if (item != null) PickUp(item.gameObject);
             }
         }
     }
 
-    private void PickUp(Item item)
+    private void PickUp(GameObject itemObject)
     {
+        Item item = itemObject.GetComponent<Item>();
         if (!item.Held && item.compatibleSlots.HasFlag(SlotTypes.Hand))
         {
             if (ActiveHandIndex == 0)
@@ -67,13 +81,13 @@ public class HumanInventory : NetworkBehaviour
             item = inventoryUI.GetSlots().slotLeftHand.uiItem.Item;
 
             inventoryUI.ClearSlotUiItem(inventoryUI.GetSlots().slotLeftHand);
-            item.Release();
+            item.CmdRelease();
         }
         else
         {
             item = inventoryUI.GetSlots().slotRightHand.uiItem.Item;
             inventoryUI.ClearSlotUiItem(inventoryUI.GetSlots().slotRightHand);
-            item.Release();
+            item.CmdRelease();
         }
     }
 }

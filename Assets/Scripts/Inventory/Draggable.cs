@@ -29,7 +29,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     {
         if (!EventSystem.current.IsPointerOverGameObject())
         {
-            lastSlot.uiItem.Item.Release();
+            lastSlot.uiItem.Item.CmdRelease();
             lastSlot.uiItem.Item.transform.SetParent(null);
             Destroy(lastSlot.uiItem.gameObject);
             return;

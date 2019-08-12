@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HumanInventoryUI : NetworkBehaviour
+public class HumanInventoryUI : MonoBehaviour
 {
     [SerializeField]
     private HumanInventoryUISlots slots;

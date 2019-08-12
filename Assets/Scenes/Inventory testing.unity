@@ -33147,7 +33147,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 2000965121
+  m_SceneId: 985335276
 --- !u!1001 &2028595527
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35648,22 +35648,22 @@ PrefabInstance:
     - target: {fileID: 6824546036906108642, guid: dae393bb4318d8b4480085c88dec7595,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 6824546036906108642, guid: dae393bb4318d8b4480085c88dec7595,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.96592355
+      value: -0.9659235
       objectReference: {fileID: 0}
     - target: {fileID: 6824546036906108642, guid: dae393bb4318d8b4480085c88dec7595,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 6824546036906108642, guid: dae393bb4318d8b4480085c88dec7595,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.25882766
+      value: 0.25882787
       objectReference: {fileID: 0}
     - target: {fileID: 6824546036906108642, guid: dae393bb4318d8b4480085c88dec7595,
         type: 3}
@@ -35678,7 +35678,7 @@ PrefabInstance:
     - target: {fileID: 6824546036906108642, guid: dae393bb4318d8b4480085c88dec7595,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -149.999
+      value: -149.99901
       objectReference: {fileID: 0}
     - target: {fileID: 6824546036906108642, guid: dae393bb4318d8b4480085c88dec7595,
         type: 3}
