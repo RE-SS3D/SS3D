@@ -5,14 +5,9 @@ using UnityEngine.EventSystems;
 public class ItemSlot : NetworkBehaviour, IDropHandler
 {
     public UiItem uiItem;
-
     public SlotTypes slotType;
-
     public Transform physicalItemLocation;
-
     private HumanInventory humanInventory;
-    
-    
 
     public void OnDrop(PointerEventData eventData)
     {
@@ -23,7 +18,7 @@ public class ItemSlot : NetworkBehaviour, IDropHandler
 
             if (uiItem.Item.compatibleSlots.HasFlag(slotType))
             {
-                UpdateVisualLocation(uiItem.Item.gameObject);
+                RpcMoveItem(uiItem.Item.gameObject, gameObject);
             }
             else
             {
@@ -46,7 +41,7 @@ public class ItemSlot : NetworkBehaviour, IDropHandler
         Item item = itemObject.GetComponent<Item>();
         ItemSlot slot = target.GetComponent<ItemSlot>();
 
-        item.RpcMoveVisual(slot.gameObject);
+        item.MoveVisual(slot.gameObject);
     }
 
     public void UpdateVisualLocation(GameObject itemObject)

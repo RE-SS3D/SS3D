@@ -41,7 +41,7 @@ public class HumanInventory : NetworkBehaviour
 
         if (Input.GetButtonDown("DropActive"))
         {
-            DropItem();
+            DropItem(GetActiveHandSlot());
 
         }
 
@@ -62,6 +62,12 @@ public class HumanInventory : NetworkBehaviour
         return activeHand == Hands.Left ? inventoryUI.GetSlots().slotLeftHand : inventoryUI.GetSlots().slotRightHand;
     }
 
+    [Command]
+    private void CmdMoveItem(GameObject uiItemObject, GameObject targetSlotObject)
+    {
+        
+    }
+    
     [Command]
     private void CmdGrab(GameObject itemObject, Hands hand)
     {
@@ -109,10 +115,10 @@ public class HumanInventory : NetworkBehaviour
         }
     }
 
-    public void DropItem()
+    public void DropItem(ItemSlot slot)
     {
         CmdDrop(GetActiveHandSlot().uiItem.Item.gameObject);
-        inventoryUI.ClearSlotUiItem(GetActiveHandSlot());
+        inventoryUI.ClearSlotUiItem(slot);
     }
 
     [Command]

@@ -15,27 +15,7 @@ public class Item : NetworkBehaviour
     [SyncVar]
     public bool Held;
 
-    [SyncVar]
-    private bool syncing;
-
     public VisualObject visual;
-
-    private void Update()
-    {
-        if (Held && !syncing) InvokeRepeating(nameof(SyncPos), uint.MaxValue, .2f);
-        else if (!Held && syncing)
-        {
-            CancelInvoke(nameof(SyncPos));
-            syncing = false;
-        }
-    }
-
-    private void SyncPos()
-    {
-        syncing = true;
-        transform.position = visual.transform.position;
-    }
-
 
     public void CreateVisual(Transform target)
     {
@@ -47,26 +27,14 @@ public class Item : NetworkBehaviour
         visual.transform.localRotation = Quaternion.identity;
     }
 
-    [ClientRpc]
-    public void RpcMoveVisual(GameObject slotObject)
+    public void MoveVisual(GameObject slotObject)
     {
         ItemSlot slot = slotObject.GetComponent<ItemSlot>();
         visual.transform.SetParent(slot.physicalItemLocation);
         visual.transform.localPosition = Vector3.zero;
         visual.transform.localRotation = Quaternion.identity;
     }
-
-//    public void Release()
-//    {
-//        RpcRelease();
-//    }
-
-    [Command]
-    public void CmdRelease()
-    {
-        RpcRelease();
-    }
-
+    
     [ClientRpc]
     public void RpcRelease()
     {

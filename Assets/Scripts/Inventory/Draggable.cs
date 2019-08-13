@@ -6,7 +6,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 {
     public Transform ReturnParent;
 
-    private ItemSlot lastSlot;
+    private ItemSlot LastSlot;
 
     [SerializeField]
     private Image image;
@@ -16,8 +16,9 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         ReturnParent = transform.parent.transform;
         image.raycastTarget = false;
 
-        lastSlot = GetComponentInParent<ItemSlot>();
-        transform.SetParent(GetComponentInParent<Canvas>().transform);
+        LastSlot = GetComponentInParent<ItemSlot>();
+        LastSlot.uiItem = GetComponent<UiItem>();
+//        transform.SetParent(GetComponentInParent<Canvas>().transform);
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -30,14 +31,12 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         if (!EventSystem.current.IsPointerOverGameObject())
         {
             transform.SetParent(ReturnParent);
-            lastSlot.uiItem.Item.visual.GetComponentInParent<HumanInventory>().DropItem();
+            LastSlot.uiItem.Item.visual.GetComponentInParent<HumanInventory>().DropItem(LastSlot);
             return;
         }
 
         transform.SetParent(ReturnParent);
         image.raycastTarget = true;
-
-        lastSlot.Clear();
 
         RectTransform rt = ((RectTransform) transform);
         rt.offsetMin = new Vector2(5, rt.offsetMin.y);
