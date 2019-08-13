@@ -1,7 +1,8 @@
+using Mirror;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ItemSlot : MonoBehaviour, IDropHandler
+public class ItemSlot : NetworkBehaviour, IDropHandler
 {
     public UiItem uiItem;
 
@@ -9,16 +10,20 @@ public class ItemSlot : MonoBehaviour, IDropHandler
 
     public Transform physicalItemLocation;
 
+    private HumanInventory humanInventory;
+    
+    
+
     public void OnDrop(PointerEventData eventData)
     {
         Draggable draggable = eventData.pointerDrag.GetComponent<Draggable>();
         if (draggable && !GetComponentInChildren<Draggable>())
         {
-            UiItem item = draggable.GetComponent<UiItem>();
+            UiItem uiItem = draggable.GetComponent<UiItem>();
 
-            if (item.Item.compatibleSlots.HasFlag(slotType))
+            if (uiItem.Item.compatibleSlots.HasFlag(slotType))
             {
-                PutItemInSlot(item);
+                UpdateVisualLocation(uiItem.Item.gameObject);
             }
             else
             {
@@ -29,16 +34,27 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         }
     }
 
-    public void PutItemInSlot(UiItem item)
+    [Command]
+    public void CmdMoveItem(GameObject itemObject, GameObject target)
     {
+        RpcMoveItem(itemObject, target);
+    }
+
+    [ClientRpc]
+    public void RpcMoveItem(GameObject itemObject, GameObject target)
+    {
+        Item item = itemObject.GetComponent<Item>();
+        ItemSlot slot = target.GetComponent<ItemSlot>();
+
+        item.RpcMoveVisual(slot.gameObject);
+    }
+
+    public void UpdateVisualLocation(GameObject itemObject)
+    {
+        Item item = itemObject.GetComponent<Item>();
         if (physicalItemLocation)
         {
-            item.Item.Retrieve();
-            item.Item.Hold(physicalItemLocation);
-        }
-        else
-        {
-            item.Item.Store();
+            CmdMoveItem(itemObject, gameObject);
         }
     }
 

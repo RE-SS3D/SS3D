@@ -3,51 +3,87 @@ using Mirror;
 using UnityEngine;
 
 [Serializable]
-public class Item : MonoBehaviour
+public class Item : NetworkBehaviour
 {
     public Sprite Sprite;
 
     public SlotTypes compatibleSlots = SlotTypes.Hand;
 
-    private Vector3 defaultScale;
+    [SerializeField]
+    private VisualObject visualObjectPrefab;
 
-    public Rigidbody rigidBody;
-
+    [SyncVar]
     public bool Held;
 
-    private void Awake()
-    {
-        defaultScale = transform.localScale;
+    [SyncVar]
+    private bool syncing;
 
-        if (!rigidBody) rigidBody = GetComponent<Rigidbody>();
+    public VisualObject visual;
+
+    private void Update()
+    {
+        if (Held && !syncing) InvokeRepeating(nameof(SyncPos), uint.MaxValue, .2f);
+        else if (!Held && syncing)
+        {
+            CancelInvoke(nameof(SyncPos));
+            syncing = false;
+        }
     }
 
-    public void Hold(Transform holder)
+    private void SyncPos()
     {
-        transform.SetParent(holder);
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
-
-        rigidBody.isKinematic = true;
-        transform.localScale = Vector3.one * 0.01f;
-        Held = true;
+        syncing = true;
+        transform.position = visual.transform.position;
     }
 
+
+    public void CreateVisual(Transform target)
+    {
+        if (!visual) visual = Instantiate(visualObjectPrefab, target);
+        visual.name = "visual - " + name;
+        visual.Initialize(GetComponentInChildren<MeshFilter>().mesh, GetComponentInChildren<MeshRenderer>().materials);
+
+        visual.transform.localPosition = Vector3.zero;
+        visual.transform.localRotation = Quaternion.identity;
+    }
+
+    [ClientRpc]
+    public void RpcMoveVisual(GameObject slotObject)
+    {
+        ItemSlot slot = slotObject.GetComponent<ItemSlot>();
+        visual.transform.SetParent(slot.physicalItemLocation);
+        visual.transform.localPosition = Vector3.zero;
+        visual.transform.localRotation = Quaternion.identity;
+    }
+
+//    public void Release()
+//    {
+//        RpcRelease();
+//    }
+
+    [Command]
     public void CmdRelease()
     {
-        transform.SetParent(null);
-        rigidBody.isKinematic = false;
-        transform.localScale = defaultScale;
-        Held = false;
+        RpcRelease();
     }
 
-    public void Store()
+    [ClientRpc]
+    public void RpcRelease()
+    {
+        ShowOriginal();
+        transform.position = visual.transform.position;
+        transform.rotation = visual.transform.rotation;
+
+        Destroy(visual.gameObject);
+    }
+
+    public void HideOriginal()
     {
         transform.localScale = Vector3.zero;
     }
 
-    public void Retrieve()
+    public void ShowOriginal()
     {
-        transform.localScale = Vector3.one * 0.01f;
+        transform.localScale = Vector3.one;
     }
 }

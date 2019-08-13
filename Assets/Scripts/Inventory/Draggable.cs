@@ -29,12 +29,11 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     {
         if (!EventSystem.current.IsPointerOverGameObject())
         {
-            lastSlot.uiItem.Item.CmdRelease();
-            lastSlot.uiItem.Item.transform.SetParent(null);
-            Destroy(lastSlot.uiItem.gameObject);
+            transform.SetParent(ReturnParent);
+            lastSlot.uiItem.Item.visual.GetComponentInParent<HumanInventory>().DropItem();
             return;
         }
-        
+
         transform.SetParent(ReturnParent);
         image.raycastTarget = true;
 

@@ -48,9 +48,9 @@ public class ContainerUI : MonoBehaviour
             // Items on spawn
             if (i < items.Count)
             {
-                UiItem item = Instantiate(uiItemPrefab, slot.transform);
-                item.Initialize(items[i]);
-                slot.PutItemInSlot(item);
+                UiItem uiItem = Instantiate(uiItemPrefab, slot.transform);
+                uiItem.Initialize(items[i]);
+                slot.UpdateVisualLocation(uiItem.Item.gameObject);
             }
 
             if (i < visualItemSpots.Count) slot.physicalItemLocation = visualItemSpots[i];

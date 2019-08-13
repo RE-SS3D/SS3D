@@ -1,6 +1,4 @@
-﻿using Mirror;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public class HumanInventoryUI : MonoBehaviour
 {
@@ -13,9 +11,28 @@ public class HumanInventoryUI : MonoBehaviour
     [SerializeField]
     private UiItem uiItemPrefab;
 
-    public void Initialize(HumanInventory inv)
+    public void Initialize(HumanInventory inv, HumanAttachmentPoints attachmentPoints)
     {
         inventory = inv;
+
+        slots.slotLeftHand.physicalItemLocation = attachmentPoints.LeftHand.transform;
+        slots.slotRightHand.physicalItemLocation = attachmentPoints.RightHand.transform;
+
+        slots.slotHelmet.physicalItemLocation = attachmentPoints.Helmet.transform;
+        slots.slotGloves.physicalItemLocation = attachmentPoints.Gloves.transform;
+        slots.slotEars.physicalItemLocation = attachmentPoints.Ears.transform;
+        slots.slotSuitStorage.physicalItemLocation = attachmentPoints.SuitStorage.transform;
+        slots.slotVest.physicalItemLocation = attachmentPoints.Vest.transform;
+        slots.slotMask.physicalItemLocation = attachmentPoints.Mask.transform;
+        slots.slotShoes.physicalItemLocation = attachmentPoints.Shoes.transform;
+        slots.slotGlasses.physicalItemLocation = attachmentPoints.Glasses.transform;
+        slots.slotShirt.physicalItemLocation = attachmentPoints.Shirt.transform;
+
+        slots.slotCard.physicalItemLocation = attachmentPoints.Card.transform;
+        slots.slotBelt.physicalItemLocation = attachmentPoints.Belt.transform;
+        slots.slotBackpack.physicalItemLocation = attachmentPoints.Backpack.transform;
+        slots.slotPocketLeft.physicalItemLocation = attachmentPoints.PocketLeft.transform;
+        slots.slotPocketRight.physicalItemLocation = attachmentPoints.PocketRight.transform;
     }
 
     public HumanInventoryUISlots GetSlots()
@@ -23,9 +40,9 @@ public class HumanInventoryUI : MonoBehaviour
         return slots;
     }
 
-    public void SwitchActiveHand(int activeHand)
+    public void SwitchActiveHand(Hands hand)
     {
-        if (activeHand == 0)
+        if (hand == Hands.Left)
         {
             slots.LeftHandActiveMarker.gameObject.SetActive(true);
             slots.RightHandActiveMarker.gameObject.SetActive(false);
@@ -46,7 +63,7 @@ public class HumanInventoryUI : MonoBehaviour
         UiItem uiItem = Instantiate(uiItemPrefab, slot.transform);
         slot.uiItem = uiItem;
         uiItem.Initialize(item);
-        slot.PutItemInSlot(uiItem);
+        slot.UpdateVisualLocation(uiItem.Item.gameObject);
     }
 
     public void ToggleBodyPanel()
