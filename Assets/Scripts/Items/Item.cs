@@ -7,7 +7,7 @@ public class Item : NetworkBehaviour
 {
     public Sprite Sprite;
 
-    public SlotTypes compatibleSlots = SlotTypes.Hand;
+    public SlotTypes compatibleSlots = SlotTypes.LeftHand | SlotTypes.RightHand | SlotTypes.Storage;
 
     [SerializeField]
     private VisualObject visualObjectPrefab;
@@ -22,9 +22,6 @@ public class Item : NetworkBehaviour
         if (!visual) visual = Instantiate(visualObjectPrefab, target);
         visual.name = "visual - " + name;
         visual.Initialize(GetComponentInChildren<MeshFilter>().mesh, GetComponentInChildren<MeshRenderer>().materials);
-
-        visual.transform.localPosition = Vector3.zero;
-        visual.transform.localRotation = Quaternion.identity;
     }
 
     public void MoveVisual(GameObject slotObject)
@@ -33,8 +30,9 @@ public class Item : NetworkBehaviour
         visual.transform.SetParent(slot.physicalItemLocation);
         visual.transform.localPosition = Vector3.zero;
         visual.transform.localRotation = Quaternion.identity;
+        
     }
-    
+
     [ClientRpc]
     public void RpcRelease()
     {

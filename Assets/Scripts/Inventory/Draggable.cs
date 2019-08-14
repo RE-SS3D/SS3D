@@ -6,7 +6,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 {
     public Transform ReturnParent;
 
-    private ItemSlot LastSlot;
+    public ItemSlot LastSlot;
 
     [SerializeField]
     private Image image;
@@ -18,7 +18,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
         LastSlot = GetComponentInParent<ItemSlot>();
         LastSlot.uiItem = GetComponent<UiItem>();
-//        transform.SetParent(GetComponentInParent<Canvas>().transform);
+        transform.SetParent(GetComponentInParent<Canvas>().transform);
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -34,6 +34,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
             LastSlot.uiItem.Item.visual.GetComponentInParent<HumanInventory>().DropItem(LastSlot);
             return;
         }
+
 
         transform.SetParent(ReturnParent);
         image.raycastTarget = true;

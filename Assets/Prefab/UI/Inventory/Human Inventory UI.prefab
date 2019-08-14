@@ -299,7 +299,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 2048
+  slotType: 4096
   physicalItemLocation: {fileID: 0}
 --- !u!114 &4383625739638485633
 MonoBehaviour:
@@ -937,7 +937,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 32
+  slotType: 64
   physicalItemLocation: {fileID: 0}
 --- !u!114 &1621783478178782526
 MonoBehaviour:
@@ -1404,7 +1404,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 8192
+  slotType: 16384
   physicalItemLocation: {fileID: 0}
 --- !u!114 &3022613293412493379
 MonoBehaviour:
@@ -1571,7 +1571,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 8192
+  slotType: 32768
   physicalItemLocation: {fileID: 0}
 --- !u!114 &2258995919496531283
 MonoBehaviour:
@@ -1738,7 +1738,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 16
+  slotType: 32
   physicalItemLocation: {fileID: 0}
 --- !u!114 &2820616079010041659
 MonoBehaviour:
@@ -1947,7 +1947,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slots:
-    defaultImage: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
     slotLeftHand: {fileID: 4314286201925930352}
     slotRightHand: {fileID: 7545107333137209530}
     LeftHandActiveMarker: {fileID: 1099113793464720927}
@@ -1967,7 +1966,24 @@ MonoBehaviour:
     slotBackpack: {fileID: 7050780242212756895}
     slotPocketLeft: {fileID: 113863036457376322}
     slotPocketRight: {fileID: 1128954165779109085}
-  inventory: {fileID: 0}
+    SlotsArray:
+    - {fileID: 5975664714417434749}
+    - {fileID: 3542299024367344771}
+    - {fileID: 7487879146078364401}
+    - {fileID: 6404171923512208180}
+    - {fileID: 3491715713036514789}
+    - {fileID: 3858110731872562890}
+    - {fileID: 7316259251033001359}
+    - {fileID: 7894722078600927266}
+    - {fileID: 2792420239897795211}
+    - {fileID: 6834322578197698525}
+    - {fileID: 8277534113389188601}
+    - {fileID: 7050780242212756895}
+    - {fileID: 113863036457376322}
+    - {fileID: 4314286201925930352}
+    - {fileID: 7545107333137209530}
+    - {fileID: 1128954165779109085}
+  Inventory: {fileID: 0}
   uiItemPrefab: {fileID: 236411278976419200, guid: b218006fe61b1054997470d7b6e28be0,
     type: 3}
 --- !u!1 &5727570337277288390
@@ -2119,7 +2135,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 512
+  slotType: 1024
   physicalItemLocation: {fileID: 0}
 --- !u!114 &8143473778920826599
 MonoBehaviour:
@@ -2286,7 +2302,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 8
+  slotType: 16
   physicalItemLocation: {fileID: 0}
 --- !u!114 &2932518225081783616
 MonoBehaviour:
@@ -2454,7 +2470,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 1
+  slotType: 2
   physicalItemLocation: {fileID: 0}
 --- !u!114 &1510399637513559322
 MonoBehaviour:
@@ -2696,7 +2712,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 256
+  slotType: 512
   physicalItemLocation: {fileID: 0}
 --- !u!114 &1616756457123693903
 MonoBehaviour:
@@ -2938,7 +2954,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 4096
+  slotType: 8192
   physicalItemLocation: {fileID: 0}
 --- !u!114 &1996334135560785682
 MonoBehaviour:
@@ -3105,7 +3121,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 64
+  slotType: 128
   physicalItemLocation: {fileID: 0}
 --- !u!114 &1183440863799249516
 MonoBehaviour:
@@ -3272,7 +3288,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 1024
+  slotType: 2048
   physicalItemLocation: {fileID: 0}
 --- !u!114 &8692953739139406220
 MonoBehaviour:
@@ -3439,7 +3455,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 128
+  slotType: 256
   physicalItemLocation: {fileID: 0}
 --- !u!114 &7139244173042226896
 MonoBehaviour:
@@ -3681,7 +3697,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 4
+  slotType: 8
   physicalItemLocation: {fileID: 0}
 --- !u!114 &8498783793697494266
 MonoBehaviour:
@@ -4148,9 +4164,9 @@ RectTransform:
   m_Father: {fileID: 5727570337167516742}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -394.99994, y: -170.00037}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 5, y: 55}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &5727570338209183129
@@ -4546,7 +4562,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   uiItem: {fileID: 0}
-  slotType: 2
+  slotType: 4
   physicalItemLocation: {fileID: 0}
 --- !u!114 &8153200715523890084
 MonoBehaviour:

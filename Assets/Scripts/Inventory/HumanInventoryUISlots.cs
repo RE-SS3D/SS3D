@@ -1,16 +1,13 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 [Serializable]
 public class HumanInventoryUISlots
 {
-    [SerializeField]
-    public Sprite defaultImage;
-
     [Header("Hands")]
     public ItemSlot slotLeftHand;
-
     public ItemSlot slotRightHand;
 
     public Image LeftHandActiveMarker;
@@ -36,4 +33,7 @@ public class HumanInventoryUISlots
     public ItemSlot slotBackpack;
     public ItemSlot slotPocketLeft;
     public ItemSlot slotPocketRight;
+
+    [Header("Reference Helper")]
+    public ItemSlot[] SlotsArray;
 }

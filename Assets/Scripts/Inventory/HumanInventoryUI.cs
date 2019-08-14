@@ -1,38 +1,45 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using Mirror;
+using UnityEngine;
 
 public class HumanInventoryUI : MonoBehaviour
 {
     [SerializeField]
     private HumanInventoryUISlots slots;
 
-    [SerializeField]
-    private HumanInventory inventory;
+    public HumanInventory Inventory;
 
     [SerializeField]
     private UiItem uiItemPrefab;
 
     public void Initialize(HumanInventory inv, HumanAttachmentPoints attachmentPoints)
     {
-        inventory = inv;
+        Inventory = inv;
 
-        slots.slotLeftHand.physicalItemLocation = attachmentPoints.LeftHand.transform;
-        slots.slotRightHand.physicalItemLocation = attachmentPoints.RightHand.transform;
+        SlotSetup(slots.slotLeftHand, attachmentPoints.LeftHand.transform);
+        SlotSetup(slots.slotRightHand, attachmentPoints.RightHand.transform);
 
-        slots.slotHelmet.physicalItemLocation = attachmentPoints.Helmet.transform;
-        slots.slotGloves.physicalItemLocation = attachmentPoints.Gloves.transform;
-        slots.slotEars.physicalItemLocation = attachmentPoints.Ears.transform;
-        slots.slotSuitStorage.physicalItemLocation = attachmentPoints.SuitStorage.transform;
-        slots.slotVest.physicalItemLocation = attachmentPoints.Vest.transform;
-        slots.slotMask.physicalItemLocation = attachmentPoints.Mask.transform;
-        slots.slotShoes.physicalItemLocation = attachmentPoints.Shoes.transform;
-        slots.slotGlasses.physicalItemLocation = attachmentPoints.Glasses.transform;
-        slots.slotShirt.physicalItemLocation = attachmentPoints.Shirt.transform;
+        SlotSetup(slots.slotHelmet, attachmentPoints.Helmet.transform);
+        SlotSetup(slots.slotGloves, attachmentPoints.Gloves.transform);
+        SlotSetup(slots.slotEars, attachmentPoints.Ears.transform);
+        SlotSetup(slots.slotSuitStorage, attachmentPoints.SuitStorage.transform);
+        SlotSetup(slots.slotVest, attachmentPoints.Vest.transform);
+        SlotSetup(slots.slotMask, attachmentPoints.Mask.transform);
+        SlotSetup(slots.slotShoes, attachmentPoints.Shoes.transform);
+        SlotSetup(slots.slotGlasses, attachmentPoints.Glasses.transform);
+        SlotSetup(slots.slotShirt, attachmentPoints.Shirt.transform);
 
-        slots.slotCard.physicalItemLocation = attachmentPoints.Card.transform;
-        slots.slotBelt.physicalItemLocation = attachmentPoints.Belt.transform;
-        slots.slotBackpack.physicalItemLocation = attachmentPoints.Backpack.transform;
-        slots.slotPocketLeft.physicalItemLocation = attachmentPoints.PocketLeft.transform;
-        slots.slotPocketRight.physicalItemLocation = attachmentPoints.PocketRight.transform;
+        SlotSetup(slots.slotCard, attachmentPoints.Card.transform);
+        SlotSetup(slots.slotBelt, attachmentPoints.Belt.transform);
+        SlotSetup(slots.slotBackpack, attachmentPoints.Backpack.transform);
+        SlotSetup(slots.slotPocketLeft, attachmentPoints.PocketLeft.transform);
+        SlotSetup(slots.slotPocketRight, attachmentPoints.PocketRight.transform);
+    }
+
+    private void SlotSetup(ItemSlot slot, Transform attachmentPoint)
+    {
+        NetworkServer.Spawn(slot.gameObject);
+        slot.physicalItemLocation = attachmentPoint;
     }
 
     public HumanInventoryUISlots GetSlots()
@@ -63,7 +70,6 @@ public class HumanInventoryUI : MonoBehaviour
         UiItem uiItem = Instantiate(uiItemPrefab, slot.transform);
         slot.uiItem = uiItem;
         uiItem.Initialize(item);
-        slot.UpdateVisualLocation(uiItem.Item.gameObject);
     }
 
     public void ToggleBodyPanel()

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Linq;
 using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,6 +34,8 @@ public class HumanInventory : NetworkBehaviour
 
     private void Update()
     {
+        if (!isLocalPlayer) return;
+
         if (Input.GetButtonDown("SwapActive"))
         {
             activeHand = activeHand == Hands.Left ? Hands.Right : Hands.Left;
@@ -42,7 +45,6 @@ public class HumanInventory : NetworkBehaviour
         if (Input.GetButtonDown("DropActive"))
         {
             DropItem(GetActiveHandSlot());
-
         }
 
         if (Input.GetButtonDown("Click"))
@@ -63,11 +65,23 @@ public class HumanInventory : NetworkBehaviour
     }
 
     [Command]
-    private void CmdMoveItem(GameObject uiItemObject, GameObject targetSlotObject)
+    public void CmdMoveItem(SlotTypes origin, GameObject itemObject, SlotTypes type)
     {
-        
+        RpcMoveItem(origin, itemObject, type);
     }
-    
+
+    [ClientRpc]
+    public void RpcMoveItem(SlotTypes origin, GameObject itemObject, SlotTypes target)
+    {
+        Item item = itemObject.GetComponent<Item>();
+        ItemSlot targetSlot = inventoryUI.GetSlots().SlotsArray.First(s => s.slotType == target);
+        ItemSlot originSlot = inventoryUI.GetSlots().SlotsArray.First(s => s.slotType == origin);
+
+        item.MoveVisual(targetSlot.gameObject);
+        targetSlot.uiItem = originSlot.uiItem;
+        originSlot.uiItem = null;
+    }
+
     [Command]
     private void CmdGrab(GameObject itemObject, Hands hand)
     {
@@ -79,18 +93,19 @@ public class HumanInventory : NetworkBehaviour
     {
         Item item = itemObject.GetComponent<Item>();
 
-        Transform selectedHand = hand == Hands.Left
-            ? owner.GetComponent<HumanInventory>().inventoryUI.GetSlots().slotLeftHand.physicalItemLocation
-            : owner.GetComponent<HumanInventory>().inventoryUI.GetSlots().slotRightHand.physicalItemLocation;
+        ItemSlot selectedHand = hand == Hands.Left
+            ? owner.GetComponent<HumanInventory>().inventoryUI.GetSlots().slotLeftHand
+            : owner.GetComponent<HumanInventory>().inventoryUI.GetSlots().slotRightHand;
 
-        item.CreateVisual(selectedHand);
+        item.CreateVisual(selectedHand.physicalItemLocation);
+        item.MoveVisual(selectedHand.gameObject);
         item.HideOriginal();
     }
 
 
     private void PickUp(Item item)
     {
-        if (!item.Held && item.compatibleSlots.HasFlag(SlotTypes.Hand))
+        if (!item.Held && item.compatibleSlots.HasFlag(SlotTypes.LeftHand | SlotTypes.RightHand))
         {
             ItemSlot slot = GetActiveHandSlot();
             if (!slot.uiItem)
@@ -117,14 +132,14 @@ public class HumanInventory : NetworkBehaviour
 
     public void DropItem(ItemSlot slot)
     {
-        CmdDrop(GetActiveHandSlot().uiItem.Item.gameObject);
+        CmdDrop(slot.uiItem.Item.gameObject);
+//        CmdDrop(GetActiveHandSlot().uiItem.Item.gameObject);
         inventoryUI.ClearSlotUiItem(slot);
     }
 
     [Command]
     private void CmdDrop(GameObject itemObject)
     {
-//        RpcShareDrop(itemObject);
         Item item = itemObject.GetComponent<Item>();
         item.RpcRelease();
     }

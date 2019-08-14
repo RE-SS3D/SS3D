@@ -208,7 +208,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 3738067182
+  m_SceneId: 2279932841
 --- !u!114 &2887063182368509390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237,11 +237,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   Sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
-  compatibleSlots: 26625
-  rigidBody: {fileID: 0}
+  compatibleSlots: 118787
   visualObjectPrefab: {fileID: 5034773723147769351, guid: f0f678d389d89df4eb832291670e46c6,
     type: 3}
   Held: 0
+  visual: {fileID: 0}
 --- !u!65 &9077860433131475901
 BoxCollider:
   m_ObjectHideFlags: 0
