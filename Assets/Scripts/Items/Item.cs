@@ -37,6 +37,7 @@ public class Item : NetworkBehaviour
     public void RpcRelease()
     {
         ShowOriginal();
+        visual.transform.SetParent(null);
         transform.position = visual.transform.position;
         transform.rotation = visual.transform.rotation;
 
