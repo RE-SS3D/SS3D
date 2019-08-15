@@ -10,6 +10,11 @@ public class HumanMovement : NetworkBehaviour
     public float speed = 10f;
     [SyncVar]
     private float acceleration = 10f;
+    private float floatingStartTime;
+    private float bobbingDistance = 0.05f;
+    private float floatingSpeed = 5.0f;
+    private float floatingHeight = -1.987f;
+    private bool floating = false;
 
     private Animator characterAnimator;
     private CharacterController characterController;
@@ -52,7 +57,25 @@ public class HumanMovement : NetworkBehaviour
                 transform.rotation = Quaternion.LookRotation(dir);
             }
         }
-        characterAnimator.SetFloat("Speed", new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).magnitude);
-        characterController.Move(Vector3.down * gravity * Time.deltaTime); 
+        if (characterController.transform.position.y > floatingHeight)
+        {
+            characterController.Move(Vector3.down * gravity * Time.deltaTime);
+            characterAnimator.SetFloat("Speed", new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).magnitude);
+            floating = false;
+        } 
+        else
+        {            
+            if(!floating)
+            {
+                floating = true;
+                floatingStartTime = Time.time;
+                characterAnimator.SetFloat("Speed", Vector2.zero.magnitude);
+            }
+            var pos = characterController.transform.position;
+            var floatPos = new Vector3(characterController.transform.position.x,
+             floatingHeight - bobbingDistance - Mathf.Cos(Mathf.PI + (Time.time - floatingStartTime) * floatingSpeed) * bobbingDistance,
+             characterController.transform.position.z);
+            characterController.transform.position = floatPos;
+        }
     }
 }
