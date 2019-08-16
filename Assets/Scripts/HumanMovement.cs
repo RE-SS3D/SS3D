@@ -13,7 +13,7 @@ public class HumanMovement : NetworkBehaviour
     private float floatingStartTime;
     private float bobbingDistance = 0.05f;
     private float floatingSpeed = 5.0f;
-    private float floatingHeight = -1.987f;
+    public float floatingHeight = -1.987f;
     private bool floating = false;
 
     private Animator characterAnimator;
