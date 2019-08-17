@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Mirror;
 using UnityEngine;
 
-public class HumanInventoryUI : MonoBehaviour
+public class HumanInventoryUI : InventoryUi
 {
     [SerializeField]
-    private HumanInventoryUISlots slots;
-
-    public HumanInventory Inventory;
+    private HumanInventoryUISlots humanSlots;
 
     [SerializeField]
     private UiItem uiItemPrefab;
@@ -16,53 +15,55 @@ public class HumanInventoryUI : MonoBehaviour
     {
         Inventory = inv;
 
-        SlotSetup(slots.slotLeftHand, attachmentPoints.LeftHand.transform);
-        SlotSetup(slots.slotRightHand, attachmentPoints.RightHand.transform);
+        SlotSetup(humanSlots.slotLeftHand, attachmentPoints.LeftHand.transform);
+        SlotSetup(humanSlots.slotRightHand, attachmentPoints.RightHand.transform);
 
-        SlotSetup(slots.slotHelmet, attachmentPoints.Helmet.transform);
-        SlotSetup(slots.slotGloves, attachmentPoints.Gloves.transform);
-        SlotSetup(slots.slotEars, attachmentPoints.Ears.transform);
-        SlotSetup(slots.slotSuitStorage, attachmentPoints.SuitStorage.transform);
-        SlotSetup(slots.slotVest, attachmentPoints.Vest.transform);
-        SlotSetup(slots.slotMask, attachmentPoints.Mask.transform);
-        SlotSetup(slots.slotShoes, attachmentPoints.Shoes.transform);
-        SlotSetup(slots.slotGlasses, attachmentPoints.Glasses.transform);
-        SlotSetup(slots.slotShirt, attachmentPoints.Shirt.transform);
+        SlotSetup(humanSlots.slotHelmet, attachmentPoints.Helmet.transform);
+        SlotSetup(humanSlots.slotGloves, attachmentPoints.Gloves.transform);
+        SlotSetup(humanSlots.slotEars, attachmentPoints.Ears.transform);
+        SlotSetup(humanSlots.slotSuitStorage, attachmentPoints.SuitStorage.transform);
+        SlotSetup(humanSlots.slotVest, attachmentPoints.Vest.transform);
+        SlotSetup(humanSlots.slotMask, attachmentPoints.Mask.transform);
+        SlotSetup(humanSlots.slotShoes, attachmentPoints.Shoes.transform);
+        SlotSetup(humanSlots.slotGlasses, attachmentPoints.Glasses.transform);
+        SlotSetup(humanSlots.slotShirt, attachmentPoints.Shirt.transform);
 
-        SlotSetup(slots.slotCard, attachmentPoints.Card.transform);
-        SlotSetup(slots.slotBelt, attachmentPoints.Belt.transform);
-        SlotSetup(slots.slotBackpack, attachmentPoints.Backpack.transform);
-        SlotSetup(slots.slotPocketLeft, attachmentPoints.PocketLeft.transform);
-        SlotSetup(slots.slotPocketRight, attachmentPoints.PocketRight.transform);
+        SlotSetup(humanSlots.slotCard, attachmentPoints.Card.transform);
+        SlotSetup(humanSlots.slotBelt, attachmentPoints.Belt.transform);
+        SlotSetup(humanSlots.slotBackpack, attachmentPoints.Backpack.transform);
+        SlotSetup(humanSlots.slotPocketLeft, attachmentPoints.PocketLeft.transform);
+        SlotSetup(humanSlots.slotPocketRight, attachmentPoints.PocketRight.transform);
     }
 
     private void SlotSetup(ItemSlot slot, Transform attachmentPoint)
     {
         NetworkServer.Spawn(slot.gameObject);
         slot.physicalItemLocation = attachmentPoint;
+        humanSlots.SlotsList.Add(slot);
     }
 
-    public HumanInventoryUISlots GetSlots()
+    public override List<ItemSlot> GetSlots()
     {
-        return slots;
+        return humanSlots.SlotsList;
     }
 
     public void SwitchActiveHand(Hands hand)
     {
         if (hand == Hands.Left)
         {
-            slots.LeftHandActiveMarker.gameObject.SetActive(true);
-            slots.RightHandActiveMarker.gameObject.SetActive(false);
+            humanSlots.LeftHandActiveMarker.gameObject.SetActive(true);
+            humanSlots.RightHandActiveMarker.gameObject.SetActive(false);
             return;
         }
 
-        slots.LeftHandActiveMarker.gameObject.SetActive(false);
-        slots.RightHandActiveMarker.gameObject.SetActive(true);
+        humanSlots.LeftHandActiveMarker.gameObject.SetActive(false);
+        humanSlots.RightHandActiveMarker.gameObject.SetActive(true);
     }
 
     public void ClearSlotUiItem(ItemSlot slot)
     {
-        Destroy(slot.transform.GetChild(slot.transform.childCount - 1).gameObject);
+        UiItem item = slot.GetComponentInChildren<UiItem>();
+        if (item) Destroy(item.gameObject);
     }
 
     public void SetSlotUiItem(ItemSlot slot, Item item)
@@ -74,7 +75,7 @@ public class HumanInventoryUI : MonoBehaviour
 
     public void ToggleBodyPanel()
     {
-        slots.bodyPanel.transform.localScale =
-            slots.bodyPanel.transform.localScale == Vector3.zero ? Vector3.one : Vector3.zero;
+        humanSlots.bodyPanel.transform.localScale =
+            humanSlots.bodyPanel.transform.localScale == Vector3.zero ? Vector3.one : Vector3.zero;
     }
 }

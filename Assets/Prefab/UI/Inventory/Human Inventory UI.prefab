@@ -1946,7 +1946,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6690bfbdf67b7cf4d9828150d45cbf07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slots:
+  Inventory: {fileID: 0}
+  humanSlots:
     slotLeftHand: {fileID: 4314286201925930352}
     slotRightHand: {fileID: 7545107333137209530}
     LeftHandActiveMarker: {fileID: 1099113793464720927}
@@ -1966,24 +1967,7 @@ MonoBehaviour:
     slotBackpack: {fileID: 7050780242212756895}
     slotPocketLeft: {fileID: 113863036457376322}
     slotPocketRight: {fileID: 1128954165779109085}
-    SlotsArray:
-    - {fileID: 5975664714417434749}
-    - {fileID: 3542299024367344771}
-    - {fileID: 7487879146078364401}
-    - {fileID: 6404171923512208180}
-    - {fileID: 3491715713036514789}
-    - {fileID: 3858110731872562890}
-    - {fileID: 7316259251033001359}
-    - {fileID: 7894722078600927266}
-    - {fileID: 2792420239897795211}
-    - {fileID: 6834322578197698525}
-    - {fileID: 8277534113389188601}
-    - {fileID: 7050780242212756895}
-    - {fileID: 113863036457376322}
-    - {fileID: 4314286201925930352}
-    - {fileID: 7545107333137209530}
-    - {fileID: 1128954165779109085}
-  Inventory: {fileID: 0}
+    SlotsList: []
   uiItemPrefab: {fileID: 236411278976419200, guid: b218006fe61b1054997470d7b6e28be0,
     type: 3}
 --- !u!1 &5727570337277288390

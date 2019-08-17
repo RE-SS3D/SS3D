@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Container : MonoBehaviour
+public class Container : Inventory
 {
     [SerializeField]
     private int size = 1;
@@ -13,9 +13,6 @@ public class Container : MonoBehaviour
     [SerializeField]
     private List<Transform> visualItemLocations;
 
-//    [SerializeField, ReadOnly]
-//    private List<Item> initialItems;
-
     [SerializeField]
     private ContainerUI containerUIPrefab;
 
@@ -23,15 +20,15 @@ public class Container : MonoBehaviour
 
     private bool visible;
 
-    private void Awake()
+    private void Start()
     {
         ui = Instantiate(containerUIPrefab);
-        ui.Initialize(size, columns, transform, visualItemLocations);
+        ui.Initialize(size, columns, transform, visualItemLocations, this);
     }
 
     public void ToggleUI()
     {
         if (!EventSystem.current.IsPointerOverGameObject())
-        ui.ToggleVisible();
+            ui.ToggleVisible();
     }
 }

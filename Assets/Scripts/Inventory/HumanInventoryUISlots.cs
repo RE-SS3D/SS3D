@@ -8,6 +8,7 @@ public class HumanInventoryUISlots
 {
     [Header("Hands")]
     public ItemSlot slotLeftHand;
+
     public ItemSlot slotRightHand;
 
     public Image LeftHandActiveMarker;
@@ -35,5 +36,5 @@ public class HumanInventoryUISlots
     public ItemSlot slotPocketRight;
 
     [Header("Reference Helper")]
-    public ItemSlot[] SlotsArray;
+    public List<ItemSlot> SlotsList;
 }

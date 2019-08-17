@@ -6,12 +6,25 @@ public class ItemSlot : NetworkBehaviour, IDropHandler
 {
     public UiItem uiItem;
     public SlotTypes slotType;
-    public Transform physicalItemLocation;
-    private HumanInventoryUI humanInventoryUi;
 
-    private void Awake()
+    public Transform physicalItemLocation;
+
+    private HumanInventoryUI humanInventoryUi;
+    public InventoryUi inventoryUi;
+
+    private void Start()
     {
-        humanInventoryUi = GetComponentInParent<HumanInventoryUI>();
+        if (!inventoryUi) inventoryUi = GetComponentInParent<InventoryUi>();
+//        humanInventoryUi = GetComponentInParent<HumanInventoryUI>();
+    }
+
+    public void Initialize(ItemSlotData data, InventoryUi ui)
+    {
+        inventoryUi = ui;
+//        uiItem = data.uiItem;
+//        slotType = data.slotType;
+//        physicalItemLocation = data.physicalItemLocation;
+//        humanInventoryUi = data.inventoryUi;
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -23,7 +36,10 @@ public class ItemSlot : NetworkBehaviour, IDropHandler
 
             if (uiItem.Item.compatibleSlots.HasFlag(slotType))
             {
-                humanInventoryUi.Inventory.CmdMoveItem(draggable.LastSlot.slotType, uiItem.Item.gameObject, slotType);
+                inventoryUi.Inventory.CmdMoveItem(
+                    draggable.LastSlot.gameObject, draggable.LastSlot.slotType,
+                    gameObject, slotType,
+                    uiItem.Item.gameObject);
                 draggable.LastSlot = this;
             }
             else

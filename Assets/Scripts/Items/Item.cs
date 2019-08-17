@@ -30,16 +30,16 @@ public class Item : NetworkBehaviour
         visual.transform.SetParent(slot.physicalItemLocation);
         visual.transform.localPosition = Vector3.zero;
         visual.transform.localRotation = Quaternion.identity;
-        
     }
 
     [ClientRpc]
-    public void RpcRelease()
+    public void RpcDrop()
     {
         ShowOriginal();
-        visual.transform.SetParent(null);
+
         transform.position = visual.transform.position;
         transform.rotation = visual.transform.rotation;
+        visual.transform.SetParent(null);
 
         Destroy(visual.gameObject);
     }
