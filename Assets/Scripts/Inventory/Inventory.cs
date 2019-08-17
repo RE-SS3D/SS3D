@@ -19,12 +19,12 @@ public abstract class Inventory : NetworkBehaviour
         SlotTypes target,
         GameObject itemObject)
     {
-        ItemSlot originSlot = OriginSlotObject.GetComponent<ItemSlot>();
-        ItemSlot targetSlot = targetSlotObject.GetComponent<ItemSlot>();
+//        ItemSlot originSlot = OriginSlotObject.GetComponent<ItemSlot>();
+//        ItemSlot targetSlot = targetSlotObject.GetComponent<ItemSlot>();
 
         Item item = itemObject.GetComponent<Item>();
-//        ItemSlot originSlot = originInventory.GetSlots().First(s => s.slotType == origin);
-//        ItemSlot targetSlot = targetInventory.GetSlots().First(s => s.slotType == target && s.uiItem == null);
+        ItemSlot originSlot = ui.GetSlots().First(s => s.slotType == origin);
+        ItemSlot targetSlot = ui.GetSlots().First(s => s.slotType == target && s.uiItem == null);
 
         item.MoveVisual(targetSlot.gameObject);
         targetSlot.uiItem = originSlot.uiItem;
