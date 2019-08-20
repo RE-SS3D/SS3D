@@ -1,15 +1,14 @@
 fileFormatVersion: 2
 guid: e341f08d96905b747ae786d277e22c79
 ModelImporter:
-  serializedVersion: 25
+  serializedVersion: 26
   internalIDToNameTable: []
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Basic
-    second: {fileID: 7161080705930187102, guid: 6ccbaffeeb70e6a4da94131f04473529,
-      type: 3}
+      name: Palette01
+    second: {fileID: 2100000, guid: db5a4f016f22afc4f8f074192ce277e8, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
@@ -44,6 +43,7 @@ ModelImporter:
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -92,7 +92,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 0
+  animationType: 2
   humanoidOversampling: 1
   additionalBone: 0
   userData: 
