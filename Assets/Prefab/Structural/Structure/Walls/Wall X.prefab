@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 7314798640087107730}
   - component: {fileID: 3624244996192491026}
   - component: {fileID: 3871275604541409667}
-  - component: {fileID: 69552184494488646}
   m_Layer: 0
   m_Name: Wall X
   m_TagString: Untagged
@@ -93,23 +92,3 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.0000005, y: 1.0000007, z: 1.880395}
   m_Center: {x: -0.00000008940697, y: 0.00000008940699, z: 1.059803}
---- !u!114 &69552184494488646
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3150103537212551531}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b3cc54132b1468eb79f4d2a628abaa3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ConnectableSettings: {fileID: 11400000, guid: 69c33043a9210c74990513eb3e475288,
-    type: 2}
-  adjacentData:
-    directions: 0
-    adjacentConnectables: []
-  connectableGroup: {fileID: 0}
-  meshFilter: {fileID: 7314798640087107730}
-  meshRenderer: {fileID: 3624244996192491026}

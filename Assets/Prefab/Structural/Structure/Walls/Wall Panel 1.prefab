@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 8519672427781962790}
   - component: {fileID: 5052732066457003297}
   - component: {fileID: 5506720912996108653}
-  - component: {fileID: 2582242322986613376}
   m_Layer: 0
   m_Name: Wall Panel 1
   m_TagString: Untagged
@@ -93,23 +92,3 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.99698615, y: 0.19925645, z: 1.4865998}
   m_Center: {x: 0, y: -0.21860613, z: 1.1867275}
---- !u!114 &2582242322986613376
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6062526798935230329}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b3cc54132b1468eb79f4d2a628abaa3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ConnectableSettings: {fileID: 11400000, guid: 69c33043a9210c74990513eb3e475288,
-    type: 2}
-  adjacentData:
-    directions: 0
-    adjacentConnectables: []
-  connectableGroup: {fileID: 0}
-  meshFilter: {fileID: 8519672427781962790}
-  meshRenderer: {fileID: 5052732066457003297}
