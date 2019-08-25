@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1717728834759464814}
   - component: {fileID: 6645627863372566044}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,7 +100,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3134385798882014685}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: airlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 6826557841697582487}
   - component: {fileID: 8979557369345210923}
   - component: {fileID: 5142881006141590176}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AirlockLightsRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -213,7 +213,8 @@ GameObject:
   - component: {fileID: 2374252227547613960}
   - component: {fileID: 1355620659942901959}
   - component: {fileID: 7710798719017128915}
-  m_Layer: 0
+  - component: {fileID: 1101376767}
+  m_Layer: 8
   m_Name: AirlockStandardRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -281,6 +282,19 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &1101376767
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3697742720601764406}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.005001939, y: 0.003694828, z: 0.018677529}
+  m_Center: {x: -0.0025011892, y: 0, z: 0.008961448}
 --- !u!1 &4120689202417891738
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,7 +305,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4970362962524795759}
   - component: {fileID: 4225552434908280745}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -383,7 +397,7 @@ GameObject:
   - component: {fileID: 8220944510872907313}
   - component: {fileID: 2831500274639174747}
   - component: {fileID: 6547939583542254847}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AirlockLightsLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -462,7 +476,8 @@ GameObject:
   - component: {fileID: 2179268797300571644}
   - component: {fileID: 6021187603974878590}
   - component: {fileID: 7602130546123335953}
-  m_Layer: 0
+  - component: {fileID: 2013886651}
+  m_Layer: 8
   m_Name: AirlockStandardLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -530,3 +545,16 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &2013886651
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8884720997915807262}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.0050019394, y: 0.003694828, z: 0.018677529}
+  m_Center: {x: 0.0024990265, y: 0, z: 0.008961448}
