@@ -1445,6 +1445,9 @@ GameObject:
   - component: {fileID: 407514154497380142}
   - component: {fileID: 3017705709253908061}
   - component: {fileID: -3017745137611230683}
+  - component: {fileID: -8102263770892283867}
+  - component: {fileID: -8893516267238864616}
+  - component: {fileID: -1324237047362816873}
   m_Layer: 0
   m_Name: DefaultBody
   m_TagString: Untagged
@@ -1502,8 +1505,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 1
-  m_AssetId: 2d3c18c72ce1873429b8a591c301d6bf
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 2512273149
 --- !u!143 &4739600006477684313
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1607,6 +1610,75 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1
+--- !u!23 &-8102263770892283867
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2933389151239950429}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!33 &-8893516267238864616
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2933389151239950429}
+  m_Mesh: {fileID: 0}
+--- !u!114 &-1324237047362816873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2933389151239950429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a78f1bcb0b2ed6641aa29766ee037de6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  viewRange: 5
+  viewConeWidth: 360
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
+  meshResolution: 0.1
+  maskCutawayDistance: 0.1
+  edgeResolveIterations: 0
+  edgeDistanceThreshold: 0
+  detectionOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &2933389151239950431
 GameObject:
   m_ObjectHideFlags: 0
