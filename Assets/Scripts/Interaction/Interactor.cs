@@ -12,7 +12,7 @@ public class Interactor : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 100))
             {
-                Interactable interactable = hit.collider.GetComponent<Interactable>();
+                InteractableClass interactable = hit.collider.GetComponent<InteractableClass>();
                 if (interactable) interactable.Click();
             }
         }

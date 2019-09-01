@@ -237,8 +237,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 92dd993132dc0e04ca4670a5073d3567
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 3482817234
 --- !u!114 &3164321753176069641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -340,7 +340,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.25
   m_Pitch: 1
   Loop: 0
   Mute: 0
