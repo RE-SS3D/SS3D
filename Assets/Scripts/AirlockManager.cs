@@ -11,7 +11,9 @@ public class AirlockManager : MonoBehaviour
 
     enum Types { regular, dual };
 
-    MaterialChanger changer = new MaterialChanger();
+    MaterialChanger changer = null;
+
+    //MaterialChanger changer = 
     // 0 for green
     // 1 for red
     // 2 for off
@@ -54,6 +56,11 @@ public class AirlockManager : MonoBehaviour
     [SerializeField]  private AudioSource audioSource;
 
     public bool Stuck => welded || bolted || disabled ; //add electrical.off here
+    
+    void Start()
+    {
+        changer = gameObject.AddComponent(typeof (MaterialChanger)) as MaterialChanger;
+    }
 
     void Update()
     {
