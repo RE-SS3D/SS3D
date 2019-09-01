@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4648183484978820039}
   - component: {fileID: 7060609441096880324}
   - component: {fileID: 8489711197432911221}
+  - component: {fileID: 4984019472753715248}
   m_Layer: 0
   m_Name: Reinforced Wall I
   m_TagString: Untagged
@@ -78,3 +79,16 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &4984019472753715248
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4798873539317404160}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.0002038, y: 1.0000001, z: 2.0567906}
+  m_Center: {x: 0.00010186434, y: -0.000000029802319, z: 1.028395}

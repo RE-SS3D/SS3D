@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1613215419752247214}
   - component: {fileID: 7667269044413066567}
   - component: {fileID: 9044614269861633760}
+  - component: {fileID: -7231442789626230396}
   m_Layer: 0
   m_Name: Wall Panel 2
   m_TagString: Untagged
@@ -78,3 +79,16 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &-7231442789626230396
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6397675249900972318}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.0134379, y: 0.16092665, z: 1.4865994}
+  m_Center: {x: 0.00000011920929, y: -0.23355521, z: 1.186727}

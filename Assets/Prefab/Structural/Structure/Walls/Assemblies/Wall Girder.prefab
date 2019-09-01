@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7059608845704966168}
   - component: {fileID: 5312106951611720845}
   - component: {fileID: 7642683217737867331}
+  - component: {fileID: -2138171669856530298}
   m_Layer: 0
   m_Name: Wall Girder
   m_TagString: Untagged
@@ -78,3 +79,16 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &-2138171669856530298
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3023172412776801796}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.9316262, y: 0.91176224, z: 2.0499418}
+  m_Center: {x: 0, y: 0, z: 1.0268022}
