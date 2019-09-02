@@ -106,7 +106,7 @@ public class AirlockManager : MonoBehaviour
     public IEnumerator Move() // TODO make a more performant, declarative manager or these simple animations
     {
         moving = true;
-        print("moving true");
+        //print("moving true");
         var origin = open ? targetOpen : 0f;
         var target = open ? 0f : targetOpen;
 
@@ -115,7 +115,7 @@ public class AirlockManager : MonoBehaviour
 
         for (var time = 0f; time < openTime; time += Time.deltaTime)
         {
-            print("into the for");
+            //print("into the for");
             yield return null;
 
             var t = Mathf.Lerp(origin, target, time / openTime);
@@ -123,10 +123,10 @@ public class AirlockManager : MonoBehaviour
             left.transform.localPosition = openAxis * openDistance * openCurve.Evaluate(t);
             right.transform.localPosition = -openAxis * openDistance * openCurve.Evaluate(t);
         }
-        print("out of the for");
+        //print("out of the for");
         left.transform.localPosition = openAxis * openDistance * openCurve.Evaluate(target);
         right.transform.localPosition = -openAxis * openDistance * openCurve.Evaluate(target);
-        print("moving false");
+        //print("moving false");
 
         
         open = open ? false : true;
