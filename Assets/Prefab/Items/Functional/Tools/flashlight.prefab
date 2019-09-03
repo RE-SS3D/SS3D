@@ -11,9 +11,7 @@ GameObject:
   - component: {fileID: 1697795290197276008}
   - component: {fileID: 3217065944804400418}
   - component: {fileID: 6257870387784203922}
-  - component: {fileID: 5510752093511141572}
-  - component: {fileID: 4762456130179558505}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Flashlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -68,6 +66,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -80,35 +79,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &5510752093511141572
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5020641350698504320}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.18160358, y: 0.33005396, z: 0.18088013}
-  m_Center: {x: -0.03517604, y: 0.027848007, z: 0.08524403}
---- !u!54 &4762456130179558505
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5020641350698504320}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &5580296672131271260
 GameObject:
   m_ObjectHideFlags: 0
@@ -120,7 +90,7 @@ GameObject:
   - component: {fileID: 7447490955765893820}
   - component: {fileID: 1356187185079910920}
   - component: {fileID: 552497102830430179}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FlashlightBulb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -166,7 +136,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 583ec5095c87a4543a564d1e7211889b, type: 2}
+  - {fileID: 2100000, guid: 4156b958be0668e49b2e9f5120660e50, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -174,6 +144,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -197,7 +168,10 @@ GameObject:
   - component: {fileID: 7765767039528054866}
   - component: {fileID: 4697256957748171575}
   - component: {fileID: 2887063182368509390}
-  m_Layer: 0
+  - component: {fileID: 448539711}
+  - component: {fileID: 9077860433131475901}
+  - component: {fileID: 1689592630}
+  m_Layer: 9
   m_Name: flashlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -249,3 +223,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   compressRotation: 1
+--- !u!114 &448539711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6746060338138399297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 212b03cf9ce24c348948331c70eb6e78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncInterval: 0.1
+  Sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
+  compatibleSlots: 118787
+  visualObjectPrefab: {fileID: 5034773723147769351, guid: f0f678d389d89df4eb832291670e46c6,
+    type: 3}
+  Held: 0
+  visual: {fileID: 0}
+--- !u!65 &9077860433131475901
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6746060338138399297}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.18160358, y: 0.33005396, z: 0.18088013}
+  m_Center: {x: -0.03517604, y: 0.027848007, z: 0.08524403}
+--- !u!54 &1689592630
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6746060338138399297}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
