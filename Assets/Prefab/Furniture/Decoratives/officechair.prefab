@@ -169,6 +169,7 @@ GameObject:
   - component: {fileID: 4867446588418447250}
   - component: {fileID: 88748871177677908}
   - component: {fileID: 6266804497559974366}
+  - component: {fileID: 7592530590283314341}
   m_Layer: 0
   m_Name: officechair
   m_TagString: Untagged
@@ -216,6 +217,22 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.558095, y: 1.0470417, z: 0.6470417}
   m_Center: {x: -0.042859852, y: 0.45, z: -0.000000014901161}
+--- !u!114 &7592530590283314341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8491534051441157505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serverOnly: 0
+  localPlayerAuthority: 0
+  m_AssetId: 
+  m_SceneId: 3975583937
 --- !u!1 &8778339073195793152
 GameObject:
   m_ObjectHideFlags: 0
