@@ -35905,70 +35905,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3901300275626017110, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
+    - target: {fileID: 2374786706335407539, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
         type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 583ec5095c87a4543a564d1e7211889b, type: 2}
-    - target: {fileID: 3813698675257442668, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
-        type: 3}
-      propertyPath: m_BoundingSphereOverride.z
-      value: 6.39e-43
-      objectReference: {fileID: 0}
-    - target: {fileID: 3813698675257442668, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
-        type: 3}
-      propertyPath: m_BoundingSphereOverride.w
-      value: -3.49337e-39
-      objectReference: {fileID: 0}
-    - target: {fileID: 3813698675257442668, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
-        type: 3}
-      propertyPath: m_BoundingSphereOverride.x
-      value: 6.39e-43
-      objectReference: {fileID: 0}
-    - target: {fileID: 3813698675257442668, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
-        type: 3}
-      propertyPath: m_BoundingSphereOverride.y
-      value: -1.7407326e-12
-      objectReference: {fileID: 0}
-    - target: {fileID: 6768456293092493511, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
-        type: 3}
-      propertyPath: m_Range
-      value: 3.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 6768456293092493511, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
-        type: 3}
-      propertyPath: m_Intensity
-      value: 2.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 6768456293092493511, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
-        type: 3}
-      propertyPath: m_SpotAngle
-      value: 179
-      objectReference: {fileID: 0}
-    - target: {fileID: 6768456293092493511, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
-        type: 3}
-      propertyPath: m_BounceIntensity
-      value: 35.78
-      objectReference: {fileID: 0}
-    - target: {fileID: 6768456293092493511, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6768456293092493511, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.998961
-      objectReference: {fileID: 0}
-    - target: {fileID: 6768456293092493511, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.6273585
-      objectReference: {fileID: 0}
-    - target: {fileID: 5482217046697471483, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
-        type: 3}
-      propertyPath: m_SceneId
-      value: 2512550003
+      propertyPath: m_AssetId
+      value: 8b781e3bdcf41c8448d30c5d7954cdb5
       objectReference: {fileID: 0}
     - target: {fileID: 2374786706335407539, guid: 8b781e3bdcf41c8448d30c5d7954cdb5,
         type: 3}

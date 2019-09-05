@@ -79,7 +79,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 1822854955
+  m_SceneId: 4067762180
 --- !u!1 &5181080420812569886
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,7 +282,7 @@ Light:
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 3
-  m_Range: 5.4
+  m_Range: 8.5
   m_SpotAngle: 148.6
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10

@@ -270,7 +270,7 @@ MonoBehaviour:
     overrideState: 1
     value: 1
   contrast:
-    overrideState: 1
+    overrideState: 0
     value: -10
   mixerRedOutRedIn:
     overrideState: 0
@@ -1529,7 +1529,7 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 0.69
+    value: 0.38
   color:
     overrideState: 1
     value: {r: 0, g: 0, b: 0, a: 1}
@@ -1547,7 +1547,7 @@ MonoBehaviour:
     value: -12
   thicknessModifier:
     overrideState: 1
-    value: 1
+    value: 2.38
   directLightingStrength:
     overrideState: 1
     value: 0

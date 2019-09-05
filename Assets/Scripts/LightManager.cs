@@ -37,7 +37,7 @@ public class LightManager : MonoBehaviour
             case States.defaultCase:
                 lightObject.SetActive(true);
                 brokenLightObject.SetActive(false);
-                c = new Color(0.945098f, 0.945098f, 0.8f);
+                c = Color.white; //new Color(0.945098f, 0.945098f, 0.8f);
                 pointLight.color = c;
                 break;
             case States.off:
