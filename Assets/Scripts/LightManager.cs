@@ -10,6 +10,8 @@ public class LightManager : MonoBehaviour
     [SerializeField]
     States state = States.defaultCase;
     enum States { defaultCase, off, broken, noLight, emergency };
+    
+    MaterialChanger changer = null;
 
     Color c;
 
@@ -22,7 +24,7 @@ public class LightManager : MonoBehaviour
 
     void Start()
     {
-
+        changer = gameObject.AddComponent(typeof (MaterialChanger)) as MaterialChanger;
     }
 
 
@@ -42,6 +44,8 @@ public class LightManager : MonoBehaviour
                 lightObject.SetActive(true);
                 pointLight.intensity = 0;
                 brokenLightObject.SetActive(false);
+                changer.ChangeMaterial(lightObject.GetComponent<MeshRenderer>(), lightObject.GetComponent<Renderer>().material);
+                //lightObject.GetComponent<Renderer>().material
                 break;
             case States.broken:
                 lightObject.SetActive(false);

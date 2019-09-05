@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 8192375152356926014}
   - component: {fileID: 8192375152356925985}
   - component: {fileID: 8192375152356925984}
-  - component: {fileID: 8192375152356925987}
-  - component: {fileID: 8192375152356925986}
-  - component: {fileID: 8192375152356925989}
-  m_Layer: 0
+  - component: {fileID: 8192375152987292465}
+  - component: {fileID: 8192375152987292466}
+  - component: {fileID: 8192375152987292467}
+  m_Layer: 11
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -60,20 +60,20 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 25
   field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 311
-  m_RenderingPath: -1
+    m_Bits: 257
+  m_RenderingPath: 1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
-  m_AllowMSAA: 1
+  m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
@@ -104,16 +104,24 @@ MonoBehaviour:
   distance: 2
   angle: 0
   scrollSpeed: 2
---- !u!45 &8192375152356925987
-Skybox:
+--- !u!114 &8192375152987292465
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8192375152356925988}
   m_Enabled: 1
-  m_CustomSkybox: {fileID: 2100000, guid: 6d7d980cb7d7eb84e9319531e3c14424, type: 2}
---- !u!114 &8192375152356925986
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sharedProfile: {fileID: 11400000, guid: ae1cfeacc4e7ea74fa76aad23a44eebb, type: 2}
+  isGlobal: 1
+  blendDistance: 0
+  weight: 1
+  priority: 0
+--- !u!114 &8192375152987292466
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -128,17 +136,17 @@ MonoBehaviour:
   volumeTrigger: {fileID: 8192375152356926015}
   volumeLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2048
   stopNaNPropagation: 1
-  finalBlitToCameraTarget: 1
-  antialiasingMode: 0
+  finalBlitToCameraTarget: 0
+  antialiasingMode: 2
   temporalAntialiasing:
     jitterSpread: 0.75
     sharpness: 0.25
     stationaryBlending: 0.95
     motionBlending: 0.85
   subpixelMorphologicalAntialiasing:
-    quality: 2
+    quality: 1
   fastApproximateAntialiasing:
     fastMode: 0
     keepAlpha: 0
@@ -168,12 +176,12 @@ MonoBehaviour:
       colorBlindnessStrength: 1
   m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
   m_ShowToolkit: 0
-  m_ShowCustomSorter: 0
+  m_ShowCustomSorter: 1
   breakBeforeColorGrading: 0
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
---- !u!114 &8192375152356925989
+--- !u!114 &8192375152987292467
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -182,11 +190,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 8192375152356925988}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
+  m_Script: {fileID: 11500000, guid: e89654dcf6db746d2a57aeaaa14f5e83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sharedProfile: {fileID: 11400000, guid: ae1cfeacc4e7ea74fa76aad23a44eebb, type: 2}
-  isGlobal: 1
-  blendDistance: 0
-  weight: 1
-  priority: 0
+  settings:
+    intensity: 1.5
+    radius: 1
+    sampleCount: 0
+    sampleCountValue: 24
+    downsampling: 0
+    ambientOnly: 0
+    occlusionSource: 1
+    debug: 0
+  _aoShader: {fileID: 4800000, guid: 65e203e5acda447acbf9dc1ef78c4a39, type: 3}
+  _quadMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
