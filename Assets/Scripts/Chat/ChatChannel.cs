@@ -1,9 +1,10 @@
 ﻿using System;
 using UnityEngine;
 
-[Serializable, CreateAssetMenu(fileName = "New Chat Channel", menuName = "Chat/Channel")]
-public class ChatChannel : ScriptableObject
+[Serializable]
+public struct ChatChannel
 {
+    public string Name;
     public string Abbreviation;
     public Color Color;
 }

@@ -16,7 +16,8 @@ public class TabCreator : MonoBehaviour
     [SerializeField]
     private List<ChatChannel> availableChannels;
 
-    private ChatManager manager;
+    [SerializeField]
+    private ChatWindow chatWindow;
 
     private List<ChatFilterOption> options = new List<ChatFilterOption>();
 
@@ -36,16 +37,16 @@ public class TabCreator : MonoBehaviour
         }
     }
 
-    private void Submit()
+    public void Submit()
     {
         List<ChatChannel> channels = new List<ChatChannel>();
         foreach (ChatFilterOption option in options)
         {
             ChatChannel channel = option.TickedChannel();
-            if (channel != null) channels.Add(channel);
+            if (!string.IsNullOrEmpty(channel.Name)) channels.Add(channel);
         }
 
-        manager.CreateChatWindow(new ChatTabData(tabNameField.text, channels));
+        chatWindow.GetChatManager().CreateChatWindow(new ChatTabData(tabNameField.text, channels, true, null), chatWindow, Vector2.zero);
         
         gameObject.SetActive(false);
     }

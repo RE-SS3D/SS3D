@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ludiq.PeekCore;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ChatWindow : MonoBehaviour
+public class ChatWindow : MonoBehaviour, IDragHandler
 {
     [SerializeField]
     private RectTransform tabRow;
@@ -15,7 +15,8 @@ public class ChatWindow : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI ChatText;
 
-    private List<ChatChannel> channelFilters;
+    [SerializeField]
+    private TMP_InputField inputField;
 
     [SerializeField]
     private ChatTab chatTabPrefab;
@@ -24,17 +25,42 @@ public class ChatWindow : MonoBehaviour
 
     private ChatManager chatManager;
 
+    [SerializeField]
+    private TMP_Dropdown channelDropDown;
+
     public void Init(ChatTabData tabData, ChatManager chatManager)
     {
         this.chatManager = chatManager;
 
+        chatManager.messageReceivedEvent.AddListener(delegate { LoadTabChatLog(currentTabData); });
+
+        AddTab(tabData);
+//        LoadTab(tabData);
+
+        LoadChannelSelector(tabData);
+    }
+
+    private void LoadChannelSelector(ChatTabData tabData)
+    {
+        channelDropDown.options.Clear();
+        foreach (ChatChannel channel in tabData.Channels)
+        {
+            channelDropDown.options.Add(new TMP_Dropdown.OptionData(
+                string.Format("<color=#{0}>[{1}]</color>", ColorUtility.ToHtmlStringRGBA(channel.Color),
+                    channel.Abbreviation)));
+        }
+    }
+
+    public void AddTab(ChatTabData tabData)
+    {
         ChatTab chatTab = Instantiate(chatTabPrefab, tabRow);
-        chatTab.UpdateText(tabData.Name);
-        chatTab.transform.SetAsFirstSibling();
+        chatTab.Init(tabData, this);
+        LoadTab(chatTab.Data);
+    }
 
-        LoadTabChatLog(tabData);
-
-        currentTabData = tabData;
+    public ChatManager GetChatManager()
+    {
+        return chatManager;
     }
 
     public void LoadTabChatLog(ChatTabData tabData)
@@ -44,18 +70,64 @@ public class ChatWindow : MonoBehaviour
         {
             sb.AppendFormat(
                 "<color=#{0}>[{1}] {2}: {3}\n",
-                message.Channel.Color.ToHexString(),
+                ColorUtility.ToHtmlStringRGBA(message.Channel.Color),
                 message.Channel.Abbreviation,
-                message.Sender.name,
+                message.Sender,
                 message.Text);
-            Debug.Log("i work");
         }
 
         ChatText.text = sb.ToString();
     }
 
-//    public void AddMessage(Message message)
-//    {
-//        messages.Add(message);
-//    }
+    public void LoadTab()
+    {
+        if (tabRow.childCount > 0)
+        {
+            ChatTab newTab = tabRow.GetChild(0).GetComponent<ChatTab>();
+            if (newTab) LoadTab(newTab.Data);
+        }
+    }
+
+    public void LoadTab(ChatTabData tabData)
+    {
+        currentTabData = tabData;
+        LoadTabChatLog(tabData);
+        LoadChannelSelector(tabData);
+    }
+
+    public void CloseTab()
+    {
+        if (currentTabData.Removable)
+        {
+            if (tabRow.childCount <= 1)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Destroy(currentTabData.Tab.gameObject);
+            StartCoroutine(UpdateCurrentDataTabNextFrame());
+        }
+    }
+
+    private IEnumerator UpdateCurrentDataTabNextFrame()
+    {
+        yield return null;
+        if (tabRow.GetChild(0)) LoadTab(tabRow.GetChild(0).GetComponent<ChatTab>().Data);
+    }
+
+    public void SendMessage()
+    {
+        Message message = new Message();
+        message.Channel = currentTabData.Channels[channelDropDown.value];
+        message.Text = inputField.text;
+
+        chatManager.CmdSendMessage(message);
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        RectTransform moveTransform = (RectTransform) transform;
+        moveTransform.position += (Vector3) eventData.delta;
+    }
 }

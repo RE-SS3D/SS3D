@@ -409,3 +409,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   label: {fileID: 8310327665941904656}
+  toggle: {fileID: 6734554438716495333}
+  chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}

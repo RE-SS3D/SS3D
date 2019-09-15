@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using Mirror;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,15 +10,19 @@ public class ChatFilterOption : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI label;
 
+    [SerializeField]
     private Toggle toggle;
+
+    [SerializeField]
+    private ChatChannels chatChannels;
 
     private ChatChannel channel;
 
     public void Init(ChatChannel channel)
     {
         this.channel = channel;
-        label.text = channel.name;
+        label.text = channel.Name;
     }
 
-    public ChatChannel TickedChannel() => toggle.isOn ? channel : null;
+    public ChatChannel TickedChannel() => toggle.isOn ? channel : new ChatChannel();
 }
