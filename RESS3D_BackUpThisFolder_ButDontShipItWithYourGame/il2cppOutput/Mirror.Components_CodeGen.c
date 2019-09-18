@@ -1,0 +1,566 @@
+﻿#include "il2cpp-config.h"
+
+#ifndef _MSC_VER
+# include <alloca.h>
+#else
+# include <malloc.h>
+#endif
+
+
+
+#include "codegen/il2cpp-codegen-metadata.h"
+
+
+
+
+
+IL2CPP_EXTERN_C_BEGIN
+IL2CPP_EXTERN_C_END
+
+
+
+
+// 0x00000001 System.Boolean Mirror.NetworkAnimator::get_sendMessagesAllowed()
+extern void NetworkAnimator_get_sendMessagesAllowed_mB669BDF36FB745BEBBBE3C395D4EF90E8360F468 ();
+// 0x00000002 System.Void Mirror.NetworkAnimator::Awake()
+extern void NetworkAnimator_Awake_m1E5E985F5C45675C0F9246DDCBFE1FB5357C7762 ();
+// 0x00000003 System.Void Mirror.NetworkAnimator::FixedUpdate()
+extern void NetworkAnimator_FixedUpdate_mB1CB67A713A389DC5EF4801D82EA13B0E583780F ();
+// 0x00000004 System.Boolean Mirror.NetworkAnimator::CheckAnimStateChanged(System.Int32&,System.Single&)
+extern void NetworkAnimator_CheckAnimStateChanged_mE9F32230ACB723A4CE4006B4A6CA4A84A0F05581 ();
+// 0x00000005 System.Void Mirror.NetworkAnimator::CheckSendRate()
+extern void NetworkAnimator_CheckSendRate_m08E8845C7425F2E26B454375F25E87F63D182323 ();
+// 0x00000006 System.Void Mirror.NetworkAnimator::SendAnimationMessage(System.Int32,System.Single,System.Byte[])
+extern void NetworkAnimator_SendAnimationMessage_mA1422691AF35B7B170D80612012FCF67B8DFBB10 ();
+// 0x00000007 System.Void Mirror.NetworkAnimator::SendAnimationParametersMessage(System.Byte[])
+extern void NetworkAnimator_SendAnimationParametersMessage_mD7C114B7A92DF28920EFD1F31E58A2987DA3DF45 ();
+// 0x00000008 System.Void Mirror.NetworkAnimator::HandleAnimMsg(System.Int32,System.Single,Mirror.NetworkReader)
+extern void NetworkAnimator_HandleAnimMsg_m9C9F49C8763C0A2E5A3AB865B391E43406C2EF6F ();
+// 0x00000009 System.Void Mirror.NetworkAnimator::HandleAnimParamsMsg(Mirror.NetworkReader)
+extern void NetworkAnimator_HandleAnimParamsMsg_mC83358D3D9822C04006BF2AF130D136498008483 ();
+// 0x0000000A System.Void Mirror.NetworkAnimator::HandleAnimTriggerMsg(System.Int32)
+extern void NetworkAnimator_HandleAnimTriggerMsg_m4F24C75EF741C0419F6D2653AFFE66168F06A823 ();
+// 0x0000000B System.UInt64 Mirror.NetworkAnimator::NextDirtyBits()
+extern void NetworkAnimator_NextDirtyBits_mDBE23D17AFE31F36AA4E519EF0D60915D882FD7A ();
+// 0x0000000C System.Boolean Mirror.NetworkAnimator::WriteParameters(Mirror.NetworkWriter)
+extern void NetworkAnimator_WriteParameters_m91D58660E52EF824BF012FE161551104A88800B6 ();
+// 0x0000000D System.Void Mirror.NetworkAnimator::ReadParameters(Mirror.NetworkReader)
+extern void NetworkAnimator_ReadParameters_m600C73E9F2F6751A7EBF9F1C986AA3A13903C995 ();
+// 0x0000000E System.Boolean Mirror.NetworkAnimator::OnSerialize(Mirror.NetworkWriter,System.Boolean)
+extern void NetworkAnimator_OnSerialize_m8BFA28336763D25C18B7C5F5E5A676B11EBFF0B4 ();
+// 0x0000000F System.Void Mirror.NetworkAnimator::OnDeserialize(Mirror.NetworkReader,System.Boolean)
+extern void NetworkAnimator_OnDeserialize_m3A8737E10E4B96D0FDF18FF854105B2D6431DFE3 ();
+// 0x00000010 System.Void Mirror.NetworkAnimator::SetTrigger(System.String)
+extern void NetworkAnimator_SetTrigger_mB896BED83C8962F5374C6B2F139A9EF04754DCBD ();
+// 0x00000011 System.Void Mirror.NetworkAnimator::SetTrigger(System.Int32)
+extern void NetworkAnimator_SetTrigger_m63C96805FBE55F7F1108D5FB355C84B2EDF7A88D ();
+// 0x00000012 System.Void Mirror.NetworkAnimator::CmdOnAnimationServerMessage(System.Int32,System.Single,System.Byte[])
+extern void NetworkAnimator_CmdOnAnimationServerMessage_mCA8209A1DF720A503AA72987B84B7F5F5626B905 ();
+// 0x00000013 System.Void Mirror.NetworkAnimator::CmdOnAnimationParametersServerMessage(System.Byte[])
+extern void NetworkAnimator_CmdOnAnimationParametersServerMessage_mD4218DBBA611B322AC4BBD3233C80CA6DCEEA81A ();
+// 0x00000014 System.Void Mirror.NetworkAnimator::CmdOnAnimationTriggerServerMessage(System.Int32)
+extern void NetworkAnimator_CmdOnAnimationTriggerServerMessage_mCC0055227022997A776D1D73C097531A6CF9F332 ();
+// 0x00000015 System.Void Mirror.NetworkAnimator::RpcOnAnimationClientMessage(System.Int32,System.Single,System.Byte[])
+extern void NetworkAnimator_RpcOnAnimationClientMessage_mF4AAE9D24C3507D7C68EA046744A387F15640FFA ();
+// 0x00000016 System.Void Mirror.NetworkAnimator::RpcOnAnimationParametersClientMessage(System.Byte[])
+extern void NetworkAnimator_RpcOnAnimationParametersClientMessage_mC34E60AB40B9C82414A80D1EA16305F8C338EF5D ();
+// 0x00000017 System.Void Mirror.NetworkAnimator::RpcOnAnimationTriggerClientMessage(System.Int32)
+extern void NetworkAnimator_RpcOnAnimationTriggerClientMessage_mB08D32E188F663C7705E248E5831F0C48F29C187 ();
+// 0x00000018 System.Void Mirror.NetworkAnimator::.ctor()
+extern void NetworkAnimator__ctor_m8DF79BA16DD8A28E4C392A0CCBB33DAD722F4514 ();
+// 0x00000019 System.Void Mirror.NetworkAnimator::InvokeCmdCmdOnAnimationServerMessage(Mirror.NetworkBehaviour,Mirror.NetworkReader)
+extern void NetworkAnimator_InvokeCmdCmdOnAnimationServerMessage_mBADAD98BC4FDEC45CFF0C7C6DAC19942F7C3E7B9 ();
+// 0x0000001A System.Void Mirror.NetworkAnimator::InvokeCmdCmdOnAnimationParametersServerMessage(Mirror.NetworkBehaviour,Mirror.NetworkReader)
+extern void NetworkAnimator_InvokeCmdCmdOnAnimationParametersServerMessage_m2F88E6333EB6DCA0291EDFFC4742201FF368FA0A ();
+// 0x0000001B System.Void Mirror.NetworkAnimator::InvokeCmdCmdOnAnimationTriggerServerMessage(Mirror.NetworkBehaviour,Mirror.NetworkReader)
+extern void NetworkAnimator_InvokeCmdCmdOnAnimationTriggerServerMessage_m9B5B1EF6A69FC697A9AB86D6B264AE0C059625B8 ();
+// 0x0000001C System.Void Mirror.NetworkAnimator::CallCmdOnAnimationServerMessage(System.Int32,System.Single,System.Byte[])
+extern void NetworkAnimator_CallCmdOnAnimationServerMessage_m147CE661BD443ECE63C01066B4EECA4A14CD5270 ();
+// 0x0000001D System.Void Mirror.NetworkAnimator::CallCmdOnAnimationParametersServerMessage(System.Byte[])
+extern void NetworkAnimator_CallCmdOnAnimationParametersServerMessage_mD2D5B6B45E1E63CF2518988355BE81D861C17F6C ();
+// 0x0000001E System.Void Mirror.NetworkAnimator::CallCmdOnAnimationTriggerServerMessage(System.Int32)
+extern void NetworkAnimator_CallCmdOnAnimationTriggerServerMessage_m1323E66EC6E416EBA3006D057DFC00B9DA89018B ();
+// 0x0000001F System.Void Mirror.NetworkAnimator::InvokeRpcRpcOnAnimationClientMessage(Mirror.NetworkBehaviour,Mirror.NetworkReader)
+extern void NetworkAnimator_InvokeRpcRpcOnAnimationClientMessage_m7EC1644E8AA6ABCDB615120E9AC89D9A999908E7 ();
+// 0x00000020 System.Void Mirror.NetworkAnimator::InvokeRpcRpcOnAnimationParametersClientMessage(Mirror.NetworkBehaviour,Mirror.NetworkReader)
+extern void NetworkAnimator_InvokeRpcRpcOnAnimationParametersClientMessage_mA703E348AEDAB6DA345A8BF6171A0935077829B1 ();
+// 0x00000021 System.Void Mirror.NetworkAnimator::InvokeRpcRpcOnAnimationTriggerClientMessage(Mirror.NetworkBehaviour,Mirror.NetworkReader)
+extern void NetworkAnimator_InvokeRpcRpcOnAnimationTriggerClientMessage_mB5FEA2615388B58470DFBDAC62ED1ECEAF9E62BB ();
+// 0x00000022 System.Void Mirror.NetworkAnimator::CallRpcOnAnimationClientMessage(System.Int32,System.Single,System.Byte[])
+extern void NetworkAnimator_CallRpcOnAnimationClientMessage_mA4E85A9C6D97AEB2D38491B381219D1EC2B3A7E2 ();
+// 0x00000023 System.Void Mirror.NetworkAnimator::CallRpcOnAnimationParametersClientMessage(System.Byte[])
+extern void NetworkAnimator_CallRpcOnAnimationParametersClientMessage_m314F69FC1D0045F84530EA3FA6C07EC584DDCFDB ();
+// 0x00000024 System.Void Mirror.NetworkAnimator::CallRpcOnAnimationTriggerClientMessage(System.Int32)
+extern void NetworkAnimator_CallRpcOnAnimationTriggerClientMessage_mC8C672B32E05A58EE651058E96A948FDDB368921 ();
+// 0x00000025 System.Void Mirror.NetworkAnimator::.cctor()
+extern void NetworkAnimator__cctor_m1205557D55569CAE84FADF5E6260DC933268B28D ();
+// 0x00000026 System.Void Mirror.NetworkLobbyManager::OnValidate()
+extern void NetworkLobbyManager_OnValidate_m4BF65E16ABB6653D5795815504BD649FA142BA99 ();
+// 0x00000027 System.Void Mirror.NetworkLobbyManager::ReadyStatusChanged()
+extern void NetworkLobbyManager_ReadyStatusChanged_mECC49320C858FCDBBF9CC9444A1C4CE5E59FAFC7 ();
+// 0x00000028 System.Void Mirror.NetworkLobbyManager::OnServerReady(Mirror.NetworkConnection)
+extern void NetworkLobbyManager_OnServerReady_m0F04193C275AD06BC7C1686AF8421E85BC4510BF ();
+// 0x00000029 System.Void Mirror.NetworkLobbyManager::SceneLoadedForPlayer(Mirror.NetworkConnection,UnityEngine.GameObject)
+extern void NetworkLobbyManager_SceneLoadedForPlayer_m84F31D26010D2EACEA125E15D2048D52561076C0 ();
+// 0x0000002A System.Void Mirror.NetworkLobbyManager::CheckReadyToBegin()
+extern void NetworkLobbyManager_CheckReadyToBegin_mDD8072B8EC35ECD29E36E40FD66F90BC6F57FB75 ();
+// 0x0000002B System.Void Mirror.NetworkLobbyManager::CallOnClientEnterLobby()
+extern void NetworkLobbyManager_CallOnClientEnterLobby_m7AA245E391535354B00A7F1CD0EC87F328B69FA1 ();
+// 0x0000002C System.Void Mirror.NetworkLobbyManager::CallOnClientExitLobby()
+extern void NetworkLobbyManager_CallOnClientExitLobby_m6153FFBDE22678237499921188B06689F9DEBD19 ();
+// 0x0000002D System.Void Mirror.NetworkLobbyManager::OnServerConnect(Mirror.NetworkConnection)
+extern void NetworkLobbyManager_OnServerConnect_mB8AF89B21DB0EEAEEEAB1E3FE8BB764A42A8597F ();
+// 0x0000002E System.Void Mirror.NetworkLobbyManager::OnServerDisconnect(Mirror.NetworkConnection)
+extern void NetworkLobbyManager_OnServerDisconnect_m44AA8814C0AF8BE45FFAD4DC9AB52120F7E9B8BE ();
+// 0x0000002F System.Void Mirror.NetworkLobbyManager::OnServerAddPlayer(Mirror.NetworkConnection,Mirror.AddPlayerMessage)
+extern void NetworkLobbyManager_OnServerAddPlayer_m43593345FB065BC294BF7597EB031E768D6CCD2F ();
+// 0x00000030 System.Void Mirror.NetworkLobbyManager::RecalculateLobbyPlayerIndices()
+extern void NetworkLobbyManager_RecalculateLobbyPlayerIndices_m0FB711F05845D1AB31665A2D68603AC81C0E5904 ();
+// 0x00000031 System.Void Mirror.NetworkLobbyManager::ServerChangeScene(System.String)
+extern void NetworkLobbyManager_ServerChangeScene_m53DA2FFEFAD6132F115C005A97277A34B20A294A ();
+// 0x00000032 System.Void Mirror.NetworkLobbyManager::OnServerSceneChanged(System.String)
+extern void NetworkLobbyManager_OnServerSceneChanged_m00C0F38636004AF435DE7145ECE9B5431AF8D8D5 ();
+// 0x00000033 System.Void Mirror.NetworkLobbyManager::OnStartServer()
+extern void NetworkLobbyManager_OnStartServer_m06319C284612F3286802C8F5CC3999537E1B87A4 ();
+// 0x00000034 System.Void Mirror.NetworkLobbyManager::OnStartHost()
+extern void NetworkLobbyManager_OnStartHost_m5A239EAAEC155571775291021DC5193FA4E4332E ();
+// 0x00000035 System.Void Mirror.NetworkLobbyManager::OnStopServer()
+extern void NetworkLobbyManager_OnStopServer_m7006BC7B211EC15582A06106A820DB62AB626908 ();
+// 0x00000036 System.Void Mirror.NetworkLobbyManager::OnStopHost()
+extern void NetworkLobbyManager_OnStopHost_mFCACFCD945712C7B6B88F5C5671F83682BE85390 ();
+// 0x00000037 System.Void Mirror.NetworkLobbyManager::OnStartClient()
+extern void NetworkLobbyManager_OnStartClient_m8316AB2DB68BD0B876E8DAEF4BA8C4BD3F927D58 ();
+// 0x00000038 System.Void Mirror.NetworkLobbyManager::OnClientConnect(Mirror.NetworkConnection)
+extern void NetworkLobbyManager_OnClientConnect_mB39AFDD9B6239E213B9CF5FDBFF129D5606C2DF2 ();
+// 0x00000039 System.Void Mirror.NetworkLobbyManager::OnClientDisconnect(Mirror.NetworkConnection)
+extern void NetworkLobbyManager_OnClientDisconnect_mA0D599AC66D335903A60A88FFDB00B384900D3DE ();
+// 0x0000003A System.Void Mirror.NetworkLobbyManager::OnStopClient()
+extern void NetworkLobbyManager_OnStopClient_mD8157BBEFCCFC7700925AA7179F37DE003D50A46 ();
+// 0x0000003B System.Void Mirror.NetworkLobbyManager::OnClientChangeScene(System.String)
+extern void NetworkLobbyManager_OnClientChangeScene_m773F0F76CF2A059B69FC9213F47CD928F62CD372 ();
+// 0x0000003C System.Void Mirror.NetworkLobbyManager::OnClientSceneChanged(Mirror.NetworkConnection)
+extern void NetworkLobbyManager_OnClientSceneChanged_m231C973F983ECA0F82705DC8E9E9F00AFE96C79D ();
+// 0x0000003D System.Void Mirror.NetworkLobbyManager::OnLobbyStartHost()
+extern void NetworkLobbyManager_OnLobbyStartHost_m6706E2EDB2ADA783636FB4E13EF3E50BC7378406 ();
+// 0x0000003E System.Void Mirror.NetworkLobbyManager::OnLobbyStopHost()
+extern void NetworkLobbyManager_OnLobbyStopHost_mA61AC62F5353000E10B2917E7B1D811AA834032E ();
+// 0x0000003F System.Void Mirror.NetworkLobbyManager::OnLobbyStartServer()
+extern void NetworkLobbyManager_OnLobbyStartServer_mBD44075FD195F6B3A73C8AF3147EB414ECAEF9B4 ();
+// 0x00000040 System.Void Mirror.NetworkLobbyManager::OnLobbyServerConnect(Mirror.NetworkConnection)
+extern void NetworkLobbyManager_OnLobbyServerConnect_mEC18976FDA202CFA572359E16C43030528D875FE ();
+// 0x00000041 System.Void Mirror.NetworkLobbyManager::OnLobbyServerDisconnect(Mirror.NetworkConnection)
+extern void NetworkLobbyManager_OnLobbyServerDisconnect_m381432600516F311F80844A6CB50F5FDC5A4724C ();
+// 0x00000042 System.Void Mirror.NetworkLobbyManager::OnLobbyServerSceneChanged(System.String)
+extern void NetworkLobbyManager_OnLobbyServerSceneChanged_mA715E5C44FCF0D7007418721AB8EB5073F4FD19B ();
+// 0x00000043 UnityEngine.GameObject Mirror.NetworkLobbyManager::OnLobbyServerCreateLobbyPlayer(Mirror.NetworkConnection)
+extern void NetworkLobbyManager_OnLobbyServerCreateLobbyPlayer_m81F9C14A281D307B721005C825977C086F901EE3 ();
+// 0x00000044 UnityEngine.GameObject Mirror.NetworkLobbyManager::OnLobbyServerCreateGamePlayer(Mirror.NetworkConnection)
+extern void NetworkLobbyManager_OnLobbyServerCreateGamePlayer_m114F734E77AC7A23FDDB254A53A3FAA97D1367C9 ();
+// 0x00000045 System.Boolean Mirror.NetworkLobbyManager::OnLobbyServerSceneLoadedForPlayer(UnityEngine.GameObject,UnityEngine.GameObject)
+extern void NetworkLobbyManager_OnLobbyServerSceneLoadedForPlayer_m6B17680CC21386ADA4020587465EBDE268DA2847 ();
+// 0x00000046 System.Void Mirror.NetworkLobbyManager::OnLobbyServerPlayersReady()
+extern void NetworkLobbyManager_OnLobbyServerPlayersReady_m5342387749EF2DD0045E11BCCAA014DC34ABF6EA ();
+// 0x00000047 System.Void Mirror.NetworkLobbyManager::OnLobbyClientEnter()
+extern void NetworkLobbyManager_OnLobbyClientEnter_m98E63E7077550D2DB214FFF93FA95224078D7322 ();
+// 0x00000048 System.Void Mirror.NetworkLobbyManager::OnLobbyClientExit()
+extern void NetworkLobbyManager_OnLobbyClientExit_m48FCE8EE761E264F6BE50E980435FF687B3DF36A ();
+// 0x00000049 System.Void Mirror.NetworkLobbyManager::OnLobbyClientConnect(Mirror.NetworkConnection)
+extern void NetworkLobbyManager_OnLobbyClientConnect_mA53CCD9822ADB0ECEC6EFEBEBBA979A04EB5F865 ();
+// 0x0000004A System.Void Mirror.NetworkLobbyManager::OnLobbyClientDisconnect(Mirror.NetworkConnection)
+extern void NetworkLobbyManager_OnLobbyClientDisconnect_mDCA95A3B25FB2D10DB166E6B33BCC0C4BEDB7DCC ();
+// 0x0000004B System.Void Mirror.NetworkLobbyManager::OnLobbyStartClient()
+extern void NetworkLobbyManager_OnLobbyStartClient_m2A230BBBB540AC31F6628D2920BAE8D15DD7C71E ();
+// 0x0000004C System.Void Mirror.NetworkLobbyManager::OnLobbyStopClient()
+extern void NetworkLobbyManager_OnLobbyStopClient_mA9A8A4341908524638743A6961824961D302AD57 ();
+// 0x0000004D System.Void Mirror.NetworkLobbyManager::OnLobbyClientSceneChanged(Mirror.NetworkConnection)
+extern void NetworkLobbyManager_OnLobbyClientSceneChanged_m9A956456588347D603A93A71322F743AAA82493E ();
+// 0x0000004E System.Void Mirror.NetworkLobbyManager::OnGUI()
+extern void NetworkLobbyManager_OnGUI_m8D34A8EC8EE30DA0C404D4241C91F31D0400A7B1 ();
+// 0x0000004F System.Void Mirror.NetworkLobbyManager::.ctor()
+extern void NetworkLobbyManager__ctor_mA903EBAE4AA8BB27EB4963E88769A04FE4AFFF1B ();
+// 0x00000050 System.Void Mirror.NetworkLobbyManager_<>c::.cctor()
+extern void U3CU3Ec__cctor_mBA1944B77CA55D05BC51EF5DCC83BF0CB30921BD ();
+// 0x00000051 System.Void Mirror.NetworkLobbyManager_<>c::.ctor()
+extern void U3CU3Ec__ctor_m19337499FC30F7DC36B19DA70B1F568B023C9EBE ();
+// 0x00000052 System.Boolean Mirror.NetworkLobbyManager_<>c::<CheckReadyToBegin>b__13_0(System.Collections.Generic.KeyValuePair`2<System.Int32,Mirror.NetworkConnection>)
+extern void U3CU3Ec_U3CCheckReadyToBeginU3Eb__13_0_m2737142319A0198F184700EE5C0B73A6ACA19D93 ();
+// 0x00000053 System.Void Mirror.NetworkLobbyPlayer::Start()
+extern void NetworkLobbyPlayer_Start_m70D32B6663B527409BF6F25DC72D481975B413BB ();
+// 0x00000054 System.Void Mirror.NetworkLobbyPlayer::CmdChangeReadyState(System.Boolean)
+extern void NetworkLobbyPlayer_CmdChangeReadyState_mB023DDD1A1F742386C8492B7641FB008765795DA ();
+// 0x00000055 System.Void Mirror.NetworkLobbyPlayer::ReadyStateChanged(System.Boolean)
+extern void NetworkLobbyPlayer_ReadyStateChanged_m31389EE130CCC19E0E4C784F473C2E1DD6A12290 ();
+// 0x00000056 System.Void Mirror.NetworkLobbyPlayer::OnClientEnterLobby()
+extern void NetworkLobbyPlayer_OnClientEnterLobby_m17A31433C133A267FFA653626EA7154D62D438FB ();
+// 0x00000057 System.Void Mirror.NetworkLobbyPlayer::OnClientExitLobby()
+extern void NetworkLobbyPlayer_OnClientExitLobby_m6A7AF485545478EF3E74987AE928A71D90DA764E ();
+// 0x00000058 System.Void Mirror.NetworkLobbyPlayer::OnClientReady(System.Boolean)
+extern void NetworkLobbyPlayer_OnClientReady_m323D7A34500B635412F8DE7F54E958F6DF571041 ();
+// 0x00000059 System.Void Mirror.NetworkLobbyPlayer::OnGUI()
+extern void NetworkLobbyPlayer_OnGUI_mC381F2505D1D8FBE8F5776206CED996D3128E231 ();
+// 0x0000005A System.Void Mirror.NetworkLobbyPlayer::.ctor()
+extern void NetworkLobbyPlayer__ctor_m2BD306FF893C8078C03981788DBFC6C16359B284 ();
+// 0x0000005B System.Boolean Mirror.NetworkLobbyPlayer::get_NetworkReadyToBegin()
+extern void NetworkLobbyPlayer_get_NetworkReadyToBegin_mA7A721B1E8247178E4F90D088D66785BCCD3C6B3 ();
+// 0x0000005C System.Void Mirror.NetworkLobbyPlayer::set_NetworkReadyToBegin(System.Boolean)
+extern void NetworkLobbyPlayer_set_NetworkReadyToBegin_m4104D3C9A65D2E1B91D8036D33CC6B91B0260244 ();
+// 0x0000005D System.Int32 Mirror.NetworkLobbyPlayer::get_NetworkIndex()
+extern void NetworkLobbyPlayer_get_NetworkIndex_mD8C65E877277E22DF85703684631C0E0A8FEC848 ();
+// 0x0000005E System.Void Mirror.NetworkLobbyPlayer::set_NetworkIndex(System.Int32)
+extern void NetworkLobbyPlayer_set_NetworkIndex_m78722CD24EBEC91A3FAD8139755CA3A847B36169 ();
+// 0x0000005F System.Void Mirror.NetworkLobbyPlayer::InvokeCmdCmdChangeReadyState(Mirror.NetworkBehaviour,Mirror.NetworkReader)
+extern void NetworkLobbyPlayer_InvokeCmdCmdChangeReadyState_m4C1C9543C1AAA1EEBB9071F1B347ADA8BCE1300F ();
+// 0x00000060 System.Void Mirror.NetworkLobbyPlayer::CallCmdChangeReadyState(System.Boolean)
+extern void NetworkLobbyPlayer_CallCmdChangeReadyState_m0A3E50017DE9E965622FDE77BA801230749E2161 ();
+// 0x00000061 System.Void Mirror.NetworkLobbyPlayer::.cctor()
+extern void NetworkLobbyPlayer__cctor_mC9A08EFC6CA3BE2310EBA1D841E262C8BB839053 ();
+// 0x00000062 System.Boolean Mirror.NetworkLobbyPlayer::OnSerialize(Mirror.NetworkWriter,System.Boolean)
+extern void NetworkLobbyPlayer_OnSerialize_mD599464BA7462881C67AD5C7D3FDBE6E2582900A ();
+// 0x00000063 System.Void Mirror.NetworkLobbyPlayer::OnDeserialize(Mirror.NetworkReader,System.Boolean)
+extern void NetworkLobbyPlayer_OnDeserialize_mA7CCDA81B07975F83025309239CF8571E704DD75 ();
+// 0x00000064 System.Void Mirror.NetworkProximityChecker::Update()
+extern void NetworkProximityChecker_Update_mE72DA163952482D72D090D456015D5311DBBBFEA ();
+// 0x00000065 System.Boolean Mirror.NetworkProximityChecker::OnCheckObserver(Mirror.NetworkConnection)
+extern void NetworkProximityChecker_OnCheckObserver_mF8C00078B9D4655D4FE4AA6095255A7898F60C55 ();
+// 0x00000066 System.Boolean Mirror.NetworkProximityChecker::OnRebuildObservers(System.Collections.Generic.HashSet`1<Mirror.NetworkConnection>,System.Boolean)
+extern void NetworkProximityChecker_OnRebuildObservers_m29B41F2EC038F735CB0B00CE5D735515F14A1A44 ();
+// 0x00000067 System.Void Mirror.NetworkProximityChecker::OnSetLocalVisibility(System.Boolean)
+extern void NetworkProximityChecker_OnSetLocalVisibility_m93002ED12135C48D5DA34E10CA717E6B12473AE6 ();
+// 0x00000068 System.Void Mirror.NetworkProximityChecker::.ctor()
+extern void NetworkProximityChecker__ctor_m633842B008157F59A1273DAA164F15FD0E513FAD ();
+// 0x00000069 System.Void Mirror.NetworkProximityChecker::.cctor()
+extern void NetworkProximityChecker__cctor_mFC2651EA76FD428A59DA07DAAA3E2BB0666BF867 ();
+// 0x0000006A UnityEngine.Transform Mirror.NetworkTransform::get_targetComponent()
+extern void NetworkTransform_get_targetComponent_m81B03CBFB35D61DAAE42F6BBC8CA56D2843F0799 ();
+// 0x0000006B System.Void Mirror.NetworkTransform::.ctor()
+extern void NetworkTransform__ctor_m9F615E53EE7696DF6D903E7D86833260870772C1 ();
+// 0x0000006C UnityEngine.Transform Mirror.NetworkTransformBase::get_targetComponent()
+// 0x0000006D System.Void Mirror.NetworkTransformBase::SerializeIntoWriter(Mirror.NetworkWriter,UnityEngine.Vector3,UnityEngine.Quaternion,Mirror.NetworkTransformBase_Compression)
+extern void NetworkTransformBase_SerializeIntoWriter_m88AA4E71E088C1A0D3F71658973A008A69FCC793 ();
+// 0x0000006E System.Boolean Mirror.NetworkTransformBase::OnSerialize(Mirror.NetworkWriter,System.Boolean)
+extern void NetworkTransformBase_OnSerialize_mE113245EFA699075059E669D232C4BB7423EB815 ();
+// 0x0000006F System.Single Mirror.NetworkTransformBase::EstimateMovementSpeed(Mirror.NetworkTransformBase_DataPoint,Mirror.NetworkTransformBase_DataPoint,UnityEngine.Transform,System.Single)
+extern void NetworkTransformBase_EstimateMovementSpeed_m24221094AABA09FA6AED5065FF864B3D755E1182 ();
+// 0x00000070 System.Void Mirror.NetworkTransformBase::DeserializeFromReader(Mirror.NetworkReader)
+extern void NetworkTransformBase_DeserializeFromReader_m10E68F6DD832F8632980258478ECAC58DA3CD1E1 ();
+// 0x00000071 System.Void Mirror.NetworkTransformBase::OnDeserialize(Mirror.NetworkReader,System.Boolean)
+extern void NetworkTransformBase_OnDeserialize_mA3DD15BAB00C2CEAA5E0460F74F358A4BD695864 ();
+// 0x00000072 System.Void Mirror.NetworkTransformBase::CmdClientToServerSync(System.Byte[])
+extern void NetworkTransformBase_CmdClientToServerSync_mB9E2F43E5439D8217A7F419966EB9253FC2E2155 ();
+// 0x00000073 System.Single Mirror.NetworkTransformBase::CurrentInterpolationFactor(Mirror.NetworkTransformBase_DataPoint,Mirror.NetworkTransformBase_DataPoint)
+extern void NetworkTransformBase_CurrentInterpolationFactor_mA4610F05C642343891A629515B35F902CF576C1B ();
+// 0x00000074 UnityEngine.Vector3 Mirror.NetworkTransformBase::InterpolatePosition(Mirror.NetworkTransformBase_DataPoint,Mirror.NetworkTransformBase_DataPoint,UnityEngine.Vector3)
+extern void NetworkTransformBase_InterpolatePosition_mD0F5E5FA7110B3DF7CD9220BBBED9CC44E4F468D ();
+// 0x00000075 UnityEngine.Quaternion Mirror.NetworkTransformBase::InterpolateRotation(Mirror.NetworkTransformBase_DataPoint,Mirror.NetworkTransformBase_DataPoint,UnityEngine.Quaternion)
+extern void NetworkTransformBase_InterpolateRotation_m3C1765B15B512D427C25324FA42A744E330860AA ();
+// 0x00000076 System.Boolean Mirror.NetworkTransformBase::NeedsTeleport()
+extern void NetworkTransformBase_NeedsTeleport_mD7079D9D0B466ECA5131FA741F103109EB96937E ();
+// 0x00000077 System.Boolean Mirror.NetworkTransformBase::HasMovedOrRotated()
+extern void NetworkTransformBase_HasMovedOrRotated_mBDF4F2B3A7439A6B0123360829E206995A6CD9BF ();
+// 0x00000078 System.Void Mirror.NetworkTransformBase::ApplyPositionAndRotation(UnityEngine.Vector3,UnityEngine.Quaternion)
+extern void NetworkTransformBase_ApplyPositionAndRotation_mC8A69EAD10A4E94F0F052DF4DFD0B162C28470E7 ();
+// 0x00000079 System.Void Mirror.NetworkTransformBase::Update()
+extern void NetworkTransformBase_Update_m79D873963BF0C71815EB4166EA5AB653F40B9519 ();
+// 0x0000007A System.Void Mirror.NetworkTransformBase::DrawDataPointGizmo(Mirror.NetworkTransformBase_DataPoint,UnityEngine.Color)
+extern void NetworkTransformBase_DrawDataPointGizmo_mC258CB44456E3C9B5C89B300F7B982DBA2A67B64 ();
+// 0x0000007B System.Void Mirror.NetworkTransformBase::DrawLineBetweenDataPoints(Mirror.NetworkTransformBase_DataPoint,Mirror.NetworkTransformBase_DataPoint,UnityEngine.Color)
+extern void NetworkTransformBase_DrawLineBetweenDataPoints_m61BDE39AA5896DA8FEDA10700D16F5663AEAAAE7 ();
+// 0x0000007C System.Void Mirror.NetworkTransformBase::OnDrawGizmos()
+extern void NetworkTransformBase_OnDrawGizmos_m3606BDDF97348BE66704E23FF703EF6A0C025FFD ();
+// 0x0000007D System.Void Mirror.NetworkTransformBase::.ctor()
+extern void NetworkTransformBase__ctor_mC5D3787D8751702765DFCD95738DDAA7A82B08C0 ();
+// 0x0000007E System.Void Mirror.NetworkTransformBase::InvokeCmdCmdClientToServerSync(Mirror.NetworkBehaviour,Mirror.NetworkReader)
+extern void NetworkTransformBase_InvokeCmdCmdClientToServerSync_m0DEEEFD50418CFC9247F63EDD051012DA2C035F8 ();
+// 0x0000007F System.Void Mirror.NetworkTransformBase::CallCmdClientToServerSync(System.Byte[])
+extern void NetworkTransformBase_CallCmdClientToServerSync_mC171CDCE9933D85AE9EAE1364CFBEAB787D079FA ();
+// 0x00000080 System.Void Mirror.NetworkTransformBase::.cctor()
+extern void NetworkTransformBase__cctor_mC2C0F249894DBD24492BB112FA658EE2040833E0 ();
+// 0x00000081 System.Void Mirror.NetworkTransformBase_DataPoint::.ctor()
+extern void DataPoint__ctor_m50221D44215F021C78130CBDA4167A8BB023E8A3 ();
+// 0x00000082 UnityEngine.Transform Mirror.NetworkTransformChild::get_targetComponent()
+extern void NetworkTransformChild_get_targetComponent_m6043BCB10E9E2C41EEE2D5F9214D54BBC1E0BC94 ();
+// 0x00000083 System.Void Mirror.NetworkTransformChild::.ctor()
+extern void NetworkTransformChild__ctor_m50421A691488CE01271EA29D154EE5C167047D00 ();
+static Il2CppMethodPointer s_methodPointers[131] = 
+{
+	NetworkAnimator_get_sendMessagesAllowed_mB669BDF36FB745BEBBBE3C395D4EF90E8360F468,
+	NetworkAnimator_Awake_m1E5E985F5C45675C0F9246DDCBFE1FB5357C7762,
+	NetworkAnimator_FixedUpdate_mB1CB67A713A389DC5EF4801D82EA13B0E583780F,
+	NetworkAnimator_CheckAnimStateChanged_mE9F32230ACB723A4CE4006B4A6CA4A84A0F05581,
+	NetworkAnimator_CheckSendRate_m08E8845C7425F2E26B454375F25E87F63D182323,
+	NetworkAnimator_SendAnimationMessage_mA1422691AF35B7B170D80612012FCF67B8DFBB10,
+	NetworkAnimator_SendAnimationParametersMessage_mD7C114B7A92DF28920EFD1F31E58A2987DA3DF45,
+	NetworkAnimator_HandleAnimMsg_m9C9F49C8763C0A2E5A3AB865B391E43406C2EF6F,
+	NetworkAnimator_HandleAnimParamsMsg_mC83358D3D9822C04006BF2AF130D136498008483,
+	NetworkAnimator_HandleAnimTriggerMsg_m4F24C75EF741C0419F6D2653AFFE66168F06A823,
+	NetworkAnimator_NextDirtyBits_mDBE23D17AFE31F36AA4E519EF0D60915D882FD7A,
+	NetworkAnimator_WriteParameters_m91D58660E52EF824BF012FE161551104A88800B6,
+	NetworkAnimator_ReadParameters_m600C73E9F2F6751A7EBF9F1C986AA3A13903C995,
+	NetworkAnimator_OnSerialize_m8BFA28336763D25C18B7C5F5E5A676B11EBFF0B4,
+	NetworkAnimator_OnDeserialize_m3A8737E10E4B96D0FDF18FF854105B2D6431DFE3,
+	NetworkAnimator_SetTrigger_mB896BED83C8962F5374C6B2F139A9EF04754DCBD,
+	NetworkAnimator_SetTrigger_m63C96805FBE55F7F1108D5FB355C84B2EDF7A88D,
+	NetworkAnimator_CmdOnAnimationServerMessage_mCA8209A1DF720A503AA72987B84B7F5F5626B905,
+	NetworkAnimator_CmdOnAnimationParametersServerMessage_mD4218DBBA611B322AC4BBD3233C80CA6DCEEA81A,
+	NetworkAnimator_CmdOnAnimationTriggerServerMessage_mCC0055227022997A776D1D73C097531A6CF9F332,
+	NetworkAnimator_RpcOnAnimationClientMessage_mF4AAE9D24C3507D7C68EA046744A387F15640FFA,
+	NetworkAnimator_RpcOnAnimationParametersClientMessage_mC34E60AB40B9C82414A80D1EA16305F8C338EF5D,
+	NetworkAnimator_RpcOnAnimationTriggerClientMessage_mB08D32E188F663C7705E248E5831F0C48F29C187,
+	NetworkAnimator__ctor_m8DF79BA16DD8A28E4C392A0CCBB33DAD722F4514,
+	NetworkAnimator_InvokeCmdCmdOnAnimationServerMessage_mBADAD98BC4FDEC45CFF0C7C6DAC19942F7C3E7B9,
+	NetworkAnimator_InvokeCmdCmdOnAnimationParametersServerMessage_m2F88E6333EB6DCA0291EDFFC4742201FF368FA0A,
+	NetworkAnimator_InvokeCmdCmdOnAnimationTriggerServerMessage_m9B5B1EF6A69FC697A9AB86D6B264AE0C059625B8,
+	NetworkAnimator_CallCmdOnAnimationServerMessage_m147CE661BD443ECE63C01066B4EECA4A14CD5270,
+	NetworkAnimator_CallCmdOnAnimationParametersServerMessage_mD2D5B6B45E1E63CF2518988355BE81D861C17F6C,
+	NetworkAnimator_CallCmdOnAnimationTriggerServerMessage_m1323E66EC6E416EBA3006D057DFC00B9DA89018B,
+	NetworkAnimator_InvokeRpcRpcOnAnimationClientMessage_m7EC1644E8AA6ABCDB615120E9AC89D9A999908E7,
+	NetworkAnimator_InvokeRpcRpcOnAnimationParametersClientMessage_mA703E348AEDAB6DA345A8BF6171A0935077829B1,
+	NetworkAnimator_InvokeRpcRpcOnAnimationTriggerClientMessage_mB5FEA2615388B58470DFBDAC62ED1ECEAF9E62BB,
+	NetworkAnimator_CallRpcOnAnimationClientMessage_mA4E85A9C6D97AEB2D38491B381219D1EC2B3A7E2,
+	NetworkAnimator_CallRpcOnAnimationParametersClientMessage_m314F69FC1D0045F84530EA3FA6C07EC584DDCFDB,
+	NetworkAnimator_CallRpcOnAnimationTriggerClientMessage_mC8C672B32E05A58EE651058E96A948FDDB368921,
+	NetworkAnimator__cctor_m1205557D55569CAE84FADF5E6260DC933268B28D,
+	NetworkLobbyManager_OnValidate_m4BF65E16ABB6653D5795815504BD649FA142BA99,
+	NetworkLobbyManager_ReadyStatusChanged_mECC49320C858FCDBBF9CC9444A1C4CE5E59FAFC7,
+	NetworkLobbyManager_OnServerReady_m0F04193C275AD06BC7C1686AF8421E85BC4510BF,
+	NetworkLobbyManager_SceneLoadedForPlayer_m84F31D26010D2EACEA125E15D2048D52561076C0,
+	NetworkLobbyManager_CheckReadyToBegin_mDD8072B8EC35ECD29E36E40FD66F90BC6F57FB75,
+	NetworkLobbyManager_CallOnClientEnterLobby_m7AA245E391535354B00A7F1CD0EC87F328B69FA1,
+	NetworkLobbyManager_CallOnClientExitLobby_m6153FFBDE22678237499921188B06689F9DEBD19,
+	NetworkLobbyManager_OnServerConnect_mB8AF89B21DB0EEAEEEAB1E3FE8BB764A42A8597F,
+	NetworkLobbyManager_OnServerDisconnect_m44AA8814C0AF8BE45FFAD4DC9AB52120F7E9B8BE,
+	NetworkLobbyManager_OnServerAddPlayer_m43593345FB065BC294BF7597EB031E768D6CCD2F,
+	NetworkLobbyManager_RecalculateLobbyPlayerIndices_m0FB711F05845D1AB31665A2D68603AC81C0E5904,
+	NetworkLobbyManager_ServerChangeScene_m53DA2FFEFAD6132F115C005A97277A34B20A294A,
+	NetworkLobbyManager_OnServerSceneChanged_m00C0F38636004AF435DE7145ECE9B5431AF8D8D5,
+	NetworkLobbyManager_OnStartServer_m06319C284612F3286802C8F5CC3999537E1B87A4,
+	NetworkLobbyManager_OnStartHost_m5A239EAAEC155571775291021DC5193FA4E4332E,
+	NetworkLobbyManager_OnStopServer_m7006BC7B211EC15582A06106A820DB62AB626908,
+	NetworkLobbyManager_OnStopHost_mFCACFCD945712C7B6B88F5C5671F83682BE85390,
+	NetworkLobbyManager_OnStartClient_m8316AB2DB68BD0B876E8DAEF4BA8C4BD3F927D58,
+	NetworkLobbyManager_OnClientConnect_mB39AFDD9B6239E213B9CF5FDBFF129D5606C2DF2,
+	NetworkLobbyManager_OnClientDisconnect_mA0D599AC66D335903A60A88FFDB00B384900D3DE,
+	NetworkLobbyManager_OnStopClient_mD8157BBEFCCFC7700925AA7179F37DE003D50A46,
+	NetworkLobbyManager_OnClientChangeScene_m773F0F76CF2A059B69FC9213F47CD928F62CD372,
+	NetworkLobbyManager_OnClientSceneChanged_m231C973F983ECA0F82705DC8E9E9F00AFE96C79D,
+	NetworkLobbyManager_OnLobbyStartHost_m6706E2EDB2ADA783636FB4E13EF3E50BC7378406,
+	NetworkLobbyManager_OnLobbyStopHost_mA61AC62F5353000E10B2917E7B1D811AA834032E,
+	NetworkLobbyManager_OnLobbyStartServer_mBD44075FD195F6B3A73C8AF3147EB414ECAEF9B4,
+	NetworkLobbyManager_OnLobbyServerConnect_mEC18976FDA202CFA572359E16C43030528D875FE,
+	NetworkLobbyManager_OnLobbyServerDisconnect_m381432600516F311F80844A6CB50F5FDC5A4724C,
+	NetworkLobbyManager_OnLobbyServerSceneChanged_mA715E5C44FCF0D7007418721AB8EB5073F4FD19B,
+	NetworkLobbyManager_OnLobbyServerCreateLobbyPlayer_m81F9C14A281D307B721005C825977C086F901EE3,
+	NetworkLobbyManager_OnLobbyServerCreateGamePlayer_m114F734E77AC7A23FDDB254A53A3FAA97D1367C9,
+	NetworkLobbyManager_OnLobbyServerSceneLoadedForPlayer_m6B17680CC21386ADA4020587465EBDE268DA2847,
+	NetworkLobbyManager_OnLobbyServerPlayersReady_m5342387749EF2DD0045E11BCCAA014DC34ABF6EA,
+	NetworkLobbyManager_OnLobbyClientEnter_m98E63E7077550D2DB214FFF93FA95224078D7322,
+	NetworkLobbyManager_OnLobbyClientExit_m48FCE8EE761E264F6BE50E980435FF687B3DF36A,
+	NetworkLobbyManager_OnLobbyClientConnect_mA53CCD9822ADB0ECEC6EFEBEBBA979A04EB5F865,
+	NetworkLobbyManager_OnLobbyClientDisconnect_mDCA95A3B25FB2D10DB166E6B33BCC0C4BEDB7DCC,
+	NetworkLobbyManager_OnLobbyStartClient_m2A230BBBB540AC31F6628D2920BAE8D15DD7C71E,
+	NetworkLobbyManager_OnLobbyStopClient_mA9A8A4341908524638743A6961824961D302AD57,
+	NetworkLobbyManager_OnLobbyClientSceneChanged_m9A956456588347D603A93A71322F743AAA82493E,
+	NetworkLobbyManager_OnGUI_m8D34A8EC8EE30DA0C404D4241C91F31D0400A7B1,
+	NetworkLobbyManager__ctor_mA903EBAE4AA8BB27EB4963E88769A04FE4AFFF1B,
+	U3CU3Ec__cctor_mBA1944B77CA55D05BC51EF5DCC83BF0CB30921BD,
+	U3CU3Ec__ctor_m19337499FC30F7DC36B19DA70B1F568B023C9EBE,
+	U3CU3Ec_U3CCheckReadyToBeginU3Eb__13_0_m2737142319A0198F184700EE5C0B73A6ACA19D93,
+	NetworkLobbyPlayer_Start_m70D32B6663B527409BF6F25DC72D481975B413BB,
+	NetworkLobbyPlayer_CmdChangeReadyState_mB023DDD1A1F742386C8492B7641FB008765795DA,
+	NetworkLobbyPlayer_ReadyStateChanged_m31389EE130CCC19E0E4C784F473C2E1DD6A12290,
+	NetworkLobbyPlayer_OnClientEnterLobby_m17A31433C133A267FFA653626EA7154D62D438FB,
+	NetworkLobbyPlayer_OnClientExitLobby_m6A7AF485545478EF3E74987AE928A71D90DA764E,
+	NetworkLobbyPlayer_OnClientReady_m323D7A34500B635412F8DE7F54E958F6DF571041,
+	NetworkLobbyPlayer_OnGUI_mC381F2505D1D8FBE8F5776206CED996D3128E231,
+	NetworkLobbyPlayer__ctor_m2BD306FF893C8078C03981788DBFC6C16359B284,
+	NetworkLobbyPlayer_get_NetworkReadyToBegin_mA7A721B1E8247178E4F90D088D66785BCCD3C6B3,
+	NetworkLobbyPlayer_set_NetworkReadyToBegin_m4104D3C9A65D2E1B91D8036D33CC6B91B0260244,
+	NetworkLobbyPlayer_get_NetworkIndex_mD8C65E877277E22DF85703684631C0E0A8FEC848,
+	NetworkLobbyPlayer_set_NetworkIndex_m78722CD24EBEC91A3FAD8139755CA3A847B36169,
+	NetworkLobbyPlayer_InvokeCmdCmdChangeReadyState_m4C1C9543C1AAA1EEBB9071F1B347ADA8BCE1300F,
+	NetworkLobbyPlayer_CallCmdChangeReadyState_m0A3E50017DE9E965622FDE77BA801230749E2161,
+	NetworkLobbyPlayer__cctor_mC9A08EFC6CA3BE2310EBA1D841E262C8BB839053,
+	NetworkLobbyPlayer_OnSerialize_mD599464BA7462881C67AD5C7D3FDBE6E2582900A,
+	NetworkLobbyPlayer_OnDeserialize_mA7CCDA81B07975F83025309239CF8571E704DD75,
+	NetworkProximityChecker_Update_mE72DA163952482D72D090D456015D5311DBBBFEA,
+	NetworkProximityChecker_OnCheckObserver_mF8C00078B9D4655D4FE4AA6095255A7898F60C55,
+	NetworkProximityChecker_OnRebuildObservers_m29B41F2EC038F735CB0B00CE5D735515F14A1A44,
+	NetworkProximityChecker_OnSetLocalVisibility_m93002ED12135C48D5DA34E10CA717E6B12473AE6,
+	NetworkProximityChecker__ctor_m633842B008157F59A1273DAA164F15FD0E513FAD,
+	NetworkProximityChecker__cctor_mFC2651EA76FD428A59DA07DAAA3E2BB0666BF867,
+	NetworkTransform_get_targetComponent_m81B03CBFB35D61DAAE42F6BBC8CA56D2843F0799,
+	NetworkTransform__ctor_m9F615E53EE7696DF6D903E7D86833260870772C1,
+	NULL,
+	NetworkTransformBase_SerializeIntoWriter_m88AA4E71E088C1A0D3F71658973A008A69FCC793,
+	NetworkTransformBase_OnSerialize_mE113245EFA699075059E669D232C4BB7423EB815,
+	NetworkTransformBase_EstimateMovementSpeed_m24221094AABA09FA6AED5065FF864B3D755E1182,
+	NetworkTransformBase_DeserializeFromReader_m10E68F6DD832F8632980258478ECAC58DA3CD1E1,
+	NetworkTransformBase_OnDeserialize_mA3DD15BAB00C2CEAA5E0460F74F358A4BD695864,
+	NetworkTransformBase_CmdClientToServerSync_mB9E2F43E5439D8217A7F419966EB9253FC2E2155,
+	NetworkTransformBase_CurrentInterpolationFactor_mA4610F05C642343891A629515B35F902CF576C1B,
+	NetworkTransformBase_InterpolatePosition_mD0F5E5FA7110B3DF7CD9220BBBED9CC44E4F468D,
+	NetworkTransformBase_InterpolateRotation_m3C1765B15B512D427C25324FA42A744E330860AA,
+	NetworkTransformBase_NeedsTeleport_mD7079D9D0B466ECA5131FA741F103109EB96937E,
+	NetworkTransformBase_HasMovedOrRotated_mBDF4F2B3A7439A6B0123360829E206995A6CD9BF,
+	NetworkTransformBase_ApplyPositionAndRotation_mC8A69EAD10A4E94F0F052DF4DFD0B162C28470E7,
+	NetworkTransformBase_Update_m79D873963BF0C71815EB4166EA5AB653F40B9519,
+	NetworkTransformBase_DrawDataPointGizmo_mC258CB44456E3C9B5C89B300F7B982DBA2A67B64,
+	NetworkTransformBase_DrawLineBetweenDataPoints_m61BDE39AA5896DA8FEDA10700D16F5663AEAAAE7,
+	NetworkTransformBase_OnDrawGizmos_m3606BDDF97348BE66704E23FF703EF6A0C025FFD,
+	NetworkTransformBase__ctor_mC5D3787D8751702765DFCD95738DDAA7A82B08C0,
+	NetworkTransformBase_InvokeCmdCmdClientToServerSync_m0DEEEFD50418CFC9247F63EDD051012DA2C035F8,
+	NetworkTransformBase_CallCmdClientToServerSync_mC171CDCE9933D85AE9EAE1364CFBEAB787D079FA,
+	NetworkTransformBase__cctor_mC2C0F249894DBD24492BB112FA658EE2040833E0,
+	DataPoint__ctor_m50221D44215F021C78130CBDA4167A8BB023E8A3,
+	NetworkTransformChild_get_targetComponent_m6043BCB10E9E2C41EEE2D5F9214D54BBC1E0BC94,
+	NetworkTransformChild__ctor_m50421A691488CE01271EA29D154EE5C167047D00,
+};
+static const int32_t s_InvokerIndices[131] = 
+{
+	17,
+	13,
+	13,
+	778,
+	13,
+	952,
+	4,
+	952,
+	4,
+	9,
+	176,
+	32,
+	4,
+	425,
+	403,
+	4,
+	9,
+	952,
+	4,
+	9,
+	952,
+	4,
+	9,
+	13,
+	158,
+	158,
+	158,
+	952,
+	4,
+	9,
+	158,
+	158,
+	158,
+	952,
+	4,
+	9,
+	8,
+	13,
+	13,
+	4,
+	23,
+	13,
+	13,
+	13,
+	4,
+	4,
+	23,
+	13,
+	4,
+	4,
+	13,
+	13,
+	13,
+	13,
+	13,
+	4,
+	4,
+	13,
+	4,
+	4,
+	13,
+	13,
+	13,
+	4,
+	4,
+	4,
+	6,
+	6,
+	21,
+	13,
+	13,
+	13,
+	4,
+	4,
+	13,
+	13,
+	4,
+	13,
+	13,
+	8,
+	13,
+	1708,
+	13,
+	44,
+	44,
+	13,
+	13,
+	44,
+	13,
+	13,
+	17,
+	44,
+	18,
+	9,
+	158,
+	44,
+	8,
+	425,
+	403,
+	13,
+	32,
+	425,
+	44,
+	13,
+	8,
+	14,
+	13,
+	14,
+	1803,
+	425,
+	1804,
+	4,
+	403,
+	4,
+	239,
+	1805,
+	1806,
+	17,
+	17,
+	1515,
+	13,
+	1807,
+	1808,
+	13,
+	13,
+	158,
+	4,
+	8,
+	13,
+	14,
+	13,
+};
+extern const Il2CppCodeGenModule g_Mirror_ComponentsCodeGenModule;
+const Il2CppCodeGenModule g_Mirror_ComponentsCodeGenModule = 
+{
+	"Mirror.Components.dll",
+	131,
+	s_methodPointers,
+	s_InvokerIndices,
+	0,
+	NULL,
+	0,
+	NULL,
+	0,
+	NULL,
+	NULL,
+};
