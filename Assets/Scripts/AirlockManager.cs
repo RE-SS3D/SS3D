@@ -72,8 +72,6 @@ public class AirlockManager : MonoBehaviour
     [SerializeField] private float closeTimer = 3f;
     [SerializeField] private float closeTimerLeft = 0f;
 
-    private Coroutine movingCoroutine;
-
     public bool Stuck => welded || bolted || disabled || !powered; // TODO: add electrical.off here
 
     void Start()
@@ -132,12 +130,6 @@ public class AirlockManager : MonoBehaviour
     {
         if (force || CanOpen())
         {
-            if (movingCoroutine != null)
-            {
-                StopCoroutine(movingCoroutine);
-                movingCoroutine = null;
-            }
-            
             closeTimerLeft = closeTimer;
             StartMoving();
             return true;
@@ -185,7 +177,7 @@ public class AirlockManager : MonoBehaviour
 
     private void StartMoving()
     {
-        movingCoroutine = StartCoroutine(ProcessMoving());
+        StartCoroutine(ProcessMoving());
     }
 
     [SerializeField]
