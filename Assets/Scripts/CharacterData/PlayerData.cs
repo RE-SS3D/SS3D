@@ -18,11 +18,13 @@ using System;
 
 public enum PlayerStatus { PLAYING, OBSERVING, LOBBY, READY }
 
+[Serializable]
 public class SyncListCharArch : SyncList<CharArch> { }
 
 [Serializable]
 public class PlayerData : NetworkBehaviour
 {
+    PlayerRegistry playerRegistry = null;
     [SyncVar]
     public string pseudonym;
     [SyncVar]
@@ -31,4 +33,23 @@ public class PlayerData : NetworkBehaviour
     public float playTime; // in minutes
     public SyncListCharArch charactersArchetypes;
     //public ModerationData
+
+    public void Start()
+    {
+        GameObject tmp;
+
+        if (isServer)
+        {
+            if ((tmp = GameObject.Find("PlayersRegistry")) == null)
+                Debug.LogWarning("Server cannot find PlayerRegistry GameObject");
+            if ((playerRegistry = tmp.GetComponent<PlayerRegistry>()) == null)
+                Debug.LogWarning("Server Cannot find Playerregistry on PlayersRegistry Gameobject");
+            playerRegistry.RegisterPlayer(this);
+        }
+    }
+
+    public PlayerRegistry GetPlayerRegistry()
+    {
+        return playerRegistry;
+    }
 }
