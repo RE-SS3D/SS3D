@@ -5,32 +5,47 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     public GameObject target = null;
+    // The offset from the object's base position to be targeting.
+    // TODO: This should be associated instead to some bone/point part of the player model (e.g. a 'head' or 'eyes')
+    public Vector3 targetOffset = new Vector3(0f, 1.8f, 0f);
     
     // the offset
-    public float height = 7f; // height from the target
-    public float distance = 5f; // distance from the target
-    public float angle = 0f; // and the camera angle
+    public float distance = 3f; // total distance from the target
+    public float angle = 90f;    // horizontal angle of the camera (around the z axis)
+    public float vAngle = 35f;  // angle above the player
 
-    // the input
+    // the input modifiers
     public float scrollSpeed = 2f; // scroll speed multiplier
-    public float rotationSpeed = 110f; // rotation speed
-    public float camera_angle = 62f;
+    public float rotationSpeed = 110f; // rotation speed multiplier
 
-    private float rotation = 0; // current rotation delta
-    private float rotationLast = 0; // rotation memory 
-    private float mouseX; // the previous X mouse position
-    private float scrollWheel; // the scroll wheel
-    private float currentAngle; // curent camera angle 
-
-    private float input_timer; // track when button was pressed
-    private Vector3 targetFollower = Vector3.zero;
+    // Limits
+    public float minDistance = 2f;
+    public float maxDistance = 20f;
     
-    private void LateUpdate() 
+    /**
+     * Gather inputs used to determine new camera position
+     */
+    public void Update()
     {
-        mouseX = Input.mousePosition.x; // stores the previous X mouse position
+        // input handling
+        float scrollWheel = Input.GetAxisRaw("Mouse ScrollWheel");
+        if (Input.GetButton("Camera Rotation"))
+        {
+            angle += Input.GetAxis("Camera Rotation") * Time.deltaTime * rotationSpeed;
+        }
+
+        // Change zoom based on scroll wheel (TODO: Change input name)
+        distance -= scrollWheel * scrollSpeed;
+        // Ensure the distance is within the min and max limits
+        distance = Mathf.Clamp(distance, minDistance, maxDistance);
     }
 
-    void Update()
+    private Vector3 currentPosition = new Vector3();
+
+    /**
+     * Determine camera position after any physics/player movement
+     */
+    public void LateUpdate()
     {
         // if there is no target exit out of update
         if (!target)
@@ -38,72 +53,15 @@ public class CameraFollow : MonoBehaviour
             return;
         }
 
-        // Save previous rotation value
-        rotationLast = rotation;
+        // Determine position from the target by the angle and the distance
+        Vector3 relativePosition = Quaternion.Euler(0, angle, vAngle) * new Vector3(distance, 0, 0);
+        // Do some minor lerping to make the movement smoother. TODO: This smoothing needs tweaking, using slerps and/or other things to get camera movement really nice feeling
+        currentPosition = Vector3.MoveTowards(currentPosition, relativePosition, Time.deltaTime * 10.0f);
 
-        // input handling
-        scrollWheel = Input.GetAxisRaw("Mouse ScrollWheel");
-        rotation = Input.GetAxisRaw("Camera Rotation");
-        
-        if (Input.GetButtonDown("Camera Rotation")) input_timer = Time.time;
-        if (Input.GetButtonUp("Camera Rotation") && Time.time - input_timer < 0.3f)
-        {
-            angle += (rotationLast > 0 ? 1 :-1) * (angle % 90 == 0 ? 90 : 45);
-            angle = Mathf.Round(angle / 90) * 90;
-        }
-
-        if (Input.GetButton("Camera Rotation") && Time.time - input_timer >= 0.3f)
-        {
-            angle += rotation * Time.deltaTime * rotationSpeed;
-        }
-
-        ZoomCap(); // limits the zoom
-
-        //zooms in and out based on the scroll wheel
-        distance -= scrollWheel * scrollSpeed;
-        height -= scrollWheel * scrollSpeed;
-
-        targetFollower = Vector3.Lerp(targetFollower, target.transform.position, Time.deltaTime * 8f);
-
-        Vector3 worldPos = (Vector3.forward * -distance) + (Vector3.up * height); // calculates the camera position
-        currentAngle = Mathf.LerpAngle(currentAngle, angle, Time.deltaTime * 8f);
-        Vector3 camAngle = Quaternion.AngleAxis(currentAngle, Vector3.up) * worldPos; // calculates the camera angle
-            
-        // gets the flat position of the target 
-        Vector3 flatTargetPos = new Vector3(targetFollower.x, 0f, targetFollower.z);
-        this.transform.position = flatTargetPos + camAngle; // the final camera position 
-        this.transform.LookAt(targetFollower);
+        // Determine the part of the target we want to follow
+        Vector3 targetPosition = target.transform.position + targetOffset;
+        // Look at that part from the correct position
+        this.transform.position = targetPosition + currentPosition;
+        this.transform.LookAt(targetPosition);
     }
-
-    //limits the zoom
-    private void ZoomCap()
-    {
-        float minHeight = 3f; // the minimum height limit variable
-        float maxHeight = 11f; // the maximum height limit variable
-
-        float minDistance = 0.5f; // the minimum distance limit variable
-        float maxDistance = 8.5f; // the maximum distance limit variable
-
-        // the height limit
-        if(height < minHeight) // the minimum height limit
-        {
-            height = minHeight;
-        }
-        else if(height > maxHeight) // the maximum height limit
-        {
-            height = maxHeight;
-        }
-            
-        // the distance limit
-        if (distance < minDistance) // the minimum distance limit
-        {
-            distance = minDistance;
-        }
-        else if(distance > maxDistance) // the maximum distance limit
-        {
-            distance = maxDistance;
-        }
-    }
-
-
 }
