@@ -9,6 +9,6 @@ public class CameraRegister : NetworkBehaviour
     void Start()
     {
         if (isLocalPlayer)
-            Camera.main.GetComponent<CameraFollow>().target = this.gameObject;
+            Camera.main.GetComponent<CameraFollow>().SetTarget(this.gameObject);
     }
 }

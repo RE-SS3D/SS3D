@@ -5,9 +5,6 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     public GameObject target = null;
-    // The offset from the object's base position to be targeting.
-    // TODO: This should be associated instead to some bone/point part of the player model (e.g. a 'head' or 'eyes')
-    public Vector3 targetOffset = new Vector3(0f, 1.8f, 0f);
     
     // the offset
     public float distance = 3f; // total distance from the target
@@ -20,6 +17,19 @@ public class CameraFollow : MonoBehaviour
     public float minDistance = 2f;
     public float maxDistance = 20f;
     
+    /**
+     * Updates the target the camera is meant to follow
+     */
+    public void SetTarget(GameObject target)
+    {
+        this.target = target;
+
+        // Set the player height based on the character controller, if one is found
+        var character = target.GetComponent<CharacterController>();
+        if (character)
+            playerOffset = new Vector3(0, target.GetComponent<CharacterController>().height);
+    }
+
     /**
      * Gather inputs used to determine new camera position
      */
@@ -35,8 +45,6 @@ public class CameraFollow : MonoBehaviour
         // Change zoom based on scroll wheel, and ensure the distance is within the min and max limits
         distance = Mathf.Clamp(distance - zoom, minDistance, maxDistance);
     }
-
-    private Vector3 currentPosition = new Vector3();
 
     /**
      * Determine camera position after any physics/player movement
@@ -55,9 +63,12 @@ public class CameraFollow : MonoBehaviour
         currentPosition = Vector3.MoveTowards(currentPosition, relativePosition, Time.deltaTime * 10.0f);
 
         // Determine the part of the target we want to follow
-        Vector3 targetPosition = target.transform.position + targetOffset;
+        Vector3 targetPosition = target.transform.position + playerOffset;
         // Look at that part from the correct position
         this.transform.position = targetPosition + currentPosition;
         this.transform.LookAt(targetPosition);
     }
+
+    private Vector3 currentPosition = new Vector3();
+    private Vector3 playerOffset = new Vector3();
 }
