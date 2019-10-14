@@ -3,7 +3,7 @@ using Mirror;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(Animator))]
-public class HumanMovement : NetworkBehaviour
+public class MovementController : NetworkBehaviour
 {
     // The base speed at which the given character can move
     [SyncVar]

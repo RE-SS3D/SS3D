@@ -1123,7 +1123,6 @@ GameObject:
   - component: {fileID: 6850072202715529767}
   - component: {fileID: 6850072202715529763}
   - component: {fileID: 6850072202715529761}
-  - component: {fileID: 6850072202715529760}
   - component: {fileID: 6850072202715529765}
   m_Layer: 0
   m_Name: HumanModelSevered
@@ -1193,7 +1192,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 1
   m_AssetId: 
-  m_SceneId: 213188020
+  m_SceneId: 23929810
 --- !u!114 &6850072202715529766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1254,21 +1253,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   characterSpeed: 5
---- !u!114 &6850072202715529760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3184525931660991265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 900a7585920d7470fb7259ab56a034aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncInterval: 0.1
-  data: 0
-  text: {fileID: 0}
 --- !u!114 &6850072202715529765
 MonoBehaviour:
   m_ObjectHideFlags: 0
