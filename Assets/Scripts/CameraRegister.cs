@@ -11,10 +11,4 @@ public class CameraRegister : NetworkBehaviour
         if (isLocalPlayer)
             Camera.main.GetComponent<CameraFollow>().target = this.gameObject;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
