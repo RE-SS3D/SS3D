@@ -14,8 +14,6 @@ public class CameraFollow : MonoBehaviour
     public float angle = 90f;    // horizontal angle of the camera (around the z axis)
     public float vAngle = 35f;  // angle above the player
 
-    // the input modifiers
-    public float scrollSpeed = 2f; // scroll speed multiplier
     public float rotationSpeed = 110f; // rotation speed multiplier
 
     // Limits
@@ -28,16 +26,14 @@ public class CameraFollow : MonoBehaviour
     public void Update()
     {
         // input handling
-        float scrollWheel = Input.GetAxisRaw("Mouse ScrollWheel");
+        float zoom = Input.GetAxisRaw("Camera Zoom");
         if (Input.GetButton("Camera Rotation"))
         {
             angle += Input.GetAxis("Camera Rotation") * Time.deltaTime * rotationSpeed;
         }
 
-        // Change zoom based on scroll wheel (TODO: Change input name)
-        distance -= scrollWheel * scrollSpeed;
-        // Ensure the distance is within the min and max limits
-        distance = Mathf.Clamp(distance, minDistance, maxDistance);
+        // Change zoom based on scroll wheel, and ensure the distance is within the min and max limits
+        distance = Mathf.Clamp(distance - zoom, minDistance, maxDistance);
     }
 
     private Vector3 currentPosition = new Vector3();
