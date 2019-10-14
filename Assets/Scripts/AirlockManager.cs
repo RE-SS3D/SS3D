@@ -50,6 +50,10 @@ public class AirlockManager : MonoBehaviour
     [SerializeField] private float openDistance = 1.0f;
     [SerializeField] private float openTime = 1.0f;
 
+    [SerializeField] private float timeLeft = 0.0f;
+    [SerializeField] private float target = 0.0f;
+    [SerializeField] private float origin = 0.0f;
+
     [SerializeField] private float targetOpen = 0.45f;
     [SerializeField] private AnimationCurve openCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
@@ -88,17 +92,38 @@ public class AirlockManager : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (!moving && !open)
-        {
-            AuthorizeAccess(idTag);
-        }
+        ToggleOpen(true);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!moving || open)
+        ToggleOpen(false);
+    }
+
+    public void ToggleOpen(bool enter)
+    {
+        //Enter is true if enter, false if exiting
+        if (enter != open)
         {
-            StartCoroutine(Move());
+            //If the door is already moving, change direction manually
+            if (moving)
+            {
+                origin = open ? targetOpen : 0f;
+                target = open ? 0f : targetOpen;
+
+                timeLeft = openTime - timeLeft;
+
+                audioSource.clip = open ? openSound : closeSound;
+                audioSource.time = timeLeft;
+                audioSource.Play();
+
+                open = open ? false : true;
+            }
+            else
+            {
+                //If not moving, start
+                StartCoroutine(Move());
+            }
         }
     }
 
@@ -107,18 +132,24 @@ public class AirlockManager : MonoBehaviour
     {
         moving = true;
         //print("moving true");
-        var origin = open ? targetOpen : 0f;
-        var target = open ? 0f : targetOpen;
+        origin = open ? targetOpen : 0f;
+        target = open ? 0f : targetOpen;
+
+        timeLeft = openTime;
 
         audioSource.clip = open ? openSound : closeSound;
+        audioSource.time = timeLeft;
         audioSource.Play();
 
-        for (var time = 0f; time < openTime; time += Time.deltaTime)
+        open = open ? false : true;
+
+        //We now run until time is up. ToggleOpen can increase timeLeft before it runs out should this loop already be running
+        for (; timeLeft > 0; timeLeft -= Time.deltaTime)
         {
             //print("into the for");
             yield return null;
 
-            var t = Mathf.Lerp(origin, target, time / openTime);
+            var t = Mathf.Lerp(origin, target, (openTime - timeLeft) / openTime);
 
             left.transform.localPosition = openAxis * openDistance * openCurve.Evaluate(t);
             right.transform.localPosition = -openAxis * openDistance * openCurve.Evaluate(t);
@@ -128,8 +159,6 @@ public class AirlockManager : MonoBehaviour
         right.transform.localPosition = -openAxis * openDistance * openCurve.Evaluate(target);
         //print("moving false");
 
-        
-        open = open ? false : true;
         moving = false;
     }
 
