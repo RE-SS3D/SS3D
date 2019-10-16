@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
+    public const float DISTANCE_ACCELERATION = 7.5f;
+    public const float ROTATE_ACCELERATION = 90.0f;
+    public const float DISTANCE_SCALING = 1.18f;
+
+    // The object to follow
     public GameObject target = null;
     
     // the offset
@@ -15,7 +20,7 @@ public class CameraFollow : MonoBehaviour
 
     // Limits
     public float minDistance = 2f;
-    public float maxDistance = 20f;
+    public float maxDistance = 15f;
     
     /**
      * Updates the target the camera is meant to follow
@@ -28,6 +33,8 @@ public class CameraFollow : MonoBehaviour
         var character = target.GetComponent<CharacterController>();
         if (character)
             playerOffset = new Vector3(0, target.GetComponent<CharacterController>().height);
+
+        currentRotation = Quaternion.Euler(0, angle, vAngle);
     }
 
     /**
@@ -36,10 +43,10 @@ public class CameraFollow : MonoBehaviour
     public void Update()
     {
         // input handling
-        float zoom = Input.GetAxisRaw("Camera Zoom");
+        float zoom = Input.GetAxis("Camera Zoom");
         if (Input.GetButton("Camera Rotation"))
         {
-            angle += Input.GetAxis("Camera Rotation") * Time.deltaTime * rotationSpeed;
+            angle += Input.GetAxisRaw("Camera Rotation") * Time.deltaTime * rotationSpeed;
         }
 
         // Change zoom based on scroll wheel, and ensure the distance is within the min and max limits
@@ -58,17 +65,23 @@ public class CameraFollow : MonoBehaviour
         }
 
         // Determine position from the target by the angle and the distance
-        Vector3 relativePosition = Quaternion.Euler(0, angle, vAngle) * new Vector3(distance, 0, 0);
-        // Do some minor lerping to make the movement smoother. TODO: This smoothing needs tweaking, using slerps and/or other things to get camera movement really nice feeling
-        currentPosition = Vector3.MoveTowards(currentPosition, relativePosition, Time.deltaTime * 10.0f);
+        // Smooth this value so that we get fluid motion around the sphere
+        currentRotation = Quaternion.RotateTowards(currentRotation, Quaternion.Euler(0, angle, vAngle), Time.deltaTime * ROTATE_ACCELERATION);
+        // Smooth the distance
+        currentDistance = Mathf.MoveTowards(currentDistance, distance, Time.deltaTime * DISTANCE_ACCELERATION);
+
+        Vector3 relativePosition = currentRotation * new Vector3(Mathf.Pow(DISTANCE_SCALING, currentDistance), 0, 0);
 
         // Determine the part of the target we want to follow
         Vector3 targetPosition = target.transform.position + playerOffset;
         // Look at that part from the correct position
-        this.transform.position = targetPosition + currentPosition;
+        this.transform.position = targetPosition + relativePosition;
         this.transform.LookAt(targetPosition);
     }
 
-    private Vector3 currentPosition = new Vector3();
+    private Quaternion currentRotation;
+    private float currentDistance;
+
+    // Offset of target transform position to camera focus point.
     private Vector3 playerOffset = new Vector3();
 }
