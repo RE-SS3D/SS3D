@@ -5,18 +5,21 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     // Sensitivities and Accelerations
-    public const float DISTANCE_ACCELERATION = 15.0f; // How quickly distance changes
-    public const float DISTANCE_SCALING = 1.18f; // The exponential effect of distance
+    private const float DISTANCE_ACCELERATION = 15.0f; // How quickly distance changes
+    private const float DISTANCE_SCALING = 1.18f; // The exponential effect of distance
 
-    public const float HORIZONTAL_ROTATION_SENSITIVITY = 150f;
-    public const float VERTICAL_ROTATION_SENSITIVITY = 80f;
+    private const float HORIZONTAL_ROTATION_SENSITIVITY = 150f;
+    private const float VERTICAL_ROTATION_SENSITIVITY = 80f;
 
     // Limits
-    public const float MIN_VERTICAL_ANGLE = 10f;
-    public const float MAX_VERTICAL_ANGLE = 80f;
+    private const float MIN_VERTICAL_ANGLE = 10f;
+    private const float MAX_VERTICAL_ANGLE = 80f;
 
-    public const float MIN_DISTANCE = 2f;
-    public const float MAX_DISTANCE = 15f;
+    private const float MIN_DISTANCE = 2f;
+    private const float MAX_DISTANCE = 15f;
+
+    private const float DOUBLE_PRESS_TIME = 2.0f;
+
 
     // The object to follow
     public GameObject target = null;
@@ -40,18 +43,33 @@ public class CameraFollow : MonoBehaviour
     }
 
     /**
-     * Gather inputs used to determine new camera position
+     * Gather inputs used to determine new camera values
      */
     public void Update()
     {
+        // Check for double tap
+        if (Input.GetButtonDown("Camera Rotation"))
+        {
+            // If a double tap actually works
+            // Round to closest 90 degree angle, going up or down based on whether axis is positive or negative
+            if ((Time.time - prevHorizontalAxisPress) < DOUBLE_PRESS_TIME)
+            {
+                angle = (Input.GetAxis("Camera Rotation") > 0 ? Mathf.Ceil(angle / 90.0f) : Mathf.Floor(angle / 90.0f)) * 90.0f;
+                prevHorizontalAxisPress = 0.0f;
+                return;
+            }
+            prevHorizontalAxisPress = Time.time; // Set up the first tap
+        }
+
         // input handling
         float zoom = Input.GetAxis("Camera Zoom");
         float angleDelta = 0.0f;
         float vAngleDelta = 0.0f;
 
-        // Camera buttons
         if (Input.GetButton("Camera Rotation"))
+        { 
             angleDelta = Input.GetAxis("Camera Rotation") * HORIZONTAL_ROTATION_SENSITIVITY * Time.deltaTime;
+        }
         if (Input.GetButton("Camera Vertical Rotation"))
             vAngleDelta = Input.GetAxis("Camera Vertical Rotation") * VERTICAL_ROTATION_SENSITIVITY * Time.deltaTime;
 
@@ -91,6 +109,9 @@ public class CameraFollow : MonoBehaviour
         this.transform.position = targetPosition + relativePosition;
         this.transform.LookAt(targetPosition);
     }
+
+    // Previous button downs for left and right axis movement
+    private float prevHorizontalAxisPress = 0.0f;
 
     private float currentDistance;
 
