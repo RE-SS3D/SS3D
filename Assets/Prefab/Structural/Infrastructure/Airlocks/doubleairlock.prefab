@@ -59,7 +59,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: db5a4f016f22afc4f8f074192ce277e8, type: 2}
-  - {fileID: 2100000, guid: 6284a75dbbea03c4f801e8d810060d91, type: 2}
+  - {fileID: 2100000, guid: ac2eaebdc7cdc274ca18a6d6bf64bf19, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -152,7 +152,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: db5a4f016f22afc4f8f074192ce277e8, type: 2}
-  - {fileID: 2100000, guid: 6284a75dbbea03c4f801e8d810060d91, type: 2}
+  - {fileID: 2100000, guid: ac2eaebdc7cdc274ca18a6d6bf64bf19, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -237,8 +237,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 3482817234
+  m_AssetId: 92dd993132dc0e04ca4670a5073d3567
+  m_SceneId: 0
 --- !u!114 &3164321753176069641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -271,7 +271,7 @@ MonoBehaviour:
   left: {fileID: 1040987634824974658}
   right: {fileID: 7030233690488004953}
   idTag: 
-  powered: 0
+  powered: 1
   lightOn: 0
   lights:
   - {fileID: 1017851352361821440}
@@ -280,6 +280,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 4101fb8be259a6f4f8508462f1eeabd6, type: 2}
   - {fileID: 2100000, guid: 6284a75dbbea03c4f801e8d810060d91, type: 2}
   - {fileID: 2100000, guid: ac2eaebdc7cdc274ca18a6d6bf64bf19, type: 2}
+  lightsBrokenFlicksCount: 10
+  lightsBrokenFlicksInterval: 0.2
   open: 0
   moving: 0
   welded: 0
@@ -287,8 +289,8 @@ MonoBehaviour:
   disabled: 0
   autoClose: 1
   openAxis: {x: 1, y: 0, z: 0}
-  openDistance: 1
-  openTime: 0.59
+  movingDistance: 1
+  movingTime: 1
   targetOpen: 0.9
   openCurve:
     serializedVersion: 2
@@ -315,6 +317,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   audioSource: {fileID: 1229972945574311675}
+  closeTimer: 3
+  closeTimerLeft: 0
 --- !u!65 &519813351216359467
 BoxCollider:
   m_ObjectHideFlags: 0
