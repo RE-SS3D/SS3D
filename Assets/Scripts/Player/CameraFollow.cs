@@ -4,23 +4,27 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    public const float DISTANCE_ACCELERATION = 7.5f;
-    public const float ROTATE_ACCELERATION = 90.0f;
-    public const float DISTANCE_SCALING = 1.18f;
+    // Sensitivities and Accelerations
+    public const float DISTANCE_ACCELERATION = 15.0f; // How quickly distance changes
+    public const float DISTANCE_SCALING = 1.18f; // The exponential effect of distance
+
+    public const float HORIZONTAL_ROTATION_SENSITIVITY = 150f;
+    public const float VERTICAL_ROTATION_SENSITIVITY = 80f;
+
+    // Limits
+    public const float MIN_VERTICAL_ANGLE = 10f;
+    public const float MAX_VERTICAL_ANGLE = 80f;
+
+    public const float MIN_DISTANCE = 2f;
+    public const float MAX_DISTANCE = 15f;
 
     // The object to follow
     public GameObject target = null;
     
     // the offset
     public float distance = 3f; // total distance from the target
-    public float angle = 90f;    // horizontal angle of the camera (around the z axis)
+    public float angle = 90f;   // horizontal angle of the camera (around the z axis)
     public float vAngle = 35f;  // angle above the player
-
-    public float rotationSpeed = 110f; // rotation speed multiplier
-
-    // Limits
-    public float minDistance = 2f;
-    public float maxDistance = 15f;
     
     /**
      * Updates the target the camera is meant to follow
@@ -33,8 +37,6 @@ public class CameraFollow : MonoBehaviour
         var character = target.GetComponent<CharacterController>();
         if (character)
             playerOffset = new Vector3(0, target.GetComponent<CharacterController>().height);
-
-        currentRotation = Quaternion.Euler(0, angle, vAngle);
     }
 
     /**
@@ -44,13 +46,27 @@ public class CameraFollow : MonoBehaviour
     {
         // input handling
         float zoom = Input.GetAxis("Camera Zoom");
+        float angleDelta = 0.0f;
+        float vAngleDelta = 0.0f;
+
+        // Camera buttons
         if (Input.GetButton("Camera Rotation"))
+            angleDelta = Input.GetAxis("Camera Rotation") * HORIZONTAL_ROTATION_SENSITIVITY * Time.deltaTime;
+        if (Input.GetButton("Camera Vertical Rotation"))
+            vAngleDelta = Input.GetAxis("Camera Vertical Rotation") * VERTICAL_ROTATION_SENSITIVITY * Time.deltaTime;
+
+        // Camera mouse movement: On right click being held down
+        if (Input.GetMouseButton(1)) // There isnt a fucking enum for the mouse buttons
         {
-            angle += Input.GetAxisRaw("Camera Rotation") * Time.deltaTime * rotationSpeed;
+            // Use mouse movement to determine axes
+            angleDelta = Input.GetAxis("Mouse X");
+            vAngleDelta = -Input.GetAxis("Mouse Y");
         }
 
-        // Change zoom based on scroll wheel, and ensure the distance is within the min and max limits
-        distance = Mathf.Clamp(distance - zoom, minDistance, maxDistance);
+        // Determine new values, clamping as necessary
+        distance = Mathf.Clamp(distance - zoom, MIN_DISTANCE, MAX_DISTANCE);
+        angle = (angle + angleDelta) % 360f;
+        vAngle = Mathf.Clamp(vAngle + vAngleDelta, MIN_VERTICAL_ANGLE, MAX_VERTICAL_ANGLE);
     }
 
     /**
@@ -63,23 +79,19 @@ public class CameraFollow : MonoBehaviour
         {
             return;
         }
-
-        // Determine position from the target by the angle and the distance
-        // Smooth this value so that we get fluid motion around the sphere
-        currentRotation = Quaternion.RotateTowards(currentRotation, Quaternion.Euler(0, angle, vAngle), Time.deltaTime * ROTATE_ACCELERATION);
-        // Smooth the distance
+        
+        // Smooth the distance before using it
         currentDistance = Mathf.MoveTowards(currentDistance, distance, Time.deltaTime * DISTANCE_ACCELERATION);
-
-        Vector3 relativePosition = currentRotation * new Vector3(Mathf.Pow(DISTANCE_SCALING, currentDistance), 0, 0);
-
+        // The position is determined by the orientation and the distance, where distance has an exponential effect.
+        Vector3 relativePosition = Quaternion.Euler(0, angle, vAngle) * new Vector3(Mathf.Pow(DISTANCE_SCALING, currentDistance), 0, 0);
         // Determine the part of the target we want to follow
         Vector3 targetPosition = target.transform.position + playerOffset;
+
         // Look at that part from the correct position
         this.transform.position = targetPosition + relativePosition;
         this.transform.LookAt(targetPosition);
     }
 
-    private Quaternion currentRotation;
     private float currentDistance;
 
     // Offset of target transform position to camera focus point.

@@ -6,6 +6,38 @@ InputManager:
   serializedVersion: 2
   m_Axes:
   - serializedVersion: 3
+    m_Name: Mouse X
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: a
+    positiveButton: d
+    altNegativeButton: a
+    altPositiveButton: d
+    gravity: 3
+    dead: 0.001
+    sensitivity: 0.4
+    snap: 0
+    invert: 0
+    type: 1
+    axis: 0
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Mouse Y
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: a
+    positiveButton: d
+    altNegativeButton: a
+    altPositiveButton: d
+    gravity: 3
+    dead: 0.001
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 1
+    axis: 1
+    joyNum: 0
+  - serializedVersion: 3
     m_Name: Horizontal
     descriptiveName: 
     descriptiveNegativeName: 
@@ -55,15 +87,31 @@ InputManager:
     joyNum: 0
   - serializedVersion: 3
     m_Name: Camera Rotation
-    descriptiveName: 
+    descriptiveName: Rotating the camera left and right
     descriptiveNegativeName: 
     negativeButton: q
     positiveButton: e
-    altNegativeButton: q
-    altPositiveButton: e
-    gravity: 10
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 5
     dead: 0.001
-    sensitivity: 10
+    sensitivity: 5
+    snap: 1
+    invert: 0
+    type: 0
+    axis: 3
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Camera Vertical Rotation
+    descriptiveName: Rotating the camera up and down
+    descriptiveNegativeName: 
+    negativeButton: '-'
+    positiveButton: =
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 5
+    dead: 0.001
+    sensitivity: 5
     snap: 1
     invert: 0
     type: 0
