@@ -56,7 +56,7 @@ public class CameraFollow : MonoBehaviour
         // Round to closest 90 degree angle, going up or down based on whether axis is positive or negative
         if (Input.GetButtonUp("Camera Rotation") && (Time.time - prevHorizontalAxisPress) < CARDINAL_SNAP_TIME)
         {
-            angle = (Input.GetAxis("Camera Rotation") > 0 ? Mathf.Ceil(angle / 90.0f) : Mathf.Floor(angle / 90.0f)) * 90.0f;
+            angle = Mathf.Round((angle + (Input.GetAxis("Camera Rotation") > 0 ? 45.1f : -45.1f)) / 90.0f) * 90.0f;
             prevHorizontalAxisPress = 0.0f;
             return;
         }
