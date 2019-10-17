@@ -57,7 +57,7 @@ public class MovementController : NetworkBehaviour
             if (currentMovement.magnitude > 0)
             {
                 // Determine the absolute movement by aligning input to the camera's looking direction
-                Vector3 absoluteMovement = currentMovement.y * Vector3.Cross(camera.transform.right, Vector3.up) + currentMovement.x * Vector3.Cross(Vector3.up, camera.transform.forward);
+                Vector3 absoluteMovement = currentMovement.y * Vector3.Cross(camera.transform.right, Vector3.up).normalized + currentMovement.x * Vector3.Cross(Vector3.up, camera.transform.forward).normalized;
                 // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
                 characterController.Move(absoluteMovement * Time.deltaTime);
                 transform.rotation = Quaternion.LookRotation(absoluteMovement);
