@@ -5,7 +5,7 @@ using Mirror;
 [RequireComponent(typeof(Animator))]
 public class MovementController : NetworkBehaviour
 {
-    public const float ACCELERATION = 10f;
+    public const float ACCELERATION = 25f;
 
     // The base speed at which the given character can move
     [SyncVar]

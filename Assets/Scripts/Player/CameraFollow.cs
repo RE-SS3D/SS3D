@@ -27,7 +27,7 @@ public class CameraFollow : MonoBehaviour
     // the offset
     public float distance = 3f; // total distance from the target
     public float angle = 90f;   // horizontal angle of the camera (around the z axis)
-    public float vAngle = 35f;  // angle above the player
+    public float vAngle = 60f;  // angle above the player
     
     /**
      * Updates the target the camera is meant to follow
