@@ -66,7 +66,7 @@ public class CameraFollow : MonoBehaviour
         float angleDelta = 0.0f;
         float vAngleDelta = 0.0f;
 
-        if (Input.GetButton("Camera Rotation"))
+        if (Input.GetButton("Camera Rotation") && (Time.time - prevHorizontalAxisPress) > CARDINAL_SNAP_TIME)
         { 
             angleDelta = Input.GetAxis("Camera Rotation") * HORIZONTAL_ROTATION_SENSITIVITY * Time.deltaTime;
         }
