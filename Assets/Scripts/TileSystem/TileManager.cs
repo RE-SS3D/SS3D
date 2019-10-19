@@ -2,6 +2,8 @@
 using Mirror;
 using UnityEngine;
 
+// The TileManager handles storing everything 
+
 public class TileManager : NetworkBehaviour
 {
     public Vector3Int bounds;
@@ -9,45 +11,19 @@ public class TileManager : NetworkBehaviour
     public Tile[] grid;
 
     // Direction bitflags used by the TileManager
-    [HideInInspector]
-    public const int NORTH = 1;
-
-    [HideInInspector]
-    public const int SOUTH = 2;
-
-    [HideInInspector]
-    public const int EAST = 4;
-
-    [HideInInspector]
-    public const int WEST = 8;
-
-    [HideInInspector]
-    public const int UP = 16;
-
-    [HideInInspector]
-    public const int DOWN = 32;
-
-    [HideInInspector]
-    public int[] CARDINALS = {
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST
-    };
-
-    [HideInInspector]
-    public int[] ORDINALS = {
-        NORTH|EAST,
-        SOUTH|EAST,
-        SOUTH|WEST,
-        NORTH|WEST
-    };
+    public enum DIRECTIONS
+    {
+        NORTH = 1,
+        SOUTH = 2,
+        EAST = 4,
+        WEST = 8,
+        UP = 16,
+        DOWN = 32
+    }
 
     // Vector3Int getCoordsFromGrid(int index)
     // {
-    //     //return object coords in the index]
-    //     Vector3Int coord(1,1,1);
-    //     return ;
+    // 
     // }
 
     int getLinearIndex(int x, int y, int z)
@@ -62,19 +38,35 @@ public class TileManager : NetworkBehaviour
 
     int getLinearIndex(Tile tile)
     {
-        // return getLinearIndex(tile.x, tile.y, tile.z);
         return 1;
     }
 
-    // void adjustBounds(Vector3Int newBounds)
+    // Gets a tile in a direction from the source
+    // int getStep()
     // {
-    //     Tile[] newGrid;
-    //     for(int i = 0; i < grid.Length; i++)
-    //     {
-    //         // Vector3Int coords = getCoordsFromGrid(i);
-    //         // int newIndex = getLinearIndex()
-    //     }
+
     // }
+
+    // Gets all tiles in a square range
+    // int tilesInRange()
+    // {
+
+    // }
+
+    // Gets all tiles in a square range, minus the source
+    // int tilesInORange()
+    // {
+
+    // }
+
+    void adjustBounds(Vector3Int newBounds)
+    {
+        Tile[] newGrid;
+        for(int i = 0; i < grid.Length; i++)
+        {
+
+        }
+    }
 
     void generatePrefabMap()
     {

@@ -2,22 +2,11 @@
 using Mirror;
 using UnityEngine;
 
+//Tiles contain a definition of everything within that is fixed to the tile grid (gridlocked), such as turfs, tables, and pipes.
+
 public class Tile : NetworkBehaviour
 {
-    TileManager tileManager;
     MeshFilter meshFilter;
-
     Turf turf;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    GameObject[] contents;
 }
