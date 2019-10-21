@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class Draggable : MonoBehaviour // , IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public Transform ReturnParent;
+/*    public Transform ReturnParent;
 
     public ItemSlot LastSlot;
 
@@ -44,5 +44,5 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         rt.offsetMax = new Vector2(-5, rt.offsetMax.y);
         rt.offsetMax = new Vector2(rt.offsetMax.x, -5);
         rt.offsetMin = new Vector2(rt.offsetMin.x, 5);
-    }
+    }*/
 }

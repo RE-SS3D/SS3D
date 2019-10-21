@@ -6,7 +6,7 @@ using UnityEngine.UI;
 [Serializable]
 public class HumanInventoryUISlots
 {
-    [Header("Hands")]
+/*    [Header("Hands")]
     public ItemSlot slotLeftHand;
 
     public ItemSlot slotRightHand;
@@ -36,5 +36,5 @@ public class HumanInventoryUISlots
     public ItemSlot slotPocketRight;
 
     [Header("Reference Helper")]
-    public List<ItemSlot> SlotsList;
+    public List<ItemSlot> SlotsList;*/
 }

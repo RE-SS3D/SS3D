@@ -9,7 +9,7 @@ public class MaterialChanger : MonoBehaviour
 
     public void ChangeMaterial(MeshRenderer target, Material newMaterial)
     {
-        cachedRenderer = target;
+        /* cachedRenderer = target;
         cachedMaterial = target.materials;
 
         Material[] inMaterials = cachedMaterial;
@@ -17,7 +17,7 @@ public class MaterialChanger : MonoBehaviour
         {
             inMaterials[i] = newMaterial;
         }
-        cachedRenderer.materials = inMaterials;
+        cachedRenderer.materials = inMaterials;*/
 
     }
 

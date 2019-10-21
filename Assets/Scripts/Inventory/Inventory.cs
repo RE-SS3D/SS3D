@@ -1,37 +1,63 @@
+using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using UnityEngine;
 
-public abstract class Inventory : NetworkBehaviour
+/**
+ * This is the basic inventory system. Any inventory-capable creature should have this component.
+ * The basic inventory system has to handle:
+ *  - Aggregating all containers on the player
+ *  - The moving of items from one item-slot to another
+ */
+public class Inventory : NetworkBehaviour
 {
-    protected InventoryUi ui;
-
+    /**
+     * Move an item from one container to another.
+     * This is intended to be called by the UI, when the user drags an item from one place to another
+     */
     [Command]
-    public void CmdMoveItem(GameObject OriginSlotObject, SlotTypes origin, GameObject targetSlotObject,
-        SlotTypes target,
-        GameObject itemObject)
+    public void CmdMoveItem(Container from, int fromIndex, Container to, int toIndex)
     {
-        RpcMoveItem(OriginSlotObject, origin, targetSlotObject, target, itemObject);
+        // TODO: Check for compatibility and etc.
+        Item item = from.items[fromIndex];
+        from.RemoveItem(fromIndex);
+        to.AddItem(toIndex, item);
     }
 
-    [ClientRpc]
-    public void RpcMoveItem(GameObject OriginSlotObject, SlotTypes origin, GameObject targetSlotObject,
-        SlotTypes target,
-        GameObject itemObject)
+    private void Start()
     {
-//        ItemSlot originSlot = OriginSlotObject.GetComponent<ItemSlot>();
-//        ItemSlot targetSlot = targetSlotObject.GetComponent<ItemSlot>();
+        // Search through and add all containers.
+        var ownedContainers = GetComponents<Container>();
+        containers.AddRange(ownedContainers);
 
-        Item item = itemObject.GetComponent<Item>();
-        ItemSlot originSlot = ui.GetSlots().First(s => s.slotType == origin);
-        ItemSlot targetSlot = ui.GetSlots().First(s => s.slotType == target && s.uiItem == null);
-
-        item.MoveVisual(targetSlot.gameObject);
-        targetSlot.uiItem = originSlot.uiItem;
-        originSlot.uiItem = null;
+        // Connect the UI
+        if (isLocalPlayer)
+            GameObject.Find("Inventory UI").GetComponent<InventoryUI>().SetInventory(this);
     }
 
-    public void AddItem(Item item)
-    {
-    }
+
+
+    /*    private void Update()
+        {
+            if (!isLocalPlayer) return;
+
+            if (Input.GetButtonDown("DropActive"))
+            {
+                RemoveItem(GetActiveHandSlot());
+            }
+
+            if (Input.GetButtonDown("Click"))
+            {
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out hit, 100))
+                {
+                    Item item = hit.transform.gameObject.GetComponent<Item>();
+                    if (item != null) AddItem(item);
+                }
+            }
+        }*/
+
+    // The containers for this player's inventory
+    public List<Container> containers;
 }

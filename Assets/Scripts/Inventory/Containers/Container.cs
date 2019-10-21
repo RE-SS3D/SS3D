@@ -2,9 +2,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Container : Inventory
+public class ContainerThing : Inventory
 {
-    [SerializeField]
+/*    [SerializeField]
     private int size = 1;
 
     [SerializeField]
@@ -30,5 +30,5 @@ public class Container : Inventory
     {
         if (!EventSystem.current.IsPointerOverGameObject())
             ui.ToggleVisible();
-    }
+    }*/
 }
