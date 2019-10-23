@@ -1,0 +1,66 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ss13_tile_loader : MonoBehaviour
+{
+    // Start is called before the first frame update
+    public Texture2D map;
+
+    public List<GameObject> tile_list;
+    // Update is called once per frame
+    void Start()
+    {
+        GenerateLevel();
+    }
+    public void DeleteLevel (){
+        foreach(GameObject tileobj in tile_list)
+        {
+            Debug.Log("DELETING TILE");
+            #if UNITY_EDITOR
+            DestroyImmediate(tileobj);
+            #else
+            Destroy(tileobj);
+            #endif
+        }
+        tile_list.RemoveAll((o)=>o == null);
+    }
+    public void GenerateLevel (){
+        DeleteLevel();
+
+        for (int x = 0; x < map.width; x++){
+            for (int y = 0; y < map.height; y++){
+                GenerateTile(x,y);
+            }
+        }
+    }
+
+    void GenerateTile(int x, int y)
+    {   
+        Color pixelColor = map.GetPixel(x,y);
+        Vector3 pos = new Vector3(x-map.width/2,0,y-map.height/2);
+        if (pixelColor.a == 0)
+        {
+            return;
+            //transparancy is nothing
+        }
+        if (pixelColor == Color.black)
+        {
+            GameObject new_obj = Instantiate(Resources.Load("empty_tile"), pos, Quaternion.identity, transform) as GameObject;
+            new_obj.GetComponent<ss13_basic_tile>().TileDescriptor = ss13_basic_tile.TileTypes.station_tile;
+            new_obj.GetComponent<ss13_basic_tile>().initTile();
+            new_obj.name = string.Format("tile_{0}_{1}", x, y);
+            tile_list.Add(new_obj);
+        }else if (pixelColor == Color.blue)
+        {
+            GameObject new_obj = Instantiate(Resources.Load("empty_tile"), pos, Quaternion.identity, transform) as GameObject;
+            new_obj.GetComponent<ss13_basic_tile>().TileDescriptor = ss13_basic_tile.TileTypes.station_wall;
+            new_obj.GetComponent<ss13_basic_tile>().initTile();
+            new_obj.name = string.Format("tile_{0}_{1}", x, y);
+            tile_list.Add(new_obj);
+        }
+        else{
+            Debug.Log(pixelColor);
+        }
+    }
+}
