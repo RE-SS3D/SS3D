@@ -38185,8 +38185,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8192375152356925984, guid: f6b5c3742006ca540aac6e963326cd9d,
         type: 3}
-      propertyPath: rotationSpeed
-      value: 110
+      propertyPath: distance
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8192375152356925984, guid: f6b5c3742006ca540aac6e963326cd9d,
+        type: 3}
+      propertyPath: angle
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8192375152356925984, guid: f6b5c3742006ca540aac6e963326cd9d,
+        type: 3}
+      propertyPath: vAngle
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 8192375152356925984, guid: f6b5c3742006ca540aac6e963326cd9d,
+        type: 3}
+      propertyPath: minDistance
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8192375152356925984, guid: f6b5c3742006ca540aac6e963326cd9d,
+        type: 3}
+      propertyPath: maxDistance
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f6b5c3742006ca540aac6e963326cd9d, type: 3}
