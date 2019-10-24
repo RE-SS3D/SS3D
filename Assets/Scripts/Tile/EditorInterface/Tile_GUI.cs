@@ -14,6 +14,14 @@ public class Tile_GUI : Editor
         {
             targetScript.initTile();
         }
+        if(GUILayout.Button("test_build"))
+        {
+            targetScript.buildContent(0);
+        }
+        if(GUILayout.Button("del_build"))
+        {
+            targetScript.DeleteContents();
+        }
 
     }
 }

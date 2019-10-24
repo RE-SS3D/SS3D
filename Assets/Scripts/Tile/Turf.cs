@@ -56,19 +56,19 @@ public class Turf : MonoBehaviour
             case completeTypes.structural:
             {
                 upperTurf = Instantiate(Resources.Load("Walls/Wall I"), transform.position, Quaternion.Euler(new Vector3(-90, 0, 0)), transform) as GameObject;
-                upperTurf.name = "upper_turf";
+                upperTurf.name = "upperTurf";
                 break;
             }
             case completeTypes.plated:
             {
                 upperTurf = Instantiate(Resources.Load("Walls/Wall I"), transform.position, Quaternion.Euler(new Vector3(-90, 0, 0)), transform) as GameObject;
-                upperTurf.name = "upper_turf";
+                upperTurf.name = "upperTurf";
                 break;
             }
             case completeTypes.complete:
             {
                 upperTurf = Instantiate(Resources.Load("Walls/Wall I"), transform.position, Quaternion.Euler(new Vector3(-90, 0, 0)), transform) as GameObject;
-                upperTurf.name = "upper_turf";
+                upperTurf.name = "upperTurf";
                 break;
             }
         }
@@ -80,19 +80,19 @@ public class Turf : MonoBehaviour
             case completeTypes.structural:
             {
                 upperTurf = Instantiate(Resources.Load("Floors/Plating"), transform.position, Quaternion.identity, transform) as GameObject;
-                upperTurf.name = "upper_turf";
+                upperTurf.name = "upperTurf";
                 break;
             }
             case completeTypes.plated:
             {
                 upperTurf = Instantiate(Resources.Load("Floors/Plating"), transform.position, Quaternion.identity, transform) as GameObject;
-                upperTurf.name = "upper_turf";
+                upperTurf.name = "upperTurf";
                 break;
             }
             case completeTypes.complete:
             {
                 upperTurf = Instantiate(Resources.Load("Floors/BasicTile"), transform.position, Quaternion.identity, transform) as GameObject;
-                upperTurf.name = "upper_turf";
+                upperTurf.name = "upperTurf";
                 break;
             }
         }
