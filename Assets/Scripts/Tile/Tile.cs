@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ss13_basic_tile : MonoBehaviour
+public class Tile : MonoBehaviour
 {
     public enum TileTypes {
         station_tile,
@@ -16,11 +16,11 @@ public class ss13_basic_tile : MonoBehaviour
     public void initTile()
     {
         if (turf == null){
-            turf = (ss13_turf_tile) gameObject.AddComponent(typeof(ss13_turf_tile));
+            turf = (Turf) gameObject.AddComponent(typeof(Turf));
             //Debug.Log("Adding Component: turf"); 
         }
-        gameObject.GetComponent<ss13_turf_tile>().turfDescriptor = TileDescriptor;
-        gameObject.GetComponent<ss13_turf_tile>().InitTurf();
+        gameObject.GetComponent<Turf>().turfDescriptor = TileDescriptor;
+        gameObject.GetComponent<Turf>().InitTurf();
     }
     // Start is called before the first frame update
     void Start()

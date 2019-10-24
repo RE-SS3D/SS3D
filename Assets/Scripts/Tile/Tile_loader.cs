@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ss13_tile_loader : MonoBehaviour
+public class Tile_loader : MonoBehaviour
 {
     // Start is called before the first frame update
     public Texture2D map;
@@ -47,15 +47,15 @@ public class ss13_tile_loader : MonoBehaviour
         if (pixelColor == Color.black)
         {
             GameObject new_obj = Instantiate(Resources.Load("empty_tile"), pos, Quaternion.identity, transform) as GameObject;
-            new_obj.GetComponent<ss13_basic_tile>().TileDescriptor = ss13_basic_tile.TileTypes.station_tile;
-            new_obj.GetComponent<ss13_basic_tile>().initTile();
+            new_obj.GetComponent<Tile>().TileDescriptor = Tile.TileTypes.station_tile;
+            new_obj.GetComponent<Tile>().initTile();
             new_obj.name = string.Format("tile_{0}_{1}", x, y);
             tile_list.Add(new_obj);
         }else if (pixelColor == Color.blue)
         {
             GameObject new_obj = Instantiate(Resources.Load("empty_tile"), pos, Quaternion.identity, transform) as GameObject;
-            new_obj.GetComponent<ss13_basic_tile>().TileDescriptor = ss13_basic_tile.TileTypes.station_wall;
-            new_obj.GetComponent<ss13_basic_tile>().initTile();
+            new_obj.GetComponent<Tile>().TileDescriptor = Tile.TileTypes.station_wall;
+            new_obj.GetComponent<Tile>().initTile();
             new_obj.name = string.Format("tile_{0}_{1}", x, y);
             tile_list.Add(new_obj);
         }

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(ss13_tile_loader))]
-public class tile_loader_gui : Editor
+[CustomEditor(typeof(Tile_loader))]
+public class Tile_loader_GUI : Editor
 {
     public override void OnInspectorGUI() {
         DrawDefaultInspector();
 
-        ss13_tile_loader targetScript = (ss13_tile_loader)target;
+        Tile_loader targetScript = (Tile_loader)target;
         if(GUILayout.Button("load_map"))
         {
             targetScript.GenerateLevel();

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ss13_turf_tile : MonoBehaviour
+public class Turf : MonoBehaviour
 {
-    public ss13_basic_tile.TileTypes turfDescriptor;
+    public Tile.TileTypes turfDescriptor;
 
     public enum completeTypes{
         structural,
@@ -37,12 +37,12 @@ public class ss13_turf_tile : MonoBehaviour
 
         switch(turfDescriptor)
         {
-            case ss13_basic_tile.TileTypes.station_tile:
+            case Tile.TileTypes.station_tile:
             {
                 SpawnTile();
                 break;
             }
-            case ss13_basic_tile.TileTypes.station_wall:
+            case Tile.TileTypes.station_wall:
             {
                 SpawnWall();
                 break;
