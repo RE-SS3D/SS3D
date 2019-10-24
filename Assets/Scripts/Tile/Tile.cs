@@ -65,7 +65,7 @@ public class Tile : MonoBehaviour
 
         //Start building
         //Hardcoded to always produce table
-        GameObject content = Instantiate(TargetBuild, transform.position, Quaternion.identity, transform);
+        GameObject content = Instantiate(TargetBuild, transform.position, Quaternion.Euler(0, orientation*90, 0), transform);
         content.name = TargetBuild.name;
 
         contents.Add(content);
