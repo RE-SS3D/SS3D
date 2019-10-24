@@ -12,6 +12,8 @@ public class Tile : MonoBehaviour
     public TileTypes TileDescriptor;
     public Component turf = null;
     
+    public GameObject TargetBuild;
+    public Mesh TargetBuild_mesh;
     public List<GameObject> contents;
 
     //Initialize the tile, add the turf component and tell the turf the tiletype
@@ -27,12 +29,21 @@ public class Tile : MonoBehaviour
 
 
     //Build an object on the tile
-    public void buildContent(int orientation){
+    public void buildContent_mesh(int orientation){
+        //Check if the content building fits on the current tiletype wall/floor/etc.
+        if (TileDescriptor != TileTypes.station_tile ){
+            Debug.Log("Can't Build Here"); 
+            return;
+        }
+        //Check if the content building is an update to existing model 
+
+        //Start building
         //Hardcoded to always produce table
-        GameObject content = new GameObject("content");
+        GameObject content = new GameObject(TargetBuild.name);
         content.transform.parent = transform;
+        content.transform.position = transform.position;
         content.AddComponent(typeof(Furniture));
-        content.GetComponent<Furniture>().InitFurniture(Resources.Load("TableWood-00") as Mesh);
+        content.GetComponent<Furniture>().InitFurniture(TargetBuild_mesh as Mesh);
         content.AddComponent<UnityEngine.MeshRenderer>();
         content.GetComponent<UnityEngine.MeshRenderer>().material = Resources.Load("Palette01") as Material;
         content.AddComponent<BoxCollider>();
@@ -41,11 +52,24 @@ public class Tile : MonoBehaviour
 
         contents.Add(content);
         Debug.Log("Table?");
-        //Check if the content building fits on the current tiletype wall/floor/etc.
 
+    }
+
+    public void buildContent(int orientation){
+        //Check if the content building fits on the current tiletype wall/floor/etc.
+        if (TileDescriptor != TileTypes.station_tile ){
+            Debug.Log("Can't Build Here"); 
+            return;
+        }
         //Check if the content building is an update to existing model 
 
         //Start building
+        //Hardcoded to always produce table
+        GameObject content = Instantiate(TargetBuild, transform.position, Quaternion.identity, transform);
+        content.name = TargetBuild.name;
+
+        contents.Add(content);
+        Debug.Log("Table?");
 
     }
 

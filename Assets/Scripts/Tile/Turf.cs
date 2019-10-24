@@ -6,12 +6,15 @@ public class Turf : MonoBehaviour
 {
     public Tile.TileTypes turfDescriptor;
 
+    //deprecated?
     public enum completeTypes{
         structural,
         plated,
         complete
     };
-    public completeTypes completeness = completeTypes.complete;
+
+    public int lowerState = 2;
+    public int upperState = 2;
     
     public GameObject lowerTurf = null;
     public GameObject upperTurf = null;
@@ -51,51 +54,19 @@ public class Turf : MonoBehaviour
     }
 
     void SpawnWall(){
-        switch(completeness)
-        {
-            case completeTypes.structural:
-            {
-                upperTurf = Instantiate(Resources.Load("Walls/Wall I"), transform.position, Quaternion.Euler(new Vector3(-90, 0, 0)), transform) as GameObject;
-                upperTurf.name = "upperTurf";
-                break;
-            }
-            case completeTypes.plated:
-            {
-                upperTurf = Instantiate(Resources.Load("Walls/Wall I"), transform.position, Quaternion.Euler(new Vector3(-90, 0, 0)), transform) as GameObject;
-                upperTurf.name = "upperTurf";
-                break;
-            }
-            case completeTypes.complete:
-            {
-                upperTurf = Instantiate(Resources.Load("Walls/Wall I"), transform.position, Quaternion.Euler(new Vector3(-90, 0, 0)), transform) as GameObject;
-                upperTurf.name = "upperTurf";
-                break;
-            }
-        }
+        upperTurf = Instantiate(Resources.Load(string.Format("Walls/station_wall/Wall_upper_c{0}", upperState)), transform.position, Quaternion.identity, transform) as GameObject;
+        upperTurf.name = "upperTurf";
+
+        lowerTurf = Instantiate(Resources.Load(string.Format("Floors/station_floor/Floor_lower_c{0}", lowerState)), transform.position, Quaternion.identity, transform) as GameObject;
+        lowerTurf.name = "lowerTurf";
     }
 
     void SpawnTile(){
-        switch(completeness)
-        {
-            case completeTypes.structural:
-            {
-                upperTurf = Instantiate(Resources.Load("Floors/Plating"), transform.position, Quaternion.identity, transform) as GameObject;
-                upperTurf.name = "upperTurf";
-                break;
-            }
-            case completeTypes.plated:
-            {
-                upperTurf = Instantiate(Resources.Load("Floors/Plating"), transform.position, Quaternion.identity, transform) as GameObject;
-                upperTurf.name = "upperTurf";
-                break;
-            }
-            case completeTypes.complete:
-            {
-                upperTurf = Instantiate(Resources.Load("Floors/BasicTile"), transform.position, Quaternion.identity, transform) as GameObject;
-                upperTurf.name = "upperTurf";
-                break;
-            }
-        }
+        upperTurf = Instantiate(Resources.Load(string.Format("Floors/station_floor/Floor_upper_c{0}", upperState)), transform.position, Quaternion.identity, transform) as GameObject;
+        upperTurf.name = "upperTurf";
+
+        lowerTurf = Instantiate(Resources.Load(string.Format("Floors/station_floor/Floor_lower_c{0}", lowerState)), transform.position, Quaternion.identity, transform) as GameObject;
+        lowerTurf.name = "lowerTurf";
     }
     // Start is called before the first frame update
     void Start()
