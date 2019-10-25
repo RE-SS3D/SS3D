@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4678626265648708736}
-  - component: {fileID: 934334617106981091}
   - component: {fileID: 5393734664220523897}
   - component: {fileID: 586692335965216842}
   - component: {fileID: 169280320132890189}
+  - component: {fileID: 2268413674734501618}
   m_Layer: 0
   m_Name: TableWood-00
   m_TagString: Untagged
@@ -34,18 +34,6 @@ Transform:
   m_Father: {fileID: 9095143728061192464}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
---- !u!114 &934334617106981091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1521628698431537304}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce199d29afd823246a4a49962f8bf8bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!33 &5393734664220523897
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -71,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b30af9d3c5c3e5d429766b5a8500703f, type: 2}
+  - {fileID: 2100000, guid: db5a4f016f22afc4f8f074192ce277e8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -105,6 +93,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.009816856, y: 0.009816856, z: 0.007394842}
   m_Center: {x: 0, y: 0, z: 0.003697421}
+--- !u!114 &2268413674734501618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1521628698431537304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0507f9a0ae3cfbf47a9287e9d11e7b85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  furnitureType: 1
 --- !u!1 &9095143728061192465
 GameObject:
   m_ObjectHideFlags: 0
@@ -114,6 +115,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9095143728061192464}
+  - component: {fileID: 7422582963117589462}
   m_Layer: 0
   m_Name: TableWood-00
   m_TagString: Untagged
@@ -136,3 +138,16 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7422582963117589462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9095143728061192465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0507f9a0ae3cfbf47a9287e9d11e7b85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  furnitureType: 1

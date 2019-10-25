@@ -68,6 +68,10 @@ public class Turf : MonoBehaviour
         lowerTurf = Instantiate(Resources.Load(string.Format("Floors/station_floor/Floor_lower_c{0}", lowerState)), transform.position, Quaternion.identity, transform) as GameObject;
         lowerTurf.name = "lowerTurf";
     }
+
+    void updateTurf(){
+        InitTurf();
+    }
     // Start is called before the first frame update
     void Start()
     {

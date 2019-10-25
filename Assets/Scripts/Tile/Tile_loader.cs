@@ -8,11 +8,7 @@ public class Tile_loader : MonoBehaviour
     public Texture2D map;
 
     public List<GameObject> tile_list;
-    // Update is called once per frame
-    void Start()
-    {
-        GenerateLevel();
-    }
+
     public void DeleteLevel (){
         foreach(GameObject tileobj in tile_list)
         {
@@ -23,7 +19,7 @@ public class Tile_loader : MonoBehaviour
             Destroy(tileobj);
             #endif
         }
-        tile_list.RemoveAll((o)=>o == null);
+        CleanList();
     }
     public void GenerateLevel (){
         DeleteLevel();
@@ -49,18 +45,22 @@ public class Tile_loader : MonoBehaviour
             GameObject new_obj = Instantiate(Resources.Load("empty_tile"), pos, Quaternion.identity, transform) as GameObject;
             new_obj.GetComponent<Tile>().TileDescriptor = Tile.TileTypes.station_tile;
             new_obj.GetComponent<Tile>().initTile();
-            new_obj.name = string.Format("tile_{0}_{1}", x, y);
+            new_obj.name = string.Format("tile_{0}_{1}", pos.x, pos.z);
             tile_list.Add(new_obj);
         }else if (pixelColor == Color.blue)
         {
             GameObject new_obj = Instantiate(Resources.Load("empty_tile"), pos, Quaternion.identity, transform) as GameObject;
             new_obj.GetComponent<Tile>().TileDescriptor = Tile.TileTypes.station_wall;
             new_obj.GetComponent<Tile>().initTile();
-            new_obj.name = string.Format("tile_{0}_{1}", x, y);
+            new_obj.name = string.Format("tile_{0}_{1}", pos.x, pos.z);
             tile_list.Add(new_obj);
         }
         else{
             Debug.Log(pixelColor);
         }
+    }
+
+    public void CleanList(){
+        tile_list.RemoveAll((o)=>o == null);
     }
 }
