@@ -7,31 +7,18 @@ using UnityEngine;
  * The hands are containers for objects that also affect the player's interaction system.
  */
 [RequireComponent(typeof(Interaction))]
+[RequireComponent(typeof(Inventory))]
 public class Hands : Container, Tool
 {
-    // Set the slot requirements
-    public Hands()
-    {
-        // TODO: Clean this up
-        slots = new SlotRequirements[] {
-            new SlotRequirements(),
-            new SlotRequirements()
-        };
-        slots[0].itemRestrictions = new string[0];
-        slots[0].count = 1;
-        slots[1].itemRestrictions = new string[0];
-        slots[1].count = 1;
-    }
-
     /**
      * The default hand interaction when no object is present.
      * Note: This could be moved into a different class if this one gets too cluttered
      */
     public void Interact(GameObject interactedObject, bool secondary = false)
     {
-        ItemReference itemRef = interactedObject.GetComponent<ItemReference>();
-        if(itemRef)
-            PutItemInHand(itemRef);
+        Item item = interactedObject.GetComponent<Item>();
+        if(item)
+            inventory.CmdAddItem(item, this, selectedHand);
 
         // TODO: Default hand interactions with non-items
     }
@@ -40,45 +27,52 @@ public class Hands : Container, Tool
     public override void AddItem(int index, Item item)
     {
         base.AddItem(index, item);
-        interactionSystem.selectedTool = items[selectedHand] is Tool ? items[selectedHand] as Tool : this;
+        UpdateInteraction();
     }
-
     // Same override for RemoveItem
-    public override void RemoveItem(int index)
+    public override Item RemoveItem(int index)
     {
-        base.RemoveItem(index);
-        interactionSystem.selectedTool = items[selectedHand] is Tool ? items[selectedHand] as Tool : this;
+        Item item = base.RemoveItem(index);
+        UpdateInteraction();
+        return item;
     }
 
     [System.NonSerialized]
     public int selectedHand = 0;
 
+    // Set the slot requirements defaults
+    private void Reset()
+    {
+        // Set defaults for container.
+        containerName = "Hands";
+        containerType = Type.Interactors;
+        slots = new SlotType[2];
+        slots[0] = SlotType.LeftHand;
+        slots[1] = SlotType.RightHand;
 
+        UpdateInteraction();
+    }
     private void Start()
     {
         interactionSystem = GetComponent<Interaction>();
-        interactionSystem.selectedTool = this;
+        inventory = GetComponent<Inventory>();
+        UpdateInteraction();
     }
-
     private void Update()
     {
         // TODO: Ensure both hands are usable
         if (Input.GetButtonDown("SwapActive"))
         {
             selectedHand = 1 - selectedHand;
-            interactionSystem.selectedTool = items[selectedHand] is Tool ? items[selectedHand] as Tool : this;
+            UpdateInteraction();
         }
     }
 
-    /**
-     * Takes the given spawned item and moves it into the player's hand
-     */
-    [Command]
-    private void PutItemInHand(ItemReference itemRef)
+    private void UpdateInteraction()
     {
-        AddItem(selectedHand, itemRef.item);
-        Destroy(itemRef.gameObject);
+        interactionSystem.selectedTool = GetItem(selectedHand) is Tool ? GetItem(selectedHand) as Tool : this;
     }
 
     private Interaction interactionSystem;
+    private Inventory inventory;
 }

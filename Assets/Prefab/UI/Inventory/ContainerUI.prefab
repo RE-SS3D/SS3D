@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 335854699328865212}
   - component: {fileID: 335854699328865213}
   - component: {fileID: 335854699328865211}
-  - component: {fileID: 4690161651193364824}
+  - component: {fileID: 5059148468630593669}
   m_Layer: 5
   m_Name: ContainerUI
   m_TagString: Untagged
@@ -77,7 +77,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &4690161651193364824
+--- !u!114 &5059148468630593669
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -86,12 +86,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 335854699328865208}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a189ebb6537f96b439616c777d8da20b, type: 3}
+  m_Script: {fileID: 11500000, guid: f4ab4b76fd6a1ff4d9cb8e0ba7c0f65f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemPrefab: {fileID: 8671244385994261026, guid: 346a52ab1ce1a9f489382aad18a75a48,
+  slotPrefab: {fileID: 8671244385994261026, guid: 346a52ab1ce1a9f489382aad18a75a48,
     type: 3}
-  container: {fileID: 0}
 --- !u!1 &2299446163709397637
 GameObject:
   m_ObjectHideFlags: 0
@@ -104,7 +103,7 @@ GameObject:
   - component: {fileID: 581116952459638255}
   - component: {fileID: 6655450670428880647}
   - component: {fileID: 7766158449379770476}
-  - component: {fileID: 9112412802765890161}
+  - component: {fileID: 1438260181476184713}
   m_Layer: 5
   m_Name: Expand Button
   m_TagString: Untagged
@@ -213,7 +212,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 9112412802765890161}
+      - m_Target: {fileID: 0}
         m_MethodName: ToggleShow
         m_Mode: 1
         m_Arguments:
@@ -226,7 +225,7 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &9112412802765890161
+--- !u!114 &1438260181476184713
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -235,11 +234,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2299446163709397637}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a189ebb6537f96b439616c777d8da20b, type: 3}
+  m_Script: {fileID: 11500000, guid: f4ab4b76fd6a1ff4d9cb8e0ba7c0f65f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemPrefab: {fileID: 0}
-  container: {fileID: 0}
+  slotPrefab: {fileID: 8671244385994261026, guid: 346a52ab1ce1a9f489382aad18a75a48,
+    type: 3}
 --- !u!1 &5152411505793282375
 GameObject:
   m_ObjectHideFlags: 0

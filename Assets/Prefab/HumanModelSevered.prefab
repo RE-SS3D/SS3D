@@ -1128,7 +1128,6 @@ GameObject:
   - component: {fileID: 6850072202715529765}
   - component: {fileID: 1673377996158476473}
   - component: {fileID: 1994183711920205137}
-  - component: {fileID: 8727987303477047279}
   - component: {fileID: 4868341486874253360}
   m_Layer: 0
   m_Name: HumanModelSevered
@@ -1197,7 +1196,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 1
-  m_AssetId: 7b853e348029ee24c97582362ada4907
+  m_AssetId: 
   m_SceneId: 0
 --- !u!114 &6850072202715529766
 MonoBehaviour:
@@ -1327,22 +1326,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1
-  containers: []
---- !u!114 &8727987303477047279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3184525931660991265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 909fb0705ca5f134d8e6254f097c4d88, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  slots:
-  - itemRestrictions: []
-    count: 6
 --- !u!114 &4868341486874253360
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1355,11 +1338,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cb0dec8ad091bb468e4dfb0f4d4f75b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slots:
-  - itemRestrictions: []
-    count: 1
-  - itemRestrictions: []
-    count: 1
+  syncInterval: 0.1
+  containerName: Hands
+  containerType: 3
+  slots: 0c0000000d000000
+  owner: {fileID: 0}
 --- !u!1 &3346638281543974701
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,12 +3,33 @@
 /**
  * An item describes what is held in a container.
  */
-public class Item
+public class Item : MonoBehaviour
 {
-    // The slots in which the item can go.
-    public string[] compatibleSlots;
+    // Distinguishes what can go in what slot
+    public enum ItemType
+    {
+        Other,
+        Hat,
+        Glasses,
+        Mask,
+        Earpiece,
+        Shirt,
+        OverShirt,
+        Gloves,
+        Shoes
+    }
 
-    // Attributes for the item.
-    public Sprite sprite;
-    public GameObject prefab;
+    public ItemType     itemType;
+    public Sprite       sprite;
+    public GameObject   prefab;
+
+    public void Despawn()
+    {
+        gameObject.SetActive(false);
+    }
+    public void Spawn(Vector3 location)
+    {
+        transform.position = location;
+        gameObject.SetActive(true);
+    }
 }
