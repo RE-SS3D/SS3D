@@ -1122,9 +1122,7 @@ GameObject:
   - component: {fileID: 6850072202715529766}
   - component: {fileID: 6850072202715529767}
   - component: {fileID: 6850072202715529763}
-  - component: {fileID: 6850072202715529762}
   - component: {fileID: 6850072202715529761}
-  - component: {fileID: 6850072202715529760}
   - component: {fileID: 6850072202715529765}
   - component: {fileID: 1673377996158476473}
   - component: {fileID: 1994183711920205137}
@@ -1197,7 +1195,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 1
   m_AssetId: 
-  m_SceneId: 0
+  m_SceneId: 687605116
 --- !u!114 &6850072202715529766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1244,20 +1242,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.83, z: 0}
---- !u!114 &6850072202715529762
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3184525931660991265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee444f2fe6f393741abfb78dcd80fb48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  horizontal: 0
-  vertical: 0
 --- !u!114 &6850072202715529761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1271,23 +1255,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1
-  speed: 5
-  floatingHeight: 0
---- !u!114 &6850072202715529760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3184525931660991265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 900a7585920d7470fb7259ab56a034aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncInterval: 0.1
-  data: 0
-  text: {fileID: 0}
+  runSpeed: 5
+  walkSpeed: 2
 --- !u!114 &6850072202715529765
 MonoBehaviour:
   m_ObjectHideFlags: 0
