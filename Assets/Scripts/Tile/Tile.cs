@@ -12,6 +12,7 @@ public class Tile : MonoBehaviour
     public TileTypes TileDescriptor;
     public Turf turf = null;
     public TileContentManager contentManager = null;
+    public TilePipeManager pipeManager = null;
 
     //Initialize the tile, add the turf component and tell the turf the tiletype
     public void initTile()
@@ -28,6 +29,12 @@ public class Tile : MonoBehaviour
             //Debug.Log("Adding Component: turf"); 
         }
         gameObject.GetComponent<TileContentManager>().InitTileContentManager();
+
+        if (pipeManager == null){
+            pipeManager = (TilePipeManager) gameObject.AddComponent(typeof(TilePipeManager));
+            //Debug.Log("Adding Component: turf"); 
+        }
+        gameObject.GetComponent<TilePipeManager>().InitTilePipeManager();
     }
 
 

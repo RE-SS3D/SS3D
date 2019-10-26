@@ -15,6 +15,21 @@ public class Tile_GUI : Editor
             targetScript.initTile();
         }
 
+        if(GUILayout.Button("build_disposal"))
+        {
+            targetScript.GetComponent<TilePipeManager>().BuildDisposal();
+        }
+
+        if(GUILayout.Button("delete_disposal"))
+        {
+            targetScript.GetComponent<TilePipeManager>().DeleteDisposal();
+        }
+
+        if(GUILayout.Button("update_disposal"))
+        {
+            targetScript.GetComponent<TilePipeManager>().UpdateDisposal();
+        }
+
     }
 }
 
