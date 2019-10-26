@@ -23,6 +23,15 @@ public class Tile_Content_Manager_GUI : Editor
         {
             targetScript.DeleteContents();
         }
+        if(GUILayout.Button("update_connectable"))
+        {
+            targetScript.UpdateMultipart();
+        }
+        if(GUILayout.Button("update_neighbours"))
+        {
+            targetScript.UpdateNeighbours();
+        }
+    
 
     }
 }

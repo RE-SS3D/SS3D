@@ -6,9 +6,8 @@ public class Tile : MonoBehaviour
 {
     public enum TileTypes {
         station_tile,
-        station_wall,
-        station_door
-    };
+        station_wall
+        };
     public TileTypes TileDescriptor;
     public Turf turf = null;
     public TileContentManager contentManager = null;

@@ -13,6 +13,9 @@ public class FurnitureDescriptor : MonoBehaviour
         door_furniture
     }
 
+    //Boolean value to tell the manager that this furniture 'can' be multi-tile (like tables)
+    public bool connectable;
+
     public FurnitureType furnitureType;
     // Start is called before the first frame update
     void Start()

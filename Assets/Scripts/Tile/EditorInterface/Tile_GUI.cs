@@ -27,9 +27,9 @@ public class Tile_GUI : Editor
 
         if(GUILayout.Button("update_disposal"))
         {
-            targetScript.GetComponent<TilePipeManager>().UpdateDisposal();
+            targetScript.GetComponent<TilePipeManager>().UpdateDisposal(-1);
         }
-
+    
     }
 }
 
