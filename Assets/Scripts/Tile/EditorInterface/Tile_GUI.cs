@@ -17,7 +17,7 @@ public class Tile_GUI : Editor
 
         if(GUILayout.Button("build_disposal"))
         {
-            targetScript.GetComponent<TilePipeManager>().BuildDisposal();
+            targetScript.GetComponent<TilePipeManager>().BuildDisposal(-1);
         }
 
         if(GUILayout.Button("delete_disposal"))

@@ -33,6 +33,13 @@ public class SceneBuilder : EditorWindow
     private int buildTargets_index;
     private GameObject buildTarget = null;
 
+    private bool pipeConnectN = false;
+    private bool pipeConnectE = false;
+    private bool pipeConnectS = false;
+    private bool pipeConnectW = false;
+    private bool pipeConnectAuto = false;
+
+
     private void DisplayVisualHelp(Vector3 cell)
     {
         // Vertices of our square
@@ -56,7 +63,7 @@ public class SceneBuilder : EditorWindow
         Vector3 mousePos = mouse_ray.origin - mouse_ray.direction * (mouse_ray.origin.y / mouse_ray.direction.y);
 
         // Get the corresponding cell on our virtual grid
-        Vector3 cell = new Vector3(Mathf.RoundToInt(mousePos.x), 0 ,Mathf.RoundToInt(mousePos.z));
+        Vector3 cell = new Vector3(Mathf.RoundToInt(mousePos.x), y_select ,Mathf.RoundToInt(mousePos.z));
         //Debug.Log(mousePos);
         //Debug.Log(cell);
         return cell;
@@ -66,6 +73,7 @@ public class SceneBuilder : EditorWindow
         buildMode = EditorGUILayout.Toggle("Enable Editor:", buildMode);
         editorFunction = (EditorFunction)EditorGUILayout.EnumPopup("Editor Function:", editorFunction);
         deleteMode = EditorGUILayout.Toggle("Delete?:", deleteMode);
+        y_select = EditorGUILayout.IntField("Y-Level: ", y_select);
         DrawUILine(Color.gray);
         switch(editorFunction)
         {
@@ -81,6 +89,11 @@ public class SceneBuilder : EditorWindow
                 break;
             case(EditorFunction.build_disposal):
                 //buildTarget = EditorGUILayout.ObjectField("Build Target: ", buildTarget, typeof(GameObject), false) as GameObject;
+                pipeConnectN = EditorGUILayout.Toggle("Connect N:", pipeConnectN);
+                pipeConnectE = EditorGUILayout.Toggle("Connect E:", pipeConnectE);
+                pipeConnectS = EditorGUILayout.Toggle("Connect S:", pipeConnectS);
+                pipeConnectW = EditorGUILayout.Toggle("Connect W:", pipeConnectW);
+                pipeConnectAuto = EditorGUILayout.Toggle("Auto Connect:", pipeConnectAuto);
                 break;
         }
     }
@@ -204,7 +217,23 @@ public class SceneBuilder : EditorWindow
                 selectedTile = GameObject.Find(string.Format("tile_{0}_{1}",cell.x, cell.z));
                 if (selectedTile != null) {
                    if(!deleteMode){
-                       selectedTile.GetComponent<TilePipeManager>().BuildDisposal();
+                       int config = 0;
+                        if(pipeConnectN){
+                            config ^= 8;
+                        }
+                        if(pipeConnectE){
+                            config ^= 4;
+                        }
+                        if(pipeConnectS){
+                            config ^= 2;
+                        }
+                        if(pipeConnectW){
+                            config ^= 1;
+                        }
+                        if(pipeConnectAuto){
+                            config = -1;
+                        }
+                       selectedTile.GetComponent<TilePipeManager>().BuildDisposal(config);
                    }else{
                        selectedTile.GetComponent<TilePipeManager>().DeleteDisposal();
                    }

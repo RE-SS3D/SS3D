@@ -6,12 +6,13 @@ public class TilePipeManager : MonoBehaviour
 {
     public bool hasDisposal = false;
     public byte hasDisposal_NESW = 0;
+    public byte disposalConfig = 0;
 
     public GameObject Disposal = null;
  
     public void InitTilePipeManager(){}
 
-    public void BuildDisposal(){
+    public void BuildDisposal(int config){
         //Update Bool
         hasDisposal = true;
         UpdateDisposal();
@@ -31,6 +32,13 @@ public class TilePipeManager : MonoBehaviour
         }
         if (tileW != null){
             tileW.GetComponent<TilePipeManager>().UpdateDisposal();
+        }
+
+        disposalConfig = (byte) config;
+        if (config == -1){
+            UpdateDisposalModel_auto();
+        }else{
+            UpdateDisposalModel(disposalConfig);
         }
     }
 
@@ -91,11 +99,9 @@ public class TilePipeManager : MonoBehaviour
                 hasDisposal_NESW ^= 1;
             }
         }
-        UpdateDisposalModel();
     }
 
-    private void UpdateDisposalModel(){
-        //Delete Model
+    private void UpdateDisposalModel(int config){
         if (Disposal != null){
             #if UNITY_EDITOR
             DestroyImmediate(Disposal);
@@ -127,8 +133,7 @@ public class TilePipeManager : MonoBehaviour
         // 14 = NES
         // 15 = NESW
 
-        if( hasDisposal == true){
-            switch(hasDisposal_NESW){
+        switch(config){
                 case(0):
                     Disposal = Instantiate(Resources.Load("Pipes/Disposal_I"),transform.position, Quaternion.identity, transform) as GameObject;
                     Disposal.name = "Disposal_pipe";
@@ -193,9 +198,21 @@ public class TilePipeManager : MonoBehaviour
                     Disposal = Instantiate(Resources.Load("Pipes/Disposal_X"),transform.position, Quaternion.identity, transform) as GameObject;
                     Disposal.name = "Disposal_pipe";
                     break;
-            }
+        }
+    }
+    
+    private void UpdateDisposalModel_auto(){
+        //Delete Model
+        if (Disposal != null){
+            #if UNITY_EDITOR
+            DestroyImmediate(Disposal);
+            #else
+            Destroy(Disposal);
+            #endif
         }
 
+        disposalConfig = hasDisposal_NESW;
+        UpdateDisposalModel(disposalConfig);
     }
 
 
