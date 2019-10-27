@@ -9,17 +9,17 @@ public class MovementController : NetworkBehaviour
 
     // The base speed at which the given character can move
     [SyncVar]
-    public float runSpeed = 5f;
+    public float runSpeed = 6f;
     // The base speed for the character when walking. To disable walkSpeed, set it to runSpeed
     [SyncVar]
-    public float walkSpeed = 2f;
+    public float walkSpeed = 3f;
 
     private Animator characterAnimator;
     private CharacterController characterController;
     private new Camera camera;
 
     // Current movement the player is making.
-    private Vector2 currentMovement = new Vector2();
+    public Vector2 currentMovement = new Vector2();
     private bool isWalking = false;
 
     private void Start()
@@ -32,10 +32,12 @@ public class MovementController : NetworkBehaviour
     void Update()
     {
         // Must be the local player, or they cannot move
-        if (!isLocalPlayer)
-            return;
+        if (!isLocalPlayer) return;
 
-        if(Input.GetButtonDown("Toggle Run"))
+        // Check if on the floor
+        if (GetComponent<Ragdoll>().ragdolled) return;
+
+        if (Input.GetButtonDown("Toggle Run"))
             isWalking = !isWalking;
         
         // TODO: Get these values from the proper places they will be generated
@@ -43,7 +45,8 @@ public class MovementController : NetworkBehaviour
         bool canGrabSomething = false;
         // TODO: Check other methods of moving, e.g. jetpack
 
-        if (hasGravity || canGrabSomething) {
+        if ((hasGravity || canGrabSomething) && characterController.enabled)
+        {
             // Calculate next movement
             // The vector is not normalized to allow for the input having potential rise and fall times
             float x = Input.GetAxisRaw("Horizontal");
@@ -69,7 +72,7 @@ public class MovementController : NetworkBehaviour
         }
 
         // TODO: Might eventually want more animation options. E.g. when in 0-gravity and 'clambering' via a surface
-        characterAnimator.SetBool("Floating", !hasGravity); // Note: Player can be floating and still move
+        //characterAnimator.SetBool("Floating", !hasGravity); // Note: Player can be floating and still move
         characterAnimator.SetFloat("Speed", currentMovement.magnitude / runSpeed); // animation Speed is a proportion of maximum runSpeed
     }
 }
