@@ -15,31 +15,32 @@ public class TilePipeManager : MonoBehaviour
     public void BuildDisposal(int config){
         //Update Bool
         hasDisposal = true;
-        UpdateDisposal(config);
+        UpdateDisposal();
 
-        disposalConfig = (byte) config;
-        if (config == -1){
-            UpdateDisposalModel_auto();
+        if(config == -1){
+            disposalConfig = hasDisposal_NESW;
         }else{
-            UpdateDisposalModel(disposalConfig);
+            disposalConfig = (byte) config;
         }
+        UpdateDisposalModel();
+
 
         //Call Update of NESW
-        GameObject tileN = GameObject.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z + 1));
-        GameObject tileE = GameObject.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z));
-        GameObject tileS = GameObject.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z - 1));
-        GameObject tileW = GameObject.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z));
+        Transform tileN = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z + 1));
+        Transform tileE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z));
+        Transform tileS = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z - 1));
+        Transform tileW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z));
         if (tileN != null){
-            tileN.GetComponent<TilePipeManager>().UpdateDisposal(config);
+            tileN.gameObject.GetComponent<TilePipeManager>().UpdateDisposal(config);
         }
         if (tileE != null){
-            tileE.GetComponent<TilePipeManager>().UpdateDisposal(config);
+            tileE.gameObject.GetComponent<TilePipeManager>().UpdateDisposal(config);
         }
         if (tileS != null){
-            tileS.GetComponent<TilePipeManager>().UpdateDisposal(config);
+            tileS.gameObject.GetComponent<TilePipeManager>().UpdateDisposal(config);
         }
         if (tileW != null){
-            tileW.GetComponent<TilePipeManager>().UpdateDisposal(config);
+            tileW.gameObject.GetComponent<TilePipeManager>().UpdateDisposal(config);
         }
     }
 
@@ -47,21 +48,21 @@ public class TilePipeManager : MonoBehaviour
         //Update Bool
         hasDisposal = false;
         //Call Update of NESW
-        GameObject tileN = GameObject.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z + 1));
-        GameObject tileE = GameObject.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z));
-        GameObject tileS = GameObject.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z - 1));
-        GameObject tileW = GameObject.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z));
+        Transform tileN = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z + 1));
+        Transform tileE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z));
+        Transform tileS = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z - 1));
+        Transform tileW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z));
         if (tileN != null){
-            tileN.GetComponent<TilePipeManager>().UpdateDisposal();
+            tileN.gameObject.GetComponent<TilePipeManager>().UpdateDisposal();
         }
         if (tileE != null){
-            tileE.GetComponent<TilePipeManager>().UpdateDisposal();
+            tileE.gameObject.GetComponent<TilePipeManager>().UpdateDisposal();
         }
         if (tileS != null){
-            tileS.GetComponent<TilePipeManager>().UpdateDisposal();
+            tileS.gameObject.GetComponent<TilePipeManager>().UpdateDisposal();
         }
         if (tileW != null){
-            tileW.GetComponent<TilePipeManager>().UpdateDisposal();
+            tileW.gameObject.GetComponent<TilePipeManager>().UpdateDisposal();
         }
         //Delete Model
         if (Disposal != null){
@@ -74,39 +75,41 @@ public class TilePipeManager : MonoBehaviour
     }
     
     public void UpdateDisposal(int config = 0){
-        //Update Bools
-        GameObject tileN = GameObject.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z + 1));
-        GameObject tileE = GameObject.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z));
-        GameObject tileS = GameObject.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z - 1));
-        GameObject tileW = GameObject.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z));
-        hasDisposal_NESW = 0;
-        if (tileN != null){
-            if(tileN.GetComponent<TilePipeManager>().hasDisposal){
-                hasDisposal_NESW ^= 8;
+        if(hasDisposal){
+            //Update Bools
+            Transform tileN = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z + 1));
+            Transform tileE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z));
+            Transform tileS = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z - 1));
+            Transform tileW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z));
+            hasDisposal_NESW = 0;
+            if (tileN != null){
+                if(tileN.gameObject.GetComponent<TilePipeManager>().hasDisposal){
+                    hasDisposal_NESW ^= 8;
+                }
             }
-        }
-        if (tileE != null){
-            if(tileE.GetComponent<TilePipeManager>().hasDisposal){
-                hasDisposal_NESW ^= 4;
+            if (tileE != null){
+                if(tileE.gameObject.GetComponent<TilePipeManager>().hasDisposal){
+                    hasDisposal_NESW ^= 4;
+                }
             }
-        }
-        if (tileS != null){
-            if(tileS.GetComponent<TilePipeManager>().hasDisposal){
-                hasDisposal_NESW ^= 2;
+            if (tileS != null){
+                if(tileS.gameObject.GetComponent<TilePipeManager>().hasDisposal){
+                    hasDisposal_NESW ^= 2;
+                }
             }
-        }
-        if (tileW != null){
-            if(tileW.GetComponent<TilePipeManager>().hasDisposal){
-                hasDisposal_NESW ^= 1;
+            if (tileW != null){
+                if(tileW.gameObject.GetComponent<TilePipeManager>().hasDisposal){
+                    hasDisposal_NESW ^= 1;
+                }
             }
-        }
-
-        if (config == -1){
-            UpdateDisposalModel_auto();
+            if (config == -1){
+                disposalConfig = hasDisposal_NESW;
+                UpdateDisposalModel();
+            }
         }
     }
 
-    private void UpdateDisposalModel(int config){
+    private void UpdateDisposalModel(){
         if (Disposal != null){
             #if UNITY_EDITOR
             DestroyImmediate(Disposal);
@@ -138,7 +141,7 @@ public class TilePipeManager : MonoBehaviour
         // 14 = NES
         // 15 = NESW
 
-        switch(config){
+        switch(disposalConfig){
                 case(0):
                     Disposal = Instantiate(Resources.Load("Pipes/Disposal_I"),transform.position, Quaternion.identity, transform) as GameObject;
                     Disposal.name = "Disposal_pipe";
@@ -205,11 +208,5 @@ public class TilePipeManager : MonoBehaviour
                     break;
         }
     }
-    
-    private void UpdateDisposalModel_auto(){
-        disposalConfig = hasDisposal_NESW;
-        UpdateDisposalModel(disposalConfig);
-    }
-
 
 }

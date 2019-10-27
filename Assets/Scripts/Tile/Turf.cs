@@ -14,7 +14,7 @@ public class Turf : MonoBehaviour
     };
 
     public int lowerState = 2;
-    public int upperState = 0;
+    public int upperState = 2;
     
     public GameObject lowerTurf = null;
     public GameObject upperTurf = null;
