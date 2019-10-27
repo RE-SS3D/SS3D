@@ -528,7 +528,7 @@ public class TilePipeManager : MonoBehaviour
             #if UNITY_EDITOR
             DestroyImmediate(redPipe);
             #else
-            Destroy(RedPipe);
+            Destroy(redPipe);
             #endif
         }
 

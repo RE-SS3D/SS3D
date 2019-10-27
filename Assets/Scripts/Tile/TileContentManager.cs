@@ -108,7 +108,7 @@ public class TileContentManager : MonoBehaviour
             #if UNITY_EDITOR
             DestroyImmediate(accessory);
             #else
-            Destroy(content);
+            Destroy(accessory);
             #endif
         }
         accessories.RemoveAll((o)=>o == null);
