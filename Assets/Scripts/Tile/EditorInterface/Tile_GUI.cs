@@ -30,6 +30,10 @@ public class Tile_GUI : Editor
             targetScript.GetComponent<TilePipeManager>().UpdateDisposal(-1);
         }
     
+        if(GUILayout.Button("update_blueModel"))
+        {
+            targetScript.GetComponent<TilePipeManager>().UpdateBlueModel();
+        }
     }
 }
 

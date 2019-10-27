@@ -15,7 +15,9 @@ public class SceneBuilder : EditorWindow
     {
         add_tiles,
         build_furniture,
-        build_disposal
+        build_disposal,
+        build_blue,
+        build_red
     }
 
     private EditorFunction editorFunction;
@@ -88,6 +90,22 @@ public class SceneBuilder : EditorWindow
                 //buildTarget = EditorGUILayout.ObjectField("Build Target: ", buildTarget, typeof(GameObject), false) as GameObject;
                 break;
             case(EditorFunction.build_disposal):
+                //buildTarget = EditorGUILayout.ObjectField("Build Target: ", buildTarget, typeof(GameObject), false) as GameObject;
+                pipeConnectN = EditorGUILayout.Toggle("Connect N:", pipeConnectN);
+                pipeConnectE = EditorGUILayout.Toggle("Connect E:", pipeConnectE);
+                pipeConnectS = EditorGUILayout.Toggle("Connect S:", pipeConnectS);
+                pipeConnectW = EditorGUILayout.Toggle("Connect W:", pipeConnectW);
+                pipeConnectAuto = EditorGUILayout.Toggle("Auto Connect:", pipeConnectAuto);
+                break;
+            case(EditorFunction.build_blue):
+                //buildTarget = EditorGUILayout.ObjectField("Build Target: ", buildTarget, typeof(GameObject), false) as GameObject;
+                pipeConnectN = EditorGUILayout.Toggle("Connect N:", pipeConnectN);
+                pipeConnectE = EditorGUILayout.Toggle("Connect E:", pipeConnectE);
+                pipeConnectS = EditorGUILayout.Toggle("Connect S:", pipeConnectS);
+                pipeConnectW = EditorGUILayout.Toggle("Connect W:", pipeConnectW);
+                pipeConnectAuto = EditorGUILayout.Toggle("Auto Connect:", pipeConnectAuto);
+                break;
+            case(EditorFunction.build_red):
                 //buildTarget = EditorGUILayout.ObjectField("Build Target: ", buildTarget, typeof(GameObject), false) as GameObject;
                 pipeConnectN = EditorGUILayout.Toggle("Connect N:", pipeConnectN);
                 pipeConnectE = EditorGUILayout.Toggle("Connect E:", pipeConnectE);
@@ -236,6 +254,58 @@ public class SceneBuilder : EditorWindow
                        selectedTile.GetComponent<TilePipeManager>().BuildDisposal(config);
                    }else{
                        selectedTile.GetComponent<TilePipeManager>().DeleteDisposal();
+                   }
+                }
+                break;
+            case(EditorFunction.build_blue):
+                selectedTile = GameObject.Find(string.Format("tile_{0}_{1}",cell.x, cell.z));
+                if (selectedTile != null) {
+                   if(!deleteMode){
+                       int config = 0;
+                        if(pipeConnectN){
+                            config ^= 8;
+                        }
+                        if(pipeConnectE){
+                            config ^= 4;
+                        }
+                        if(pipeConnectS){
+                            config ^= 2;
+                        }
+                        if(pipeConnectW){
+                            config ^= 1;
+                        }
+                        if(pipeConnectAuto){
+                            config = -1;
+                        }
+                       selectedTile.GetComponent<TilePipeManager>().BuildBlue(config);
+                   }else{
+                       selectedTile.GetComponent<TilePipeManager>().DeleteBlue();
+                   }
+                }
+                break;
+            case(EditorFunction.build_red):
+                selectedTile = GameObject.Find(string.Format("tile_{0}_{1}",cell.x, cell.z));
+                if (selectedTile != null) {
+                   if(!deleteMode){
+                       int config = 0;
+                        if(pipeConnectN){
+                            config ^= 8;
+                        }
+                        if(pipeConnectE){
+                            config ^= 4;
+                        }
+                        if(pipeConnectS){
+                            config ^= 2;
+                        }
+                        if(pipeConnectW){
+                            config ^= 1;
+                        }
+                        if(pipeConnectAuto){
+                            config = -1;
+                        }
+                       selectedTile.GetComponent<TilePipeManager>().BuildRed(config);
+                   }else{
+                       selectedTile.GetComponent<TilePipeManager>().DeleteRed();
                    }
                 }
                 break;
