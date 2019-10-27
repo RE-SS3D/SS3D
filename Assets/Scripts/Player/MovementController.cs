@@ -35,7 +35,7 @@ public class MovementController : NetworkBehaviour
         if (!isLocalPlayer) return;
 
         // Check if on the floor
-        if (GetComponent<Ragdoll>().ragdolled) return;
+        if (GetComponent<S_Ragdoll>().ragdolled) return;
 
         if (Input.GetButtonDown("Toggle Run"))
             isWalking = !isWalking;
@@ -55,7 +55,7 @@ public class MovementController : NetworkBehaviour
             // Smoothly transition to next intended movement
             Vector2 intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
             currentMovement = Vector2.MoveTowards(currentMovement, intendedMovement, Time.deltaTime * ACCELERATION);
-
+            
             // Move the player
             if (currentMovement.magnitude > 0)
             {
