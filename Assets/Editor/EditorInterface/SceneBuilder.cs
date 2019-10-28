@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+namespace Mirror{
 public class SceneBuilder : EditorWindow
 {
     [MenuItem("Window/Eric's SceneBuilder")]
@@ -27,6 +28,7 @@ public class SceneBuilder : EditorWindow
     private int upperTurfStat;
     private int lowerTurfStat;
     private int y_select = 0;
+    private int buildOrientation = 0;
 
     private string[] furnitureTypes;
     private int furnitureTypes_index = 0;
@@ -85,6 +87,7 @@ public class SceneBuilder : EditorWindow
                 lowerTurfStat = EditorGUILayout.IntField("Lower Turf Status:", lowerTurfStat);
                 break;
             case(EditorFunction.build_furniture):
+                buildOrientation = EditorGUILayout.IntField("Orientation:", buildOrientation);
                 LoadFurnitureTypes();
                 LoadPrefabFurniture(furnitureTypes[furnitureTypes_index]);
                 //buildTarget = EditorGUILayout.ObjectField("Build Target: ", buildTarget, typeof(GameObject), false) as GameObject;
@@ -223,7 +226,7 @@ public class SceneBuilder : EditorWindow
                 buildTarget = buildTargets[buildTargets_index];
                 if (!deleteMode){
                     if (buildTarget != null && GameObject.Find(string.Format("tile_{0}_{1}",cell.x, cell.z)) != null){
-                        GameObject.Find(string.Format("tile_{0}_{1}",cell.x, cell.z)).GetComponent<TileContentManager>().BuildContent(buildTarget, 0);
+                        GameObject.Find(string.Format("tile_{0}_{1}",cell.x, cell.z)).GetComponent<TileContentManager>().BuildContent(buildTarget, buildOrientation);
                     }
                 }else{
                     if(GameObject.Find(string.Format("tile_{0}_{1}",cell.x, cell.z)) != null){
@@ -326,5 +329,4 @@ public class SceneBuilder : EditorWindow
 
 
 }
-
-
+}

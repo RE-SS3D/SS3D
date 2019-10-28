@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using Mirror;
-
+namespace Mirror{
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(Animator))]
 public class MovementController : NetworkBehaviour
@@ -35,9 +35,22 @@ public class MovementController : NetworkBehaviour
         if (!isLocalPlayer)
             return;
 
-        if(Input.GetButtonDown("Toggle Run"))
+        if(Input.GetButtonDown("Toggle Run")){
             isWalking = !isWalking;
+
+        }
+
+        if(Input.GetButtonDown("Toggle Update")){
+            if(isServer){
+                Debug.Log("UPDATING MAP");
+                GameObject TL = GameObject.Find("TileLoader");
+                TL.GetComponent<Tile_loader_networked>().GenerateLevel();
+            }
         
+        }
+            
+        
+
         // TODO: Get these values from the proper places they will be generated
         bool hasGravity = true;
         bool canGrabSomething = false;
@@ -72,4 +85,5 @@ public class MovementController : NetworkBehaviour
         characterAnimator.SetBool("Floating", !hasGravity); // Note: Player can be floating and still move
         characterAnimator.SetFloat("Speed", currentMovement.magnitude / runSpeed); // animation Speed is a proportion of maximum runSpeed
     }
+}
 }

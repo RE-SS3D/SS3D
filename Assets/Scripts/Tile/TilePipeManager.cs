@@ -8,7 +8,11 @@ public class TilePipeManager : MonoBehaviour
         { "N", 8 },
         { "E", 4 },
         { "S", 2 },
-        { "W", 1 }
+        { "W", 1 },
+        { "NE", 128},
+        { "SE", 64 },
+        { "SW", 32 },
+        { "NW", 16 }
     };
 
     public bool hasDisposal = false;
@@ -28,6 +32,12 @@ public class TilePipeManager : MonoBehaviour
     public GameObject redPipe = null;
  
     public void InitTilePipeManager(){}
+
+    public void UpdatePipes(){
+        UpdateDisposal();
+        UpdateRed();
+        UpdateBlue();
+    }
 
     public void BuildDisposal(int config){
         //Update Bool
@@ -121,9 +131,9 @@ public class TilePipeManager : MonoBehaviour
             }
             if (config == -1){
                 disposalConfig = hasDisposal_NESW;
-                UpdateDisposalModel();
             }
         }
+        UpdateDisposalModel();
     }
 
     private void UpdateDisposalModel(){
@@ -157,72 +167,73 @@ public class TilePipeManager : MonoBehaviour
         // 13 = NEW
         // 14 = NES
         // 15 = NESW
-
-        switch(disposalConfig){
-                case(0):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_I"),transform.position, Quaternion.identity, transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(1):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_I"),transform.position, Quaternion.Euler(0,90,0), transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(2):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_I"),transform.position, Quaternion.identity, transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(3):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_L"),transform.position, Quaternion.Euler(0,180,0), transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(4):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_I"),transform.position, Quaternion.Euler(0,90,0), transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(5):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_I"),transform.position, Quaternion.Euler(0,90,0), transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(6):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_L"),transform.position, Quaternion.Euler(0,90,0), transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(7):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_T"),transform.position, Quaternion.Euler(0,90,0), transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(8):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_I"),transform.position, Quaternion.identity, transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(9):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_L"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(10):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_I"),transform.position, Quaternion.identity, transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(11):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_T"),transform.position, Quaternion.Euler(0,180,0), transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(12):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_L"),transform.position, Quaternion.identity, transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(13):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_T"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(14):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_T"),transform.position, Quaternion.identity, transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
-                case(15):
-                    Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_X"),transform.position, Quaternion.identity, transform) as GameObject;
-                    Disposal.name = "Disposal_pipe";
-                    break;
+        if(hasDisposal){
+            switch(disposalConfig){
+                    case(0):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_I"),transform.position, Quaternion.identity, transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(1):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_I"),transform.position, Quaternion.Euler(0,90,0), transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(2):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_I"),transform.position, Quaternion.identity, transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(3):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_L"),transform.position, Quaternion.Euler(0,180,0), transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(4):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_I"),transform.position, Quaternion.Euler(0,90,0), transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(5):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_I"),transform.position, Quaternion.Euler(0,90,0), transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(6):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_L"),transform.position, Quaternion.Euler(0,90,0), transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(7):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_T"),transform.position, Quaternion.Euler(0,90,0), transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(8):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_I"),transform.position, Quaternion.identity, transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(9):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_L"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(10):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_I"),transform.position, Quaternion.identity, transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(11):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_T"),transform.position, Quaternion.Euler(0,180,0), transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(12):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_L"),transform.position, Quaternion.identity, transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(13):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_T"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(14):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_T"),transform.position, Quaternion.identity, transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+                    case(15):
+                        Disposal = Instantiate(Resources.Load("Pipes/Under/Disposal/Disposal_X"),transform.position, Quaternion.identity, transform) as GameObject;
+                        Disposal.name = "Disposal_pipe";
+                        break;
+            }
         }
     }
 
@@ -319,9 +330,9 @@ public class TilePipeManager : MonoBehaviour
             }
             if (config == -1){
                 bluePipeConfig = hasBluePipe_NESW;
-                UpdateBlueModel();
             }
         }
+        UpdateBlueModel();
     }
 
     public void UpdateBlueModel(){
@@ -355,73 +366,73 @@ public class TilePipeManager : MonoBehaviour
         // 13 = NEW
         // 14 = NES
         // 15 = NESW
-
-        switch(bluePipeConfig){
-                case(0)://none
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(1)://W
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_I"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(2)://S
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(3)://SW
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_SW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(4)://E
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_I"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(5)://EW
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_I"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(6)://SE
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_SE"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(7)://SEW
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_SEW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(8)://N
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(9)://NW
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_NW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(10)://NS
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(11)://NSW
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_NSW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(12)://NE
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_NE"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(13)://NEW
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_NEW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(14)://NES
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_NES"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                case(15)://NESW
-                    bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_X"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    bluePipe.name = "Blue_pipe";
-                    break;
-                
+        if(hasBluePipe){
+            switch(bluePipeConfig){
+                    case(0)://none
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(1)://W
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_I"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(2)://S
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(3)://SW
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_SW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(4)://E
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_I"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(5)://EW
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_I"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(6)://SE
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_SE"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(7)://SEW
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_SEW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(8)://N
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(9)://NW
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_NW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(10)://NS
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(11)://NSW
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_NSW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(12)://NE
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_NE"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(13)://NEW
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_NEW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(14)://NES
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_NES"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+                    case(15)://NESW
+                        bluePipe = Instantiate(Resources.Load("Pipes/Under/Blue/Blue_X"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        bluePipe.name = "Blue_pipe";
+                        break;
+            }
         }
     }
 
@@ -518,9 +529,9 @@ public class TilePipeManager : MonoBehaviour
             }
             if (config == -1){
                 redPipeConfig = hasRedPipe_NESW;
-                UpdateRedModel();
             }
         }
+        UpdateRedModel();
     }
 
     public void UpdateRedModel(){
@@ -554,73 +565,74 @@ public class TilePipeManager : MonoBehaviour
         // 13 = NEW
         // 14 = NES
         // 15 = NESW
-
-        switch(redPipeConfig){
-                case(0)://none
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(1)://W
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_I"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(2)://S
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(3)://SW
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_SW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(4)://E
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_I"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(5)://EW
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_I"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(6)://SE
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_SE"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(7)://SEW
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_SEW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(8)://N
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(9)://NW
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_NW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(10)://NS
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(11)://NSW
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_NSW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(12)://NE
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_NE"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(13)://NEW
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_NEW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(14)://NES
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_NES"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                case(15)://NESW
-                    redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_X"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
-                    redPipe.name = "Red_pipe";
-                    break;
-                
+        if(hasRedPipe){
+            switch(redPipeConfig){
+                    case(0)://none
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(1)://W
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_I"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(2)://S
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(3)://SW
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_SW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(4)://E
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_I"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(5)://EW
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_I"),transform.position, Quaternion.Euler(0,-90,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(6)://SE
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_SE"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(7)://SEW
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_SEW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(8)://N
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(9)://NW
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_NW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(10)://NS
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_I"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(11)://NSW
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_NSW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(12)://NE
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_NE"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(13)://NEW
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_NEW"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(14)://NES
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_NES"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    case(15)://NESW
+                        redPipe = Instantiate(Resources.Load("Pipes/Under/Red/Red_X"),transform.position, Quaternion.Euler(0,0,0), transform) as GameObject;
+                        redPipe.name = "Red_pipe";
+                        break;
+                    
+            }
         }
     }
 

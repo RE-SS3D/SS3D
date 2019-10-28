@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2fde2f7ebbac5a47ab8a9ef1d26d4bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncInterval: 0.1
   TileDescriptor: 0
   turf: {fileID: 0}
   contentManager: {fileID: 0}

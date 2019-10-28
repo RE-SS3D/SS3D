@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+namespace Mirror{
 [CustomEditor(typeof(Tile))]
 public class Tile_GUI : Editor
 {
@@ -36,4 +37,4 @@ public class Tile_GUI : Editor
         }
     }
 }
-
+}

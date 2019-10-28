@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace Mirror{
 public class TileContentManager : MonoBehaviour
 {
     public GameObject mainObject;
@@ -131,59 +132,59 @@ public class TileContentManager : MonoBehaviour
                 // NE SE SW NW N  E  S  W
                 // 0  0  0  0  0  0  0  0
                 //128 64  32 16 8  4  2  1
-            GameObject tileN = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z + 1)).gameObject;
-            GameObject tileE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z)).gameObject;
-            GameObject tileS = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z - 1)).gameObject;
-            GameObject tileW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z)).gameObject;
-            GameObject tileNE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z + 1)).gameObject;
-            GameObject tileSE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z - 1)).gameObject;
-            GameObject tileSW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z - 1)).gameObject;
-            GameObject tileNW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z + 1)).gameObject;
+            Transform tileN = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z + 1));
+            Transform tileE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z));
+            Transform tileS = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z - 1));
+            Transform tileW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z));
+            Transform tileNE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z + 1));
+            Transform tileSE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z - 1));
+            Transform tileSW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z - 1));
+            Transform tileNW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z + 1));
             if(tileN != null){
-                if (tileN.GetComponent<TileContentManager>().hasConnectable){
-                    if (tileN.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
+                if (tileN.gameObject.GetComponent<TileContentManager>().hasConnectable){
+                    if (tileN.gameObject.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
                         hasConnectableNeighbours ^= 8;
                 }
             }
             if(tileE != null){
-                if (tileE.GetComponent<TileContentManager>().hasConnectable){
-                    if (tileE.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
+                if (tileE.gameObject.GetComponent<TileContentManager>().hasConnectable){
+                    if (tileE.gameObject.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
                         hasConnectableNeighbours ^= 4;
                 }
             }
             if(tileS != null){
-                if (tileS.GetComponent<TileContentManager>().hasConnectable){
-                    if (tileS.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
+                if (tileS.gameObject.GetComponent<TileContentManager>().hasConnectable){
+                    if (tileS.gameObject.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
                         hasConnectableNeighbours ^= 2;
                 }
             }
             if(tileW != null){
-                if (tileW.GetComponent<TileContentManager>().hasConnectable){
-                    if (tileW.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
+                if (tileW.gameObject.GetComponent<TileContentManager>().hasConnectable){
+                    if (tileW.gameObject.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
                         hasConnectableNeighbours ^= 1;
                 }
             }
             if(tileNE != null){
-                if (tileNE.GetComponent<TileContentManager>().hasConnectable){
-                    if (tileNE.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
+                if (tileNE.gameObject.GetComponent<TileContentManager>().hasConnectable){
+                    if (tileNE.gameObject.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
                         hasConnectableNeighbours ^= 128;
                 }
             }
             if(tileSE != null){
-                if (tileSE.GetComponent<TileContentManager>().hasConnectable){
-                    if (tileSE.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
+                if (tileSE.gameObject.GetComponent<TileContentManager>().hasConnectable){
+                    if (tileSE.gameObject.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
                         hasConnectableNeighbours ^= 64;
                 }
             }
             if(tileSW != null){
-                if (tileSW.GetComponent<TileContentManager>().hasConnectable){
-                    if (tileSW.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
+                if (tileSW.gameObject.GetComponent<TileContentManager>().hasConnectable){
+                    if (tileSW.gameObject.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
                         hasConnectableNeighbours ^= 32;
                 }
             }
             if(tileNW != null){
-                if (tileNW.GetComponent<TileContentManager>().hasConnectable){
-                    if (tileNW.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
+                if (tileNW.gameObject.GetComponent<TileContentManager>().hasConnectable){
+                    if (tileNW.gameObject.GetComponent<TileContentManager>().mainObject.name == mainObject.name)
                         hasConnectableNeighbours ^= 16;
                 } 
             }
@@ -193,33 +194,32 @@ public class TileContentManager : MonoBehaviour
     }
 
     public void UpdateNeighbours(){
-        GameObject tileN = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z + 1)).gameObject;
-        GameObject tileE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z)).gameObject;
-        GameObject tileS = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z - 1)).gameObject;
-        GameObject tileW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z)).gameObject;
-        GameObject tileNE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z + 1)).gameObject;
-        GameObject tileSE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z - 1)).gameObject;
-        GameObject tileSW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z - 1)).gameObject;
-        GameObject tileNW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z + 1)).gameObject;
+        Transform tileN = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z + 1));
+        Transform tileE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z));
+        Transform tileS = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z - 1));
+        Transform tileW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z));
+        Transform tileNE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z + 1));
+        Transform tileSE = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x + 1, gameObject.transform.position.z - 1));
+        Transform tileSW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z - 1));
+        Transform tileNW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z + 1));
         if(tileN != null)
-            tileN.GetComponent<TileContentManager>().UpdateMultipart();
+            tileN.gameObject.GetComponent<TileContentManager>().UpdateMultipart();
         if(tileE != null)
-            tileE.GetComponent<TileContentManager>().UpdateMultipart();
+            tileE.gameObject.GetComponent<TileContentManager>().UpdateMultipart();
         if(tileS != null)
-            tileS.GetComponent<TileContentManager>().UpdateMultipart();
+            tileS.gameObject.GetComponent<TileContentManager>().UpdateMultipart();
         if(tileW != null)
-            tileW.GetComponent<TileContentManager>().UpdateMultipart();
+            tileW.gameObject.GetComponent<TileContentManager>().UpdateMultipart();
         if(tileNE != null)
-            tileNE.GetComponent<TileContentManager>().UpdateMultipart();
+            tileNE.gameObject.GetComponent<TileContentManager>().UpdateMultipart();
         if(tileSE != null)
-            tileSE.GetComponent<TileContentManager>().UpdateMultipart();
+            tileSE.gameObject.GetComponent<TileContentManager>().UpdateMultipart();
         if(tileSW != null)
-            tileSW.GetComponent<TileContentManager>().UpdateMultipart();
+            tileSW.gameObject.GetComponent<TileContentManager>().UpdateMultipart();
         if(tileNW != null)
-            tileNW.GetComponent<TileContentManager>().UpdateMultipart();
+            tileNW.gameObject.GetComponent<TileContentManager>().UpdateMultipart();
         
     }
-    
 
     public void UpdateMultipartModel(){
         // update model (with new prefab for now)
@@ -426,4 +426,5 @@ public class TileContentManager : MonoBehaviour
             
         }
     }
+}
 }

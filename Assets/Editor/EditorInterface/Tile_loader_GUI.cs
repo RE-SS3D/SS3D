@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-
+namespace Mirror{
 [CustomEditor(typeof(Tile_loader))]
 public class Tile_loader_GUI : Editor
 {
@@ -19,4 +19,5 @@ public class Tile_loader_GUI : Editor
             targetScript.DeleteLevel();
         }
     }
+}
 }
