@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1076091533179888624}
   - component: {fileID: 1076091533179888622}
   - component: {fileID: 1525516196371455867}
+  - component: {fileID: 8865271898015047287}
   m_Layer: 5
   m_Name: HotBar
   m_TagString: Untagged
@@ -129,6 +130,22 @@ MonoBehaviour:
     slot: {fileID: 4426452476792735896}
   - type: 10
     slot: {fileID: 6211653709340827144}
+--- !u!114 &8865271898015047287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1076091533179888626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c75ab7fec4b8e34cb00573a61dcd02e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handSlots:
+  - {fileID: 3077284699684687893}
+  - {fileID: 4426452476792735896}
+  hands: {fileID: 0}
 --- !u!1 &4304450713059239085
 GameObject:
   m_ObjectHideFlags: 0

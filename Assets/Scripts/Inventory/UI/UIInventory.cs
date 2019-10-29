@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 public class UIInventory : MonoBehaviour
 {
@@ -14,27 +15,23 @@ public class UIInventory : MonoBehaviour
 
         public abstract void UpdateContainers(GameObject owner, List<Container> containers);
     }
-
+    
     // The prefab for when a new container needs to be made
     public GameObject genericContainerPrefab;
 
     public ContainerRenderer playerBodyView;
     public ContainerRenderer hotbarView;
 
-    public void SetInventory(Inventory inventory)
+    public void StartUI(Inventory inventory)
     {
-        if(this.inventory)
-            this.inventory.onChange -= OnInventoryChange;
-
         this.inventory = inventory;
-
-        inventory.onChange += OnInventoryChange;
-
-        OnInventoryChange(inventory.GetContainers());
+        inventory.EventOnChange += OnInventoryChange;
+        OnInventoryChange();
     }
 
-    private void OnInventoryChange(IReadOnlyList<Container> containers)
+    private void OnInventoryChange()
     {
+        var containers = inventory.GetContainers();
         // Collect each container by owner
         Dictionary<GameObject, List<Container>> containerSets = containers.GroupBy(container => container.owner).ToDictionary(group => group.Key, group => group.ToList());
         
@@ -45,6 +42,7 @@ public class UIInventory : MonoBehaviour
             {
                 playerBodyView.UpdateContainers(containerSet.Key, containerSet.Value);
                 hotbarView.UpdateContainers(containerSet.Key, containerSet.Value);
+                continue;
             }
 
             // If a handler for it exists
@@ -71,6 +69,6 @@ public class UIInventory : MonoBehaviour
         handlers = handlers.Except(removeList).ToList();
     }
 
-    private List<ContainerRenderer> handlers;
+    private List<ContainerRenderer> handlers = new List<ContainerRenderer>();
     private Inventory inventory;
 }

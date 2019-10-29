@@ -36,7 +36,7 @@ public class UIGeneralContainer : UIInventory.ContainerRenderer
             if (newContainers.Contains(container))
                 continue;
 
-            container.onChange -= items => UpdateContainer(container, items);
+            container.onChange -= () => UpdateContainer(container);
 
             // Remove slots from here
             var deleteList = slots.Where(slot => slot.container == container);
@@ -54,7 +54,7 @@ public class UIGeneralContainer : UIInventory.ContainerRenderer
                 slotIndex += container.Length();
                 continue;
             }
-            container.onChange += items => UpdateContainer(container, items);
+            container.onChange += () => UpdateContainer(container);
 
             // Add all container slots
             for (int i = 0; i < container.Length(); ++i)
@@ -86,12 +86,12 @@ public class UIGeneralContainer : UIInventory.ContainerRenderer
     /**
      * Called when any single container updates
      */
-    private void UpdateContainer(Container container, IReadOnlyList<Item> items) {
+    private void UpdateContainer(Container container) {
         // Note: This assumes container size doesn't change
 
         int slotIndex = slots.FindIndex(slot => slot.container == container);
 
-        foreach (var item in items)
+        foreach (var item in container.GetItems())
         {
             if(slots[slotIndex].container != container)
                 Debug.LogError("UIGeneralContainer.UpdateContainer was not meant to handle container size changing.");

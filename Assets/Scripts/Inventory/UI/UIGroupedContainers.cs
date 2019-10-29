@@ -24,6 +24,11 @@ public class UIGroupedContainers : UIInventory.ContainerRenderer
     [SerializeField] private Container.Type   containerType; // TODO:
     [SerializeField] private ItemSlot[]       uiSlots;
 
+    public UIGroupedContainers()
+    {
+        OnContainerChange = () => UpdateContainer();
+    }
+
     public override void UpdateContainers(GameObject owner, List<Container> containers)
     {
         bool[] isSet = new bool[uiSlots.Length];
@@ -41,13 +46,15 @@ public class UIGroupedContainers : UIInventory.ContainerRenderer
 
                 if (slotIndex == -1)
                 {
-                    Debug.LogWarning("Nowhere to display slottype " + slotType.ToString() + " from " + container.containerName + " from " + owner.name + " in Grouped Container " + name);
+                    // Debug.LogWarning("Nowhere to display slottype " + slotType.ToString() + " from " + container.containerName + " from " + owner.name + " in Grouped Container " + name);
                     continue;
                 }
 
                 isSet[slotIndex] = true;
                 if (container.GetItem(i))
                     uiSlots[slotIndex].slot.SetSprite(container.GetItem(i).sprite);
+                else
+                    uiSlots[slotIndex].slot.SetSprite(null);
             }
         }
 
@@ -62,9 +69,11 @@ public class UIGroupedContainers : UIInventory.ContainerRenderer
 
         // Swap over all event subscriptions
         foreach (var container in this.containers)
-            container.onChange -= any => UpdateContainer();
+            if (!containers.Contains(container))
+                container.onChange -= OnContainerChange;
         foreach (var container in containers)
-            container.onChange += any => UpdateContainer();
+            if (!this.containers.Contains(container))
+                container.onChange += OnContainerChange;
 
         this.owner = owner;
         this.containers = containers;
@@ -75,4 +84,6 @@ public class UIGroupedContainers : UIInventory.ContainerRenderer
         // Can't be bothered doing a specific update here.
         UpdateContainers(owner, containers);
     }
+    // Used to store delegate used for performance reasons
+    private readonly Container.OnChange OnContainerChange;
 }

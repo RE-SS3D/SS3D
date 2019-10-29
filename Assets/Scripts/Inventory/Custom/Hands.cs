@@ -4,12 +4,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /**
- * The hands are containers for objects that also affect the player's interaction system.
+ * The hand system is an interaction system which connects to the inventory.
+ * There is a hands container, that the interaction system connects to, that defines what items the player is currently holding.
  */
-[RequireComponent(typeof(Interaction))]
 [RequireComponent(typeof(Inventory))]
-public class Hands : Container, Tool
+[RequireComponent(typeof(HandContainer))]
+public class Hands : Interaction, Tool
 {
+    public delegate void OnHandChange(int selectedHand);
+
+    [System.NonSerialized]
+    public int selectedHand = 0;
+    public event OnHandChange onHandChange;
+
     /**
      * The default hand interaction when no object is present.
      * Note: This could be moved into a different class if this one gets too cluttered
@@ -17,62 +24,47 @@ public class Hands : Container, Tool
     public void Interact(GameObject interactedObject, bool secondary = false)
     {
         Item item = interactedObject.GetComponent<Item>();
-        if(item)
-            inventory.CmdAddItem(item, this, selectedHand);
+
+        if(item && item.transform.parent == null)
+            inventory.CmdAddItem(interactedObject, holding.gameObject, selectedHand);
 
         // TODO: Default hand interactions with non-items
     }
 
-    // Override add item so any changes refresh the interaction system's tool
-    public override void AddItem(int index, Item item)
+    private void Awake()
     {
-        base.AddItem(index, item);
-        UpdateInteraction();
-    }
-    // Same override for RemoveItem
-    public override Item RemoveItem(int index)
-    {
-        Item item = base.RemoveItem(index);
-        UpdateInteraction();
-        return item;
-    }
-
-    [System.NonSerialized]
-    public int selectedHand = 0;
-
-    // Set the slot requirements defaults
-    private void Reset()
-    {
-        // Set defaults for container.
-        containerName = "Hands";
-        containerType = Type.Interactors;
-        slots = new SlotType[2];
-        slots[0] = SlotType.LeftHand;
-        slots[1] = SlotType.RightHand;
-
-        UpdateInteraction();
-    }
-    private void Start()
-    {
-        interactionSystem = GetComponent<Interaction>();
         inventory = GetComponent<Inventory>();
-        UpdateInteraction();
+        holding = GetComponent<HandContainer>();
+        holding.onChange += UpdateTool;
+
+        if (holding.GetItems().Count > 0)
+            UpdateTool();
     }
-    private void Update()
+    protected override void Update()
     {
+        base.Update();
+
+        if (!isLocalPlayer)
+            return;
+
         // TODO: Ensure both hands are usable
-        if (Input.GetButtonDown("SwapActive"))
+        if (Input.GetButtonDown("Swap Active"))
         {
             selectedHand = 1 - selectedHand;
-            UpdateInteraction();
+            onHandChange?.Invoke(selectedHand);
+            UpdateTool();       
+        }
+        if (Input.GetButtonDown("Drop Item"))
+        {
+            inventory.CmdPlaceItem(transform.position, holding.gameObject, selectedHand);
         }
     }
 
-    private void UpdateInteraction()
+    private void UpdateTool()
     {
-        interactionSystem.selectedTool = GetItem(selectedHand) is Tool ? GetItem(selectedHand) as Tool : this;
+        selectedTool = holding.GetItem(selectedHand) is Tool ? holding.GetItem(selectedHand) as Tool : this;
     }
 
-    private Interaction interactionSystem;
+    private HandContainer holding;
     private Inventory inventory;
 }

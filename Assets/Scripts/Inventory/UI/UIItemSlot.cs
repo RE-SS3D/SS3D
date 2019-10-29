@@ -18,7 +18,6 @@ public class UIItemSlot : MonoBehaviour
     private Color inactiveColor = Color.grey;
     [SerializeField]
     private Sprite emptySprite;
-
     // TODO: On press
 
     public void SetSprite(Sprite sprite)
@@ -39,8 +38,13 @@ public class UIItemSlot : MonoBehaviour
         if(!active)
             SetSprite(null);
     }
+    public void SetHighlight(bool value)
+    {
+        border.color = value ? activeColor : inactiveColor;
+        // itemContainer.color = value ? activeColor : inactiveColor;
+    }
 
-    private void Start()
+    private void Awake()
     {
         itemContainer.sprite = emptySprite;
         itemContainer.color = active ? activeColor : inactiveColor;

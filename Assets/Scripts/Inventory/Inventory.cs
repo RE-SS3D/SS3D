@@ -11,29 +11,31 @@ using UnityEngine;
  */
 public class Inventory : NetworkBehaviour
 {
-    public delegate void OnChange(IReadOnlyList<Container> containers);
+    public delegate void OnChange();
+    private class GameObjectList : SyncList<GameObject> { }
 
     // Called whenever the containers change
-    public event OnChange onChange;
+    [SyncEvent]
+    public event OnChange EventOnChange;
 
     /**
      * Add an item from the world into a container.
      */
     [Command]
-    public void CmdAddItem(Item item, Container to, int toIndex)
+    public void CmdAddItem(GameObject item, GameObject toContainer, int toIndex)
     {
-        item.Despawn();
-        to.AddItem(toIndex, item);
+        Despawn(item);
+        toContainer.GetComponent<Container>().AddItem(toIndex, item);
     }
 
     /**
      * Place an item from a container into the world.
      */
     [Command]
-    public void CmdPlaceItem(Vector3 location, Container from, int fromIndex)
+    public void CmdPlaceItem(Vector3 location, GameObject fromContainer, int fromIndex)
     {
-        Item item = from.RemoveItem(fromIndex);
-        item.Spawn(location);
+        GameObject item = fromContainer.GetComponent<Container>().RemoveItem(fromIndex);
+        Spawn(item, location);
     }
 
     /**
@@ -41,39 +43,83 @@ public class Inventory : NetworkBehaviour
      * This is intended to be called by the UI, when the user drags an item from one place to another
      */
     [Command]
-    public void CmdMoveItem(Container from, int fromIndex, Container to, int toIndex)
+    public void CmdMoveItem(GameObject fromContainer, int fromIndex, GameObject toContainer, int toIndex)
     {
         // TODO: Check for compatibility and etc.
-        Item item = from.RemoveItem(fromIndex);
-        to.AddItem(toIndex, item);
+        GameObject item = fromContainer.GetComponent<Container>().RemoveItem(fromIndex);
+        toContainer.GetComponent<Container>().AddItem(toIndex, item);
     }
 
-    public IReadOnlyList<Container> GetContainers()
+    public List<Container> GetContainers()
     {
-        return containers.AsReadOnly();
-    }
-    public void AddContainer(Container container)
-    {
-        containers.Add(container);
-        onChange(GetContainers());
-    }
-    public void RemoveContainer(Container container)
-    {
-        containers.Remove(container);
-        onChange(GetContainers());
+        List<Container> containers = new List<Container>();
+
+        foreach (var gameObject in objectSources)
+            containers.AddRange(gameObject.GetComponents<Container>());
+
+        return containers;
     }
 
+    /**
+     * Sets up the containers. Must run on server.
+     */
     private void Start()
     {
-        // Search through and add all containers.
-        var ownedContainers = GetComponents<Container>();
-        containers.AddRange(ownedContainers);
+        if (!isServer)
+        {
+            if (isLocalPlayer)
+                CmdStart();
+            return;
+        }
 
-        // Connect the UI
-        if (isLocalPlayer)
-            GameObject.Find("Inventory UI").GetComponent<UIInventory>().SetInventory(this);
+        // Search through and add all containers.
+        objectSources.Add(gameObject);
+    }
+    [Command]
+    private void CmdStart()
+    {
+        Start();
+    }
+
+
+    /**
+     * Performs the necessary item stuff to actually pick up the object
+     */
+    private void Despawn(GameObject item)
+    {
+        // If on server we can do things to the transform
+        item.transform.SetPositionAndRotation(new Vector3(), new Quaternion());
+        item.SetActive(false);
+
+        if (isServer)
+            RpcDespawn(item);
+    }
+    [ClientRpc]
+    private void RpcDespawn(GameObject item)
+    {
+        if(!isServer) // Prevent server double-dipping
+            Despawn(item);
+    }
+
+    /**
+     * Performs the necessary item stuff to drop the object
+     */
+    private void Spawn(GameObject item, Vector3 position, Quaternion rotation = new Quaternion())
+    {
+        item.transform.SetPositionAndRotation(position, rotation);
+        item.SetActive(true);
+
+        if (isServer)
+            RpcSpawn(item, position, rotation);
+    }
+    [ClientRpc]
+    private void RpcSpawn(GameObject item, Vector3 position, Quaternion rotation)
+    {
+        if(!isServer) // Silly thing to prevent looping when server and client are one
+            Spawn(item, position, rotation);
     }
 
     // All containers accessible to the player
-    private List<Container> containers = new List<Container>();
+    // TODO: Sync List probably doesn't need to be used
+    private readonly GameObjectList objectSources = new GameObjectList();
 }

@@ -1,11 +1,13 @@
 ﻿using Mirror;
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 /**
- * A container holds items of a given kind
+ * A container holds items of a given kind.
+ * Attach it to an object to give that object the ability to contain.
  */
 public class Container : NetworkBehaviour
 {
@@ -52,7 +54,8 @@ public class Container : NetworkBehaviour
         return slot == SlotType.General || (int)slot == (int)item || (int)slot > 9;
     }
 
-    public delegate void OnChange(IReadOnlyList<Item> items);
+    public delegate void OnChange();
+    private class ItemList : SyncList<GameObject> { }
     #endregion
 
     // Editor properties
@@ -72,25 +75,27 @@ public class Container : NetworkBehaviour
     /**
      * Add an item to a specific slot
      */
-    public virtual void AddItem(int slot, Item item)
+    [Server]
+    public virtual void AddItem(int slot, GameObject item)
     {
         if (items[slot] != null)
             throw new Exception("Item already exists in slot"); // TODO: Specific exception
 
         items[slot] = item;
 
-        onChange?.Invoke(Array.AsReadOnly(items));
+        RpcNotifyChange();
     }
     /**
      * Add an item to the first available slot.
      * Returns the slot it was added to. If item could not be added, -1 is returned.
      * Note: Will call AddItem(slot, item) if a slot is found
      */
-    public int AddItem(Item item)
+    public int AddItem(GameObject item)
     {
-        for (int i = 0; i < items.Length; ++i)
+        var itemComponent = item.GetComponent<Item>();
+        for (int i = 0; i < items.Count; ++i)
         {
-            if(items[i] == null && AreCompatible(slots[i], item.itemType))
+            if(items[i] == null && AreCompatible(slots[i], itemComponent.itemType))
             {
                 AddItem(i, item);
                 return i;
@@ -102,7 +107,8 @@ public class Container : NetworkBehaviour
     /**
      * Remove the item from the container, returning the Item.
      */
-    public virtual Item RemoveItem(int slot)
+    [Server]
+    public virtual GameObject RemoveItem(int slot)
     {
         if (items[slot] == null)
             throw new Exception("No item exists in slot"); // TODO: Specific exception
@@ -110,26 +116,50 @@ public class Container : NetworkBehaviour
         var item = items[slot];
         items[slot] = null;
 
-        onChange?.Invoke(Array.AsReadOnly(items));
+        RpcNotifyChange();
 
         return item;
     }
+
+    /**
+     * Get all items
+     */
+    public List<Item> GetItems() => items.Select(i => i?.GetComponent<Item>()).ToList();
     /**
      * Get the item at the given slot
      */
-    public Item GetItem(int slot) => items[slot];
+    public Item GetItem(int slot) => items[slot]?.GetComponent<Item>();
     /**
      * Get the slot type of a given slot
      */
     public SlotType GetSlot(int slot) => slots[slot];
-    public int Length() => items.Length;
+    public int Length() => items.Count;
 
-    private void Awake()
+    protected virtual void Start()
     {
-        items = new Item[slots.Length];
+        if (!isServer)
+        {
+            if (isLocalPlayer)
+                CmdStart();
+            return;
+        }
+
+        for (int i = 0; i < slots.Length; ++i)
+            items.Add(null);
         owner = gameObject;
+        RpcNotifyChange();
     }
-    
-    // TODO: Share over networking
-    private Item[] items = null;
+    [Command]
+    private void CmdStart()
+    {
+        Start();
+    }
+
+    [ClientRpc]
+    private void RpcNotifyChange()
+    {
+        onChange?.Invoke();
+    }
+
+    readonly private ItemList items = new ItemList();
 }
