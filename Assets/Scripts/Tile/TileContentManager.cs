@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Mirror{
 public class TileContentManager : MonoBehaviour
 {
     public GameObject mainObject;
@@ -426,5 +425,4 @@ public class TileContentManager : MonoBehaviour
             
         }
     }
-}
 }

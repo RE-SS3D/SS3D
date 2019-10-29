@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Mirror{
-public class Tile_loader : MonoBehaviour
+public class Tile_loader : NetworkBehaviour
 {
     // Start is called before the first frame update
     public Texture2D map;
 
     public List<GameObject> tile_list;
 
-    public void Start(){
-        GenerateLevel();
-    }
+
     public void DeleteLevel (){
         foreach(GameObject tileobj in tile_list)
         {

@@ -33,13 +33,31 @@ public class TilePipeManager : MonoBehaviour
  
     public void InitTilePipeManager(){}
 
-    public void UpdatePipes(){
-        UpdateDisposal();
-        UpdateRed();
-        UpdateBlue();
+    public void UpdatePipes(bool autobuild = false){
+        if (!autobuild){
+            UpdateDisposal();
+            UpdateRed();
+            UpdateBlue();
+        }else{
+            if(hasDisposal){
+                BuildDisposal(-1);
+            }else{
+                DeleteDisposal(-1);
+            }
+            if(hasBluePipe){
+                BuildBlue(-1);
+            }else{
+                DeleteBlue(-1);
+            }
+            if(hasRedPipe){
+                BuildRed(-1);
+            }else{
+                DeleteRed(-1);
+            }
+        }
     }
 
-    public void BuildDisposal(int config){
+    public void BuildDisposal(int config = 0){
         //Update Bool
         hasDisposal = true;
         UpdateDisposal();
@@ -71,7 +89,7 @@ public class TilePipeManager : MonoBehaviour
         }
     }
 
-    public void DeleteDisposal(){
+    public void DeleteDisposal(int config = 0){
         //Update Bool
         hasDisposal = false;
         //Call Update of NESW
@@ -80,16 +98,16 @@ public class TilePipeManager : MonoBehaviour
         Transform tileS = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z - 1));
         Transform tileW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z));
         if (tileN != null){
-            tileN.gameObject.GetComponent<TilePipeManager>().UpdateDisposal();
+            tileN.gameObject.GetComponent<TilePipeManager>().UpdateDisposal(config);
         }
         if (tileE != null){
-            tileE.gameObject.GetComponent<TilePipeManager>().UpdateDisposal();
+            tileE.gameObject.GetComponent<TilePipeManager>().UpdateDisposal(config);
         }
         if (tileS != null){
-            tileS.gameObject.GetComponent<TilePipeManager>().UpdateDisposal();
+            tileS.gameObject.GetComponent<TilePipeManager>().UpdateDisposal(config);
         }
         if (tileW != null){
-            tileW.gameObject.GetComponent<TilePipeManager>().UpdateDisposal();
+            tileW.gameObject.GetComponent<TilePipeManager>().UpdateDisposal(config);
         }
         //Delete Model
         if (Disposal != null){
@@ -269,7 +287,7 @@ public class TilePipeManager : MonoBehaviour
         }
     }
 
-    public void DeleteBlue(){
+    public void DeleteBlue(int config = 0){
         //Update Bool
         hasBluePipe = false;
         bluePipeConfig = 0;
@@ -279,16 +297,16 @@ public class TilePipeManager : MonoBehaviour
         Transform tileS = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z - 1));
         Transform tileW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z));
         if (tileN != null){
-            tileN.gameObject.GetComponent<TilePipeManager>().UpdateBlue();
+            tileN.gameObject.GetComponent<TilePipeManager>().UpdateBlue(config);
         }
         if (tileE != null){
-            tileE.gameObject.GetComponent<TilePipeManager>().UpdateBlue();
+            tileE.gameObject.GetComponent<TilePipeManager>().UpdateBlue(config);
         }
         if (tileS != null){
-            tileS.gameObject.GetComponent<TilePipeManager>().UpdateBlue();
+            tileS.gameObject.GetComponent<TilePipeManager>().UpdateBlue(config);
         }
         if (tileW != null){
-            tileW.gameObject.GetComponent<TilePipeManager>().UpdateBlue();
+            tileW.gameObject.GetComponent<TilePipeManager>().UpdateBlue(config);
         }
         //Delete Model
         if (bluePipe != null){
@@ -468,7 +486,7 @@ public class TilePipeManager : MonoBehaviour
         }
     }
 
-    public void DeleteRed(){
+    public void DeleteRed(int config = 0){
         //Update Bool
         hasRedPipe = false;
         redPipeConfig = 0;
@@ -478,16 +496,16 @@ public class TilePipeManager : MonoBehaviour
         Transform tileS = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x, gameObject.transform.position.z - 1));
         Transform tileW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z));
         if (tileN != null){
-            tileN.gameObject.GetComponent<TilePipeManager>().UpdateRed();
+            tileN.gameObject.GetComponent<TilePipeManager>().UpdateRed(config);
         }
         if (tileE != null){
-            tileE.gameObject.GetComponent<TilePipeManager>().UpdateRed();
+            tileE.gameObject.GetComponent<TilePipeManager>().UpdateRed(config);
         }
         if (tileS != null){
-            tileS.gameObject.GetComponent<TilePipeManager>().UpdateRed();
+            tileS.gameObject.GetComponent<TilePipeManager>().UpdateRed(config);
         }
         if (tileW != null){
-            tileW.gameObject.GetComponent<TilePipeManager>().UpdateRed();
+            tileW.gameObject.GetComponent<TilePipeManager>().UpdateRed(config);
         }
         //Delete Model
         if (redPipe != null){

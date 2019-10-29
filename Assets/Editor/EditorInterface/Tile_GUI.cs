@@ -35,6 +35,11 @@ public class Tile_GUI : Editor
         {
             targetScript.GetComponent<TilePipeManager>().UpdateBlueModel();
         }
+
+        if(GUILayout.Button("NETWORK_UPDATE"))
+        {
+            targetScript.GetComponent<Tile>().UpdateFromNetwork();
+        }
     }
 }
 }

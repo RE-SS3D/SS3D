@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Mirror{
 public class Turf : MonoBehaviour
 {
     public Tile.TileTypes turfDescriptor;
@@ -87,9 +86,15 @@ public class Turf : MonoBehaviour
         // }
     }
     public void updateTurf(){
-        turfDescriptor = gameObject.GetComponent<Tile>().TileDescriptor;
-        UpdateUpper();
-        UpdateLower();
+        Tile.TileTypes new_turfDescriptor = gameObject.GetComponent<Tile>().TileDescriptor;
+        if (new_turfDescriptor != turfDescriptor){
+            turfDescriptor = new_turfDescriptor;
+            BuildTurf();
+        }else{
+            UpdateUpper();
+            UpdateLower();
+        }
+        
     }
 
     void UpdateUpper(){
@@ -223,6 +228,7 @@ public class Turf : MonoBehaviour
     }
    
     void UpdateUpper_model(string modelName){
+        //Debug.Log("uMODEL: " + modelName);
         if (upperTurf != null)
         {
             #if UNITY_EDITOR
@@ -295,6 +301,7 @@ public class Turf : MonoBehaviour
     }
 
     void UpdateLower_model(string modelName){
+        //Debug.Log("lMODEL: " + modelName);
         if (lowerTurf != null)
         {
             #if UNITY_EDITOR
@@ -311,5 +318,4 @@ public class Turf : MonoBehaviour
             lowerTurf.name = "lowerTurf";
         }
     }
-}
 }
