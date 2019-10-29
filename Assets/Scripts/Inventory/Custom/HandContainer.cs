@@ -46,14 +46,17 @@ public class HandContainer : Container
 
     private void PlaceItem(int index, GameObject item)
     {
-        item.transform.SetPositionAndRotation(new Vector3(), new Quaternion());
         item.SetActive(true);
 
         // Determine physics status
         item.GetComponent<Rigidbody>().isKinematic = true;
         item.GetComponent<BoxCollider>().enabled = false;
+        if (item.GetComponent<NetworkTransform>())
+            item.GetComponent<NetworkTransform>().enabled = false;
 
         item.transform.SetParent(handSlots[index].transform, false);
+        item.transform.localPosition = new Vector3();
+        item.transform.localRotation = new Quaternion();
 
         if (isServer)
             RpcPlaceItem(index, item);
@@ -65,6 +68,8 @@ public class HandContainer : Container
         // Determine physics status
         item.GetComponent<Rigidbody>().isKinematic = false;
         item.GetComponent<BoxCollider>().enabled = true;
+        if (item.GetComponent<NetworkTransform>())
+            item.GetComponent<NetworkTransform>().enabled = true;
 
         item.transform.SetParent(null);
 
