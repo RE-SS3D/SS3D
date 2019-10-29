@@ -19,6 +19,7 @@ public class MovementController : NetworkBehaviour
     private new Camera camera;
 
     // Current movement the player is making.
+    [HideInInspector]
     public Vector2 currentMovement = new Vector2();
     private bool isWalking = false;
 
@@ -35,7 +36,7 @@ public class MovementController : NetworkBehaviour
         if (!isLocalPlayer) return;
 
         // Check if on the floor
-        if (GetComponent<S_Ragdoll>().ragdolled) return;
+        if (GetComponent<RagdollManager>().GetRagdolled()) return;
 
         if (Input.GetButtonDown("Toggle Run"))
             isWalking = !isWalking;

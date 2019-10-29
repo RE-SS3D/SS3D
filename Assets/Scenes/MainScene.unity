@@ -12459,8 +12459,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncInterval: 0.1
-  compressRotation: 1
+  syncInterval: 0.02
+  compressRotation: 2
 --- !u!1001 &729094702
 PrefabInstance:
   m_ObjectHideFlags: 0

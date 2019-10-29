@@ -1,7 +1,4 @@
 ﻿/*
-Ragdoll Script
-Created by Singulo
-10/26/2019
 The purpose of this script is to ragdoll the player given different inputs
 */
 
@@ -11,18 +8,20 @@ using Mirror;
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(MovementController))]
-public class S_Ragdoll : NetworkBehaviour
+public class RagdollManager : NetworkBehaviour
 {
-    public bool ragdolled = false;
+    [SyncVar]
+    private bool ragdolled = false;
+
     private Rigidbody[] bodies;
 
 
     [Command]
-    void CmdGetUp(bool newValue)
+    public void CmdSlip(float force, bool newValue)
     {
         GetComponent<Animator>().enabled = newValue;
         GetComponent<CharacterController>().enabled = newValue;
-        RpcSlip(0f , newValue);
+        RpcSlip(force, newValue);
     }
 
 
@@ -31,7 +30,6 @@ public class S_Ragdoll : NetworkBehaviour
     {
         GetComponent<Animator>().enabled = newValue;
         GetComponent<CharacterController>().enabled = newValue;
-
         // For each of the components in the array, treat the component as a Rigidbody and set its isKinematic property
         foreach (Rigidbody rb in bodies)
         {
@@ -42,12 +40,25 @@ public class S_Ragdoll : NetworkBehaviour
         }
     }
 
+    // Getter for ragdolled
+    public bool GetRagdolled()
+    {
+        return ragdolled;
+    }
+
+
+    // Getter for ragdolled
+    public void SetRagdolled(bool newValue)
+    {
+        ragdolled = newValue;
+    }
+
 
     // Start is called before the first frame update
     void Start()
     {
         bodies = GetComponentsInChildren<Rigidbody>();
-        CmdGetUp(true);
+        CmdSlip(0f , true);
     }
 
     // Update is called once per frame
@@ -57,10 +68,10 @@ public class S_Ragdoll : NetworkBehaviour
         // Debug button press to test the ragdoll
         if(Input.GetKeyDown(KeyCode.R))
         {
-            ragdolled = !ragdolled;
-            if(!ragdolled)
+            if(ragdolled)
             {
-                CmdGetUp(true);
+                ragdolled = !ragdolled;
+                CmdSlip(0f, true);
                 transform.position = bodies[0].position;
             }
         }
