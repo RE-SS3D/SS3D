@@ -2,29 +2,48 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tile_loader : MonoBehaviour
+namespace Mirror{
+public class Tile_loader : NetworkBehaviour
 {
     // Start is called before the first frame update
     public Texture2D map;
 
     public List<GameObject> tile_list;
-    // Update is called once per frame
-    void Start()
-    {
-        GenerateLevel();
-    }
+
+
     public void DeleteLevel (){
         foreach(GameObject tileobj in tile_list)
         {
-            Debug.Log("DELETING TILE");
+            //Debug.Log("DELETING TILE");
             #if UNITY_EDITOR
             DestroyImmediate(tileobj);
             #else
             Destroy(tileobj);
             #endif
         }
-        tile_list.RemoveAll((o)=>o == null);
+        CleanList();
     }
+
+    public void updateTurfs(){
+        foreach(GameObject tileobj in tile_list)
+        {
+            Turf tile_turf = tileobj.GetComponent<Turf>();
+            if(tile_turf != null){
+                tile_turf.updateTurf();
+            }
+        }
+    }
+
+    public void updateTiles(){
+        foreach(GameObject tileobj in tile_list)
+        {
+            Tile tile_tile = tileobj.GetComponent<Tile>();
+            if(tile_tile != null){
+                tile_tile.UpdateTile();
+            }
+        }
+    }
+
     public void GenerateLevel (){
         DeleteLevel();
 
@@ -33,6 +52,8 @@ public class Tile_loader : MonoBehaviour
                 GenerateTile(x,y);
             }
         }
+
+        updateTurfs();
     }
 
     void GenerateTile(int x, int y)
@@ -44,23 +65,29 @@ public class Tile_loader : MonoBehaviour
             return;
             //transparancy is nothing
         }
-        if (pixelColor == Color.black)
-        {
-            GameObject new_obj = Instantiate(Resources.Load("empty_tile"), pos, Quaternion.identity, transform) as GameObject;
+        GameObject new_obj = Instantiate(Resources.Load("empty_tile"), pos, Quaternion.identity, transform) as GameObject;
+  
+        if (pixelColor == Color.black){
             new_obj.GetComponent<Tile>().TileDescriptor = Tile.TileTypes.station_tile;
-            new_obj.GetComponent<Tile>().initTile();
-            new_obj.name = string.Format("tile_{0}_{1}", x, y);
-            tile_list.Add(new_obj);
-        }else if (pixelColor == Color.blue)
-        {
-            GameObject new_obj = Instantiate(Resources.Load("empty_tile"), pos, Quaternion.identity, transform) as GameObject;
+        }else if (pixelColor == Color.blue){
             new_obj.GetComponent<Tile>().TileDescriptor = Tile.TileTypes.station_wall;
-            new_obj.GetComponent<Tile>().initTile();
-            new_obj.name = string.Format("tile_{0}_{1}", x, y);
-            tile_list.Add(new_obj);
-        }
-        else{
+        }else if (pixelColor == Color.red){
+            new_obj.GetComponent<Tile>().TileDescriptor = Tile.TileTypes.station_wall_reinforced;
+        }else if (pixelColor == Color.green){
+            new_obj.GetComponent<Tile>().TileDescriptor = Tile.TileTypes.station_wall_glass;
+        }else if (pixelColor == Color.magenta){
+            new_obj.GetComponent<Tile>().TileDescriptor = Tile.TileTypes.station_wall_glass_reinforced;
+        }else{
             Debug.Log(pixelColor);
+            return;
         }
+        new_obj.GetComponent<Tile>().initTile();
+        new_obj.name = string.Format("tile_{0}_{1}", pos.x, pos.z);
+        tile_list.Add(new_obj);
     }
+
+    public void CleanList(){
+        tile_list.RemoveAll((o)=>o == null);
+    }
+}
 }
