@@ -57,7 +57,6 @@ Pull requests allow the maintainers to verify that any changes are wanted and do
 
 Here are some simple general guidelines for pull requests:
 
-* Fill in [the template](.github/PULL_REQUEST_TEMPLATE.md). It'll pop up when you create the Pull Request.
 * Do not include issue numbers in the PR title
 * Include screenshots and/or animated GIFs in your pull request whenever possible.
 
