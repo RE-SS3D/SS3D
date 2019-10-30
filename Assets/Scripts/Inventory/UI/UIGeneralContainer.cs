@@ -108,6 +108,7 @@ public class UIGeneralContainer : UIInventory.ContainerRenderer
     public void ToggleShow()
     {
         show = !show;
+        // TODO
     }
 
     private bool show = false;

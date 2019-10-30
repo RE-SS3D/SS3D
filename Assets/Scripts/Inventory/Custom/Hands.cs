@@ -32,6 +32,7 @@ public class Hands : Interaction, Tool
         }
         else
         {
+            // Drop the item currently being held.
             inventory.CmdPlaceItem(holding.gameObject, selectedHand, hit.point + new Vector3(0f, 0.2f), new Quaternion());
         }
         // TODO: Default hand interactions with non-items
@@ -57,6 +58,7 @@ public class Hands : Interaction, Tool
         if (!isLocalPlayer)
             return;
 
+        // Hand-related buttons
         // TODO: Ensure both hands are usable
         if (Input.GetButtonDown("Swap Active"))
         {
@@ -71,6 +73,7 @@ public class Hands : Interaction, Tool
         }
     }
 
+    // Update the current tool being used, should occur whenever hand or item changes
     private void UpdateTool()
     {
         selectedTool = holding.GetItem(selectedHand) is Tool ? holding.GetItem(selectedHand) as Tool : this;
@@ -78,5 +81,4 @@ public class Hands : Interaction, Tool
 
     private HandContainer holding;
     private Inventory inventory;
-    private int _selectedHand;
 }

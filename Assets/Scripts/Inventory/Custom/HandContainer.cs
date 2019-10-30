@@ -2,8 +2,13 @@
 using System.Collections;
 using Mirror;
 
+/**
+ * A container for the items that a creature is holding in their hands.
+ * Additionally ensures those items are rendered in the player's hands.
+ */
 public class HandContainer : Container
 {
+    // The left and right hand slots
     public GameObject[] handSlots;
 
     // Override add item so any changes refresh the interaction system's tool
@@ -33,14 +38,22 @@ public class HandContainer : Container
     }
     public override void OnStartClient()
     {
+        // Load what is in this player's hands and place appropriately
         for (int i = 0; i < Length(); ++i)
         {
             var item = GetItem(i);
+
+            // A rare case where we specifically call the method client-side.
+            // This allows the client to 'catch up' with the server
             if (item)
                 PlaceItem(i, item.gameObject);
         }
     }
 
+    /**
+     * Places an item into the player's hand.
+     * Should be called by server, which then calls on all clients.
+     */
     private void PlaceItem(int index, GameObject item)
     {
         item.SetActive(true);
@@ -58,6 +71,17 @@ public class HandContainer : Container
         if (isServer)
             RpcPlaceItem(index, item);
     }
+    [ClientRpc]
+    private void RpcPlaceItem(int index, GameObject item)
+    {
+        if (!isServer)
+            PlaceItem(index, item);
+    }
+
+    /**
+     * Removes an item from the player's hand
+     * Should be called by server, which then calls on all clients
+     */
     private void UnplaceItem(int index, GameObject item)
     {
         item.SetActive(false);
@@ -72,13 +96,6 @@ public class HandContainer : Container
 
         if (isServer)
             RpcUnplaceItem(index, item);
-    }
-
-    [ClientRpc]
-    private void RpcPlaceItem(int index, GameObject item)
-    {
-        if (!isServer)
-            PlaceItem(index, item);
     }
     [ClientRpc]
     private void RpcUnplaceItem(int index, GameObject item)
