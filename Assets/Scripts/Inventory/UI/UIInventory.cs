@@ -4,6 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
+/**
+ * Connects a player's inventory with the UI.
+ * 
+ * The UIInventory collects containers the player has access to them, and
+ * hands them out to UI Elements.
+ * 
+ * Containers attached to the player are dealt with two 'special' ui elements, one for the body, one for the hotbar.
+ * All other containers are handled by a creating a 'generic' container.
+ */
 public class UIInventory : MonoBehaviour
 {
     public abstract class ContainerRenderer : MonoBehaviour
@@ -18,8 +27,9 @@ public class UIInventory : MonoBehaviour
     
     // The prefab for when a new container needs to be made
     public GameObject genericContainerPrefab;
-
+    // The existing ui element for the player body
     public ContainerRenderer playerBodyView;
+    // The existing ui element for the hotbar area
     public ContainerRenderer hotbarView;
 
     public void StartUI(Inventory inventory)
