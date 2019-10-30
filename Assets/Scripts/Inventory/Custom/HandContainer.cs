@@ -31,15 +31,12 @@ public class HandContainer : Container
         slots[0] = SlotType.LeftHand;
         slots[1] = SlotType.RightHand;
     }
-    // TODO: If any item is in hands on start, should be done in Start()
-    protected override void Start()
+    public override void OnStartClient()
     {
-        base.Start();
-
-        for (int i = 0; i < handSlots.Length; ++i)
+        for (int i = 0; i < Length(); ++i)
         {
             var item = GetItem(i);
-            if(item)
+            if (item)
                 PlaceItem(i, item.gameObject);
         }
     }

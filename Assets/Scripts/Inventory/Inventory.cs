@@ -11,12 +11,13 @@ using UnityEngine;
  */
 public class Inventory : NetworkBehaviour
 {
-    public delegate void OnChange();
     private class GameObjectList : SyncList<GameObject> { }
 
     // Called whenever the containers change
-    [SyncEvent]
-    public event OnChange EventOnChange;
+    public event GameObjectList.SyncListChanged EventOnChange {
+        add { objectSources.Callback += value; }
+        remove { objectSources.Callback -= value; }
+    }
 
     /**
      * Add an item from the world into a container.
@@ -54,36 +55,38 @@ public class Inventory : NetworkBehaviour
     {
         List<Container> containers = new List<Container>();
 
-        foreach (var gameObject in objectSources)
-            containers.AddRange(gameObject.GetComponents<Container>());
+        containers.AddRange(gameObject.GetComponents<Container>());
+        foreach (var obj in objectSources)
+        { 
+            if (obj == null)
+                Debug.Log("Still have that mirror bug where transmitting self in OnStartServer for some reason doesnt fucking work");
+            else
+                containers.AddRange(obj.GetComponents<Container>());
+        }
 
         return containers;
     }
 
+    public override void OnStartLocalPlayer()
+    {
+        base.OnStartLocalPlayer();
+        CmdAddSelf();
+    }
+
     /**
      * Sets up the containers. Must run on server.
+     * Only called in OnStartLocalPlayer. If I try to run the AddSelf code directly
+     * in OnStartServer the thing has a fucking tantrum and just adds null to the objectSources list.
      */
-    private void Start()
+    [Command]
+    private void CmdAddSelf()
     {
-        if (!isServer)
-        {
-            if (isLocalPlayer)
-                CmdStart();
-            return;
-        }
-
-        // Search through and add all containers.
         objectSources.Add(gameObject);
     }
-    [Command]
-    private void CmdStart()
-    {
-        Start();
-    }
-
 
     /**
-     * Performs the necessary item stuff to actually pick up the object
+     * Graphically removes the object from the world (for server and all clients).
+     * Must be called from server initially
      */
     private void Despawn(GameObject item)
     {
@@ -102,7 +105,8 @@ public class Inventory : NetworkBehaviour
     }
 
     /**
-     * Performs the necessary item stuff to drop the object
+     * Graphically adds the item back into the world (for server and all clients).
+     * Must be called from server initially
      */
     private void Spawn(GameObject item, Vector3 position, Quaternion rotation = new Quaternion())
     {
@@ -119,7 +123,6 @@ public class Inventory : NetworkBehaviour
             Spawn(item, position, rotation);
     }
 
-    // All containers accessible to the player
-    // TODO: Sync List probably doesn't need to be used
+    // All objects containing containers usable by this player
     private readonly GameObjectList objectSources = new GameObjectList();
 }

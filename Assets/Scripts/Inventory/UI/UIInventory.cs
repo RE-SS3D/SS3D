@@ -25,7 +25,7 @@ public class UIInventory : MonoBehaviour
     public void StartUI(Inventory inventory)
     {
         this.inventory = inventory;
-        inventory.EventOnChange += OnInventoryChange;
+        inventory.EventOnChange += (a, b, c) => OnInventoryChange();
         OnInventoryChange();
     }
 
@@ -33,7 +33,7 @@ public class UIInventory : MonoBehaviour
     {
         var containers = inventory.GetContainers();
         // Collect each container by owner
-        Dictionary<GameObject, List<Container>> containerSets = containers.GroupBy(container => container.owner).ToDictionary(group => group.Key, group => group.ToList());
+        Dictionary<GameObject, List<Container>> containerSets = containers.GroupBy(container => container.gameObject).ToDictionary(group => group.Key, group => group.ToList());
         
         foreach (var containerSet in containerSets)
         {

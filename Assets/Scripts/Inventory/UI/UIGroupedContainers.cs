@@ -26,7 +26,7 @@ public class UIGroupedContainers : UIInventory.ContainerRenderer
 
     public UIGroupedContainers()
     {
-        OnContainerChange = () => UpdateContainer();
+        OnContainerChange = (a, b, c) => UpdateContainer();
     }
 
     public override void UpdateContainers(GameObject owner, List<Container> containers)
@@ -85,5 +85,5 @@ public class UIGroupedContainers : UIInventory.ContainerRenderer
         UpdateContainers(owner, containers);
     }
     // Used to store delegate used for performance reasons
-    private readonly Container.OnChange OnContainerChange;
+    private readonly Container.ItemList.SyncListChanged OnContainerChange;
 }

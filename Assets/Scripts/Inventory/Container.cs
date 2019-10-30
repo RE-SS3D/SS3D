@@ -47,15 +47,13 @@ public class Container : NetworkBehaviour
         LeftHand,
         RightHand
     }
-
     public static bool AreCompatible(SlotType slot, Item.ItemType item)
     {
         // This is somewhat hacky, but slots are potentially subject to change anyway.
         return slot == SlotType.General || (int)slot == (int)item || (int)slot > 9;
     }
 
-    public delegate void OnChange();
-    private class ItemList : SyncList<GameObject> { }
+    public class ItemList : SyncList<GameObject> { }
     #endregion
 
     // Editor properties
@@ -63,14 +61,12 @@ public class Container : NetworkBehaviour
     public Type containerType;
     [SerializeField]
     protected SlotType[] slots;
-    // [SerializeField] private bool recursive; // Whether the container will try and add child containers
-
-    // TODO: Network
 
     // Called whenever items in the container change.
-    public event OnChange onChange;
-    // The owner of this container. Most of the time this is just the object itself.
-    public GameObject owner;
+    public event ItemList.SyncListChanged onChange {
+        add { items.Callback += value; }
+        remove { items.Callback -=  value; }
+    }
 
     /**
      * Add an item to a specific slot
@@ -82,14 +78,13 @@ public class Container : NetworkBehaviour
             throw new Exception("Item already exists in slot"); // TODO: Specific exception
 
         items[slot] = item;
-
-        RpcNotifyChange();
     }
     /**
      * Add an item to the first available slot.
      * Returns the slot it was added to. If item could not be added, -1 is returned.
      * Note: Will call AddItem(slot, item) if a slot is found
      */
+    [Server]
     public int AddItem(GameObject item)
     {
         var itemComponent = item.GetComponent<Item>();
@@ -116,8 +111,6 @@ public class Container : NetworkBehaviour
         var item = items[slot];
         items[slot] = null;
 
-        RpcNotifyChange();
-
         return item;
     }
 
@@ -135,30 +128,11 @@ public class Container : NetworkBehaviour
     public SlotType GetSlot(int slot) => slots[slot];
     public int Length() => items.Count;
 
-    protected virtual void Start()
-    {
-        if (!isServer)
-        {
-            if (isLocalPlayer)
-                CmdStart();
-            return;
-        }
 
+    public override void OnStartServer()
+    {
         for (int i = 0; i < slots.Length; ++i)
             items.Add(null);
-        owner = gameObject;
-        RpcNotifyChange();
-    }
-    [Command]
-    private void CmdStart()
-    {
-        Start();
-    }
-
-    [ClientRpc]
-    private void RpcNotifyChange()
-    {
-        onChange?.Invoke();
     }
 
     readonly private ItemList items = new ItemList();

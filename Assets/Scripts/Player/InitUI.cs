@@ -8,12 +8,9 @@ public class InitUI : NetworkBehaviour
 {
     public GameObject prefab;
 
-    public void Start()
+    public override void OnStartLocalPlayer()
     {
-        if(isClient && isLocalPlayer)
-        {
-            var obj = Instantiate(prefab);
-            obj.GetComponent<UIInventory>().StartUI(GetComponent<Inventory>());
-        }
+        var obj = Instantiate(prefab);
+        obj.GetComponent<UIInventory>().StartUI(GetComponent<Inventory>());
     }
 }

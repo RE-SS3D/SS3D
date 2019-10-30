@@ -35,11 +35,15 @@ public class Hands : Interaction, Tool
     {
         inventory = GetComponent<Inventory>();
         holding = GetComponent<HandContainer>();
-        holding.onChange += UpdateTool;
+    }
+    public override void OnStartClient()
+    {
+        holding.onChange += (a, b, c) => UpdateTool();
 
         if (holding.GetItems().Count > 0)
             UpdateTool();
     }
+
     protected override void Update()
     {
         base.Update();
@@ -52,9 +56,9 @@ public class Hands : Interaction, Tool
         {
             selectedHand = 1 - selectedHand;
             onHandChange?.Invoke(selectedHand);
-            UpdateTool();       
+            UpdateTool();
         }
-        if (Input.GetButtonDown("Drop Item"))
+        if (Input.GetButtonDown("Drop Item") && holding.GetItem(selectedHand))
         {
             inventory.CmdPlaceItem(transform.position, holding.gameObject, selectedHand);
         }

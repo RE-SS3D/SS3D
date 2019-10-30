@@ -36,7 +36,7 @@ public class UIGeneralContainer : UIInventory.ContainerRenderer
             if (newContainers.Contains(container))
                 continue;
 
-            container.onChange -= () => UpdateContainer(container);
+            container.onChange -= (a, b, c) => UpdateContainer(container);
 
             // Remove slots from here
             var deleteList = slots.Where(slot => slot.container == container);
@@ -54,7 +54,7 @@ public class UIGeneralContainer : UIInventory.ContainerRenderer
                 slotIndex += container.Length();
                 continue;
             }
-            container.onChange += () => UpdateContainer(container);
+            container.onChange += (a, b, c) => UpdateContainer(container);
 
             // Add all container slots
             for (int i = 0; i < container.Length(); ++i)
