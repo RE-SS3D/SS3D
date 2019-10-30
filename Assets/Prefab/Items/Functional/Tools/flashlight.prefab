@@ -168,7 +168,7 @@ GameObject:
   - component: {fileID: 7765767039528054866}
   - component: {fileID: 4697256957748171575}
   - component: {fileID: 2887063182368509390}
-  - component: {fileID: 448539711}
+  - component: {fileID: 2031915424835862766}
   - component: {fileID: 9077860433131475901}
   - component: {fileID: 1689592630}
   m_Layer: 9
@@ -207,8 +207,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: c990feb6647aea545be9563fad3ffde1
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 732104267
 --- !u!114 &2887063182368509390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,7 +223,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   compressRotation: 1
---- !u!114 &448539711
+--- !u!114 &2031915424835862766
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -232,16 +232,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 6746060338138399297}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 212b03cf9ce24c348948331c70eb6e78, type: 3}
+  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncInterval: 0.1
-  Sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
-  compatibleSlots: 118787
-  visualObjectPrefab: {fileID: 5034773723147769351, guid: f0f678d389d89df4eb832291670e46c6,
-    type: 3}
-  Held: 0
-  visual: {fileID: 0}
+  itemType: 0
+  sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
+  prefab: {fileID: 6746060338138399297}
 --- !u!65 &9077860433131475901
 BoxCollider:
   m_ObjectHideFlags: 0

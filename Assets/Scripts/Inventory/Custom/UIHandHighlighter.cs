@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 /**
  * Highlights the hand the player has selected.
@@ -12,10 +13,10 @@ public class UIHandHighlighter : MonoBehaviour
 
     private void Start()
     {
-        // TODO: For player specific
-/*        var hands = FindObjectOfType<Hands>();
+        // Find the hand component attached to the local player
+        var hands = NetworkClient.connection.playerController.GetComponent<Hands>();
         hands.onHandChange += OnHandChange;
-        OnHandChange(hands.selectedHand);*/
+        OnHandChange(hands.selectedHand);
     }
 
     private void OnHandChange(int selectedHand)

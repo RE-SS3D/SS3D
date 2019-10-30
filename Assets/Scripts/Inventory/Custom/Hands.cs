@@ -71,4 +71,5 @@ public class Hands : Interaction, Tool
 
     private HandContainer holding;
     private Inventory inventory;
+    private int _selectedHand;
 }
