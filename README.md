@@ -5,12 +5,6 @@ Welcome to the repository. Here you'll find Space Station 3D: a 3D remake of [Sp
 If you haven't been there already, the [Discord Server](https://discord.gg/Z3sPhyS) should probably be your first stop. 
 You'll find a lot of helpful people there, capable of answering any questions you may have.
 
-## Code of Conduct
-
-This project and everyone participating in it are governed by the [Code of Conduct](CODE_OF_CONDUCT.md). 
-By participating, you are expected to uphold this code.
-Please report any unacceptable behavior to an admin.
-
 ## Setting up the project
 
 ### Quickstart Guide
