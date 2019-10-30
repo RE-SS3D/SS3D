@@ -35,7 +35,7 @@ public class MovementController : NetworkBehaviour
         // Must be the local player, or they cannot move
         if (!isLocalPlayer) return;
 
-        // Check if on the floor
+        // Don't move if the player is ragdolled
         if (GetComponent<RagdollManager>().GetRagdolled()) return;
 
         if (Input.GetButtonDown("Toggle Run"))

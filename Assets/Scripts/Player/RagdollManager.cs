@@ -1,44 +1,25 @@
 ﻿/*
-The purpose of this script is to ragdoll the player given different inputs
+    This manager will ragdoll the whatever given different inputs.
+    To use it, simply add this script to a valid model with a ragdoll
+    setup, then you can use CmdSetRagdolled(true) to switch the ragdoller on
+    
+    Functions:
+    GetRagdolled() - Returns the state of the ragdoll
+    CmdSetRagdolled(bool newValue) - Enables the ragdoll on the player
+    CmdAddForce(string targetName, Vector3 amount) - Adds a force to a
+        target bone's name given a magnitude and direction
 */
 
 using UnityEngine;
 using Mirror;
 
-[RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(Animator))]
-[RequireComponent(typeof(MovementController))]
 public class RagdollManager : NetworkBehaviour
 {
-    [SyncVar]
     private bool ragdolled = false;
-
     private Rigidbody[] bodies;
+    private Animator animator;
+    private CharacterController charController;
 
-
-    [Command]
-    public void CmdSlip(float force, bool newValue)
-    {
-        GetComponent<Animator>().enabled = newValue;
-        GetComponent<CharacterController>().enabled = newValue;
-        RpcSlip(force, newValue);
-    }
-
-
-    [ClientRpc]
-    public void RpcSlip(float force, bool newValue)
-    {
-        GetComponent<Animator>().enabled = newValue;
-        GetComponent<CharacterController>().enabled = newValue;
-        // For each of the components in the array, treat the component as a Rigidbody and set its isKinematic property
-        foreach (Rigidbody rb in bodies)
-        {
-            rb.isKinematic = newValue;
-            if((rb.name == "lower_leg.l" || rb.name == "lower_leg.r") && newValue == false)
-                    // Magnitude of force is 167 * max value of 6 ~= 1000. This way ragdoll won't slip if not moving
-                    rb.AddForce(transform.forward * force * GetComponent<MovementController>().currentMovement.magnitude);
-        }
-    }
 
     // Getter for ragdolled
     public bool GetRagdolled()
@@ -46,11 +27,52 @@ public class RagdollManager : NetworkBehaviour
         return ragdolled;
     }
 
-
-    // Getter for ragdolled
-    public void SetRagdolled(bool newValue)
+    // Enables the ragdoll on the player
+    [Command]
+    public void CmdSetRagdolled(bool newValue)
     {
+        // Tell server to update Animator, CharacterController, and ragdolled, if available
+        if (animator)
+            animator.enabled = !newValue;
+        if (charController)
+            charController.enabled = !newValue;
         ragdolled = newValue;
+
+        RpcSetRagdolled(newValue);
+    }
+    [ClientRpc]
+    public void RpcSetRagdolled(bool newValue)
+    {
+        // Tell clients to update Animator, CharacterController, and ragdolled, if available
+        if (animator)
+            animator.enabled = !newValue;
+        if (charController)
+            charController.enabled = !newValue;
+        ragdolled = newValue;
+
+        // For each of the components in the array, treat the component as a Rigidbody and set its isKinematic property
+        foreach (Rigidbody rb in bodies)
+        {
+            rb.isKinematic = !newValue;
+        }
+    }
+
+
+    // Applies a force on the rigid body given the bone's name
+    [Command]
+    public void CmdAddForce(string targetString, Vector3 amount)
+    {
+        RpcAddForce(targetString, amount);
+    }
+    [ClientRpc]
+    public void RpcAddForce(string targetString, Vector3 amount)
+    {
+        foreach (Rigidbody rb in bodies)
+        {
+            if(rb.name == targetString)
+                rb.AddForce(amount);
+        }
+        
     }
 
 
@@ -58,22 +80,21 @@ public class RagdollManager : NetworkBehaviour
     void Start()
     {
         bodies = GetComponentsInChildren<Rigidbody>();
-        CmdSlip(0f , true);
+        animator = GetComponent<Animator>();
+        charController = GetComponent<CharacterController>();
+        // Make sure the player is not ragdolled on start
+        CmdSetRagdolled(false);
     }
 
-    // Update is called once per frame
-    void Update()
+
+    // Check if player can get up after being ragdolled
+    void FixedUpdate()
     {
-        if (!isLocalPlayer) return;
-        // Debug button press to test the ragdoll
-        if(Input.GetKeyDown(KeyCode.R))
+        // The ragdoll will "sleep" effectively stopping it from updating, that's when you get up
+        if (ragdolled && bodies[0].IsSleeping())
         {
-            if(ragdolled)
-            {
-                ragdolled = !ragdolled;
-                CmdSlip(0f, true);
-                transform.position = bodies[0].position;
-            }
+            CmdSetRagdolled(false);
+            transform.position = bodies[0].position;
         }
     }
 }
