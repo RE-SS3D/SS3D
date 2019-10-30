@@ -7,5 +7,5 @@ using UnityEngine;
  */
 public interface Tool
 {
-    void Interact(GameObject gameObject, bool secondary = false);
+    void Interact(RaycastHit hit, bool secondary = false);
 }

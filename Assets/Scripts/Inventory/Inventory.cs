@@ -33,10 +33,10 @@ public class Inventory : NetworkBehaviour
      * Place an item from a container into the world.
      */
     [Command]
-    public void CmdPlaceItem(Vector3 location, GameObject fromContainer, int fromIndex)
+    public void CmdPlaceItem(GameObject fromContainer, int fromIndex, Vector3 location, Quaternion rotation)
     {
         GameObject item = fromContainer.GetComponent<Container>().RemoveItem(fromIndex);
-        Spawn(item, location);
+        Spawn(item, location, rotation);
     }
 
     /**

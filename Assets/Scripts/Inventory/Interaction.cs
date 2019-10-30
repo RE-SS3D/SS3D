@@ -22,7 +22,7 @@ public class Interaction : NetworkBehaviour
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (selectedTool != null && Physics.Raycast(ray, out hit, 100))
-                selectedTool.Interact(hit.collider.gameObject, Input.GetMouseButtonDown(2));
+                selectedTool.Interact(hit, Input.GetMouseButtonDown(2));
         }
     }
 }

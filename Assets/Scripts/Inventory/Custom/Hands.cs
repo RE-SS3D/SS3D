@@ -21,13 +21,19 @@ public class Hands : Interaction, Tool
      * The default hand interaction when no object is present.
      * Note: This could be moved into a different class if this one gets too cluttered
      */
-    public void Interact(GameObject interactedObject, bool secondary = false)
+    public void Interact(RaycastHit hit, bool secondary = false)
     {
-        Item item = interactedObject.GetComponent<Item>();
-
-        if(item && item.transform.parent == null)
-            inventory.CmdAddItem(interactedObject, holding.gameObject, selectedHand);
-
+        // To pick up an item, we need to be clicking a free item object with an empty hand
+        if(holding.GetItem(selectedHand) == null)
+        {
+            Item item = hit.collider.gameObject.GetComponent<Item>();
+            if(item && item.transform.parent == null)
+                inventory.CmdAddItem(hit.collider.gameObject, holding.gameObject, selectedHand);
+        }
+        else
+        {
+            inventory.CmdPlaceItem(holding.gameObject, selectedHand, hit.point + new Vector3(0f, 0.2f), new Quaternion());
+        }
         // TODO: Default hand interactions with non-items
     }
 
@@ -60,7 +66,8 @@ public class Hands : Interaction, Tool
         }
         if (Input.GetButtonDown("Drop Item") && holding.GetItem(selectedHand))
         {
-            inventory.CmdPlaceItem(transform.position, holding.gameObject, selectedHand);
+            var transform = holding.GetItem(selectedHand).transform;
+            inventory.CmdPlaceItem(holding.gameObject, selectedHand, transform.position, transform.rotation);
         }
     }
 
