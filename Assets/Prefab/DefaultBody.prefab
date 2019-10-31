@@ -1908,7 +1908,7 @@ Animator:
   m_GameObject: {fileID: 2933389151239950429}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 10bc2f32380de3b42be18820ac26f1c1, type: 3}
-  m_Controller: {fileID: 9100000, guid: a1ac53162579a7d47aed8500b36be080, type: 2}
+  m_Controller: {fileID: 9100000, guid: df4943a9a7aba9f4d9c4f667297a91ff, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2005,8 +2005,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 1
-  m_AssetId: 
-  m_SceneId: 3846990044
+  m_AssetId: 2d3c18c72ce1873429b8a591c301d6bf
+  m_SceneId: 0
 --- !u!114 &407514154497380142
 MonoBehaviour:
   m_ObjectHideFlags: 0
