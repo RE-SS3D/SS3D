@@ -27,7 +27,6 @@ public class RagdollManager : NetworkBehaviour
         return ragdolled;
     }
 
-
     // Enables the ragdoll on the player
     [Command]
     public void CmdSetRagdolled(bool newValue)
@@ -41,8 +40,6 @@ public class RagdollManager : NetworkBehaviour
 
         RpcSetRagdolled(newValue);
     }
-
-
     [ClientRpc]
     public void RpcSetRagdolled(bool newValue)
     {
@@ -67,8 +64,6 @@ public class RagdollManager : NetworkBehaviour
     {
         RpcAddForce(targetString, amount);
     }
-
-
     [ClientRpc]
     public void RpcAddForce(string targetString, Vector3 amount)
     {
@@ -77,6 +72,7 @@ public class RagdollManager : NetworkBehaviour
             if(rb.name == targetString)
                 rb.AddForce(amount);
         }
+        
     }
 
 
