@@ -66,7 +66,7 @@ namespace Mirror{
                 n_upperTurf = (byte) upperState;
             }
             // set dirtyBit Trigger 001<Tile>  010<Turf> 100<Pipe>
-            SetDirtyBit(0b010);
+            SetDirtyBit(base.syncVarDirtyBits ^ 0b010);
         }
 
         public void UpdateTurf(){
@@ -78,7 +78,7 @@ namespace Mirror{
         public void SetTile(Tile.TileTypes tileType){
             this.n_TileType = (byte) tileType;
             // set dirtyBit Trigger 001<Tile>  010<Turf> 100<Pipe>
-            SetDirtyBit(0b001);
+            SetDirtyBit(base.syncVarDirtyBits ^ 0b001);
         }
 
         public void UpdateTile(){
@@ -108,7 +108,7 @@ namespace Mirror{
                 
             }
             // set dirtyBit Trigger 001<Tile>  010<Turf> 100<Pipe>
-            SetDirtyBit(0b100);
+            SetDirtyBit(base.syncVarDirtyBits ^ 0b100);
         }
 
         public void UpdateUnderPipes(bool autoBuild = false){
