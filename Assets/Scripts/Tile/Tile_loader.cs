@@ -29,7 +29,7 @@ public class Tile_loader : NetworkBehaviour
         {
             Turf tile_turf = tileobj.GetComponent<Turf>();
             if(tile_turf != null){
-                tile_turf.updateTurf();
+                tile_turf.UpdateTurf();
             }
         }
     }

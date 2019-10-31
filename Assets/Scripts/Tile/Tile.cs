@@ -12,8 +12,6 @@ public class Tile : MonoBehaviour
         station_wall_glass_reinforced
         };
 
-    public int type_index;
-
     public TileTypes TileDescriptor;
     public Turf turf = null;
     public TileContentManager contentManager = null;
@@ -51,14 +49,8 @@ public class Tile : MonoBehaviour
 
     public void UpdateTile(){
         //call to update all models of tile
-        gameObject.GetComponent<Turf>().updateTurf();
-        gameObject.GetComponent<TileContentManager>().UpdateMultipart();
-        gameObject.GetComponent<TilePipeManager>().UpdateBlue();
-    }
-
-    public void UpdateFromNetwork(){
-        // new values have been set, and Tile should be 'redrawn'
-        gameObject.GetComponent<Turf>().updateTurf();
-        gameObject.GetComponent<TilePipeManager>().UpdatePipes(true);
-    }
+        this.turf.UpdateTurf();
+        //this.contentManager.UpdateMultipart();
+        //this.pipeManager.UpdatePipes();
+    } 
 }

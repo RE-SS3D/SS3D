@@ -31,7 +31,7 @@ public class Tile_loader_networked : MonoBehaviour
         {
             Turf tile_turf = tileobj.GetComponent<Turf>();
             if(tile_turf != null){
-                tile_turf.updateTurf();
+                tile_turf.UpdateTurf();
             }
         }
     }
@@ -71,19 +71,14 @@ public class Tile_loader_networked : MonoBehaviour
 
         if (pixelColor == Color.black){
             new_obj.GetComponent<Tile>().TileDescriptor = Tile.TileTypes.station_tile;
-            new_obj.GetComponent<Tile>().type_index = 0; 
         }else if (pixelColor == Color.blue){
             new_obj.GetComponent<Tile>().TileDescriptor = Tile.TileTypes.station_wall;
-            new_obj.GetComponent<Tile>().type_index = 1; 
         }else if (pixelColor == Color.red){
             new_obj.GetComponent<Tile>().TileDescriptor = Tile.TileTypes.station_wall_reinforced;
-            new_obj.GetComponent<Tile>().type_index = 2; 
         }else if (pixelColor == Color.green){
             new_obj.GetComponent<Tile>().TileDescriptor = Tile.TileTypes.station_wall_glass;
-            new_obj.GetComponent<Tile>().type_index = 3; 
         }else if (pixelColor == Color.magenta){
             new_obj.GetComponent<Tile>().TileDescriptor = Tile.TileTypes.station_wall_glass_reinforced;
-            new_obj.GetComponent<Tile>().type_index = 4; 
         }else{
             Debug.Log(pixelColor);
             return;

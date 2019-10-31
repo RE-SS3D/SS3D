@@ -31,7 +31,7 @@ public class Turf : MonoBehaviour
     
     public void InitTurf()
     {
-        BuildTurf();
+        UpdateTurf();
     }
 
     public void BuildTurf(){
@@ -58,19 +58,19 @@ public class Turf : MonoBehaviour
         // Transform tileNW = transform.parent.Find(string.Format("tile_{0}_{1}",gameObject.transform.position.x - 1, gameObject.transform.position.z + 1));
         if(tileN != null){
             //Debug.Log("updating: "+tileN.name);
-            tileN.gameObject.GetComponent<Turf>().updateTurf();
+            tileN.gameObject.GetComponent<Turf>().UpdateTurf();
         }
         if(tileE != null){
             //Debug.Log("updating: "+tileE.name);
-            tileE.gameObject.GetComponent<Turf>().updateTurf();
+            tileE.gameObject.GetComponent<Turf>().UpdateTurf();
         }
         if(tileS != null){
             //Debug.Log("updating: "+tileS.name);
-            tileS.gameObject.GetComponent<Turf>().updateTurf();
+            tileS.gameObject.GetComponent<Turf>().UpdateTurf();
         }
         if(tileW != null){
             //Debug.Log("updating: "+tileW.name);
-            tileW.gameObject.GetComponent<Turf>().updateTurf();
+            tileW.gameObject.GetComponent<Turf>().UpdateTurf();
         }
         // if(tileNE != null){
         //     tileNE.gameObject.GetComponent<Turf>().updateTurf();
@@ -85,7 +85,7 @@ public class Turf : MonoBehaviour
         //     tileNW.gameObject.GetComponent<Turf>().updateTurf();
         // }
     }
-    public void updateTurf(){
+    public void UpdateTurf(){
         Tile.TileTypes new_turfDescriptor = gameObject.GetComponent<Tile>().TileDescriptor;
         if (new_turfDescriptor != turfDescriptor){
             turfDescriptor = new_turfDescriptor;

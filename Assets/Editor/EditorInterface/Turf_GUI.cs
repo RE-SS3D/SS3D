@@ -25,7 +25,7 @@ public class Turf_GUI : Editor
         }
         if(GUILayout.Button("update_turf"))
         {
-            targetScript.updateTurf();
+            targetScript.UpdateTurf();
         }
         if(GUILayout.Button("update_neighbour_turf"))
         {

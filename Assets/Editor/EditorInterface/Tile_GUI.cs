@@ -28,7 +28,7 @@ public class Tile_GUI : Editor
 
         if(GUILayout.Button("update_disposal"))
         {
-            targetScript.GetComponent<TilePipeManager>().UpdateDisposal(-1);
+            targetScript.GetComponent<TilePipeManager>().UpdateDisposal(true);
         }
     
         if(GUILayout.Button("update_blueModel"))
@@ -36,9 +36,9 @@ public class Tile_GUI : Editor
             targetScript.GetComponent<TilePipeManager>().UpdateBlueModel();
         }
 
-        if(GUILayout.Button("NETWORK_UPDATE"))
+        if(GUILayout.Button("UPDATE"))
         {
-            targetScript.GetComponent<Tile>().UpdateFromNetwork();
+            targetScript.GetComponent<Tile>().UpdateTile();
         }
     }
 }

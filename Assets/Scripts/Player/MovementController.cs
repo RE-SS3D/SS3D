@@ -35,24 +35,16 @@ public class MovementController : NetworkBehaviour
         int posX = (int)gameObject.transform.position.x;
         int posZ = (int)gameObject.transform.position.z;
 
-        GameObject selectedTile = GameObject.Find(string.Format("tile_{0}_{1}",posX,posZ));
-        if (selectedTile != null){
+        GameObject selectedTile_obj = GameObject.Find(string.Format("tile_{0}_{1}",posX,posZ));
+        if (selectedTile_obj != null){
+            Tile selectedTile = selectedTile_obj.GetComponent<Tile>();
             //Debug.Log(" +++++++++  CHANGING TILE DATA");
-            if(selectedTile.GetComponent<TileNetworkManager>().n_lowerTurf == 2){
-                selectedTile.GetComponent<TileNetworkManager>().n_lowerTurf = 1; //set network component;
-                selectedTile.GetComponent<TileNetworkManager>().n_upperTurf = 0;
+            if(selectedTile.turf.upperState == 2){
+                selectedTile.tileNetworkManager.SetTurf(lowerState: 1, upperState: 0);
             }else{
-                selectedTile.GetComponent<TileNetworkManager>().n_lowerTurf = 2; //set network component;
-                selectedTile.GetComponent<TileNetworkManager>().n_upperTurf = 2;
+                selectedTile.tileNetworkManager.SetTurf(lowerState: 2, upperState: 2);
             }
-            selectedTile.GetComponent<TileNetworkManager>().SetTileData(); //now LOCK IN that data;
-            // set dirtyBit to trigger clients to update this TileData
-            selectedTile.GetComponent<TileNetworkManager>().SetDirtyBit(0xFF);
-
-            //now update server graphics manually, as it doesnt get the trigger through the updatePacket
-            if (isServer){
-                selectedTile.GetComponent<Tile>().UpdateFromNetwork();
-            }
+            //selectedTile.GetComponent<TileNetworkManager>().SetAllTileData(); //now LOCK IN that data;
         }
     }
 
@@ -63,21 +55,14 @@ public class MovementController : NetworkBehaviour
         int posX = (int)gameObject.transform.position.x;
         int posZ = (int)gameObject.transform.position.z;
 
-        GameObject selectedTile = GameObject.Find(string.Format("tile_{0}_{1}",posX,posZ));
-        if (selectedTile != null){
+        GameObject selectedTile_obj = GameObject.Find(string.Format("tile_{0}_{1}",posX,posZ));
+        if (selectedTile_obj != null){
+            Tile selectedTile = selectedTile_obj.GetComponent<Tile>();
             //Debug.Log(" +++++++++  CHANGING TILE DATA");
-            if(selectedTile.GetComponent<TileNetworkManager>().n_hasDisposal){
-                selectedTile.GetComponent<TileNetworkManager>().n_hasDisposal = false; //set network component;
+            if(selectedTile.pipeManager.hasDisposal){
+                selectedTile.tileNetworkManager.SetUnderPipes(hasDisposal: 0);
             }else{
-                selectedTile.GetComponent<TileNetworkManager>().n_hasDisposal = true; //set network component;
-            }
-            selectedTile.GetComponent<TileNetworkManager>().SetTileData(); //now LOCK IN that data;
-            // set dirtyBit to trigger clients to update this TileData
-            selectedTile.GetComponent<TileNetworkManager>().SetDirtyBit(0xFF);
-
-            //now update server graphics manually, as it doesnt get the trigger through the updatePacket
-            if (isServer){
-                selectedTile.GetComponent<Tile>().UpdateFromNetwork();
+                selectedTile.tileNetworkManager.SetUnderPipes(hasDisposal: 1);
             }
         }
     }
@@ -87,21 +72,14 @@ public class MovementController : NetworkBehaviour
         int posX = (int)gameObject.transform.position.x;
         int posZ = (int)gameObject.transform.position.z;
 
-        GameObject selectedTile = GameObject.Find(string.Format("tile_{0}_{1}",posX,posZ));
-        if (selectedTile != null){
+        GameObject selectedTile_obj = GameObject.Find(string.Format("tile_{0}_{1}",posX,posZ));
+        if (selectedTile_obj != null){
+            Tile selectedTile = selectedTile_obj.GetComponent<Tile>();
             //Debug.Log(" +++++++++  CHANGING TILE DATA");
-            if(selectedTile.GetComponent<TileNetworkManager>().n_hasBlue){
-                selectedTile.GetComponent<TileNetworkManager>().n_hasBlue = false; //set network component;
+            if(selectedTile.pipeManager.hasBluePipe){
+                selectedTile.tileNetworkManager.SetUnderPipes(hasBlue: 0);
             }else{
-                selectedTile.GetComponent<TileNetworkManager>().n_hasBlue = true; //set network component;
-            }
-            selectedTile.GetComponent<TileNetworkManager>().SetTileData(); //now LOCK IN that data;
-            // set dirtyBit to trigger clients to update this TileData
-            selectedTile.GetComponent<TileNetworkManager>().SetDirtyBit(0xFF);
-
-            //now update server graphics manually, as it doesnt get the trigger through the updatePacket
-            if (isServer){
-                selectedTile.GetComponent<Tile>().UpdateFromNetwork();
+                selectedTile.tileNetworkManager.SetUnderPipes(hasBlue: 1);
             }
         }
     }
@@ -112,21 +90,14 @@ public class MovementController : NetworkBehaviour
         int posX = (int)gameObject.transform.position.x;
         int posZ = (int)gameObject.transform.position.z;
 
-        GameObject selectedTile = GameObject.Find(string.Format("tile_{0}_{1}",posX,posZ));
-        if (selectedTile != null){
+        GameObject selectedTile_obj = GameObject.Find(string.Format("tile_{0}_{1}",posX,posZ));
+        if (selectedTile_obj != null){
+            Tile selectedTile = selectedTile_obj.GetComponent<Tile>();
             //Debug.Log(" +++++++++  CHANGING TILE DATA");
-            if(selectedTile.GetComponent<TileNetworkManager>().n_hasRed){
-                selectedTile.GetComponent<TileNetworkManager>().n_hasRed = false; //set network component;
+            if(selectedTile.pipeManager.hasRedPipe){
+                selectedTile.tileNetworkManager.SetUnderPipes(hasRed: 0);
             }else{
-                selectedTile.GetComponent<TileNetworkManager>().n_hasRed = true; //set network component;
-            }
-            selectedTile.GetComponent<TileNetworkManager>().SetTileData(); //now LOCK IN that data;
-            // set dirtyBit to trigger clients to update this TileData
-            selectedTile.GetComponent<TileNetworkManager>().SetDirtyBit(0xFF);
-
-            //now update server graphics manually, as it doesnt get the trigger through the updatePacket
-            if (isServer){
-                selectedTile.GetComponent<Tile>().UpdateFromNetwork();
+                selectedTile.tileNetworkManager.SetUnderPipes(hasRed: 1);
             }
         }
     }
