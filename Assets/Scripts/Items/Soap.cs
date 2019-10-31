@@ -15,7 +15,9 @@ public class Soap : NetworkBehaviour
         // Set the object that touched the soap, and check to see if it has a ragdoll script
         var ragdollManager = other.gameObject.GetComponent<RagdollManager>();
         var moveController = other.gameObject.GetComponent<MovementController>();
-        if (ragdollManager)
+        
+        // This will check to see if we can ragdoll stuff, most likely the player
+        if (ragdollManager && moveController && moveController.currentMovement.magnitude > 3f)
         {
             // Enable the object's ragdoll so that it starts to fall
             ragdollManager.CmdSetRagdolled(true);
