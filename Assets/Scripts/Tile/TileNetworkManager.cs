@@ -151,7 +151,8 @@ namespace Mirror{
                 //This gets excecuted ONLY on server whenever a dirtybit is set in the dirtybitmask in order to synchronize data.
                 //TODO: rework to put the incremental change information in the bitmask, and send that informaiton to reduce packet size
                 Debug.Log("SENDING DELTA TILE-INFO: " + gameObject.name + " :: " + base.syncVarDirtyBits.ToString("X"));
-                writer.Write(base.syncVarDirtyBits); // set dirtyBit Trigger 001<Tile>  010<Turf> 100<Pipe>
+                //Send dirtyBit to the client as well!
+                writer.Write(base.syncVarDirtyBits); //dirtyBit Trigger 001<Tile>  010<Turf> 100<Pipe>
                 if((base.syncVarDirtyBits & 0b001 ) != 0u){
                     writer.Write(this.n_TileType);
                     if (isServer){
@@ -198,8 +199,9 @@ namespace Mirror{
             }else{
                 //This gets excecuted ONLY on client whenever updataPacket is invoked. the dirty bitmask itself is inaccesable
                 // and should be send into the write/read buffer if its needed here to 'know' what is gonna change.
+                // set dirtyBit Trigger 001<Tile>  010<Turf> 100<Pipe>
                 ulong receivedDirtyBits = reader.ReadUInt64();
-                Debug.Log("RECEIVING DELTA TILE-INFO: " + gameObject.name + " :: " + base.syncVarDirtyBits.ToString("X"));
+                Debug.Log("RECEIVING DELTA TILE-INFO: " + gameObject.name + " :: " + receivedDirtyBits.ToString("X"));
                 if((receivedDirtyBits & 0b001 ) != 0u){
                     this.n_TileType = reader.ReadByte();
                     UpdateTile();
