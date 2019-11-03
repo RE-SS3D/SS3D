@@ -251,10 +251,7 @@ public class SceneBuilder : EditorWindow
                         if(pipeConnectW){
                             config ^= 1;
                         }
-                        if(pipeConnectAuto){
-                            config = -1;
-                        }
-                       selectedTile.GetComponent<TilePipeManager>().BuildDisposal(config);
+                       selectedTile.GetComponent<TilePipeManager>().BuildDisposal(config, pipeConnectAuto);
                    }else{
                        selectedTile.GetComponent<TilePipeManager>().DeleteDisposal();
                    }
@@ -277,10 +274,7 @@ public class SceneBuilder : EditorWindow
                         if(pipeConnectW){
                             config ^= 1;
                         }
-                        if(pipeConnectAuto){
-                            config = -1;
-                        }
-                       selectedTile.GetComponent<TilePipeManager>().BuildBlue(config);
+                       selectedTile.GetComponent<TilePipeManager>().BuildBlue(config, pipeConnectAuto);
                    }else{
                        selectedTile.GetComponent<TilePipeManager>().DeleteBlue();
                    }
@@ -303,10 +297,7 @@ public class SceneBuilder : EditorWindow
                         if(pipeConnectW){
                             config ^= 1;
                         }
-                        if(pipeConnectAuto){
-                            config = -1;
-                        }
-                       selectedTile.GetComponent<TilePipeManager>().BuildRed(config);
+                       selectedTile.GetComponent<TilePipeManager>().BuildRed(config, pipeConnectAuto);
                    }else{
                        selectedTile.GetComponent<TilePipeManager>().DeleteRed();
                    }
