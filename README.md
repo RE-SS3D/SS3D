@@ -19,11 +19,11 @@ You'll find a lot of helpful people there, capable of answering any questions yo
 
 > **tldr;**
 >
-> * **Unity 2019.2.2f1**
+> * **Unity 2019.2.0f1**
 > * Any **Git** client, see below.
 > * Whatever tool you need to do your thing
 
-The game is developed in **Unity 2019.2.2** (you can get it here : https://unity3d.com/get-unity/download/archive). Regardless of if you make code or art, installing Unity will be helpful for getting your contribution in. Upgrading the unity project version is possible in the case that it would help you with a feature or a major update has been passed. However the lead dev is in charge of the upgrade so that the transition can be as smooth as possible across forks.
+The game is developed in **Unity 2019.2.0** (you can get it here : https://unity3d.com/get-unity/download/archive). Regardless of if you make code or art, installing Unity will be helpful for getting your contribution in. Upgrading the unity project version is possible in the case that it would help you with a feature or a major update has been passed. However the lead dev is in charge of the upgrade so that the transition can be as smooth as possible across forks.
 
 For coding, you can use whatever you want, but [Visual Studio](https://visualstudio.microsoft.com/) is probably the most popular choice. It's free and integrates well with Unity. If you're a student, we recommend getting a copy of [ReSharper](https://www.jetbrains.com/resharper), which adds a lot of code hints and shortcuts that will significantly improve your code quality.
 
