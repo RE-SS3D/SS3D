@@ -1,7 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+/**
+    Component of tiles that deals with 'furniture' on tile
+     
+     Has functions used to build furniture on the tile and contains a prototype for procedural multi-tile furniture (tables)
 
+
+
+ */
 public class TileContentManager : MonoBehaviour
 {
     public GameObject mainObject;

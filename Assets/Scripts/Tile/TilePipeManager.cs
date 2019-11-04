@@ -2,6 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/**
+    Component of tiles that deals with (underground) pipes
+     
+    - Has build/delete functions to update the models and set the pipe configuration byte (which identifies the pipe 'configuration')
+    - Checks neighbours to see which pipes are available.
+    - Pipes are currently only decorative.
+
+    Config Byte (LSB):
+        N E S W
+        0 0 0 0
+
+
+ */
 public class TilePipeManager : MonoBehaviour
 {
     Dictionary<string, byte> directions = new Dictionary<string, byte>(){

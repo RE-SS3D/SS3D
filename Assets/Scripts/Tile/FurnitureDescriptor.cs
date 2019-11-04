@@ -4,6 +4,16 @@ using UnityEngine;
 
 public class FurnitureDescriptor : MonoBehaviour
 {
+/**
+    Component to be added to every furniture prefab to hold information
+    Most of this class is a placeholder for now (04 November 2019)
+
+
+
+
+
+
+ */
     // Compontent that should be attached to every furniture prefab. It holds flags of what the furniture type is, where it can go, etc.
     public enum FurnitureType{
         wall_furniture,

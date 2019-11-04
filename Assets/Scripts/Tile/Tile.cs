@@ -2,6 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/**
+    Main component of tiles that holds:
+     - references to other components (and initializes them if necessary) 
+     - The type of the current Tile attached to
+     - TileTypes enumerator
+
+
+
+ */
+
+
 public class Tile : MonoBehaviour
 {
     public enum TileTypes {

@@ -2,6 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/**
+    Component of tiles that deals Network Communication
+     
+    - Has a bytebuffer of the values that 'characterize' a tile
+    - Communicates these over network (SetTurf/SetTile/SetPipes) by setting dirtyBits
+        * example of communications can be found in MovementController of player
+    - Has functions that update the tile based on the bytebuffer
+    - Custom Serialize and Deserialize function handles Sending <-> Receiving, overrides Mirror NetworkBehaviour functions (based on dirtybits)
+
+
+ */
 namespace Mirror{
     public class TileNetworkManager : NetworkBehaviour {
         // A Tile Networking Packet is defined as follows!

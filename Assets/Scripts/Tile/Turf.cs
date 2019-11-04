@@ -2,6 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/**
+    Component of tiles that deals with the Turf
+     
+    The turf is the 'physical' tile. Meaning the lattice/floor/wall/plenum.
+
+    A tile exists of an upper-turf (Main tiled floor / Wall )
+    and Lower-turf (Lattice/plenum )
+
+    The 'appearance' of the turf is based on the tile type.
+ */
+
 public class Turf : MonoBehaviour
 {
     public Tile.TileTypes turfDescriptor;
