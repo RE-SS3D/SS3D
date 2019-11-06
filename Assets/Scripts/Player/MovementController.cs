@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using Mirror;
-
+namespace Mirror{
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(Animator))]
 public class MovementController : NetworkBehaviour
@@ -29,15 +29,111 @@ public class MovementController : NetworkBehaviour
         camera = Camera.main;
     }
 
+
+    [Command] // this gets executed on client AND SERVER 
+    public void CmdToggleFloor(){
+        int posX = (int)gameObject.transform.position.x;
+        int posZ = (int)gameObject.transform.position.z;
+
+        GameObject selectedTile_obj = GameObject.Find(string.Format("tile_{0}_{1}",posX,posZ));
+        if (selectedTile_obj != null){
+            Tile selectedTile = selectedTile_obj.GetComponent<Tile>();
+            //Debug.Log(" +++++++++  CHANGING TILE DATA");
+            if(selectedTile.turf.upperState == 2){
+                selectedTile.tileNetworkManager.SetTurf(lowerState: 1, upperState: 0);
+            }else{
+                selectedTile.tileNetworkManager.SetTurf(lowerState: 2, upperState: 2);
+            }
+            //selectedTile.GetComponent<TileNetworkManager>().SetAllTileData(); //now LOCK IN that data;
+        }
+    }
+
+
+
+    [Command] // this gets executed on client AND SERVER 
+    public void CmdToggleDisposal(){
+        int posX = (int)gameObject.transform.position.x;
+        int posZ = (int)gameObject.transform.position.z;
+
+        GameObject selectedTile_obj = GameObject.Find(string.Format("tile_{0}_{1}",posX,posZ));
+        if (selectedTile_obj != null){
+            Tile selectedTile = selectedTile_obj.GetComponent<Tile>();
+            //Debug.Log(" +++++++++  CHANGING TILE DATA");
+            if(selectedTile.pipeManager.hasDisposal){
+                selectedTile.tileNetworkManager.SetUnderPipes(hasDisposal: 0);
+            }else{
+                selectedTile.tileNetworkManager.SetUnderPipes(hasDisposal: 1);
+            }
+        }
+    }
+
+    [Command] // this gets executed on client AND SERVER 
+    public void CmdToggleBlue(){
+        int posX = (int)gameObject.transform.position.x;
+        int posZ = (int)gameObject.transform.position.z;
+
+        GameObject selectedTile_obj = GameObject.Find(string.Format("tile_{0}_{1}",posX,posZ));
+        if (selectedTile_obj != null){
+            Tile selectedTile = selectedTile_obj.GetComponent<Tile>();
+            //Debug.Log(" +++++++++  CHANGING TILE DATA");
+            if(selectedTile.pipeManager.hasBluePipe){
+                selectedTile.tileNetworkManager.SetUnderPipes(hasBlue: 0);
+            }else{
+                selectedTile.tileNetworkManager.SetUnderPipes(hasBlue: 1);
+            }
+        }
+    }
+
+
+[Command] // this gets executed on client AND SERVER 
+    public void CmdToggleRed(){
+        int posX = (int)gameObject.transform.position.x;
+        int posZ = (int)gameObject.transform.position.z;
+
+        GameObject selectedTile_obj = GameObject.Find(string.Format("tile_{0}_{1}",posX,posZ));
+        if (selectedTile_obj != null){
+            Tile selectedTile = selectedTile_obj.GetComponent<Tile>();
+            //Debug.Log(" +++++++++  CHANGING TILE DATA");
+            if(selectedTile.pipeManager.hasRedPipe){
+                selectedTile.tileNetworkManager.SetUnderPipes(hasRed: 0);
+            }else{
+                selectedTile.tileNetworkManager.SetUnderPipes(hasRed: 1);
+            }
+        }
+    }
+
+
+
+
     void Update()
     {
         // Must be the local player, or they cannot move
         if (!isLocalPlayer)
             return;
 
-        if(Input.GetButtonDown("Toggle Run"))
+        if(Input.GetButtonDown("Toggle Run")){
             isWalking = !isWalking;
+
+        }
+
+        if(Input.GetButtonDown("Toggle Floor")){
+            Debug.Log("TOGGLE FLOOR");
+            CmdToggleFloor();
+        }
+        if(Input.GetButtonDown("Toggle Disposal")){
+            Debug.Log("TOGGLE DISPOSAL");
+            CmdToggleDisposal();
+        }
+        if(Input.GetButtonDown("Toggle Blue")){
+            Debug.Log("TOGGLE BLUE");
+            CmdToggleBlue();
+        }
+        if(Input.GetButtonDown("Toggle Red")){
+            Debug.Log("TOGGLE RED");
+            CmdToggleRed();
+        }
         
+
         // TODO: Get these values from the proper places they will be generated
         bool hasGravity = true;
         bool canGrabSomething = false;
@@ -72,4 +168,5 @@ public class MovementController : NetworkBehaviour
         characterAnimator.SetBool("Floating", !hasGravity); // Note: Player can be floating and still move
         characterAnimator.SetFloat("Speed", currentMovement.magnitude / runSpeed); // animation Speed is a proportion of maximum runSpeed
     }
+}
 }
