@@ -6,9 +6,8 @@ using Mirror;
 public class CameraRegister : NetworkBehaviour
 {
     // Start is called before the first frame update
-    void Start()
+    public override void OnStartLocalPlayer()
     {
-        if (isLocalPlayer)
-            Camera.main.GetComponent<CameraFollow>().SetTarget(this.gameObject);
+        Camera.main.GetComponent<CameraFollow>().SetTarget(gameObject);
     }
 }

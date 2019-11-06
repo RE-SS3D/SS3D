@@ -14,8 +14,8 @@ GameObject:
   - component: {fileID: 5409357308568763189}
   - component: {fileID: 6896420296466994080}
   - component: {fileID: 3596717974082439244}
-  - component: {fileID: 348354279}
   - component: {fileID: 926100782}
+  - component: {fileID: 2986641575226085218}
   m_Layer: 9
   m_Name: crowbar
   m_TagString: Untagged
@@ -97,8 +97,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 281040032
+  m_AssetId: 7becfab153276864f9fc7636a839d837
+  m_SceneId: 0
 --- !u!114 &6896420296466994080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,25 +126,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.05706672, y: 0.24774957, z: 0.7755265}
   m_Center: {x: -0.00000029057264, y: 0.034477245, z: -0.022109343}
---- !u!114 &348354279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1888703706215615217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 212b03cf9ce24c348948331c70eb6e78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncInterval: 0.1
-  Sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
-  compatibleSlots: 118791
-  visualObjectPrefab: {fileID: 5034773723147769351, guid: f0f678d389d89df4eb832291670e46c6,
-    type: 3}
-  Held: 0
-  visual: {fileID: 0}
 --- !u!54 &926100782
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -161,3 +142,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2986641575226085218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888703706215615217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemType: 0
+  sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
+  prefab: {fileID: 1888703706215615217}

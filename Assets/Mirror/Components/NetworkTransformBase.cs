@@ -46,8 +46,8 @@ namespace Mirror
             public float movementSpeed;
         }
         // interpolation start and goal
-        DataPoint start;
-        DataPoint goal;
+        public DataPoint start;
+        public DataPoint goal;
 
         // local authority send time
         float lastClientSendTime;
@@ -283,7 +283,7 @@ namespace Mirror
         //    fence between us and the goal
         // -> checking time always works, this way we just teleport if we still
         //    didn't reach the goal after too much time has elapsed
-        bool NeedsTeleport()
+        public virtual bool NeedsTeleport()
         {
             // calculate time between the two data points
             float startTime = start != null ? start.timeStamp : Time.time - syncInterval;
