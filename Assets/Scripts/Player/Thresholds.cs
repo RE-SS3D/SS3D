@@ -23,14 +23,15 @@ public class Thresholds : MonoBehaviour
         public float maxNumb;
         public float minBlistered;
         public float maxBlistered;
+        public float softCrit;
+        public float hardCrit;
     }
 
     public static DamageThresholds[] thresholds = new DamageThresholds[7];
 
     public enum Entities
     {
-        Organic,
-        Weasle
+        Organic
     }
 
     // Update is called once per frame
@@ -40,8 +41,8 @@ public class Thresholds : MonoBehaviour
         //Brute
         thresholds[(int)Entities.Organic].minBruise = .15f;
         thresholds[(int)Entities.Organic].maxBruise = .25f;
-        thresholds[(int)Entities.Organic].minBleed = .35f;
-        thresholds[(int)Entities.Organic].maxBleed = .45f;
+        thresholds[(int)Entities.Organic].minBleed = .15f;
+        thresholds[(int)Entities.Organic].maxBleed = .25f;
         thresholds[(int)Entities.Organic].minCrippled = .55f;
         thresholds[(int)Entities.Organic].maxCrippled = .75f;
         thresholds[(int)Entities.Organic].minDetached = .55f;
@@ -53,5 +54,8 @@ public class Thresholds : MonoBehaviour
         thresholds[(int)Entities.Organic].maxNumb = .45f;
         thresholds[(int)Entities.Organic].minBlistered = .55f;
         thresholds[(int)Entities.Organic].maxBlistered = .75f;
+        //critStatus
+        thresholds[(int)Entities.Organic].softCrit = -0.5f;
+        thresholds[(int)Entities.Organic].hardCrit = -1f;
     }
 }

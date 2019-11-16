@@ -19,9 +19,11 @@ public class Health : MonoBehaviour
     //number of limbs that are currently bleeding
     private int numBleedingLimbs;
 
-    //Booleans for crit and soft crit
-    private bool scrit = false;
-    private bool crit = false;
+    //Array for establishing max limb HP
+    public float[] maxLimbHP = new float[7];
+
+    //Used to keep track of current crit status
+    private critStatus critLevel;
 
     //structs for status bools
     private struct limbStatus
@@ -29,6 +31,7 @@ public class Health : MonoBehaviour
         public bool bruised;
         public bool bleeding;
         public bool crippled;
+        public bool detached;
         public bool burned;
         public bool numb;
         public bool blistered;
@@ -50,9 +53,7 @@ public class Health : MonoBehaviour
     //enum for entity types
     public enum Entities
     {
-        Organic,
-        Onebi,
-        Connie
+        Organic
     }
 
     //enum for each body part
@@ -67,105 +68,129 @@ public class Health : MonoBehaviour
         overall
     }
 
+    [System.Flags]
+    private enum critStatus
+    {
+        STABLE,
+        CRIT_LEVEL_SOFT,
+        CRIT_LEVEL_HARD
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         //Intializes overall player health
         currentHealth = maxHealth;
         currentBloodVol = maxBloodVol;
+        critLevel = critStatus.STABLE;
 
         //Initilize the HP of each respective limb
-        limbHealthInfo[(int)SkeletalSections.torso].maxLimbHP = limbHealthInfo[(int)SkeletalSections.head].maxLimbHP =
-        limbHealthInfo[(int)SkeletalSections.leftArm].maxLimbHP = limbHealthInfo[(int)SkeletalSections.rightArm].maxLimbHP =
-        limbHealthInfo[(int)SkeletalSections.leftLeg].maxLimbHP = limbHealthInfo[(int)SkeletalSections.rightLeg].maxLimbHP = maxHealth;
+        for(int i = (int)SkeletalSections.torso; i <= (int)SkeletalSections.overall; i++)
+        {
+            limbHealthInfo[i].maxLimbHP = maxLimbHP[i];
+        }
 
         //Initilizes Thresholds dependent on Entity type
         Thresholds.InitializeThresholds();
     }
 
     //Updates the damage value of corresponding damage to corresponding body part targetted
-    public void dmgUpdate(int target, int dmgType , float dmg)
+    public void dmgUpdate(int target, int dmgType , float dmg, Damage.weaponTags[] tags)
     {
-        if (dmgType == 0)
+        switch (dmgType)
         {
-            limbHealthInfo[target].brute += dmg;
-            limbHealthInfo[(int)SkeletalSections.overall].brute += dmg;
+            case 0:             
+                limbHealthInfo[target].brute += dmg;
+                limbHealthInfo[(int)SkeletalSections.overall].brute += dmg;
+                bruteDmgEval(target, tags);
+                break;
+            case 1: 
+                limbHealthInfo[target].burn += dmg;
+                limbHealthInfo[(int)SkeletalSections.overall].burn += dmg;
+                burnDmgEval(target, tags);
+                break;
+            case 2:
+                limbHealthInfo[(int)SkeletalSections.overall].toxic += dmg;
+                break;
+            case 3:
+                limbHealthInfo[(int)SkeletalSections.overall].suffocation += dmg;
+                break;
         }
-        else if (dmgType == 1)
-        {
-            limbHealthInfo[target].burn += dmg;
-            limbHealthInfo[(int)SkeletalSections.overall].burn += dmg;
-        }
-        else if (dmgType == 2)
-            limbHealthInfo[(int)SkeletalSections.overall].toxic += dmg;
-        else
-            limbHealthInfo[(int)SkeletalSections.overall].suffocation += dmg;
-
-        dmgEval(target, dmgType);
+        critEval();
         dmgDebug();
-       }
+    }
 
-    public void dmgEval(int target, int dmgType)
+    private void bruteDmgEval(int target, Damage.weaponTags[] tags)
     {
-        //Determines the status of an affected limb based on the brute damage
-        if (dmgType == 0)
+        for (int i = 0; i < tags.Length; i++)
         {
-            //Calculates if a limb is bruised
-            if (statusBools[target].bruised == false && Random.Range(Thresholds.thresholds[(int)Entities.Organic].minBruise, Thresholds.thresholds[(int)Entities.Organic].maxBruise)* limbHealthInfo[target].maxLimbHP < limbHealthInfo[target].brute)
+            if ((int)tags[i] == (int)Damage.weaponTags.blunt)
             {
-                statusBools[target].bruised = true;
+                if (!statusBools[target].bruised && Random.Range(Thresholds.thresholds[(int)Entities.Organic].minBruise, Thresholds.thresholds[(int)Entities.Organic].maxBruise) * limbHealthInfo[target].maxLimbHP < limbHealthInfo[target].brute)
+                {
+                    statusBools[target].bruised = true;
+                }
+
+                //Calculates if a limb is crippled
+                if ((!statusBools[target].crippled && !statusBools[target].detached) && Random.Range(Thresholds.thresholds[(int)Entities.Organic].minCrippled, Thresholds.thresholds[(int)Entities.Organic].maxCrippled) * limbHealthInfo[target].maxLimbHP < limbHealthInfo[target].brute)
+                {
+                    statusBools[target].crippled = true;
+                }
             }
 
-            //Calculates if a limb is bleeding. If true, begin the BloodLoss Coroutine
-            if (statusBools[target].bleeding == false && Random.Range(Thresholds.thresholds[(int)Entities.Organic].minBleed, Thresholds.thresholds[(int)Entities.Organic].maxBleed) * limbHealthInfo[target].maxLimbHP < limbHealthInfo[target].brute)
+            else if ((int)tags[i] == (int)Damage.weaponTags.stab || (int)tags[i] == (int)Damage.weaponTags.cut)
             {
-                statusBools[target].bleeding = true;
-                numBleedingLimbs++;
-                /*if(numBleedingLimbs == 1)
-                StartCoroutine("BloodLoss");
-                StartCoroutine("BloodRegen");
-                */
-            }
+                //Calculates if a limb is bleeding. If true, begin the BloodLoss Coroutine
+                if (!statusBools[target].bleeding && Random.Range(Thresholds.thresholds[(int)Entities.Organic].minBleed, Thresholds.thresholds[(int)Entities.Organic].maxBleed) * limbHealthInfo[target].maxLimbHP < limbHealthInfo[target].brute)
+                {
+                    statusBools[target].bleeding = true;
+                    numBleedingLimbs++;
+                    /*if(numBleedingLimbs == 1)
+                    StartCoroutine("BloodLoss");
+                    StartCoroutine("BloodRegen");
+                    */
+                }
 
-            //Calculates if a limb is crippled
-            if (statusBools[target].crippled == false && Random.Range(Thresholds.thresholds[(int)Entities.Organic].minCrippled, Thresholds.thresholds[(int)Entities.Organic].maxCrippled) * limbHealthInfo[target].maxLimbHP < limbHealthInfo[target].brute)
-            {
-                statusBools[target].crippled = true;
+                //Calculates if a limb is crippled
+                if (target != (int)SkeletalSections.torso && !statusBools[target].detached && Random.Range(Thresholds.thresholds[(int)Entities.Organic].minDetached, Thresholds.thresholds[(int)Entities.Organic].maxDetached) * limbHealthInfo[target].maxLimbHP < limbHealthInfo[target].brute)
+                {
+                    statusBools[target].detached = true;
+                }
             }
         }
+    }
 
-        //Determines the status of an affected limb based on the burn damage
-        else if (dmgType == 1)
+    private void burnDmgEval(int target, Damage.weaponTags[] tags)
+    {
+        //Calculates if a limb is burned
+        if (!statusBools[target].burned && Random.Range(Thresholds.thresholds[(int)Entities.Organic].minBurn, Thresholds.thresholds[(int)Entities.Organic].maxBurn) * limbHealthInfo[target].maxLimbHP < limbHealthInfo[target].burn)
         {
-            //Calculates if a limb is burned
-            if (statusBools[target].burned == false && Random.Range(Thresholds.thresholds[(int)Entities.Organic].minBurn, Thresholds.thresholds[(int)Entities.Organic].maxBurn) * limbHealthInfo[target].maxLimbHP < limbHealthInfo[target].burn)
-            {
-                statusBools[target].burned = true;
-            }
-
-            //Calculates if a limb is numb
-            if (statusBools[target].numb == false && Random.Range(Thresholds.thresholds[(int)Entities.Organic].minNumb, Thresholds.thresholds[(int)Entities.Organic].maxNumb) * limbHealthInfo[target].maxLimbHP < limbHealthInfo[target].burn)
-            {
-                statusBools[target].numb = true;
-            }
-
-            //Calculates if a limb is blistered
-            if (statusBools[target].blistered == false && Random.Range(Thresholds.thresholds[(int)Entities.Organic].minBlistered, Thresholds.thresholds[(int)Entities.Organic].maxBlistered) * limbHealthInfo[target].maxLimbHP < limbHealthInfo[target].burn)
-            {
-                statusBools[target].blistered = true;
-            }
-
+            statusBools[target].burned = true;
         }
 
+        //Calculates if a limb is numb
+        if (!statusBools[target].numb && Random.Range(Thresholds.thresholds[(int)Entities.Organic].minNumb, Thresholds.thresholds[(int)Entities.Organic].maxNumb) * limbHealthInfo[target].maxLimbHP < limbHealthInfo[target].burn)
+        {
+            statusBools[target].numb = true;
+        }
+
+        //Calculates if a limb is blistered
+        if (!statusBools[target].blistered && Random.Range(Thresholds.thresholds[(int)Entities.Organic].minBlistered, Thresholds.thresholds[(int)Entities.Organic].maxBlistered) * limbHealthInfo[target].maxLimbHP < limbHealthInfo[target].burn)
+        {
+            statusBools[target].blistered = true;
+        }
+    }
+
+    private void critEval()
+    {
         //Determines if the player is in soft crit or regular crit
-        if(scrit == false && currentHealth <= 0)
+        if(currentHealth <= Thresholds.thresholds[(int)Entities.Organic].hardCrit)
         {
-            scrit = true;
+            critLevel = critStatus.CRIT_LEVEL_HARD;
         }
-        if(crit == false && currentHealth <= -50)
+        else if (currentHealth <= Thresholds.thresholds[(int)Entities.Organic].softCrit)
         {
-            scrit = false;
-            crit = true;
+            critLevel = critStatus.CRIT_LEVEL_SOFT;
         }
     }
 
@@ -198,7 +223,8 @@ public class Health : MonoBehaviour
          Debug.Log("Torso=> \r\n  Brute: " + limbHealthInfo[(int)SkeletalSections.torso].brute +
              "\r\n  Bruised? " + statusBools[(int)SkeletalSections.torso].bruised +
              "\r\n  Bleeding? " + statusBools[(int)SkeletalSections.torso].bleeding +
-             "\r\n  Crippled? " + statusBools[(int)SkeletalSections.torso].crippled + 
+             "\r\n  Crippled? " + statusBools[(int)SkeletalSections.torso].crippled +
+             "\r\n  Detached? " + statusBools[(int)SkeletalSections.torso].detached +
              "\r\n  Burn: " + limbHealthInfo[(int)SkeletalSections.torso].burn +
              "\r\n  Burned? " + statusBools[(int)SkeletalSections.torso].burned +
              "\r\n  Numb? " + statusBools[(int)SkeletalSections.torso].numb +
@@ -207,6 +233,7 @@ public class Health : MonoBehaviour
              "\r\n  Bruised? " + statusBools[(int)SkeletalSections.head].bruised +
              "\r\n  Bleeding? " + statusBools[(int)SkeletalSections.head].bleeding +
              "\r\n  Crippled? " + statusBools[(int)SkeletalSections.head].crippled +
+             "\r\n  Detached? " + statusBools[(int)SkeletalSections.head].detached +
              "\r\n  Burn: " + limbHealthInfo[(int)SkeletalSections.head].burn +
              "\r\n  Burned? " + statusBools[(int)SkeletalSections.head].burned +
              "\r\n  Numb? " + statusBools[(int)SkeletalSections.head].numb +
@@ -215,6 +242,7 @@ public class Health : MonoBehaviour
              "\r\n  Bruised? " + statusBools[(int)SkeletalSections.leftArm].bruised +
              "\r\n  Bleeding? " + statusBools[(int)SkeletalSections.leftArm].bleeding +
              "\r\n  Crippled? " + statusBools[(int)SkeletalSections.leftArm].crippled +
+             "\r\n  Detached? " + statusBools[(int)SkeletalSections.leftArm].detached +
              "\r\n  Burn: " + limbHealthInfo[(int)SkeletalSections.leftArm].burn +
              "\r\n  Burned? " + statusBools[(int)SkeletalSections.leftArm].burned +
              "\r\n  Numb? " + statusBools[(int)SkeletalSections.leftArm].numb +
@@ -223,6 +251,7 @@ public class Health : MonoBehaviour
              "\r\n  Bruised? " + statusBools[(int)SkeletalSections.rightArm].bruised +
              "\r\n  Bleeding? " + statusBools[(int)SkeletalSections.rightArm].bleeding +
              "\r\n  Crippled? " + statusBools[(int)SkeletalSections.rightArm].crippled +
+             "\r\n  Detached? " + statusBools[(int)SkeletalSections.rightArm].detached +
              "\r\n  Burn: " + limbHealthInfo[(int)SkeletalSections.rightArm].burn +
              "\r\n  Burned? " + statusBools[(int)SkeletalSections.rightArm].burned +
              "\r\n  Numb? " + statusBools[(int)SkeletalSections.rightArm].numb +
@@ -231,6 +260,7 @@ public class Health : MonoBehaviour
              "\r\n  Bruised? " + statusBools[(int)SkeletalSections.leftLeg].bruised +
              "\r\n  Bleeding? " + statusBools[(int)SkeletalSections.leftLeg].bleeding +
              "\r\n  Crippled? " + statusBools[(int)SkeletalSections.leftLeg].crippled +
+             "\r\n  Detached? " + statusBools[(int)SkeletalSections.leftLeg].detached +
              "\r\n  Burn: " + limbHealthInfo[(int)SkeletalSections.leftLeg].burn +
              "\r\n  Burned? " + statusBools[(int)SkeletalSections.leftLeg].burned +
              "\r\n  Numb? " + statusBools[(int)SkeletalSections.leftLeg].numb +
@@ -239,12 +269,12 @@ public class Health : MonoBehaviour
              "\r\n  Bruised? " + statusBools[(int)SkeletalSections.rightLeg].bruised +
              "\r\n  Bleeding? " + statusBools[(int)SkeletalSections.rightLeg].bleeding +
              "\r\n  Crippled? " + statusBools[(int)SkeletalSections.rightLeg].crippled +
+             "\r\n  Detached? " + statusBools[(int)SkeletalSections.rightLeg].detached +
              "\r\n  Burn: " + limbHealthInfo[(int)SkeletalSections.rightLeg].burn +
              "\r\n  Burned? " + statusBools[(int)SkeletalSections.rightLeg].burned +
              "\r\n  Numb? " + statusBools[(int)SkeletalSections.rightLeg].numb +
              "\r\n  Blistered? " + statusBools[(int)SkeletalSections.rightLeg].blistered +
-             "\r\n \r\n Soft Crit? " + scrit +
-             "\r\n Crit? " + crit);
+             "\r\n \r\n Crit Level: " + critLevel);
            
     }
 
