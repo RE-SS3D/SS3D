@@ -8,7 +8,7 @@ using UnityEngine;
  * A component for rendering multiple seperate containers together as one group.
  * Will complain if there aren't enough item slots for a given container type.
  */
-public class UIGroupedContainers : UIInventory.ContainerRenderer
+public class UIGroupedContainers : UIAbstractContainer
 {
     // Matches a container type (expected to hold 1 item) to a slot
     [Serializable]
@@ -21,19 +21,24 @@ public class UIGroupedContainers : UIInventory.ContainerRenderer
     }
 
     // Editor properties
-    [SerializeField] private Container.Type   containerType; // TODO:
     [SerializeField] private ItemSlot[]       uiSlots;
 
-    public UIGroupedContainers()
+    // Runtime
+    public override bool Highlight { get; set; }
+
+    public void Start()
     {
-        OnContainerChange = (a, b, c) => UpdateContainer();
+        foreach(var uiSlot in uiSlots)
+            uiSlot.slot.slotInteractor = this;
     }
 
-    public override void UpdateContainers(GameObject owner, List<Container> containers)
+    protected override void RenderContainers(GameObject newOwner, List<Container> newContainers)
     {
+        slots.Clear();
+
         bool[] isSet = new bool[uiSlots.Length];
 
-        foreach (var container in containers)
+        foreach (var container in newContainers)
         {
             for (int i = 0; i < container.Length(); ++i)
             {
@@ -46,44 +51,29 @@ public class UIGroupedContainers : UIInventory.ContainerRenderer
 
                 if (slotIndex == -1)
                 {
+                    // TODO: Perform this warning only when actually useful
                     // Debug.LogWarning("Nowhere to display slottype " + slotType.ToString() + " from " + container.containerName + " from " + owner.name + " in Grouped Container " + name);
                     continue;
                 }
 
                 isSet[slotIndex] = true;
-                if (container.GetItem(i))
-                    uiSlots[slotIndex].slot.SetSprite(container.GetItem(i).sprite);
-                else
-                    uiSlots[slotIndex].slot.SetSprite(null);
+
+                slots.Add(new SlotInfo(container, i, uiSlots[slotIndex].slot));
+                uiSlots[slotIndex].slot.Item = container.GetItem(i);
             }
         }
 
         // Disable all unused slots
-        for(int i = 0; i < uiSlots.Length; ++i)
-        {
-            if(isSet[i])
-                uiSlots[i].slot.SetActive(true);
-            else
-                uiSlots[i].slot.SetActive(false);
-        }
-
-        // Swap over all event subscriptions
-        foreach (var container in this.containers)
-            if (!containers.Contains(container))
-                container.onChange -= OnContainerChange;
-        foreach (var container in containers)
-            if (!this.containers.Contains(container))
-                container.onChange += OnContainerChange;
-
-        this.owner = owner;
-        this.containers = containers;
+        for (int i = 0; i < uiSlots.Length; ++i)
+            uiSlots[i].slot.enabled = isSet[i];
     }
 
-    private void UpdateContainer()
+    protected override void RenderContainer(Container container)
     {
-        // Can't be bothered doing a specific update here.
-        UpdateContainers(owner, containers);
+        // As we dont ever have to instantiate objects, it should be fast enough to just do a complete rerender
+        RenderContainers(owner, containers);
     }
+
     // Used to store delegate used for performance reasons
     private readonly Container.ItemList.SyncListChanged OnContainerChange;
 }

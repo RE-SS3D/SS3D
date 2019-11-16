@@ -62,11 +62,14 @@ public class Container : NetworkBehaviour
     [SerializeField]
     protected SlotType[] slots;
 
-    // Called whenever items in the container change.
-    public event ItemList.SyncListChanged onChange {
-        add { items.Callback += value; }
-        remove { items.Callback -=  value; }
+    public Container()
+    {
+        items = new ItemList();
+        items.Callback += (a, b, c) => OnChange?.Invoke(this);
     }
+
+    // Called whenever items in the container change.
+    public event Action<Container> OnChange;
 
     /**
      * Add an item to a specific slot
@@ -128,12 +131,12 @@ public class Container : NetworkBehaviour
     public SlotType GetSlot(int slot) => slots[slot];
     public int Length() => items.Count;
 
-
     public override void OnStartServer()
     {
         for (int i = 0; i < slots.Length; ++i)
             items.Add(null);
     }
 
-    readonly private ItemList items = new ItemList();
+
+    readonly private ItemList items;
 }
