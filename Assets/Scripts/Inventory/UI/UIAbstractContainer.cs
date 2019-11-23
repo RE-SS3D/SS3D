@@ -17,11 +17,16 @@ public abstract class UIAbstractContainer : MonoBehaviour, UIItemSlot.SlotIntera
      */
     public interface UIInventoryHandler
     {
+        SlotInfo GetHoldingSlot();
+        UIAbstractContainer FindHandler(Container container);
+
         bool CanMoveItem(Container from, int fromSlot, Container to, int toSlot);
-        bool CanMoveItem(Container from, int fromSlot, UIAbstractContainer to);
+        bool CanMoveItem(Container from, int fromSlot, UIAbstractContainer to); // TODO: Move into UIAbstractContainer
+
         void MoveItem(Container from, int fromSlot, Container to, int toSlot);
-        void MoveItem(Container from, int fromSlot, UIAbstractContainer to);
+        void MoveItem(Container from, int fromSlot, UIAbstractContainer to); // TODO: Move into UIAbstractContainer
         void MoveSelectedItem(Container container, int slot);
+
         void DropItem(Container from, int fromSlot, Vector2 screenPosition);
     }
     /**
@@ -47,7 +52,7 @@ public abstract class UIAbstractContainer : MonoBehaviour, UIItemSlot.SlotIntera
         updateContainer = RenderContainer;
     }
 
-    public abstract bool Highlight { get; set; }
+    public abstract bool Highlighted { get; set; }
 
     [System.NonSerialized]
     public UIInventoryHandler inventoryHandler;
@@ -76,10 +81,16 @@ public abstract class UIAbstractContainer : MonoBehaviour, UIItemSlot.SlotIntera
     {
         return slots.Find(slotInfo => slotInfo.uiSlot == slot);
     }
+    public UIItemSlot GetUISlot(Container container, int slotIndex)
+    {
+        return slots.Find(slotInfo => slotInfo.container == container && slotInfo.index == slotIndex).uiSlot;
+    }
 
     // The object that owns all of the containers being rendered. TODO: Is this used?
+    [NonSerialized]
     public GameObject owner;
     // All containers being rendered
+    [NonSerialized]
     public List<Container> containers = new List<Container>();
 
     /**
@@ -105,7 +116,7 @@ public abstract class UIAbstractContainer : MonoBehaviour, UIItemSlot.SlotIntera
         if (over)
             over.Highlighted = true;
         else
-            overContainer.Highlight = true;
+            overContainer.Highlighted = true;
     }
     void UIItemSlot.SlotInteractor.StopHover(UIItemSlot hovering, UIAbstractContainer overContainer, UIItemSlot over)
     {
@@ -113,7 +124,7 @@ public abstract class UIAbstractContainer : MonoBehaviour, UIItemSlot.SlotIntera
         if (over)
             over.Highlighted = false;
         else
-            overContainer.Highlight = false;
+            overContainer.Highlighted = false;
     }
 
     void UIItemSlot.SlotInteractor.DragTo(UIItemSlot from, UIAbstractContainer toContainer, UIItemSlot toSlot)

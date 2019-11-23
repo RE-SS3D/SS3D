@@ -64,7 +64,7 @@ public class Hands : Interaction, Tool
         handContainer.OnChange += c => UpdateTool();
         if (handContainer.GetItems().Count > 0)
         {
-            inventory.selectedSlot = new Inventory.SlotReference(handContainer, handSlots[selectedHand]);
+            inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[selectedHand]);
             UpdateTool();
         }
     }
@@ -80,7 +80,7 @@ public class Hands : Interaction, Tool
         if (Input.GetButtonDown("Swap Active"))
         {
             selectedHand = 1 - selectedHand;
-            inventory.selectedSlot = new Inventory.SlotReference(handContainer, handSlots[selectedHand]);
+            inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[selectedHand]);
             onHandChange?.Invoke(selectedHand);
             
             UpdateTool();

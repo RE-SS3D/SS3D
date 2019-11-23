@@ -8,7 +8,7 @@ using UnityEngine.UI;
  * Controls a single slot that displays a single item
  */
 [ExecuteInEditMode]
-public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class UIItemSlot : MonoBehaviour
 {
     public interface SlotInteractor
     {
@@ -68,11 +68,6 @@ public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         get => item;
         set {
             item = value;
-            if(draggingSprite)
-            {
-                Destroy(draggingSprite);
-                draggingSprite = null;
-            }
             itemContainer.sprite = item == null ? emptySprite : item.sprite;
         }
     }
@@ -90,83 +85,23 @@ public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
             CalculateColors();
         }
     }
+    public bool Transparent {
+        get => transparent;
+        set {
+            transparent = value;
+            CalculateColors();
+        }
+    }
 
     public void Press()
     {
         slotInteractor.OnPress(this);
     }
-
-    // Dragging implementations
-    public void OnBeginDrag(PointerEventData eventData)
+    public GameObject CreateDraggableSprite(Vector2 position, Quaternion quaternion, Transform parent)
     {
-        if (item != null)
-        {
-            // Copy the sprite into a new object that will be dragged around
-            draggingSprite = Instantiate(itemContainer.gameObject, eventData.position, new Quaternion(), transform);
-            itemContainer.sprite = emptySprite;
-        }
-        else
-            eventData.pointerDrag = null;
+        return Instantiate(itemContainer.gameObject, position, quaternion, transform);
     }
-    public void OnDrag(PointerEventData eventData)
-    {
-        draggingSprite.transform.position = eventData.position;
 
-        // Check if hovering
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventData, results);
-
-        // Find what we might be hovering over
-        UIAbstractContainer foundContainer = null;
-        UIItemSlot foundOtherSlot = null;
-
-        foreach (var result in results)
-        {
-            var container = result.gameObject.GetComponent<UIAbstractContainer>();
-            if (container != null)
-                foundContainer = container;
-
-            var slot = result.gameObject.GetComponent<UIItemSlot>();
-            if (slot != null)
-                foundOtherSlot = slot;
-        }
-
-        if(prevHoverContainer != foundContainer || prevHoverSlot != foundOtherSlot)
-        {
-            if(prevHoverContainer)
-                slotInteractor.StopHover(this, prevHoverContainer, prevHoverSlot);
-            if(foundContainer != null)
-                slotInteractor.StartHover(this, foundContainer, foundOtherSlot);
-
-            prevHoverContainer = foundContainer;
-            prevHoverSlot = foundOtherSlot;
-        }
-    }
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        // Get what we are currently hovering over
-        var hoverContainer = prevHoverContainer;
-        var hoverSlot = prevHoverSlot;
-
-        // Stop any hovering
-        if (prevHoverContainer)
-        {
-            slotInteractor.StopHover(this, prevHoverContainer, prevHoverSlot);
-            prevHoverContainer = null;
-            prevHoverSlot = null;
-        }
-
-        // Revert the dragging object
-        Destroy(draggingSprite);
-        draggingSprite = null;
-        itemContainer.sprite = item.sprite;
-
-        // Figure out if we are dragging to anything
-        if (hoverContainer != null)
-            slotInteractor.DragTo(this, hoverContainer, hoverSlot);
-        else if(!EventSystem.current.IsPointerOverGameObject())
-            slotInteractor.DragTo(this, eventData.position);
-    }
 
     private void Awake()
     {
@@ -202,15 +137,19 @@ public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         buttonColors.pressedColor = buttonColors.normalColor;
 
         button.colors = buttonColors;
+
+        var itemColor = itemContainer.color;
+        if (transparent)
+            itemColor.a = 0.75f;
+        else
+            itemColor.a = 1.0f;
+        itemContainer.color = itemColor;
     }
 
     private Item item = null;
     private bool selected = false;
     private bool highlighted = false;
+    private bool transparent = false;
 
     private ColorBlock buttonColors;
-    // For when hovering
-    private GameObject draggingSprite = null;
-    private UIAbstractContainer prevHoverContainer = null;
-    private UIItemSlot prevHoverSlot = null;
 }

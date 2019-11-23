@@ -32,7 +32,7 @@ public class Inventory : NetworkBehaviour
     
     // The slot the player currently has selected. May be null (container will be null, slotindex will be -1)
     // Note: NOT SYNCHRONIZED. LOCAL PLAYER ONLY
-    public SlotReference selectedSlot = new SlotReference(null, -1);
+    public SlotReference holdingSlot = new SlotReference(null, -1);
 
     /**
      * Add an item from the world into a container.
@@ -61,9 +61,14 @@ public class Inventory : NetworkBehaviour
     [Command]
     public void CmdMoveItem(GameObject fromContainer, int fromIndex, GameObject toContainer, int toIndex)
     {
-        // TODO: Check for compatibility and etc.
-        GameObject item = fromContainer.GetComponent<Container>().RemoveItem(fromIndex);
-        toContainer.GetComponent<Container>().AddItem(toIndex, item);
+        var from = fromContainer.GetComponent<Container>();
+        var to = toContainer.GetComponent<Container>();
+
+        if (!Container.AreCompatible(to.GetSlot(toIndex), from.GetItem(fromIndex).itemType))
+            throw new System.Exception("Item not compatible with slot");
+
+        GameObject item = from.RemoveItem(fromIndex);
+        to.AddItem(toIndex, item);
     }
 
     public List<Container> GetContainers()

@@ -12,7 +12,7 @@ public class UIGeneralContainer : UIAbstractContainer
     private GameObject slotPrefab;
 
     public bool Show { get; set; }
-    public override bool Highlight { get; set; } // TODO:
+    public override bool Highlighted { get; set; } // TODO:
 
     protected override void RenderContainers(GameObject owner, List<Container> newContainers)
     {
