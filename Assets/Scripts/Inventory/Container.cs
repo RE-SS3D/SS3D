@@ -8,6 +8,8 @@ using UnityEngine;
 /**
  * A container holds items of a given kind.
  * Attach it to an object to give that object the ability to contain.
+ * 
+ * Note: 1 security vulnerability: Any client can subscribe to the container and view its contents (though NOT modify), regardless of distance or status
  */
 public class Container : NetworkBehaviour
 {
@@ -65,7 +67,6 @@ public class Container : NetworkBehaviour
     public Container()
     {
         items = new ItemList();
-        items.Callback += (a, b, c) => OnChange?.Invoke(this);
     }
 
     // Called whenever items in the container change.
@@ -129,14 +130,19 @@ public class Container : NetworkBehaviour
      * Get the slot type of a given slot
      */
     public SlotType GetSlot(int slot) => slots[slot];
-    public int Length() => items.Count;
+    public int Length() => slots.Length;
 
     public override void OnStartServer()
     {
         for (int i = 0; i < slots.Length; ++i)
             items.Add(null);
-    }
 
+        items.Callback += (a, b, c) => OnChange?.Invoke(this);
+    }
+    public override void OnStartClient()
+    {
+        items.Callback += (a, b, c) => OnChange?.Invoke(this);
+    }
 
     readonly private ItemList items;
 }

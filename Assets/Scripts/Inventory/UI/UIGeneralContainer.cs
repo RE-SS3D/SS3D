@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 /**
  * This renders a container of variable length in a generic fashion
@@ -23,16 +24,20 @@ public class UIGeneralContainer : UIAbstractContainer
         int slotStartIndex = 0;
         foreach(var container in newContainers)
         {
-            for(int i = 0; i < containers.Count; ++i)
+            for(int i = 0; i < container.Length(); ++i)
             {
-                var itemSlotObject = Instantiate(slotPrefab, GetPositionFromIndex(slotStartIndex + i), new Quaternion(), transform);
+                var itemSlotObject = Instantiate(slotPrefab, transform);
+                itemSlotObject.transform.localPosition = GetPositionFromIndex(slotStartIndex + i);
                 var slot = itemSlotObject.GetComponent<UIItemSlot>();
 
                 slots.Add(new SlotInfo(container, i, slot));
                 slot.Item = container.GetItem(i);
                 slot.slotInteractor = this;
             }
+            slotStartIndex += container.Length();
         }
+
+        rectTransform.sizeDelta = new Vector2(Math.Min(slotStartIndex, 4) * 50f + 50f, Mathf.Ceil(slotStartIndex / 4f) * 50f);
     }
 
     /**
@@ -59,8 +64,14 @@ public class UIGeneralContainer : UIAbstractContainer
 
     private Vector2 GetPositionFromIndex(int i)
     {
-        return new Vector2((i % 4) * 50f, (i / 4) * 50f);
+        return new Vector2((i % 4) * 50f + 50f, (i / 4) * 50f);
     }
 
+    private void Awake()
+    {
+        rectTransform = GetComponent<RectTransform>();
+    }
+
+    private RectTransform rectTransform;
     private bool show = false;
 }

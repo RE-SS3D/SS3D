@@ -105,7 +105,8 @@ public class UIItemSlot : MonoBehaviour
 
     private void Awake()
     {
-        itemContainer.sprite = emptySprite;
+        if (emptySprite)
+            itemContainer.sprite = emptySprite;
         buttonColors = button.colors;
         CalculateColors();
     }
@@ -138,12 +139,16 @@ public class UIItemSlot : MonoBehaviour
 
         button.colors = buttonColors;
 
-        var itemColor = itemContainer.color;
-        if (transparent)
-            itemColor.a = 0.75f;
-        else
-            itemColor.a = 1.0f;
-        itemContainer.color = itemColor;
+        if (itemContainer.sprite)
+        {
+            var itemColor = itemContainer.color;
+            if (transparent)
+                itemColor.a = 0.75f;
+            else
+                itemColor.a = 1.0f;
+            itemContainer.color = itemColor;
+        }
+        
     }
 
     private Item item = null;

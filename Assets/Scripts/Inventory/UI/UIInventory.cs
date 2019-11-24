@@ -69,9 +69,9 @@ public class UIInventory : MonoBehaviour, UIAbstractContainer.UIInventoryHandler
 
         // If there is an item selected, move the selected item into the given slot.
         // Else if no item is currently held, move the selected item into the the holding slot.
-        if(inventory.holdingSlot.container.GetItem(inventory.holdingSlot.slotIndex) != null)
+        if (inventory.holdingSlot.container.GetItem(inventory.holdingSlot.slotIndex) != null && container.GetItem(slot) == null)
             inventory.CmdMoveItem(inventory.holdingSlot.container.gameObject, inventory.holdingSlot.slotIndex, container.gameObject, slot);
-        else
+        else if (inventory.holdingSlot.container.GetItem(inventory.holdingSlot.slotIndex) == null && container.GetItem(slot) != null)
             inventory.CmdMoveItem(container.gameObject, slot, inventory.holdingSlot.container.gameObject, inventory.holdingSlot.slotIndex);
     }
     public void DropItem(Container from, int fromSlot, Vector2 screenPosition)
@@ -132,9 +132,9 @@ public class UIInventory : MonoBehaviour, UIAbstractContainer.UIInventoryHandler
         }
 
         // Remove any no-longer-needed handlers (excluding player container)
-        var removeList = handlers.FindAll(handler => !containerSets.Keys.Contains(handler.owner) && !handler.owner == inventory.gameObject);
+        var removeList = handlers.FindAll(handler => !containerSets.Keys.Contains(handler.owner) && handler.owner != inventory.gameObject);
         foreach (var handler in removeList)
-            Destroy(handler);
+            Destroy(handler.gameObject);
         handlers = handlers.Except(removeList).ToList();
     }
 

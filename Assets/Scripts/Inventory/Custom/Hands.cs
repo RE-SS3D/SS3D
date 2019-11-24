@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using Mirror;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 /**
@@ -13,6 +15,8 @@ public class Hands : Interaction, Tool
     // A container which manages the hands. Should be sibling component.
     [SerializeField]
     private Container handContainer;
+    [SerializeField]
+    private float handRange;
 
     [System.NonSerialized]
     public int selectedHand = 0;
@@ -28,12 +32,23 @@ public class Hands : Interaction, Tool
         if(secondary)
             return;
 
+        if ((hit.point - transform.position).magnitude > handRange)
+            return;
+
         // To pick up an item, we need to be clicking a free item object with an empty hand
-        if(GetItemInHand() == null)
+        if (GetItemInHand() == null)
         {
-            Item item = hit.collider.gameObject.GetComponent<Item>();
+            var gameObject = hit.collider.gameObject;
+
+            // If an item pick it up
+            Item item = gameObject.GetComponent<Item>();
             if(item && item.transform.parent == null)
                 inventory.CmdAddItem(hit.collider.gameObject, handContainer.gameObject, handSlots[selectedHand]);
+
+            // If it has a container, open the container
+            Container container = gameObject.GetComponent<Container>() ?? gameObject.GetComponentInParent<Container>();
+            if(container)
+                CmdConnectContainer(container.gameObject);
         }
         else
         {
@@ -41,6 +56,28 @@ public class Hands : Interaction, Tool
             inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], hit.point + new Vector3(0f, 0.2f), new Quaternion());
         }
         // TODO: Default hand interactions with non-items
+    }
+
+    /**
+     * Attaches a container to the player's inventory.
+     * Uses the ContainerAttachment component (on the server)
+     * to ensure that the container is removed from the players inventory
+     * when they get out of range.
+     */
+    [Command]
+    private void CmdConnectContainer(GameObject containerObject)
+    {
+        Container container = containerObject.GetComponent<Container>();
+
+        // If there's already an attachment, don't make another one
+        var prevAttaches = GetComponents<ContainerAttachment>();
+        if(prevAttaches.Any(attachment => attachment.container == container))
+            return;
+
+        var attach = gameObject.AddComponent<ContainerAttachment>();
+        attach.inventory = GetComponent<Inventory>();
+        attach.container = container;
+        attach.range = handRange;
     }
 
     private void Awake()

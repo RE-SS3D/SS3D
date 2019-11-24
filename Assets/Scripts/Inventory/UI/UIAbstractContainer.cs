@@ -107,7 +107,9 @@ public abstract class UIAbstractContainer : MonoBehaviour, UIItemSlot.SlotIntera
     void UIItemSlot.SlotInteractor.OnPress(UIItemSlot slot)
     {
         var info = GetSlotLink(slot);
-        inventoryHandler.MoveSelectedItem(info.container, info.index);
+
+        if (info.container != null)
+            inventoryHandler.MoveSelectedItem(info.container, info.index);
     }
 
     void UIItemSlot.SlotInteractor.StartHover(UIItemSlot hovering, UIAbstractContainer overContainer, UIItemSlot over)

@@ -35,6 +35,23 @@ public class Inventory : NetworkBehaviour
     public SlotReference holdingSlot = new SlotReference(null, -1);
 
     /**
+     * Adds a container source.
+     */
+    [Server]
+    public void AddContainer(GameObject containerObject)
+    {
+        objectSources.Add(containerObject);
+    }
+    /**
+     * Removes a container source
+     */
+    [Server]
+    public void RemoveContainer(GameObject containerObject)
+    {
+        objectSources.Remove(containerObject);
+    }
+
+    /**
      * Add an item from the world into a container.
      */
     [Command]
@@ -78,14 +95,9 @@ public class Inventory : NetworkBehaviour
         foreach (var obj in objectSources)
         {
             if (obj == null)
-            {
                 Debug.Log("Still have that mirror bug where transmitting self in OnStartServer for some reason doesnt fucking work");
-            }
             else
-            {
-                containers.AddRange(obj.GetComponents<Container>());
                 containers.AddRange(obj.GetComponentsInChildren<Container>());
-            }
         }
 
         return containers;

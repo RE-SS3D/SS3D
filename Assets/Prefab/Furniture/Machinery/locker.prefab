@@ -330,6 +330,7 @@ GameObject:
   - component: {fileID: 1542474723672914225}
   - component: {fileID: 141301939705353520}
   - component: {fileID: 5227133807252648279}
+  - component: {fileID: 7486643788515421600}
   m_Layer: 0
   m_Name: locker
   m_TagString: Untagged
@@ -402,3 +403,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   compressRotation: 1
+--- !u!114 &7486643788515421600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5599841925940684376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c66d43c6dbcfac444b581f95607728c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncInterval: 0.1
+  containerName: locker
+  containerType: 0
+  slots: 00000000000000000000000000000000

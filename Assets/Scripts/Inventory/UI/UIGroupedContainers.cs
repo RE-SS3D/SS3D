@@ -22,7 +22,7 @@ public class UIGroupedContainers : UIAbstractContainer
 
     // Editor properties
     [SerializeField]
-    private ItemSlot[]       uiSlots;
+    private ItemSlot[] uiSlots;
 
     // Runtime
     public override bool Highlighted { get; set; }

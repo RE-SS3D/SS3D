@@ -142,12 +142,14 @@ public class DraggingOperation
 
             prevHover = hover;
 
-            var hoverSlot = hover.container.GetSlotLink(hover.slot);
-
-            if (hover.slot && uiInventory.CanMoveItem(holding.container, holding.index, hoverSlot.container, hoverSlot.index))
+            if (hover.slot)
             {
-                prevHoverSlot = hoverSlot;
-                hover.slot.Highlighted = true;
+                var hoverSlot = hover.container.GetSlotLink(hover.slot);
+                if (uiInventory.CanMoveItem(holding.container, holding.index, hoverSlot.container, hoverSlot.index))
+                {
+                    prevHoverSlot = hoverSlot;
+                    hover.slot.Highlighted = true;
+                }
             }
             else if (hover.container && uiInventory.CanMoveItem(holding.container, holding.index, hover.container))
                 hover.container.Highlighted = true;

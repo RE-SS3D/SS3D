@@ -1328,6 +1328,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   handContainer: {fileID: 1028998233664674745}
+  handRange: 5
 --- !u!114 &8229646440758677250
 MonoBehaviour:
   m_ObjectHideFlags: 0
