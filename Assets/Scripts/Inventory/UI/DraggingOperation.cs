@@ -135,7 +135,7 @@ public class DraggingOperation : MonoBehaviour, IDragHandler, IEndDragHandler
             if (hover.slot)
             {
                 var hoverSlot = hover.container.GetSlotLink(hover.slot);
-                if (uiInventory.CanMoveItem(holding.container, holding.index, hoverSlot.container, hoverSlot.index))
+                if (hoverSlot.container && holding.container.GetItem(holding.index) != null && uiInventory.CanMoveItem(holding.container, holding.index, hoverSlot.container, hoverSlot.index))
                 {
                     prevHoverSlot = hoverSlot;
                     hover.slot.Highlighted = true;

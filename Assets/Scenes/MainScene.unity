@@ -21013,7 +21013,7 @@ PrefabInstance:
     - target: {fileID: 6325457104804831208, guid: 02fc5f12ab2897c49b2df843f364b6a1,
         type: 3}
       propertyPath: m_ConnectedAnchor.z
-      value: 0.016470432
+      value: 0.016470406
       objectReference: {fileID: 0}
     - target: {fileID: 5528976441724070652, guid: 02fc5f12ab2897c49b2df843f364b6a1,
         type: 3}
