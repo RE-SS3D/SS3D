@@ -12,7 +12,7 @@ using static UIAbstractContainer;
  * When a hover begins, the item being dragged will be instantly moved into the holding slot (e.g. the hand), made slightly transparent, and when dragging ends, 
  * the item will be either moved to the given place if valid, or moved back to the original slot.
  */
-public class DraggingOperation
+public class DraggingOperation : MonoBehaviour, IDragHandler, IEndDragHandler
 {
     public struct UISlotRef
     {
@@ -73,21 +73,9 @@ public class DraggingOperation
         return slotRef;
     }
 
-    public DraggingOperation(UIInventoryHandler uiInventory, GameObject canvas)
+    public bool OnBeginDrag(SlotInfo origin, PointerEventData eventData)
     {
-        this.uiInventory = uiInventory;
-        this.canvas = canvas;
-    }
-
-    public bool OnBeginDrag(PointerEventData eventData)
-    {
-        UISlotRef slotRef = FindSlotAtPointer(eventData);
-
-        // Don't perform the drag if we aren't dragging a slot
-        if (!slotRef.slot)
-            return false;
-        
-        origin = slotRef.container.GetSlotLink(slotRef.slot);
+        this.origin = origin;
 
         if (origin.container.GetItem(origin.index) == null)
             return false;
@@ -118,6 +106,8 @@ public class DraggingOperation
                 holding.uiSlot.Transparent = true;
             }
         }
+
+        eventData.pointerDrag = gameObject;
 
         return true;
     }
@@ -207,10 +197,12 @@ public class DraggingOperation
 
         origin = new SlotInfo();
         holding = new SlotInfo();
+
+        Destroy(this);
     }
 
-    private GameObject canvas;
-    private UIInventoryHandler uiInventory;
+    public GameObject canvas;
+    public UIInventoryHandler uiInventory;
 
     private SlotInfo origin;
     private SlotInfo holding;

@@ -20,6 +20,8 @@ public abstract class UIAbstractContainer : MonoBehaviour, UIItemSlot.SlotIntera
         SlotInfo GetHoldingSlot();
         UIAbstractContainer FindHandler(Container container);
 
+        void OnDragStart(SlotInfo slot, PointerEventData eventData);
+
         bool CanMoveItem(Container from, int fromSlot, Container to, int toSlot);
         bool CanMoveItem(Container from, int fromSlot, UIAbstractContainer to); // TODO: Move into UIAbstractContainer
 
@@ -128,28 +130,10 @@ public abstract class UIAbstractContainer : MonoBehaviour, UIItemSlot.SlotIntera
         else
             overContainer.Highlighted = false;
     }
-
-    void UIItemSlot.SlotInteractor.DragTo(UIItemSlot from, UIAbstractContainer toContainer, UIItemSlot toSlot)
+    void UIItemSlot.SlotInteractor.OnDragStart(UIItemSlot from, PointerEventData eventData)
     {
-        var fromSlotInfo = GetSlotLink(from);
-        try
-        {
-            if(toSlot)
-            {
-                var toSlotInfo = toContainer.GetSlotLink(toSlot);
-                inventoryHandler.MoveItem(fromSlotInfo.container, fromSlotInfo.index, toSlotInfo.container, toSlotInfo.index);
-            }
-            else
-                inventoryHandler.MoveItem(fromSlotInfo.container, fromSlotInfo.index, toContainer);
-        }
-        catch {}
+        inventoryHandler.OnDragStart(GetSlotLink(from), eventData);
     }
-    void UIItemSlot.SlotInteractor.DragTo(UIItemSlot slot, Vector2 screenPosition)
-    {
-        var fromSlotInfo = GetSlotLink(slot);
-        inventoryHandler.DropItem(fromSlotInfo.container, fromSlotInfo.index, screenPosition);
-    }
-
 
     protected List<SlotInfo> slots = new List<SlotInfo>();
 

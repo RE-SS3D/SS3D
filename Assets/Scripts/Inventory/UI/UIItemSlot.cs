@@ -8,32 +8,13 @@ using UnityEngine.UI;
  * Controls a single slot that displays a single item
  */
 [ExecuteInEditMode]
-public class UIItemSlot : MonoBehaviour
+public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler
 {
     public interface SlotInteractor
     {
         // When the given item slot is tapped
         void OnPress(UIItemSlot slot);
-
-        /// <summary>
-        /// When the item is dragged to a container. Can either be dragged just to that container, or to a slot in that container.
-        /// 
-        /// Note: The UIItemSlot does not assume a drag results in the item moving, and will function correctly whether or not
-        /// the item moves
-        /// </summary>
-        /// <param name="from">The UISlot being dragged</param>
-        /// <param name="toContainer">The container being dragged to</param>
-        /// <param name="toSlot">The slot being dragged to within the container. May be null.</param>
-        void DragTo(UIItemSlot from, UIAbstractContainer toContainer, UIItemSlot toSlot = null);
-        /// <summary>
-        /// When the item is dragged to the world.
-        /// 
-        /// Note: The UIItemSlot does not assume a drag results in the item moving, and will function correctly whether or not
-        /// the item moves
-        /// </summary>
-        /// <param name="slot">The UISlot being dragged</param>
-        /// <param name="position">The raycast indicating where the drag ended</param>
-        void DragTo(UIItemSlot slot, Vector2 screenPosition);
+        void OnDragStart(UIItemSlot from, PointerEventData eventData);
 
         // When the item is being dragged, and it hovers over the given slot
         void StartHover(UIItemSlot hovering, UIAbstractContainer overContainer, UIItemSlot over = null);
@@ -69,6 +50,7 @@ public class UIItemSlot : MonoBehaviour
         set {
             item = value;
             itemContainer.sprite = item == null ? emptySprite : item.sprite;
+            CalculateColors();
         }
     }
     public bool Selected {
@@ -99,8 +81,20 @@ public class UIItemSlot : MonoBehaviour
     }
     public GameObject CreateDraggableSprite(Vector2 position, Quaternion quaternion, Transform parent)
     {
-        return Instantiate(itemContainer.gameObject, position, quaternion, transform);
+        var itemObject = Instantiate(itemContainer.gameObject, position, quaternion, transform);
+        var image = itemObject.GetComponent<Image>();
+        var transparentColor = image.color;
+        transparentColor.a = 0.75f;
+        image.color = transparentColor;
+        return itemObject;
     }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        slotInteractor.OnDragStart(this, eventData);
+    }
+    // Required to do OnBeginDrag :/
+    public void OnDrag(PointerEventData eventData) { }
 
 
     private void Awake()
@@ -139,15 +133,14 @@ public class UIItemSlot : MonoBehaviour
 
         button.colors = buttonColors;
 
-        if (itemContainer.sprite)
-        {
-            var itemColor = itemContainer.color;
-            if (transparent)
-                itemColor.a = 0.75f;
-            else
-                itemColor.a = 1.0f;
-            itemContainer.color = itemColor;
-        }
+        var itemColor = itemContainer.color;
+        if (itemContainer.sprite == null)
+            itemColor.a = 0.0f;
+        else if (transparent)
+            itemColor.a = 0.75f;
+        else
+            itemColor.a = 1.0f;
+        itemContainer.color = itemColor;
         
     }
 

@@ -14,7 +14,7 @@ using UnityEngine.EventSystems;
  * Containers attached to the player are dealt with two 'special' ui elements, one for the body, one for the hotbar.
  * All other containers are handled by a creating a 'generic' container.
  */
-public class UIInventory : MonoBehaviour, UIAbstractContainer.UIInventoryHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class UIInventory : MonoBehaviour, UIAbstractContainer.UIInventoryHandler
 {
     // The prefab for when a new container needs to be made
     public GameObject genericContainerPrefab;
@@ -85,26 +85,6 @@ public class UIInventory : MonoBehaviour, UIAbstractContainer.UIInventoryHandler
         inventory.CmdPlaceItem(from.gameObject, fromSlot, hit.point + hit.normal * 0.2f, new Quaternion());
     }
 
-    // Dragging here just passes everything onto the DraggingOperation class,
-    // which handles all the actual logic.
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        draggingOperation = new DraggingOperation(this, gameObject);
-
-        // If the drag isn't valid, fail to drag.
-        if(!draggingOperation.OnBeginDrag(eventData))
-            eventData.pointerDrag = null;
-    }
-    public void OnDrag(PointerEventData eventData)
-    {
-        draggingOperation.OnDrag(eventData);
-    }
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        draggingOperation.OnEndDrag(eventData);
-        draggingOperation = null;
-    }
-
     private void OnInventoryChange()
     {
         var containers = inventory.GetContainers();
@@ -136,6 +116,20 @@ public class UIInventory : MonoBehaviour, UIAbstractContainer.UIInventoryHandler
         foreach (var handler in removeList)
             Destroy(handler.gameObject);
         handlers = handlers.Except(removeList).ToList();
+    }
+
+    public void OnDragStart(UIAbstractContainer.SlotInfo slot, PointerEventData eventData)
+    {
+        draggingOperation = gameObject.AddComponent<DraggingOperation>();
+        draggingOperation.uiInventory = this;
+        draggingOperation.canvas = gameObject;
+
+        // If the drag isn't valid, fail to drag.
+        if (!draggingOperation.OnBeginDrag(slot, eventData))
+        {
+            eventData.pointerDrag = null;
+            Destroy(draggingOperation);
+        }
     }
 
     private Inventory inventory;

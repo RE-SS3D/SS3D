@@ -37,7 +37,7 @@ public class UIGeneralContainer : UIAbstractContainer
             slotStartIndex += container.Length();
         }
 
-        rectTransform.sizeDelta = new Vector2(Math.Min(slotStartIndex, 4) * 50f + 50f, Mathf.Ceil(slotStartIndex / 4f) * 50f);
+        rectTransform.sizeDelta = new Vector2(Math.Min(slotStartIndex, 4) * 52f + 52f, Mathf.Ceil(slotStartIndex / 4f) * 52f + 2f);
     }
 
     /**
@@ -58,13 +58,13 @@ public class UIGeneralContainer : UIAbstractContainer
             slotIndex++;
         }
 
-        if(slots[slotIndex].container == container)
+        if(slots.Count > slotIndex && slots[slotIndex].container == container)
             Debug.LogError("UIGeneralContainer.UpdateContainer was not meant to handle container size changing.");
     }
 
     private Vector2 GetPositionFromIndex(int i)
     {
-        return new Vector2((i % 4) * 50f + 50f, (i / 4) * 50f);
+        return new Vector2((i % 4) * 52f + 52f, (i / 4) * 52f + 2f);
     }
 
     private void Awake()
