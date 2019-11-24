@@ -98,7 +98,7 @@ public class Hands : Interaction, Tool
         if (handSlots[0] == -1 || handSlots[1] == -1)
             Debug.LogWarning("Player container does not contain slots for hands upon initialization. Maybe they were severed though?");
 
-        handContainer.OnChange += c => UpdateTool();
+        handContainer.onChange += (a, b, c) => UpdateTool();
         if (handContainer.GetItems().Count > 0)
         {
             inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[selectedHand]);

@@ -70,7 +70,14 @@ public class Container : NetworkBehaviour
     }
 
     // Called whenever items in the container change.
-    public event Action<Container> OnChange;
+    public event SyncList<GameObject>.SyncListChanged onChange {
+        add {
+            items.Callback += value;
+        }
+        remove {
+            items.Callback -= value;
+        }
+    }
 
     /**
      * Add an item to a specific slot
@@ -136,12 +143,6 @@ public class Container : NetworkBehaviour
     {
         for (int i = 0; i < slots.Length; ++i)
             items.Add(null);
-
-        items.Callback += (a, b, c) => OnChange?.Invoke(this);
-    }
-    public override void OnStartClient()
-    {
-        items.Callback += (a, b, c) => OnChange?.Invoke(this);
     }
 
     readonly private ItemList items;

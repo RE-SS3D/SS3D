@@ -107,7 +107,7 @@ public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler
     private void Start() => CalculateColors();
     private void OnValidate()
     {
-        if (itemContainer && emptySprite)
+        if (itemContainer && itemContainer.sprite == null && emptySprite)
             itemContainer.sprite = emptySprite;
 
         if(!button)

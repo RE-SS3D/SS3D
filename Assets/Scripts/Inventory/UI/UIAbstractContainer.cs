@@ -49,11 +49,6 @@ public abstract class UIAbstractContainer : MonoBehaviour, UIItemSlot.SlotIntera
     }
     #endregion
 
-    public UIAbstractContainer()
-    {
-        updateContainer = RenderContainer;
-    }
-
     public abstract bool Highlighted { get; set; }
 
     [System.NonSerialized]
@@ -65,17 +60,42 @@ public abstract class UIAbstractContainer : MonoBehaviour, UIItemSlot.SlotIntera
 
         RenderContainers(newOwner, newContainers);
 
-        foreach(var container in oldContainers)
+        /* C# events are very silly.
+         * To be able to add AND remove delegates (which we need to do), we cannot allow the delegates
+         * to be anonymous, because if they are there is no way of referencing them. Therefore we have to create
+         * the delegate, store it, and re-use that reference to remove the delegate.
+         * 
+         * IF at any point in the chain an anonymous function is used, the whole thing goes kaput.
+         */
+        foreach (var container in oldContainers)
+        {
             if(!newContainers.Contains(container))
-                container.OnChange -= updateContainer;
+            {
+                container.onChange -= delegates[container];
+                delegates.Remove(container);
+            }
+        }
         foreach(var container in newContainers)
+        {
             if(!oldContainers.Contains(container))
-                container.OnChange += updateContainer;
+            {
+                Mirror.SyncList<GameObject>.SyncListChanged del = (a, b, c) => RenderContainer(container);
+                delegates.Add(container, del);
+                container.onChange += del;
+            }
+        }
 
         owner = newOwner;
         if(containers == oldContainers)
             containers = newContainers;
     }
+    public virtual void Unlink()
+    {
+        foreach(var container in containers)
+            container.onChange -= delegates[container];
+        delegates.Clear();
+    }
+
     /**
      * Get the container slot referred to by a UIItemSlot in this renderer's posession
      */
@@ -138,5 +158,5 @@ public abstract class UIAbstractContainer : MonoBehaviour, UIItemSlot.SlotIntera
     protected List<SlotInfo> slots = new List<SlotInfo>();
 
     // Used for saving the delegate information, as C#'s delegate event handling is unfortunately inefficient
-    private Action<Container> updateContainer;
+    private Dictionary<Container, Mirror.SyncList<GameObject>.SyncListChanged> delegates = new Dictionary<Container, Mirror.SyncList<GameObject>.SyncListChanged>();
 }

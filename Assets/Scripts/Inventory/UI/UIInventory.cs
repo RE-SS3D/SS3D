@@ -114,7 +114,11 @@ public class UIInventory : MonoBehaviour, UIAbstractContainer.UIInventoryHandler
         // Remove any no-longer-needed handlers (excluding player container)
         var removeList = handlers.FindAll(handler => !containerSets.Keys.Contains(handler.owner) && handler.owner != inventory.gameObject);
         foreach (var handler in removeList)
+        {
+            handler.Unlink();
             Destroy(handler.gameObject);
+        }
+
         handlers = handlers.Except(removeList).ToList();
     }
 
