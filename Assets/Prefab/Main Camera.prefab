@@ -100,14 +100,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  targetOffset: {x: 0, y: 1.8, z: 0}
   distance: 2
   angle: 0
   vAngle: 20
-  scrollSpeed: 2
-  rotationSpeed: 110
-  minDistance: 0.5
-  maxDistance: 20
 --- !u!45 &8192375152356925987
 Skybox:
   m_ObjectHideFlags: 0

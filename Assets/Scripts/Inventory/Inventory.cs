@@ -1,6 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
 using Mirror;
+using System.Collections.Generic;
 using UnityEngine;
 
 /**
@@ -11,12 +10,45 @@ using UnityEngine;
  */
 public class Inventory : NetworkBehaviour
 {
+    public struct SlotReference
+    {
+        public SlotReference(Container container, int slotIndex)
+        {
+            this.container = container;
+            this.slotIndex = slotIndex;
+        }
+
+        public Container container;
+        public int slotIndex;
+    }
+
     private class GameObjectList : SyncList<GameObject> { }
 
     // Called whenever the containers change
     public event GameObjectList.SyncListChanged EventOnChange {
         add { objectSources.Callback += value; }
         remove { objectSources.Callback -= value; }
+    }
+    
+    // The slot the player currently has selected. May be null (container will be null, slotindex will be -1)
+    // Note: NOT SYNCHRONIZED. LOCAL PLAYER ONLY
+    public SlotReference holdingSlot = new SlotReference(null, -1);
+
+    /**
+     * Adds a container source.
+     */
+    [Server]
+    public void AddContainer(GameObject containerObject)
+    {
+        objectSources.Add(containerObject);
+    }
+    /**
+     * Removes a container source
+     */
+    [Server]
+    public void RemoveContainer(GameObject containerObject)
+    {
+        objectSources.Remove(containerObject);
     }
 
     /**
@@ -46,22 +78,26 @@ public class Inventory : NetworkBehaviour
     [Command]
     public void CmdMoveItem(GameObject fromContainer, int fromIndex, GameObject toContainer, int toIndex)
     {
-        // TODO: Check for compatibility and etc.
-        GameObject item = fromContainer.GetComponent<Container>().RemoveItem(fromIndex);
-        toContainer.GetComponent<Container>().AddItem(toIndex, item);
+        var from = fromContainer.GetComponent<Container>();
+        var to = toContainer.GetComponent<Container>();
+
+        if (!Container.AreCompatible(to.GetSlot(toIndex), from.GetItem(fromIndex).itemType))
+            throw new System.Exception("Item not compatible with slot");
+
+        GameObject item = from.RemoveItem(fromIndex);
+        to.AddItem(toIndex, item);
     }
 
     public List<Container> GetContainers()
     {
         List<Container> containers = new List<Container>();
 
-        containers.AddRange(gameObject.GetComponents<Container>());
         foreach (var obj in objectSources)
-        { 
+        {
             if (obj == null)
                 Debug.Log("Still have that mirror bug where transmitting self in OnStartServer for some reason doesnt fucking work");
             else
-                containers.AddRange(obj.GetComponents<Container>());
+                containers.AddRange(obj.GetComponentsInChildren<Container>());
         }
 
         return containers;
@@ -100,7 +136,7 @@ public class Inventory : NetworkBehaviour
     [ClientRpc]
     private void RpcDespawn(GameObject item)
     {
-        if(!isServer) // Prevent server double-dipping
+        if (!isServer) // Prevent server double-dipping
             Despawn(item);
     }
 
@@ -119,7 +155,7 @@ public class Inventory : NetworkBehaviour
     [ClientRpc]
     private void RpcSpawn(GameObject item, Vector3 position, Quaternion rotation)
     {
-        if(!isServer) // Silly thing to prevent looping when server and client are one
+        if (!isServer) // Silly thing to prevent looping when server and client are one
             Spawn(item, position, rotation);
     }
 

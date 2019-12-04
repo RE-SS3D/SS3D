@@ -167,7 +167,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7765767039528054866}
   - component: {fileID: 4697256957748171575}
-  - component: {fileID: 2887063182368509390}
+  - component: {fileID: 711011559727933381}
   - component: {fileID: 2031915424835862766}
   - component: {fileID: 9077860433131475901}
   - component: {fileID: 1689592630}
@@ -209,7 +209,7 @@ MonoBehaviour:
   localPlayerAuthority: 0
   m_AssetId: c990feb6647aea545be9563fad3ffde1
   m_SceneId: 0
---- !u!114 &2887063182368509390
+--- !u!114 &711011559727933381
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -218,11 +218,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 6746060338138399297}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Script: {fileID: 11500000, guid: d58f89848030a2548b9061e6d808403f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   compressRotation: 1
+  snappingDistance: 1
 --- !u!114 &2031915424835862766
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,60 +1,153 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 /**
  * Controls a single slot that displays a single item
  */
 [ExecuteInEditMode]
-public class UIItemSlot : MonoBehaviour
+public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler
 {
+    public interface SlotInteractor
+    {
+        // When the given item slot is tapped
+        void OnPress(UIItemSlot slot);
+        void OnDragStart(UIItemSlot from, PointerEventData eventData);
+
+        // When the item is being dragged, and it hovers over the given slot
+        void StartHover(UIItemSlot hovering, UIAbstractContainer overContainer, UIItemSlot over = null);
+        // When the item is being dragged, and it stops hovering over the given slot
+        void StopHover(UIItemSlot hovering, UIAbstractContainer overContainer, UIItemSlot over = null);
+    }
+
+    // Unity Inspector
+    // The place in which the item sprite goes
     [SerializeField]
-    private UnityEngine.UI.Image itemContainer;
+    private Image itemContainer;
     [SerializeField]
-    private UnityEngine.UI.Image border;
-    [SerializeField]
-    private Color activeColor = Color.white;
-    [SerializeField]
-    private Color inactiveColor = Color.grey;
+    private Button button;
+    // The default image for when there is no sprite
     [SerializeField]
     private Sprite emptySprite;
-    // TODO: On press
 
-    public void SetSprite(Sprite sprite)
-    {
-        if(!active && sprite != null)
-            SetActive(true);
+    [SerializeField]
+    private Color highlightedColor;
+    [SerializeField]
+    private Color selectedColor;
+    [SerializeField]
+    private Color defaultColor;
+    [SerializeField]
+    private Color disabledColor;
 
-        if(sprite != null)
-            itemContainer.sprite = sprite;
-        else
-            itemContainer.sprite = emptySprite;
-    }
-    public void SetActive(bool active)
-    {
-        this.active = active;
+    // Runtime Variables
+    [System.NonSerialized]
+    public SlotInteractor slotInteractor;
 
-        // TODO: Correct logic?
-        if(!active)
-            SetSprite(null);
+    public Item Item {
+        get => item;
+        set {
+            item = value;
+            itemContainer.sprite = item == null ? emptySprite : item.sprite;
+            CalculateColors();
+        }
     }
-    public void SetHighlight(bool value)
+    public bool Selected {
+        get => selected;
+        set {
+            selected = value;
+            CalculateColors();
+        }
+    }
+    public bool Highlighted {
+        get => highlighted;
+        set {
+            highlighted = value;
+            CalculateColors();
+        }
+    }
+    public bool Transparent {
+        get => transparent;
+        set {
+            transparent = value;
+            CalculateColors();
+        }
+    }
+
+    public void Press()
     {
-        border.color = value ? activeColor : inactiveColor;
-        // itemContainer.color = value ? activeColor : inactiveColor;
+        slotInteractor.OnPress(this);
     }
+    public GameObject CreateDraggableSprite(Vector2 position, Quaternion quaternion, Transform parent)
+    {
+        var itemObject = Instantiate(itemContainer.gameObject, position, quaternion, transform);
+        var image = itemObject.GetComponent<Image>();
+        var transparentColor = image.color;
+        transparentColor.a = 0.75f;
+        image.color = transparentColor;
+        return itemObject;
+    }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        slotInteractor.OnDragStart(this, eventData);
+    }
+    // Required to do OnBeginDrag :/
+    public void OnDrag(PointerEventData eventData) { }
+
 
     private void Awake()
     {
-        itemContainer.sprite = emptySprite;
-        itemContainer.color = active ? activeColor : inactiveColor;
-        border.color = active ? activeColor : inactiveColor;
+        if (emptySprite)
+            itemContainer.sprite = emptySprite;
+        buttonColors = button.colors;
+        CalculateColors();
     }
+    private void Start() => CalculateColors();
     private void OnValidate()
     {
-        if (itemContainer && emptySprite)
+        if (itemContainer && itemContainer.sprite == null && emptySprite)
             itemContainer.sprite = emptySprite;
+
+        if(!button)
+            button = GetComponent<Button>();
+        buttonColors = button.colors;
+    }
+    private void OnDisable() => CalculateColors();
+    private void OnEnable() => CalculateColors();
+
+    private void CalculateColors()
+    {
+        if (!enabled)
+            buttonColors.normalColor = disabledColor;
+        else if (highlighted)
+            buttonColors.normalColor = highlightedColor;
+        else if (selected)
+            buttonColors.normalColor = selectedColor;
+        else
+            buttonColors.normalColor = defaultColor;
+
+        buttonColors.highlightedColor = buttonColors.normalColor;
+        buttonColors.pressedColor = buttonColors.normalColor;
+
+        button.colors = buttonColors;
+
+        var itemColor = itemContainer.color;
+        if (itemContainer.sprite == null)
+            itemColor.a = 0.0f;
+        else if (transparent)
+            itemColor.a = 0.75f;
+        else
+            itemColor.a = 1.0f;
+        itemContainer.color = itemColor;
+        
     }
 
-    private bool active = false;
+    private Item item = null;
+    private bool selected = false;
+    private bool highlighted = false;
+    private bool transparent = false;
+
+    private ColorBlock buttonColors;
 }

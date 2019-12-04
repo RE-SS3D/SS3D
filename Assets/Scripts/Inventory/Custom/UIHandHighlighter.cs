@@ -21,7 +21,7 @@ public class UIHandHighlighter : MonoBehaviour
 
     private void OnHandChange(int selectedHand)
     {
-        for (int i = 0; i < handSlots.Length; ++i)
-            handSlots[i].SetHighlight(selectedHand == i);
+        for(int i = 0; i < handSlots.Length; i++)
+            handSlots[i].Selected = selectedHand == i;
     }
 }

@@ -1,22 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 using Mirror;
 
 /**
- * A container for the items that a creature is holding in their hands.
- * Additionally ensures those items are rendered in the player's hands.
+ * A container for the items that a creature can display on their body
  */
-public class HandContainer : Container
+public class WearableContainer : Container
 {
-    // The left and right hand slots
-    public GameObject[] handSlots;
+    public GameObject[] displays;
 
     // Override add item so any changes refresh the interaction system's tool
     public override void AddItem(int index, GameObject item)
     {
         base.AddItem(index, item);
 
-        // Place item in hand
+        // Place item in display position
         PlaceItem(index, item);
     }
     public override GameObject RemoveItem(int slot)
@@ -26,19 +25,13 @@ public class HandContainer : Container
         return base.RemoveItem(slot);
     }
 
-    // Set the slot requirements defaults
-    private void Reset()
+    public void OnValidate()
     {
-        // Set defaults for container.
-        containerName = "Hands";
-        containerType = Type.Interactors;
-        slots = new SlotType[2];
-        slots[0] = SlotType.LeftHand;
-        slots[1] = SlotType.RightHand;
+        Array.Resize(ref displays, slots.Length);
     }
     public override void OnStartClient()
     {
-        // Load what is in this player's hands and place appropriately
+        // Load what is in this slot and place appropriately
         for (int i = 0; i < Length(); ++i)
         {
             var item = GetItem(i);
@@ -51,7 +44,7 @@ public class HandContainer : Container
     }
 
     /**
-     * Places an item into the player's hand.
+     * Places an item into the display position.
      * Should be called by server, which then calls on all clients.
      */
     private void PlaceItem(int index, GameObject item)
@@ -64,7 +57,7 @@ public class HandContainer : Container
         if (item.GetComponent<NetworkTransform>())
             item.GetComponent<NetworkTransform>().enabled = false;
 
-        item.transform.SetParent(handSlots[index].transform, false);
+        item.transform.SetParent(displays[index].transform, false);
         item.transform.localPosition = new Vector3();
         item.transform.localRotation = new Quaternion();
 
@@ -79,7 +72,7 @@ public class HandContainer : Container
     }
 
     /**
-     * Removes an item from the player's hand
+     * Removes an item from the display
      * Should be called by server, which then calls on all clients
      */
     private void UnplaceItem(int index, GameObject item)
