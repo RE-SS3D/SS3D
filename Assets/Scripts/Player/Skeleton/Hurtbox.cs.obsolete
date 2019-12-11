@@ -1,0 +1,29 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Mirror.Examples.Basic
+{
+	public class Hurtbox : NetworkBehaviour
+	{
+		public float damageAmount = 5;
+		public float invincibleTime = 1;	//Seconds, how long until this hitbox can damage again
+		bool ableToHit = true;	//Used for i-frames
+		
+		void SetAbleToHit() {	//Function for use with invoke(func, delay)
+			ableToHit = true;
+		}
+		
+		void OnTriggerEnter(Collider other) {
+			if (true) {	//Change to if isServer
+				Hitbox hitbox = other.gameObject.GetComponent<Hitbox>();	//Change this to use layers
+				if (hitbox != null & ableToHit) {
+					//Wham!
+					hitbox.bp.damageMe("Brute", damageAmount);
+					ableToHit = false;
+					Invoke("SetAbleToHit", invincibleTime);
+				}
+			}
+		}
+	}
+}

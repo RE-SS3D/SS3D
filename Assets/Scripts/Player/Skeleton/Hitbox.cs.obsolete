@@ -1,0 +1,27 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Mirror.Examples.Basic
+{
+	public class Hitbox : NetworkBehaviour
+	{
+		//Change inheritance to monoBehaviour eventually if networking not used
+		
+		[HideInInspector]
+		//Set by the BodyPart, this is just a handy ref
+		public BodyPart bp;
+		
+		// Start is called before the first frame update
+		void Start()
+		{
+			
+		}
+
+		// Update is called once per frame
+		void Update()
+		{
+			
+		}
+	}
+}
