@@ -10,6 +10,12 @@ using UnityEngine;
  */
 public class Inventory : NetworkBehaviour
 {
+    public class InventoryOperationException : System.Exception {
+        public InventoryOperationException() { }
+        public InventoryOperationException(string message)
+            : base(message)
+        { }
+    }
     public struct SlotReference
     {
         public SlotReference(Container container, int slotIndex)
@@ -82,7 +88,7 @@ public class Inventory : NetworkBehaviour
         var to = toContainer.GetComponent<Container>();
 
         if (!Container.AreCompatible(to.GetSlot(toIndex), from.GetItem(fromIndex).itemType))
-            throw new System.Exception("Item not compatible with slot");
+            throw new InventoryOperationException("Item not compatible with slot");
 
         GameObject item = from.RemoveItem(fromIndex);
         to.AddItem(toIndex, item);
