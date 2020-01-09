@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
@@ -29,7 +27,14 @@ public class CameraFollow : MonoBehaviour
     public float distance = 3f; // total distance from the target
     public float angle = 90f;   // horizontal angle of the camera (around the z axis)
     public float vAngle = 60f;  // angle above the player
-    
+
+    private ChatManager chatManager;
+
+    private void Start()
+    {
+        chatManager = FindObjectOfType<ChatManager>();
+    }
+
     /**
      * Updates the target the camera is meant to follow
      */
@@ -48,6 +53,13 @@ public class CameraFollow : MonoBehaviour
      */
     public void Update()
     {
+        //Ignore camera controls when typing in chat
+        ChatWindow chatWindow = chatManager.GetChatWindow();
+        if (chatWindow != null && chatWindow.PlayerIsTyping())
+        {
+            return;
+        }
+        
         // Check for double tap
         if (Input.GetButtonDown("Camera Rotation"))
             prevHorizontalAxisPress = Time.time;
