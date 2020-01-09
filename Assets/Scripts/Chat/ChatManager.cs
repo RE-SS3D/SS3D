@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using EasyButtons;
 using Mirror;
@@ -8,27 +7,39 @@ using UnityEngine.Events;
 
 public class ChatManager : NetworkBehaviour
 {
-    [SerializeField]
-    public Message debugMessage;
+    [SerializeField] public Message debugMessage;
 
     public GameObject Sender;
 
-    [Header("References")]
-    [SerializeField]
+    [Header("References")] [SerializeField]
     private ChatChannels chatChannels;
 
-    [SerializeField]
-    private ChatWindow chatWindowPrefab;
+    [SerializeField] private ChatWindow chatWindowPrefab;
 
-    [SerializeField]
-    private List<Message> messages = new List<Message>();
+    [SerializeField] private List<Message> messages = new List<Message>();
 
     public UnityEvent messageReceivedEvent;
 
+    private bool chatCreated;
+    private ChatWindow chatWindow;
 
-    private void Start()
+    private void Update()
     {
+        if (chatCreated)
+        {
+            return;
+        }
+
+        //TODO: This should probably be converted to an Initialize() method and simply called after the player is spawned.
+        NetworkIdentity player = ClientScene.localPlayer;
+        if (player == null)
+        {
+            return;
+        }
+
+        Sender = player.gameObject;
         CreateChatWindow(new ChatTabData("All", chatChannels.GetChannels(), false, null), null, Vector2.zero);
+        chatCreated = true;
     }
 
     public List<Message> GetMessages(List<ChatChannel> channels)
@@ -46,13 +57,6 @@ public class ChatManager : NetworkBehaviour
         messageReceivedEvent.Invoke();
     }
 
-    [Command]
-    public void CmdSendMessage(Message message)
-    {
-        message.Sender = Sender.name;
-        RpcReceiveMessage(message);
-    }
-
     /// <summary>
     /// Creates a new chat window with the supplied tab data.
     /// Adds a tab to an existing window if an existing window is supplied.
@@ -68,9 +72,18 @@ public class ChatManager : NetworkBehaviour
         }
         else
         {
-            ChatWindow window = Instantiate(chatWindowPrefab, transform);
-            if (position != Vector2.zero) window.transform.position = position;
-            window.Init(tabData, this);
+            chatWindow = Instantiate(chatWindowPrefab, transform);
+            if (position != Vector2.zero)
+            {
+                chatWindow.transform.position = position;
+            }
+
+            chatWindow.Init(tabData, this, Sender.GetComponent<ChatRegister>());
         }
+    }
+
+    public ChatWindow GetChatWindow()
+    {
+        return chatWindow;
     }
 }

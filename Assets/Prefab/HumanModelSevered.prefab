@@ -1132,6 +1132,7 @@ GameObject:
   - component: {fileID: 1028998233664674745}
   - component: {fileID: 5962172127431872774}
   - component: {fileID: 8229646440758677250}
+  - component: {fileID: -6017801602675652448}
   m_Layer: 0
   m_Name: HumanModelSevered
   m_TagString: Untagged
@@ -1199,8 +1200,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 1
-  m_AssetId: 7b853e348029ee24c97582362ada4907
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 4200496002
 --- !u!114 &6850072202715529766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1343,6 +1344,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   prefab: {fileID: 5727570337167516730, guid: f86d70d91f583f44e95c5a20aea0fa31, type: 3}
+--- !u!114 &-6017801602675652448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3184525931660991265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc0556901c8047ec9c6e4283a9f1f7c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncInterval: 0.1
 --- !u!1 &3346638281543974701
 GameObject:
   m_ObjectHideFlags: 0

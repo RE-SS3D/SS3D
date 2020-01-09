@@ -7,14 +7,9 @@ public class ChatFilterOption : MonoBehaviour
 {
     private string name;
 
-    [SerializeField]
-    private TextMeshProUGUI label;
+    [SerializeField] private TextMeshProUGUI label;
 
-    [SerializeField]
-    private Toggle toggle;
-
-    [SerializeField]
-    private ChatChannels chatChannels;
+    [SerializeField] private Toggle toggle;
 
     private ChatChannel channel;
 

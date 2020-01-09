@@ -28,9 +28,17 @@ public class ChatWindow : MonoBehaviour, IDragHandler
     [SerializeField]
     private TMP_Dropdown channelDropDown;
 
-    public void Init(ChatTabData tabData, ChatManager chatManager)
+    private ChatRegister chatRegister;
+
+    private void Update()
+    {
+        UpdateChatFocus();
+    }
+
+    public void Init(ChatTabData tabData, ChatManager chatManager, ChatRegister chatRegister)
     {
         this.chatManager = chatManager;
+        this.chatRegister = chatRegister;
 
         chatManager.messageReceivedEvent.AddListener(delegate { LoadTabChatLog(currentTabData); });
 
@@ -81,10 +89,16 @@ public class ChatWindow : MonoBehaviour, IDragHandler
 
     public void LoadTab()
     {
-        if (tabRow.childCount > 0)
+        if (tabRow.childCount <= 0)
         {
-            ChatTab newTab = tabRow.GetChild(0).GetComponent<ChatTab>();
-            if (newTab) LoadTab(newTab.Data);
+            return;
+        }
+
+        ChatTab newTab = tabRow.GetChild(0).GetComponent<ChatTab>();
+        
+        if (newTab)
+        {
+            LoadTab(newTab.Data);
         }
     }
 
@@ -118,16 +132,49 @@ public class ChatWindow : MonoBehaviour, IDragHandler
 
     public void SendMessage()
     {
+        string text = inputField.text;
+        if (text.Length <= 0)
+        {
+            return;
+        }
+        
         Message message = new Message();
         message.Channel = currentTabData.Channels[channelDropDown.value];
-        message.Text = inputField.text;
+        message.Text = text;
+        inputField.text = "";
 
-        chatManager.CmdSendMessage(message);
+        chatRegister.CmdSendMessage(message);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         RectTransform moveTransform = (RectTransform) transform;
         moveTransform.position += (Vector3) eventData.delta;
+    }
+
+    public bool PlayerIsTyping()
+    {
+        return EventSystem.current.currentSelectedGameObject == inputField.gameObject;
+    }
+
+    private void UpdateChatFocus()
+    {
+        //Make sure player is pressing submit
+        if (!Input.GetButtonDown("Submit"))
+        {
+            return;
+        }
+        
+        //Focus chat window
+        if (!PlayerIsTyping())
+        {
+            inputField.ActivateInputField();
+            return;
+        }
+        
+        //Send message and unfocus
+        SendMessage();
+        inputField.DeactivateInputField(true);
+        EventSystem.current.SetSelectedGameObject(null);
     }
 }
