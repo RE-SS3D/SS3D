@@ -1,31 +1,32 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-/**
- * Handles the attachment between a container and the inventory.
- * 
- * This component should only exist on the server.
- */
-public class ContainerAttachment : MonoBehaviour
+namespace Inventory
 {
-    public Inventory   inventory;
-    public Container   container;
-    public float       range;
-
-    public void Start()
+    /**
+     * Handles the attachment between a container and the inventory.
+     * 
+     * This component should only exist on the server.
+    */
+    public class ContainerAttachment : MonoBehaviour
     {
-        inventory.AddContainer(container.gameObject);
-    }
+        public Inventory   inventory;
+        public Container   container;
+        public float       range;
 
-    public void Update()
-    {
-        var distance = inventory.transform.position - container.transform.position;
-
-        if (distance.sqrMagnitude > (range * range))
+        public void Start()
         {
-            inventory.RemoveContainer(container.gameObject);
-            Destroy(this);
+            inventory.AddContainer(container.gameObject);
+        }
+
+        public void Update()
+        {
+            var distance = inventory.transform.position - container.transform.position;
+
+            if (distance.sqrMagnitude > (range * range))
+            {
+                inventory.RemoveContainer(container.gameObject);
+                Destroy(this);
+            }
         }
     }
 }

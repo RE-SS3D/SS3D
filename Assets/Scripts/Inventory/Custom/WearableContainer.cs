@@ -53,7 +53,7 @@ public class WearableContainer : Container
 
         // Determine physics status
         item.GetComponent<Rigidbody>().isKinematic = true;
-        item.GetComponent<BoxCollider>().enabled = false;
+        item.GetComponent<Collider>().enabled = false;
         if (item.GetComponent<NetworkTransform>())
             item.GetComponent<NetworkTransform>().enabled = false;
 
@@ -81,7 +81,7 @@ public class WearableContainer : Container
 
         // Determine physics status
         item.GetComponent<Rigidbody>().isKinematic = false;
-        item.GetComponent<BoxCollider>().enabled = true;
+        item.GetComponent<Collider>().enabled = true;
         if (item.GetComponent<NetworkTransform>())
             item.GetComponent<NetworkTransform>().enabled = true;
 
