@@ -1,16 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using Inventory.UI;
 using Mirror;
+using UnityEngine;
 
-[RequireComponent(typeof(Inventory))]
-public class InitUI : NetworkBehaviour
+namespace Player
 {
-    public GameObject prefab;
-
-    public override void OnStartLocalPlayer()
+    [RequireComponent(typeof(Inventory.Inventory))]
+    public class InitUI : NetworkBehaviour
     {
-        var obj = Instantiate(prefab);
-        obj.GetComponent<UIInventory>().StartUI(GetComponent<Inventory>());
+        public GameObject prefab;
+
+        public override void OnStartLocalPlayer()
+        {
+            var obj = Instantiate(prefab);
+            obj.GetComponent<UIInventory>().StartUI(GetComponent<Inventory.Inventory>());
+        }
     }
 }

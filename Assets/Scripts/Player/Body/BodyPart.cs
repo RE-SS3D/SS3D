@@ -1,0 +1,103 @@
+using System.Collections.Generic;
+using Enums;
+using UnityEngine;
+
+namespace Player.Body
+{
+    /// <summary>
+    /// Class is responsible for handling state changes associated with a particular body part.
+    /// MonoBehaviour should be attached to the game object that contains the hitbox collider of the particular body part.
+    /// Each body part with its own collider should also have an instance of this component.
+    /// </summary>
+    public class BodyPart : MonoBehaviour
+    {
+        ///Specifies which body part this is
+        [SerializeField] private BodyPartType bodyPartType;
+        ///Specifies prefab to spawn if this body part is detached
+        [SerializeField] private GameObject severedBodyPartPrefab;
+        ///List of children for this bodypart. For example, the hand should be a child of the arm, etc.
+        [SerializeField] private List<BodyPart> childrenParts;
+        ///Flag enum, storing the current active statuses for this bodypart
+        [SerializeField] private BodyPartStatuses bodyPartStatuses;
+        ///The skinnedMeshRenderer associated with this bodypart. It will be hidden if the bodypart is detached
+        [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
+        ///The body component that this bodypart belongs to
+        [SerializeField] private Body body;
+
+        //The types and amounts of damages that this bodypart has suffered
+        private List<BodyPartDamage> bodyPartDamages = new List<BodyPartDamage>
+        {
+            new BodyPartDamage(DamageType.Burn, 0f), 
+            new BodyPartDamage(DamageType.Brute, 0f),
+            new BodyPartDamage(DamageType.Toxic, 0f), 
+            new BodyPartDamage(DamageType.Suffocation, 0f)
+        };
+
+        private void Start()
+        {
+            if (severedBodyPartPrefab != null && severedBodyPartPrefab.GetComponent<SeveredBodyPart>() == null)
+            {
+                Debug.LogError($"SeveredBodyPartPrefab on BodyPart {gameObject.name} on Body {body.gameObject.name} is missing a SeveredBodyPart component!");
+            }
+        }
+
+        public BodyPartType BodyPartType => bodyPartType;
+        public GameObject SeveredBodyPartPrefab => severedBodyPartPrefab;
+        public List<BodyPart> ChildrenParts => childrenParts;
+        public BodyPartStatuses BodyPartStatuses => bodyPartStatuses;
+        public List<BodyPartDamage> BodyPartDamages => bodyPartDamages;
+        public SkinnedMeshRenderer SkinnedMeshRenderer => skinnedMeshRenderer;
+        public Body Body => body;
+
+        //Method responsible for determining if a new status should be added to the bodypart
+        //TODO: currently, it only gets worse. Should implement logic to heal damages and remove a status from a bodypart
+        public void EvaluateStatusChange(BodyPartStatuses status, float totalDamage, float serverAuthoritativeRandomRoll)
+        {
+            if (bodyPartStatuses.HasFlag(status))
+            {
+                return;
+            }
+            
+            float requiredThreshold = DamageThresholds.OrganicMinimumRequiredDamage[status];
+            if (requiredThreshold > totalDamage)
+            {
+                return;
+            }
+
+            float applyEffectRoll = serverAuthoritativeRandomRoll + totalDamage - requiredThreshold;
+            Debug.Log($"{status} roll {applyEffectRoll}");
+            if (applyEffectRoll < requiredThreshold)
+            {
+                return;
+            }
+            
+            if (status == BodyPartStatuses.Severed && bodyPartType == BodyPartType.Torso)
+            {
+                return;
+            }
+            
+            bodyPartStatuses |= status;
+            PerformStatusAssociatedAction(status);
+        }
+
+        private void PerformStatusAssociatedAction(BodyPartStatuses status)
+        {          
+            switch (status)
+            {
+                case BodyPartStatuses.Numb:
+                case BodyPartStatuses.Burned:
+                case BodyPartStatuses.Bruised:
+                case BodyPartStatuses.Crippled:
+                case BodyPartStatuses.Bleeding:
+                case BodyPartStatuses.Blistered:
+                    return;
+                case BodyPartStatuses.Severed:
+                    body.SeverBodyPart(this);
+                    break;
+                default:
+                    Debug.LogError($"BodyPart does not have damage handling for status {status}!");
+                    break;
+            }
+        }
+    }
+}
