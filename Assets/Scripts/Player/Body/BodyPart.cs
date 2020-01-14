@@ -35,10 +35,19 @@ namespace Player.Body
 
         private void Start()
         {
+            if (severedBodyPartPrefab == null)
+            {
+                Debug.LogError($"No SeveredBodyPart defined on the Body {body.gameObject.name} on the BodyParts {gameObject.name}");
+            }
+            if (body == null)
+            {
+                body = transform.root.GetComponent<Body>();
+            }
             if (severedBodyPartPrefab != null && severedBodyPartPrefab.GetComponent<SeveredBodyPart>() == null)
             {
                 Debug.LogError($"SeveredBodyPartPrefab on BodyPart {gameObject.name} on Body {body.gameObject.name} is missing a SeveredBodyPart component!");
             }
+            
         }
 
         public BodyPartType BodyPartType => bodyPartType;

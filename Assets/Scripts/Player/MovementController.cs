@@ -188,7 +188,31 @@ namespace Mirror
                     currentMovement.y * Vector3.Cross(camera.transform.right, Vector3.up).normalized +
                     currentMovement.x * Vector3.Cross(Vector3.up, camera.transform.forward).normalized;
                 // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
-                characterController.Move(absoluteMovement * Time.deltaTime);
+
+                //temporary to keep us from being stuck in the air
+                Tile _currentTile = null;
+
+                try
+                {
+                    _currentTile = GameObject.Find(string.Format("tile_{0}_{1}", Mathf.Round(transform.position.x), Mathf.Round(transform.position.z))).GetComponent<Tile>();
+                }
+                catch
+                {
+
+                }
+                Vector3 _gravity;
+                if (_currentTile == null || _currentTile.turf == null)
+                {
+                    _gravity = new Vector3(0, 0, 0);
+                    characterAnimator.SetBool("Floating", true);
+                }
+                else
+                {
+                    _gravity = new Vector3(0, 9.8f, 0);
+                    characterAnimator.SetBool("Floating", false);
+                }
+
+                characterController.Move((absoluteMovement * Time.deltaTime) - _gravity);
                 transform.rotation = Quaternion.LookRotation(absoluteMovement);
             }
         }
@@ -202,7 +226,7 @@ namespace Mirror
             }
             
             // TODO: Might eventually want more animation options. E.g. when in 0-gravity and 'clambering' via a surface
-            characterAnimator.SetBool("Floating", false); // Note: Player can be floating and still move
+            //characterAnimator.SetBool("Floating", false); // Note: Player can be floating and still move
             characterAnimator.SetFloat("Speed",
                 currentMovement.magnitude / runSpeed); // animation Speed is a proportion of maximum runSpeed
         }

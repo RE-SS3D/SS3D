@@ -440,7 +440,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 4835078630258379571, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
+  - {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
   - {fileID: -4093226344146330725, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -531,7 +531,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7146870540262340178}
   m_Layer: 0
-  m_Name: Hips
+  m_Name: hips
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -633,7 +633,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 4835078630258379571, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
+  - {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
   - {fileID: -4093226344146330725, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -885,7 +885,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 4835078630258379571, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
+  - {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
   - {fileID: -4093226344146330725, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -1014,7 +1014,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 4835078630258379571, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
+  - {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
   - {fileID: -4093226344146330725, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -1467,7 +1467,6 @@ MonoBehaviour:
   - {fileID: 1124637067884402731}
   - {fileID: 5949131190728675574}
   - {fileID: 4211533769812448533}
-  currentBloodVolumeCC: 560
 --- !u!114 &1994183711920205137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1782,7 +1781,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 4835078630258379571, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
+  - {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
   - {fileID: -4093226344146330725, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -2003,7 +2002,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 4835078630258379571, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
+  - {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
   - {fileID: -4093226344146330725, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -2163,7 +2162,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 4835078630258379571, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
+  - {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
   - {fileID: -4093226344146330725, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -2745,8 +2744,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6764455047072956265}
   m_LocalRotation: {x: -0.034542184, y: 0.72693664, z: 0.05964631, w: 0.6832366}
-  m_LocalPosition: {x: -0.000000039121677, y: 0.10359481, z: 0.00000004278085}
-  m_LocalScale: {x: 1.0000001, y: 1.0000004, z: 1.0000001}
+  m_LocalPosition: {x: 0, y: 0.10359481, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3863826514686862277}
   m_Father: {fileID: 120852149422290267}
@@ -2800,7 +2799,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 4835078630258379571, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
+  - {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
   - {fileID: -4093226344146330725, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -3304,7 +3303,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 4835078630258379571, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
+  - {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
   - {fileID: -4093226344146330725, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -3533,7 +3532,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 4835078630258379571, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
+  - {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
   - {fileID: -4093226344146330725, guid: c78e6b60457640f4baaab4ed78ce1023, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -3623,8 +3622,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2895004554525284375}
-  - component: {fileID: 9197184583554334932}
   - component: {fileID: 1903259415010948184}
+  - component: {fileID: 9197184583554334932}
   m_Layer: 0
   m_Name: chest
   m_TagString: Untagged
@@ -3649,19 +3648,6 @@ Transform:
   m_Father: {fileID: 604341245041889215}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &9197184583554334932
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8477201263387432168}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.4, y: 0.65, z: 0.3}
-  m_Center: {x: 0, y: -0.15, z: 0}
 --- !u!114 &1903259415010948184
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3680,6 +3666,19 @@ MonoBehaviour:
   bodyPartStatuses: 0
   skinnedMeshRenderer: {fileID: 2809606374156368696}
   body: {fileID: 5996438145529512993}
+--- !u!65 &9197184583554334932
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8477201263387432168}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.4, y: 0.65, z: 0.3}
+  m_Center: {x: 0, y: -0.15, z: 0}
 --- !u!1 &8500999515411619954
 GameObject:
   m_ObjectHideFlags: 0

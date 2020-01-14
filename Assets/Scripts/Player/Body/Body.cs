@@ -75,12 +75,17 @@ namespace Player.Body
 			}
 			
 			GameObject mainBodypart = Instantiate(bodyPart.SeveredBodyPartPrefab, transform.position, Quaternion.identity);
-			NetworkServer.Spawn(mainBodypart);
+            UpdateBodyPartVisuals(mainBodypart, bodyPart); 
+
+            NetworkServer.Spawn(mainBodypart);
+
 			bodyPart.ChildrenParts.ForEach(child =>
 			{
-				GameObject childBodyPart = Instantiate(child.SeveredBodyPartPrefab, child.transform.position, Quaternion.identity);
-				NetworkServer.Spawn(childBodyPart);
-			});
+                GameObject childBodyPart = Instantiate(child.SeveredBodyPartPrefab, child.transform.position, Quaternion.identity);
+                UpdateBodyPartVisuals(childBodyPart, child);
+
+                NetworkServer.Spawn(childBodyPart);
+            });
 			RpcHideSeveredBodyPart(bodyPartType);
 		}
 
@@ -101,5 +106,36 @@ namespace Player.Body
 		{
 			return bodyParts.FirstOrDefault(bodyParts => bodyParts.BodyPartType == bodyPartType);
 		}
-	}
+
+        private void UpdateBodyPartList()
+        {
+            bodyParts.Clear();
+            foreach (BodyPart part in gameObject.GetComponentsInChildren<BodyPart>())
+            {
+                bodyParts.Add(part);
+                
+            }  
+        }
+
+        private void UpdateBodyPartVisuals(GameObject newBodyPart, BodyPart bodyPart)
+        {
+            // Making sure the part is equal to the original one
+            SkinnedMeshRenderer newBodyPartMesh = newBodyPart.GetComponent<SkinnedMeshRenderer>();
+            SkinnedMeshRenderer bodyPartMesh = bodyPart.SkinnedMeshRenderer;
+
+            Material[] materials = bodyPartMesh.sharedMaterials;
+            newBodyPartMesh.materials = materials;
+
+            // there's 5 shape keys on the human model
+            for (int i = 0; i < 4; i++)
+            {
+                newBodyPartMesh.SetBlendShapeWeight(i, bodyPartMesh.GetBlendShapeWeight(i));
+            }
+        }
+
+        private void Start()
+        {
+            UpdateBodyPartList();
+        }
+    }
 }
