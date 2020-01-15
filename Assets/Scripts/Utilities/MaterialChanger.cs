@@ -7,11 +7,10 @@ public class MaterialChanger : MonoBehaviour
     public Material[] cachedMaterial;
     public MeshRenderer cachedRenderer;
 
+    //todo: make sure the main materials are here, Unity's material manipulation is not really nice.
     public  Material Palette01            = Resources.Load<Material>("Materials/Pallete01.mat");
     public  Material Palette05            = Resources.Load<Material>("Materials/Pallete05.mat");
     public  Material Palette05Emission    = Resources.Load<Material>("Materials/Pallete05 Emission.mat");
-    
-    
 
     public void ChangeMaterial(MeshRenderer target, Material newMaterial)
     {
@@ -24,7 +23,6 @@ public class MaterialChanger : MonoBehaviour
             inMaterials[i] = newMaterial;
         }
         cachedRenderer.materials = inMaterials;*/
-
     }
 
     public void ChangeMaterialSlot(int slot, MeshRenderer target, Material newMaterial)

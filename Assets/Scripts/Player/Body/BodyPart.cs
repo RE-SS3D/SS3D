@@ -47,7 +47,6 @@ namespace Player.Body
             {
                 Debug.LogError($"SeveredBodyPartPrefab on BodyPart {gameObject.name} on Body {body.gameObject.name} is missing a SeveredBodyPart component!");
             }
-            
         }
 
         public BodyPartType BodyPartType => bodyPartType;

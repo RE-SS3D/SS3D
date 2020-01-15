@@ -14,10 +14,14 @@ namespace Player.Body
 	{
 		///The BodyPart objects that this MonoBehaviour is responsible for managing
 		[SerializeField] private List<BodyPart> bodyParts = new List<BodyPart>();
-		
-		//TODO: implement bleeding
-		//TODO: handle missing body parts appropriately. Missing hand should prevent using it. Missing foot should slow you down or make it impossible to stand, etc.
-		[ClientRpc]
+        private void Start()
+        {
+            UpdateBodyPartList();
+        }
+
+        //TODO: implement bleeding
+        //TODO: handle missing body parts appropriately. Missing hand should prevent using it. Missing foot should slow you down or make it impossible to stand, etc.
+        [ClientRpc]
 		public void RpcDoDamageToBodyPart(BodyPartType bodyPartType, DamageType damageType, float damageAmount, float serverAuthoritativeRandomRoll)
 		{
 			BodyPart bodyPart = FindBodyPart(bodyPartType);
@@ -113,7 +117,6 @@ namespace Player.Body
             foreach (BodyPart part in gameObject.GetComponentsInChildren<BodyPart>())
             {
                 bodyParts.Add(part);
-                
             }  
         }
 
@@ -131,11 +134,6 @@ namespace Player.Body
             {
                 newBodyPartMesh.SetBlendShapeWeight(i, bodyPartMesh.GetBlendShapeWeight(i));
             }
-        }
-
-        private void Start()
-        {
-            UpdateBodyPartList();
         }
     }
 }
