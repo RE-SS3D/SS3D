@@ -1307,9 +1307,9 @@ GameObject:
   - component: {fileID: 1994183711920205137}
   - component: {fileID: 1028998233664674745}
   - component: {fileID: 5962172127431872774}
+  - component: {fileID: -6017801602675652448}
   - component: {fileID: 8229646440758677250}
   - component: {fileID: 6850072202715529765}
-  - component: {fileID: -6017801602675652448}
   - component: {fileID: -365188936181880124}
   m_Layer: 15
   m_Name: HumanModelSevered
@@ -1378,7 +1378,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 1
-  m_AssetId: 7b853e348029ee24c97582362ada4907
+  m_AssetId: 
   m_SceneId: 0
 --- !u!114 &6850072202715529766
 MonoBehaviour:
@@ -1521,6 +1521,19 @@ MonoBehaviour:
   syncInterval: 0.1
   handContainer: {fileID: 1028998233664674745}
   handRange: 5
+--- !u!114 &-6017801602675652448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3184525931660991265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc0556901c8047ec9c6e4283a9f1f7c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncInterval: 0.1
 --- !u!114 &8229646440758677250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1545,19 +1558,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cbcf283d261054d41a00d301c9c97de9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncInterval: 0.1
---- !u!114 &-6017801602675652448
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3184525931660991265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc0556901c8047ec9c6e4283a9f1f7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1

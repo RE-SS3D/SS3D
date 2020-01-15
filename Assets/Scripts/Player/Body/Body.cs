@@ -13,10 +13,16 @@ namespace Player.Body
 	public class Body : NetworkBehaviour
 	{
 		///The BodyPart objects that this MonoBehaviour is responsible for managing
-		[SerializeField] private List<BodyPart> bodyParts = new List<BodyPart>();
+		private List<BodyPart> bodyParts = new List<BodyPart>();
         private void Start()
         {
-            UpdateBodyPartList();
+            //update the bodypart list
+            bodyParts.Clear();
+
+            foreach (BodyPart part in gameObject.GetComponentsInChildren<BodyPart>())
+            {
+                bodyParts.Add(part);
+            }
         }
 
         //TODO: implement bleeding
@@ -79,14 +85,14 @@ namespace Player.Body
 			}
 			
 			GameObject mainBodypart = Instantiate(bodyPart.SeveredBodyPartPrefab, transform.position, Quaternion.identity);
-            UpdateBodyPartVisuals(mainBodypart, bodyPart); 
+            UpdateBodyPartVisuals(mainBodypart.GetComponent<SkinnedMeshRenderer>(), bodyPart.SkinnedMeshRenderer); 
 
             NetworkServer.Spawn(mainBodypart);
 
 			bodyPart.ChildrenParts.ForEach(child =>
 			{
                 GameObject childBodyPart = Instantiate(child.SeveredBodyPartPrefab, child.transform.position, Quaternion.identity);
-                UpdateBodyPartVisuals(childBodyPart, child);
+                UpdateBodyPartVisuals(childBodyPart.GetComponent<SkinnedMeshRenderer>(), child.SkinnedMeshRenderer);
 
                 NetworkServer.Spawn(childBodyPart);
             });
@@ -111,28 +117,14 @@ namespace Player.Body
 			return bodyParts.FirstOrDefault(bodyParts => bodyParts.BodyPartType == bodyPartType);
 		}
 
-        private void UpdateBodyPartList()
+        private void UpdateBodyPartVisuals(SkinnedMeshRenderer newBodyPart, SkinnedMeshRenderer bodyPart)
         {
-            bodyParts.Clear();
-            foreach (BodyPart part in gameObject.GetComponentsInChildren<BodyPart>())
+            Material[] materials = bodyPart.sharedMaterials;
+            newBodyPart.materials = materials;
+
+            for (int i = 0; i < newBodyPart.sharedMesh.blendShapeCount; i++)
             {
-                bodyParts.Add(part);
-            }  
-        }
-
-        private void UpdateBodyPartVisuals(GameObject newBodyPart, BodyPart bodyPart)
-        {
-            // Making sure the part is equal to the original one
-            SkinnedMeshRenderer newBodyPartMesh = newBodyPart.GetComponent<SkinnedMeshRenderer>();
-            SkinnedMeshRenderer bodyPartMesh = bodyPart.SkinnedMeshRenderer;
-
-            Material[] materials = bodyPartMesh.sharedMaterials;
-            newBodyPartMesh.materials = materials;
-
-            // there's 5 shape keys on the human model
-            for (int i = 0; i < 4; i++)
-            {
-                newBodyPartMesh.SetBlendShapeWeight(i, bodyPartMesh.GetBlendShapeWeight(i));
+                newBodyPart.SetBlendShapeWeight(i, bodyPart.GetBlendShapeWeight(i));
             }
         }
     }

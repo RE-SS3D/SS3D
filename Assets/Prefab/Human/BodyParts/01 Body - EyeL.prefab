@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5402465896333994291}
   - component: {fileID: 2836724577922652618}
   - component: {fileID: 8343766275542259350}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: 01 Body - EyeL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ SkinnedMeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2153916105656836095}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -157,5 +157,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 1de4493c3e85cf548a1edc11684697ff
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 996645946

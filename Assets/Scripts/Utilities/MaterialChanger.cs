@@ -7,7 +7,7 @@ public class MaterialChanger : MonoBehaviour
     public Material[] cachedMaterial;
     public MeshRenderer cachedRenderer;
 
-    //todo: make sure the main materials are here, Unity's material manipulation is not really nice.
+    //todo: put the materials into Resources
     public  Material Palette01            = Resources.Load<Material>("Materials/Pallete01.mat");
     public  Material Palette05            = Resources.Load<Material>("Materials/Pallete05.mat");
     public  Material Palette05Emission    = Resources.Load<Material>("Materials/Pallete05 Emission.mat");

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5048438735895756066}
   - component: {fileID: 1049418644109996052}
   - component: {fileID: 9205660896183359516}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: 01 Body - Human EarL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,5 +153,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 1de4493c3e85cf548a1edc11684697ff
+  m_AssetId: 4f869bcb1ae6e4b45b121ee768dc357d
   m_SceneId: 0

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5632083527285006574}
   - component: {fileID: 6888774820875637847}
   - component: {fileID: 3758031854440501420}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: 01 Body - Human Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -157,5 +157,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 1de4493c3e85cf548a1edc11684697ff
+  m_AssetId: 4f869bcb1ae6e4b45b121ee768dc357d
   m_SceneId: 0
