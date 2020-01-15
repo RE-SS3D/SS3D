@@ -74,7 +74,7 @@ namespace Mirror
         // virtual so that inheriting classes' Awake() can call base.Awake() too
         public virtual void Awake()
         {
-            Debug.Log("Thank you for using Mirror! https://mirror-networking.com");
+            //Debug.Log("Thank you for using Mirror! https://mirror-networking.com");
 
             // Set the networkSceneName to prevent a scene reload
             // if client connection to server fails.
@@ -315,6 +315,7 @@ namespace Mirror
             NetworkClient.RegisterHandler<NotReadyMessage>(OnClientNotReadyMessageInternal);
             NetworkClient.RegisterHandler<ErrorMessage>(OnClientErrorInternal);
             NetworkClient.RegisterHandler<SceneMessage>(OnClientSceneInternal);
+            NetworkClient.RegisterHandler<LoginServerMessage>(OnLoginDataMessage);
 
             if (playerPrefab != null)
             {
@@ -784,6 +785,8 @@ namespace Mirror
         // Called from ClientChangeScene immediately before SceneManager.LoadSceneAsync is executed
         // This allows client to do work / cleanup / prep before the scene changes.
         public virtual void OnClientChangeScene(string newSceneName) {}
+
+        public virtual void OnLoginDataMessage(NetworkConnection conn, LoginServerMessage message) {}
 
         public virtual void OnClientSceneChanged(NetworkConnection conn)
         {
