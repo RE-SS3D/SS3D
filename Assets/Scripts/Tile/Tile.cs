@@ -1,67 +1,67 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System;
+using System.Collections;
 
-/**
-    Main component of tiles that holds:
-     - references to other components (and initializes them if necessary) 
-     - The type of the current Tile attached to
-     - TileTypes enumerator
-
-
-
- */
-
-
-public class Tile : MonoBehaviour
-{
-    public enum TileTypes {
-        station_tile,
-        station_wall,
-        station_wall_reinforced,
-        station_wall_glass,
-        station_wall_glass_reinforced
-        };
-
-    public TileTypes TileDescriptor;
-    public Turf turf = null;
-    public TileContentManager contentManager = null;
-    public TilePipeManager pipeManager = null;
-    public Mirror.TileNetworkManager tileNetworkManager = null;
-
-    //Initialize the tile, add the turf component and tell the turf the tiletype
-    public void initTile()
+namespace TileMap {
+    public enum Direction
     {
-        if (turf == null){
-            turf = (Turf) gameObject.AddComponent(typeof(Turf));
-            //Debug.Log("Adding Component: turf"); 
-        }
-        gameObject.GetComponent<Turf>().turfDescriptor = TileDescriptor;
-        gameObject.GetComponent<Turf>().InitTurf();
+        North,
+        NorthEast,
+        East,
+        SouthEast,
+        South,
+        SouthWest,
+        West,
+        NorthWest,
+    }
 
-        if (contentManager == null){
-            contentManager = (TileContentManager) gameObject.AddComponent(typeof(TileContentManager));
-            //Debug.Log("Adding Component: turf"); 
+    public static class DirectionHelper {
+        public static float ToAngle(Direction direction)
+        {
+            return ((int)direction) * 45.0f;
         }
-        gameObject.GetComponent<TileContentManager>().InitTileContentManager();
-
-        if (pipeManager == null){
-            pipeManager = (TilePipeManager) gameObject.AddComponent(typeof(TilePipeManager));
-            //Debug.Log("Adding Component: turf"); 
+        public static Tuple<int, int> ToCardinalVector(Direction direction)
+        {
+            return new Tuple<int, int>(
+                direction > Direction.South ? 1 : (direction > Direction.North && direction != Direction.South) ? -1 : 0,
+                (direction > Direction.East && direction < Direction.West) ? -1 : (direction == Direction.East || direction == Direction.West) ? 0 : 1
+            );
         }
-        gameObject.GetComponent<TilePipeManager>().InitTilePipeManager();
-
-        if (tileNetworkManager == null){
-            tileNetworkManager = (Mirror.TileNetworkManager) gameObject.AddComponent(typeof(Mirror.TileNetworkManager));
+        public static Direction GetOpposite(Direction direction)
+        {
+            return (Direction)(((int)direction + 4) % 8);
         }
     }
 
+    public enum TileLayer
+    {
+        Turf,
+        Fixture,
+    }
 
+    /**
+     * Describes a tile in networkable information
+     */
+    public struct NetworkableTile
+    {
+        // The base of the tile, could be a wall or floor. Is id of Turf scriptable object
+        public string turf;
 
-    public void UpdateTile(){
-        //call to update all models of tile
-        this.turf.UpdateTurf();
-        //this.contentManager.UpdateMultipart();
-        //this.pipeManager.UpdatePipes();
-    } 
+        public string fixture; // Id of a Fixture scriptable object
+        public Direction fixtureDirection;
+    }
+
+    /**
+     * Same as above but with IDs converted to actual scriptable objects
+     */
+    [Serializable]
+    public struct ConstructibleTile
+    {
+        public Turf turf;
+
+        public Fixture fixture;
+        public Direction fixtureDirection;
+
+        public static ConstructibleTile NullObject = new ConstructibleTile { turf = null, fixture = null, fixtureDirection = Direction.North }; 
+    }
 }
