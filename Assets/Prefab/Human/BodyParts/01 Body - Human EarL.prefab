@@ -9,8 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7977055645464623718}
-  - component: {fileID: 1930652424941263617}
-  - component: {fileID: 5079489217572430538}
+  - component: {fileID: 7162703924894328455}
   - component: {fileID: 8651267604047641409}
   - component: {fileID: 3024767170023466247}
   - component: {fileID: 5048438735895756066}
@@ -37,16 +36,8 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &1930652424941263617
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4328654258577221477}
-  m_Mesh: {fileID: -102578397599201760, guid: 19e6e3a6594def0459da07a718282e99, type: 3}
---- !u!23 &5079489217572430538
-MeshRenderer:
+--- !u!137 &7162703924894328455
+SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -63,6 +54,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 4835078630258379571, guid: 19e6e3a6594def0459da07a718282e99, type: 3}
+  - {fileID: -4093226344146330725, guid: 19e6e3a6594def0459da07a718282e99, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -83,6 +75,18 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  serializedVersion: 2
+  m_Quality: 0
+  m_UpdateWhenOffscreen: 0
+  m_SkinnedMotionVectors: 1
+  m_Mesh: {fileID: -102578397599201760, guid: 19e6e3a6594def0459da07a718282e99, type: 3}
+  m_Bones: []
+  m_BlendShapeWeights: []
+  m_RootBone: {fileID: 0}
+  m_AABB:
+    m_Center: {x: 0.0014491528, y: 0.00026486628, z: -0.0006184839}
+    m_Extent: {x: 0.02893591, y: 0.017263455, z: 0.039585292}
+  m_DirtyAABB: 0
 --- !u!65 &8651267604047641409
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -153,5 +157,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 4f869bcb1ae6e4b45b121ee768dc357d
+  m_AssetId: 
   m_SceneId: 0
