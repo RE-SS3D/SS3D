@@ -36,7 +36,7 @@ namespace TileMap {
         /**
          * Fill in our non-serialized variables
          */
-        private void Start()
+        private void OnEnable()
         {
             // Fill in our references to objects using the saved information from our tile variable.
             // Effectively, this code expects the tile's children to match up to the turf and fixture.
@@ -59,7 +59,7 @@ namespace TileMap {
             }
 
             if(tile.fixture) {
-                fixture = transform.Find("turf_" + tile.fixture.id)?.gameObject;
+                fixture = transform.Find("fixture_" + tile.fixture.id)?.gameObject;
 
                 if (fixture != null) {
                     fixtureConnector = fixture.GetComponent<AdjacencyConnector>();
@@ -68,7 +68,6 @@ namespace TileMap {
                     // Update our tile object to make up for the fact that the object doesn't exist in the world.
                     // A user would have to fuck around in the editor to get to this point.
                     Debug.LogWarning("Tile's turf was not created?");
-                    
                     CreateFixture(tile.fixture, tile.fixtureDirection);
                 }
             }
@@ -79,11 +78,11 @@ namespace TileMap {
 
                 if (child != turf && child != fixture) {
                     Debug.LogWarning("Unknown object found in tile " + name + ": " + child.name + ", deleting.");
-                    #if UNITY_EDITOR
+                #if UNITY_EDITOR
                     DestroyImmediate(child);
-                    #else
+                #else
                     Destroy(child);
-                    #endif
+                #endif
                 }
             }
         }
@@ -101,11 +100,13 @@ namespace TileMap {
             if(tileManager.Tiles.Count == 0) // OnValidate gets called waaaay too often.
                 return;
 
-            // Update contents 
-            SetContents(tile);
-
-            // Inform the tilemanager that the tile has updated, so it can update surroundings
-            tileManager.UpdateTile(transform.position, tile);
+            // Can't do most things in OnValidate, so wait a sec.
+            EditorApplication.delayCall += () => {
+                // Update contents
+                SetContents(tile);
+                // Inform the tilemanager that the tile has updated, so it can update surroundings
+                tileManager.UpdateTile(transform.position, tile);
+            };
         }
 
         /**
@@ -128,8 +129,6 @@ namespace TileMap {
          */
         private void SetContents(ConstructibleTile newTile)
         {
-            // Replace previous tile contents with new contents, if they have changed.
-
             if (newTile.turf != tile.turf) {
                 CreateTurf(newTile.turf);
             }
@@ -138,16 +137,10 @@ namespace TileMap {
                 if (fixture != null)
                     Destroy(fixture);
 
-                fixture = Instantiate(
-                    newTile.fixture.prefab,
-                    new Vector2(),
-                    Quaternion.Euler(0, DirectionHelper.ToAngle(newTile.fixtureDirection), 0),
-                    transform
-                );
-                fixture.name = "fixture_" + newTile.fixture.id;
+                CreateFixture(newTile.fixture, newTile.fixtureDirection);
             }
             else if (newTile.fixtureDirection != tile.fixtureDirection && fixture != null) {
-                fixture.transform.rotation = Quaternion.Euler(0, DirectionHelper.ToAngle(newTile.fixtureDirection), 0);
+                fixture.transform.rotation = Quaternion.Euler(fixture.transform.localRotation.eulerAngles.x, DirectionHelper.ToAngle(newTile.fixtureDirection), fixture.transform.localRotation.eulerAngles.z);
             }
 
             // Check if they have adjacency connectors, which we can then update.
@@ -160,31 +153,32 @@ namespace TileMap {
 
         private void CreateTurf(Turf turfDefinition)
         {
-            if(turf != null) {
-                #if UNITY_EDITOR
+        #if UNITY_EDITOR
+            if (turf != null)
                 DestroyImmediate(turf);
-                #else
+            turf = (GameObject)PrefabUtility.InstantiatePrefab(turfDefinition.prefab, transform);
+        #else
+            if (turf != null)
                 Destroy(turf);
-                #endif
-            }
-
             turf = Instantiate(turfDefinition.prefab, transform);
+        #endif
+
             turf.name = "turf_" + turfDefinition.id;
         }
         private void CreateFixture(Fixture fixtureDefinition, Direction direction)
         {
-            if (fixture != null) {
-            #if UNITY_EDITOR
+        #if UNITY_EDITOR
+            if (fixture != null) 
                 DestroyImmediate(turf);
-            #else
+            fixture = (GameObject)PrefabUtility.InstantiatePrefab(fixtureDefinition.prefab, transform);
+        #else
+            if (fixture != null) 
                 Destroy(turf);
-            #endif
-            }
-
-                fixture = Instantiate(fixtureDefinition.prefab, transform);
+            fixture = Instantiate(fixtureDefinition.prefab, transform);
+        #endif
             fixture.name = "fixture_" + fixtureDefinition.id;
             // TODO: Allow this to work with non-standard fixture rotations.
-            fixture.transform.localRotation *= Quaternion.Euler(0, DirectionHelper.ToAngle(direction), 0);
+            fixture.transform.localRotation = Quaternion.Euler(fixture.transform.localRotation.eulerAngles.x, DirectionHelper.ToAngle(direction), fixture.transform.localRotation.eulerAngles.z);
         }
 
         [SerializeField]

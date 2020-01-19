@@ -41,7 +41,7 @@ namespace Mirror
             }
 
             //Ignore movement controls when typing in chat
-            ChatWindow chatWindow = chatManager.GetChatWindow();
+            ChatWindow chatWindow = chatManager?.GetChatWindow();
             if (chatWindow != null && chatWindow.PlayerIsTyping())
             {
                 currentMovement.Set(0, 0);
