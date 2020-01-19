@@ -53,7 +53,7 @@ namespace Mirror
                 return;
             }
 
-            if (extraMessage == null)
+            if (extraMessage?.value == null)
             {
                 base.OnServerAddPlayer(conn, null);
                 return;

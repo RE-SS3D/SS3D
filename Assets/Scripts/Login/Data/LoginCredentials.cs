@@ -5,13 +5,10 @@ namespace Login.Data
     /// </summary>
     public class LoginCredentials
     {
-        private string email;
-        private string password;
-
         public LoginCredentials(string email, string password)
         {
-            this.email = email;
-            this.password = password;
+            Email = email;
+            Password = password;
         }
 
         public static LoginCredentials From(RegisterCredentials registerCredentials)
@@ -19,8 +16,8 @@ namespace Login.Data
             return new LoginCredentials(registerCredentials.Email, registerCredentials.Password);
         }
 
-        public string Email => email;
-        public string Password => password;
+        public string Email { get; }
+        public string Password { get; }
         
         public string ToJson()
         {

@@ -53,7 +53,7 @@ namespace Login
         {
             HideAllScreens();
             characterScreen.gameObject.SetActive(true);
-            ApiResponse characterResult = loginManager.CallCharacterListEndpoint();
+            ApiResponse characterResult = loginManager.LoginServerClient.GetCharacters();
             characterScreen.LoadCharacters(characterResult.GetCharacters());
         }
     
@@ -116,7 +116,7 @@ namespace Login
                 return;
             }
 
-            ApiResponse result = loginManager.CallRegisterEndpoint(registerCredentials);
+            ApiResponse result = loginManager.LoginServerClient.Register(registerCredentials);
 
             if (!result.IsSuccess())
             {
@@ -144,7 +144,7 @@ namespace Login
                 return;
             }
             
-            ApiResponse result = loginManager.CallAuthenticateEndpoint(loginCredentials);
+            ApiResponse result = loginManager.LoginServerClient.Authenticate(loginCredentials);
             
             if (!result.IsSuccess())
             {
@@ -170,7 +170,7 @@ namespace Login
                 characterScreen.DisplayErrorMessage("Name cannot be empty!");
             }
 
-            ApiResponse createResult = loginManager.CallCharacterCreateEndpoint(enteredName);
+            ApiResponse createResult = loginManager.LoginServerClient.SaveCharacter(enteredName);
 
             if (!createResult.IsSuccess())
             {
@@ -196,7 +196,7 @@ namespace Login
 
         public void HandleCharacterDeleteButton(int id)
         {
-            ApiResponse result = loginManager.CallCharacterDeleteEndpoint(id);
+            ApiResponse result = loginManager.LoginServerClient.DeleteCharacter(id);
             if (!result.IsSuccess())
             {
                 characterScreen.DisplayErrorMessage(result.GetError());

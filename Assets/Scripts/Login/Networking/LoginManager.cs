@@ -12,14 +12,16 @@ namespace Login
     /// </summary>
     public class LoginManager : MonoBehaviour
     {
-        [SerializeField] private string apiAddress;
+        public LoginServerClient LoginServerClient => loginServerClient;
+        
         [SerializeField] private LoginWindow loginWindowPrefab;
         
         private LoginServerClient loginServerClient;
         private LoginWindow loginWindowInstance;
         private Action<NetworkConnection, CharacterResponse> spawnPlayerAction;
         private NetworkConnection connection;
-
+        
+        private string apiAddress;
         private string token;
 
         void Start()
@@ -56,55 +58,9 @@ namespace Login
             loginWindowInstance = Instantiate(loginWindowPrefab, transform);
         }
 
-        public void HideLoginWindow()
+        private void HideLoginWindow()
         {
             Destroy(loginWindowInstance.gameObject);
-        }
-
-        public ApiResponse CallRegisterEndpoint(RegisterCredentials registerCredentials)
-        {
-            return loginServerClient.Register(registerCredentials);
-        }
-
-        public ApiResponse CallAuthenticateEndpoint(LoginCredentials loginCredentials)
-        {
-            ApiResponse response = loginServerClient.Authenticate(loginCredentials);
-            if (response.IsSuccess())
-            {
-                token = response.GetToken();
-            }
-
-            return response;
-        }
-
-        public ApiResponse CallCharacterListEndpoint()
-        {
-            if (!IsTokenValid("Get Characters"))
-            {
-                return new ApiResponse(ApiResponse.ResponseType.Error, "");
-            }
-
-            return loginServerClient.GetCharacters(token);
-        }
-
-        public ApiResponse CallCharacterCreateEndpoint(string name)
-        {
-            if (!IsTokenValid("Create Character"))
-            {
-                return new ApiResponse(ApiResponse.ResponseType.Error, "");
-            }
-
-            return loginServerClient.SaveCharacter(token, name);
-        }
-
-        public ApiResponse CallCharacterDeleteEndpoint(int id)
-        {
-            if (!IsTokenValid("Delete Character"))
-            {
-                return new ApiResponse(ApiResponse.ResponseType.Error, "");
-            }
-
-            return loginServerClient.DeleteCharacter(token, id);
         }
 
         public void SpawnPlayer(CharacterResponse characterResponse)
@@ -112,22 +68,5 @@ namespace Login
             spawnPlayerAction(connection, characterResponse);
             HideLoginWindow();
         }
-
-        /// <summary>
-        /// Validates that client has authenticated and has a token. Should be called before every non-anonymous endpoint call.
-        /// </summary>
-        /// <param name="requestName">For logging purposes only. Specifies which request was done when error occured.</param>
-        /// <returns></returns>
-        private bool IsTokenValid(string requestName)
-        {
-            if (string.IsNullOrEmpty(token))
-            {
-                Debug.LogError($"Attempting to make {requestName} requests before having received a token!");
-                return false;
-            }
-
-            return true;
-        }
-
     }
 }

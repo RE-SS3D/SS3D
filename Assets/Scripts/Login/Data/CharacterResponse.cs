@@ -6,17 +6,13 @@ namespace Login.Data
     /// </summary>
     public class CharacterResponse
     {
-        private int id;
-        private string name;
-
         public CharacterResponse(int id, string name)
         {
-            this.id = id;
-            this.name = name;
+            Id = id;
+            Name = name;
         }
 
-        public int Id => id;
-
-        public string Name => name;
+        public int Id { get; }
+        public string Name { get; }
     }
 }
