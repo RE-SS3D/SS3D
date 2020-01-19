@@ -17,6 +17,8 @@ namespace Enums
         Head = 9,
         LegLeft = 10,
         LegRight = 11,
-        Torso = 12
+        Torso = 12,
+        EarLeft = 13,
+        EarRight = 14
     }
 }
