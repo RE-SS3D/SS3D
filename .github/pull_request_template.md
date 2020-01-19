@@ -4,6 +4,9 @@ Example:
 *This PR aims to add a basic implementation for internal organ simulation for living creatures. It implements body organs as a concept, and adds methods for interactions between organs. Additionally it ties the organs into the body damage and limb detachment systems. Since we have eating and blood features, only the stomach and heart organs have been implemented. 
 This PR does not implement lungs, or brains because we don't have atmospherics or soul/conciousness mechanics.*
 
+## Screenshots, gifs, videos (Encouraged, but optional)
+One or more screenshot or moving imagery of what his PR achieves. These will not be used anywhere, but is just to help reviewers know what is going on. You may want to submit the same image to the devblog.
+
 ## Changes to existing Unity files (Optional if none)
 A list of every prefab and scene file that was changed and why/how they were changed.
 Example:
