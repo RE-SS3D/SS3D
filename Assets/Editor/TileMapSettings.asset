@@ -12,4 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99817bb6720207647b76453e1a617702, type: 3}
   m_Name: TileMapSettings
   m_EditorClassIdentifier: 
-  tiles: []
+  tiles:
+  - turf: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
+    fixture: {fileID: 0}
+    fixtureDirection: 0
+  - turf: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
+    fixture: {fileID: 11400000, guid: e361c0d934015604fa13db8b86d73f4b, type: 2}
+    fixtureDirection: 0
+  - turf: {fileID: 11400000, guid: cede127f2ecc46345ab2c1fad9cbd507, type: 2}
+    fixture: {fileID: 0}
+    fixtureDirection: 0
+  - turf: {fileID: 11400000, guid: c4f20fbebbaf46f4f85293a69e3c0d7d, type: 2}
+    fixture: {fileID: 0}
+    fixtureDirection: 0

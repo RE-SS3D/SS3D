@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: ReinforcedGlassWall
   m_EditorClassIdentifier: 
   id: reinforced_glass_wall
+  genericType: wall
   isWall: 1
   prefab: {fileID: 3591147544166670882, guid: 6e6257fcfea4f46418ac01d93fd37115, type: 3}

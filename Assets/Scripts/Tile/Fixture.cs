@@ -9,6 +9,8 @@ namespace TileMap {
     public class Fixture : ScriptableObject
     {
         public string id;
+        public string genericType;
+
         public GameObject prefab;
         // Whether this fixture connects to adjacent fixtures
         public bool connects;

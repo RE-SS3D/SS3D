@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using System;
 
 namespace TileMap {
 
@@ -129,24 +130,15 @@ namespace TileMap {
          */
         private void SetContents(ConstructibleTile newTile)
         {
-            if (newTile.turf != tile.turf) {
+            if (newTile.turf != tile.turf)
                 CreateTurf(newTile.turf);
-            }
 
             if (newTile.fixture != tile.fixture) {
-                if (fixture != null)
-                    Destroy(fixture);
-
                 CreateFixture(newTile.fixture, newTile.fixtureDirection);
             }
             else if (newTile.fixtureDirection != tile.fixtureDirection && fixture != null) {
                 fixture.transform.rotation = Quaternion.Euler(fixture.transform.localRotation.eulerAngles.x, DirectionHelper.ToAngle(newTile.fixtureDirection), fixture.transform.localRotation.eulerAngles.z);
             }
-
-            // Check if they have adjacency connectors, which we can then update.
-            turfConnector = turf.GetComponent<AdjacencyConnector>();
-            if(fixture != null)
-                fixtureConnector = fixture.GetComponent<AdjacencyConnector>();
 
             tile = newTile;
         }
@@ -164,18 +156,37 @@ namespace TileMap {
         #endif
 
             turf.name = "turf_" + turfDefinition.id;
+            turfConnector = turf.GetComponent<AdjacencyConnector>();
         }
         private void CreateFixture(Fixture fixtureDefinition, Direction direction)
         {
-        #if UNITY_EDITOR
-            if (fixture != null) 
-                DestroyImmediate(turf);
-            fixture = (GameObject)PrefabUtility.InstantiatePrefab(fixtureDefinition.prefab, transform);
-        #else
-            if (fixture != null) 
-                Destroy(turf);
-            fixture = Instantiate(fixtureDefinition.prefab, transform);
-        #endif
+#if UNITY_EDITOR
+            if (fixture != null)
+                DestroyImmediate(fixture);
+
+            if (fixtureDefinition != null) {
+                fixture = (GameObject)PrefabUtility.InstantiatePrefab(fixtureDefinition.prefab, transform);
+                fixtureConnector = fixture.GetComponent<AdjacencyConnector>();
+            }
+            else {
+                fixture = null;
+                fixtureConnector = null;
+                return;
+            }
+#else
+            if (fixture != null)
+                Destroy(fixture);
+
+            if(fixtureDefinition != null) {
+                fixture = Instantiate(fixtureDefinition.prefab, transform);
+                fixtureConnector = fixture.GetComponent<AdjacencyConnector>();
+            }
+            else {
+                fixture = null;
+                fixtureConnector = null;
+                return;
+            }
+#endif
             fixture.name = "fixture_" + fixtureDefinition.id;
             // TODO: Allow this to work with non-standard fixture rotations.
             fixture.transform.localRotation = Quaternion.Euler(fixture.transform.localRotation.eulerAngles.x, DirectionHelper.ToAngle(direction), fixture.transform.localRotation.eulerAngles.z);

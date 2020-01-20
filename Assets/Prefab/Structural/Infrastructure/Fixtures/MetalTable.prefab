@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 6583449581753452249}
   - component: {fileID: 6984099654956712234}
   - component: {fileID: 3608857327747406091}
-  - component: {fileID: 1573044378674119543}
+  - component: {fileID: 1683531520590988412}
   m_Layer: 0
-  m_Name: Table
+  m_Name: MetalTable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,13 +27,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8036950609662249464}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: -0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6583449581753452249
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -41,7 +41,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8036950609662249464}
-  m_Mesh: {fileID: 4300000, guid: bebd5931bbcf18e48aa4e6a7fbc9b5e2, type: 2}
+  m_Mesh: {fileID: 8149708829910368781, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
 --- !u!23 &6984099654956712234
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -59,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: db5a4f016f22afc4f8f074192ce277e8, type: 2}
+  - {fileID: 4608077969783966991, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -91,9 +91,9 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.009416856, y: 0.008616858, z: 0.0073948437}
-  m_Center: {x: 0, y: 0, z: 0.0036974219}
---- !u!114 &1573044378674119543
+  m_Size: {x: 1, y: 1, z: 0.75}
+  m_Center: {x: 0, y: 0, z: 0.375}
+--- !u!114 &1683531520590988412
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -102,14 +102,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 8036950609662249464}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 961b31fd1d838b9418d00d2675f3a9ab, type: 3}
+  m_Script: {fileID: 11500000, guid: aa3fb3fb0fa47e54bad7580218ea1e05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  corner: {fileID: 4300000, guid: 5cf11c6159b6cb946a5adc54469b51a5, type: 2}
-  i: {fileID: 4300000, guid: d6797c5fce96c3643a769e904094c4ff, type: 2}
-  c: {fileID: 4300000, guid: ab982842f049827418b3687033fda9dd, type: 2}
-  t: {fileID: 4300000, guid: 1cc61dd9122968b498e00b860c7b947a, type: 2}
-  x: {fileID: 4300000, guid: 1cc61dd9122968b498e00b860c7b947a, type: 2}
-  none: {fileID: 4300000, guid: bebd5931bbcf18e48aa4e6a7fbc9b5e2, type: 2}
-  layer: 1
-  id: table
+  type: table
+  o: {fileID: 8149708829910368781, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  c: {fileID: 3066403768434774729, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  i: {fileID: 8645502265600497589, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  lNone: {fileID: -6943702242849410326, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  lSingle: {fileID: -740198089320790797, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  tNone: {fileID: 4313468504179094331, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  tSingleRight: {fileID: -8463400382135103013, guid: f860e5d60928a9a428e4e08ced949943,
+    type: 3}
+  tSingleLeft: {fileID: 3801335336682644343, guid: f860e5d60928a9a428e4e08ced949943,
+    type: 3}
+  tDouble: {fileID: 7180860349006429713, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xNone: {fileID: 1007854491449196397, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xSingle: {fileID: 4137495204679279947, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xSide: {fileID: 2127268651971676719, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xOpposite: {fileID: 898908343608802800, guid: f860e5d60928a9a428e4e08ced949943,
+    type: 3}
+  xTriple: {fileID: -852506227573067607, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xQuad: {fileID: 4989269521715750725, guid: f860e5d60928a9a428e4e08ced949943, type: 3}

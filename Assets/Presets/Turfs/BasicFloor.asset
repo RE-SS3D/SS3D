@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: BasicFloor
   m_EditorClassIdentifier: Assembly-CSharp:TileMap:Turf
   id: basic_tile
+  genericType: floor
   isWall: 0
   prefab: {fileID: 6767447678079105841, guid: 5ecf13819099b014eb5f731155540586, type: 3}

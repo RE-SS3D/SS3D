@@ -3,11 +3,14 @@ using System.Collections;
 
 namespace TileMap {
     /**
-     * A simple adjacency connector uses 6 meshes and checks for all possible scenarios
-     * which stem from only the 4 cardinal directions.
+     * These classes are getting very specific...
+     * This one is the same as SimpleAdjacencyConnector, but it has specific unique I connections
+     * to a more generic type.
+     * This is currently used for glass walls, where when connecting to any other wall we need to
+     * 'close' the glass window.
      */
     [RequireComponent(typeof(MeshFilter))]
-    public class SimpleAdjacencyConnector : AdjacencyConnector
+    public class TieredIAdjacencyConnector : AdjacencyConnector
     {
         public enum TileLayer
         {
@@ -16,7 +19,8 @@ namespace TileMap {
         }
 
         // Id that adjacent objects must be to count. If null, any id is accepted
-        public string type;
+        public string id;
+        public string genericType;
 
         [Header("Meshes")]
         // A mesh where no edges are connected
@@ -25,6 +29,10 @@ namespace TileMap {
         public Mesh c;
         // A mesh where east and west edges are connected
         public Mesh i;
+        // A mesh where west connects to same type, and east connects to the generic type
+        public Mesh iBorder;
+        // A mesh for a single I tile between two generic ones
+        public Mesh iAlone;
         // A mesh where the south and west edges are connected
         public Mesh l;
         // A mesh where the north, south, and east edge is connected
@@ -68,20 +76,24 @@ namespace TileMap {
          */
         private void UpdateSingleConnection(Direction direction, ConstructibleTile tile)
         {
-            bool isConnected = (tile.turf && (tile.turf.genericType == type || type == null)) || (tile.fixture && (tile.fixture.genericType == type || type == null));
+            bool isGeneric = (tile.turf && (tile.turf.genericType == genericType || genericType == null)) || (tile.fixture && (tile.fixture.genericType == genericType || genericType == null));
+            bool isSpecific = (tile.turf && (tile.turf.id == id || id == null)) || (tile.fixture && (tile.fixture.id == id || id == null));
 
             // Set the direction bit to isConnected (1 or 0)
             connections &= (byte)~(1 << (int)direction);
-            connections |= (byte)((isConnected ? 1 : 0) << (int)direction);
+            connections |= (byte)((isGeneric ? 1 : 0) << (int)direction);
+
+            specificConnections &= (byte)~(1 << (int)direction);
+            specificConnections |= (byte)((isSpecific ? 1 : 0) << (int)direction);
         }
 
         private void SetMeshAndDirection()
         {
             // Count number of connections along cardinal (which is all that we use atm)
-            int north = (connections >> (int)Direction.North) & 0x1;
-            int east = (connections >> (int)Direction.East) & 0x1;
-            int south = (connections >> (int)Direction.South) & 0x1;
-            int west = (connections >> (int)Direction.West) & 0x1;
+            int north = Adjacent(Direction.North);
+            int east = Adjacent(Direction.East);
+            int south = Adjacent(Direction.South);
+            int west = Adjacent(Direction.West);
 
             int numConnections = north + east + south + west;
 
@@ -96,8 +108,20 @@ namespace TileMap {
             else if (numConnections == 2) {
                 // If north and south are both 1 or 0, must be a line.
                 if (north == south) {
-                    mesh = i;
-                    rotation = east > 0 ? 0 : 90;
+                    // Check for specific connections
+                    int numSpecific = SpecificAdjacent(Direction.North)
+                        + SpecificAdjacent(Direction.East)
+                        + SpecificAdjacent(Direction.South)
+                        + SpecificAdjacent(Direction.West);
+
+                    if (numSpecific == 1) {
+                        mesh = iBorder;
+                        rotation = SpecificAdjacent(Direction.North) * 90 + SpecificAdjacent(Direction.East) * 180 + SpecificAdjacent(Direction.South) * 270;
+                    }
+                    else {
+                        mesh = numSpecific == 2 ? i : iAlone;
+                        rotation = east > 0 ? 0 : 90;
+                    }
                 }
                 else {
                     mesh = l;
@@ -126,8 +150,19 @@ namespace TileMap {
             return (connections >> (int)direction) & 0x1;
         }
 
+        /**
+         * Returns 0 if no adjacency, or 1 if there is.
+         */
+        private int SpecificAdjacent(Direction direction)
+        {
+            return (specificConnections >> (int)direction) & 0x1;
+        }
+
+
         // A bitfield of connections. Total of 8 connections -> 8 bits, ascending order with direction.
         private byte connections = 0;
+        private byte specificConnections = 0;
+
         private MeshFilter filter;
     }
 }
