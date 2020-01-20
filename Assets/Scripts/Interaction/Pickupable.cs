@@ -9,12 +9,11 @@ namespace Interaction
         
         public void Advertise(Interactable interactable)
         {
-            interactable.Subscribe(InteractionKind.Click, this);
+            interactable.Subscribe("pickup", this);
         }
 
         public void Handle(InteractionEvent e)
         {
-            Debug.Log(e);
             e.sender.GetComponent<Hands>().Pickup(gameObject);
         }
     }

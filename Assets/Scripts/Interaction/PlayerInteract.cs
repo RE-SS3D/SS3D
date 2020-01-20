@@ -31,17 +31,17 @@ namespace Interaction
                 if (!EventSystem.current.IsPointerOverGameObject() &&
                     Physics.Raycast(ray, out var hit, float.PositiveInfinity))
                 {
-                    var activeSender = hands.GetItemInHand();
-                    
                     var interactable = hit.transform.GetComponent<Interactable>();
-                    if (interactable) interactable.Trigger(new InteractionEvent(
-                        InteractionKind.Click, 
-                        activeSender ? activeSender.transform : transform, 
-                        activeSender ? hands.transform : null)
+                    if (interactable) interactable.Trigger(new InteractionEvent("pickup", hands.transform)
+                        .WorldPosition(hit.point).WorldNormal(hit.normal));
+                    
+                    var held = hands.GetItemInHand();
+                    if (held != null)
                     {
-                        worldPosition = hit.point,
-                        worldNormal = hit.normal,
-                    });
+                        var heldInteractable = held.GetComponent<Interactable>();
+                        if (heldInteractable) heldInteractable.Trigger(new InteractionEvent("use", hands.transform)
+                            .WorldPosition(hit.point).WorldNormal(hit.normal).ForwardTo(interactable));
+                    }
                 }
             }
         }

@@ -6,24 +6,52 @@ namespace Interaction
     [Serializable]
     public struct InteractionEvent
     {
-        public InteractionKind kind;
+        public string kind;
         public Transform sender;
-        public Transform parent;
         public Vector3 worldPosition;
         public Vector3 worldNormal;
+        public Interactable forwardTo;
 
-        public InteractionEvent(InteractionKind kind, Transform sender, Transform parent = null)
+        public InteractionEvent(string kind, Transform sender, Transform parent = null)
         {
             this.kind = kind;
             this.sender = sender;
-            this.parent = parent;
             this.worldPosition = Vector3.zero;
             this.worldNormal = Vector3.zero;
+            this.forwardTo = null;
+        }
+
+        public InteractionEvent Forward(string place, Transform transform)
+        {
+            return new InteractionEvent
+            {
+                kind = place,
+                sender = transform,
+                worldNormal = worldNormal,
+                worldPosition = worldPosition,
+                forwardTo = null,
+            };
+        }
+
+        public InteractionEvent WorldPosition(Vector3 value)
+        {
+            worldPosition = value;
+            return this;
+        }
+        public InteractionEvent WorldNormal(Vector3 value)
+        {
+            worldNormal = value;
+            return this;
+        }
+        public InteractionEvent ForwardTo(Interactable value)
+        {
+            forwardTo = value;
+            return this;
         }
 
         public override string ToString()
         {
-            return $"{kind}: {nameof(sender)}: {sender} ({parent})";
+            return $"{kind}: {nameof(sender)}: {sender}";
         }
     }
 }

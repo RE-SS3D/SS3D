@@ -8,13 +8,15 @@ namespace Interaction
     {
         public void Advertise(Interactable interactable)
         {
-            interactable.Subscribe(InteractionKind.Click, this);
+            interactable.Subscribe("place", this);
         }
 
         public void Handle(InteractionEvent e)
         {
-            e.parent.GetComponent<Hands>().Drop();
-            e.sender.position = e.worldPosition;
+            var item = e.sender.GetComponent<Item>();
+            item.container.RemoveItem(item.gameObject);
+            item.transform.position = e.worldPosition;
+            item.gameObject.SetActive(true);
         }
     }
 }

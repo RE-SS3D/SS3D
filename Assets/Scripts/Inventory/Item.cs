@@ -21,6 +21,7 @@ public class Item : MonoBehaviour
         Shoes
     }
 
+    public Container    container;
     public ItemType     itemType;
     public Sprite       sprite;
     public GameObject   prefab;

@@ -89,6 +89,7 @@ public class Container : NetworkBehaviour
             throw new Exception("Item already exists in slot"); // TODO: Specific exception
 
         items[slot] = item;
+        item.GetComponent<Item>().container = this;
     }
     /**
      * Add an item to the first available slot.
@@ -120,9 +121,21 @@ public class Container : NetworkBehaviour
             throw new Exception("No item exists in slot"); // TODO: Specific exception
 
         var item = items[slot];
+        item.GetComponent<Item>().container = null;
         items[slot] = null;
 
         return item;
+    }
+
+    /**
+     * Remove the item from the container, returning the Item.
+     */
+    [Server]
+    public void RemoveItem(GameObject item)
+    {
+        for(var i = 0; i < items.Count; i++)
+            if (items[i] == item)
+                RemoveItem(i);
     }
 
     /**
