@@ -7,14 +7,16 @@ namespace Interaction
     public class Pickupable : MonoBehaviour, IInteractable
     {
         
-        public void Advertise(Interactable interactable)
+        public void Setup(Action<string> listen, Action<string> blocks)
         {
-            interactable.Subscribe("pickup", this);
+            listen("pickup");
         }
 
-        public void Handle(InteractionEvent e)
+        public bool Handle(InteractionEvent e)
         {
             e.sender.GetComponent<Hands>().Pickup(gameObject);
+
+            return true;
         }
     }
 }

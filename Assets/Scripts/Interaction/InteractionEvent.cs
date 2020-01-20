@@ -11,6 +11,7 @@ namespace Interaction
         public Vector3 worldPosition;
         public Vector3 worldNormal;
         public Interactable forwardTo;
+        public Interactable waitFor;
 
         public InteractionEvent(string kind, Transform sender, Transform parent = null)
         {
@@ -19,6 +20,7 @@ namespace Interaction
             this.worldPosition = Vector3.zero;
             this.worldNormal = Vector3.zero;
             this.forwardTo = null;
+            this.waitFor = null;
         }
 
         public InteractionEvent Forward(string place, Transform transform)
@@ -46,6 +48,12 @@ namespace Interaction
         public InteractionEvent ForwardTo(Interactable value)
         {
             forwardTo = value;
+            return this;
+        }
+
+        public InteractionEvent WaitFor(Interactable interactable)
+        {
+            waitFor = interactable;
             return this;
         }
 

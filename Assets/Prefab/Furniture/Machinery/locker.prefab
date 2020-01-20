@@ -71,10 +71,10 @@ GameObject:
   - component: {fileID: 7831052452063596952}
   - component: {fileID: 6474128899204961467}
   - component: {fileID: 1746560049918852329}
-  - component: {fileID: 1991821696461391970}
   - component: {fileID: 3542738651248568969}
   - component: {fileID: 2483959803612036482}
   - component: {fileID: 1339665882733639394}
+  - component: {fileID: 7035540085544037899}
   m_Layer: 0
   m_Name: LockerBasic
   m_TagString: Untagged
@@ -147,19 +147,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &1991821696461391970
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2742629995579614087}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.0063288035, y: 0.0055178963, z: 0.017198702}
-  m_Center: {x: -2.3283064e-10, y: 0.0019188733, z: 0.008598697}
 --- !u!114 &3542738651248568969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,6 +193,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!65 &7035540085544037899
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2742629995579614087}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.0063288035, y: 0.0055178963, z: 0.017198702}
+  m_Center: {x: -2.3283064e-10, y: 0.0019188733, z: 0.008598697}
 --- !u!1 &2809162880574980545
 GameObject:
   m_ObjectHideFlags: 0
@@ -422,10 +422,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8930069987588985931}
-  - component: {fileID: 1542474723672914225}
   - component: {fileID: 141301939705353520}
   - component: {fileID: 5227133807252648279}
   - component: {fileID: 7176282325643906320}
+  - component: {fileID: 5791468917511128255}
+  - component: {fileID: 5357114244261574010}
+  - component: {fileID: 8913433770271218549}
   m_Layer: 0
   m_Name: locker
   m_TagString: Untagged
@@ -448,25 +450,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &1542474723672914225
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5599841925940684376}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: e341f08d96905b747ae786d277e22c79, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &141301939705353520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -518,6 +501,44 @@ MonoBehaviour:
   - {fileID: 2809162880574980545}
   - {fileID: 1988891896432220810}
   - {fileID: 8361523995367601340}
+--- !u!114 &5791468917511128255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5599841925940684376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f31cf7033044701bd2040285a11b93f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5357114244261574010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5599841925940684376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b07ea8cc1bcc03409e910d0dadaa590, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onlyIfOpen: 1
+--- !u!114 &8913433770271218549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5599841925940684376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d45716433d3a4cabba92dc588fd62938, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  open: 0
 --- !u!1 &8361523995367601340
 GameObject:
   m_ObjectHideFlags: 0

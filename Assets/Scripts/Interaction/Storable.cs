@@ -1,11 +1,10 @@
 ﻿using System;
-using Inventory.Custom;
 using UnityEngine;
 
 namespace Interaction
 {
     [RequireComponent(typeof(Interactable))]
-    public class Placeable : MonoBehaviour, IInteractable
+    public class Storable : MonoBehaviour, IInteractable
     {
         public void Setup(Action<string> listen, Action<string> blocks)
         {
@@ -15,7 +14,7 @@ namespace Interaction
         public bool Handle(InteractionEvent e)
         {
             if (!e.forwardTo) return false;
-            e.forwardTo.Trigger(e.Forward("place", transform));
+            e.forwardTo.Trigger(e.Forward("store", transform));
 
             return true;
         }

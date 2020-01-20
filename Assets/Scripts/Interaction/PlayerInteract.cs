@@ -30,20 +30,39 @@ namespace Interaction
                 // Ensure that user did not click the UI (fucking stupid that we need the event system to check this)
                 if (!EventSystem.current.IsPointerOverGameObject() &&
                     Physics.Raycast(ray, out var hit, float.PositiveInfinity))
-                {
-                    var interactable = hit.transform.GetComponent<Interactable>();
-                    if (interactable) interactable.Trigger(new InteractionEvent("pickup", hands.transform)
-                        .WorldPosition(hit.point).WorldNormal(hit.normal));
-                    
-                    var held = hands.GetItemInHand();
-                    if (held != null)
-                    {
-                        var heldInteractable = held.GetComponent<Interactable>();
-                        if (heldInteractable) heldInteractable.Trigger(new InteractionEvent("use", hands.transform)
-                            .WorldPosition(hit.point).WorldNormal(hit.normal).ForwardTo(interactable));
-                    }
-                }
+                    Interact(hit.transform, hit.point, hit.normal);
             }
+        }
+
+        private void Interact(Transform target, Vector3 position, Vector3 normal)
+        {
+            var interactable = FindInteractable(target);
+                    
+            var held = hands.GetItemInHand();
+            Interactable heldInteractable = null;
+            if (held != null)
+            {
+                heldInteractable = FindInteractable(held.transform);
+                if (heldInteractable) heldInteractable.Trigger(new InteractionEvent("use", hands.transform)
+                    .WorldPosition(position).WorldNormal(normal).ForwardTo(interactable));
+            }
+            
+            if (interactable) interactable.Trigger(new InteractionEvent("pickup", hands.transform)
+                .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractable));
+            if (interactable) interactable.Trigger(new InteractionEvent("open", hands.transform)
+                .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractable));
+        }
+
+        private Interactable FindInteractable(Transform target)
+        {
+            while (target)
+            {
+                var result = target.GetComponent<Interactable>();
+                if (result) return result;
+                target = target.parent;
+            }
+
+            return null;
         }
     }
 }

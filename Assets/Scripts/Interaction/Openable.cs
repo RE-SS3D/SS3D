@@ -1,21 +1,23 @@
 ﻿using System;
-using Inventory.Custom;
 using UnityEngine;
 
 namespace Interaction
 {
     [RequireComponent(typeof(Interactable))]
-    public class Placeable : MonoBehaviour, IInteractable
+    public class Openable : MonoBehaviour, IInteractable
     {
+        public bool open;
+        
         public void Setup(Action<string> listen, Action<string> blocks)
         {
-            listen("use");
+            listen("open");
         }
 
         public bool Handle(InteractionEvent e)
         {
-            if (!e.forwardTo) return false;
-            e.forwardTo.Trigger(e.Forward("place", transform));
+            open = !open;
+            
+            Debug.Log($"{name} is now {(open ? "open" : "closed")}");
 
             return true;
         }

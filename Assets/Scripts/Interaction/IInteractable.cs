@@ -1,8 +1,10 @@
-﻿namespace Interaction
+﻿using System;
+
+namespace Interaction
 {
     public interface IInteractable
     {
-        void Advertise(Interactable interactable);
-        void Handle(InteractionEvent e);
+        void Setup(Action<string> listen, Action<string> blocks);
+        bool Handle(InteractionEvent e);
     }
 }
