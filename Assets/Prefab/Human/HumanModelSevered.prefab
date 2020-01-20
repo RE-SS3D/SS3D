@@ -1379,7 +1379,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 1
   m_AssetId: 
-  m_SceneId: 0
+  m_SceneId: 1443059148
 --- !u!114 &6850072202715529766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1454,19 +1454,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1
-  bodyParts:
-  - {fileID: 1903259415010948184}
-  - {fileID: 8746797839868163853}
-  - {fileID: 3291334341940294444}
-  - {fileID: 8996461472011561313}
-  - {fileID: 4040678651569690357}
-  - {fileID: 3037573119208291311}
-  - {fileID: 5439284932066326749}
-  - {fileID: 735844182605997609}
-  - {fileID: 8889837685357318779}
-  - {fileID: 1124637067884402731}
-  - {fileID: 5949131190728675574}
-  - {fileID: 4211533769812448533}
 --- !u!114 &1994183711920205137
 MonoBehaviour:
   m_ObjectHideFlags: 0

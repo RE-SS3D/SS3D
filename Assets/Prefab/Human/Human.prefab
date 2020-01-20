@@ -83,6 +83,7 @@ GameObject:
   - component: {fileID: -3295296730462155149}
   - component: {fileID: -1122543427383380906}
   - component: {fileID: -4076194270709087877}
+  - component: {fileID: 1958784860310624992}
   m_Layer: 15
   m_Name: Human
   m_TagString: Untagged
@@ -153,7 +154,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 1
   m_AssetId: 
-  m_SceneId: 0
+  m_SceneId: 721342239
 --- !u!114 &-5918456934534797284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -339,6 +340,19 @@ MonoBehaviour:
     type: 3}
   attackType: 1
   damageAmount: 5
+--- !u!114 &1958784860310624992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8dc905ed8643cb9704a20ea52a943e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncInterval: 0.1
 --- !u!1 &290878266594310021
 GameObject:
   m_ObjectHideFlags: 0
