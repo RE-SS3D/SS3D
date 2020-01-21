@@ -4,11 +4,12 @@ using Inventory.Custom;
 using Mirror;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Event = Interaction.Core.Event;
 
 namespace Interaction
 {
     [RequireComponent(typeof(Hands))]
-    public class PlayerInteract : NetworkBehaviour
+    public class PlayerInteractor : NetworkBehaviour
     {
         private new Camera camera;
         private Hands hands;
@@ -40,25 +41,25 @@ namespace Interaction
             var interactable = FindInteractable(target);
                     
             var held = hands.GetItemInHand();
-            Interactable heldInteractable = null;
+            InteractionReceiver heldInteractionReceiver = null;
             if (held != null)
             {
-                heldInteractable = FindInteractable(held.transform);
-                if (heldInteractable) heldInteractable.Trigger(new InteractionEvent("use", hands.transform)
+                heldInteractionReceiver = FindInteractable(held.transform);
+                if (heldInteractionReceiver) heldInteractionReceiver.Trigger(new Event("use", hands.gameObject)
                     .WorldPosition(position).WorldNormal(normal).ForwardTo(interactable));
             }
             
-            if (interactable) interactable.Trigger(new InteractionEvent("pickup", hands.transform)
-                .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractable));
-            if (interactable) interactable.Trigger(new InteractionEvent("open", hands.transform)
-                .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractable));
+            if (interactable) interactable.Trigger(new Event("pickup", hands.gameObject)
+                .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractionReceiver));
+            if (interactable) interactable.Trigger(new Event("open", hands.gameObject)
+                .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractionReceiver));
         }
 
-        private Interactable FindInteractable(Transform target)
+        private InteractionReceiver FindInteractable(Transform target)
         {
             while (target)
             {
-                var result = target.GetComponent<Interactable>();
+                var result = target.GetComponent<InteractionReceiver>();
                 if (result) return result;
                 target = target.parent;
             }

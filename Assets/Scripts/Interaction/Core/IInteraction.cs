@@ -2,9 +2,9 @@
 
 namespace Interaction.Core
 {
-    public interface IInteractable
+    public interface IInteraction
     {
         void Setup(Action<string> listen, Action<string> blocks);
-        bool Handle(InteractionEvent e);
+        bool Handle(Event e);
     }
 }

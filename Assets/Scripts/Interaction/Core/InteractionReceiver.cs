@@ -4,27 +4,39 @@ using UnityEngine;
 
 namespace Interaction.Core
 {
-    public class Interactable : MonoBehaviour
+    [DisallowMultipleComponent]
+    public sealed class InteractionReceiver : MonoBehaviour
     {
-        private readonly Dictionary<string, List<IInteractable>> receivers = new Dictionary<string, List<IInteractable>>();
-        private readonly Dictionary<IInteractable, List<string>> listeners = new Dictionary<IInteractable, List<string>>();
+        [SerializeField] private Interaction[] interactions = new Interaction[0];
+        
+        private readonly Dictionary<string, List<IInteraction>> receivers = new Dictionary<string, List<IInteraction>>();
+        private readonly Dictionary<IInteraction, List<string>> listeners = new Dictionary<IInteraction, List<string>>();
         private readonly Dictionary<string, string> dependencies = new Dictionary<string, string>();
-        private readonly List<InteractionEvent> eventQueue = new List<InteractionEvent>();
-        private readonly List<Interactable> waiting = new List<Interactable>();
+        private readonly List<Event> eventQueue = new List<Event>();
+        private readonly List<InteractionReceiver> waiting = new List<InteractionReceiver>();
 
-        private Coroutine handlerCoroutine;
+        private Coroutine handlerCoroutine = null;
 
-        public bool IsClear => handlerCoroutine == null;
+        private bool IsClear => handlerCoroutine == null;
 
         private void Start()
         {
-            foreach (var interactable in GetComponents<IInteractable>())
+            foreach (var interactable in GetComponents<IInteraction>())
                 interactable.Setup(
                     kind => Subscribe(kind, interactable),
                     kind => SetBlockage(kind, interactable));
+
+            foreach (var interaction in interactions)
+            {
+                var localInteraction = Instantiate(interaction);
+                localInteraction.receiver = gameObject;
+                localInteraction.Setup(
+                    kind => Subscribe(kind, localInteraction),
+                    kind => SetBlockage(kind, localInteraction));
+            }
         }
 
-        private void SetBlockage(string kind, IInteractable receiver)
+        private void SetBlockage(string kind, IInteraction receiver)
         {
             if (!listeners.ContainsKey(receiver))
             {
@@ -38,17 +50,17 @@ namespace Interaction.Core
             }
         }
 
-        public void Subscribe(string kind, IInteractable receiver)
+        public void Subscribe(string kind, IInteraction receiver)
         {
             if (!receivers.ContainsKey(kind))
-                receivers.Add(kind, new List<IInteractable>());
+                receivers.Add(kind, new List<IInteraction>());
             receivers[kind].Add(receiver);
             
             if (!listeners.ContainsKey(receiver))
                 listeners.Add(receiver, new List<string>());
             listeners[receiver].Add(kind);
         }
-        public void Unsubscribe(string kind, IInteractable receiver)
+        public void Unsubscribe(string kind, IInteraction receiver)
         {
             if (receivers.ContainsKey(kind))
             {
@@ -62,7 +74,7 @@ namespace Interaction.Core
             }
         }
 
-        public void Trigger(InteractionEvent e)
+        public void Trigger(Event e)
         {
             if (dependencies.TryGetValue(e.kind, out var dependency))
             {

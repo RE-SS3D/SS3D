@@ -1,11 +1,12 @@
 ﻿using System;
 using Interaction.Core;
 using UnityEngine;
+using Event = Interaction.Core.Event;
 
 namespace Interaction
 {
-    [RequireComponent(typeof(Interactable))]
-    public class Openable : MonoBehaviour, IInteractable
+    [RequireComponent(typeof(InteractionReceiver))]
+    public class Openable : MonoBehaviour, IInteraction
     {
         public bool open;
         
@@ -14,7 +15,7 @@ namespace Interaction
             listen("open");
         }
 
-        public bool Handle(InteractionEvent e)
+        public bool Handle(Event e)
         {
             open = !open;
             

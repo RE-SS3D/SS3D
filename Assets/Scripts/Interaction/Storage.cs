@@ -1,12 +1,13 @@
 ﻿using System;
 using Interaction.Core;
 using UnityEngine;
+using Event = Interaction.Core.Event;
 
 namespace Interaction
 {
-    [RequireComponent(typeof(Interactable))]
+    [RequireComponent(typeof(InteractionReceiver))]
     [RequireComponent(typeof(Container))]
-    public class Storage : MonoBehaviour, IInteractable
+    public class Storage : MonoBehaviour, IInteraction
     {
         public bool onlyIfOpen;
 
@@ -25,7 +26,7 @@ namespace Interaction
             blocks("open");
         }
 
-        public bool Handle(InteractionEvent e)
+        public bool Handle(Event e)
         {
             if (onlyIfOpen)
             {

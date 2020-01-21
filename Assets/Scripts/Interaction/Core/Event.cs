@@ -4,16 +4,16 @@ using UnityEngine;
 namespace Interaction.Core
 {
     [Serializable]
-    public struct InteractionEvent
+    public struct Event
     {
         public string kind;
-        public Transform sender;
+        public GameObject sender;
         public Vector3 worldPosition;
         public Vector3 worldNormal;
-        public Interactable forwardTo;
-        public Interactable waitFor;
+        public InteractionReceiver forwardTo;
+        public InteractionReceiver waitFor;
 
-        public InteractionEvent(string kind, Transform sender, Transform parent = null)
+        public Event(string kind, GameObject sender)
         {
             this.kind = kind;
             this.sender = sender;
@@ -23,9 +23,9 @@ namespace Interaction.Core
             this.waitFor = null;
         }
 
-        public InteractionEvent Forward(string place, Transform transform)
+        public Event Forward(string place, GameObject transform)
         {
-            return new InteractionEvent
+            return new Event
             {
                 kind = place,
                 sender = transform,
@@ -35,25 +35,25 @@ namespace Interaction.Core
             };
         }
 
-        public InteractionEvent WorldPosition(Vector3 value)
+        public Event WorldPosition(Vector3 value)
         {
             worldPosition = value;
             return this;
         }
-        public InteractionEvent WorldNormal(Vector3 value)
+        public Event WorldNormal(Vector3 value)
         {
             worldNormal = value;
             return this;
         }
-        public InteractionEvent ForwardTo(Interactable value)
+        public Event ForwardTo(InteractionReceiver value)
         {
             forwardTo = value;
             return this;
         }
 
-        public InteractionEvent WaitFor(Interactable interactable)
+        public Event WaitFor(InteractionReceiver interactionReceiver)
         {
-            waitFor = interactable;
+            waitFor = interactionReceiver;
             return this;
         }
 

@@ -17,8 +17,6 @@ GameObject:
   - component: {fileID: 769153401460545782}
   - component: {fileID: 2560149424242592160}
   - component: {fileID: 5911543497110224905}
-  - component: {fileID: 1090928910032981316}
-  - component: {fileID: 1156625236516607257}
   m_Layer: 16
   m_Name: crowbar
   m_TagString: Untagged
@@ -160,6 +158,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f31cf7033044701bd2040285a11b93f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactions:
+  - {fileID: 11400000, guid: 2ad3183a1e200dd4b9edd607982b7a79, type: 2}
+  - {fileID: 11400000, guid: 29f49cd8263d64849af4e9623d167953, type: 2}
 --- !u!114 &5911543497110224905
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,29 +171,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 423fd31b2f264f39a59b5cfb1ea70904, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1090928910032981316
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1888703706215615217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1dac38a4994642a08275e4c12a26faa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1156625236516607257
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1888703706215615217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebb6f371c1b54e3c8f913383f2bf3b6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

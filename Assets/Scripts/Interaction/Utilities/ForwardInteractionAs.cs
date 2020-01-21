@@ -3,20 +3,23 @@ using Interaction.Core;
 using UnityEngine;
 using Event = Interaction.Core.Event;
 
-namespace Interaction
+namespace Interaction.Utilities
 {
     [RequireComponent(typeof(InteractionReceiver))]
-    public class Storable : MonoBehaviour, IInteraction
+    public class ForwardInteractionAs : MonoBehaviour, IInteraction
     {
+        [SerializeField] private string from = "";
+        [SerializeField] private string to = "";
+        
         public void Setup(Action<string> listen, Action<string> blocks)
         {
-            listen("use");
+            listen(from);
         }
 
         public bool Handle(Event e)
         {
             if (!e.forwardTo) return false;
-            e.forwardTo.Trigger(e.Forward("store", gameObject));
+            e.forwardTo.Trigger(e.Forward(to, gameObject));
 
             return true;
         }
