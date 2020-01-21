@@ -20,7 +20,7 @@ There many things that you can do to help out, regardless if you're a maintainer
 
 ### Code or Asset Contributions
 
-Making an actual change in the project is really admirable and also a simple but complicated process. To get started, choose a task on the [implementation board](https://github.com/RE-SS3D/SS3D/projects/2), hop on over to the discord, and request to be assigned. For asset contributions you might also want to check the [model list](https://trello.com/b/z0H4ci3u/ss3d-model-list-mkiv).
+Making an actual change in the project is really admirable and also a simple but complicated process. To get started, choose a task on the [implementation board](https://github.com/RE-SS3D/SS3D/projects/2), hop on over to the discord, and request to be assigned. For asset contributions you might also want to check the [model list](https://trello.com/b/ZVcDitv0/ss3d-model-list).
 
 Regardless of kind of asset you produce remember to head over to the [Style guide section](#style-guides) to make sure your contribution fits in with everyone else's.
 
