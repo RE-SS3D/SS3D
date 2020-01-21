@@ -74,8 +74,6 @@ namespace Mirror
         // virtual so that inheriting classes' Awake() can call base.Awake() too
         public virtual void Awake()
         {
-            //Debug.Log("Thank you for using Mirror! https://mirror-networking.com");
-
             // Set the networkSceneName to prevent a scene reload
             // if client connection to server fails.
             networkSceneName = offlineScene;

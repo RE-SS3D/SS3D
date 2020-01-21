@@ -6,8 +6,7 @@ using UnityEngine;
 namespace Login
 {
     /// <summary>
-    /// MonoBehaviour responsible for communication between Login UI (LoginWindow) and the backend (LoginServerClient).
-    /// Begins and ends the Login process, notifies NetworkManager about selected character with a callback.
+    /// MonoBehaviour responsible for beginning and ending the Login process, notifying NetworkManager about selected character with a callback.
     /// Should be attached to Login System prefab.
     /// </summary>
     public class LoginManager : MonoBehaviour
@@ -24,33 +23,34 @@ namespace Login
         private string apiAddress;
         private string token;
 
-        void Start()
+        private void Start()
         {
-            loginServerClient = new LoginServerClient(apiAddress);
+            loginServerClient = new LoginServerClient(apiAddress, this);
         }
 
         /// <summary>
-        /// Checks if API is reachable, updates address if true, returns result.
         /// Used as an initializer for the LoginManager both on Server and Client side.
         /// </summary>
-        /// <param name="address">Address of the Login API</param>
-        /// <param name="connection">The connection that will use this login process. Required for Spawn Player callback</param>
-        /// <param name="spawnPlayerAction">The callback to perform once login process is complete</param>
-        /// <returns></returns>
-        public bool UpdateApiAddress(string address, NetworkConnection connection, Action<NetworkConnection, CharacterResponse> spawnPlayerAction)
+        public void UpdateApiAddress(string address, NetworkConnection connection, Action<NetworkConnection, CharacterResponse> spawnPlayerAction)
         {
-            LoginServerClient newClient = new LoginServerClient(address);
+            loginServerClient = new LoginServerClient(address, this);
+            apiAddress = address;
+            this.spawnPlayerAction = spawnPlayerAction;
+            this.connection = connection;
+        }
 
-            if (newClient.IsLoginServerAlive())
+        /// <summary>
+        /// Checks if the API is reachable. Consumes callback to handle the response.
+        /// </summary>
+        public void ApiHeartbeat(Action<string, bool> callback)
+        {
+            if (loginServerClient == null)
             {
-                apiAddress = address;
-                loginServerClient = newClient;
-                this.spawnPlayerAction = spawnPlayerAction;
-                this.connection = connection;
-                return true;
+                Debug.LogError("Attempting to get heartbeat without setting API address!");
+                return;
             }
 
-            return false;
+            loginServerClient.Heartbeat(callback);
         }
 
         public void ShowLoginWindow()
@@ -67,6 +67,11 @@ namespace Login
         {
             spawnPlayerAction(connection, characterResponse);
             HideLoginWindow();
+        }
+
+        public void StoreToken(string token)
+        {
+            loginServerClient.StoreToken(token);
         }
     }
 }

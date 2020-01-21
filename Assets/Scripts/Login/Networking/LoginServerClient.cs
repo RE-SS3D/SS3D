@@ -1,135 +1,271 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Net;
+using System.Text;
 using Login.Data;
 using UnityEngine;
+using UnityEngine.Networking;
 using Utilities;
 
 namespace Login
 {
     /// <summary>
-    /// Class responsible for communicating with the Login API.
-    /// Contains all supported endpoints and any special logic required to serialize/deserialize requests/responses
+    /// Class responsible for communicating with the Login API - CentCom.
+    /// Contains all supported endpoints and handling for initiating request coroutines
     /// </summary>
     public class LoginServerClient
     {
-        public static readonly string prefix = "/api/";
+        public static readonly string prefix = "/api";
 
         //Method_EndpointName
         //Anonymous requests
-        private static readonly string Get_Heartbeat = prefix + "heartbeat";
-        private static readonly string Post_Register = prefix + "user/register";
-        private static readonly string Post_Authenticate = prefix + "user/authenticate";
+        private static readonly string Get_Heartbeat = prefix + "/heartbeat";
+        private static readonly string Post_Register = prefix + "/user/register";
+        private static readonly string Post_Authenticate = prefix + "/user/authenticate";
 
         //Authenticated requests
-        private static readonly string Get_CharacterList = prefix + "character/all";
-        private static readonly string Post_CreateCharacter = prefix + "character/create";
-        private static readonly string Delete_DeleteCharacter = prefix + "character/";
+        private static readonly string Get_CharacterList = prefix + "/character/all";
+        private static readonly string Post_CreateCharacter = prefix + "/character/create";
+        private static readonly string Delete_DeleteCharacter = prefix + "/character";
 
         private string connectionAddress;
+        private MonoBehaviour monoBehaviour;
         private string token;
 
-        public LoginServerClient(string connectionAddress)
+        public LoginServerClient(string connectionAddress, MonoBehaviour monoBehaviour)
         {
             this.connectionAddress = connectionAddress;
+            this.monoBehaviour = monoBehaviour;
         }
 
-        public bool IsLoginServerAlive()
+        /// <summary>
+        /// Store the authentication token received from CentCom. Will be used in future requests that require authentication.
+        /// </summary>
+        /// <param name="token">JWT</param>
+        public void StoreToken(string token)
         {
-            ApiResponse apiResponse = ProcessWebRequest(() =>
-                WebRequestMaker.Get(connectionAddress + Get_Heartbeat));
-            return apiResponse.IsSuccess();
+            this.token = token;
         }
 
-        public ApiResponse Register(RegisterCredentials registerCredentials)
+        /// <summary>
+        /// CentCom call to determine if it is alive.
+        /// </summary>
+        /// <param name="resultCallback"></param>
+        public void Heartbeat(Action<string, bool> resultCallback)
         {
-            string payload = LoginCredentials.From(registerCredentials).ToJson();
-            return ProcessWebRequest(() =>
-                WebRequestMaker.Post(connectionAddress + Post_Register, payload));
+            monoBehaviour.StartCoroutine(HandleSimpleRequest(
+                UnityWebRequest.kHttpVerbGET,
+                connectionAddress + Get_Heartbeat, 
+                "Heartbeat", 
+                false,
+                resultCallback
+            ));
         }
 
-        public ApiResponse Authenticate(LoginCredentials loginCredentials)
+        /// <summary>
+        /// CentCom call to register a new user.
+        /// </summary>
+        /// <param name="credentialRequest"></param>
+        /// <param name="resultCallback"></param>
+        public void Register(CredentialRequest credentialRequest, Action<string, bool> resultCallback)
         {
-            ApiResponse response = ProcessWebRequest(() =>
-                WebRequestMaker.Post(connectionAddress + Post_Authenticate, loginCredentials.ToJson()));
+            monoBehaviour.StartCoroutine(HandlePayloadRequest(
+                UnityWebRequest.kHttpVerbPOST,
+                connectionAddress + Post_Register, 
+                JsonUtility.ToJson(credentialRequest),
+                "Register", 
+                false,
+                resultCallback
+            ));
+        }
 
-            if (response.IsSuccess())
+        /// <summary>
+        /// CentCom call to log in and receive an authentication token.
+        /// </summary>
+        /// <param name="credentialRequest"></param>
+        /// <param name="resultCallback"></param>
+        public void Authenticate(CredentialRequest credentialRequest,  Action<string, bool> resultCallback)
+        {
+            monoBehaviour.StartCoroutine(HandlePayloadRequest(
+                UnityWebRequest.kHttpVerbPOST,
+                connectionAddress + Post_Authenticate, 
+                JsonUtility.ToJson(credentialRequest),
+                "Authenticate", 
+                false,
+                resultCallback
+            ));
+        }
+
+        /// <summary>
+        /// CentCom call to get all characters of the current user.
+        /// Requires Authenticate to have been called at least once before.
+        /// </summary>
+        /// <param name="resultCallback"></param>
+        public void GetCharacters(Action<string, bool> resultCallback)
+        {
+            ValidateToken("Get Characters");
+            monoBehaviour.StartCoroutine(HandleSimpleRequest(
+                UnityWebRequest.kHttpVerbGET,
+                connectionAddress + Get_CharacterList, 
+                "Get Characters", 
+                true,
+                resultCallback
+            ));
+        }
+
+        /// <summary>
+        /// CentCom call to store a new character for the current user.
+        /// Requires Authenticate to have been called at least once before.
+        /// </summary>
+        /// <param name="characterRequest"></param>
+        /// <param name="resultCallback"></param>
+        public void SaveCharacter(CharacterRequest characterRequest, Action<string, bool> resultCallback) 
+        {
+            ValidateToken("Save Character");
+            monoBehaviour.StartCoroutine(HandlePayloadRequest(
+                UnityWebRequest.kHttpVerbPOST,
+                connectionAddress + Post_CreateCharacter,
+                JsonUtility.ToJson(characterRequest),
+                "Save Character", 
+                true,
+                resultCallback
+            ));
+        }
+
+        /// <summary>
+        /// CentCom call to delete a character of the current user.
+        /// Requires Authenticate to have been called at least once before.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="resultCallback"></param>
+        public void DeleteCharacter(string id, Action<string, bool> resultCallback)
+        {
+            ValidateToken("Delete Character");
+            monoBehaviour.StartCoroutine(HandleSimpleRequest(
+                UnityWebRequest.kHttpVerbDELETE,
+                connectionAddress + Delete_DeleteCharacter + $"/{id}",
+                "Delete Character", 
+                true,
+                resultCallback
+            ));
+        }
+
+        /// <summary>
+        /// Handles requests that do not contain a data payload
+        /// </summary>
+        /// <param name="method">A value from UnityWebRequest.kHttpVerb<...></param>
+        /// <param name="url">The endpoint url where the request will be sent</param>
+        /// <param name="name">Name of this request. For logging purposes only.</param>
+        /// <param name="authenticatedRequest">Set to true, if the request requires authentication</param>
+        /// <param name="resultCallback">Callback to be executed when a response is received</param>
+        private IEnumerator HandleSimpleRequest(string method, string url, string name, bool authenticatedRequest, Action<string, bool> resultCallback)
+        {
+            Func<string, UnityWebRequest> requestCall;
+
+            switch (method)
             {
-                token = response.GetToken();
-            }
-
-            return response;
-        }
-
-        public ApiResponse GetCharacters()
-        {
-            if (!IsTokenValid("Get Characters"))
-            {
-                return new ApiResponse(ApiResponse.ResponseType.Error, "");
+                case UnityWebRequest.kHttpVerbGET:
+                    requestCall = UnityWebRequest.Get;
+                    break;
+                case UnityWebRequest.kHttpVerbDELETE:
+                    requestCall = UnityWebRequest.Delete;
+                    break;
+                default:
+                    Debug.LogError($"Unknown request method {method}");
+                    yield break;
             }
             
-            return ProcessWebRequest(() =>
-                WebRequestMaker.Get(connectionAddress + Get_CharacterList, token));
-        }
-
-        public ApiResponse SaveCharacter(string name)
-        {
-            if (!IsTokenValid("Save Character"))
+            using (UnityWebRequest webRequest = requestCall(url))
             {
-                return new ApiResponse(ApiResponse.ResponseType.Error, "");
-            }
-            
-            var json = new JSONObject(JSONObject.Type.OBJECT);
-            json.AddField("name", name);
-            string payload = json.Print();
-            return ProcessWebRequest(() => WebRequestMaker.Post(connectionAddress + Post_CreateCharacter, payload,
-                WebRequestMaker.PostMethod.POST, token));
-        }
-
-        public ApiResponse DeleteCharacter(int id)
-        {
-            if (!IsTokenValid("Delete Character"))
-            {
-                return new ApiResponse(ApiResponse.ResponseType.Error, "");
-            }
-            
-            return ProcessWebRequest(() => WebRequestMaker.Post(connectionAddress + Delete_DeleteCharacter + id, "",
-                WebRequestMaker.PostMethod.DELETE, token));
-        }
-
-        private ApiResponse ProcessWebRequest(Func<string> request)
-        {
-            try
-            {
-                string response = request.Invoke();
-                return new ApiResponse(ApiResponse.ResponseType.Success, response);
-            }
-            catch (WebException e)
-            {
-                if (e.Response == null)
+                webRequest.SetRequestHeader("Content-Type", "application/json");
+                if (authenticatedRequest)
                 {
-                    return new ApiResponse(ApiResponse.ResponseType.Error, "");
+                    webRequest.SetRequestHeader("Authorization", $"Bearer {token}");
+                }
+                yield return webRequest.SendWebRequest();
+                if (webRequest.isNetworkError || webRequest.isHttpError)
+                {
+                    Debug.Log($"{name} request error: {webRequest.error}");
+                    resultCallback(webRequest.downloadHandler.text, false);
+                    yield break;
                 }
 
-                string response = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
-                return new ApiResponse(ApiResponse.ResponseType.Error, response);
+                string result = "";
+                if (webRequest.downloadHandler != null)
+                {
+                    result = webRequest.downloadHandler.text;
+                }
+                resultCallback(result, true);
             }
         }
         
+        /// <summary>
+        /// Handles requests that contain a data payload
+        /// </summary>
+        /// <param name="method">A value from UnityWebRequest.kHttpVerb<...></param>
+        /// <param name="url">The endpoint url where the request will be sent</param>
+        /// <param name="payload">The data to be sent with the request. Must be a valid Json.</param>
+        /// <param name="name">Name of this request. For logging purposes only.</param>
+        /// <param name="authenticatedRequest">Set to true, if the request requires authentication</param>
+        /// <param name="resultCallback">Callback to be executed when a response is received</param>
+        private IEnumerator HandlePayloadRequest(string method, string url, string payload, string name, bool authenticatedRequest, Action<string, bool> resultCallback, string authorization = null)
+        {
+            Func<string, string, UnityWebRequest> requestCall;
+
+            switch (method)
+            {
+                case UnityWebRequest.kHttpVerbPOST:
+                    requestCall = UnityWebRequest.Post;
+                    break;
+                case UnityWebRequest.kHttpVerbPUT:
+                    requestCall = UnityWebRequest.Put;
+                    break;
+                default:
+                    Debug.LogError($"Unknown request method {method}");
+                    yield break;
+            }
+            
+            using (UnityWebRequest webRequest = requestCall(url, method))
+            {
+                byte[] bodyRaw = Encoding.UTF8.GetBytes(payload);
+                webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                webRequest.downloadHandler = new DownloadHandlerBuffer();
+                webRequest.SetRequestHeader("Content-Type", "application/json");
+                
+                if (authenticatedRequest)
+                {
+                    webRequest.SetRequestHeader("Authorization", $"Bearer {token}");
+                }
+                
+                yield return webRequest.SendWebRequest();
+                if (webRequest.isNetworkError || webRequest.isHttpError)
+                {
+                    Debug.Log($"{name} request error: {webRequest.error}");
+                    resultCallback(webRequest.downloadHandler.text, false);
+                    yield break;
+                }
+
+                string result = "";
+                if (webRequest.downloadHandler != null)
+                {
+                    result = webRequest.downloadHandler.text;
+                }
+                resultCallback(result, true);
+            }
+        }
+
         /// <summary>
         /// Validates that client has authenticated and has a token. Should be called before every non-anonymous endpoint call.
         /// </summary>
         /// <param name="requestName">For logging purposes only. Specifies which request was done when error occured.</param>
         /// <returns></returns>
-        private bool IsTokenValid(string requestName)
+        private void ValidateToken(string requestName)
         {
             if (string.IsNullOrEmpty(token))
             {
                 Debug.LogError($"Attempting to make {requestName} requests before having received a token!");
-                return false;
             }
-
-            return true;
         }
     }
 }

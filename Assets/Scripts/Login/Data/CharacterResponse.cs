@@ -1,18 +1,21 @@
+using UnityEngine;
+
 namespace Login.Data
 {
     /// <summary>
-    /// Data class to store character details from API response.
-    /// Will be expanded as more customisation options become implemented.
+    /// Data class to used to deserialize a character data response from CentCom
     /// </summary>
+    [System.Serializable]
+    //TODO: consider storing other customisation options in a separate serializable object, so they can all be custom format json in the DB
     public class CharacterResponse
     {
-        public CharacterResponse(int id, string name)
-        {
-            Id = id;
-            Name = name;
-        }
+        public string id;
+        public string name;
+        public string userId;
 
-        public int Id { get; }
-        public string Name { get; }
+        public static CharacterResponse CreateFromJSON(string jsonString)
+        {
+            return JsonUtility.FromJson<CharacterResponse>(jsonString);
+        }
     }
 }

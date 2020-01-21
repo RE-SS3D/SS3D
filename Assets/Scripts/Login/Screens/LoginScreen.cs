@@ -14,9 +14,17 @@ namespace Login.Screens
         [SerializeField] private TMP_InputField passwordInput;
         [SerializeField] private TextMeshProUGUI errorElement;
 
-        public LoginCredentials GetLoginCredentials()
+        public CredentialRequest GetLoginCredentials()
         {
-            return new LoginCredentials(emailInput.text, passwordInput.text);
+            if (IsInputValid())
+            {
+                CredentialRequest credentialRequest = new CredentialRequest();
+                credentialRequest.email = emailInput.text;
+                credentialRequest.password = passwordInput.text;
+                return credentialRequest;
+            }
+
+            return null;
         }
         
         public void DisplayErrorMessage(string error)
@@ -29,6 +37,25 @@ namespace Login.Screens
         {
             errorElement.text = "";
             errorElement.gameObject.SetActive(false);
+        }
+        
+        private bool IsInputValid()
+        {
+            string email = emailInput.text;
+            string password = passwordInput.text;
+            if (string.IsNullOrEmpty(email))
+            {
+                DisplayErrorMessage("Email cannot be empty!");
+                return false;
+            }
+            
+            if (string.IsNullOrEmpty(password))
+            {
+                DisplayErrorMessage("Password cannot be empty!");
+                return false;
+            }
+
+            return true;
         }
     }
 }

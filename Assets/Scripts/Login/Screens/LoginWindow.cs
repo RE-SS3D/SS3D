@@ -1,7 +1,9 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Login.Data;
 using Login.Screens;
 using UnityEngine;
+using Utilities;
 
 namespace Login
 {
@@ -53,8 +55,7 @@ namespace Login
         {
             HideAllScreens();
             characterScreen.gameObject.SetActive(true);
-            ApiResponse characterResult = loginManager.LoginServerClient.GetCharacters();
-            characterScreen.LoadCharacters(characterResult.GetCharacters());
+            loginManager.LoginServerClient.GetCharacters(HandleGetCharactersResponse);
         }
     
         public void ShowCharacterCreateScreen()
@@ -64,6 +65,7 @@ namespace Login
                 characterSelectScreen.SetActive(false);
             }
             characterCreateScreen.SetActive(true);
+            characterScreen.ClearErrors();
             characterPreview.SetActive(true);
         }
     
@@ -74,6 +76,7 @@ namespace Login
                 characterCreateScreen.SetActive(false);
             }
             characterSelectScreen.SetActive(true);
+            characterScreen.ClearErrors();
             characterPreview.SetActive(true);
         }
 
@@ -84,76 +87,20 @@ namespace Login
 
         public void HandleRegisterButton()
         {
-            RegisterCredentials registerCredentials = registerScreen.GetRegisterCredentials();
-
-            if (!Regex.IsMatch(registerCredentials.Email, "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"))
+            CredentialRequest credentialRequest = registerScreen.GetRegisterCredentials();
+            if (credentialRequest != null)
             {
-                registerScreen.DisplayErrorMessage("That is not a valid email address.");
-                return;
+                loginManager.LoginServerClient.Register(credentialRequest, HandleRegisterResponse);
             }
-            
-            if (string.IsNullOrEmpty(registerCredentials.Password))
-            {
-                registerScreen.DisplayErrorMessage("Password cannot be empty!");
-                return;
-            }
-
-            if (Regex.IsMatch(registerCredentials.Password, "[<>'\"`]"))
-            {
-                registerScreen.DisplayErrorMessage("Password may not contain < > \" ' ` characters.");
-                return;
-            }
-
-            if (registerCredentials.Password.Length < 6)
-            {
-                registerScreen.DisplayErrorMessage("Password must be at least 6 symbols long.");
-                return;
-            }
-
-            if (registerCredentials.Password != registerCredentials.Password2)
-            {
-                registerScreen.DisplayErrorMessage("Passwords must match.");
-                return;
-            }
-
-            ApiResponse result = loginManager.LoginServerClient.Register(registerCredentials);
-
-            if (!result.IsSuccess())
-            {
-                registerScreen.DisplayErrorMessage(result.GetError());
-                return;
-            }
-            
-            ShowLoginScreen();
-            loginScreen.DisplayErrorMessage("Registration successful!");
         }
 
         public void HandleLoginButton()
         {
-            LoginCredentials loginCredentials = loginScreen.GetLoginCredentials();
-            
-            if (string.IsNullOrEmpty(loginCredentials.Email))
+            CredentialRequest credentialRequest = loginScreen.GetLoginCredentials();
+            if (credentialRequest != null)
             {
-                loginScreen.DisplayErrorMessage("Email cannot be empty!");
-                return;
+                loginManager.LoginServerClient.Authenticate(credentialRequest, HandleAuthenticateResponse);
             }
-            
-            if (string.IsNullOrEmpty(loginCredentials.Password))
-            {
-                loginScreen.DisplayErrorMessage("Password cannot be empty!");
-                return;
-            }
-            
-            ApiResponse result = loginManager.LoginServerClient.Authenticate(loginCredentials);
-            
-            if (!result.IsSuccess())
-            {
-                loginScreen.DisplayErrorMessage(result.GetError());
-                return;
-            }
-            
-            loginScreen.ClearErrors();
-            ShowCharacterScreen();
         }
 
         public void HandleCharacterCreateButton()
@@ -164,22 +111,13 @@ namespace Login
 
         public void HandleCharacterSaveButton()
         {
-            string enteredName = characterScreen.EnteredCharacterName;
-            if (string.IsNullOrEmpty(enteredName))
+            CharacterRequest characterRequest = characterScreen.GetCharacterCustomisationData();
+            if (string.IsNullOrEmpty(characterRequest.name))
             {
                 characterScreen.DisplayErrorMessage("Name cannot be empty!");
             }
 
-            ApiResponse createResult = loginManager.LoginServerClient.SaveCharacter(enteredName);
-
-            if (!createResult.IsSuccess())
-            {
-                characterScreen.DisplayErrorMessage(createResult.GetError());
-                return;
-            }
-            
-            ShowCharacterScreen();
-            characterScreen.DisplayErrorMessage($"Character {enteredName} created!");
+            loginManager.LoginServerClient.SaveCharacter(characterRequest, HandleCharacterCreateResponse);
         }
 
         public void HandleCharacterToggle(int id, bool isOn)
@@ -196,15 +134,8 @@ namespace Login
 
         public void HandleCharacterDeleteButton(int id)
         {
-            ApiResponse result = loginManager.LoginServerClient.DeleteCharacter(id);
-            if (!result.IsSuccess())
-            {
-                characterScreen.DisplayErrorMessage(result.GetError());
-                return;
-            }
-            
-            ShowCharacterScreen();
-            characterScreen.DisplayErrorMessage("Character has been deleted");
+            loginManager.LoginServerClient.DeleteCharacter(id.ToString(), HandleCharacterDeleteResponse);
+            characterScreen.DeleteCharacterLocally(id);
         }
 
         public void HandleCharacterSelectButton()
@@ -218,6 +149,73 @@ namespace Login
 
             loginManager.SpawnPlayer(characterResponse);
         }
+        
+        private void HandleRegisterResponse(string response, bool success)
+        {
+            if (success)
+            {
+                ShowLoginScreen();
+                loginScreen.DisplayErrorMessage("Registration successful!");
+                return;
+            }
+            
+            registerScreen.DisplayErrorMessage(MessageResponse.CreateFromJSON(response).message);
+        }
+
+        private void HandleAuthenticateResponse(string response, bool success)
+        {
+            if (success)
+            {
+                loginManager.StoreToken(AuthenticationResponse.CreateFromJSON(response).token);
+                loginScreen.ClearErrors();
+                ShowCharacterScreen();
+                return;
+            }
+            
+            loginScreen.DisplayErrorMessage(MessageResponse.CreateFromJSON(response).message);
+        }
+
+        private void HandleGetCharactersResponse(string response, bool success)
+        {
+            if (success)
+            {
+                List<CharacterResponse> characters = JsonArray.Deserialize<CharacterResponse>(response, "characters").ToList();
+                characterScreen.LoadCharacters(characters);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(response))
+            {
+                characterScreen.DisplayErrorMessage("No characters found.");
+                return;
+            }
+            
+            characterScreen.DisplayErrorMessage(MessageResponse.CreateFromJSON(response).message);
+        }
+
+        private void HandleCharacterCreateResponse(string response, bool success)
+        {
+            if (success)
+            {
+                ShowCharacterScreen();
+                characterScreen.DisplayErrorMessage("Character created!");
+                return;
+            }
+            
+            characterScreen.DisplayErrorMessage(MessageResponse.CreateFromJSON(response).message);
+        }
+
+        private void HandleCharacterDeleteResponse(string response, bool success)
+        {
+            if (success)
+            {
+                ShowCharacterScreen();
+                characterScreen.DisplayErrorMessage("Character has been deleted");
+                return;
+            }
+            
+            characterScreen.DisplayErrorMessage(MessageResponse.CreateFromJSON(response).message);
+        }
     
         private void HideAllScreens()
         {
@@ -229,7 +227,6 @@ namespace Login
             loginScreen.ClearErrors();
             registerScreen.ClearErrors();
             characterScreen.ClearErrors();
-            characterScreen.ClearCharacterList();
         }
 
         private void OnDestroy()

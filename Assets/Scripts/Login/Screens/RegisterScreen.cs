@@ -1,4 +1,5 @@
-﻿using Login.Data;
+﻿using System.Text.RegularExpressions;
+using Login.Data;
 using TMPro;
 using UnityEngine;
 
@@ -15,9 +16,17 @@ namespace Login.Screens
         [SerializeField] private TMP_InputField passwordInput2;
         [SerializeField] private TextMeshProUGUI errorElement;
 
-        public RegisterCredentials GetRegisterCredentials()
+        public CredentialRequest GetRegisterCredentials()
         {
-            return new RegisterCredentials(emailInput.text, passwordInput.text, passwordInput2.text);
+            if (IsInputValid())
+            {
+                CredentialRequest credentialRequest = new CredentialRequest();
+                credentialRequest.email = emailInput.text;
+                credentialRequest.password = passwordInput.text;
+                return credentialRequest;
+            }
+
+            return null;
         }
         
         public void DisplayErrorMessage(string error)
@@ -30,6 +39,44 @@ namespace Login.Screens
         {
             errorElement.text = "";
             errorElement.gameObject.SetActive(false);
+        }
+
+        private bool IsInputValid()
+        {
+            string email = emailInput.text;
+            string password = passwordInput.text;
+            string password2 = passwordInput2.text;
+            if (!Regex.IsMatch(email, "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"))
+            {
+                DisplayErrorMessage("That is not a valid email address.");
+                return false;
+            }
+            
+            if (string.IsNullOrEmpty(password))
+            {
+                DisplayErrorMessage("Password cannot be empty!");
+                return false;
+            }
+
+            if (Regex.IsMatch(password, "[<>'\"`]"))
+            {
+                DisplayErrorMessage("Password may not contain < > \" ' ` characters.");
+                return false;
+            }
+
+            if (password.Length < 6)
+            {
+                DisplayErrorMessage("Password must be at least 6 symbols long.");
+                return false;
+            }
+
+            if (password != password2)
+            {
+                DisplayErrorMessage("Passwords must match.");
+                return false;
+            }
+
+            return true;
         }
     }
 }

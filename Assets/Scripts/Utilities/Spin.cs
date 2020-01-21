@@ -11,8 +11,7 @@ namespace Utilities
 
         private void Update()
         {
-            Vector3 current = transform.eulerAngles;
-            transform.eulerAngles = new Vector3(current.x, current.y + speed * Time.deltaTime, current.z);
+            transform.Rotate(0, speed * Time.deltaTime, 0);
         }
     }
 }

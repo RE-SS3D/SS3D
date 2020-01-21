@@ -43,7 +43,32 @@ namespace Mirror
 
             var loginManagerGameObject = Instantiate(loginManagerPrefab);
             loginManager = loginManagerGameObject.GetComponent<LoginManager>();
-            hasLoginServer = loginManager.UpdateApiAddress(loginServerAddress, NetworkServer.localConnection, SpawnPlayerWithLoginServer);
+            loginManager.UpdateApiAddress(loginServerAddress, NetworkServer.localConnection, SpawnPlayerWithLoginServer);
+            loginManager.ApiHeartbeat(ConfirmLoginServer);
+        }
+
+        private void ConfirmLoginServer(string response, bool apiAlive)
+        {
+            if (!apiAlive)
+            {
+                Debug.Log("Login server could not be reached.");
+                hasLoginServer = false;
+                return;
+            }
+
+            Debug.Log("Connection to Login server established.");
+            hasLoginServer = true;
+        }
+
+        private void BeginLoginProcedure(string response, bool apiAlive)
+        {
+            if (!apiAlive)
+            {
+                Debug.LogError("Could not reach login server at login procedure start!");
+                return;
+            }
+            
+            loginManager.ShowLoginWindow();
         }
 
         public override void OnServerAddPlayer(NetworkConnection conn, AddPlayerMessage extraMessage)
@@ -68,9 +93,7 @@ namespace Mirror
              * }
              */
             string rawJson = System.Text.Encoding.UTF8.GetString(extraMessage.value);
-            JSONObject jsonObject = new JSONObject(rawJson);
-            string name = playerPrefab.name;
-            jsonObject.GetField("name", delegate(JSONObject o) { name = o.str; });
+            string name = CharacterResponse.CreateFromJSON(rawJson).name;
         
             //Spawn player based on their character choices
             Transform startPos = GetStartPosition();
@@ -110,25 +133,18 @@ namespace Mirror
                 SpawnPlayerWithoutLoginServer(conn);
                 return;
             }
-            
-            if (loginManager.UpdateApiAddress(message.serverAddress, conn, SpawnPlayerWithLoginServer))
-            {
-                loginManager.ShowLoginWindow();
-                return;
-            }
 
-            SpawnPlayerWithoutLoginServer(conn);
+            loginManager.UpdateApiAddress(message.serverAddress, conn, SpawnPlayerWithLoginServer);
+            loginManager.ApiHeartbeat(BeginLoginProcedure);
         }
 
         private void SpawnPlayerWithLoginServer(NetworkConnection conn, CharacterResponse characterResponse)
         {
             ClientScene.Ready(conn);
-            //Serialize player character choice
-            JSONObject json = new JSONObject();
-            json.AddField("name", characterResponse.Name);
-            //TODO: add more fields here as they becomes available
+            string json = JsonUtility.ToJson(characterResponse);
+            
             //Convert to byte[] and send
-            byte[] data = System.Text.Encoding.UTF8.GetBytes(json.Print());
+            byte[] data = System.Text.Encoding.UTF8.GetBytes(json);
             ClientScene.AddPlayer(conn, data);
         }
 

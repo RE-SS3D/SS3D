@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Login.Data;
 using TMPro;
@@ -22,7 +23,13 @@ namespace Login.Screens
 
         private Dictionary<int, CharacterResponse> characterDictionary = new Dictionary<int, CharacterResponse>();
 
-        public string EnteredCharacterName => characterNameInput.text;
+
+        public CharacterRequest GetCharacterCustomisationData()
+        {
+            CharacterRequest characterRequest = new CharacterRequest();
+            characterRequest.name = characterNameInput.text;
+            return characterRequest;
+        }
 
         public void DisplayErrorMessage(string error)
         {
@@ -38,6 +45,8 @@ namespace Login.Screens
 
         public void LoadCharacters(List<CharacterResponse> characters)
         {
+            ClearCharacterList();
+            
             if (characters.Count == 0)
             {
                 DisplayErrorMessage("No characters found.");
@@ -49,11 +58,11 @@ namespace Login.Screens
                 CharacterToggleElement characterToggleElement = Instantiate(togglePrefab, toggleGroup.transform);
                 Toggle toggle = characterToggleElement.GetComponent<Toggle>();
                 TextMeshProUGUI label = toggle.GetComponentInChildren<TextMeshProUGUI>();
-                label.text = character.Name;
+                label.text = character.name;
                 toggle.group = toggleGroup;
-                characterDictionary.Add(character.Id, character);
+                characterDictionary.Add(Int32.Parse(character.id), character);
                 LoginWindow loginWindow = transform.root.GetComponentInChildren<LoginWindow>();
-                characterToggleElement.Register(character.Id, loginWindow);
+                characterToggleElement.Register(Int32.Parse(character.id), loginWindow);
             });
         }
 
@@ -82,7 +91,7 @@ namespace Login.Screens
                 return;
             }
 
-            characterNameOutput.text = characterDictionary[id].Name;
+            characterNameOutput.text = characterDictionary[id].name;
         }
 
         public void ClearCharacterNameInput()
@@ -90,7 +99,12 @@ namespace Login.Screens
             characterNameInput.text = "";
         }
 
-        public void ClearCharacterList()
+        public void DeleteCharacterLocally(int id)
+        {
+            characterDictionary.Remove(id);
+        }
+
+        private void ClearCharacterList()
         {
             GetComponentsInChildren<Toggle>().ToList().ForEach(characterToggle => Destroy(characterToggle.gameObject));
             characterDictionary = new Dictionary<int, CharacterResponse>();
