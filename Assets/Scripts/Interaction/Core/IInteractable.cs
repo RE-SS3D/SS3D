@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Interaction
+namespace Interaction.Core
 {
     public interface IInteractable
     {

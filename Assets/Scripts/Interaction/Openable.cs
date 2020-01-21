@@ -1,4 +1,5 @@
 ﻿using System;
+using Interaction.Core;
 using UnityEngine;
 
 namespace Interaction

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Interaction
+namespace Interaction.Core
 {
     [Serializable]
     public struct InteractionEvent

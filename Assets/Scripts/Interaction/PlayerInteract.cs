@@ -1,4 +1,5 @@
 ﻿using System;
+using Interaction.Core;
 using Inventory.Custom;
 using Mirror;
 using UnityEngine;
