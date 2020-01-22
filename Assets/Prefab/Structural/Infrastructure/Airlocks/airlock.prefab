@@ -9,11 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2516339592714421201}
-  - component: {fileID: 816336073176476181}
-  - component: {fileID: 7430208440811128012}
-  - component: {fileID: 692091843423608489}
   - component: {fileID: 2288187705956357922}
   - component: {fileID: 3798886226619046800}
+  - component: {fileID: 8363364513767061674}
   m_Layer: 0
   m_Name: airlock
   m_TagString: Untagged
@@ -37,102 +35,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &816336073176476181
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1490845820242129346}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dba89a475d1c73d448ac8fab8f653c08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 0
-  openSound: {fileID: 8300000, guid: 34297ba204a9f3944872f100baaa2369, type: 3}
-  closeSound: {fileID: 8300000, guid: fc2485e75c5d3ab4e86e814043c9e9cb, type: 3}
-  left: {fileID: 4544670586652914259}
-  right: {fileID: 2983440218238844164}
-  idTag: 
-  powered: 1
-  lightOn: 0
-  lights:
-  - {fileID: 5213922929823099796}
-  - {fileID: 7103870224588809695}
-  lightsMaterials:
-  - {fileID: 2100000, guid: 4101fb8be259a6f4f8508462f1eeabd6, type: 2}
-  - {fileID: 2100000, guid: 6284a75dbbea03c4f801e8d810060d91, type: 2}
-  - {fileID: 2100000, guid: ac2eaebdc7cdc274ca18a6d6bf64bf19, type: 2}
-  lightsBrokenFlicksCount: 10
-  lightsBrokenFlicksInterval: 0.2
-  open: 0
-  moving: 0
-  welded: 0
-  bolted: 0
-  disabled: 0
-  autoClose: 1
-  openAxis: {x: 1, y: 0, z: 0}
-  movingDistance: 1
-  movingTime: 1
-  targetOpen: 0.45
-  openCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  audioSource: {fileID: 3798886226619046800}
-  closeTimer: 3
-  closeTimerLeft: 0
---- !u!114 &7430208440811128012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1490845820242129346}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  serverOnly: 0
-  localPlayerAuthority: 0
-  m_AssetId: e12dbb8448e720a499f1bc632e16fd32
-  m_SceneId: 0
---- !u!114 &692091843423608489
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1490845820242129346}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncInterval: 0.1
-  compressRotation: 1
 --- !u!65 &2288187705956357922
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -242,6 +144,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8363364513767061674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1490845820242129346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ae09ddc4af0024b88eea866e7b45bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    orientation: 0
+  wallCapPrefab: {fileID: 5532353597398885135, guid: 1257cb58aa84aeb48a09c63963a02e38,
+    type: 3}
+  doorType: 0
 --- !u!1 &4234865420741084218
 GameObject:
   m_ObjectHideFlags: 0

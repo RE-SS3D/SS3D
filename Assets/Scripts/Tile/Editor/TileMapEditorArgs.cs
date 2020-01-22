@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using UnityEditor;
 
 namespace TileMap.Editor {
+
+    /**
+     * Used purely in TileMapEditor for arguments/settings. Stored as asset for reuse.
+     */
     public class TileMapEditorArgs : ScriptableObject
     {
         public List<ConstructibleTile> tiles;

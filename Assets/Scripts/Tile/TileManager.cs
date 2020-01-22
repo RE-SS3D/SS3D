@@ -7,7 +7,7 @@ namespace TileMap {
     /**
      * Handles communication between tiles, and networking tile changes
      */
-    [ExecuteInEditMode]
+    [ExecuteAlways]
     public class TileManager : NetworkBehaviour
     {
         public IReadOnlyDictionary<ulong, TileObject> Tiles => tiles;
@@ -203,11 +203,7 @@ namespace TileMap {
 
                 if(tiles.ContainsKey(key) && tiles[key] != childTile) {
                     Debug.LogWarning("Tile already exists at [" + index.x.ToString() + ", " + index.y.ToString() + "]. Deleting other.");
-                    #if UNITY_EDITOR
-                    DestroyImmediate(child.gameObject);
-                    #else
-                    Destroy(child.gameObject);
-                    #endif
+                    EditorAndRuntime.Destroy(child.gameObject);
                 }
                 else {
                     tiles[key] = childTile;
@@ -215,11 +211,7 @@ namespace TileMap {
             }
 
             foreach (var gameObject in queuedDestroy) {
-            #if UNITY_EDITOR
-                DestroyImmediate(gameObject);
-            #else 
-                Destroy(gameObject);
-            #endif
+                EditorAndRuntime.Destroy(gameObject);
             }
         }
 

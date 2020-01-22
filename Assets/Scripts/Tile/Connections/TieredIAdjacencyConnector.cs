@@ -10,7 +10,7 @@ namespace TileMap {
      * 'close' the glass window.
      */
     [RequireComponent(typeof(MeshFilter))]
-    public class TieredIAdjacencyConnector : AdjacencyConnector
+    public class TieredIAdjacencyConnector : MonoBehaviour, AdjacencyConnector
     {
         public enum TileLayer
         {
@@ -48,7 +48,7 @@ namespace TileMap {
         /**
          * When a single adjacent turf is updated
          */
-        public override void UpdateSingle(Direction direction, ConstructibleTile tile)
+        public void UpdateSingle(Direction direction, ConstructibleTile tile)
         {
             UpdateSingleConnection(direction, tile);
             SetMeshAndDirection();
@@ -58,7 +58,7 @@ namespace TileMap {
          * When all (or a significant number) of adjacent turfs update.
          * Turfs are ordered by direction, i.e. North, NorthEast, East ... NorthWest
          */
-        public override void UpdateAll(ConstructibleTile[] tiles)
+        public void UpdateAll(ConstructibleTile[] tiles)
         {
             for (int i = 0; i < tiles.Length; i++) {
                 UpdateSingleConnection((Direction)i, tiles[i]);

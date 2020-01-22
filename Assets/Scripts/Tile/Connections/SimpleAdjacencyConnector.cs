@@ -7,7 +7,7 @@ namespace TileMap {
      * which stem from only the 4 cardinal directions.
      */
     [RequireComponent(typeof(MeshFilter))]
-    public class SimpleAdjacencyConnector : AdjacencyConnector
+    public class SimpleAdjacencyConnector : MonoBehaviour, AdjacencyConnector
     {
         public enum TileLayer
         {
@@ -40,7 +40,7 @@ namespace TileMap {
         /**
          * When a single adjacent turf is updated
          */
-        public override void UpdateSingle(Direction direction, ConstructibleTile tile)
+        public void UpdateSingle(Direction direction, ConstructibleTile tile)
         {
             UpdateSingleConnection(direction, tile);
             SetMeshAndDirection();
@@ -50,7 +50,7 @@ namespace TileMap {
          * When all (or a significant number) of adjacent turfs update.
          * Turfs are ordered by direction, i.e. North, NorthEast, East ... NorthWest
          */
-        public override void UpdateAll(ConstructibleTile[] tiles)
+        public void UpdateAll(ConstructibleTile[] tiles)
         {
             for (int i = 0; i < tiles.Length; i++) {
                 UpdateSingleConnection((Direction)i, tiles[i]);
@@ -78,10 +78,10 @@ namespace TileMap {
         private void SetMeshAndDirection()
         {
             // Count number of connections along cardinal (which is all that we use atm)
-            int north = (connections >> (int)Direction.North) & 0x1;
-            int east = (connections >> (int)Direction.East) & 0x1;
-            int south = (connections >> (int)Direction.South) & 0x1;
-            int west = (connections >> (int)Direction.West) & 0x1;
+            int north = Adjacent(Direction.North);
+            int east = Adjacent(Direction.East);
+            int south = Adjacent(Direction.South);
+            int west = Adjacent(Direction.West);
 
             int numConnections = north + east + south + west;
 

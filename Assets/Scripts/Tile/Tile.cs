@@ -14,6 +14,11 @@ namespace TileMap {
         West,
         NorthWest,
     }
+    public enum Orientation
+    {
+        Vertical, // North-South
+        Horizontal // East-West
+    }
 
     public static class DirectionHelper {
         public static float ToAngle(Direction direction)
@@ -58,9 +63,9 @@ namespace TileMap {
     public struct ConstructibleTile
     {
         public Turf turf;
-
         public Fixture fixture;
-        public Direction fixtureDirection;
+
+        public byte[][] attributes;
 
         public static ConstructibleTile NullObject = new ConstructibleTile { turf = null, fixture = null, fixtureDirection = Direction.North }; 
     }

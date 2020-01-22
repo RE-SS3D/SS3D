@@ -12,7 +12,5 @@ namespace TileMap {
         public string genericType;
 
         public GameObject prefab;
-        // Whether this fixture connects to adjacent fixtures
-        public bool connects;
     }
 }

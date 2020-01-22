@@ -8,7 +8,7 @@ namespace TileMap {
     /**
      * The tile object takes information about a tile and transforms it into the world gameobject.
      */
-    [ExecuteInEditMode]
+    [ExecuteAlways]
     [SelectionBase]
     public class TileObject : MonoBehaviour
     {
@@ -39,53 +39,7 @@ namespace TileMap {
          */
         private void OnEnable()
         {
-            // Fill in our references to objects using the saved information from our tile variable.
-            // Effectively, this code expects the tile's children to match up to the turf and fixture.
-            // If it finds any inconsistencies, it rectifies them.
-
-            if(tile.turf) {
-                turf = transform.Find("turf_" + tile.turf.id)?.gameObject;
-
-                if(turf != null) {
-                    turfConnector = turf.GetComponent<AdjacencyConnector>();
-                }
-                else {
-                    // Update our tile object to make up for the fact that the object doesn't exist in the world.
-                    // A user would have to fuck around in the editor to get to this point.
-                    Debug.LogWarning("Tile's turf was not created? Creating now.");
-
-                    // Create the object
-                    CreateTurf(tile.turf);
-                }
-            }
-
-            if(tile.fixture) {
-                fixture = transform.Find("fixture_" + tile.fixture.id)?.gameObject;
-
-                if (fixture != null) {
-                    fixtureConnector = fixture.GetComponent<AdjacencyConnector>();
-                }
-                else {
-                    // Update our tile object to make up for the fact that the object doesn't exist in the world.
-                    // A user would have to fuck around in the editor to get to this point.
-                    Debug.LogWarning("Tile's turf was not created?");
-                    CreateFixture(tile.fixture, tile.fixtureDirection);
-                }
-            }
-
-            // As extra fuckery ensure no NEW objects have been added either
-            for(int i = transform.childCount - 1; i >= 0; i--) {
-                var child = transform.GetChild(i).gameObject;
-
-                if (child != turf && child != fixture) {
-                    Debug.LogWarning("Unknown object found in tile " + name + ": " + child.name + ", deleting.");
-                #if UNITY_EDITOR
-                    DestroyImmediate(child);
-                #else
-                    Destroy(child);
-                #endif
-                }
-            }
+            UpdateContents(true);
         }
 
         #if UNITY_EDITOR
@@ -104,7 +58,7 @@ namespace TileMap {
             // Can't do most things in OnValidate, so wait a sec.
             EditorApplication.delayCall += () => {
                 // Update contents
-                SetContents(tile);
+                UpdateContents(false);
                 // Inform the tilemanager that the tile has updated, so it can update surroundings
                 tileManager.UpdateTile(transform.position, tile);
             };
@@ -143,29 +97,84 @@ namespace TileMap {
             tile = newTile;
         }
 
+        /**
+         * Run a more comprehensive complete update of tile, used
+         * when you don't know what the previous tile contents was.
+         */
+        private void UpdateContents(bool shouldWarn)
+        {
+            // Fill in our references to objects using the saved information from our tile variable.
+            // Effectively, this code expects the tile's children to match up to the turf and fixture.
+            // If it finds any inconsistencies, it rectifies them.
+
+            if (tile.turf) {
+                turf = transform.Find("turf_" + tile.turf.id)?.gameObject;
+
+                if (turf != null) {
+                    turfConnector = turf.GetComponent<AdjacencyConnector>();
+                }
+                else {
+                    // Update our tile object to make up for the fact that the object doesn't exist in the world.
+                    // A user would have to fuck around in the editor to get to this point.
+                    if(shouldWarn)
+                        Debug.LogWarning("Tile's turf was not created? Creating now.");
+
+                    // Create the object
+                    CreateTurf(tile.turf);
+                }
+            }
+            else {
+                turf = null;
+                turfConnector = null;
+            }
+
+            if (tile.fixture) {
+                fixture = transform.Find("fixture_" + tile.fixture.id)?.gameObject;
+
+                if (fixture != null) {
+                    fixtureConnector = fixture.GetComponent<AdjacencyConnector>();
+                }
+                else {
+                    // Update our tile object to make up for the fact that the object doesn't exist in the world.
+                    // A user would have to fuck around in the editor to get to this point.
+                    if(shouldWarn)
+                        Debug.LogWarning("Tile's turf was not created?");
+                    CreateFixture(tile.fixture, tile.fixtureDirection);
+                }
+            }
+            else {
+                fixture = null;
+                fixtureConnector = null;
+            }
+
+            // As extra fuckery ensure no NEW objects have been added either
+            for (int i = transform.childCount - 1; i >= 0; i--) {
+                var child = transform.GetChild(i).gameObject;
+
+                if (child != turf && child != fixture) {
+                    if(shouldWarn)
+                        Debug.LogWarning("Unknown object found in tile " + name + ": " + child.name + ", deleting.");
+                    EditorAndRuntime.Destroy(child);
+                }
+            }
+        }
+
         private void CreateTurf(Turf turfDefinition)
         {
-        #if UNITY_EDITOR
             if (turf != null)
-                DestroyImmediate(turf);
-            turf = (GameObject)PrefabUtility.InstantiatePrefab(turfDefinition.prefab, transform);
-        #else
-            if (turf != null)
-                Destroy(turf);
-            turf = Instantiate(turfDefinition.prefab, transform);
-        #endif
+                EditorAndRuntime.Destroy(turf);
+            turf = EditorAndRuntime.InstantiatePrefab(turfDefinition.prefab, transform);
 
             turf.name = "turf_" + turfDefinition.id;
             turfConnector = turf.GetComponent<AdjacencyConnector>();
         }
         private void CreateFixture(Fixture fixtureDefinition, Direction direction)
         {
-#if UNITY_EDITOR
             if (fixture != null)
-                DestroyImmediate(fixture);
+                EditorAndRuntime.Destroy(fixture);
 
             if (fixtureDefinition != null) {
-                fixture = (GameObject)PrefabUtility.InstantiatePrefab(fixtureDefinition.prefab, transform);
+                fixture = EditorAndRuntime.InstantiatePrefab(fixtureDefinition.prefab, transform);
                 fixtureConnector = fixture.GetComponent<AdjacencyConnector>();
             }
             else {
@@ -173,20 +182,7 @@ namespace TileMap {
                 fixtureConnector = null;
                 return;
             }
-#else
-            if (fixture != null)
-                Destroy(fixture);
 
-            if(fixtureDefinition != null) {
-                fixture = Instantiate(fixtureDefinition.prefab, transform);
-                fixtureConnector = fixture.GetComponent<AdjacencyConnector>();
-            }
-            else {
-                fixture = null;
-                fixtureConnector = null;
-                return;
-            }
-#endif
             fixture.name = "fixture_" + fixtureDefinition.id;
             // TODO: Allow this to work with non-standard fixture rotations.
             fixture.transform.localRotation = Quaternion.Euler(fixture.transform.localRotation.eulerAngles.x, DirectionHelper.ToAngle(direction), fixture.transform.localRotation.eulerAngles.z);
