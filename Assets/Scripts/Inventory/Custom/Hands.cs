@@ -4,9 +4,6 @@ using UnityEngine;
 
 namespace Inventory.Custom
 {
-    /// <summary>
-    /// 
-    /// </summary>
     [RequireComponent(typeof(Inventory))]
     public class Hands : NetworkBehaviour
     {
@@ -21,10 +18,6 @@ namespace Inventory.Custom
         public int selectedHand = 0;
         public event OnHandChange onHandChange;
         
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="target"></param>
         public void Pickup(GameObject target)
         {
             if (GetItemInHand() == null)
@@ -37,10 +30,6 @@ namespace Inventory.Custom
             }
         }
         
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="target"></param>
         public void Drop()
         {
             var transform = GetItemInHand().transform;

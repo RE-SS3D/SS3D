@@ -52,7 +52,8 @@ namespace Interaction.Core
 
         /// <summary>
         /// Manually subscribe an interaction to an event kind.<br/>
-        /// You probably don't need this if you don't know what you're doing
+        /// Useful when setting up interactions from non unity classes.<br/>
+        /// You probably don't need this if you don't know what you're doing.
         /// </summary>
         /// <param name="kind">The kind to subscribe to</param>
         /// <param name="receiver">The interaction to subscribe</param>
@@ -69,7 +70,8 @@ namespace Interaction.Core
         
         /// <summary>
         /// Manually unsubscribe an interaction from an event kind.<br/>
-        /// You probably don't need this if you don't know what you're doing
+        /// Useful when setting up interactions from non unity classes.<br/>
+        /// You probably don't need this if you don't know what you're doing.
         /// </summary>
         /// <param name="kind">The kind to unsubscribe from</param>
         /// <param name="receiver">The interaction to unsubscribe</param>

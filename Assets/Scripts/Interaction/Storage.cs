@@ -32,8 +32,21 @@ namespace Interaction
                 if (openable == null) Debug.LogWarning("Trying to check for a Openable that has not been added");
                 else if (!openable.open) return false;
             }
-            
+
+            if (e.sender == null)
+            {
+                Debug.LogWarning($"Trying to store null in storage ({name})");
+                return false;
+            }
+
             var item = e.sender.GetComponent<Item>();
+            if (item == null)
+            {
+                Debug.LogWarning(
+                    $"Object ({e.sender.name}) getting stored in storage ({name}) has no item component");
+                return false;
+            }
+
             item.container.RemoveItem(item.gameObject);
             container.AddItem(item.gameObject);
 

@@ -89,7 +89,8 @@ public class Container : NetworkBehaviour
             throw new Exception("Item already exists in slot"); // TODO: Specific exception
 
         items[slot] = item;
-        item.GetComponent<Item>().container = this;
+        var itemComponent = item.GetComponent<Item>();
+        if (itemComponent != null) itemComponent.container = this;
     }
     /**
      * Add an item to the first available slot.
