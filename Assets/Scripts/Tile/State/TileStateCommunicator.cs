@@ -8,6 +8,6 @@ using System.Collections;
  */
 public interface TileStateCommunicator
 {
-    byte[] GetTileState();
-    void UpdateTileState(byte[] serializedData);
+    object GetTileState();
+    void SetTileState(object obj);
 }

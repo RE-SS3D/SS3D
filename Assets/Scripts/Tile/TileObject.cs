@@ -12,7 +12,7 @@ namespace TileMap {
     [SelectionBase]
     public class TileObject : MonoBehaviour
     {
-        public ConstructibleTile Tile {
+        public TileDefinition Tile {
             get => tile;
             set => SetContents(value);
         }
@@ -20,7 +20,7 @@ namespace TileMap {
         /**
          * Passes through an adjacency update to all children
          */
-        public void UpdateSingleAdjacency(Direction direction, ConstructibleTile tile)
+        public void UpdateSingleAdjacency(Direction direction, TileDefinition tile)
         {
             turfConnector?.UpdateSingle(direction, tile);
             fixtureConnector?.UpdateSingle(direction, tile);
@@ -28,11 +28,22 @@ namespace TileMap {
         /**
          * Passes through an adjacency update to all children
          */
-        public void UpdateAllAdjacencies(ConstructibleTile[] tiles)
+        public void UpdateAllAdjacencies(TileDefinition[] tiles)
         {
             turfConnector?.UpdateAll(tiles);
             fixtureConnector?.UpdateAll(tiles);
         }
+
+        #if UNITY_EDITOR
+        /**
+         * Allows the editor to refresh the tile.subData when it knows it has
+         * modified the child of a tile.
+         */
+        public void RefreshSubData()
+        {
+            UpdateSubDataFromChildren();
+        }
+        #endif
 
         /**
          * Fill in our non-serialized variables
@@ -48,19 +59,21 @@ namespace TileMap {
          */
         private void OnValidate() {
             // If we haven't started yet, don't try to validate.
-            if(!isActiveAndEnabled || turf == null)
+            if(tile.IsEmpty())
                 return;
 
-            var tileManager = FindObjectOfType<TileManager>();
-            if(tileManager.Tiles.Count == 0) // OnValidate gets called waaaay too often.
-                return;
+            var tileManager = transform.root.GetComponent<TileManager>();
 
             // Can't do most things in OnValidate, so wait a sec.
             EditorApplication.delayCall += () => {
+                if(!this)
+                    return;
+
                 // Update contents
                 UpdateContents(false);
                 // Inform the tilemanager that the tile has updated, so it can update surroundings
-                tileManager.UpdateTile(transform.position, tile);
+                if (tileManager != null && !TileMapEditorHelpers.IsGhostTile(this) && tileManager.Tiles.Count > 0)
+                    tileManager.UpdateTile(transform.position, tile);
             };
         }
 
@@ -73,8 +86,9 @@ namespace TileMap {
             if(EditorApplication.isPlaying)
                 return;
 
-            var tileManager = FindObjectOfType<TileManager>();
-            tileManager?.RemoveTile(this);
+            var tileManager = transform.root.GetComponent<TileManager>();
+            if(tileManager != null && gameObject.tag == "EditorOnly") // Don't inform tilemanager if we're a ghost tile
+                tileManager.RemoveTile(this);
         }
         #endif
 
@@ -82,19 +96,21 @@ namespace TileMap {
         /**
          * Modify the tile based on the given information
          */
-        private void SetContents(ConstructibleTile newTile)
+        private void SetContents(TileDefinition newTile)
         {
             if (newTile.turf != tile.turf)
                 CreateTurf(newTile.turf);
-
-            if (newTile.fixture != tile.fixture) {
-                CreateFixture(newTile.fixture, newTile.fixtureDirection);
-            }
-            else if (newTile.fixtureDirection != tile.fixtureDirection && fixture != null) {
-                fixture.transform.rotation = Quaternion.Euler(fixture.transform.localRotation.eulerAngles.x, DirectionHelper.ToAngle(newTile.fixtureDirection), fixture.transform.localRotation.eulerAngles.z);
-            }
+            if (newTile.fixture != tile.fixture)
+                CreateFixture(newTile.fixture);
+        
+            UpdateChildrenFromSubData(newTile);
 
             tile = newTile;
+
+#if UNITY_EDITOR
+            // If we're in the editor we'll try to correct any errors with tilestate.
+            UpdateSubDataFromChildren();
+#endif
         }
 
         /**
@@ -139,13 +155,16 @@ namespace TileMap {
                     // A user would have to fuck around in the editor to get to this point.
                     if(shouldWarn)
                         Debug.LogWarning("Tile's turf was not created?");
-                    CreateFixture(tile.fixture, tile.fixtureDirection);
+                    CreateFixture(tile.fixture);
                 }
             }
             else {
                 fixture = null;
                 fixtureConnector = null;
             }
+
+            UpdateChildrenFromSubData(tile);
+            UpdateSubDataFromChildren();
 
             // As extra fuckery ensure no NEW objects have been added either
             for (int i = transform.childCount - 1; i >= 0; i--) {
@@ -168,7 +187,7 @@ namespace TileMap {
             turf.name = "turf_" + turfDefinition.id;
             turfConnector = turf.GetComponent<AdjacencyConnector>();
         }
-        private void CreateFixture(Fixture fixtureDefinition, Direction direction)
+        private void CreateFixture(Fixture fixtureDefinition)
         {
             if (fixture != null)
                 EditorAndRuntime.Destroy(fixture);
@@ -184,12 +203,26 @@ namespace TileMap {
             }
 
             fixture.name = "fixture_" + fixtureDefinition.id;
-            // TODO: Allow this to work with non-standard fixture rotations.
-            fixture.transform.localRotation = Quaternion.Euler(fixture.transform.localRotation.eulerAngles.x, DirectionHelper.ToAngle(direction), fixture.transform.localRotation.eulerAngles.z);
+        }
+
+        private void UpdateChildrenFromSubData(TileDefinition newTile)
+        {
+            if (newTile.subData != null && newTile.subData.Length >= 1 && newTile.subData[0] != null)
+                turf?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subData[0]);
+
+            if (newTile.subData != null && newTile.subData.Length >= 2 && newTile.subData[1] != null)
+                fixture?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subData[1]);
+        }
+        private void UpdateSubDataFromChildren()
+        {
+            tile.subData = new object[] {
+                turf?.GetComponent<TileStateCommunicator>()?.GetTileState(),
+                fixture?.GetComponent<TileStateCommunicator>()?.GetTileState()
+            };
         }
 
         [SerializeField]
-        private ConstructibleTile tile = new ConstructibleTile { turf = null, fixture = null, fixtureDirection = Direction.North };
+        private TileDefinition tile = new TileDefinition();
 
         private GameObject turf = null;
         private AdjacencyConnector turfConnector = null; // may be null

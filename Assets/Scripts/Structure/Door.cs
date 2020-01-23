@@ -36,7 +36,7 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
     /**
      * When a single adjacent turf is updated
      */
-    public void UpdateSingle(Direction direction, ConstructibleTile tile)
+    public void UpdateSingle(Direction direction, TileDefinition tile)
     {
         UpdateSingleConnection(direction, tile);
         SetMeshAndDirection();
@@ -46,7 +46,7 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
      * When all (or a significant number) of adjacent turfs update.
      * Turfs are ordered by direction, i.e. North, NorthEast, East ... NorthWest
      */
-    public void UpdateAll(ConstructibleTile[] tiles)
+    public void UpdateAll(TileDefinition[] tiles)
     {
         for (int i = 0; i < tiles.Length; i++) {
             UpdateSingleConnection((Direction)i, tiles[i]);
@@ -56,7 +56,7 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
 
     protected override void OnStateUpdate(DoorState prevState)
     {
-        float rotation = TileState.orientation == Orientation.Vertical ? 0 : 90;
+        float rotation = TileState.orientation == Orientation.Vertical ? 90 : 0;
         transform.localRotation = Quaternion.Euler(0, rotation, 0);
     }
 
@@ -69,9 +69,9 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
     /**
      * Adjusts the connections value based on the given new tile
      */
-    private void UpdateSingleConnection(Direction direction, ConstructibleTile tile)
+    private void UpdateSingleConnection(Direction direction, TileDefinition tile)
     {
-        bool isConnected = tile.turf.genericType == "wall";
+        bool isConnected = tile.turf && tile.turf.genericType == "wall";
 
         // Set the direction bit to isConnected (1 or 0)
         connections &= (byte)~(1 << (int)direction);

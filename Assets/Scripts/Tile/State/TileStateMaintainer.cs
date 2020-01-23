@@ -15,24 +15,16 @@ public class TileStateMaintainer<T> : MonoBehaviour, TileStateCommunicator
     // The main reason its public and not protected is so that the editor can access it.
     public T TileState => tileState;
 
-    public byte[] GetTileState()
+    public object GetTileState()
     {
-        using (MemoryStream stream = new MemoryStream()) {
-            new BinaryFormatter().Serialize(stream, TileState);
-            return stream.ToArray();
-        }
+        return TileState;
     }
-
-    public void UpdateTileState(byte[] data)
+    public void SetTileState(object obj)
     {
-        var prevData = TileState;
+        var prevState = tileState;
 
-        using (MemoryStream stream = new MemoryStream(data)) {
-            tileState = (T)new BinaryFormatter().Deserialize(stream);
-        }
-
-        // TODO: If we had dots this action should really be queued.
-        OnStateUpdate(prevData);
+        tileState = (T) obj;
+        OnStateUpdate(prevState);
     }
 
     /**

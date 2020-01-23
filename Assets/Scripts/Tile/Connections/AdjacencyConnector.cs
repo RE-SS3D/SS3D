@@ -11,12 +11,12 @@ namespace TileMap {
         /**
          * When a single adjacent turf is updated
          */
-        void UpdateSingle(Direction direction, ConstructibleTile tile);
+        void UpdateSingle(Direction direction, TileDefinition tile);
 
         /**
          * When all (or a significant number) of adjacent turfs update.
          * Turfs are ordered by direction, i.e. North, NorthEast, East ... NorthWest
          */
-        void UpdateAll(ConstructibleTile[] tiles);
+        void UpdateAll(TileDefinition[] tiles);
     }
 }

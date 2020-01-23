@@ -16,7 +16,7 @@ namespace TileMap {
         /**
          * Create a series of tiles at the given positions
          */
-        public void InitializeTiles(Vector2 origin, List<Tuple<int, int, ConstructibleTile>> tileList)
+        public void InitializeTiles(Vector2 origin, List<Tuple<int, int, TileDefinition>> tileList)
         {
             tiles.Clear();
             this.origin = origin;
@@ -44,7 +44,7 @@ namespace TileMap {
         /**
          * Creates a tile at or near the given position
          */
-        public void CreateTile(Vector3 position, ConstructibleTile tileInfo)
+        public void CreateTile(Vector3 position, TileDefinition tileInfo)
         {
             var index = GetIndexAt(position);
             CreateTile(index.x, index.y, tileInfo);
@@ -54,7 +54,7 @@ namespace TileMap {
          * 
          * Note: throws if a tile already exists
          */
-        public void CreateTile(int x, int y, ConstructibleTile tileInfo) {
+        public void CreateTile(int x, int y, TileDefinition tileInfo) {
             ulong key = GetKey(x, y);
 
             if(tiles.ContainsKey(key)) {
@@ -71,7 +71,7 @@ namespace TileMap {
             tileObject.UpdateAllAdjacencies(adjacents);
         }
 
-        public void UpdateTile(Vector3 position, ConstructibleTile tileInfo)
+        public void UpdateTile(Vector3 position, TileDefinition tileInfo)
         {
             var index = GetIndexAt(position);
             UpdateTile(index.x, index.y, tileInfo);
@@ -81,7 +81,7 @@ namespace TileMap {
          * 
          * Note: Throws if there is no tile
          */
-        public void UpdateTile(int x, int y, ConstructibleTile tileInfo)
+        public void UpdateTile(int x, int y, TileDefinition tileInfo)
         {
             ulong key = GetKey(x, y);
 
@@ -117,7 +117,7 @@ namespace TileMap {
             tiles.Remove(key);
             Destroy(obj);
 
-            GetAndUpdateAdjacentTiles(x, y, ConstructibleTile.NullObject);
+            GetAndUpdateAdjacentTiles(x, y, TileDefinition.NullObject);
         }
 
         #if UNITY_EDITOR
@@ -132,7 +132,7 @@ namespace TileMap {
 
             // If we initiated the tile destroying from the TileManager, then tiles[key] shouldn't exist, and we shouldn't repeat ourselves
             if(tiles.ContainsKey(key) && tiles[key] == tileObject) {
-                GetAndUpdateAdjacentTiles(index.x, index.y, ConstructibleTile.NullObject);
+                GetAndUpdateAdjacentTiles(index.x, index.y, TileDefinition.NullObject);
                 tiles.Remove(key);
             }
         }
@@ -163,17 +163,34 @@ namespace TileMap {
         {
             return origin + new Vector3(x * 1.0f, 0.0f, y * 1.0f);
         }
+        /**
+         * Gets the closest tile position to the given position
+         */
+        public Vector3 GetPositionClosestTo(Vector3 position)
+        {
+            return new Vector3(
+                Mathf.Round(position.x - Origin.x) + Origin.x,
+                0.0f,
+                Mathf.Round(position.z - Origin.z) + Origin.z
+            );
+        }
 
         // Perform the getting of children as early as possible in case we get queried.
         private void Start() => ReinitializeFromChildren();
+
+#if UNITY_EDITOR
         private void OnValidate()
         {
             if(tiles.Count > 0)
                 return;
 
             // Can't do most things in OnValidate, so wait a sec.
-            UnityEditor.EditorApplication.delayCall += ReinitializeFromChildren;
+            UnityEditor.EditorApplication.delayCall += () => {
+                if(this)
+                    ReinitializeFromChildren();
+            };
         }
+#endif
 
         /**
          * Load all children into being tiles, but doesn't do anything with them.
@@ -191,6 +208,13 @@ namespace TileMap {
                     Debug.LogWarning("TileMap has child which is not a tile: " + child.name);
                     continue;
                 }
+
+                #if UNITY_EDITOR
+                // It may be a ghost tile, which should be ignored.
+                if(child.tag == "EditorOnly") {
+                    continue;
+                }
+                #endif
 
                 // If the tile doesn't actually have anything, destroy it
                 if (childTile.Tile.turf == null && childTile.Tile.fixture == null) {
@@ -220,9 +244,9 @@ namespace TileMap {
          * 
          * Returns adjacent tiles which may be used to update the central tile
          */
-        private ConstructibleTile[] GetAndUpdateAdjacentTiles(int x, int y, ConstructibleTile tileInfo)
+        private TileDefinition[] GetAndUpdateAdjacentTiles(int x, int y, TileDefinition tileInfo)
         {
-            ConstructibleTile[] adjacents = new ConstructibleTile[8];
+            TileDefinition[] adjacents = new TileDefinition[8];
 
             // Then go for each adjacent and update
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++) {
@@ -248,7 +272,7 @@ namespace TileMap {
         private void UpdateAllTileAdjacencies()
         {
             // Once they are all made go through and update all adjacencies.
-            var adjacentTiles = new ConstructibleTile[8];
+            var adjacentTiles = new TileDefinition[8];
             foreach (var item in tiles) {
                 int x = (int)(item.Key & 0xffff);
                 int y = (int)(item.Key >> 32);
@@ -259,13 +283,13 @@ namespace TileMap {
                     var modifier = DirectionHelper.ToCardinalVector(direction);
 
                     if (y + modifier.Item2 < 0 || x + modifier.Item1 < 0)
-                        adjacentTiles[(int)direction] = ConstructibleTile.NullObject;
+                        adjacentTiles[(int)direction] = TileDefinition.NullObject;
 
                     ulong otherKey = GetKey(x + modifier.Item1, y + modifier.Item2);
                     if (tiles.ContainsKey(otherKey))
                         adjacentTiles[(int)direction] = tiles[otherKey].Tile;
                     else
-                        adjacentTiles[(int)direction] = ConstructibleTile.NullObject;
+                        adjacentTiles[(int)direction] = TileDefinition.NullObject;
                 }
 
                 item.Value.UpdateAllAdjacencies(adjacentTiles);

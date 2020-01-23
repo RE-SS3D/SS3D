@@ -62,7 +62,7 @@ namespace TileMap
         /**
          * When a single adjacent turf is updated
          */
-        public void UpdateSingle(Direction direction, ConstructibleTile tile)
+        public void UpdateSingle(Direction direction, TileDefinition tile)
         {
             UpdateSingleConnection(direction, tile);
             SetMeshAndDirection();
@@ -72,7 +72,7 @@ namespace TileMap
          * When all (or a significant number) of adjacent turfs update.
          * Turfs are ordered by direction, i.e. North, NorthEast, East ... NorthWest
          */
-        public void UpdateAll(ConstructibleTile[] tiles)
+        public void UpdateAll(TileDefinition[] tiles)
         {
             for (int i = 0; i < tiles.Length; i++) {
                 UpdateSingleConnection((Direction)i, tiles[i]);
@@ -88,7 +88,7 @@ namespace TileMap
         /**
          * Adjusts the connections value based on the given new tile
          */
-        private void UpdateSingleConnection(Direction direction, ConstructibleTile tile)
+        private void UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
             bool isConnected = (tile.turf && (tile.turf.genericType == type || type == null)) || (tile.fixture && (tile.fixture.genericType == type || type == null));
 
