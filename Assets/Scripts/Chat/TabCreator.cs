@@ -26,7 +26,7 @@ public class TabCreator : MonoBehaviour
 
         options.Clear();
 
-        foreach (ChatChannel channel in chatChannels.GetChannels())
+        foreach (ChatChannel channel in chatChannels.GetHidable())
         {
             ChatFilterOption option = Instantiate(optionPrefab, optionContainer);
             option.Init(channel);
@@ -49,6 +49,10 @@ public class TabCreator : MonoBehaviour
 
         List<ChatChannel> channels = options.Select(option => option.TickedChannel())
             .Where(channel => !string.IsNullOrEmpty(channel.Name)).ToList();
+        
+        foreach (ChatChannel channel in chatChannels.GetUnhidable()){
+            channels.Add(channel);
+        }
         
         //A tab without channels is pointless
         if (channels.Count <= 0)
