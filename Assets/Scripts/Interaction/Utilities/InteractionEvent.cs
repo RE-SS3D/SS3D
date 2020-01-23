@@ -2,12 +2,14 @@
 using Interaction.Core;
 using UnityEngine;
 using UnityEngine.Events;
-using Event = Interaction.Core.Event;
 
 namespace Interaction.Utilities
 {
+    /// <summary>
+    /// Used to emit a Unity event when an `InteractionEvent` of a certain kind is triggerec.
+    /// </summary>
     [RequireComponent(typeof(InteractionReceiver))]
-    public class InteractionEvent : MonoBehaviour, IInteraction
+    public sealed class InteractionEvent : MonoBehaviour, IInteraction
     {
         [SerializeField] private string kind = "";
 
@@ -20,7 +22,7 @@ namespace Interaction.Utilities
             listen(kind);
         }
 
-        public bool Handle(Event e)
+        public bool Handle(Core.InteractionEvent e)
         {
             receive?.Invoke(e.sender);
             return true;

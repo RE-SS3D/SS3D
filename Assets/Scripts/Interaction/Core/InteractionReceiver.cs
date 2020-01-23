@@ -12,7 +12,7 @@ namespace Interaction.Core
         private readonly Dictionary<string, List<IInteraction>> receivers = new Dictionary<string, List<IInteraction>>();
         private readonly Dictionary<IInteraction, List<string>> listeners = new Dictionary<IInteraction, List<string>>();
         private readonly Dictionary<string, string> dependencies = new Dictionary<string, string>();
-        private readonly List<Event> eventQueue = new List<Event>();
+        private readonly List<InteractionEvent> eventQueue = new List<InteractionEvent>();
         private readonly List<InteractionReceiver> waiting = new List<InteractionReceiver>();
 
         private Coroutine handlerCoroutine = null;
@@ -50,6 +50,12 @@ namespace Interaction.Core
             }
         }
 
+        /// <summary>
+        /// Manually subscribe an interaction to an event kind.<br/>
+        /// You probably don't need this if you don't know what you're doing
+        /// </summary>
+        /// <param name="kind">The kind to subscribe to</param>
+        /// <param name="receiver">The interaction to subscribe</param>
         public void Subscribe(string kind, IInteraction receiver)
         {
             if (!receivers.ContainsKey(kind))
@@ -60,30 +66,51 @@ namespace Interaction.Core
                 listeners.Add(receiver, new List<string>());
             listeners[receiver].Add(kind);
         }
+        
+        /// <summary>
+        /// Manually unsubscribe an interaction from an event kind.<br/>
+        /// You probably don't need this if you don't know what you're doing
+        /// </summary>
+        /// <param name="kind">The kind to unsubscribe from</param>
+        /// <param name="receiver">The interaction to unsubscribe</param>
         public void Unsubscribe(string kind, IInteraction receiver)
         {
             if (receivers.ContainsKey(kind))
             {
                 receivers[kind].Remove(receiver);
-                if (receivers[kind].Count == 0) receivers.Remove(kind);
+                if (receivers[kind].Count == 0)
+                {
+                    receivers.Remove(kind);
+                }
             }
             if (listeners.ContainsKey(receiver))
             {
                 listeners[receiver].Remove(kind);
-                if (listeners[receiver].Count == 0) listeners.Remove(receiver);
+                if (listeners[receiver].Count == 0)
+                {
+                    listeners.Remove(receiver);
+                }
             }
         }
 
-        public void Trigger(Event e)
+        /// <summary>
+        /// Add an `InteractionEvent` to the event queue to be handled by subscribed interactions
+        /// </summary>
+        /// <param name="e">The event to be triggered</param>
+        public void Trigger(InteractionEvent e)
         {
             if (dependencies.TryGetValue(e.kind, out var dependency))
             {
                 var index = eventQueue.FindIndex(ev => ev.kind == dependency);
                 
                 if (index == -1)
+                {
                     eventQueue.Add(e);
+                }
                 else
+                {
                     eventQueue.Insert(index, e);
+                }
             }
             else
             {
@@ -98,8 +125,10 @@ namespace Interaction.Core
         {
             if (waiting.Count > 0)
             {
-                for (var i = 0; i < waiting.Count; i++)
-                    yield return new WaitUntil(() => waiting[i].IsClear);
+                foreach (var receiver in waiting)
+                {
+                    yield return new WaitUntil(() => receiver.IsClear);
+                }
 
                 waiting.Clear();
             }

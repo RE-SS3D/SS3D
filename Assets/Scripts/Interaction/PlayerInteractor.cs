@@ -4,7 +4,6 @@ using Inventory.Custom;
 using Mirror;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Event = Interaction.Core.Event;
 
 namespace Interaction
 {
@@ -29,7 +28,7 @@ namespace Interaction
             {
                 var ray = camera.ScreenPointToRay(Input.mousePosition);
 
-                // Ensure that user did not click the UI (fucking stupid that we need the event system to check this)
+                // Ensure that user did not click the UI and that we hit something
                 if (!EventSystem.current.IsPointerOverGameObject() &&
                     Physics.Raycast(ray, out var hit, float.PositiveInfinity))
                     Interact(hit.transform, hit.point, hit.normal);
@@ -45,17 +44,23 @@ namespace Interaction
             if (held != null)
             {
                 heldInteractionReceiver = FindInteractable(held.transform);
-                if (heldInteractionReceiver) heldInteractionReceiver.Trigger(new Event("use", hands.gameObject)
-                    .WorldPosition(position).WorldNormal(normal).ForwardTo(interactable));
+                if (heldInteractionReceiver)
+                {
+                    heldInteractionReceiver.Trigger(new InteractionEvent("use", hands.gameObject)
+                        .WorldPosition(position).WorldNormal(normal).ForwardTo(interactable));
+                }
             }
             
-            if (interactable) interactable.Trigger(new Event("pickup", hands.gameObject)
-                .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractionReceiver));
-            if (interactable) interactable.Trigger(new Event("open", hands.gameObject)
-                .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractionReceiver));
+            if (interactable)
+            {
+                interactable.Trigger(new InteractionEvent("pickup", hands.gameObject)
+                    .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractionReceiver));
+                interactable.Trigger(new InteractionEvent("open", hands.gameObject)
+                    .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractionReceiver));
+            }
         }
 
-        private InteractionReceiver FindInteractable(Transform target)
+        private static InteractionReceiver FindInteractable(Transform target)
         {
             while (target)
             {

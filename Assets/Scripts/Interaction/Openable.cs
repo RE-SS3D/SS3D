@@ -1,7 +1,6 @@
 ﻿using System;
 using Interaction.Core;
 using UnityEngine;
-using Event = Interaction.Core.Event;
 
 namespace Interaction
 {
@@ -15,7 +14,7 @@ namespace Interaction
             listen("open");
         }
 
-        public bool Handle(Event e)
+        public bool Handle(InteractionEvent e)
         {
             open = !open;
             

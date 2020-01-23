@@ -1,7 +1,6 @@
 ﻿using System;
 using Interaction.Core;
 using UnityEngine;
-using Event = Interaction.Core.Event;
 
 namespace Interaction
 {
@@ -26,7 +25,7 @@ namespace Interaction
             blocks("open");
         }
 
-        public bool Handle(Event e)
+        public bool Handle(InteractionEvent e)
         {
             if (onlyIfOpen)
             {

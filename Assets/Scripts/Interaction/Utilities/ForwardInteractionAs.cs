@@ -1,12 +1,11 @@
 ﻿using System;
 using Interaction.Core;
 using UnityEngine;
-using Event = Interaction.Core.Event;
 
 namespace Interaction.Utilities
 {
     [RequireComponent(typeof(InteractionReceiver))]
-    public class ForwardInteractionAs : MonoBehaviour, IInteraction
+    internal sealed class ForwardInteractionAs : MonoBehaviour, IInteraction
     {
         [SerializeField] private string from = "";
         [SerializeField] private string to = "";
@@ -16,7 +15,7 @@ namespace Interaction.Utilities
             listen(from);
         }
 
-        public bool Handle(Event e)
+        public bool Handle(Core.InteractionEvent e)
         {
             if (!e.forwardTo) return false;
             e.forwardTo.Trigger(e.Forward(to, gameObject));

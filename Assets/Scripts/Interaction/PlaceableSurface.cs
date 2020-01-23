@@ -2,7 +2,6 @@
 using Interaction.Core;
 using Inventory.Custom;
 using UnityEngine;
-using Event = Interaction.Core.Event;
 
 namespace Interaction
 {
@@ -14,7 +13,7 @@ namespace Interaction
             listen("place");
         }
 
-        public bool Handle(Event e)
+        public bool Handle(InteractionEvent e)
         {
             var item = e.sender.GetComponent<Item>();
             item.container.RemoveItem(item.gameObject);
