@@ -13,11 +13,21 @@ namespace Player.Body
 	public class Body : NetworkBehaviour
 	{
 		///The BodyPart objects that this MonoBehaviour is responsible for managing
-		[SerializeField] private List<BodyPart> bodyParts = new List<BodyPart>();
-		
-		//TODO: implement bleeding
-		//TODO: handle missing body parts appropriately. Missing hand should prevent using it. Missing foot should slow you down or make it impossible to stand, etc.
-		[ClientRpc]
+		private List<BodyPart> bodyParts = new List<BodyPart>();
+        private void Start()
+        {
+            //update the bodypart list
+            bodyParts.Clear();
+
+            foreach (BodyPart part in gameObject.GetComponentsInChildren<BodyPart>())
+            {
+                bodyParts.Add(part);
+            }
+        }
+
+        //TODO: implement bleeding
+        //TODO: handle missing body parts appropriately. Missing hand should prevent using it. Missing foot should slow you down or make it impossible to stand, etc.
+        [ClientRpc]
 		public void RpcDoDamageToBodyPart(BodyPartType bodyPartType, DamageType damageType, float damageAmount, float serverAuthoritativeRandomRoll)
 		{
 			BodyPart bodyPart = FindBodyPart(bodyPartType);
@@ -75,12 +85,17 @@ namespace Player.Body
 			}
 			
 			GameObject mainBodypart = Instantiate(bodyPart.SeveredBodyPartPrefab, transform.position, Quaternion.identity);
-			NetworkServer.Spawn(mainBodypart);
+            UpdateBodyPartVisuals(mainBodypart.GetComponent<SkinnedMeshRenderer>(), bodyPart.SkinnedMeshRenderer); 
+
+            NetworkServer.Spawn(mainBodypart);
+
 			bodyPart.ChildrenParts.ForEach(child =>
 			{
-				GameObject childBodyPart = Instantiate(child.SeveredBodyPartPrefab, child.transform.position, Quaternion.identity);
-				NetworkServer.Spawn(childBodyPart);
-			});
+                GameObject childBodyPart = Instantiate(child.SeveredBodyPartPrefab, child.transform.position, Quaternion.identity);
+                UpdateBodyPartVisuals(childBodyPart.GetComponent<SkinnedMeshRenderer>(), child.SkinnedMeshRenderer);
+
+                NetworkServer.Spawn(childBodyPart);
+            });
 			RpcHideSeveredBodyPart(bodyPartType);
 		}
 
@@ -101,5 +116,16 @@ namespace Player.Body
 		{
 			return bodyParts.FirstOrDefault(bodyParts => bodyParts.BodyPartType == bodyPartType);
 		}
-	}
+
+        private void UpdateBodyPartVisuals(SkinnedMeshRenderer newBodyPart, SkinnedMeshRenderer bodyPart)
+        {
+            Material[] materials = bodyPart.sharedMaterials;
+            newBodyPart.materials = materials;
+
+            for (int i = 0; i < newBodyPart.sharedMesh.blendShapeCount; i++)
+            {
+                newBodyPart.SetBlendShapeWeight(i, bodyPart.GetBlendShapeWeight(i));
+            }
+        }
+    }
 }

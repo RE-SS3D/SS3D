@@ -188,7 +188,8 @@ namespace Mirror
                     currentMovement.y * Vector3.Cross(camera.transform.right, Vector3.up).normalized +
                     currentMovement.x * Vector3.Cross(Vector3.up, camera.transform.forward).normalized;
                 // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
-                characterController.Move(absoluteMovement * Time.deltaTime);
+
+                characterController.Move((absoluteMovement * Time.deltaTime));
                 transform.rotation = Quaternion.LookRotation(absoluteMovement);
             }
         }
@@ -202,7 +203,7 @@ namespace Mirror
             }
             
             // TODO: Might eventually want more animation options. E.g. when in 0-gravity and 'clambering' via a surface
-            characterAnimator.SetBool("Floating", false); // Note: Player can be floating and still move
+            //characterAnimator.SetBool("Floating", false); // Note: Player can be floating and still move
             characterAnimator.SetFloat("Speed",
                 currentMovement.magnitude / runSpeed); // animation Speed is a proportion of maximum runSpeed
         }

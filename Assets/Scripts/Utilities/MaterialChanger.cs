@@ -7,6 +7,11 @@ public class MaterialChanger : MonoBehaviour
     public Material[] cachedMaterial;
     public MeshRenderer cachedRenderer;
 
+    //todo: put the materials into Resources
+    public  Material Palette01            = Resources.Load<Material>("Materials/Pallete01.mat");
+    public  Material Palette05            = Resources.Load<Material>("Materials/Pallete05.mat");
+    public  Material Palette05Emission    = Resources.Load<Material>("Materials/Pallete05 Emission.mat");
+
     public void ChangeMaterial(MeshRenderer target, Material newMaterial)
     {
         /* cachedRenderer = target;
@@ -18,7 +23,6 @@ public class MaterialChanger : MonoBehaviour
             inMaterials[i] = newMaterial;
         }
         cachedRenderer.materials = inMaterials;*/
-
     }
 
     public void ChangeMaterialSlot(int slot, MeshRenderer target, Material newMaterial)
