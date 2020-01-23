@@ -12,4 +12,12 @@ public class ChatChannels : ScriptableObject
     {
         return Channels;
     }
+    public List<ChatChannel> GetUnhidable()
+    {
+        return Channels.FindAll(channel => {return channel.Unhidable;});
+    }
+    public List<ChatChannel> GetHidable()
+    {
+        return Channels.FindAll(channel => {return !channel.Unhidable;});
+    }
 }

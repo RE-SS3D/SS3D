@@ -53,9 +53,15 @@ public class ChatWindow : MonoBehaviour, IDragHandler
         channelDropDown.options.Clear();
         foreach (ChatChannel channel in tabData.Channels)
         {
-            channelDropDown.options.Add(new TMP_Dropdown.OptionData(
-                string.Format("<color=#{0}>[{1}]</color>", ColorUtility.ToHtmlStringRGBA(channel.Color),
-                    channel.Abbreviation)));
+            if (chatRegister.restrictedChannels.Contains(channel.Name)) continue;
+
+            channelDropDown.options.Add(
+                new TMP_Dropdown.OptionData(
+                    string.Format("<color=#{0}>[{1}]</color>", 
+                    ColorUtility.ToHtmlStringRGBA(channel.Color),
+                    channel.Abbreviation)
+                )
+            );
         }
     }
 
@@ -140,6 +146,9 @@ public class ChatWindow : MonoBehaviour, IDragHandler
         
         Message message = new Message();
         message.Channel = currentTabData.Channels[channelDropDown.value];
+        if(chatRegister.restrictedChannels.Contains(message.Channel.Name)){
+            return; //do not allow talking in restricted channels
+        }
         message.Text = text;
         inputField.text = "";
 

@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Channels
   m_EditorClassIdentifier: 
   Channels:
+  - Name: System
+    Abbreviation: SYS
+    Color: {r: 0, g: 0, b: 0, a: 1}
   - Name: AI
     Abbreviation: AI
     Color: {r: 1, g: 0.33333334, b: 1, a: 1}
