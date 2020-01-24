@@ -20,13 +20,8 @@ public class Item : MonoBehaviour
         Gloves,
         Shoes
     }
-    public enum ItemPosition
-    {
-        InInventory,
-        InWorld,
-        OnObject
-    }
 
+    public Container    container;
     public ItemType     itemType;
     public Sprite       sprite;
     public GameObject   prefab;

@@ -4,16 +4,11 @@ using UnityEngine;
 
 namespace Inventory.Custom
 {
-    /**
-     * The hand system is an interaction system which connects to the inventory.
-     * There is a hands container, that the interaction system connects to, that defines what items the player is currently holding.
-    */
     [RequireComponent(typeof(Inventory))]
-    public class Hands : Interaction, Tool
+    public class Hands : NetworkBehaviour
     {
         public delegate void OnHandChange(int selectedHand);
 
-        // A container which manages the hands. Should be sibling component.
         [SerializeField]
         private Container handContainer;
         [SerializeField]
@@ -22,41 +17,23 @@ namespace Inventory.Custom
         [System.NonSerialized]
         public int selectedHand = 0;
         public event OnHandChange onHandChange;
-
-        /**
-     * The default hand interaction when no object is present.
-     * Note: This could be moved into a different class if this one gets too cluttered
-     */
-        public void Interact(RaycastHit hit, bool secondary)
+        
+        public void Pickup(GameObject target)
         {
-            // All actions just use primary mouse.
-            if(secondary)
-                return;
-
-            if ((hit.point - transform.position).magnitude > handRange)
-                return;
-
-            // To pick up an item, we need to be clicking a free item object with an empty hand
             if (GetItemInHand() == null)
             {
-                var gameObject = hit.collider.gameObject;
-
-                // If an item pick it up
-                Item item = gameObject.GetComponent<Item>();
-                if(item && item.transform.parent == null)
-                    inventory.CmdAddItem(hit.collider.gameObject, handContainer.gameObject, handSlots[selectedHand]);
-
-                // If it has a container, open the container
-                Container container = gameObject.GetComponent<Container>() ?? gameObject.GetComponentInParent<Container>();
-                if(container)
-                    CmdConnectContainer(container.gameObject);
+                inventory.CmdAddItem(target, handContainer.gameObject, handSlots[selectedHand]);
             }
             else
             {
-                // Drop the item currently being held.
-                inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], hit.point + new Vector3(0f, 0.2f), new Quaternion());
+                Debug.LogWarning("Trying to pick up with a non-empty hand");
             }
-            // TODO: Default hand interactions with non-items
+        }
+        
+        public void Drop()
+        {
+            var transform = GetItemInHand().transform;
+            inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], transform.position, transform.rotation);
         }
 
         /**
@@ -99,18 +76,19 @@ namespace Inventory.Custom
             if (handSlots[0] == -1 || handSlots[1] == -1)
                 Debug.LogWarning("Player container does not contain slots for hands upon initialization. Maybe they were severed though?");
 
-            handContainer.onChange += (a, b, c) => UpdateTool();
+            handContainer.onChange += (a, b, c) =>
+            {
+                //UpdateTool()
+            };
             if (handContainer.GetItems().Count > 0)
             {
                 inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[selectedHand]);
-                UpdateTool();
+                //UpdateTool();
             }
         }
 
-        protected override void Update()
+        private void Update()
         {
-            base.Update();
-
             if (!isLocalPlayer)
                 return;
 
@@ -121,22 +99,13 @@ namespace Inventory.Custom
                 inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[selectedHand]);
                 onHandChange?.Invoke(selectedHand);
             
-                UpdateTool();
+                //UpdateTool();
             }
-            if (Input.GetButtonDown("Drop Item") && GetItemInHand())
-            {
-                var transform = GetItemInHand().transform;
-                inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], transform.position, transform.rotation);
-            }
+            
+            if (Input.GetButtonDown("Drop Item")) Drop();
         }
 
-        // Update the current tool being used, should occur whenever hand or item changes
-        private void UpdateTool()
-        {
-            selectedTool = GetItemInHand() is Tool ? GetItemInHand() as Tool : this;
-        }
-
-        private Item GetItemInHand()
+        public Item GetItemInHand()
         {
             return handContainer.GetItem(handSlots[selectedHand]);
         }

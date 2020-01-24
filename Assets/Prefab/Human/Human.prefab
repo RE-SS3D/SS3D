@@ -82,7 +82,7 @@ GameObject:
   - component: {fileID: -4112737952016829400}
   - component: {fileID: -3295296730462155149}
   - component: {fileID: -1122543427383380906}
-  - component: {fileID: -4076194270709087877}
+  - component: {fileID: 1958784860310624992}
   m_Layer: 15
   m_Name: Human
   m_TagString: Untagged
@@ -152,7 +152,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 1
-  m_AssetId: 
+  m_AssetId: 808fc3b770e18cf4a8fe9dbd48fa2444
   m_SceneId: 0
 --- !u!114 &-5918456934534797284
 MonoBehaviour:
@@ -308,6 +308,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1
+  restrictedChannels:
+  - SYSTEM
 --- !u!114 &-1122543427383380906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -322,7 +324,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   prefab: {fileID: 5727570337167516730, guid: f86d70d91f583f44e95c5a20aea0fa31, type: 3}
---- !u!114 &-4076194270709087877
+--- !u!114 &1958784860310624992
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -331,14 +333,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 289348138277843802}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84bbfbdac69ea744fb5d55752afa9fca, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b8dc905ed8643cb9704a20ea52a943e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1
-  attackParticleEffect: {fileID: 7714517724079113232, guid: b604ce3224264694392255a281108306,
-    type: 3}
-  attackType: 1
-  damageAmount: 5
+  interactionsOnClick:
+  - {fileID: 11400000, guid: 46238d5084f126546a9d4ce51fae93a0, type: 2}
+  - {fileID: 11400000, guid: 84d4df51de2c0b947bea8e92f52f3602, type: 2}
+  heldInteractionsOnClick:
+  - {fileID: 11400000, guid: f6a04c063494ad44c805f91d49c7eef4, type: 2}
 --- !u!1 &290878266594310021
 GameObject:
   m_ObjectHideFlags: 0
