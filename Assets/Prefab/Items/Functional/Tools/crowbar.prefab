@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 926100782}
   - component: {fileID: 2986641575226085218}
   - component: {fileID: 769153401460545782}
+  - component: {fileID: 2560149424242592160}
+  - component: {fileID: 5911543497110224905}
   m_Layer: 16
   m_Name: crowbar
   m_TagString: Untagged
@@ -96,8 +98,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 7becfab153276864f9fc7636a839d837
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 4058023494
 --- !u!54 &926100782
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -126,6 +128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 1888703706215615217}
@@ -143,3 +146,31 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 8918077550557095614, guid: 8f2f2c0dc3e66ab4fafad982b8bea8ab, type: 3}
+--- !u!114 &2560149424242592160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888703706215615217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f31cf7033044701bd2040285a11b93f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactions:
+  - {fileID: 11400000, guid: 2ad3183a1e200dd4b9edd607982b7a79, type: 2}
+  - {fileID: 11400000, guid: 29f49cd8263d64849af4e9623d167953, type: 2}
+--- !u!114 &5911543497110224905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888703706215615217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 423fd31b2f264f39a59b5cfb1ea70904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  kind: {fileID: 11400000, guid: 84d4df51de2c0b947bea8e92f52f3602, type: 2}
