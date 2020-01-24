@@ -174,6 +174,22 @@ namespace Mirror
             writer.Write((byte)physicsMode);
         }
     }
+
+    public class LoginServerMessage : MessageBase
+    {
+        public string serverAddress;
+
+        public override void Deserialize(NetworkReader reader)
+        {
+            serverAddress = reader.ReadString();
+        }
+
+        public override void Serialize(NetworkWriter writer)
+        {
+            writer.Write(serverAddress);
+        }
+    }
+    
     #endregion
 
     #region System Messages requried for code gen path
