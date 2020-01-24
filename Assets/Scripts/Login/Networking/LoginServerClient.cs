@@ -186,16 +186,12 @@ namespace Login
                 yield return webRequest.SendWebRequest();
                 if (webRequest.isNetworkError || webRequest.isHttpError)
                 {
-                    Debug.Log($"{name} request error: {webRequest.error}");
+                    Debug.LogWarning($"{name} request error: {webRequest.error}");
                     resultCallback(webRequest.downloadHandler.text, false);
                     yield break;
                 }
 
-                string result = "";
-                if (webRequest.downloadHandler != null)
-                {
-                    result = webRequest.downloadHandler.text;
-                }
+                string result = webRequest.downloadHandler?.text ?? "";
                 resultCallback(result, true);
             }
         }
