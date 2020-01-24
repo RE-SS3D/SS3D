@@ -140,8 +140,10 @@ namespace Interaction.Core
             }
 
             var skip = new HashSet<InteractionKind>();
-            foreach (var e in eventQueue) 
+            for (var i = 0; i < eventQueue.Count; i++)
             {
+                var e = eventQueue[i];
+                
                 if (!receivers.ContainsKey(e.kind)) continue;
                 if (skip.Contains(e.kind)) continue;
                 Debug.Log($"{e} @ {transform.name}");
@@ -153,6 +155,7 @@ namespace Interaction.Core
                     }
                 }
             }
+
             eventQueue.Clear();
             
             handlerCoroutine = null;

@@ -25347,6 +25347,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2180616172124099969, guid: 16234a251ac6e90439bf3fa0acde2eea,
+        type: 3}
+      propertyPath: loginServerAddress
+      value: http://35.198.114.91
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 16234a251ac6e90439bf3fa0acde2eea, type: 3}
 --- !u!1 &354244255
