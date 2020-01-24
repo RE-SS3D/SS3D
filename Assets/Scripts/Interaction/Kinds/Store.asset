@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a98c55cd0ac4137b1856a90f02d41b0, type: 3}
-  m_Name: Placeable
+  m_Script: {fileID: 11500000, guid: 2fdc7d5626af4b5a999f1b8ba0bc5ad4, type: 3}
+  m_Name: Store
   m_EditorClassIdentifier: 
-  from: {fileID: 11400000, guid: f6a04c063494ad44c805f91d49c7eef4, type: 2}
-  to: {fileID: 11400000, guid: 38eed80e5f8df1f4d840163dfa89fb11, type: 2}
+  description: 

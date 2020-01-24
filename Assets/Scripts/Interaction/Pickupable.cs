@@ -7,9 +7,11 @@ namespace Interaction
 {
     public class Pickupable : MonoBehaviour, IInteraction
     {
-        public void Setup(Action<string> listen, Action<string> blocks)
+        [SerializeField] private InteractionKind kind = null;
+        
+        public void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks)
         {
-            listen("pickup");
+            listen(kind);
         }
 
         public bool Handle(InteractionEvent e)

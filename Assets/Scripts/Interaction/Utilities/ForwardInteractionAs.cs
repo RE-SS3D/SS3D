@@ -7,10 +7,10 @@ namespace Interaction.Utilities
     [RequireComponent(typeof(InteractionReceiver))]
     internal sealed class ForwardInteractionAs : MonoBehaviour, IInteraction
     {
-        [SerializeField] private string from = "";
-        [SerializeField] private string to = "";
+        [SerializeField] private InteractionKind from = null;
+        [SerializeField] private InteractionKind to = null;
         
-        public void Setup(Action<string> listen, Action<string> blocks)
+        public void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks)
         {
             listen(from);
         }

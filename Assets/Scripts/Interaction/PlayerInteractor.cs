@@ -10,6 +10,11 @@ namespace Interaction
     [RequireComponent(typeof(Hands))]
     public class PlayerInteractor : NetworkBehaviour
     {
+        [Tooltip("The interaction events to be sent to the object that is clicked")]
+        [SerializeField] private InteractionKind[] interactionsOnClick = new InteractionKind[0];
+        [Tooltip("The interaction events to be sent to the held object when anything is clicked")]
+        [SerializeField] private InteractionKind[] heldInteractionsOnClick = new InteractionKind[0];
+        
         private new Camera camera;
         private Hands hands;
         
@@ -46,17 +51,21 @@ namespace Interaction
                 heldInteractionReceiver = FindInteractable(held.transform);
                 if (heldInteractionReceiver)
                 {
-                    heldInteractionReceiver.Trigger(new InteractionEvent("use", hands.gameObject)
-                        .WorldPosition(position).WorldNormal(normal).ForwardTo(interactable));
+                    foreach (var kind in heldInteractionsOnClick)
+                    {
+                        heldInteractionReceiver.Trigger(new InteractionEvent(kind, hands.gameObject)
+                            .WorldPosition(position).WorldNormal(normal).ForwardTo(interactable));
+                    }
                 }
             }
             
             if (interactable)
             {
-                interactable.Trigger(new InteractionEvent("pickup", hands.gameObject)
-                    .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractionReceiver));
-                interactable.Trigger(new InteractionEvent("open", hands.gameObject)
-                    .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractionReceiver));
+                foreach (var kind in interactionsOnClick)
+                {
+                    interactable.Trigger(new InteractionEvent(kind, hands.gameObject)
+                        .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractionReceiver));
+                }
             }
         }
 

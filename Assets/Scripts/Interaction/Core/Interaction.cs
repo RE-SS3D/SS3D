@@ -16,7 +16,7 @@ namespace Interaction.Core
         /// </summary>
         protected GameObject Receiver => receiver;
         
-        public abstract void Setup(Action<string> listen, Action<string> blocks);
+        public abstract void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks);
         public abstract bool Handle(InteractionEvent e);
     }
 }

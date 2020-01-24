@@ -9,9 +9,9 @@ namespace Interaction.Core
     {
         [SerializeField] private Interaction[] interactions = new Interaction[0];
         
-        private readonly Dictionary<string, List<IInteraction>> receivers = new Dictionary<string, List<IInteraction>>();
-        private readonly Dictionary<IInteraction, List<string>> listeners = new Dictionary<IInteraction, List<string>>();
-        private readonly Dictionary<string, string> dependencies = new Dictionary<string, string>();
+        private readonly Dictionary<InteractionKind, List<IInteraction>> receivers = new Dictionary<InteractionKind, List<IInteraction>>();
+        private readonly Dictionary<IInteraction, List<InteractionKind>> listeners = new Dictionary<IInteraction, List<InteractionKind>>();
+        private readonly Dictionary<InteractionKind, InteractionKind> dependencies = new Dictionary<InteractionKind, InteractionKind>();
         private readonly List<InteractionEvent> eventQueue = new List<InteractionEvent>();
         private readonly List<InteractionReceiver> waiting = new List<InteractionReceiver>();
 
@@ -36,7 +36,7 @@ namespace Interaction.Core
             }
         }
 
-        private void SetBlockage(string kind, IInteraction receiver)
+        private void SetBlockage(InteractionKind kind, IInteraction receiver)
         {
             if (!listeners.ContainsKey(receiver))
             {
@@ -57,14 +57,14 @@ namespace Interaction.Core
         /// </summary>
         /// <param name="kind">The kind to subscribe to</param>
         /// <param name="receiver">The interaction to subscribe</param>
-        public void Subscribe(string kind, IInteraction receiver)
+        public void Subscribe(InteractionKind kind, IInteraction receiver)
         {
             if (!receivers.ContainsKey(kind))
                 receivers.Add(kind, new List<IInteraction>());
             receivers[kind].Add(receiver);
             
             if (!listeners.ContainsKey(receiver))
-                listeners.Add(receiver, new List<string>());
+                listeners.Add(receiver, new List<InteractionKind>());
             listeners[receiver].Add(kind);
         }
         
@@ -75,7 +75,7 @@ namespace Interaction.Core
         /// </summary>
         /// <param name="kind">The kind to unsubscribe from</param>
         /// <param name="receiver">The interaction to unsubscribe</param>
-        public void Unsubscribe(string kind, IInteraction receiver)
+        public void Unsubscribe(InteractionKind kind, IInteraction receiver)
         {
             if (receivers.ContainsKey(kind))
             {
@@ -127,9 +127,9 @@ namespace Interaction.Core
         {
             if (waiting.Count > 0)
             {
-                foreach (var receiver in waiting)
+                for (var i = 0; i < waiting.Count; i++)
                 {
-                    yield return new WaitUntil(() => receiver.IsClear);
+                    yield return new WaitUntil(() => waiting[i].IsClear);
                 }
 
                 waiting.Clear();
@@ -139,7 +139,7 @@ namespace Interaction.Core
                 yield return null;
             }
 
-            var skip = new HashSet<string>();
+            var skip = new HashSet<InteractionKind>();
             foreach (var e in eventQueue) 
             {
                 if (!receivers.ContainsKey(e.kind)) continue;

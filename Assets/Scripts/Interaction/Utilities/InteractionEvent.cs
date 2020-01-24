@@ -11,15 +11,20 @@ namespace Interaction.Utilities
     [RequireComponent(typeof(InteractionReceiver))]
     public sealed class InteractionEvent : MonoBehaviour, IInteraction
     {
-        [SerializeField] private string kind = "";
+        [SerializeField] private InteractionKind kind = null;
+        [SerializeField] private InteractionKind[] blocks = new InteractionKind[0];
 
         [Serializable]
         public class UnityInteractionEvent : UnityEvent<GameObject> { }
         public UnityInteractionEvent receive;
         
-        public void Setup(Action<string> listen, Action<string> blocks)
+        public void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks)
         {
             listen(kind);
+            foreach (var block in this.blocks)
+            {
+                blocks(block);
+            }
         }
 
         public bool Handle(Core.InteractionEvent e)

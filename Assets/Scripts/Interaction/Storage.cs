@@ -8,6 +8,9 @@ namespace Interaction
     [RequireComponent(typeof(Container))]
     public class Storage : MonoBehaviour, IInteraction
     {
+        [SerializeField] private InteractionKind kind = null;
+        [SerializeField] private InteractionKind block = null;
+        
         public bool onlyIfOpen;
 
         private Container container;
@@ -19,10 +22,10 @@ namespace Interaction
             openable = GetComponent<Openable>();
         }
 
-        public void Setup(Action<string> listen, Action<string> blocks)
+        public void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks)
         {
-            listen("store");
-            blocks("open");
+            listen(kind);
+            blocks(block);
         }
 
         public bool Handle(InteractionEvent e)

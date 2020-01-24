@@ -12,7 +12,7 @@ namespace Interaction.Core
         /// <summary>
         /// The kind of event. For example, "pickup", "shoot", "explode", "admin_kill".
         /// </summary>
-        public string kind;
+        public InteractionKind kind;
         /// <summary>
         /// The `GameObject` that sent the event.
         /// </summary>
@@ -41,7 +41,7 @@ namespace Interaction.Core
         /// </summary>
         /// <param name="kind">The kind of event being triggered.</param>
         /// <param name="sender">The `GameObject` that sends the event.</param>
-        public InteractionEvent(string kind, GameObject sender)
+        public InteractionEvent(InteractionKind kind, GameObject sender)
         {
             this.kind = kind;
             this.sender = sender;
@@ -58,7 +58,7 @@ namespace Interaction.Core
         /// <param name="kind">The kind of event being triggered.</param>
         /// <param name="sender">The `GameObject` that sends the event.</param>
         /// <returns>A clone of this event with a new sender and kind</returns>
-        public InteractionEvent Forward(string kind, GameObject sender)
+        public InteractionEvent Forward(InteractionKind kind, GameObject sender)
         {
             return new InteractionEvent
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using Interaction.Core;
 using UnityEngine;
 
 namespace Interaction.Utilities
@@ -6,10 +7,10 @@ namespace Interaction.Utilities
     [CreateAssetMenu(fileName = "ForwardInteraction", menuName = "Interaction/Forward Interaction", order = 0)]
     internal sealed class ForwardInteraction : Core.Interaction
     {
-        [SerializeField] private string from = "";
-        [SerializeField] private string to = "";
+        [SerializeField] private InteractionKind from = null;
+        [SerializeField] private InteractionKind to = null;
         
-        public override void Setup(Action<string> listen, Action<string> blocks)
+        public override void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks)
         {
             listen(from);
         }

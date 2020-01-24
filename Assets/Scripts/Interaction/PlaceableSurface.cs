@@ -8,9 +8,11 @@ namespace Interaction
     [RequireComponent(typeof(InteractionReceiver))]
     public class PlaceableSurface : MonoBehaviour, IInteraction
     {
-        public void Setup(Action<string> listen, Action<string> blocks)
+        [SerializeField] private InteractionKind kind = null;
+        
+        public void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks)
         {
-            listen("place");
+            listen(kind);
         }
 
         public bool Handle(InteractionEvent e)

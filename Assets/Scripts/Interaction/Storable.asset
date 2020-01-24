@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a98c55cd0ac4137b1856a90f02d41b0, type: 3}
   m_Name: Storable
   m_EditorClassIdentifier: 
-  from: use
-  to: store
+  from: {fileID: 11400000, guid: f6a04c063494ad44c805f91d49c7eef4, type: 2}
+  to: {fileID: 11400000, guid: 137714e30b0210841a3efc15a2872999, type: 2}

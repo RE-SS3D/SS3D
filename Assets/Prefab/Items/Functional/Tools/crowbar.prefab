@@ -98,8 +98,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 7becfab153276864f9fc7636a839d837
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 4058023494
 --- !u!54 &926100782
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -173,3 +173,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 423fd31b2f264f39a59b5cfb1ea70904, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  kind: {fileID: 11400000, guid: 84d4df51de2c0b947bea8e92f52f3602, type: 2}

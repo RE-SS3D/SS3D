@@ -7,11 +7,13 @@ namespace Interaction
     [RequireComponent(typeof(InteractionReceiver))]
     public class Openable : MonoBehaviour, IInteraction
     {
+        [SerializeField] private InteractionKind kind = null;
+        
         public bool open;
         
-        public void Setup(Action<string> listen, Action<string> blocks)
+        public void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks)
         {
-            listen("open");
+            listen(kind);
         }
 
         public bool Handle(InteractionEvent e)
