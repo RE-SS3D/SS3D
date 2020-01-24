@@ -61,13 +61,30 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
 
     protected override void OnStateUpdate(DoorState prevState = new DoorState())
     {
-        float rotation = TileState.orientation == Orientation.Vertical ? 90 : 0;
+        float rotation = OrientationHelper.AngleBetween(Orientation.Horizontal, TileState.orientation);
         transform.localRotation = Quaternion.Euler(0, rotation, 0);
 
         UpdateWallCaps();
     }
 
     private void OnValidate() => UnityEditor.EditorApplication.delayCall += () => OnStateUpdate();
+    private void Start()
+    {
+        for(int i = transform.childCount - 1; i > 0; --i) {
+            var child = transform.GetChild(i);
+            if(child.name.StartsWith("WallCap")) {
+                int num = 0;
+                bool success = int.TryParse(child.name.Substring(7), out num);
+                if(!success || num > 0) {
+                    Debug.LogWarning($"Unusual child found whilst searching for wall caps: {child.name}, deleting");
+                    EditorAndRuntime.Destroy(child.gameObject);
+                    continue;
+                }
+
+                wallCaps[num] = child.gameObject;
+            }
+        }
+    }
 
     /**
      * Adjusts the connections value based on the given new tile.
@@ -76,7 +93,7 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
     private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
     {
         bool isConnected = tile.turf && tile.turf.genericType == "wall";
-        return adjacents.UpdateDirection(direction, isConnected);
+        return adjacents.UpdateDirection(direction, isConnected, true);
     }
 
     private void UpdateWallCaps()
@@ -85,17 +102,26 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
             return;
 
         // Go through each direction and ensure the wallcap is present.
-        for(int i = 0; i < 4; i++) {
-            Direction direction = (Direction)(i * 2);
-            bool isPresent = adjacents.Adjacent(direction) == 1;
+        for(Direction direction = Direction.North; direction < Direction.NorthWest; direction += 2) {
+            int i = (int)direction / 2;
+
+            // Get the direction this applies to for the external world
+            Direction outsideDirection = DirectionHelper.Apply(OrientationHelper.ToPrincipalDirection(TileState.orientation), direction);
+            bool isPresent = adjacents.Adjacent(outsideDirection) == 1;
+
             if(isPresent && wallCaps[i] == null) {
                 wallCaps[i] = EditorAndRuntime.InstantiatePrefab(wallCapPrefab, transform);
-                var cardinal = DirectionHelper.ToCardinalVector(direction);
-                wallCaps[i].transform.localRotation = Quaternion.Euler(0, (1 - i / 2) * 180, 0);
-                wallCaps[i].transform.localPosition = new Vector3(cardinal.Item1 + cardinal.Item2, 0, 0);
+                wallCaps[i].name = $"WallCap{i}";
+
+                var cardinal = DirectionHelper.ToCardinalVector(DirectionHelper.Apply(Direction.East, direction));
+                var rotation = DirectionHelper.AngleBetween(Direction.South, direction);
+
+                wallCaps[i].transform.localRotation = Quaternion.Euler(0, rotation, 0);
+                wallCaps[i].transform.localPosition = new Vector3(cardinal.Item1, 0, cardinal.Item2);
             }
             else if(!isPresent && wallCaps[i] != null) {
                 EditorAndRuntime.Destroy(wallCaps[i]);
+                wallCaps[i] = null;
             }
         }
     }

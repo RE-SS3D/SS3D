@@ -24,6 +24,14 @@ namespace TileMap {
 
     public static class DirectionHelper
     {
+        /**
+         * Applies the second direction on top of the first
+         */
+        public static Direction Apply(Direction first, Direction second)
+        {
+            return (Direction)(((int)first + (int)second + 8) % 8);
+        }
+
         public static Tuple<int, int> ToCardinalVector(Direction direction)
         {
             return new Tuple<int, int>(
@@ -55,6 +63,13 @@ namespace TileMap {
         public static float AngleBetween(Orientation from, Orientation to)
         {
             return ((int)to - (int)from) * 90.0f;
+        }
+        /**
+         * North for vertical, east for horizontal
+         */
+        public static Direction ToPrincipalDirection(Orientation orientation)
+        {
+            return (Direction)((int)orientation * 2);
         }
     }
 
