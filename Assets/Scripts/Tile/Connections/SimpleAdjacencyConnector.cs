@@ -22,17 +22,17 @@ namespace TileMap.Connections
         public string type;
 
         [Header("Meshes")]
-        // A mesh where no edges are connected
+        [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
-        // A mesh where the east edge is connected
+        [Tooltip("A mesh where the east edge is connected")]
         public Mesh c;
-        // A mesh where east and west edges are connected
+        [Tooltip("A mesh where east and west edges are connected")]
         public Mesh i;
-        // A mesh where the south and west edges are connected
+        [Tooltip("A mesh where the south and west edges are connected")]
         public Mesh l;
-        // A mesh where the north, south, and east edge is connected
+        [Tooltip("A mesh where the north, south, and east edge is connected")]
         public Mesh t;
-        // A mesh where all edges are connected
+        [Tooltip("A mesh where all edges are connected")]
         public Mesh x;
 
         /**

@@ -22,38 +22,38 @@ namespace TileMap.Connections
         public string type;
 
         [Header("Meshes")]
-        // A mesh where no edges are connected
+        [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
-        // A mesh where the east edge is connected
+        [Tooltip("A mesh where the east edge is connected")]
         public Mesh c;
-        // A mesh where east and west edges are connected
+        [Tooltip("A mesh where east and west edges are connected")]
         public Mesh i;
 
-        // A mesh where the south and west edges are connected, no corners
+        [Tooltip("A mesh where the south and west edges are connected, no corners")]
         public Mesh lNone;
-        // A mesh where the south and west edges are connected, and ne is a corner
+        [Tooltip("A mesh where the south and west edges are connected, and ne is a corner")]
         public Mesh lSingle;
 
-        // A mesh where the north, south, and east edge is connected, no corners
+        [Tooltip("A mesh where the north, south, and east edge is connected, no corners")]
         public Mesh tNone;
-        // A mesh where the north, south, and east edge is connected, southeast is a corner
+        [Tooltip("A mesh where the north, south, and east edge is connected, southeast is a corner")]
         public Mesh tSingleRight;
-        // A mesh where the north, south, and east edge is connected, northeast is a corner
+        [Tooltip("A mesh where the north, south, and east edge is connected, northeast is a corner")]
         public Mesh tSingleLeft;
-        // A mesh where north, south, and east is connected, northeast and southeast are corners
+        [Tooltip("A mesh where north, south, and east is connected, northeast and southeast are corners")]
         public Mesh tDouble;
 
-        // A mesh where all edges are connected, no corners
+        [Tooltip("A mesh where all edges are connected, no corners")]
         public Mesh xNone;
-        // A mesh where all edges are connected, southeast is a corner
+        [Tooltip("A mesh where all edges are connected, southeast is a corner")]
         public Mesh xSingle;
-        // A mesh where all edges connected, southeast and northeast corners
+        [Tooltip("A mesh where all edges connected, southeast and northeast corners")]
         public Mesh xSide;
-        // A mesh where all edges connected, southeast and northwest corners
+        [Tooltip("A mesh where all edges connected, southeast and northwest corners")]
         public Mesh xOpposite;
-        // A mesh where all edges connected, all but northwest are corners
+        [Tooltip("A mesh where all edges connected, all but northwest are corners")]
         public Mesh xTriple;
-        // A mesh where all edges connected, all corners
+        [Tooltip("A mesh where all edges connected, all corners")]
         public Mesh xQuad;
 
         /**

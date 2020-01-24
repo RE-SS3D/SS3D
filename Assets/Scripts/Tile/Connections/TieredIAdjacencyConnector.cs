@@ -19,21 +19,21 @@ namespace TileMap.Connections
         public string genericType;
 
         [Header("Meshes")]
-        // A mesh where no edges are connected
+        [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
-        // A mesh where the east edge is connected
+        [Tooltip("A mesh where the east edge is connected")]
         public Mesh c;
-        // A mesh where east and west edges are connected
+        [Tooltip("A mesh where east and west edges are connected")]
         public Mesh i;
-        // A mesh where west connects to same type, and east connects to the generic type
+        [Tooltip("A mesh where west connects to same type, and east connects to the generic type")]
         public Mesh iBorder;
-        // A mesh for a single I tile between two generic ones
+        [Tooltip("A mesh for a single I tile between two generic ones")]
         public Mesh iAlone;
-        // A mesh where the south and west edges are connected
+        [Tooltip("A mesh where the south and west edges are connected")]
         public Mesh l;
-        // A mesh where the north, south, and east edge is connected
+        [Tooltip("A mesh where the north, south, and east edge is connected")]
         public Mesh t;
-        // A mesh where all edges are connected
+        [Tooltip("A mesh where all edges are connected")]
         public Mesh x;
 
         /**
