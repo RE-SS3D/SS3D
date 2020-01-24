@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 namespace Interaction.Core
@@ -7,7 +8,7 @@ namespace Interaction.Core
     /// This is a Scriptable Object that may be added to an `InteractionReceiver` to receive an event without the need for a `MonoBehaviour`.<br/>
     /// The intended use case of this class is to implement fully or mostly stateless interactions.
     /// </summary>
-    public abstract class Interaction : ScriptableObject, IInteraction
+    public abstract class ContinuousInteraction : ScriptableObject, IContinuousInteraction
     {
         internal GameObject receiver = null;
         
@@ -17,6 +18,6 @@ namespace Interaction.Core
         protected GameObject Receiver => receiver;
         
         public abstract void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks);
-        public abstract bool Handle(InteractionEvent e);
+        public abstract IEnumerator Handle(InteractionEvent e);
     }
 }

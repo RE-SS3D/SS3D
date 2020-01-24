@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Interaction.Utilities
 {
     [RequireComponent(typeof(InteractionReceiver))]
-    internal sealed class ForwardInteractionAs : MonoBehaviour, IInteraction
+    internal sealed class ForwardBaseInteractionAs : MonoBehaviour, ISingularInteraction
     {
         [SerializeField] private InteractionKind from = null;
         [SerializeField] private InteractionKind to = null;

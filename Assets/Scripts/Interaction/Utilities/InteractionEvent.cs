@@ -9,7 +9,7 @@ namespace Interaction.Utilities
     /// Used to emit a Unity event when an `InteractionEvent` of a certain kind is triggerec.
     /// </summary>
     [RequireComponent(typeof(InteractionReceiver))]
-    public sealed class InteractionEvent : MonoBehaviour, IInteraction
+    public sealed class InteractionEvent : MonoBehaviour, ISingularInteraction
     {
         [SerializeField] private InteractionKind kind = null;
         [SerializeField] private InteractionKind[] blocks = new InteractionKind[0];

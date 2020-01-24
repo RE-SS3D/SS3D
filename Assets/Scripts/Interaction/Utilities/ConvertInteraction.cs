@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Interaction.Utilities
 {
     [CreateAssetMenu(fileName = "ConvertInteraction", menuName = "Interaction/Convert Interaction", order = 0)]
-    internal sealed class ConvertInteraction : Core.Interaction
+    internal sealed class ConvertInteraction : Core.SingularInteraction
     {
         [SerializeField] private InteractionKind from = null;
         [SerializeField] private InteractionKind to = null;
