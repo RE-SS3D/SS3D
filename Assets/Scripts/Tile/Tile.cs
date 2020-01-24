@@ -22,11 +22,8 @@ namespace TileMap {
         Horizontal // East-West
     }
 
-    public static class DirectionHelper {
-        public static float ToAngle(Direction direction)
-        {
-            return ((int)direction) * 45.0f;
-        }
+    public static class DirectionHelper
+    {
         public static Tuple<int, int> ToCardinalVector(Direction direction)
         {
             return new Tuple<int, int>(
@@ -37,6 +34,27 @@ namespace TileMap {
         public static Direction GetOpposite(Direction direction)
         {
             return (Direction)(((int)direction + 4) % 8);
+        }
+
+        // Same as AngleBetween(North, direction)
+        public static float ToAngle(Direction direction)
+        {
+            return ((int)direction) * 45.0f;
+        }
+        public static float AngleBetween(Direction from, Direction to)
+        {
+            return ((int)to - (int)from) * 45.0f;
+        }
+    }
+    public static class OrientationHelper
+    {
+        public static float ToAngle(Orientation orientation)
+        {
+            return (int)orientation * 90.0f;
+        }
+        public static float AngleBetween(Orientation from, Orientation to)
+        {
+            return ((int)to - (int)from) * 90.0f;
         }
     }
 

@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using TileMap.Connections;
 
-namespace TileMap {
+namespace TileMap.Connections
+{
     /**
      * These classes are getting very specific...
      * This one is the same as SimpleAdjacencyConnector, but it has specific unique I connections
@@ -12,12 +14,6 @@ namespace TileMap {
     [RequireComponent(typeof(MeshFilter))]
     public class TieredIAdjacencyConnector : MonoBehaviour, AdjacencyConnector
     {
-        public enum TileLayer
-        {
-            Turf,
-            Fixture,
-        }
-
         // Id that adjacent objects must be to count. If null, any id is accepted
         public string id;
         public string genericType;
@@ -40,18 +36,13 @@ namespace TileMap {
         // A mesh where all edges are connected
         public Mesh x;
 
-        public void OnEnable()
-        {
-            SetMeshAndDirection();
-        }
-
         /**
          * When a single adjacent turf is updated
          */
         public void UpdateSingle(Direction direction, TileDefinition tile)
         {
-            UpdateSingleConnection(direction, tile);
-            SetMeshAndDirection();
+            if (UpdateSingleConnection(direction, tile));
+                UpdateMeshAndDirection();
         }
 
         /**
@@ -60,77 +51,69 @@ namespace TileMap {
          */
         public void UpdateAll(TileDefinition[] tiles)
         {
+            bool changed = false;
             for (int i = 0; i < tiles.Length; i++) {
-                UpdateSingleConnection((Direction)i, tiles[i]);
+                changed |= UpdateSingleConnection((Direction)i, tiles[i]);
             }
-            SetMeshAndDirection();
+            if(changed)
+                UpdateMeshAndDirection();
         }
 
-        public void Awake()
-        {
-            filter = GetComponent<MeshFilter>();
-        }
+        public void Awake() => filter = GetComponent<MeshFilter>();
+        public void OnEnable() => UpdateMeshAndDirection();
 
         /**
          * Adjusts the connections value based on the given new tile
          */
-        private void UpdateSingleConnection(Direction direction, TileDefinition tile)
+        private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
             bool isGeneric = (tile.turf && (tile.turf.genericType == genericType || genericType == null)) || (tile.fixture && (tile.fixture.genericType == genericType || genericType == null));
             bool isSpecific = (tile.turf && (tile.turf.id == id || id == null)) || (tile.fixture && (tile.fixture.id == id || id == null));
 
-            // Set the direction bit to isConnected (1 or 0)
-            connections &= (byte)~(1 << (int)direction);
-            connections |= (byte)((isGeneric ? 1 : 0) << (int)direction);
+            bool changed = generalAdjacents.UpdateDirection(direction, isGeneric, true);
+            changed |= specificAdjacents.UpdateDirection(direction, isSpecific, true);
 
-            specificConnections &= (byte)~(1 << (int)direction);
-            specificConnections |= (byte)((isSpecific ? 1 : 0) << (int)direction);
+            return changed;
         }
 
-        private void SetMeshAndDirection()
+        private void UpdateMeshAndDirection()
         {
             // Count number of connections along cardinal (which is all that we use atm)
-            int north = Adjacent(Direction.North);
-            int east = Adjacent(Direction.East);
-            int south = Adjacent(Direction.South);
-            int west = Adjacent(Direction.West);
-
-            int numConnections = north + east + south + west;
+            var generalCardinals = generalAdjacents.GetCardinalInfo();
 
             float rotation = 0.0f;
             Mesh mesh;
-            if (numConnections == 0)
+            if (generalCardinals.IsO())
                 mesh = o;
-            else if (numConnections == 1) {
+            else if (generalCardinals.IsC())
+            {
                 mesh = c;
-                rotation = south * 90 + west * 180 + north * 270;
+                rotation = DirectionHelper.AngleBetween(Direction.East, generalCardinals.GetOnlyPositive());
             }
-            else if (numConnections == 2) {
-                // If north and south are both 1 or 0, must be a line.
-                if (north == south) {
-                    // Check for specific connections
-                    int numSpecific = SpecificAdjacent(Direction.North)
-                        + SpecificAdjacent(Direction.East)
-                        + SpecificAdjacent(Direction.South)
-                        + SpecificAdjacent(Direction.West);
+            else if (generalCardinals.IsI())
+            {
+                // Check for specific connections
+                var specificCardinals = specificAdjacents.GetCardinalInfo();
 
-                    if (numSpecific == 1) {
-                        mesh = iBorder;
-                        rotation = SpecificAdjacent(Direction.North) * 90 + SpecificAdjacent(Direction.East) * 180 + SpecificAdjacent(Direction.South) * 270;
-                    }
-                    else {
-                        mesh = numSpecific == 2 ? i : iAlone;
-                        rotation = east > 0 ? 0 : 90;
-                    }
+                if (specificCardinals.numConnections == 1)
+                {
+                    mesh = iBorder;
+                    rotation = DirectionHelper.AngleBetween(Direction.West, specificCardinals.GetOnlyPositive());
                 }
-                else {
-                    mesh = l;
-                    rotation = south > 0 ? east > 0 ? 0 : 90 : east > 0 ? 270 : 180;
+                else
+                {
+                    mesh = specificCardinals.numConnections == 2 ? i : iAlone;
+                    rotation = OrientationHelper.AngleBetween(Orientation.Horizontal, generalCardinals.GetFirstOrientation());
                 }
             }
-            else if (numConnections == 3) {
+            else if (generalCardinals.IsL())
+            {
+                mesh = l;
+                rotation = DirectionHelper.AngleBetween(Direction.SouthEast, generalCardinals.GetCornerDirection());
+            }
+            else if (generalCardinals.IsT()) {
                 mesh = t;
-                rotation = (1 - north) * 90 + (1 - east) * 180 + (1 - south) * 270;
+                rotation = DirectionHelper.AngleBetween(Direction.West, generalCardinals.GetOnlyNegative());
             }
             else
                 mesh = x;
@@ -142,26 +125,8 @@ namespace TileMap {
             transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, rotation, transform.localRotation.eulerAngles.z);
         }
 
-        /**
-         * Returns 0 if no adjacency, or 1 if there is.
-         */
-        private int Adjacent(Direction direction)
-        {
-            return (connections >> (int)direction) & 0x1;
-        }
-
-        /**
-         * Returns 0 if no adjacency, or 1 if there is.
-         */
-        private int SpecificAdjacent(Direction direction)
-        {
-            return (specificConnections >> (int)direction) & 0x1;
-        }
-
-
-        // A bitfield of connections. Total of 8 connections -> 8 bits, ascending order with direction.
-        private byte connections = 0;
-        private byte specificConnections = 0;
+        private AdjacencyBitmap generalAdjacents = new AdjacencyBitmap();
+        private AdjacencyBitmap specificAdjacents = new AdjacencyBitmap();
 
         private MeshFilter filter;
     }

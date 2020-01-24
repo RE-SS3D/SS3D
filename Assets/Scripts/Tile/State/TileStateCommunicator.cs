@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-/**
- * An interface used as a component for recieving and sending tile state.
- * 
- * Note: Please do not directly inherit from this. Use TileStateMaintainer instead if possible.
- */
-public interface TileStateCommunicator
+namespace TileMap.State
 {
-    object GetTileState();
-    void SetTileState(object obj);
+    /**
+     * An interface used as a component for recieving and sending tile state.
+     * 
+     * Note: Please do not directly inherit from this. Use TileStateMaintainer instead if possible.
+     */
+    public interface TileStateCommunicator
+    {
+        object GetTileState();
+        void SetTileState(object obj);
+    }
 }

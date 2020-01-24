@@ -1,10 +1,13 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using System;
 using System.Collections;
-using System;
+using UnityEngine;
+using UnityEditor;
 
-namespace TileMap {
+using TileMap.Connections;
+using TileMap.State;
 
+namespace TileMap
+{
     /**
      * The tile object takes information about a tile and transforms it into the world gameobject.
      */

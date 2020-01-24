@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using TileMap.Connections;
+using System;
 
-namespace TileMap
+namespace TileMap.Connections
 {
     /**
      * The advanced adjacency connector considers
@@ -54,18 +56,13 @@ namespace TileMap
         // A mesh where all edges connected, all corners
         public Mesh xQuad;
 
-        public void OnEnable()
-        {
-            SetMeshAndDirection();
-        }
-
         /**
          * When a single adjacent turf is updated
          */
         public void UpdateSingle(Direction direction, TileDefinition tile)
         {
-            UpdateSingleConnection(direction, tile);
-            SetMeshAndDirection();
+            if (UpdateSingleConnection(direction, tile))
+                UpdateMeshAndDirection();
         }
 
         /**
@@ -74,27 +71,26 @@ namespace TileMap
          */
         public void UpdateAll(TileDefinition[] tiles)
         {
+            bool changed = false;
             for (int i = 0; i < tiles.Length; i++) {
-                UpdateSingleConnection((Direction)i, tiles[i]);
+                changed |= UpdateSingleConnection((Direction)i, tiles[i]);
             }
-            SetMeshAndDirection();
+
+            if (changed)
+                UpdateMeshAndDirection();
         }
 
-        public void Awake()
-        {
-            filter = GetComponent<MeshFilter>();
-        }
+        public void Awake() => filter = GetComponent<MeshFilter>();
+        public void OnEnable() => UpdateMeshAndDirection();
 
         /**
-         * Adjusts the connections value based on the given new tile
+         * Adjusts the connections value based on the given new tile.
+         * Returns whether value changed.
          */
-        private void UpdateSingleConnection(Direction direction, TileDefinition tile)
+        private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
             bool isConnected = (tile.turf && (tile.turf.genericType == type || type == null)) || (tile.fixture && (tile.fixture.genericType == type || type == null));
-
-            // Set the direction bit to isConnected (1 or 0)
-            connections &= (byte)~(1 << (int)direction);
-            connections |= (byte)((isConnected ? 1 : 0) << (int)direction);
+            return adjacents.UpdateDirection(direction, isConnected);
         }
 
         /**
@@ -104,89 +100,78 @@ namespace TileMap
          * This code takes the information about what tiles are adjacent (each of the 8 directions either has an adjacent connectable or not),
          * and converts this into the mesh to use, along with a direction to rotate the mesh in.
          */
-        private void SetMeshAndDirection()
+        private void UpdateMeshAndDirection()
         {
             // Count number of connections along cardinal, to determine which 'outer' mesh we use of O, C, I/L, T, X
-            int north = Adjacent(Direction.North);
-            int east = Adjacent(Direction.East);
-            int south = Adjacent(Direction.South);
-            int west = Adjacent(Direction.West);
-
-            int numConnections = north + east + south + west;
+            var cardinalInfo = adjacents.GetCardinalInfo();
 
             float rotation = 0.0f;
             Mesh mesh;
-            if(numConnections == 0)
+            if(cardinalInfo.IsO())
             {
                 mesh = o;
             }
-            else if(numConnections == 1)
+            else if(cardinalInfo.IsC())
             {
                 mesh = c;
-                rotation = south * 90 + west * 180 + north * 270;
+                rotation = DirectionHelper.AngleBetween(Direction.East, cardinalInfo.GetOnlyPositive());
             }
-            else if(numConnections == 2)
+            else if(cardinalInfo.IsI())
             {
-                // If north and south are both 1 or 0, must be a line.
-                if (north == south) {
-                    mesh = i;
-                    rotation = east > 0 ? 0 : 90;
-                }
-                else {
-                    // Determine lSolid or lCorner by finding whether the area between the two connections is filled
-                    // We check for if any of the following bitfields matches the connection bitfield
-                    // N+NE+E = 0/1/2, E+SE+S = 2/3/4, S+SW+W = 4/5/6, W+NW+N = 6/7/0
-                    bool isFilled = (connections & 0b00000111) == 0b00000111 || (connections & 0b00011100) == 0b00011100 || (connections & 0b01110000) == 0b01110000 || (connections & 0b11000001) == 0b11000001;
-                    mesh = isFilled ? lNone : lSingle;
-                    rotation = south > 0 ? east > 0 ? 0 : 90 : east > 0 ? 270 : 180;
-                }
+                mesh = i;
+                rotation = OrientationHelper.AngleBetween(Orientation.Horizontal, cardinalInfo.GetFirstOrientation());
             }
-            else if(numConnections == 3)
+            else if(cardinalInfo.IsL())
+            {
+                // Determine lSolid or lCorner by finding whether the area between the two connections is filled
+                // We check for if any of the following bitfields matches the connection bitfield
+                // N+NE+E = 0/1/2, E+SE+S = 2/3/4, S+SW+W = 4/5/6, W+NW+N = 6/7/0
+                bool isFilled = (adjacents.Connections & 0b00000111) == 0b00000111 || (adjacents.Connections & 0b00011100) == 0b00011100 || (adjacents.Connections & 0b01110000) == 0b01110000 || (adjacents.Connections & 0b11000001) == 0b11000001;
+                mesh = isFilled ? lNone : lSingle;
+                rotation = DirectionHelper.AngleBetween(Direction.SouthEast, cardinalInfo.GetCornerDirection());
+            }
+            else if(cardinalInfo.IsT())
             {
                 // We make another bitfield (noticing a pattern?). 0x0 means no fills, 0x1 means right corner filled, 0x2 means left corner filled,
                 // therefore both corners filled = 0x3.
-                int corners = ((1 - north) * 2 | (1 - east)) * Adjacent(Direction.SouthWest)
-                            + ((1 - east) * 2 | (1 - south)) * Adjacent(Direction.NorthWest)
-                            + ((1 - south) * 2 | (1 - west)) * Adjacent(Direction.NorthEast)
-                            + ((1 - west) * 2 | (1 - north)) * Adjacent(Direction.SouthEast);
+                int corners = ((1 - cardinalInfo.north) * 2 | (1 - cardinalInfo.east)) * adjacents.Adjacent(Direction.SouthWest)
+                            + ((1 - cardinalInfo.east) * 2 | (1 - cardinalInfo.south)) * adjacents.Adjacent(Direction.NorthWest)
+                            + ((1 - cardinalInfo.south) * 2 | (1 - cardinalInfo.west)) * adjacents.Adjacent(Direction.NorthEast)
+                            + ((1 - cardinalInfo.west) * 2 | (1 - cardinalInfo.north)) * adjacents.Adjacent(Direction.SouthEast);
                 mesh = corners == 0 ? tDouble
                     : corners == 1 ? tSingleLeft
                     : corners == 2 ? tSingleRight
                     : tNone;
 
-                rotation = (1 - north) * 90 + (1 - east) * 180 + (1 - south) * 270;
+                rotation = DirectionHelper.AngleBetween(Direction.West, cardinalInfo.GetOnlyNegative());
             }
             else
             {
-                // Ok, the really stupid part is that this is effectively a duplicate of the above code, where we now use corners instead of sides
-                // INCLUDING ROTATION.
-                int northEast = Adjacent(Direction.NorthEast);
-                int northWest = Adjacent(Direction.NorthWest);
-                int southEast = Adjacent(Direction.SouthEast);
-                int southWest = Adjacent(Direction.SouthWest);
+                // This sneaky piece of code uses the cardinal info to store diagonals by rotating everything -45 degrees
+                // NE -> N, SW -> S, etc.
+                var diagonals = new AdjacencyBitmap.CardinalInfo((byte)(adjacents.Connections >> 1));
 
-                int numCorners = northEast + northWest + southEast + southWest;
-                switch (numCorners) {
+                switch (diagonals.numConnections) {
                     case 0:
                         mesh = xNone;
                         break;
                     case 1:
                         mesh = xSingle;
-                        rotation = southWest * 90 + northEast * 180 + northWest * 270;
+                        rotation = DirectionHelper.AngleBetween(Direction.East, diagonals.GetOnlyPositive());
                         break;
                     case 2:
-                        if(northEast == southWest) {
+                        if(diagonals.north == diagonals.south) {
                             mesh = xOpposite;
-                            rotation = northEast > 0 ? 0 : 90;
+                            rotation = OrientationHelper.AngleBetween(Orientation.Vertical, diagonals.GetFirstOrientation());
                         }
                         else {
                             mesh = xSide;
-                            rotation = southEast > 0 ? southWest > 0 ? 0 : 90 : northEast > 0 ? 180 : 270;
+                            rotation = DirectionHelper.AngleBetween(Direction.SouthEast, diagonals.GetCornerDirection());
                         }
                         break;
                     case 3:
                         mesh = xTriple;
-                        rotation = (1 - southWest) * 90 + (1 - southEast) * 180 + (1 - northEast) * 270;
+                        rotation = DirectionHelper.AngleBetween(Direction.East, diagonals.GetOnlyNegative());
                         break;
                     default:
                         mesh = xQuad;
@@ -201,16 +186,8 @@ namespace TileMap
             transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, rotation, transform.localRotation.eulerAngles.z);
         }
 
-        /**
-         * Returns 0 if no adjacency, or 1 if there is.
-         */
-        private int Adjacent(Direction direction)
-        {
-            return (connections >> (int)direction) & 0x1;
-        }
-
         // A bitfield of connections. Total of 8 connections -> 8 bits, ascending order with direction.
-        private byte connections = 0;
+        private AdjacencyBitmap adjacents = new AdjacencyBitmap();
         private MeshFilter filter;
     }
 }

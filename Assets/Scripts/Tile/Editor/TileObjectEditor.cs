@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using TileMap.State;
 
 namespace TileMap.Editor
 {
