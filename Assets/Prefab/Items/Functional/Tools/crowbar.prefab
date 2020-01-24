@@ -162,9 +162,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 29f49cd8263d64849af4e9623d167953, type: 2}
   - {fileID: 11400000, guid: 2ad3183a1e200dd4b9edd607982b7a79, type: 2}
   - {fileID: 11400000, guid: 0166fd8ad3ffe8c41b110fc867a1f710, type: 2}
-  - {fileID: 11400000, guid: 3b830e3e33f5b9047bcc3e80b8e4deae, type: 2}
-  continuousInteractions:
-  - {fileID: 11400000, guid: 863cbf71327602e4eaf3a70d5484c1b0, type: 2}
+  continuousInteractions: []
 --- !u!114 &5911543497110224905
 MonoBehaviour:
   m_ObjectHideFlags: 0
