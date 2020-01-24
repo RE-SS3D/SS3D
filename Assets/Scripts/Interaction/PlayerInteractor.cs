@@ -54,7 +54,8 @@ namespace Interaction
                     foreach (var kind in heldInteractionsOnClick)
                     {
                         heldInteractionReceiver.Trigger(new InteractionEvent(kind, hands.gameObject)
-                            .WorldPosition(position).WorldNormal(normal).ForwardTo(interactable));
+                            .WorldPosition(position).WorldNormal(normal).ForwardTo(interactable)
+                            .RunWhile(e => transform.position.x < 0));
                     }
                 }
             }

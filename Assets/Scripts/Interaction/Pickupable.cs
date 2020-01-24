@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Interaction
 {
-    public class Pickupable : MonoBehaviour, IInteraction
+    public class Pickupable : MonoBehaviour, ISingularInteraction
     {
         [SerializeField] private InteractionKind kind = null;
         

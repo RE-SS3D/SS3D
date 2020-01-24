@@ -6,7 +6,7 @@ namespace Interaction
 {
     [RequireComponent(typeof(InteractionReceiver))]
     [RequireComponent(typeof(Container))]
-    public class Storage : MonoBehaviour, IInteraction
+    public class Storage : MonoBehaviour, ISingularInteraction
     {
         [SerializeField] private InteractionKind kind = null;
         [SerializeField] private InteractionKind block = null;

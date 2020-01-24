@@ -9,7 +9,7 @@ namespace Interaction.Core
     /// <br/>
     /// For a lot of interactions, you may want to extend the `Interaction` Scriptable Object instead though.
     /// </summary>
-    public interface IInteraction
+    public interface IBaseInteraction
     {
         /// <summary>
         /// This method is called by `InteractionReceiver` when it initializes.<br/>
@@ -18,12 +18,5 @@ namespace Interaction.Core
         /// <param name="listen">Call this action with the event kind you want to listen for</param>
         /// <param name="blocks">Call this action any event types that will be blocked when this interaction succeeds. Can be called any number of times.</param>
         void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks);
-        
-        /// <summary>
-        /// This method is called by `InteractionReceiver` when it an event of the subscribed kind is received
-        /// </summary>
-        /// <param name="e">The event that was received</param>
-        /// <returns>Whether or not the interaction succeeded. A success will block event kinds specified in `Setup`</returns>
-        bool Handle(InteractionEvent e);
     }
 }

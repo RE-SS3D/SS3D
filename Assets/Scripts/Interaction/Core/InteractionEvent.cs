@@ -35,6 +35,11 @@ namespace Interaction.Core
         /// Events are handled concurrently and this is a mechanism to ensure that everything works.
         /// </summary>
         public InteractionReceiver waitFor;
+        /// <summary>
+        /// A predicate that should be true while a continuous interaction should run.<br/>
+        /// The interaction will be stopped when the predicate return false.
+        /// </summary>
+        public Predicate<InteractionEvent> runWhile;
 
         /// <summary>
         /// Default constructor that should cover most use cases.
@@ -49,6 +54,7 @@ namespace Interaction.Core
             this.worldNormal = Vector3.zero;
             this.forwardTo = null;
             this.waitFor = null;
+            this.runWhile = null;
         }
 
         /// <summary>
@@ -66,6 +72,7 @@ namespace Interaction.Core
                 sender = sender,
                 worldNormal = worldNormal,
                 worldPosition = worldPosition,
+                runWhile = runWhile,
                 forwardTo = null,
             };
         }
@@ -111,6 +118,17 @@ namespace Interaction.Core
         public InteractionEvent WaitFor(InteractionReceiver value)
         {
             waitFor = value;
+            return this;
+        }
+
+        /// <summary>>
+        /// Builder method for adding `runWhile`
+        /// </summary>
+        /// <param name="value">A predicate that should be true while a continuous interaction should run</param>
+        /// <returns>This `InteractionEvent`</returns>
+        public InteractionEvent RunWhile(Predicate<InteractionEvent> value)
+        {
+            runWhile = value;
             return this;
         }
 
