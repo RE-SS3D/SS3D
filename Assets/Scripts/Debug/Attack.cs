@@ -16,9 +16,9 @@ namespace Interaction
     /// </summary>
     public class Attack : NetworkBehaviour
     {
-        [SerializeField] private GameObject attackParticleEffect;
-        [SerializeField] private AttackType attackType;
-        [SerializeField][Range(1,10)] private float damageAmount;
+        [SerializeField] private GameObject attackParticleEffect = null;
+        [SerializeField] private AttackType attackType = AttackType.Blunt;
+        [SerializeField][Range(1,10)] private float damageAmount = 1f;
 
         private void Update()
         {

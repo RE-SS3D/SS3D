@@ -30,8 +30,15 @@ namespace Interaction
                 return false;
             }
 
+            var itemCollider = e.sender.GetComponent<Collider>();
+            if (itemCollider == null)
+            {
+                Debug.LogWarning($"Object ({e.sender.name}) being placed on a surface ({name}) does not have a collider component");
+                return false;
+            }
+
             item.container.RemoveItem(item.gameObject);
-            item.transform.position = e.worldPosition;
+            item.transform.position = e.worldPosition + Vector3.up * itemCollider.bounds.max.y;
             item.gameObject.SetActive(true);
 
             return true;

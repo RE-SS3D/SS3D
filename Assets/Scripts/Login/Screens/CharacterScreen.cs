@@ -15,11 +15,11 @@ namespace Login.Screens
     /// </summary>
     public class CharacterScreen : MonoBehaviour, IScreenWithErrors
     {
-        [SerializeField] private TMP_InputField characterNameInput;
-        [SerializeField] private TextMeshProUGUI characterNameOutput;
-        [SerializeField] private TextMeshProUGUI errorElement;
-        [SerializeField] private ToggleGroup toggleGroup;
-        [SerializeField] private CharacterToggleElement togglePrefab;
+        [SerializeField] private TMP_InputField characterNameInput = null;
+        [SerializeField] private TextMeshProUGUI characterNameOutput = null;
+        [SerializeField] private TextMeshProUGUI errorElement = null;
+        [SerializeField] private ToggleGroup toggleGroup = null;
+        [SerializeField] private CharacterToggleElement togglePrefab = null;
 
         private Dictionary<int, CharacterResponse> characterDictionary = new Dictionary<int, CharacterResponse>();
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Chat;
 using UnityEngine;
 
 [Serializable]

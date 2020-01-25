@@ -1,23 +1,22 @@
-﻿using Mirror;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ChatFilterOption : MonoBehaviour
+namespace Chat
 {
-    private string name;
-
-    [SerializeField] private TextMeshProUGUI label;
-
-    [SerializeField] private Toggle toggle;
-
-    private ChatChannel channel;
-
-    public void Init(ChatChannel channel)
+    public class ChatFilterOption : MonoBehaviour
     {
-        this.channel = channel;
-        label.text = channel.Name;
-    }
+        [SerializeField] private TextMeshProUGUI label = null;
+        [SerializeField] private Toggle toggle = null;
 
-    public ChatChannel TickedChannel() => toggle.isOn ? channel : new ChatChannel();
+        private ChatChannel channel;
+
+        public void Init(ChatChannel channel)
+        {
+            this.channel = channel;
+            label.text = channel.Name;
+        }
+
+        public ChatChannel TickedChannel() => toggle.isOn ? channel : new ChatChannel();
+    }
 }

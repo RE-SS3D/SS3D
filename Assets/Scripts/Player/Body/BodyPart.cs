@@ -12,15 +12,15 @@ namespace Player.Body
     public class BodyPart : MonoBehaviour
     {
         ///Specifies which body part this is
-        [SerializeField] private BodyPartType bodyPartType;
+        [SerializeField] private BodyPartType bodyPartType = BodyPartType.Head;
         ///Specifies prefab to spawn if this body part is detached
-        [SerializeField] private GameObject severedBodyPartPrefab;
+        [SerializeField] private GameObject severedBodyPartPrefab = null;
         ///List of children for this bodypart. For example, the hand should be a child of the arm, etc.
-        [SerializeField] private List<BodyPart> childrenParts;
+        [SerializeField] private List<BodyPart> childrenParts = new List<BodyPart>();
         ///Flag enum, storing the current active statuses for this bodypart
-        [SerializeField] private BodyPartStatuses bodyPartStatuses;
+        [SerializeField] private BodyPartStatuses bodyPartStatuses = BodyPartStatuses.Healthy;
         ///The skinnedMeshRenderer associated with this bodypart. It will be hidden if the bodypart is detached
-        [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
+        [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer = null;
         ///The body component that this bodypart belongs to
         [SerializeField] private Body body;
 

@@ -11,10 +11,10 @@ namespace Login.Screens
     /// </summary>
     public class RegisterScreen : MonoBehaviour, IScreenWithErrors
     {
-        [SerializeField] private TMP_InputField emailInput;
-        [SerializeField] private TMP_InputField passwordInput;
-        [SerializeField] private TMP_InputField passwordInput2;
-        [SerializeField] private TextMeshProUGUI errorElement;
+        [SerializeField] private TMP_InputField emailInput = null;
+        [SerializeField] private TMP_InputField passwordInput = null;
+        [SerializeField] private TMP_InputField passwordInput2 = null;
+        [SerializeField] private TextMeshProUGUI errorElement = null;
 
         public CredentialRequest GetRegisterCredentials()
         {

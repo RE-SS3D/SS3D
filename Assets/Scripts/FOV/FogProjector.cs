@@ -1,37 +1,36 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
-[RequireComponent(typeof(Projector))]
-public class FogProjector : MonoBehaviour
+namespace FOV
 {
-    [SerializeField]
-    private Material projectorMaterial;
+    [RequireComponent(typeof(Projector))]
+    public class FogProjector : MonoBehaviour
+    {
+        [SerializeField] private Material projectorMaterial = null;
+        [SerializeField] private RenderTexture fogTexture = null;
 
-    [SerializeField]
-    private RenderTexture fogTexture;
-
-    private RenderTexture currTexture;
-    private Projector projector;
+        private RenderTexture currTexture;
+        private Projector projector;
     
-    private void Awake()
-    {
-        projector = GetComponent<Projector>();
-    }
+        private void Awake()
+        {
+            projector = GetComponent<Projector>();
+        }
 
-    private void OnEnable()
-    {
-        currTexture = fogTexture;
+        private void OnEnable()
+        {
+            currTexture = fogTexture;
 
-        // Projector materials aren't instanced, resulting in the material asset getting changed.
-        // Instance it here to prevent us from having to check in or discard these changes manually.
-        projector.material = new Material(projectorMaterial);
+            // Projector materials aren't instanced, resulting in the material asset getting changed.
+            // Instance it here to prevent us from having to check in or discard these changes manually.
+            projector.material = new Material(projectorMaterial);
 
-        projector.material.SetTexture("_CurrTexture", currTexture);
-    }
+            projector.material.SetTexture("_CurrTexture", currTexture);
+        }
 
-    private void Update()
-    {
-        // Swap the textures
+        private void Update()
+        {
+            // Swap the textures
 //        Graphics.Blit(fogTexture, currTexture);
+        }
     }
 }

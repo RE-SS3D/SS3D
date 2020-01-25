@@ -16,13 +16,13 @@ namespace Login
     public class LoginWindow : MonoBehaviour
     {
         //UI components that contain their respective screen panels
-        [SerializeField] private LoginScreen loginScreen;
-        [SerializeField] private RegisterScreen registerScreen;
-        [SerializeField] private CharacterScreen characterScreen;
-        [SerializeField] private GameObject characterCreateScreen;
-        [SerializeField] private GameObject characterSelectScreen;
+        [SerializeField] private LoginScreen loginScreen = null;
+        [SerializeField] private RegisterScreen registerScreen = null;
+        [SerializeField] private CharacterScreen characterScreen = null;
+        [SerializeField] private GameObject characterCreateScreen = null;
+        [SerializeField] private GameObject characterSelectScreen = null;
         //Prefab that contains the "mini scene" for the character preview render texture
-        [SerializeField] private GameObject characterPreviewRendererPrefab;
+        [SerializeField] private GameObject characterPreviewRendererPrefab = null;
 
         private GameObject characterPreview;
         private LoginManager loginManager;

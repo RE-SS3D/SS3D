@@ -9,10 +9,8 @@ namespace Inventory.Custom
     {
         public delegate void OnHandChange(int selectedHand);
 
-        [SerializeField]
-        private Container handContainer;
-        [SerializeField]
-        private float handRange;
+        [SerializeField] private Container handContainer = null;
+        [SerializeField] private float handRange = 0f;
 
         [System.NonSerialized]
         public int selectedHand = 0;

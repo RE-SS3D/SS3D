@@ -193,13 +193,13 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 1.62
+  m_Height: 1.61
   m_Radius: 0.25
-  m_SlopeLimit: 45
-  m_StepOffset: 0.5
+  m_SlopeLimit: 0
+  m_StepOffset: 0
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.78, z: 0}
+  m_Center: {x: 0, y: 0.81, z: 0}
 --- !u!114 &3952038737195694225
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -309,7 +309,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   restrictedChannels:
-  - SYSTEM
+  - System
 --- !u!114 &-1122543427383380906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4070,6 +4070,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1078238172721072839}
+  - component: {fileID: 8479457143270676815}
   m_Layer: 0
   m_Name: Armature
   m_TagString: Untagged
@@ -4092,6 +4093,19 @@ Transform:
   m_Father: {fileID: 3627826803242844489}
   m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &8479457143270676815
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8568554382609704399}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.9, y: 0.9, z: 0.14}
+  m_Center: {x: 0, y: 0, z: -0.01}
 --- !u!1 &8715993811148055229
 GameObject:
   m_ObjectHideFlags: 0

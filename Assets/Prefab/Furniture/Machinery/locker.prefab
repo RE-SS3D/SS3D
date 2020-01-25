@@ -161,8 +161,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 02fc5f12ab2897c49b2df843f364b6a1
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 6644269
 --- !u!114 &2483959803612036482
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,7 +191,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!65 &7035540085544037899
 BoxCollider:
@@ -346,8 +346,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 02fc5f12ab2897c49b2df843f364b6a1
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 573127817
 --- !u!114 &4343467203709485157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,8 +464,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 02fc5f12ab2897c49b2df843f364b6a1
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 264293833
 --- !u!114 &5227133807252648279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -513,7 +513,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f31cf7033044701bd2040285a11b93f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactions: []
+  singularInteractions: []
+  continuousInteractions: []
 --- !u!114 &5357114244261574010
 MonoBehaviour:
   m_ObjectHideFlags: 0
