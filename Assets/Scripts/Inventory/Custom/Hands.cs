@@ -34,12 +34,17 @@ namespace Inventory.Custom
             inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], transform.position, transform.rotation);
         }
 
+        public void Place(Vector3 position, Quaternion rotation)
+        {
+            inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], position, rotation);
+        }
+
         /**
-     * Attaches a container to the player's inventory.
-     * Uses the ContainerAttachment component (on the server)
-     * to ensure that the container is removed from the players inventory
-     * when they get out of range.
-     */
+         * Attaches a container to the player's inventory.
+         * Uses the ContainerAttachment component (on the server)
+         * to ensure that the container is removed from the players inventory
+         * when they get out of range.
+         */
         [Command]
         private void CmdConnectContainer(GameObject containerObject)
         {

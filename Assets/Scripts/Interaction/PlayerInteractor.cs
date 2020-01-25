@@ -28,7 +28,7 @@ namespace Interaction
         {
             if (!mainCamera) return;
             
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetButtonDown("Click"))
             {
                 var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
@@ -52,7 +52,7 @@ namespace Interaction
                 {
                     foreach (var kind in heldInteractionsOnClick)
                     {
-                        heldInteractionReceiver.Trigger(new InteractionEvent(kind, hands.gameObject)
+                        heldInteractionReceiver.Trigger(new InteractionEvent(kind, hands.gameObject, gameObject)
                             .WorldPosition(position).WorldNormal(normal).ForwardTo(interactable)
                             .RunWhile(e => transform.position.x < 0));
                     }
@@ -63,7 +63,7 @@ namespace Interaction
             {
                 foreach (var kind in interactionsOnClick)
                 {
-                    interactable.Trigger(new InteractionEvent(kind, hands.gameObject)
+                    interactable.Trigger(new InteractionEvent(kind, hands.gameObject, gameObject)
                         .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractionReceiver));
                 }
             }

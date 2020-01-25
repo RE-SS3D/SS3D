@@ -1,12 +1,13 @@
 ﻿using System;
 using Interaction.Core;
 using Inventory.Custom;
+using Mirror;
 using UnityEngine;
 
 namespace Interaction
 {
     [RequireComponent(typeof(InteractionReceiver))]
-    public class PlaceableSurface : MonoBehaviour, ISingularInteraction
+    public class PlaceableSurface : NetworkBehaviour, ISingularInteraction
     {
         [SerializeField] private InteractionKind kind = null;
         
@@ -22,14 +23,6 @@ namespace Interaction
                 Debug.LogWarning($"Tried to place null on a surface ({name})");
                 return false;
             }
-
-            var item = e.sender.GetComponent<Item>();
-            if (item == null)
-            {
-                Debug.LogWarning($"Object ({e.sender.name}) being placed on a surface ({name}) does not have an item component");
-                return false;
-            }
-
             var itemCollider = e.sender.GetComponent<Collider>();
             if (itemCollider == null)
             {
@@ -37,9 +30,15 @@ namespace Interaction
                 return false;
             }
 
-            item.container.RemoveItem(item.gameObject);
-            item.transform.position = e.worldPosition + Vector3.up * itemCollider.bounds.max.y;
-            item.gameObject.SetActive(true);
+            var playerHands = e.player.GetComponent<Hands>();
+            if (playerHands == null)
+            {
+                Debug.LogWarning($"Player holding object ({e.sender.name}) being placed on a surface ({name}) does not have a hands component");
+                return false;
+            }
+            
+            Vector3 position = e.worldPosition + Vector3.up * itemCollider.bounds.max.y;
+            playerHands.Place(position, Quaternion.identity);
 
             return true;
         }
