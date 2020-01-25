@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Interaction
 {
     [RequireComponent(typeof(InteractionReceiver))]
-    public class PlaceableSurface : MonoBehaviour, IInteraction
+    public class PlaceableSurface : MonoBehaviour, ISingularInteraction
     {
         [SerializeField] private InteractionKind kind = null;
         

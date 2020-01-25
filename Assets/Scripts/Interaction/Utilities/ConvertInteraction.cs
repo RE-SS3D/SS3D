@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Interaction.Utilities
 {
-    [CreateAssetMenu(fileName = "ForwardInteraction", menuName = "Interaction/Forward Interaction", order = 0)]
-    internal sealed class ForwardInteraction : Core.SingularInteraction
+    [CreateAssetMenu(fileName = "ConvertInteraction", menuName = "Interaction/Convert Interaction", order = 0)]
+    internal sealed class ConvertInteraction : Core.SingularInteraction
     {
         [SerializeField] private InteractionKind from = null;
         [SerializeField] private InteractionKind to = null;
@@ -22,8 +22,15 @@ namespace Interaction.Utilities
 
         public override bool Handle(Core.InteractionEvent e)
         {
-            if (!e.forwardTo) return false;
-            e.forwardTo.Trigger(e.Forward(to, Receiver));
+            var receiver = Receiver.GetComponent<InteractionReceiver>();
+            if (!receiver)
+            {
+                Debug.LogWarning($"There is no receiver on the interaction {Receiver.name}");
+                return false;
+            }
+
+            e.kind = to;
+            receiver.Trigger(e);
 
             return true;
         }

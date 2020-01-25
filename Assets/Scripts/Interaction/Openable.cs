@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Interaction
 {
     [RequireComponent(typeof(InteractionReceiver))]
-    public class Openable : MonoBehaviour, IInteraction
+    public class Openable : MonoBehaviour, ISingularInteraction
     {
         [SerializeField] private InteractionKind kind = null;
         
