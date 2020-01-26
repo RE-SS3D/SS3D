@@ -40,7 +40,7 @@ namespace TileMap
 
         #if UNITY_EDITOR
         /**
-         * Allows the editor to refresh the tile.subData when it knows it has
+         * Allows the editor to refresh the tile.subStates when it knows it has
          * modified the child of a tile.
          */
         public void RefreshSubData()
@@ -211,15 +211,15 @@ namespace TileMap
 
         private void UpdateChildrenFromSubData(TileDefinition newTile)
         {
-            if (newTile.subData != null && newTile.subData.Length >= 1 && newTile.subData[0] != null)
-                turf?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subData[0]);
+            if (newTile.subStates != null && newTile.subStates.Length >= 1 && newTile.subStates[0] != null)
+                turf?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[0]);
 
-            if (newTile.subData != null && newTile.subData.Length >= 2 && newTile.subData[1] != null)
-                fixture?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subData[1]);
+            if (newTile.subStates != null && newTile.subStates.Length >= 2 && newTile.subStates[1] != null)
+                fixture?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[1]);
         }
         private void UpdateSubDataFromChildren()
         {
-            tile.subData = new object[] {
+            tile.subStates = new object[] {
                 turf?.GetComponent<TileStateCommunicator>()?.GetTileState(),
                 fixture?.GetComponent<TileStateCommunicator>()?.GetTileState()
             };
