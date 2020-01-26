@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 1683531520590988412}
   - component: {fileID: 7148500711621885916}
   - component: {fileID: 2622621003458583736}
-  - component: {fileID: 7403704095914360243}
   m_Layer: 0
   m_Name: MetalTable
   m_TagString: Untagged
@@ -154,19 +153,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   kind: {fileID: 11400000, guid: 38eed80e5f8df1f4d840163dfa89fb11, type: 2}
---- !u!114 &7403704095914360243
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8036950609662249464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  serverOnly: 0
-  localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 3878950716

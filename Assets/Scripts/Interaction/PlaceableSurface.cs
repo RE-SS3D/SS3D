@@ -1,13 +1,12 @@
 ﻿using System;
 using Interaction.Core;
 using Inventory.Custom;
-using Mirror;
 using UnityEngine;
 
 namespace Interaction
 {
     [RequireComponent(typeof(InteractionReceiver))]
-    public class PlaceableSurface : NetworkBehaviour, ISingularInteraction
+    public class PlaceableSurface : MonoBehaviour, ISingularInteraction
     {
         [SerializeField] private InteractionKind kind = null;
         
