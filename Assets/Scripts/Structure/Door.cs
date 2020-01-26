@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System;
-using System.Collections;
+using UnityEditor;
 using TileMap;
 using TileMap.Connections;
 using TileMap.State;
@@ -30,7 +30,7 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
 
     // As is the standard in the rest of the code, wallCap should face east.
     [SerializeField]
-    private GameObject wallCapPrefab; 
+    private GameObject wallCapPrefab = null; 
 
     [SerializeField]
     private DoorType doorType;
@@ -67,7 +67,16 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
         UpdateWallCaps();
     }
 
-    private void OnValidate() => UnityEditor.EditorApplication.delayCall += () => OnStateUpdate();
+    private void OnValidate()
+    {
+#if UNITY_EDITOR
+        EditorApplication.delayCall += () =>
+        {
+            if (this) OnStateUpdate();
+        };
+#endif
+    }
+
     private void Start()
     {
         for(int i = transform.childCount - 1; i > 0; --i) {
@@ -75,7 +84,7 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
             if(child.name.StartsWith("WallCap")) {
                 int num = 0;
                 bool success = int.TryParse(child.name.Substring(7), out num);
-                if(!success || num > 0) {
+                if(!success || num > wallCaps.Length) {
                     Debug.LogWarning($"Unusual child found whilst searching for wall caps: {child.name}, deleting");
                     EditorAndRuntime.Destroy(child.gameObject);
                     continue;

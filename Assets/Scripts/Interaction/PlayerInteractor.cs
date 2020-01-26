@@ -1,5 +1,4 @@
-﻿using System;
-using Interaction.Core;
+﻿using Interaction.Core;
 using Inventory.Custom;
 using Mirror;
 using UnityEngine;
@@ -15,23 +14,23 @@ namespace Interaction
         [Tooltip("The interaction events to be sent to the held object when anything is clicked")]
         [SerializeField] private InteractionKind[] heldInteractionsOnClick = new InteractionKind[0];
         
-        private new Camera camera;
+        private Camera mainCamera;
         private Hands hands;
         
         private void Start()
         {
             if (!isLocalPlayer) Destroy(this);
             hands = GetComponent<Hands>();
+            if (!mainCamera) mainCamera = Camera.main;
         }
 
         protected virtual void Update()
         {
-            if (!camera) camera = Camera.main;
-            if (!camera) return;
+            if (!mainCamera) return;
             
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetButtonDown("Click"))
             {
-                var ray = camera.ScreenPointToRay(Input.mousePosition);
+                var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
                 // Ensure that user did not click the UI and that we hit something
                 if (!EventSystem.current.IsPointerOverGameObject() &&
@@ -53,7 +52,7 @@ namespace Interaction
                 {
                     foreach (var kind in heldInteractionsOnClick)
                     {
-                        heldInteractionReceiver.Trigger(new InteractionEvent(kind, hands.gameObject)
+                        heldInteractionReceiver.Trigger(new InteractionEvent(kind, hands.gameObject, gameObject)
                             .WorldPosition(position).WorldNormal(normal).ForwardTo(interactable)
                             .RunWhile(e => transform.position.x < 0));
                     }
@@ -64,7 +63,7 @@ namespace Interaction
             {
                 foreach (var kind in interactionsOnClick)
                 {
-                    interactable.Trigger(new InteractionEvent(kind, hands.gameObject)
+                    interactable.Trigger(new InteractionEvent(kind, hands.gameObject, gameObject)
                         .WorldPosition(position).WorldNormal(normal).WaitFor(heldInteractionReceiver));
                 }
             }

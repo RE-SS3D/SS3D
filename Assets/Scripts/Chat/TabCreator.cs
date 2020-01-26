@@ -3,67 +3,66 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-public class TabCreator : MonoBehaviour
+namespace Chat
 {
-    [SerializeField] private TMP_InputField tabNameField;
-
-    [SerializeField] private ChatFilterOption optionPrefab;
-
-    [SerializeField] private RectTransform optionContainer;
-
-    [SerializeField] private ChatChannels chatChannels;
-
-    [SerializeField] private ChatWindow chatWindow;
-
-    private List<ChatFilterOption> options = new List<ChatFilterOption>();
-
-    private void OnEnable()
+    public class TabCreator : MonoBehaviour
     {
-        foreach (Transform child in optionContainer.transform)
+        [SerializeField] private TMP_InputField tabNameField = null;
+        [SerializeField] private ChatFilterOption optionPrefab = null;
+        [SerializeField] private RectTransform optionContainer = null;
+        [SerializeField] private ChatChannels chatChannels = null;
+        [SerializeField] private ChatWindow chatWindow = null;
+
+        private List<ChatFilterOption> options = new List<ChatFilterOption>();
+
+        private void OnEnable()
         {
-            Destroy(child.gameObject);
+            foreach (Transform child in optionContainer.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            options.Clear();
+
+            foreach (ChatChannel channel in chatChannels.GetHidable())
+            {
+                ChatFilterOption option = Instantiate(optionPrefab, optionContainer);
+                option.Init(channel);
+                options.Add(option);
+            }
         }
 
-        options.Clear();
-
-        foreach (ChatChannel channel in chatChannels.GetHidable())
+        public void Close()
         {
-            ChatFilterOption option = Instantiate(optionPrefab, optionContainer);
-            option.Init(channel);
-            options.Add(option);
-        }
-    }
-
-    public void Close()
-    {
-        gameObject.SetActive(false);
-    }
-
-    public void Submit()
-    {
-        //Empty tab names cause visual glitches
-        if (string.IsNullOrEmpty(tabNameField.text))
-        {
-            tabNameField.text = "Honk!";
+            gameObject.SetActive(false);
         }
 
-        List<ChatChannel> channels = options.Select(option => option.TickedChannel())
-            .Where(channel => !string.IsNullOrEmpty(channel.Name)).ToList();
+        public void Submit()
+        {
+            //Empty tab names cause visual glitches
+            if (string.IsNullOrEmpty(tabNameField.text))
+            {
+                tabNameField.text = "Honk!";
+            }
+
+            List<ChatChannel> channels = options.Select(option => option.TickedChannel())
+                .Where(channel => !string.IsNullOrEmpty(channel.Name)).ToList();
         
-        foreach (ChatChannel channel in chatChannels.GetUnhidable()){
-            channels.Add(channel);
-        }
+            foreach (ChatChannel channel in chatChannels.GetUnhidable()){
+                channels.Add(channel);
+            }
         
-        //A tab without channels is pointless
-        if (channels.Count <= 0)
-        {
+            //A tab without channels is pointless
+            if (channels.Count <= 0)
+            {
+                Close();
+                return;
+            }
+
+            chatWindow.GetChatManager().CreateChatWindow(new ChatTabData(tabNameField.text, channels, true, null),
+                chatWindow, Vector2.zero);
+
             Close();
-            return;
         }
-
-        chatWindow.GetChatManager().CreateChatWindow(new ChatTabData(tabNameField.text, channels, true, null),
-            chatWindow, Vector2.zero);
-
-        Close();
     }
 }

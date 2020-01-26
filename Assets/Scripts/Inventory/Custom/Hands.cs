@@ -9,10 +9,8 @@ namespace Inventory.Custom
     {
         public delegate void OnHandChange(int selectedHand);
 
-        [SerializeField]
-        private Container handContainer;
-        [SerializeField]
-        private float handRange;
+        [SerializeField] private Container handContainer = null;
+        [SerializeField] private float handRange = 0f;
 
         [System.NonSerialized]
         public int selectedHand = 0;
@@ -36,12 +34,17 @@ namespace Inventory.Custom
             inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], transform.position, transform.rotation);
         }
 
+        public void Place(Vector3 position, Quaternion rotation)
+        {
+            inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], position, rotation);
+        }
+
         /**
-     * Attaches a container to the player's inventory.
-     * Uses the ContainerAttachment component (on the server)
-     * to ensure that the container is removed from the players inventory
-     * when they get out of range.
-     */
+         * Attaches a container to the player's inventory.
+         * Uses the ContainerAttachment component (on the server)
+         * to ensure that the container is removed from the players inventory
+         * when they get out of range.
+         */
         [Command]
         private void CmdConnectContainer(GameObject containerObject)
         {

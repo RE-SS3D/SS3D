@@ -41,8 +41,10 @@ namespace TileMap.Connections
          */
         public void UpdateSingle(Direction direction, TileDefinition tile)
         {
-            if (UpdateSingleConnection(direction, tile));
+            if (UpdateSingleConnection(direction, tile))
+            {
                 UpdateMeshAndDirection();
+            } 
         }
 
         /**

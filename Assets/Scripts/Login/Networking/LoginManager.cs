@@ -13,7 +13,7 @@ namespace Login
     {
         public LoginServerClient LoginServerClient => loginServerClient;
         
-        [SerializeField] private LoginWindow loginWindowPrefab;
+        [SerializeField] private LoginWindow loginWindowPrefab = null;
         
         private LoginServerClient loginServerClient;
         private LoginWindow loginWindowInstance;

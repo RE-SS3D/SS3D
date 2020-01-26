@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -24,22 +22,15 @@ public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler
 
     // Unity Inspector
     // The place in which the item sprite goes
-    [SerializeField]
-    private Image itemContainer;
-    [SerializeField]
-    private Button button;
+    [SerializeField] private Image itemContainer = null;
+    [SerializeField] private Button button = null;
     // The default image for when there is no sprite
-    [SerializeField]
-    private Sprite emptySprite;
+    [SerializeField] private Sprite emptySprite = null;
 
-    [SerializeField]
-    private Color highlightedColor;
-    [SerializeField]
-    private Color selectedColor;
-    [SerializeField]
-    private Color defaultColor;
-    [SerializeField]
-    private Color disabledColor;
+    [SerializeField] private Color highlightedColor = Color.red;
+    [SerializeField] private Color selectedColor = Color.green;
+    [SerializeField] private Color defaultColor = Color.blue;
+    [SerializeField] private Color disabledColor = Color.black;
 
     // Runtime Variables
     [System.NonSerialized]

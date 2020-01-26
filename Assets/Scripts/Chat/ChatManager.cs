@@ -1,27 +1,27 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Chat;
 using EasyButtons;
 using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 public class ChatManager : NetworkBehaviour
 {
     [SerializeField] public Message debugMessage;
 
-    public GameObject Sender;
-
+    public GameObject sender = null;
+    
     [Header("References")] [SerializeField]
-    private ChatChannels chatChannels;
-
-    [SerializeField] private ChatWindow chatWindowPrefab;
-
+    private ChatChannels chatChannels = null;
+    [SerializeField] private ChatWindow chatWindowPrefab = null;
     [SerializeField] private List<Message> messages = new List<Message>();
 
-    public UnityEvent messageReceivedEvent;
+    public UnityEvent messageReceivedEvent = null;
 
-    private bool chatCreated;
-    private ChatWindow chatWindow;
+    private bool chatCreated = false;
+    private ChatWindow chatWindow = null;
 
     private void Update()
     {
@@ -37,7 +37,7 @@ public class ChatManager : NetworkBehaviour
             return;
         }
 
-        Sender = player.gameObject;
+        sender = player.gameObject;
         CreateChatWindow(new ChatTabData("All", chatChannels.GetChannels(), false, null), null, Vector2.zero);
         chatCreated = true;
     }
@@ -78,7 +78,7 @@ public class ChatManager : NetworkBehaviour
                 chatWindow.transform.position = position;
             }
 
-            chatWindow.Init(tabData, this, Sender.GetComponent<ChatRegister>());
+            chatWindow.Init(tabData, this, sender.GetComponent<ChatRegister>());
         }
     }
 

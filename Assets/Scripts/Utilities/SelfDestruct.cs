@@ -1,14 +1,17 @@
 ﻿using UnityEngine;
 
-/// <summary>
-/// Helper MonoBehaviour to destroy a GameObject after a set timer.
-/// </summary>
-public class SelfDestruct : MonoBehaviour
+namespace Utilities
 {
-    [SerializeField] private float time;
-
-    private void Start()
+    /// <summary>
+    /// Helper MonoBehaviour to destroy a GameObject after a set timer.
+    /// </summary>
+    public class SelfDestruct : MonoBehaviour
     {
-        Destroy(gameObject, time);
+        [SerializeField] private float time = 0f;
+
+        private void Start()
+        {
+            Destroy(gameObject, time);
+        }
     }
 }

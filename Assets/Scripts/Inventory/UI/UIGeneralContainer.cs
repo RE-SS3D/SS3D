@@ -1,77 +1,76 @@
-﻿using System.Collections;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
-/**
- * This renders a container of variable length in a generic fashion
- */
-public class UIGeneralContainer : UIAbstractContainer
+namespace Inventory.UI
 {
-    [SerializeField]
-    private GameObject slotPrefab;
-
-    public bool Show { get; set; }
-    public override bool Highlighted { get; set; } // TODO:
-
-    protected override void RenderContainers(GameObject owner, List<Container> newContainers)
+    /**
+    * This renders a container of variable length in a generic fashion
+    */
+    public class UIGeneralContainer : UIAbstractContainer
     {
-        // Just completely remakes the slot list, as thats easiest to code.
-        // TODO: Probably add a few more efficiencies in the future
-        slots.Clear();
+        [SerializeField] private GameObject slotPrefab = null;
 
-        int slotStartIndex = 0;
-        foreach(var container in newContainers)
+        public bool Show { get; set; }
+        public override bool Highlighted { get; set; } // TODO:
+
+        protected override void RenderContainers(GameObject owner, List<Container> newContainers)
         {
-            for(int i = 0; i < container.Length(); ++i)
-            {
-                var itemSlotObject = Instantiate(slotPrefab, transform);
-                itemSlotObject.transform.localPosition = GetPositionFromIndex(slotStartIndex + i);
-                var slot = itemSlotObject.GetComponent<UIItemSlot>();
+            // Just completely remakes the slot list, as thats easiest to code.
+            // TODO: Probably add a few more efficiencies in the future
+            slots.Clear();
 
-                slots.Add(new SlotInfo(container, i, slot));
-                slot.Item = container.GetItem(i);
-                slot.slotInteractor = this;
+            int slotStartIndex = 0;
+            foreach(var container in newContainers)
+            {
+                for(int i = 0; i < container.Length(); ++i)
+                {
+                    var itemSlotObject = Instantiate(slotPrefab, transform);
+                    itemSlotObject.transform.localPosition = GetPositionFromIndex(slotStartIndex + i);
+                    var slot = itemSlotObject.GetComponent<UIItemSlot>();
+
+                    slots.Add(new SlotInfo(container, i, slot));
+                    slot.Item = container.GetItem(i);
+                    slot.slotInteractor = this;
+                }
+                slotStartIndex += container.Length();
             }
-            slotStartIndex += container.Length();
+
+            rectTransform.sizeDelta = new Vector2(Math.Min(slotStartIndex, 4) * 52f + 52f, Mathf.Ceil(slotStartIndex / 4f) * 52f + 2f);
         }
 
-        rectTransform.sizeDelta = new Vector2(Math.Min(slotStartIndex, 4) * 52f + 52f, Mathf.Ceil(slotStartIndex / 4f) * 52f + 2f);
-    }
-
-    /**
+        /**
      * Called when any single container updates
      */
-    protected override void RenderContainer(Container container) {
-        // Note: This assumes container size doesn't change
+        protected override void RenderContainer(Container container) {
+            // Note: This assumes container size doesn't change
 
-        int slotIndex = slots.FindIndex(slot => slot.container == container);
+            int slotIndex = slots.FindIndex(slot => slot.container == container);
 
-        foreach (var item in container.GetItems())
-        {
-            if(slots[slotIndex].container != container)
-                Debug.LogError("UIGeneralContainer.UpdateContainer can not yet handle container size changing.");
+            foreach (var item in container.GetItems())
+            {
+                if(slots[slotIndex].container != container)
+                    Debug.LogError("UIGeneralContainer.UpdateContainer can not yet handle container size changing.");
 
-            slots[slotIndex].uiSlot.Item = item;
+                slots[slotIndex].uiSlot.Item = item;
 
-            slotIndex++;
+                slotIndex++;
+            }
+
+            if(slots.Count > slotIndex && slots[slotIndex].container == container)
+                Debug.LogError("UIGeneralContainer.UpdateContainer was not meant to handle container size changing.");
         }
 
-        if(slots.Count > slotIndex && slots[slotIndex].container == container)
-            Debug.LogError("UIGeneralContainer.UpdateContainer was not meant to handle container size changing.");
-    }
+        private Vector2 GetPositionFromIndex(int i)
+        {
+            return new Vector2((i % 4) * 52f + 52f, (i / 4) * 52f + 2f);
+        }
 
-    private Vector2 GetPositionFromIndex(int i)
-    {
-        return new Vector2((i % 4) * 52f + 52f, (i / 4) * 52f + 2f);
-    }
+        private void Awake()
+        {
+            rectTransform = GetComponent<RectTransform>();
+        }
 
-    private void Awake()
-    {
-        rectTransform = GetComponent<RectTransform>();
+        private RectTransform rectTransform;
     }
-
-    private RectTransform rectTransform;
-    private bool show = false;
 }

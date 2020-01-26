@@ -5,7 +5,7 @@ using System;
 public class ChatRegister : NetworkBehaviour
 {
     private ChatManager chatManager;
-    public List<String> restrictedChannels = new List<String>(){"SYSTEM"};
+    public List<String> restrictedChannels = new List<String>(){"System"};
 
     private void Awake()
     {
@@ -19,5 +19,4 @@ public class ChatRegister : NetworkBehaviour
         message.Sender = gameObject.name;
         chatManager.RpcReceiveMessage(message);
     }
-
 }

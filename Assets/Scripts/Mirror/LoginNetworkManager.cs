@@ -30,14 +30,14 @@ namespace Mirror
     /// </summary>
     public class LoginNetworkManager : NetworkManager
     {
-        [SerializeField] private string loginServerAddress;
-        [SerializeField] private LoginManager loginManagerPrefab;
+        [SerializeField] private string loginServerAddress = null;
+        [SerializeField] private LoginManager loginManagerPrefab = null;
 
         private LoginManager loginManager;
         private bool hasLoginServer;
         private readonly string noServerConstant = "NO_SERVER";
 
-        private void Start()
+        public override void Start()
         {
             base.Start();
 

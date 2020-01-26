@@ -1,7 +1,6 @@
 ﻿using Mirror;
 using System;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -131,7 +130,6 @@ public class Container : NetworkBehaviour
     /**
      * Remove the item from the container, returning the Item.
      */
-    [Server]
     public void RemoveItem(GameObject item)
     {
         for(var i = 0; i < items.Count; i++)

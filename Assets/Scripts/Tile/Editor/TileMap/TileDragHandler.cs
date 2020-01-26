@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static TileMap.TileMapEditorHelpers;
+using static Tile.TileMapEditorHelpers;
 
 namespace TileMap.Editor.TileMap
 {

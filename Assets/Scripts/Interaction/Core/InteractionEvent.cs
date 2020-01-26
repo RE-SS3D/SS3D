@@ -18,6 +18,10 @@ namespace Interaction.Core
         /// </summary>
         public GameObject sender;
         /// <summary>
+        /// The player 'GameObject' that sent the event
+        /// </summary>
+        public GameObject player;
+        /// <summary>
         /// (Optional) The position that the event happened at.
         /// </summary>
         public Vector3 worldPosition;
@@ -46,10 +50,12 @@ namespace Interaction.Core
         /// </summary>
         /// <param name="kind">The kind of event being triggered.</param>
         /// <param name="sender">The `GameObject` that sends the event.</param>
-        public InteractionEvent(InteractionKind kind, GameObject sender)
+        /// <param name="player">The player `GameObject` that triggered the event.</param>
+        public InteractionEvent(InteractionKind kind, GameObject sender, GameObject player)
         {
             this.kind = kind;
             this.sender = sender;
+            this.player = player;
             this.worldPosition = Vector3.zero;
             this.worldNormal = Vector3.zero;
             this.forwardTo = null;
@@ -70,6 +76,7 @@ namespace Interaction.Core
             {
                 kind = kind,
                 sender = sender,
+                player = player,
                 worldNormal = worldNormal,
                 worldPosition = worldPosition,
                 runWhile = runWhile,
@@ -134,7 +141,7 @@ namespace Interaction.Core
 
         public override string ToString()
         {
-            return $"{kind}: {nameof(sender)}: {sender}";
+            return $"{kind}: {nameof(sender)}: {sender} from player {player}";
         }
     }
 }

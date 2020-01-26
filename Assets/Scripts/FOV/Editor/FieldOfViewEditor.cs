@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using FOV;
+using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(FieldOfView))]

@@ -22,17 +22,22 @@ namespace Interaction
                 Debug.LogWarning($"Tried to place null on a surface ({name})");
                 return false;
             }
-
-            var item = e.sender.GetComponent<Item>();
-            if (item == null)
+            var itemCollider = e.sender.GetComponent<Collider>();
+            if (itemCollider == null)
             {
-                Debug.LogWarning($"Object ({e.sender.name}) being placed on a surface ({name}) does not have an item component");
+                Debug.LogWarning($"Object ({e.sender.name}) being placed on a surface ({name}) does not have a collider component");
                 return false;
             }
 
-            item.container.RemoveItem(item.gameObject);
-            item.transform.position = e.worldPosition;
-            item.gameObject.SetActive(true);
+            var playerHands = e.player.GetComponent<Hands>();
+            if (playerHands == null)
+            {
+                Debug.LogWarning($"Player holding object ({e.sender.name}) being placed on a surface ({name}) does not have a hands component");
+                return false;
+            }
+            
+            Vector3 position = e.worldPosition + Vector3.up * itemCollider.bounds.max.y;
+            playerHands.Place(position, Quaternion.identity);
 
             return true;
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Chat;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,25 +10,14 @@ using UnityEngine.UI;
 
 public class ChatWindow : MonoBehaviour, IDragHandler
 {
-    [SerializeField]
-    private RectTransform tabRow;
-
-    [SerializeField]
-    private TextMeshProUGUI ChatText;
-
-    [SerializeField]
-    private TMP_InputField inputField;
-
-    [SerializeField]
-    private ChatTab chatTabPrefab;
+    [SerializeField] private RectTransform tabRow = null;
+    [SerializeField] private TextMeshProUGUI ChatText = null;
+    [SerializeField] private TMP_InputField inputField = null;
+    [SerializeField] private ChatTab chatTabPrefab = null;
+    [SerializeField] private TMP_Dropdown channelDropDown = null;
 
     private ChatTabData currentTabData;
-
     private ChatManager chatManager;
-
-    [SerializeField]
-    private TMP_Dropdown channelDropDown;
-
     private ChatRegister chatRegister;
 
     private void Update()
@@ -41,10 +31,7 @@ public class ChatWindow : MonoBehaviour, IDragHandler
         this.chatRegister = chatRegister;
 
         chatManager.messageReceivedEvent.AddListener(delegate { LoadTabChatLog(currentTabData); });
-
         AddTab(tabData);
-//        LoadTab(tabData);
-
         LoadChannelSelector(tabData);
     }
 
@@ -53,7 +40,8 @@ public class ChatWindow : MonoBehaviour, IDragHandler
         channelDropDown.options.Clear();
         foreach (ChatChannel channel in tabData.Channels)
         {
-            if (chatRegister.restrictedChannels.Contains(channel.Name)) continue;
+            //Need a more robust way to do this. Not adding the option makes the index mismatch when sending messages.
+            //if (chatRegister.restrictedChannels.Contains(channel.Name)) continue;
 
             channelDropDown.options.Add(
                 new TMP_Dropdown.OptionData(
@@ -146,11 +134,11 @@ public class ChatWindow : MonoBehaviour, IDragHandler
         
         Message message = new Message();
         message.Channel = currentTabData.Channels[channelDropDown.value];
+        message.Text = text;
+        inputField.text = "";
         if(chatRegister.restrictedChannels.Contains(message.Channel.Name)){
             return; //do not allow talking in restricted channels
         }
-        message.Text = text;
-        inputField.text = "";
 
         chatRegister.CmdSendMessage(message);
     }

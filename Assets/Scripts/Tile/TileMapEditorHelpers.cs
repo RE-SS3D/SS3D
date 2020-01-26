@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using TileMap;
 using UnityEditor;
+using UnityEngine;
 
-namespace TileMap
+namespace Tile
 {
     /**
      * Helper methods used in the tilemap editor.
@@ -43,6 +44,7 @@ namespace TileMap
          */
         public static void SetTile(TileManager tileManager, TileDefinition tileDefinition, int x, int y)
         {
+#if UNITY_EDITOR
             if (tileManager.GetTile(x, y) == null) {
                 tileManager.CreateTile(x, y, tileDefinition);
                 Undo.RegisterCreatedObjectUndo(tileManager.GetTile(x, y).gameObject, "Created tile");
@@ -51,10 +53,12 @@ namespace TileMap
                 Undo.RecordObject(tileManager.GetTile(x, y).gameObject, "Updated tile");
                 tileManager.UpdateTile(x, y, tileDefinition);
             }
+#endif
         }
 
         public static void DestroyAllGhosts(TileManager tileManager)
         {
+#if UNITY_EDITOR
             if(!tileManager)
                 return;
 
@@ -62,6 +66,7 @@ namespace TileMap
                 if (tileManager.transform.GetChild(i).tag == "EditorOnly")
                     Object.DestroyImmediate(tileManager.transform.GetChild(i).gameObject);
             }
+#endif
         }
 
     }
