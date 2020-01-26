@@ -167,7 +167,7 @@ public class DraggingOperation : MonoBehaviour, IDragHandler, IEndDragHandler
         
         bool moveOccured = false;
 
-        if (destination.slot)
+        if (destination.slot && !destination.slot.Disabled)
         {
             // Move from holding to destination
             var destinationSlot = destination.container.GetSlotLink(destination.slot);
