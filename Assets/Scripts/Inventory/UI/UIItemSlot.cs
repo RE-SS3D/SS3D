@@ -65,14 +65,6 @@ public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler
             CalculateColors();
         }
     }
-    public bool Disabled
-    {
-        get => disabled;
-        set
-        {
-            disabled = value;
-        }
-    }
 
     public void Press()
     {
@@ -147,7 +139,6 @@ public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler
     private bool selected = false;
     private bool highlighted = false;
     private bool transparent = false;
-    private bool disabled = false;
 
     private ColorBlock buttonColors;
 }

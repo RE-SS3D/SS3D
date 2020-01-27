@@ -65,10 +65,7 @@ namespace Inventory.UI
 
             // Disable all unused slots
             for (int i = 0; i < uiSlots.Length; ++i)
-            {
                 uiSlots[i].slot.enabled = isSet[i];
-                uiSlots[i].slot.Disabled = !isSet[i];
-            }
         }
 
         protected override void RenderContainer(Container container)
