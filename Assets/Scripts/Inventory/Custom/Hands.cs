@@ -79,7 +79,7 @@ namespace Inventory.Custom
             if (handSlots[0] == -1 || handSlots[1] == -1)
                 Debug.LogWarning("Player container does not contain slots for hands upon initialization. Maybe they were severed though?");
 
-            handContainer.onChange += (a, b, c) =>
+            handContainer.onChange += (a, b, c, d) =>
             {
                 //UpdateTool()
             };

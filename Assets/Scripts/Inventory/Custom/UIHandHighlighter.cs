@@ -15,7 +15,7 @@ public class UIHandHighlighter : MonoBehaviour
     private void Start()
     {
         // Find the hand component attached to the local player
-        var hands = NetworkClient.connection.playerController.GetComponent<Hands>();
+        var hands = NetworkClient.connection.identity.GetComponent<Hands>();
         hands.onHandChange += OnHandChange;
         OnHandChange(hands.selectedHand);
     }
