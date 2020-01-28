@@ -38,6 +38,11 @@ namespace Inventory.Custom
         {
             inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], position, rotation);
         }
+        
+        public void DestroyItemInHand()
+        {
+            inventory.CmdDestroyItem(handContainer.gameObject, handSlots[selectedHand]);
+        }
 
         /**
          * Attaches a container to the player's inventory.

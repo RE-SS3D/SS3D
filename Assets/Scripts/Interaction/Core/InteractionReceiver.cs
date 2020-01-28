@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Interaction.Core
@@ -44,6 +44,11 @@ namespace Interaction.Core
                     kind => Subscribe(kind, localInteraction),
                     kind => SetBlockage(kind, localInteraction));
             }
+        }
+
+        public bool IsListeningForContinuous(ContinuousInteraction interaction)
+        {
+            return continuousInteractions.ToList().Any(listener => listener.GetType() == interaction.GetType());
         }
 
         private void SetBlockage(InteractionKind kind, IBaseInteraction receiver)

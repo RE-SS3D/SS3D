@@ -75,6 +75,7 @@ GameObject:
   - component: {fileID: 2483959803612036482}
   - component: {fileID: 1339665882733639394}
   - component: {fileID: 7035540085544037899}
+  - component: {fileID: 526332636648290584}
   m_Layer: 0
   m_Name: LockerBasic
   m_TagString: Untagged
@@ -160,9 +161,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 6644269
+  m_AssetId: 02fc5f12ab2897c49b2df843f364b6a1
+  m_SceneId: 0
 --- !u!114 &2483959803612036482
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,8 +175,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   compressRotation: 1
+  clientAuthority: 0
 --- !u!54 &1339665882733639394
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -206,6 +208,21 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.0063288035, y: 0.0055178963, z: 0.017198702}
   m_Center: {x: -2.3283064e-10, y: 0.0019188733, z: 0.008598697}
+--- !u!114 &526332636648290584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2742629995579614087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f31cf7033044701bd2040285a11b93f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  singularInteractions: []
+  continuousInteractions:
+  - {fileID: 11400000, guid: ed28f9f0b9f779a45b6f879411af4a87, type: 2}
 --- !u!1 &2809162880574980545
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,9 +362,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 573127817
+  m_AssetId: 02fc5f12ab2897c49b2df843f364b6a1
+  m_SceneId: 0
 --- !u!114 &4343467203709485157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -360,8 +376,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   compressRotation: 1
+  clientAuthority: 0
 --- !u!54 &6980943977341017186
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -463,9 +481,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 264293833
+  m_AssetId: 02fc5f12ab2897c49b2df843f364b6a1
+  m_SceneId: 0
 --- !u!114 &5227133807252648279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -478,8 +495,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   compressRotation: 1
+  clientAuthority: 0
 --- !u!114 &7176282325643906320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -492,6 +511,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f0cfe7ad268bc44b2e36b581d0086c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   containerName: locker
   containerType: 0
@@ -514,7 +534,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   singularInteractions: []
-  continuousInteractions: []
+  continuousInteractions:
+  - {fileID: 11400000, guid: ed28f9f0b9f779a45b6f879411af4a87, type: 2}
 --- !u!114 &5357114244261574010
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -63,6 +63,11 @@ namespace Inventory.UI
             // TODO:
             throw new NotImplementedException();
         }
+        public void SetHeldItemSupply(float amount)
+        {
+            UIItemSlot uiSlot = FindHandler(inventory.holdingSlot.container).GetUISlot(inventory.holdingSlot.container, inventory.holdingSlot.slotIndex);
+            uiSlot.SetItemSupplyDisplay(amount);
+        }
         public void MoveSelectedItem(Container container, int slot)
         {
             if(inventory.holdingSlot.container == null)

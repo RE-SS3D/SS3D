@@ -1,4 +1,5 @@
 ﻿using Interaction.Core;
+using Inventory;
 using Inventory.Custom;
 using Mirror;
 using UnityEngine;
@@ -21,22 +22,62 @@ namespace Interaction
         {
             if (!isLocalPlayer) Destroy(this);
             hands = GetComponent<Hands>();
-            if (!mainCamera) mainCamera = Camera.main;
+            mainCamera = Camera.main;
         }
 
         protected virtual void Update()
         {
             if (!mainCamera) return;
+            if (!Input.GetButtonDown("Click")) return;
             
-            if (Input.GetButtonDown("Click"))
+            if (GetWorldData(out var hit))
             {
-                var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-
-                // Ensure that user did not click the UI and that we hit something
-                if (!EventSystem.current.IsPointerOverGameObject() &&
-                    Physics.Raycast(ray, out var hit, float.PositiveInfinity))
-                    Interact(hit.transform, hit.point, hit.normal);
+                Interact(hit.transform, hit.point, hit.normal);
             }
+        }
+
+        /// <summary>
+        /// Get the current interaction point data
+        /// </summary>
+        /// <param name="hit">Result of the raycast</param>
+        /// <returns></returns>
+        public bool GetWorldData(out RaycastHit hit)
+        {
+            var raycastHit = new RaycastHit();
+            // Ensure that user did not click the UI
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                hit = raycastHit;
+                return false;
+            }
+            
+            var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            //Ignore "Ignore Raycast" layer.
+            LayerMask layerMask = ~(1 << LayerMask.NameToLayer ("Ignore Raycast"));
+            return Physics.Raycast(ray, out hit, float.PositiveInfinity, layerMask);
+        }
+
+        /// <summary>
+        /// Decrease the remaining supply for an item. Will most commonly happen during an interaction.
+        /// </summary>
+        /// <param name="itemWithSupply"></param>
+        [Command]
+        public void CmdDecreaseSupplyOfItem(GameObject itemWithSupply)
+        {
+            RpcDecreaseSupplyOfItem(itemWithSupply);
+        }
+
+        [ClientRpc]
+        private void RpcDecreaseSupplyOfItem(GameObject itemWithSupply)
+        {
+            IItemWithSupply itemSupplyComponent = itemWithSupply.GetComponent<IItemWithSupply>();
+            if (itemSupplyComponent == null)
+            {
+                Debug.LogError($"Could not find a IItemWithSupply component when attempting to decrease supply on {itemWithSupply}");
+                return;
+            }
+
+            itemSupplyComponent.ChangeSupply(-itemSupplyComponent.GetSupplyDrainRate());
         }
 
         private void Interact(Transform target, Vector3 position, Vector3 normal)
@@ -54,7 +95,7 @@ namespace Interaction
                     {
                         heldInteractionReceiver.Trigger(new InteractionEvent(kind, hands.gameObject, gameObject)
                             .WorldPosition(position).WorldNormal(normal).ForwardTo(interactable)
-                            .RunWhile(e => transform.position.x < 0));
+                            .RunWhile(e => Input.GetButton("Click")));
                     }
                 }
             }

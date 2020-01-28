@@ -21,7 +21,12 @@ namespace Inventory.Custom
         }
         public override GameObject RemoveItem(int slot)
         {
-            UnplaceItem(slot, GetItem(slot).gameObject);
+            Item item = GetItem(slot);
+            if (!item)
+            {
+                return null;
+            }
+            UnplaceItem(slot, item.gameObject);
 
             return base.RemoveItem(slot);
         }
