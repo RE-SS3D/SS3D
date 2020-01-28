@@ -10,6 +10,7 @@ namespace Interaction.Core
     {
         [SerializeField] private SingularInteraction[] singularInteractions = new SingularInteraction[0];
         [SerializeField] private ContinuousInteraction[] continuousInteractions = new ContinuousInteraction[0];
+        [SerializeField] private bool debug = false;
         
         private readonly Dictionary<InteractionKind, List<IBaseInteraction>> receivers = new Dictionary<InteractionKind, List<IBaseInteraction>>();
         private readonly Dictionary<IBaseInteraction, List<InteractionKind>> listeners = new Dictionary<IBaseInteraction, List<InteractionKind>>();
@@ -118,6 +119,11 @@ namespace Interaction.Core
         /// <param name="onFail">Action to be called if the event fails</param>
         public void Trigger(InteractionEvent e, Action onSuccess = null, Action onFail = null)
         {
+            if (debug)
+            {
+                Debug.Log($"Triggered: {e.kind.name} on {name}");
+            }
+            
             if (onFail != null)
             {
                 e.onFail = onFail;
@@ -186,12 +192,14 @@ namespace Interaction.Core
                 if (skip.Contains(e.kind)) continue;
                 if (!receivers.ContainsKey(e.kind))
                 {
-                    Debug.Log(e.kind.name +" "+name);
                     e.onFail?.Invoke();
                     continue;
                 }
-                
-                Debug.Log($"{e} @ {transform.name}");
+
+                if (debug)
+                {
+                    Debug.Log($"{e} @ {transform.name}");
+                }
                 
                 foreach (var receiver in receivers[e.kind])
                 {

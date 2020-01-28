@@ -161,8 +161,6 @@ MonoBehaviour:
   singularInteractions:
   - {fileID: 11400000, guid: 29f49cd8263d64849af4e9623d167953, type: 2}
   - {fileID: 11400000, guid: 2ad3183a1e200dd4b9edd607982b7a79, type: 2}
-  - {fileID: 0}
-  - {fileID: 11400000, guid: 1fc2af4df96c215499b4ed78f6e32744, type: 2}
   continuousInteractions: []
 --- !u!114 &5911543497110224905
 MonoBehaviour:

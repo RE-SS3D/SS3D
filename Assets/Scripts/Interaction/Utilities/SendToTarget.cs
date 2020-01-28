@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Interaction.Utilities
 {
     [CreateAssetMenu(fileName = "ForwardInteraction", menuName = "Interaction/Forward Interaction", order = 0)]
-    internal sealed class ForwardInteraction : SingularInteraction
+    internal sealed class SendToTarget : SingularInteraction
     {
         [SerializeField] private InteractionKind from = null;
         [SerializeField] private InteractionKind to = null;
@@ -23,32 +23,40 @@ namespace Interaction.Utilities
 
         public override bool Handle(Core.InteractionEvent e)
         {
-            if (!e.forwardTo) return false;
+            if (!e.target)
+            {
+                TriggerBlock(e);
+                return false;
+            }
             
             var newEvent = e;
-            newEvent.forwardTo = null;
+            newEvent.target = null;
             newEvent.kind = to;
             newEvent.sender = Receiver.gameObject;
 
             if (triggerBlockOnFail)
             {
-                e.forwardTo.Trigger(newEvent, null, () =>
+                e.target.Trigger(newEvent, null, () =>
                 {
-                    foreach (var block in blocks)
-                    {
-                        var blockEvent = e;
-                        blockEvent.kind = block;
-                        Debug.Log("Triggering "+block.name+" because "+to.name+" failed");
-                        Receiver.Trigger(blockEvent);
-                    }
+                    TriggerBlock(e);
                 });
             }
             else
             {
-                e.forwardTo.Trigger(newEvent);
+                e.target.Trigger(newEvent);
             }
 
             return true;
+        }
+
+        private void TriggerBlock(Core.InteractionEvent e)
+        {
+            foreach (var block in blocks)
+            {
+                var blockEvent = e;
+                blockEvent.kind = block;
+                Receiver.Trigger(blockEvent);
+            }
         }
     }
 }

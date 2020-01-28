@@ -30,10 +30,10 @@ namespace Interaction.Core
         /// </summary>
         public Vector3 worldNormal;
         /// <summary>
-        /// The receiver that any further events should be forwarded to.<br/>
+        /// The receiver that any further events should be send to.<br/>
         /// Used for example when using an item in your hand, that then needs to send an event to the object it is being used on
         /// </summary>
-        public InteractionReceiver forwardTo;
+        public InteractionReceiver target;
         /// <summary>
         /// Any receiver that need to finish before this event can be handled.<br/>
         /// Events are handled concurrently and this is a mechanism to ensure that everything works.
@@ -62,7 +62,7 @@ namespace Interaction.Core
             this.player = player;
             this.worldPosition = Vector3.zero;
             this.worldNormal = Vector3.zero;
-            this.forwardTo = null;
+            this.target = null;
             this.waitFor = null;
             this.runWhile = null;
             this.onFail = null;
@@ -98,7 +98,7 @@ namespace Interaction.Core
         /// <returns>This `InteractionEvent`</returns>
         public InteractionEvent ForwardTo(InteractionReceiver value)
         {
-            forwardTo = value;
+            target = value;
             return this;
         }
 
