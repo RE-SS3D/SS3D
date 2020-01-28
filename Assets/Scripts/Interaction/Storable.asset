@@ -14,3 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   from: {fileID: 11400000, guid: f6a04c063494ad44c805f91d49c7eef4, type: 2}
   to: {fileID: 11400000, guid: 137714e30b0210841a3efc15a2872999, type: 2}
+  blocks:
+  - {fileID: 11400000, guid: 875609ba0eafd94439758864ccb4594b, type: 2}
+  triggerBlockOnFail: 0

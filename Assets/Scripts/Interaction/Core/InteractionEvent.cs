@@ -45,6 +45,10 @@ namespace Interaction.Core
         /// </summary>
         public Predicate<InteractionEvent> runWhile;
 
+        internal Action onFail;
+        internal Action onSuccess;
+            
+
         /// <summary>
         /// Default constructor that should cover most use cases.
         /// </summary>
@@ -61,27 +65,8 @@ namespace Interaction.Core
             this.forwardTo = null;
             this.waitFor = null;
             this.runWhile = null;
-        }
-
-        /// <summary>
-        /// A cloning method intended for forwarding an event to another receiver.<br/>
-        /// Creates a clone of this event, except with a new sender and no `forwardTo`.<br/>
-        /// </summary>
-        /// <param name="kind">The kind of event being triggered.</param>
-        /// <param name="sender">The `GameObject` that sends the event.</param>
-        /// <returns>A clone of this event with a new sender and kind</returns>
-        public InteractionEvent Forward(InteractionKind kind, GameObject sender)
-        {
-            return new InteractionEvent
-            {
-                kind = kind,
-                sender = sender,
-                player = player,
-                worldNormal = worldNormal,
-                worldPosition = worldPosition,
-                runWhile = runWhile,
-                forwardTo = null,
-            };
+            this.onFail = null;
+            this.onSuccess = null;
         }
 
         /// <summary>
@@ -141,7 +126,7 @@ namespace Interaction.Core
 
         public override string ToString()
         {
-            return $"{kind}: {nameof(sender)}: {sender} from player {player}";
+            return $"{kind.name} from {sender.name} from player {player}";
         }
     }
 }

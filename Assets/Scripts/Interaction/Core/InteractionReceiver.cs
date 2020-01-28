@@ -14,6 +14,7 @@ namespace Interaction.Core
         private readonly Dictionary<InteractionKind, List<IBaseInteraction>> receivers = new Dictionary<InteractionKind, List<IBaseInteraction>>();
         private readonly Dictionary<IBaseInteraction, List<InteractionKind>> listeners = new Dictionary<IBaseInteraction, List<InteractionKind>>();
         private readonly Dictionary<InteractionKind, InteractionKind> dependencies = new Dictionary<InteractionKind, InteractionKind>();
+        private readonly Dictionary<InteractionKind, InteractionKind> backups = new Dictionary<InteractionKind, InteractionKind>();
         private readonly List<InteractionEvent> eventQueue = new List<InteractionEvent>();
         private readonly List<InteractionReceiver> waiting = new List<InteractionReceiver>();
 
@@ -26,32 +27,29 @@ namespace Interaction.Core
             foreach (var interactable in GetComponents<IBaseInteraction>())
                 interactable.Setup(
                     kind => Subscribe(kind, interactable),
-                    kind => SetBlockage(kind, interactable));
+                    kind => SetBlocker(kind, interactable));
 
             foreach (var interaction in singularInteractions)
             {
+                if (interaction == null) continue;
                 var localInteraction = Instantiate(interaction);
-                localInteraction.receiver = gameObject;
+                localInteraction.receiver = this;
                 localInteraction.Setup(
                     kind => Subscribe(kind, localInteraction),
-                    kind => SetBlockage(kind, localInteraction));
+                    kind => SetBlocker(kind, localInteraction));
             }
             foreach (var interaction in continuousInteractions)
             {
+                if (interaction == null) continue;
                 var localInteraction = Instantiate(interaction);
                 localInteraction.receiver = gameObject;
                 localInteraction.Setup(
                     kind => Subscribe(kind, localInteraction),
-                    kind => SetBlockage(kind, localInteraction));
+                    kind => SetBlocker(kind, localInteraction));
             }
         }
 
-        public bool IsListeningForContinuous(ContinuousInteraction interaction)
-        {
-            return continuousInteractions.ToList().Any(listener => listener.GetType() == interaction.GetType());
-        }
-
-        private void SetBlockage(InteractionKind kind, IBaseInteraction receiver)
+        private void SetBlocker(InteractionKind kind, IBaseInteraction receiver)
         {
             if (!listeners.ContainsKey(receiver))
             {
@@ -61,7 +59,10 @@ namespace Interaction.Core
             
             foreach (var listener in listeners[receiver])
             {
-                dependencies.Add(listener, kind);
+                if (!dependencies.ContainsKey(listener))
+                {
+                    dependencies.Add(listener, kind);
+                }
             }
         }
 
@@ -114,11 +115,34 @@ namespace Interaction.Core
         /// Add an `InteractionEvent` to the event queue to be handled by subscribed interactions
         /// </summary>
         /// <param name="e">The event to be triggered</param>
-        public void Trigger(InteractionEvent e)
+        /// <param name="onFail">Action to be called if the event fails</param>
+        public void Trigger(InteractionEvent e, Action onSuccess = null, Action onFail = null)
         {
+            if (onFail != null)
+            {
+                e.onFail = onFail;
+            }
+            if (onSuccess != null)
+            {
+                e.onSuccess = onSuccess;
+            }
+
             if (dependencies.TryGetValue(e.kind, out var dependency))
             {
                 var index = eventQueue.FindIndex(ev => ev.kind == dependency);
+                
+                if (index == -1)
+                {
+                    eventQueue.Add(e);
+                }
+                else
+                {
+                    eventQueue.Insert(index, e);
+                }
+            }
+            else if(backups.TryGetValue(e.kind, out var backup))
+            {
+                var index = eventQueue.FindIndex(ev => ev.kind == backup);
                 
                 if (index == -1)
                 {
@@ -158,26 +182,43 @@ namespace Interaction.Core
             for (var i = 0; i < eventQueue.Count; i++)
             {
                 var e = eventQueue[i];
-                
-                if (!receivers.ContainsKey(e.kind)) continue;
+
                 if (skip.Contains(e.kind)) continue;
+                if (!receivers.ContainsKey(e.kind))
+                {
+                    Debug.Log(e.kind.name +" "+name);
+                    e.onFail?.Invoke();
+                    continue;
+                }
+                
                 Debug.Log($"{e} @ {transform.name}");
+                
                 foreach (var receiver in receivers[e.kind])
                 {
-                    if (receiver is ISingularInteraction singular)
+                    switch (receiver)
                     {
-                        if (singular.Handle(e) && dependencies.TryGetValue(e.kind, out var dependency))
+                        case ISingularInteraction singular:
                         {
-                            skip.Add(dependency);
-                        }
-                    }
+                            var result = singular.Handle(e);
+                            if (result)
+                            {
+                                e.onSuccess?.Invoke();
+                                
+                                if (dependencies.TryGetValue(e.kind, out var dependency))
+                                {
+                                    skip.Add(dependency);
+                                }
+                            }
+                            else
+                            {
+                                e.onFail?.Invoke();
+                            }
 
-                    if (receiver is IContinuousInteraction continuous)
-                    {
-                        if (e.runWhile != null)
-                        {
-                            StartCoroutine(HandleContinuous(e, continuous));
+                            break;
                         }
+                        case IContinuousInteraction continuous:
+                            StartCoroutine(HandleContinuous(e, continuous));
+                            break;
                     }
                 }
             }

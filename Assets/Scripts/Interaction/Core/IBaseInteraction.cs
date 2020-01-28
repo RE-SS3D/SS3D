@@ -16,7 +16,7 @@ namespace Interaction.Core
         /// You should use the callbacks to specify the requirements for this listener.
         /// </summary>
         /// <param name="listen">Call this action with the event kind you want to listen for</param>
-        /// <param name="blocks">Call this action any event types that will be blocked when this interaction succeeds. Can be called any number of times.</param>
+        /// <param name="blocks">Call this action with any event types that will be blocked when this interaction succeeds. Can be called any number of times.</param>
         void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks);
     }
 }

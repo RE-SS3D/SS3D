@@ -9,12 +9,12 @@ namespace Interaction.Core
     /// </summary>
     public abstract class SingularInteraction : ScriptableObject, ISingularInteraction
     {
-        internal GameObject receiver = null;
+        internal InteractionReceiver receiver = null;
         
         /// <summary>
         /// The receiver that this Scriptable Object has been added to.
         /// </summary>
-        protected GameObject Receiver => receiver;
+        protected InteractionReceiver Receiver => receiver;
         
         public abstract void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks);
         public abstract bool Handle(InteractionEvent e);
