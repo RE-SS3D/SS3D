@@ -12,7 +12,7 @@ namespace Mirror
         
         protected override Transform targetComponent => transform;
 
-        public override bool NeedsTeleport()
+        protected override bool NeedsTeleport()
         {   
             // ADDITION TO FUNC: if distance between start and goal is too much (> snapping), teleport:
             if (Vector3.Distance(start.localPosition, goal.localPosition) > snappingDistance){

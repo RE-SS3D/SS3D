@@ -1,4 +1,4 @@
-﻿// Net 4.X has ConcurrentQueue, but ConcurrentQueue has no TryDequeueAll method,
+// Net 4.X has ConcurrentQueue, but ConcurrentQueue has no TryDequeueAll method,
 // which makes SafeQueue twice as fast for the send thread.
 //
 // uMMORPG 450 CCU
@@ -13,7 +13,7 @@ namespace Telepathy
 {
     public class SafeQueue<T>
     {
-        Queue<T> queue = new Queue<T>();
+        readonly Queue<T> queue = new Queue<T>();
 
         // for statistics. don't call Count and assume that it's the same after the
         // call.
@@ -21,7 +21,7 @@ namespace Telepathy
         {
             get
             {
-                lock(queue)
+                lock (queue)
                 {
                     return queue.Count;
                 }
@@ -30,7 +30,7 @@ namespace Telepathy
 
         public void Enqueue(T item)
         {
-            lock(queue)
+            lock (queue)
             {
                 queue.Enqueue(item);
             }
@@ -40,7 +40,7 @@ namespace Telepathy
         // so we need a TryDequeue
         public bool TryDequeue(out T result)
         {
-            lock(queue)
+            lock (queue)
             {
                 result = default(T);
                 if (queue.Count > 0)
@@ -56,7 +56,7 @@ namespace Telepathy
         // locking every single TryDequeue.
         public bool TryDequeueAll(out T[] result)
         {
-            lock(queue)
+            lock (queue)
             {
                 result = queue.ToArray();
                 queue.Clear();
@@ -66,7 +66,7 @@ namespace Telepathy
 
         public void Clear()
         {
-            lock(queue)
+            lock (queue)
             {
                 queue.Clear();
             }

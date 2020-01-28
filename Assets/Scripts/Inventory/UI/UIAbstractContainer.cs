@@ -79,7 +79,7 @@ public abstract class UIAbstractContainer : MonoBehaviour, UIItemSlot.SlotIntera
         {
             if(!oldContainers.Contains(container))
             {
-                Mirror.SyncList<GameObject>.SyncListChanged del = (a, b, c) => RenderContainer(container);
+                Mirror.SyncList<GameObject>.SyncListChanged del = (a, b, c, d) => RenderContainer(container);
                 delegates.Add(container, del);
                 container.onChange += del;
             }

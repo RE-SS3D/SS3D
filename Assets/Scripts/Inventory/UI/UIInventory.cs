@@ -31,7 +31,7 @@ namespace Inventory.UI
 
             handlers.Add(playerContainer);
 
-            inventory.EventOnChange += (a, b, c) => OnInventoryChange();
+            inventory.EventOnChange += (a, b, c, d) => OnInventoryChange();
             OnInventoryChange();
         }
     

@@ -11,32 +11,27 @@ namespace Login
     /// </summary>
     public class LoginManager : MonoBehaviour
     {
-        public LoginServerClient LoginServerClient => loginServerClient;
-        
+        public LoginServerClient LoginServerClient { get; private set; }
+
         [SerializeField] private LoginWindow loginWindowPrefab = null;
-        
-        private LoginServerClient loginServerClient;
         private LoginWindow loginWindowInstance;
-        private Action<NetworkConnection, CharacterResponse> spawnPlayerAction;
-        private NetworkConnection connection;
+        private Action<CharacterResponse> spawnPlayerAction;
         
         private string apiAddress;
-        private string token;
 
         private void Start()
         {
-            loginServerClient = new LoginServerClient(apiAddress, this);
+            LoginServerClient = new LoginServerClient(apiAddress, this);
         }
 
         /// <summary>
         /// Used as an initializer for the LoginManager both on Server and Client side.
         /// </summary>
-        public void UpdateApiAddress(string address, NetworkConnection connection, Action<NetworkConnection, CharacterResponse> spawnPlayerAction)
+        public void UpdateApiAddress(string address, Action<CharacterResponse> spawnPlayerAction)
         {
-            loginServerClient = new LoginServerClient(address, this);
+            LoginServerClient = new LoginServerClient(address, this);
             apiAddress = address;
             this.spawnPlayerAction = spawnPlayerAction;
-            this.connection = connection;
         }
 
         /// <summary>
@@ -44,13 +39,13 @@ namespace Login
         /// </summary>
         public void ApiHeartbeat(Action<string, bool> callback)
         {
-            if (loginServerClient == null)
+            if (LoginServerClient == null)
             {
                 Debug.LogError("Attempting to get heartbeat without setting API address!");
                 return;
             }
 
-            loginServerClient.Heartbeat(callback);
+            LoginServerClient.Heartbeat(callback);
         }
 
         public void ShowLoginWindow()
@@ -65,13 +60,13 @@ namespace Login
 
         public void SpawnPlayer(CharacterResponse characterResponse)
         {
-            spawnPlayerAction(connection, characterResponse);
+            spawnPlayerAction(characterResponse);
             HideLoginWindow();
         }
 
         public void StoreToken(string token)
         {
-            loginServerClient.StoreToken(token);
+            LoginServerClient.StoreToken(token);
         }
     }
 }
