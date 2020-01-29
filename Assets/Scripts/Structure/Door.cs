@@ -72,27 +72,20 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
 #if UNITY_EDITOR
         EditorApplication.delayCall += () =>
         {
-            if (this) OnStateUpdate();
+            if (this)
+            {
+                OnStateUpdate();
+                ValidateChildren();
+            }
         };
 #endif
     }
 
     private void Start()
     {
-        for(int i = transform.childCount - 1; i > 0; --i) {
-            var child = transform.GetChild(i);
-            if(child.name.StartsWith("WallCap")) {
-                int num = 0;
-                bool success = int.TryParse(child.name.Substring(7), out num);
-                if(!success || num > wallCaps.Length) {
-                    Debug.LogWarning($"Unusual child found whilst searching for wall caps: {child.name}, deleting");
-                    EditorAndRuntime.Destroy(child.gameObject);
-                    continue;
-                }
-
-                wallCaps[num] = child.gameObject;
-            }
-        }
+        // Note: 'Should' already be validated by the point the game starts.
+        // So the only purpose is when loading map from scene to correctly load children.
+        ValidateChildren();
     }
 
     /**
@@ -131,6 +124,27 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
             else if(!isPresent && wallCaps[i] != null) {
                 EditorAndRuntime.Destroy(wallCaps[i]);
                 wallCaps[i] = null;
+            }
+        }
+    }
+
+    private void ValidateChildren()
+    {
+        // Note: This only needs to run on the server, which loads from the scene.
+        // Anywhere else (including clients, mostly), doesn't really need this.
+        for (int i = transform.childCount - 1; i > 0; --i) {
+            var child = transform.GetChild(i);
+            if (child.name.StartsWith("WallCap")) {
+                int num = 0;
+                bool success = int.TryParse(child.name.Substring(7), out num);
+                // Remove if no int, int out of bounds, or duplicate
+                if (!success || num > wallCaps.Length || num < 0 || (wallCaps[num] != null && wallCaps[num] != child.gameObject)) {
+                    Debug.LogWarning($"Unusual child found whilst searching for wall caps: {child.name}, deleting");
+                    EditorAndRuntime.Destroy(child.gameObject);
+                    continue;
+                }
+
+                wallCaps[num] = child.gameObject;
             }
         }
     }
