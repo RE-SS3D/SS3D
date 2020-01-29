@@ -151,9 +151,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 1
-  m_AssetId: 808fc3b770e18cf4a8fe9dbd48fa2444
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 3555514789
 --- !u!114 &-5918456934534797284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,8 +165,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   animator: {fileID: 6688587067372006451}
+  clientAuthority: 1
 --- !u!114 &2898001805863503684
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,8 +181,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   compressRotation: 1
+  clientAuthority: 1
 --- !u!143 &-5804938744367538470
 CharacterController:
   m_ObjectHideFlags: 0
@@ -212,6 +215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3efa57f7de3b8d44982dc618446dddf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   runSpeed: 5
   walkSpeed: 2
@@ -227,6 +231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8056a0e760f77c441b1d2418e701d7a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
 --- !u!114 &-587293498524188288
 MonoBehaviour:
@@ -240,6 +245,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c49aa1e5ada94de1b51bd69341f36078, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
 --- !u!114 &593928988720118032
 MonoBehaviour:
@@ -253,6 +259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f0cfe7ad268bc44b2e36b581d0086c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   containerName: Human Equippable
   containerType: 1
@@ -279,6 +286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cb0dec8ad091bb468e4dfb0f4d4f75b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   handContainer: {fileID: 593928988720118032}
   handRange: 5
@@ -294,6 +302,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbcf283d261054d41a00d301c9c97de9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
 --- !u!114 &-3295296730462155149
 MonoBehaviour:
@@ -307,6 +316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc0556901c8047ec9c6e4283a9f1f7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   restrictedChannels:
   - System
@@ -322,6 +332,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3e846f0e0548b54eb8bfb9afad9191a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   prefab: {fileID: 5727570337167516730, guid: f86d70d91f583f44e95c5a20aea0fa31, type: 3}
 --- !u!114 &1958784860310624992
@@ -336,6 +347,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b8dc905ed8643cb9704a20ea52a943e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   interactionsOnClick:
   - {fileID: 11400000, guid: 46238d5084f126546a9d4ce51fae93a0, type: 2}
