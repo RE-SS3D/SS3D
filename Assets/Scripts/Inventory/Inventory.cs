@@ -88,6 +88,17 @@ namespace Inventory
             GameObject item = fromContainer.GetComponent<Container>().RemoveItem(fromIndex);
             Spawn(item, location, rotation);
         }
+        
+        /**
+         * Destroy an item in the container
+         */
+        [Command]
+        public void CmdDestroyItem(GameObject fromContainer, int fromIndex)
+        {
+            GameObject item = fromContainer.GetComponent<Container>().RemoveItem(fromIndex);
+            Despawn(item);
+            Destroy(item);
+        }
 
         /**
          * Move an item from one container to another.

@@ -139,7 +139,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   singularInteractions: []
-  continuousInteractions: []
+  continuousInteractions:
+  - {fileID: 11400000, guid: ed28f9f0b9f779a45b6f879411af4a87, type: 2}
 --- !u!114 &2622621003458583736
 MonoBehaviour:
   m_ObjectHideFlags: 0

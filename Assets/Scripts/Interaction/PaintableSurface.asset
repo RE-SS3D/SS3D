@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd4acabe567c4c74a83c199312e00f28, type: 3}
+  m_Name: PaintableSurface
+  m_EditorClassIdentifier: 
+  kind: {fileID: 11400000, guid: ebdfd6e791b27a943899f7963d8d2ac3, type: 2}

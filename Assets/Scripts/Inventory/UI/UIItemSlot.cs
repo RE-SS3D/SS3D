@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Inventory;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -26,11 +27,15 @@ public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler
     [SerializeField] private Button button = null;
     // The default image for when there is no sprite
     [SerializeField] private Sprite emptySprite = null;
+    [SerializeField] private Slider itemSupplySlider = null;
 
     [SerializeField] private Color highlightedColor = Color.red;
     [SerializeField] private Color selectedColor = Color.green;
     [SerializeField] private Color defaultColor = Color.blue;
     [SerializeField] private Color disabledColor = Color.black;
+    [SerializeField] private Color itemSupplyFullColor = Color.green;
+    [SerializeField] private Color itemSupplyHalfColor = Color.yellow;
+    [SerializeField] private Color itemSupplyEmptyColor = Color.red;
 
     // Runtime Variables
     [System.NonSerialized]
@@ -42,6 +47,19 @@ public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler
             item = value;
             itemContainer.sprite = item == null ? emptySprite : item.sprite;
             CalculateColors();
+            if (item != null)
+            {
+                //Activate item supply bar display, if appropriate.
+                IItemWithSupply itemWithSupply = item.GetComponent<IItemWithSupply>();
+                if (itemWithSupply == null) return;
+                
+                itemSupplySlider.gameObject.SetActive(true);
+                SetItemSupplyDisplay(itemWithSupply.GetRemainingSupplyPercentage());
+            }
+            else
+            {
+                itemSupplySlider.gameObject.SetActive(false);
+            }
         }
     }
     public bool Selected {
@@ -87,6 +105,24 @@ public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler
     // Required to do OnBeginDrag :/
     public void OnDrag(PointerEventData eventData) { }
 
+    public void SetItemSupplyDisplay(float value)
+    {
+        itemSupplySlider.value = value;
+        ColorBlock colors = itemSupplySlider.colors;
+        if (value > 0.66f)
+        {
+            colors.disabledColor = itemSupplyFullColor;
+        } else if (value > 0.33f)
+        {
+            colors.disabledColor = itemSupplyHalfColor;
+        }
+        else
+        {
+            colors.disabledColor = itemSupplyEmptyColor;
+        }
+
+        itemSupplySlider.colors = colors;
+    }
 
     private void Awake()
     {
