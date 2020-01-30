@@ -34,8 +34,8 @@ namespace Interaction
             newTileDefinition.fixture = null; // TODO: Assumes fixtures are incompatible between wall and tile for now
             newTileDefinition.subStates = new object[2];
 
-            var tileMap = tile.transform.parent.GetComponent<TileManager>();
-            tileMap.UpdateTile(tile.transform.position, newTileDefinition);
+            var playerClient = e.player.GetComponent<PlayerTileManagerClient>();
+            playerClient.UpdateTile(tile, newTileDefinition);
 
             return true;
         }

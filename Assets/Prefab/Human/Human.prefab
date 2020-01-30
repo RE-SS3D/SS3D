@@ -84,6 +84,7 @@ GameObject:
   - component: {fileID: -1122543427383380906}
   - component: {fileID: 1958784860310624992}
   - component: {fileID: -471130512158292522}
+  - component: {fileID: -6858114181086538097}
   m_Layer: 15
   m_Name: Human
   m_TagString: Untagged
@@ -153,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 137383457
+  m_SceneId: 898434945
 --- !u!114 &-5918456934534797284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -365,6 +366,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 549c7530dc91c894d89364d65c81b540, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+--- !u!114 &-6858114181086538097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37a7b92140d23c643a71934b9304b32f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0

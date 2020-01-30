@@ -25,7 +25,7 @@ namespace Interaction
                 return false;
 
             // Run in coroutine to prevent destroy-while-in-use errors
-            StartCoroutine(DeconstructWall());
+            StartCoroutine(DeconstructWall(e));
 
             return true;
         }
@@ -35,7 +35,7 @@ namespace Interaction
             tile = transform.parent.GetComponent<TileObject>();
         }
 
-        private IEnumerator DeconstructWall()
+        private IEnumerator DeconstructWall(InteractionEvent e)
         {
             // Construct a wall on this spot
             var newTileDefinition = tile.Tile;
@@ -44,11 +44,11 @@ namespace Interaction
             // TODO: code dealing with all possibilities of substates should be moved into TileDefinition
             newTileDefinition.subStates = new object[2];
 
-            var tileMap = tile.transform.parent.GetComponent<TileManager>();
+            var playerClient = e.player.GetComponent<PlayerTileManagerClient>();
 
             // Wait a tick to update the tile otherwise the interaction system complains
             yield return new WaitForEndOfFrame();
-            tileMap.UpdateTile(transform.position, newTileDefinition);
+            playerClient.UpdateTile(tile, newTileDefinition);
         }
 
         private TileObject tile;

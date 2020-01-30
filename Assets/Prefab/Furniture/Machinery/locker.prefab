@@ -534,8 +534,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   singularInteractions: []
-  continuousInteractions:
-  - {fileID: 11400000, guid: ed28f9f0b9f779a45b6f879411af4a87, type: 2}
+  continuousInteractions: []
 --- !u!114 &5357114244261574010
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using Tile;
+﻿using Tile;
 using UnityEngine;
 using UnityEditor;
 
@@ -63,7 +61,7 @@ namespace TileMap
          */
         private void OnValidate() {
             // If we haven't started yet, don't try to validate.
-            if(tile.IsEmpty())
+            if(!this || tile.IsEmpty())
                 return;
 
             var tileManager = transform.root.GetComponent<TileManager>();
@@ -76,8 +74,10 @@ namespace TileMap
                 // Update contents
                 UpdateContents(false);
                 // Inform the tilemanager that the tile has updated, so it can update surroundings
-                if (tileManager != null && !TileMapEditorHelpers.IsGhostTile(this) && tileManager.Tiles.Count > 0)
-                    tileManager.UpdateTile(transform.position, tile);
+                if (tileManager != null && tileManager.Count > 0 && !TileMapEditorHelpers.IsGhostTile(this)) {
+                    var pos = tileManager.GetIndexAt(transform.position);
+                    tileManager.EditorUpdateTile(pos.x, pos.y, tile);
+                }
             };
         }
 
@@ -91,7 +91,7 @@ namespace TileMap
                 return;
 
             var tileManager = transform.root.GetComponent<TileManager>();
-            if(tileManager != null && gameObject.tag == "EditorOnly") // Don't inform tilemanager if we're a ghost tile
+            if(tileManager != null && !TileMapEditorHelpers.IsGhostTile(this))
                 tileManager.RemoveTile(this);
         }
         #endif

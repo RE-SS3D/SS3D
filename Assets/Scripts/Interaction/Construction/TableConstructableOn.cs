@@ -27,13 +27,14 @@ namespace Interaction.Construction
             if (tile.Tile.turf == null || tile.Tile.turf.isWall)
                 return false;
 
+            var playerClient = e.player.GetComponent<PlayerTileManagerClient>();
+
             // Construct a table on this spot
             var newTileDefinition = tile.Tile;
             newTileDefinition.fixture = tableToConstruct;
             newTileDefinition.subStates = new object[2];
 
-            var tileMap = tile.transform.parent.GetComponent<TileManager>();
-            tileMap.UpdateTile(tile.transform.position, newTileDefinition);
+            playerClient.UpdateTile(tile, newTileDefinition);
 
             return true;
         }

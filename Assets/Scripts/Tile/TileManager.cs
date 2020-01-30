@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Mirror;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using UnityEngine;
+using Mirror;
 
 namespace TileMap {
     /**
@@ -14,30 +14,14 @@ namespace TileMap {
     [ExecuteAlways]
     public class TileManager : NetworkBehaviour
     {
-        /**
-         * Describes a tile in networkable information
-         */
-        private struct NetworkableTileDefinition
-        {
-            // The base of the tile, could be a wall or floor. Is id of Turf scriptable object
-            public string turf;
-            public string fixture; // Id of a Fixture scriptable object
-
-            // Serialized objects
-            public object[] subStates;
-        }
-
         private struct NetworkableTileObject
         {
             public Vector2Int position;
-            public NetworkableTileDefinition definition;
+            public TileDefinition definition;
         }
 
-        // Should put all turfs and fixtures that are usable in the map here.
-        // TODO: Debate putting them in Resources and auto loading them on startup,
-        // so they don't have to be provided
-        public IReadOnlyDictionary<ulong, TileObject> Tiles => tiles;
         public Vector3 Origin => origin;
+        public int Count => tiles.Count;
 
         /**
          * Recreates tilemap using just children.
@@ -52,27 +36,21 @@ namespace TileMap {
         /**
          * Creates a tile at or near the given position
          */
-        public void CreateTile(Vector3 position, TileDefinition tileInfo)
+        [Server]
+        public void CreateTile(Vector3 position, TileDefinition definition)
         {
             var index = GetIndexAt(position);
-            CreateTile(index.x, index.y, tileInfo);
+            CreateTile(index.x, index.y, definition);
         }
         /**
          * Create a tile in the given grid position
          * 
          * Note: throws if a tile already exists
          */
-        public void CreateTile(int x, int y, TileDefinition tileInfo) {
-#if UNITY_EDITOR
-            if (Application.isPlaying)
-                CmdCreateTile(x, y, ToNetworkable(tileInfo));
-            else
-                ExecuteCreateTile(x, y, tileInfo);
-#else
-            CmdCreateTile(x, y, ToNetworkable(tileInfo));
-#endif
-        }
+        [Server]
+        public void CreateTile(int x, int y, TileDefinition definition) => InternalCreateTile(x, y, definition);
 
+        [Server]
         public void UpdateTile(Vector3 position, TileDefinition tileInfo)
         {
             var index = GetIndexAt(position);
@@ -83,38 +61,25 @@ namespace TileMap {
          * 
          * Note: Throws if there is no tile
          */
-        public void UpdateTile(int x, int y, TileDefinition tileInfo)
-        {
-#if UNITY_EDITOR
-            if(Application.isPlaying)
-                CmdUpdateTile(x, y, ToNetworkable(tileInfo));
-            else
-                ExecuteUpdateTile(x, y, tileInfo);
-#else
-            CmdUpdateTile(x, y, ToNetworkable(tileInfo));
-#endif
-        }
+        [Server]
+        public void UpdateTile(int x, int y, TileDefinition definition) => InternalUpdateTile(x, y, definition);
 
         /**
          * Destroy the given tile object
          */
+        [Server]
         public void DestroyTile(TileObject tileObject) {
             var index = GetIndexAt(tileObject.transform.position);
             DestroyTile(index.x, index.y);
         }
-        public void DestroyTile(int x, int y)
-        {
-#if UNITY_EDITOR
-            if (Application.isPlaying)
-                CmdDestroyTile(x, y);
-            else
-                ExecuteDestroyTile(x, y);
-#else
-            CmdDestroyTile(x, y);
-#endif
-        }
+        [Server]
+        public void DestroyTile(int x, int y) => InternalDestroyTile(x, y);
 
 #if UNITY_EDITOR
+        public void EditorCreateTile(int x, int y, TileDefinition definition) => InternalCreateTile(x, y, definition);
+        public void EditorUpdateTile(int x, int y, TileDefinition definition) => InternalUpdateTile(x, y, definition);
+        public void EditorDestroyTile(int x, int y) => InternalDestroyTile(x, y);
+
         /**
          * Remove a tile from the map without destroying it.
          * Called when user deletes a tile in the editor
@@ -130,8 +95,11 @@ namespace TileMap {
                 tiles.Remove(key);
             }
         }
-        #endif
+#endif
 
+        /**
+         * Returns null if no tile found
+         */
         public TileObject GetTile(Vector3 position)
         {
             var index = GetIndexAt(position);
@@ -169,16 +137,9 @@ namespace TileMap {
             );
         }
 
-        public void Awake()
-        {
-            turfs = Resources.FindObjectsOfTypeAll<Turf>();
-            fixtures = Resources.FindObjectsOfTypeAll<Fixture>();
-        }
+        // TODO: Check whether OnStartServer is called on the server when a client connects, or only called when server starts.
         public override void OnStartServer() => ReinitializeFromChildren();
-        public override void OnStartLocalPlayer()
-        {
-            InitializeTilesFromServer();
-        }
+        public override void OnStartLocalPlayer() => CmdRequestTiles();
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -195,52 +156,69 @@ namespace TileMap {
 #endif
 
         /**
+         * Request that the server send tiles to me
+         */
+        [Command]
+        private void CmdRequestTiles()
+        {
+            TargetInitializeTilesFromServer(
+                connectionToClient,
+                origin,
+                tiles.Values.Select(tile => new NetworkableTileObject {
+                    position = GetIndexAt(tile.transform.position),
+                    definition = tile.Tile
+                }).ToArray()
+            );
+        }
+        /**
          * Create a series of tiles at the given positions
          */
-        private void InitializeTilesFromServer()
+        [TargetRpc]
+        private void TargetInitializeTilesFromServer(NetworkConnection connection, Vector3 origin, NetworkableTileObject[] tileList)
         {
-            tiles.Clear();
-            
-            // TODO: Origins
-            // this.origin = origin;
-            var tileList = CmdGetTileMap();
+            DestroyChildren();
 
+            this.origin = origin;
             foreach (var item in tileList) {
                 ulong key = GetKey(item.position.x, item.position.y);
                 tiles[key] = SpawnTileObject(item.position.x, item.position.y);
-                tiles[key].Tile = FromNetworkable(item.definition);
+                tiles[key].Tile = item.definition;
             }
 
             // Once they are all made go through and update all adjacencies.
             UpdateAllTileAdjacencies();
         }
+        
+        /*
+         * These RPCs cause the given operations to be executed on all clients.
+         * It will refuse to run on a client that is also the server, as that would cause an endless loop,
+         * and it is already executed on the server.
+         */
 
-        [Command]
-        private List<NetworkableTileObject> CmdGetTileMap()
-        {
-            return tiles.Values.Select(tile => new NetworkableTileObject {
-                position = GetIndexAt(tile.transform.position),
-                definition = ToNetworkable(tile.Tile)
-            }).ToList();
-        }
-
-        // If theres a more compact way of doing this, please tell me.
-        [Command]
-        private void CmdCreateTile(int x, int y, NetworkableTileDefinition definition)
-        {
-            ExecuteCreateTile(x, y, FromNetworkable(definition));
-            RpcCreateTile(x, y, definition);
-        }
         [ClientRpc]
-        private void RpcCreateTile(int x, int y, NetworkableTileDefinition definition)
+        private void RpcCreateTile(int x, int y, TileDefinition definition)
         {
             if(!isServer)
-                ExecuteCreateTile(x, y, FromNetworkable(definition));
+                InternalCreateTile(x, y, definition);
         }
-        /**
-         * Creates a tile from networked information.
+        [ClientRpc]
+        private void RpcUpdateTile(int x, int y, TileDefinition definition)
+        {
+            if (!isServer)
+                InternalUpdateTile(x, y, definition);
+        }
+        [ClientRpc]
+        private void RpcDestroyTile(int x, int y)
+        {
+            if (!isServer)
+                InternalDestroyTile(x, y);
+        }
+
+        /*
+         * The internals contain the actual logic of the above functions. They aren't put in the
+         * public method as the public method needs to have warnings when not called from server
          */
-        private void ExecuteCreateTile(int x, int y, TileDefinition tileDefinition)
+        private void InternalCreateTile(int x, int y, TileDefinition definition)
         {
             ulong key = GetKey(x, y);
 
@@ -253,24 +231,15 @@ namespace TileMap {
             var tileObject = SpawnTileObject(x, y);
             tiles[key] = tileObject;
 
-            tileObject.Tile = tileDefinition;
-            var adjacents = GetAndUpdateAdjacentTiles(x, y, tileDefinition);
+            tileObject.Tile = definition;
+            var adjacents = GetAndUpdateAdjacentTiles(x, y, definition);
             tileObject.UpdateAllAdjacencies(adjacents);
+
+            // Run on every client.
+            if (Application.isPlaying && isServer)
+                RpcCreateTile(x, y, definition);
         }
-        
-        [Command]
-        private void CmdUpdateTile(int x, int y, NetworkableTileDefinition definition)
-        {
-            ExecuteUpdateTile(x, y, FromNetworkable(definition));
-            RpcUpdateTile(x, y, definition);
-        }
-        [ClientRpc]
-        private void RpcUpdateTile(int x, int y, NetworkableTileDefinition definition)
-        {
-            if (!isServer)
-                ExecuteUpdateTile(x, y, FromNetworkable(definition));
-        }
-        private void ExecuteUpdateTile(int x, int y, TileDefinition tileDefinition)
+        private void InternalUpdateTile(int x, int y, TileDefinition definition)
         {
             ulong key = GetKey(x, y);
 
@@ -279,25 +248,15 @@ namespace TileMap {
             }
 
             var obj = tiles[key];
-            obj.Tile = tileDefinition;
+            obj.Tile = definition;
 
-            var adjacents = GetAndUpdateAdjacentTiles(x, y, tileDefinition);
+            var adjacents = GetAndUpdateAdjacentTiles(x, y, definition);
             obj.UpdateAllAdjacencies(adjacents);
-        }
 
-        [Command]
-        private void CmdDestroyTile(int x, int y)
-        {
-            ExecuteDestroyTile(x, y);
-            RpcDestroyTile(x, y);
+            if (Application.isPlaying && isServer)
+                RpcUpdateTile(x, y, definition);
         }
-        [ClientRpc]
-        private void RpcDestroyTile(int x, int y)
-        {
-            if (!isServer)
-                ExecuteDestroyTile(x, y);
-        }
-        private void ExecuteDestroyTile(int x, int y)
+        private void InternalDestroyTile(int x, int y)
         {
             ulong key = GetKey(x, y);
 
@@ -312,8 +271,10 @@ namespace TileMap {
             Destroy(obj);
 
             GetAndUpdateAdjacentTiles(x, y, TileDefinition.NullObject);
-        }
 
+            if (Application.isPlaying && isServer)
+                RpcDestroyTile(x, y);
+        }
 
         /**
          * Load all children into being tiles, but doesn't do anything with them.
@@ -359,6 +320,17 @@ namespace TileMap {
 
             foreach (var gameObject in queuedDestroy) {
                 EditorAndRuntime.Destroy(gameObject);
+            }
+        }
+
+        /**
+         * Just like my dad used to do
+         */
+        private void DestroyChildren()
+        {
+            tiles.Clear();
+            for(int i = transform.childCount - 1; i >= 0; --i) {
+                Destroy(transform.GetChild(i).gameObject);
             }
         }
 
@@ -431,47 +403,71 @@ namespace TileMap {
             return ((ulong)y << 32) + (ulong)x;
         }
 
-        /**
-         * Converts a tile definition into a networkable form
-         */
-        private NetworkableTileDefinition ToNetworkable(TileDefinition tileDefinition)
-        {
-            return new NetworkableTileDefinition {
-                turf = tileDefinition.turf?.id,
-                fixture = tileDefinition.fixture?.id,
-                subStates = tileDefinition.subStates
-            };
-        }
-        /**
-         * Converts a networkable definition back to it's original form
-         */
-        private TileDefinition FromNetworkable(NetworkableTileDefinition tileDefinition)
-        {
-            var turfObject = turfs.FirstOrDefault(turf => turf.id == tileDefinition.turf);
-            if(turfObject == null && !String.IsNullOrEmpty(tileDefinition.turf)) {
-                Debug.LogError($"Failed to find turf with id {tileDefinition.turf} from network source");
-            }
-            var fixtureObject = fixtures.FirstOrDefault(fixture => fixture.id == tileDefinition.fixture);
-            if(fixtureObject == null && !String.IsNullOrEmpty(tileDefinition.fixture)) {
-                Debug.LogError($"Failed to find fixture with id {tileDefinition.fixture} from network source");
-            }
-
-            return new TileDefinition {
-                turf = turfObject,
-                fixture = fixtureObject,
-                subStates = tileDefinition.subStates,
-            };
-        }
-
         // TODO: This is an inefficient data structure for our purposes.
         // TODO: Allow negatives
         // The key is the concatenated y,x position of the tile.
         private Dictionary<ulong, TileObject> tiles = new Dictionary<ulong, TileObject>();
 
         private Vector3 origin = new Vector3(-100.0f, 0.0f, -100.0f);
+    }
 
-        // All turfs and fixtures that are usable
-        private Turf[] turfs;
-        private Fixture[] fixtures;
+    /**
+     * Static methods for networking of tilemap
+     * Note: Networkability of tiles relies on tiles being located in the Resources folder.
+     */
+    public static class TileNetworkingProperties
+    {
+        public static void WriteNetworkableTileDefinition(this NetworkWriter writer, TileDefinition definition)
+        {
+            writer.WriteString(definition.turf?.name ?? "");
+            writer.WriteString(definition.fixture?.name ?? "");
+
+            // Use C# serializer to serialize the object array, cos the Mirror one isn't powerful enough.
+            
+            // Can't serialize null values so put a boolean indicating array presence first
+            writer.WriteBoolean(definition.subStates != null);
+
+            if(definition.subStates == null)
+                return;
+
+            using(var stream = new MemoryStream()) {
+                new BinaryFormatter().Serialize(stream, definition.subStates);
+                writer.WriteBytesAndSize(stream.ToArray());
+            }
+        }
+        public static TileDefinition ReadNetworkableTileDefinition(this NetworkReader reader)
+        {
+            TileDefinition tileDefinition = new TileDefinition();
+
+            string turfName = reader.ReadString();
+            string fixtureName = reader.ReadString();
+
+            if (!string.IsNullOrEmpty(turfName)) {
+                tileDefinition.turf = turfs.FirstOrDefault(turf => turf.name == turfName);
+                if (tileDefinition.turf == null)
+                    Debug.LogError($"Network recieved turf with name {turfName} could not be found");
+            }
+
+            if (!string.IsNullOrEmpty(fixtureName)) {
+                tileDefinition.fixture = fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
+                if (tileDefinition.fixture == null)
+                    Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
+            }
+
+            // If the boolean is false, subStates should be null.
+            if(reader.ReadBoolean()) {
+                using(var stream = new MemoryStream(reader.ReadBytesAndSize())) {
+                    tileDefinition.subStates = new BinaryFormatter().Deserialize(stream) as object[];
+                }
+            }
+
+            return tileDefinition;
+        }
+
+        // Store a list of all turfs and fixtures to be used in networking communications.
+        // This might not be the final place of these resources (could be a public singleton), given that these could be
+        // used for other purposes, e.g. in-game tile editing, recipes, etc.
+        private static Turf[] turfs = Resources.FindObjectsOfTypeAll<Turf>();
+        private static Fixture[] fixtures = Resources.FindObjectsOfTypeAll<Fixture>();
     }
 }

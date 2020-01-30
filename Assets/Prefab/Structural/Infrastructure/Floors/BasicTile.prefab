@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 2523290996575343201}
   - component: {fileID: 5870127389560564871}
   - component: {fileID: 6915316761841473625}
-  - component: {fileID: -859366801292198072}
   - component: {fileID: 6808383822648345501}
   m_Layer: 0
   m_Name: BasicTile
@@ -111,20 +110,6 @@ MonoBehaviour:
   singularInteractions:
   - {fileID: 11400000, guid: 1722cb6280729ea4ebd8e906f06f965c, type: 2}
   - {fileID: 11400000, guid: 604cdb04ede8c9643bf7cf5cb9588bd4, type: 2}
-  continuousInteractions: []
---- !u!114 &
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6767447678079105841}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f31cf7033044701bd2040285a11b93f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  singularInteractions: []
   continuousInteractions:
   - {fileID: 11400000, guid: ed28f9f0b9f779a45b6f879411af4a87, type: 2}
 --- !u!114 &6808383822648345501

@@ -24,7 +24,7 @@ namespace Interaction.Construction
             if (tile.Tile.fixture?.id != tableToRemove.id)
                 return false;
 
-            StartCoroutine(DeconstructTable());
+            StartCoroutine(DeconstructTable(e));
 
             return true;
         }
@@ -34,7 +34,7 @@ namespace Interaction.Construction
             tile = transform.parent.GetComponent<TileObject>();
         }
 
-        private IEnumerator DeconstructTable()
+        private IEnumerator DeconstructTable(InteractionEvent e)
         {
             // Construct a table on this spot
             var newTileDefinition = tile.Tile;
@@ -43,11 +43,11 @@ namespace Interaction.Construction
             if (newTileDefinition.subStates != null && newTileDefinition.subStates.Length >= 2)
                 newTileDefinition.subStates[1] = null;
 
-            var tileMap = tile.transform.parent.GetComponent<TileManager>();
+            var playerClient = e.player.GetComponent<PlayerTileManagerClient>();
 
             // Wait a tick to update the tile otherwise the interaction system complains
             yield return new WaitForEndOfFrame();
-            tileMap.UpdateTile(transform.position, newTileDefinition);
+            playerClient.UpdateTile(tile, newTileDefinition);
         }
 
         private TileObject tile;
