@@ -15,6 +15,14 @@ namespace TileMap
             tileManager = FindObjectOfType<TileManager>();
         }
 
+        // Note: If getting rid of this class, this code should probably somehow be moved into
+        // the NetworkManager's SpawnPlayer
+        public override void OnStartLocalPlayer()
+        {
+            if(!isServer)
+                CmdRequestServerSendTilesToClient();
+        }
+
         public void CreateTile(TileObject tile, TileDefinition definition)
         {
             var pos = tileManager.GetIndexAt(tile.transform.position);
@@ -41,6 +49,13 @@ namespace TileMap
 
         [Command]
         private void CmdDestroyTile(int x, int y) => tileManager.DestroyTile(x, y);
+
+        // Purposefully stupid name to encourage me to update this.
+        [Command]
+        private void CmdRequestServerSendTilesToClient()
+        {
+            tileManager.SendTilesToClient(connectionToClient);
+        }
 
         TileManager tileManager;
     }

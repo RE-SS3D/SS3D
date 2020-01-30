@@ -137,9 +137,20 @@ namespace TileMap {
             );
         }
 
-        // TODO: Check whether OnStartServer is called on the server when a client connects, or only called when server starts.
+        [Server]
+        public void SendTilesToClient(NetworkConnection connection)
+        {
+            TargetInitializeTilesFromServer(
+                connection,
+                origin,
+                tiles.Values.Select(tile => new NetworkableTileObject {
+                    position = GetIndexAt(tile.transform.position),
+                    definition = tile.Tile
+                }).ToArray()
+            );
+        }
+
         public override void OnStartServer() => ReinitializeFromChildren();
-        public override void OnStartLocalPlayer() => CmdRequestTiles();
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -155,21 +166,6 @@ namespace TileMap {
         }
 #endif
 
-        /**
-         * Request that the server send tiles to me
-         */
-        [Command]
-        private void CmdRequestTiles()
-        {
-            TargetInitializeTilesFromServer(
-                connectionToClient,
-                origin,
-                tiles.Values.Select(tile => new NetworkableTileObject {
-                    position = GetIndexAt(tile.transform.position),
-                    definition = tile.Tile
-                }).ToArray()
-            );
-        }
         /**
          * Create a series of tiles at the given positions
          */
@@ -188,7 +184,7 @@ namespace TileMap {
             // Once they are all made go through and update all adjacencies.
             UpdateAllTileAdjacencies();
         }
-        
+
         /*
          * These RPCs cause the given operations to be executed on all clients.
          * It will refuse to run on a client that is also the server, as that would cause an endless loop,
