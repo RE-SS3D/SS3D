@@ -34,6 +34,13 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
 
     [SerializeField]
     private DoorType doorType;
+    
+    private void Start()
+    {
+        // Note: 'Should' already be validated by the point the game starts.
+        // So the only purpose is when loading map from scene to correctly load children.
+        ValidateChildren();
+    }
 
     /**
      * When a single adjacent turf is updated
@@ -80,14 +87,7 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
         };
 #endif
     }
-
-    private void Start()
-    {
-        // Note: 'Should' already be validated by the point the game starts.
-        // So the only purpose is when loading map from scene to correctly load children.
-        ValidateChildren();
-    }
-
+    
     /**
      * Adjusts the connections value based on the given new tile.
      * Returns whether value changed.

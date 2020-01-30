@@ -16,12 +16,22 @@ public class DoorAnimator : NetworkBehaviour
     [SerializeField] private Vector3 openLeft;
     [SerializeField] private Vector3 openRight;
     private float lerpTime;
+    [SyncVar]
     private bool isOpening;
+
+    private bool isOpeningLocal;
+    [SyncVar]
     private bool isClosing;
+
+    private bool isClosingLocal;
     private bool isOpened;
 
     private int playerLayer;
     private int playersInTrigger;
+
+    [SerializeField] private AudioSource openSfx;
+    [SerializeField] private AudioSource closeSfx;
+    
 
     void Awake()
     {
@@ -33,7 +43,7 @@ public class DoorAnimator : NetworkBehaviour
     public void OnTriggerEnter(Collider other)
     {
         
-        if (other.gameObject.layer != playerLayer) return;
+        if (other.gameObject.layer != playerLayer && isServer) return;
         
         if (!insidePlayers.Contains(other.gameObject))
         {
@@ -44,7 +54,7 @@ public class DoorAnimator : NetworkBehaviour
 
     public void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.layer != playerLayer) return;
+        if (other.gameObject.layer != playerLayer && isServer) return;
         
         if (insidePlayers.Contains(other.gameObject))
         {
@@ -59,6 +69,7 @@ public class DoorAnimator : NetworkBehaviour
         
         lerpTime = 0f;
         StartCoroutine(OpenDoorAnim());
+        openSfx.Play();
     }
 
     void CloseDoor()
@@ -67,27 +78,32 @@ public class DoorAnimator : NetworkBehaviour
         
         lerpTime = 0f;
         StartCoroutine(CloseDoorAnim());
+        closeSfx.Play();
     }
 
     IEnumerator OpenDoorAnim()
     {
-        isOpening = true;
+        if(isServer) isOpening = true;
+        isOpeningLocal = true;
         while (lerpTime < 1f)
         {
-            lerpTime += Time.deltaTime * openSpeed;
+            lerpTime += Time.deltaTime * (openSpeed * 2f);
 
             leftPanel.localPosition = Vector3.Lerp(closedLeft, openLeft, lerpTime);
             rightPanel.localPosition = Vector3.Lerp(closedRight, openRight, lerpTime);
             yield return new WaitForEndOfFrame();
         }
+        
+        yield return new WaitForSeconds(1f);
 
-        isOpening = false;
+        if(isServer) isOpening = false;
+        isOpeningLocal = false;
         isOpened = true;
     }
 
     IEnumerator CloseDoorAnim()
     {
-        isClosing = true;
+        if(isServer)  isClosing = true;
         while (lerpTime < 1f)
         {
             lerpTime += Time.deltaTime * openSpeed;
@@ -96,17 +112,25 @@ public class DoorAnimator : NetworkBehaviour
             rightPanel.localPosition = Vector3.Lerp(openRight, closedRight, lerpTime);
             yield return new WaitForEndOfFrame();
         }
-
-        isClosing = false;
+        
+        yield return new WaitForSeconds(1f);
+        if(isServer) isClosing = false;
         isOpened = false;
     }
 
     void Update()
     {
-        MonitorDoor();
+        if (isServer)
+        {
+            ServerMonitorDoor();
+        }
+        else
+        {
+            ClientMonitorDoor();
+        }
     }
 
-    void MonitorDoor()
+    void ServerMonitorDoor()
     {
         if (insidePlayers.Count > 0 && !isOpening && !isOpened)
         {
@@ -118,5 +142,19 @@ public class DoorAnimator : NetworkBehaviour
             CloseDoor();
             isOpened = false;
         }
+    }
+
+    void ClientMonitorDoor()
+    {
+        if (!isOpeningLocal && isOpening)
+        {
+            OpenDoor();
+        }
+
+        if (!isClosing && isClosing)
+        {
+            CloseDoor();
+        }
+        
     }
 }
