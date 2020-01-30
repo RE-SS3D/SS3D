@@ -24,6 +24,7 @@ public class DoorAnimator : NetworkBehaviour
     private bool isClosing;
 
     private bool isClosingLocal;
+    [SyncVar]
     private bool isOpened;
 
     private int playerLayer;
@@ -40,32 +41,46 @@ public class DoorAnimator : NetworkBehaviour
         playerLayer = LayerMask.NameToLayer("Player");
     }
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        SyncInitialState();
+    }
+
+    void SyncInitialState()
+    {
+        if (isServer) return;
+        if (isOpened)
+        {
+            leftPanel.localPosition = openLeft;
+            rightPanel.localPosition = openRight;
+        }
+    }
+    
     public void OnTriggerEnter(Collider other)
     {
         
-        if (other.gameObject.layer != playerLayer && isServer) return;
+        if (other.gameObject.layer != playerLayer || !isServer) return;
         
         if (!insidePlayers.Contains(other.gameObject))
         {
             insidePlayers.Add(other.gameObject);
-            Debug.Log($"Player added to the inside count {insidePlayers.Count}");
         }
     }
 
     public void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.layer != playerLayer && isServer) return;
+        if (other.gameObject.layer != playerLayer || !isServer) return;
         
         if (insidePlayers.Contains(other.gameObject))
         {
             insidePlayers.Remove(other.gameObject);
-            Debug.Log($"Player left there are {insidePlayers.Count} players left inside this door trigger");
         }
     }
 
     void OpenDoor()
     {
-        if (isClosing || isOpening) return;
+        if (isClosingLocal || isOpeningLocal) return;
         
         lerpTime = 0f;
         StartCoroutine(OpenDoorAnim());
@@ -74,7 +89,7 @@ public class DoorAnimator : NetworkBehaviour
 
     void CloseDoor()
     {
-        if (isClosing || isOpening) return;
+        if (isClosingLocal || isOpeningLocal) return;
         
         lerpTime = 0f;
         StartCoroutine(CloseDoorAnim());
@@ -98,12 +113,14 @@ public class DoorAnimator : NetworkBehaviour
 
         if(isServer) isOpening = false;
         isOpeningLocal = false;
-        isOpened = true;
+        if(isServer) isOpened = true;
     }
 
     IEnumerator CloseDoorAnim()
     {
         if(isServer)  isClosing = true;
+        isClosingLocal = true;
+        
         while (lerpTime < 1f)
         {
             lerpTime += Time.deltaTime * openSpeed;
@@ -115,7 +132,8 @@ public class DoorAnimator : NetworkBehaviour
         
         yield return new WaitForSeconds(1f);
         if(isServer) isClosing = false;
-        isOpened = false;
+        isClosingLocal = false;
+        if(isServer) isOpened = false;
     }
 
     void Update()
@@ -151,10 +169,9 @@ public class DoorAnimator : NetworkBehaviour
             OpenDoor();
         }
 
-        if (!isClosing && isClosing)
+        if (!isClosingLocal && isClosing)
         {
             CloseDoor();
         }
-        
     }
 }
