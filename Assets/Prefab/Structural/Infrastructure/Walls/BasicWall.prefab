@@ -125,6 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f31cf7033044701bd2040285a11b93f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  singularInteractions: []
-  continuousInteractions:
+  singularInteractions:
   - {fileID: 11400000, guid: ed28f9f0b9f779a45b6f879411af4a87, type: 2}
+  continuousInteractions: []
+  debug: 0

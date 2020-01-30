@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Interaction.Utilities
 {
-    [CreateAssetMenu(fileName = "ForwardInteraction", menuName = "Interaction/Forward Interaction", order = 0)]
+    [CreateAssetMenu(fileName = "SendToTarget", menuName = "Interaction/Send to target", order = 0)]
     internal sealed class SendToTarget : SingularInteraction
     {
         [SerializeField] private InteractionKind from = null;

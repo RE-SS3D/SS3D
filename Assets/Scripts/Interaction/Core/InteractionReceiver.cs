@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,12 +11,12 @@ namespace Interaction.Core
     {
         [SerializeField] private SingularInteraction[] singularInteractions = new SingularInteraction[0];
         [SerializeField] private ContinuousInteraction[] continuousInteractions = new ContinuousInteraction[0];
+        [Tooltip("Turns on logging of otherwise uninteresting events")]
         [SerializeField] private bool debug = false;
         
         private readonly Dictionary<InteractionKind, List<IBaseInteraction>> receivers = new Dictionary<InteractionKind, List<IBaseInteraction>>();
         private readonly Dictionary<IBaseInteraction, List<InteractionKind>> listeners = new Dictionary<IBaseInteraction, List<InteractionKind>>();
         private readonly Dictionary<InteractionKind, InteractionKind> dependencies = new Dictionary<InteractionKind, InteractionKind>();
-        private readonly Dictionary<InteractionKind, InteractionKind> backups = new Dictionary<InteractionKind, InteractionKind>();
         private readonly List<InteractionEvent> eventQueue = new List<InteractionEvent>();
         private readonly List<InteractionReceiver> waiting = new List<InteractionReceiver>();
 
@@ -48,6 +49,11 @@ namespace Interaction.Core
                     kind => Subscribe(kind, localInteraction),
                     kind => SetBlocker(kind, localInteraction));
             }
+        }
+
+        public bool IsListeningForContinuous(ContinuousInteraction interaction)
+        {
+            return continuousInteractions.ToList().Any(listener => listener.GetType() == interaction.GetType());
         }
 
         private void SetBlocker(InteractionKind kind, IBaseInteraction receiver)
@@ -136,19 +142,6 @@ namespace Interaction.Core
             if (dependencies.TryGetValue(e.kind, out var dependency))
             {
                 var index = eventQueue.FindIndex(ev => ev.kind == dependency);
-                
-                if (index == -1)
-                {
-                    eventQueue.Add(e);
-                }
-                else
-                {
-                    eventQueue.Insert(index, e);
-                }
-            }
-            else if(backups.TryGetValue(e.kind, out var backup))
-            {
-                var index = eventQueue.FindIndex(ev => ev.kind == backup);
                 
                 if (index == -1)
                 {

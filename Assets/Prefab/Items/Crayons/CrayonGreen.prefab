@@ -129,7 +129,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 1613948219
+  m_SceneId: 3492507997
 --- !u!114 &244458066234329819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,9 +158,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f31cf7033044701bd2040285a11b93f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  singularInteractions:
-  - {fileID: 11400000, guid: 357e27d36e09bfb4cb7297745bb90664, type: 2}
-  continuousInteractions: []
+  singularInteractions: []
+  continuousInteractions:
+  - {fileID: 11400000, guid: f550986bf37b6d84b8b06fcef8a8315e, type: 2}
+  debug: 0
 --- !u!114 &6535825198127465852
 MonoBehaviour:
   m_ObjectHideFlags: 0
