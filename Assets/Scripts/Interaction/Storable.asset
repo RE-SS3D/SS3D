@@ -16,4 +16,4 @@ MonoBehaviour:
   to: {fileID: 11400000, guid: 137714e30b0210841a3efc15a2872999, type: 2}
   blocks:
   - {fileID: 11400000, guid: 875609ba0eafd94439758864ccb4594b, type: 2}
-  triggerBlockOnFail: 0
+  triggerBlockOnFail: 1

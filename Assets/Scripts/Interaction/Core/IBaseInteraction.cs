@@ -18,5 +18,11 @@ namespace Interaction.Core
         /// <param name="listen">Call this action with the event kind you want to listen for</param>
         /// <param name="blocks">Call this action with any event types that will be blocked when this interaction succeeds. Can be called any number of times.</param>
         void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks);
+
+        /// <summary>
+        /// This method is called by `InteractionReceiver` after it is done handling events for this frame.<br/>
+        /// You may use this to reset your interaction if it depends on several incoming events.
+        /// </summary>
+        void Reset();
     }
 }

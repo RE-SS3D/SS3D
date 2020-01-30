@@ -22,6 +22,8 @@ namespace Interaction
             openable = GetComponent<Openable>();
         }
 
+        public void Reset() { }
+
         public void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks)
         {
             listen(kind);

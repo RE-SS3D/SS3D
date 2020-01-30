@@ -97,7 +97,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
   m_AssetId: 7becfab153276864f9fc7636a839d837
   m_SceneId: 0
 --- !u!54 &926100782
@@ -161,7 +160,9 @@ MonoBehaviour:
   singularInteractions:
   - {fileID: 11400000, guid: 29f49cd8263d64849af4e9623d167953, type: 2}
   - {fileID: 11400000, guid: 2ad3183a1e200dd4b9edd607982b7a79, type: 2}
+  - {fileID: 11400000, guid: fc104ab4121f7ef4481aa523972205ea, type: 2}
   continuousInteractions: []
+  debug: 1
 --- !u!114 &5911543497110224905
 MonoBehaviour:
   m_ObjectHideFlags: 0

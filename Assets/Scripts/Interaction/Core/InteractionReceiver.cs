@@ -51,11 +51,6 @@ namespace Interaction.Core
             }
         }
 
-        public bool IsListeningForContinuous(ContinuousInteraction interaction)
-        {
-            return continuousInteractions.ToList().Any(listener => listener.GetType() == interaction.GetType());
-        }
-
         private void SetBlocker(InteractionKind kind, IBaseInteraction receiver)
         {
             if (!listeners.ContainsKey(receiver))
@@ -225,6 +220,14 @@ namespace Interaction.Core
             }
 
             eventQueue.Clear();
+
+            foreach (var interactionList in receivers.Values)
+            {
+                foreach (var interaction in interactionList)
+                {
+                    interaction.Reset();
+                }
+            }
             
             handlerCoroutine = null;
         }

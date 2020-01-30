@@ -16,6 +16,8 @@ namespace Interaction
             listen(kind);
         }
 
+        public void Reset() { }
+
         public bool Handle(InteractionEvent e)
         {
             open = !open;

@@ -14,6 +14,8 @@ namespace Interaction
             listen(kind);
         }
 
+        public void Reset() { }
+
         public bool Handle(InteractionEvent e)
         {
             e.sender.GetComponent<Hands>().Pickup(gameObject);

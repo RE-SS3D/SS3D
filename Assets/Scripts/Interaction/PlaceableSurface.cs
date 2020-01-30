@@ -15,6 +15,8 @@ namespace Interaction
             listen(kind);
         }
 
+        public void Reset() { }
+
         public bool Handle(InteractionEvent e)
         {
             if (e.sender == null)

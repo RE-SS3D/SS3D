@@ -27,6 +27,8 @@ namespace Interaction.Utilities
             }
         }
 
+        public void Reset() { }
+
         public bool Handle(Core.InteractionEvent e)
         {
             receive?.Invoke(e.sender);

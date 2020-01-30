@@ -21,6 +21,8 @@ namespace Interaction.Utilities
             }
         }
 
+        public void Reset() { }
+
         public bool Handle(Core.InteractionEvent e)
         {
             if (!e.target)

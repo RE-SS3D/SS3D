@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4837a500b8d4111bf8c41f6a9e76c1c, type: 3}
+  m_Name: FireTrigger
+  m_EditorClassIdentifier: 
+  inputKind: {fileID: 11400000, guid: 875609ba0eafd94439758864ccb4594b, type: 2}
+  senders:
+  - {fileID: 11400000, guid: 38eed80e5f8df1f4d840163dfa89fb11, type: 2}
+  - {fileID: 11400000, guid: 137714e30b0210841a3efc15a2872999, type: 2}
+  outputKind: {fileID: 11400000, guid: 25cfbed18e8c62a47bb14412edd51eb2, type: 2}

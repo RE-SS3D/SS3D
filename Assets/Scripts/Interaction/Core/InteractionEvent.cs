@@ -44,7 +44,11 @@ namespace Interaction.Core
         /// The interaction will be stopped when the predicate return false.
         /// </summary>
         public Predicate<InteractionEvent> runWhile;
-
+        /// <summary>
+        /// The kind of event that triggered this event in the case of a chain of events.
+        /// </summary>
+        public InteractionKind previousKind;
+        
         internal Action onFail;
         internal Action onSuccess;
             
@@ -67,6 +71,7 @@ namespace Interaction.Core
             this.runWhile = null;
             this.onFail = null;
             this.onSuccess = null;
+            this.previousKind = null;
         }
 
         /// <summary>

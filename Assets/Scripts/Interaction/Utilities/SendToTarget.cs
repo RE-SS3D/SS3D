@@ -25,7 +25,7 @@ namespace Interaction.Utilities
         {
             if (!e.target)
             {
-                TriggerBlock(e);
+                TriggerBlock(e, to);
                 return false;
             }
             
@@ -38,7 +38,7 @@ namespace Interaction.Utilities
             {
                 e.target.Trigger(newEvent, null, () =>
                 {
-                    TriggerBlock(e);
+                    TriggerBlock(e, to);
                 });
             }
             else
@@ -49,11 +49,12 @@ namespace Interaction.Utilities
             return true;
         }
 
-        private void TriggerBlock(Core.InteractionEvent e)
+        private void TriggerBlock(Core.InteractionEvent e, InteractionKind failedKind)
         {
             foreach (var block in blocks)
             {
                 var blockEvent = e;
+                blockEvent.previousKind = failedKind;
                 blockEvent.kind = block;
                 Receiver.Trigger(blockEvent);
             }

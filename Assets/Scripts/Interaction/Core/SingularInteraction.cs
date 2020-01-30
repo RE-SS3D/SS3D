@@ -18,5 +18,6 @@ namespace Interaction.Core
         
         public abstract void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks);
         public abstract bool Handle(InteractionEvent e);
+        public virtual void Reset() {}
     }
 }
