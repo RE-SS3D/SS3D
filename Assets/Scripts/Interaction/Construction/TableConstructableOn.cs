@@ -11,9 +11,9 @@ namespace Interaction.Construction
     public class TableConstructableOn : SingularInteraction
     {
         [SerializeField]
-        private InteractionKind tableConstructKind;
+        private InteractionKind tableConstructKind = null;
         [SerializeField]
-        private Fixture tableToConstruct;
+        private Fixture tableToConstruct = null;
 
         public override void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks)
         {

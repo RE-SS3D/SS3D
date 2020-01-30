@@ -11,10 +11,10 @@ namespace Interaction
     public class WallConstructableOn : SingularInteraction
     {
         [SerializeField]
-        private InteractionKind wallConstructKind;
+        private InteractionKind wallConstructKind = null;
 
         [SerializeField]
-        private Turf wallToConstruct;
+        private Turf wallToConstruct = null;
 
         public override void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks)
         {

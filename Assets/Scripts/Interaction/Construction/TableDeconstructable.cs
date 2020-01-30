@@ -9,10 +9,10 @@ namespace Interaction.Construction
     public class TableDeconstructable : MonoBehaviour, ISingularInteraction
     {
         [SerializeField]
-        private InteractionKind tableDeconstructKind;
+        private InteractionKind tableDeconstructKind = null;
 
         [SerializeField]
-        private Fixture tableToRemove;
+        private Fixture tableToRemove = null;
 
         public void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks)
         {

@@ -7,12 +7,13 @@ using TileMap;
 
 namespace Interaction
 {
+    [RequireComponent(typeof(InteractionReceiver))]
     public class WallDeconstructable : MonoBehaviour, ISingularInteraction
     {
         [SerializeField]
-        private InteractionKind wallDeconstructKind;
+        private InteractionKind wallDeconstructKind = null;
         [SerializeField]
-        private Turf tileToConstruct;
+        private Turf tileToConstruct = null;
 
         public void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks)
         {
