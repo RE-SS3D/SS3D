@@ -162,7 +162,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2ad3183a1e200dd4b9edd607982b7a79, type: 2}
   - {fileID: 11400000, guid: fc104ab4121f7ef4481aa523972205ea, type: 2}
   continuousInteractions: []
-  debug: 1
+  debug: 0
 --- !u!114 &5911543497110224905
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -10,7 +10,6 @@ namespace Interaction.Utilities
         [SerializeField] private InteractionKind from = null;
         [SerializeField] private InteractionKind to = null;
         [SerializeField] private InteractionKind[] blocks = new InteractionKind[0];
-        [SerializeField] private bool triggerBlockOnFail = false;
         
         public override void Setup(Action<InteractionKind> listen, Action<InteractionKind> blocks)
         {

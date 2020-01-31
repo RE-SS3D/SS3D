@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +40,7 @@ namespace Interaction.Core
                     kind => Subscribe(kind, localInteraction),
                     kind => SetBlocker(kind, localInteraction));
             }
+
             foreach (var interaction in continuousInteractions)
             {
                 if (interaction == null) continue;
@@ -58,7 +59,7 @@ namespace Interaction.Core
                 Debug.LogError($"{receiver} has no listener set on {this} when setting blocker for {kind}");
                 return;
             }
-            
+
             foreach (var listener in listeners[receiver])
             {
                 if (!dependencies.ContainsKey(listener))
@@ -80,12 +81,12 @@ namespace Interaction.Core
             if (!receivers.ContainsKey(kind))
                 receivers.Add(kind, new List<IBaseInteraction>());
             receivers[kind].Add(receiver);
-            
+
             if (!listeners.ContainsKey(receiver))
                 listeners.Add(receiver, new List<InteractionKind>());
             listeners[receiver].Add(kind);
         }
-        
+
         /// <summary>
         /// Manually unsubscribe an interaction from an event kind.<br/>
         /// Useful when setting up interactions from non unity classes.<br/>
@@ -103,6 +104,7 @@ namespace Interaction.Core
                     receivers.Remove(kind);
                 }
             }
+
             if (listeners.ContainsKey(receiver))
             {
                 listeners[receiver].Remove(kind);
@@ -124,11 +126,12 @@ namespace Interaction.Core
             {
                 Debug.Log($"Triggered: {e.kind.name} on {name}");
             }
-            
+
             if (onFail != null)
             {
                 e.onFail = onFail;
             }
+
             if (onSuccess != null)
             {
                 e.onSuccess = onSuccess;
@@ -137,7 +140,7 @@ namespace Interaction.Core
             if (dependencies.TryGetValue(e.kind, out var dependency))
             {
                 var index = eventQueue.FindIndex(ev => ev.kind == dependency);
-                
+
                 if (index == -1)
                 {
                     eventQueue.Add(e);
@@ -152,8 +155,16 @@ namespace Interaction.Core
                 eventQueue.Add(e);
             }
 
-            if (e.waitFor) waiting.Add(e.waitFor);
-            if (handlerCoroutine == null) handlerCoroutine = StartCoroutine(HandleEvents());
+            if (e.waitFor)
+            {
+                waiting.Add(e.waitFor);
+            }
+
+            if (handlerCoroutine != null)
+            {
+                StopCoroutine(handlerCoroutine);
+            }
+            handlerCoroutine = StartCoroutine(HandleEvents());
         }
 
         private IEnumerator HandleEvents()
@@ -172,12 +183,18 @@ namespace Interaction.Core
                 yield return null;
             }
 
+            handlerCoroutine = null;
+
             var skip = new HashSet<InteractionKind>();
             for (var i = 0; i < eventQueue.Count; i++)
             {
                 var e = eventQueue[i];
 
-                if (skip.Contains(e.kind)) continue;
+                if (skip.Contains(e.kind))
+                {
+                    continue;
+                }
+
                 if (!receivers.ContainsKey(e.kind))
                 {
                     e.onFail?.Invoke();
@@ -188,7 +205,7 @@ namespace Interaction.Core
                 {
                     Debug.Log($"{e} @ {transform.name}");
                 }
-                
+
                 foreach (var receiver in receivers[e.kind])
                 {
                     switch (receiver)
@@ -199,7 +216,7 @@ namespace Interaction.Core
                             if (result)
                             {
                                 e.onSuccess?.Invoke();
-                                
+
                                 if (dependencies.TryGetValue(e.kind, out var dependency))
                                 {
                                     skip.Add(dependency);
@@ -228,21 +245,17 @@ namespace Interaction.Core
                     interaction.Reset();
                 }
             }
-            
-            handlerCoroutine = null;
         }
 
         private IEnumerator HandleContinuous(InteractionEvent e, IContinuousInteraction continuous)
         {
             var enumerator = continuous.Handle(e);
 
-            if (!enumerator.MoveNext()) yield break;
-            
-            do
+            while (enumerator.MoveNext())
             {
                 if (e.runWhile != null && !e.runWhile(e)) break;
                 yield return enumerator.Current;
-            } while (enumerator.MoveNext());
+            }
         }
     }
 }
