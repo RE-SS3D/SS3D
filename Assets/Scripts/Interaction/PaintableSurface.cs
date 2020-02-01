@@ -79,7 +79,7 @@ namespace Interaction
 
                 if (remainingSupply <= 0)
                 {
-                    playerHands.DestroyItemInHand();
+                    playerHands.DestroyHeldItem();
                     yield break;
                 }
                 yield return new WaitForSeconds(0.01f);

@@ -1,6 +1,7 @@
 ﻿using System;
-using Interaction.Core;
 using UnityEngine;
+using Interaction.Core;
+using Inventory;
 
 namespace Interaction
 {

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Mirror;
 using UnityEngine;
 
@@ -7,20 +8,22 @@ namespace Inventory.Custom
     [RequireComponent(typeof(Inventory))]
     public class Hands : NetworkBehaviour
     {
-        public delegate void OnHandChange(int selectedHand);
-
         [SerializeField] private Container handContainer = null;
         [SerializeField] private float handRange = 0f;
 
-        [System.NonSerialized]
-        public int selectedHand = 0;
-        public event OnHandChange onHandChange;
+        public event Action<int> onHandChange;
+        public int SelectedHand { get; private set; } = 0;
+
+        // Use these for inventory actions
+        public Container Container => handContainer;
+        public GameObject ContainerObject => Container.gameObject;
+        public int HeldSlot => handSlots[SelectedHand];
         
         public void Pickup(GameObject target)
         {
             if (GetItemInHand() == null)
             {
-                inventory.CmdAddItem(target, handContainer.gameObject, handSlots[selectedHand]);
+                inventory.CmdAddItemAt(target, ContainerObject, HeldSlot);
             }
             else
             {
@@ -28,22 +31,22 @@ namespace Inventory.Custom
             }
         }
         
-        private void Drop()
+        /*
+         * Command wrappers for inventory actions using the currently held item
+         */
+        public void DropHeldItem()
         {
             if (GetItemInHand() == null) return;
-            
-            var itemTransform = GetItemInHand().transform;
-            inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], itemTransform.position, itemTransform.rotation);
-        }
 
-        public void Place(Vector3 position, Quaternion rotation)
-        {
-            inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], position, rotation);
+            var transform = GetItemInHand().transform;
+            inventory.CmdPlaceItem(ContainerObject, HeldSlot, transform.position, transform.rotation);
         }
-        
-        public void DestroyItemInHand()
+        public void PlaceHeldItem(Vector3 position, Quaternion rotation) => inventory.CmdPlaceItem(ContainerObject, HeldSlot, position, rotation);
+        public void DestroyHeldItem() => inventory.CmdDestroyItem(ContainerObject, HeldSlot);
+
+        public Item GetItemInHand()
         {
-            inventory.CmdDestroyItem(handContainer.gameObject, handSlots[selectedHand]);
+            return handContainer.GetItem(HeldSlot);
         }
 
         /**
@@ -92,7 +95,7 @@ namespace Inventory.Custom
             };
             if (handContainer.GetItems().Count > 0)
             {
-                inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[selectedHand]);
+                inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[SelectedHand]);
                 //UpdateTool();
             }
         }
@@ -105,19 +108,14 @@ namespace Inventory.Custom
             // Hand-related buttons
             if (Input.GetButtonDown("Swap Active"))
             {
-                selectedHand = 1 - selectedHand;
-                inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[selectedHand]);
-                onHandChange?.Invoke(selectedHand);
+                SelectedHand = 1 - SelectedHand;
+                inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[SelectedHand]);
+                onHandChange?.Invoke(SelectedHand);
             
                 //UpdateTool();
             }
             
-            if (Input.GetButtonDown("Drop Item")) Drop();
-        }
-
-        public Item GetItemInHand()
-        {
-            return handContainer.GetItem(handSlots[selectedHand]);
+            if (Input.GetButtonDown("Drop Item")) DropHeldItem();
         }
 
         // The indices in the container that contains the hands

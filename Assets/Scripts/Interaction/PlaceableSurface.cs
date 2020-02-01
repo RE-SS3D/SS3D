@@ -37,7 +37,7 @@ namespace Interaction
             }
             
             Vector3 position = e.worldPosition + Vector3.up * itemCollider.bounds.max.y;
-            playerHands.Place(position, Quaternion.identity);
+            playerHands.PlaceHeldItem(position, Quaternion.identity);
 
             return true;
         }

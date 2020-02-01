@@ -9,10 +9,19 @@ namespace Inventory
     */
     public class ContainerAttachment : MonoBehaviour
     {
-        public Inventory   inventory;
-        public Container   container;
-        public float       range;
+        public Inventory   inventory = null;
+        public Container   container = null;
+        public float       range = 5.0f;
 
+        public void Awake()
+        {
+            if(!inventory)
+                inventory = GetComponent<Inventory>();
+
+            if(!inventory) {
+                Debug.LogError("ContainerAttachment component cannot find inventory");
+            }
+        }
         public void Start()
         {
             inventory.AddContainer(container.gameObject);
@@ -27,6 +36,8 @@ namespace Inventory
                 inventory.RemoveContainer(container.gameObject);
                 Destroy(this);
             }
+            if(!inventory.HasContainer(container.gameObject))
+                Destroy(this);
         }
     }
 }
