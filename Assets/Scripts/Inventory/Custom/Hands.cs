@@ -18,19 +18,17 @@ namespace Inventory.Custom
         public Container Container => handContainer;
         public GameObject ContainerObject => Container.gameObject;
         public int HeldSlot => handSlots[SelectedHand];
-        
+
         public void Pickup(GameObject target)
         {
-            if (GetItemInHand() == null)
-            {
-                inventory.CmdAddItemAt(target, ContainerObject, HeldSlot);
+            if (GetItemInHand() == null) {
+                inventory.CmdAddItem(target, ContainerObject, HeldSlot);
             }
-            else
-            {
+            else {
                 Debug.LogWarning("Trying to pick up with a non-empty hand");
             }
         }
-        
+
         /*
          * Command wrappers for inventory actions using the currently held item
          */
@@ -62,7 +60,7 @@ namespace Inventory.Custom
 
             // If there's already an attachment, don't make another one
             var prevAttaches = GetComponents<ContainerAttachment>();
-            if(prevAttaches.Any(attachment => attachment.container == container))
+            if (prevAttaches.Any(attachment => attachment.container == container))
                 return;
 
             var attach = gameObject.AddComponent<ContainerAttachment>();
@@ -79,8 +77,7 @@ namespace Inventory.Custom
         {
             // Find the indices in the hand container corresponding to the correct slots
             handSlots = new int[2] { -1, -1 };
-            for (int i = 0; i < handContainer.Length(); ++i)
-            {
+            for (int i = 0; i < handContainer.Length(); ++i) {
                 if (handContainer.GetSlot(i) == Container.SlotType.LeftHand)
                     handSlots[0] = i;
                 else if (handContainer.GetSlot(i) == Container.SlotType.RightHand)
@@ -89,12 +86,10 @@ namespace Inventory.Custom
             if (handSlots[0] == -1 || handSlots[1] == -1)
                 Debug.LogWarning("Player container does not contain slots for hands upon initialization. Maybe they were severed though?");
 
-            handContainer.onChange += (a, b, c, d) =>
-            {
+            handContainer.onChange += (a, b, c, d) => {
                 //UpdateTool()
             };
-            if (handContainer.GetItems().Count > 0)
-            {
+            if (handContainer.GetItems().Count > 0) {
                 inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[SelectedHand]);
                 //UpdateTool();
             }
@@ -106,15 +101,14 @@ namespace Inventory.Custom
                 return;
 
             // Hand-related buttons
-            if (Input.GetButtonDown("Swap Active"))
-            {
+            if (Input.GetButtonDown("Swap Active")) {
                 SelectedHand = 1 - SelectedHand;
                 inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[SelectedHand]);
                 onHandChange?.Invoke(SelectedHand);
-            
+
                 //UpdateTool();
             }
-            
+
             if (Input.GetButtonDown("Drop Item")) DropHeldItem();
         }
 

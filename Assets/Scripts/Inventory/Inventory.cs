@@ -49,7 +49,6 @@ namespace Inventory
 
         // The slot the player currently has selected. May be null (container will be null, slotindex will be -1)
         // Note: NOT SYNCHRONIZED. LOCAL PLAYER ONLY
-        // TODO: Should put into interface and managed by Hands
         public SlotReference holdingSlot = new SlotReference(null, -1);
 
         /**
@@ -70,24 +69,23 @@ namespace Inventory
             objectSources.Remove(containerObject);
         }
 
-        public bool HasContainer(GameObject containerObject)
-        {
-            return objectSources.Contains(containerObject);
-        }
+        public bool HasContainer(GameObject containerObject) => objectSources.Contains(containerObject);
 
         /**
          * Add an item from the world into a container.
-         * Note: Mirror doesn't allow method overloading for [Commands] >:(
          */
         [Command]
-        public void CmdAddItemAt(GameObject item, GameObject toContainer, int toIndex)
+        public void CmdAddItem(GameObject item, GameObject toContainer, int toIndex)
         {
             Despawn(item);
             toContainer.GetComponent<Container>().AddItem(toIndex, item);
         }
 
+        /**
+         * Add an item to the default place in the given container
+         */
         [Command]
-        public void CmdAddItem(GameObject item, GameObject toContainer)
+        public void CmdAddItemToDefault(GameObject item, GameObject toContainer)
         {
             Despawn(item);
             toContainer.GetComponent<Container>().AddItem(item);
