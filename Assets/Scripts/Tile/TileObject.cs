@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using Tile;
+﻿using Tile;
 using UnityEngine;
 using UnityEditor;
 
@@ -40,7 +38,7 @@ namespace TileMap
 
         #if UNITY_EDITOR
         /**
-         * Allows the editor to refresh the tile.subData when it knows it has
+         * Allows the editor to refresh the tile.subStates when it knows it has
          * modified the child of a tile.
          */
         public void RefreshSubData()
@@ -63,7 +61,7 @@ namespace TileMap
          */
         private void OnValidate() {
             // If we haven't started yet, don't try to validate.
-            if(tile.IsEmpty())
+            if(!this || tile.IsEmpty())
                 return;
 
             var tileManager = transform.root.GetComponent<TileManager>();
@@ -76,8 +74,10 @@ namespace TileMap
                 // Update contents
                 UpdateContents(false);
                 // Inform the tilemanager that the tile has updated, so it can update surroundings
-                if (tileManager != null && !TileMapEditorHelpers.IsGhostTile(this) && tileManager.Tiles.Count > 0)
-                    tileManager.UpdateTile(transform.position, tile);
+                if (tileManager != null && tileManager.Count > 0 && !TileMapEditorHelpers.IsGhostTile(this)) {
+                    var pos = tileManager.GetIndexAt(transform.position);
+                    tileManager.EditorUpdateTile(pos.x, pos.y, tile);
+                }
             };
         }
 
@@ -91,7 +91,7 @@ namespace TileMap
                 return;
 
             var tileManager = transform.root.GetComponent<TileManager>();
-            if(tileManager != null && gameObject.tag == "EditorOnly") // Don't inform tilemanager if we're a ghost tile
+            if(tileManager != null && !TileMapEditorHelpers.IsGhostTile(this))
                 tileManager.RemoveTile(this);
         }
         #endif
@@ -211,15 +211,15 @@ namespace TileMap
 
         private void UpdateChildrenFromSubData(TileDefinition newTile)
         {
-            if (newTile.subData != null && newTile.subData.Length >= 1 && newTile.subData[0] != null)
-                turf?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subData[0]);
+            if (newTile.subStates != null && newTile.subStates.Length >= 1 && newTile.subStates[0] != null)
+                turf?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[0]);
 
-            if (newTile.subData != null && newTile.subData.Length >= 2 && newTile.subData[1] != null)
-                fixture?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subData[1]);
+            if (newTile.subStates != null && newTile.subStates.Length >= 2 && newTile.subStates[1] != null)
+                fixture?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[1]);
         }
         private void UpdateSubDataFromChildren()
         {
-            tile.subData = new object[] {
+            tile.subStates = new object[] {
                 turf?.GetComponent<TileStateCommunicator>()?.GetTileState(),
                 fixture?.GetComponent<TileStateCommunicator>()?.GetTileState()
             };

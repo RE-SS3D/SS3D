@@ -15,6 +15,7 @@ namespace Tile
             return obj?.gameObject.tag == "EditorOnly";
         }
 
+#if UNITY_EDITOR
         /**
          * Creates a fake tile to use in-editor
          */
@@ -44,21 +45,18 @@ namespace Tile
          */
         public static void SetTile(TileManager tileManager, TileDefinition tileDefinition, int x, int y)
         {
-#if UNITY_EDITOR
             if (tileManager.GetTile(x, y) == null) {
-                tileManager.CreateTile(x, y, tileDefinition);
+                tileManager.EditorCreateTile(x, y, tileDefinition);
                 Undo.RegisterCreatedObjectUndo(tileManager.GetTile(x, y).gameObject, "Created tile");
             }
             else {
                 Undo.RecordObject(tileManager.GetTile(x, y).gameObject, "Updated tile");
-                tileManager.UpdateTile(x, y, tileDefinition);
+                tileManager.EditorUpdateTile(x, y, tileDefinition);
             }
-#endif
         }
 
         public static void DestroyAllGhosts(TileManager tileManager)
         {
-#if UNITY_EDITOR
             if(!tileManager)
                 return;
 
@@ -66,8 +64,7 @@ namespace Tile
                 if (tileManager.transform.GetChild(i).tag == "EditorOnly")
                     Object.DestroyImmediate(tileManager.transform.GetChild(i).gameObject);
             }
-#endif
         }
-
+#endif
     }
 }

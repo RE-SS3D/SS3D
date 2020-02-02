@@ -80,18 +80,6 @@ namespace TileMap {
     }
 
     /**
-     * Describes a tile in networkable information
-     */
-    public struct NetworkableTileDefinition
-    {
-        // The base of the tile, could be a wall or floor. Is id of Turf scriptable object
-        public string turf;
-        public string fixture; // Id of a Fixture scriptable object
-        
-        public byte[][] attributes;
-    }
-
-    /**
      * Same as above but with IDs converted to actual scriptable objects
      */
     [Serializable]
@@ -104,13 +92,13 @@ namespace TileMap {
         // If a subtile object has state, it will be stored at the corresponding index (turf=0, fixture=1).
         // If no subtile object has state, the array may be null or have no length.
         // The array may only be as long as it needs to be to store all non-null objects.
-        public object[] subData;
+        public object[] subStates;
 
-        public static TileDefinition NullObject = new TileDefinition { turf = null, fixture = null, subData = null };
+        public static TileDefinition NullObject = new TileDefinition { turf = null, fixture = null, subStates = null };
 
         public static bool operator ==(TileDefinition a, TileDefinition b)
         {
-            return a.turf == b.turf && a.fixture == b.fixture && a.subData.Equals(b.subData);
+            return a.turf == b.turf && a.fixture == b.fixture && a.subStates.Equals(b.subStates);
         }
         public static bool operator !=(TileDefinition a, TileDefinition b)
         {
@@ -121,14 +109,14 @@ namespace TileMap {
             return obj is TileDefinition definition &&
                    EqualityComparer<Turf>.Default.Equals(turf, definition.turf) &&
                    EqualityComparer<Fixture>.Default.Equals(fixture, definition.fixture) &&
-                   EqualityComparer<object[]>.Default.Equals(subData, definition.subData);
+                   EqualityComparer<object[]>.Default.Equals(subStates, definition.subStates);
         }
         public override int GetHashCode()
         {
             var hashCode = 1153620473;
             hashCode = hashCode * -1521134295 + EqualityComparer<Turf>.Default.GetHashCode(turf);
             hashCode = hashCode * -1521134295 + EqualityComparer<Fixture>.Default.GetHashCode(fixture);
-            hashCode = hashCode * -1521134295 + EqualityComparer<object[]>.Default.GetHashCode(subData);
+            hashCode = hashCode * -1521134295 + EqualityComparer<object[]>.Default.GetHashCode(subStates);
             return hashCode;
         }
         public bool IsEmpty()
