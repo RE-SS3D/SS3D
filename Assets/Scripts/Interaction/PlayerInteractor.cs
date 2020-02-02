@@ -70,6 +70,9 @@ namespace Interaction
         [ClientRpc]
         private void RpcDecreaseSupplyOfItem(GameObject itemWithSupply)
         {
+            //Item probably already used up
+            if (itemWithSupply == null) return;
+            
             IItemWithSupply itemSupplyComponent = itemWithSupply.GetComponent<IItemWithSupply>();
             if (itemSupplyComponent == null)
             {

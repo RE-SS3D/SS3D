@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 898434945
+  m_SceneId: 2810381394
 --- !u!114 &-5918456934534797284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -320,8 +320,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
+  chatWindowPrefab: {fileID: 7861828484222706393, guid: f4708dd3e86544c4bbf03b0157bb21c7,
+    type: 3}
   restrictedChannels:
   - System
+  messages: []
 --- !u!114 &-1122543427383380906
 MonoBehaviour:
   m_ObjectHideFlags: 0

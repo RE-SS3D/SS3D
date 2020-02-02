@@ -19,6 +19,11 @@ namespace Login
         
         private string apiAddress;
 
+        private void Awake()
+        {
+            DontDestroyOnLoad(gameObject);
+        }
+
         private void Start()
         {
             LoginServerClient = new LoginServerClient(apiAddress, this);
@@ -50,12 +55,16 @@ namespace Login
 
         public void ShowLoginWindow()
         {
+            //Get rid of previous login window, if exists
+            if (loginWindowInstance) HideLoginWindow();
+            
             loginWindowInstance = Instantiate(loginWindowPrefab, transform);
         }
 
         private void HideLoginWindow()
         {
             Destroy(loginWindowInstance.gameObject);
+            loginWindowInstance = null;
         }
 
         public void SpawnPlayer(CharacterResponse characterResponse)

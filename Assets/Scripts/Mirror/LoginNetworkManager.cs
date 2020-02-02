@@ -1,6 +1,8 @@
 ﻿using Login;
 using Login.Data;
 using System;
+using System.Collections;
+using Round;
 using UnityEngine;
 
 namespace Mirror
@@ -49,9 +51,13 @@ namespace Mirror
         }
 
         [SerializeField] private string loginServerAddress = null;
+        [SerializeField] private GameObject playerDummyPrefab = null;
         [SerializeField] private LoginManager loginManagerPrefab = null;
+        [SerializeField] private GameObject roundManagerPrefab = null;
 
         private LoginManager loginManager;
+        private RoundManager roundManager;
+
         private bool hasLoginServer; // whether the login server is found and alive
 
         public override void Start()
@@ -63,14 +69,32 @@ namespace Mirror
             // Set the defaults for the login manager
             var loginManagerGameObject = Instantiate(loginManagerPrefab);
             loginManager = loginManagerGameObject.GetComponent<LoginManager>();
-            loginManager.UpdateApiAddress(loginServerAddress, character => SpawnPlayerWithLoginServer(NetworkServer.localConnection, character));
+            loginManager.UpdateApiAddress(loginServerAddress,
+                character => SpawnPlayerWithLoginServer(NetworkServer.localConnection, character));
             loginManager.ApiHeartbeat(ConfirmLoginServer);
         }
 
+        
+        /// <summary>
+        /// Initial server setup
+        /// </summary>
         public override void OnStartServer()
         {
             base.OnStartServer();
             NetworkServer.RegisterHandler<CharacterSelectMessage>(OnCharacterSelectMessage);
+            SetupServerManagers();
+        }
+
+        /// <summary>
+        /// Server setup after round restart
+        /// </summary>
+        /// <param name="sceneName"></param>
+        public override void OnServerSceneChanged(string sceneName)
+        {
+            base.OnServerSceneChanged(sceneName);
+            SetupServerManagers();
+            NetworkServer.SendToAll(new LoginServerMessage
+                {serverAddress = hasLoginServer ? loginServerAddress : null});
         }
 
         public override void OnStartClient()
@@ -80,9 +104,18 @@ namespace Mirror
             NetworkClient.RegisterHandler<LoginServerMessage>(OnLoginDataMessage, false);
         }
 
+        private void SetupServerManagers()
+        {
+            GameObject roundManagerGameObject = Instantiate(roundManagerPrefab);
+            NetworkServer.Spawn(roundManagerGameObject);
+            roundManager = roundManagerGameObject.GetComponent<RoundManager>();
+            roundManager.StartWarmup();
+        }
+
         private void ConfirmLoginServer(string response, bool apiAlive)
         {
-            if (!apiAlive) {
+            if (!apiAlive)
+            {
                 Debug.Log("Login server could not be reached.");
                 hasLoginServer = false;
                 return;
@@ -94,7 +127,8 @@ namespace Mirror
 
         private void BeginLoginProcedure(string response, bool apiAlive)
         {
-            if (!apiAlive) {
+            if (!apiAlive)
+            {
                 Debug.LogError("Could not reach login server at login procedure start!");
                 return;
             }
@@ -109,27 +143,43 @@ namespace Mirror
         {
             base.OnServerConnect(conn);
             // Must always send a message, so the client knows if they should spawn through the login server or not
-            conn.Send(new LoginServerMessage() { serverAddress = hasLoginServer ? loginServerAddress : null });
+            conn.Send(new LoginServerMessage() {serverAddress = hasLoginServer ? loginServerAddress : null});
         }
 
         /**
-         * In the meantime, client just checks scene stuff.
+         * Once the client establishes a connection, it immediately tells the server to add them as a player
          */
         public override void OnClientConnect(NetworkConnection conn)
         {
-            if (clientLoadedScene) {
+            if (clientLoadedScene)
+            {
                 // TODO: Mirror has a different workflow for clients when loading a separate scene after connecting to a server. If we need one, someone should implement it.
                 Debug.LogWarning("The Login system does not support having a separate Online Scene yet!");
+                return;
             }
+
+            ClientScene.AddPlayer(conn);
         }
 
         /**
-         * The client recieves the message informing them of the Login Server,
+         * When the server receives the add player command, it creates a dummy object of the player.
+         * This is necessary so the client could begin receiving RPC calls.
+         * The dummy player is replaced with the actual player in SpawnPlayerAfterRoundStart()
+         */
+        public override void OnServerAddPlayer(NetworkConnection conn)
+        {
+            GameObject player = Instantiate(playerDummyPrefab);
+            NetworkServer.AddPlayerForConnection(conn, player);
+        }
+
+        /**
+         * The client receives the message informing them of the Login Server,
          * Uses this to start the player's character select process
          */
         private void OnLoginDataMessage(NetworkConnection conn, LoginServerMessage message)
         {
-            if (message.serverAddress == null) {
+            if (message.serverAddress == null)
+            {
                 SpawnPlayerWithoutLoginServer(conn);
                 return;
             }
@@ -137,7 +187,8 @@ namespace Mirror
             // Update our login server to match theirs. Attempt to connect.
             // If successful, hand over control to the LoginManager, telling it to call SpawnPlayerWithLoginServer when
             // the user has chosen their player.
-            loginManager.UpdateApiAddress(message.serverAddress, character => SpawnPlayerWithLoginServer(conn, character));
+            loginManager.UpdateApiAddress(message.serverAddress,
+                character => SpawnPlayerWithLoginServer(conn, character));
             loginManager.ApiHeartbeat(BeginLoginProcedure);
         }
 
@@ -146,19 +197,17 @@ namespace Mirror
          */
         private void SpawnPlayerWithLoginServer(NetworkConnection conn, CharacterResponse characterResponse)
         {
-            ClientScene.Ready(conn);
-            conn.Send(new CharacterSelectMessage { character = characterResponse });
+            conn.Send(new CharacterSelectMessage {character = characterResponse});
         }
 
         /**
-         * If the client is told that the login server doesn't exist, they just signal that they are ready to start.
+         * If the client is told that the login server doesn't exist, we build them a John Doe.
          */
         private void SpawnPlayerWithoutLoginServer(NetworkConnection conn)
         {
-            ClientScene.Ready(conn);
-            if (autoCreatePlayer) {
-                ClientScene.AddPlayer();
-            }
+            CharacterResponse characterResponse = new CharacterResponse();
+            characterResponse.name = "John Doe";
+            conn.Send(new CharacterSelectMessage {character = characterResponse});
         }
 
         /**
@@ -166,15 +215,21 @@ namespace Mirror
          */
         private void OnCharacterSelectMessage(NetworkConnection conn, CharacterSelectMessage characterSelection)
         {
-            if (!IsPlayerPrefabValid(conn)) {
+            if (!IsPlayerPrefabValid(conn))
+            {
                 return;
             }
 
-            // If they somehow fuck up the 
-            if (characterSelection?.character == null) {
-                base.OnServerAddPlayer(conn);
-                return;
-            }
+            StartCoroutine(SpawnPlayerAfterRoundStart(conn, characterSelection));
+        }
+
+        private IEnumerator SpawnPlayerAfterRoundStart(NetworkConnection conn,
+            CharacterSelectMessage characterSelection)
+        {
+            yield return new WaitUntil(() => roundManager.IsRoundStarted);
+
+            //Something has gone horribly wrong
+            if (characterSelection?.character == null) throw new Exception("Could not read character data");
 
             // Spawn player based on their character choices
             Transform startPos = GetStartPosition();
@@ -182,23 +237,29 @@ namespace Mirror
                 ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
                 : Instantiate(playerPrefab);
             player.name = characterSelection.character.name;
-
+            //Destroy dummy player
+            NetworkServer.DestroyPlayerForConnection(conn);
+            //Spawn actual player
             NetworkServer.AddPlayerForConnection(conn, player);
         }
 
         private bool IsPlayerPrefabValid(NetworkConnection conn)
         {
-            if (playerPrefab == null) {
+            if (playerPrefab == null)
+            {
                 Debug.LogError("The PlayerPrefab is empty on the NetworkManager. Please setup a PlayerPrefab object.");
                 return false;
             }
 
-            if (playerPrefab.GetComponent<NetworkIdentity>() == null) {
-                Debug.LogError("The PlayerPrefab does not have a NetworkIdentity. Please add a NetworkIdentity to the player prefab.");
+            if (playerPrefab.GetComponent<NetworkIdentity>() == null)
+            {
+                Debug.LogError(
+                    "The PlayerPrefab does not have a NetworkIdentity. Please add a NetworkIdentity to the player prefab.");
                 return false;
             }
 
-            if (conn.identity != null) {
+            if (conn.identity != null && conn.identity.name != $"{playerDummyPrefab.name}(Clone)")
+            {
                 Debug.LogError("There is already a player for this connections.");
                 return false;
             }

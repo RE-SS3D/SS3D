@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Chat;
+using UnityEngine;
 
 namespace Mirror
 {
@@ -21,14 +22,15 @@ namespace Mirror
         // Current movement the player is making.
         private Vector2 currentMovement = new Vector2();
         private bool isWalking = false;
-        private ChatManager chatManager;
+        //Required to detect if player is typing and stop accepting movement input
+        private ChatRegister chatRegister;
         private float heightOffGround;
 
         private void Start()
         {
             characterController = GetComponent<CharacterController>();
             characterAnimator = GetComponent<Animator>();
-            chatManager = FindObjectOfType<ChatManager>();
+            chatRegister = GetComponent<ChatRegister>();
             mainCamera = Camera.main;
             heightOffGround = transform.position.y;
         }
@@ -44,8 +46,7 @@ namespace Mirror
             }
 
             //Ignore movement controls when typing in chat
-            ChatWindow chatWindow = chatManager?.GetChatWindow();
-            if (chatWindow != null && chatWindow.PlayerIsTyping())
+            if (chatRegister.ChatWindow != null && chatRegister.ChatWindow.PlayerIsTyping())
             {
                 currentMovement.Set(0, 0);
                 return;

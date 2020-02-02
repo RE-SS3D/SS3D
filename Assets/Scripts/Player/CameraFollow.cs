@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Chat;
+using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
@@ -28,11 +29,12 @@ public class CameraFollow : MonoBehaviour
     public float angle = 90f;   // horizontal angle of the camera (around the z axis)
     public float vAngle = 60f;  // angle above the player
 
-    private ChatManager chatManager;
+    //This exists to stop camera controls from working if a player is typing
+    private ChatWindow chatWindow;
 
     private void Start()
     {
-        chatManager = FindObjectOfType<ChatManager>();
+        chatWindow = FindObjectOfType<ChatWindow>();
     }
 
     /**
@@ -54,7 +56,6 @@ public class CameraFollow : MonoBehaviour
     public void Update()
     {
         //Ignore camera controls when typing in chat
-        ChatWindow chatWindow = chatManager?.GetChatWindow();
         if (chatWindow != null && chatWindow.PlayerIsTyping())
         {
             return;
@@ -84,14 +85,6 @@ public class CameraFollow : MonoBehaviour
         }
         if (Input.GetButton("Camera Vertical Rotation"))
             vAngleDelta = Input.GetAxis("Camera Vertical Rotation") * VERTICAL_ROTATION_SENSITIVITY * Time.deltaTime;
-
-        // Camera mouse movement: On right click being held down
-        if (Input.GetMouseButton(1)) // There isnt a fucking enum for the mouse buttons
-        {
-            // Use mouse movement to determine axes
-            angleDelta = Input.GetAxis("Mouse X");
-            vAngleDelta = -Input.GetAxis("Mouse Y");
-        }
 
         // Determine new values, clamping as necessary
         distance = Mathf.Clamp(distance - zoom, MIN_DISTANCE, MAX_DISTANCE);
