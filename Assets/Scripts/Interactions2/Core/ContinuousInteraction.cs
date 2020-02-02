@@ -9,10 +9,17 @@ namespace Interactions2.Core
          * <summary>Continues the interaction's occuring</summary>
          * <returns>Whether or not the interaction can continue. If not, then EndInteraction is called.</returns>
          */
-        bool ContinueInteracting();
+        bool ContinueInteracting(GameObject tool, GameObject target, RaycastHit hit);
 
         /**
-         * <summary>Ends the interaction. Can occur either because ContinueInteracting returns false, or because the user has terminated the interaction.</summary>
+         * <summary>Ends the interaction.</summary>
+         * <remarks>
+         * The interaction can end when:
+         *  - <see cref="ContinueInteracting"/> returns false
+         *  - the player releases the action key
+         *  - the interaction source is no longer part of the interaction
+         *    (e.g. mouse leaves the target, if target is source of interaction)
+         * </remarks>
          */
         void EndInteraction();
     }
