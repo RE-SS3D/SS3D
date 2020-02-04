@@ -46,7 +46,6 @@ namespace Chat
             if (!Data.Removable) return;
         
             originParent = transform.parent;
-            transform.SetParent(chatWindow.GetChatManager().transform);
 
             chatWindow.LoadTab();
         
@@ -73,7 +72,7 @@ namespace Chat
             }
             else
             {
-                chatWindow.GetChatManager().CreateChatWindow(Data, null, Input.mousePosition);
+                chatWindow.ChatRegister.CreateChatWindow(Data, null, Input.mousePosition);
                 Destroy(gameObject);
             }
 

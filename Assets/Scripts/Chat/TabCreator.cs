@@ -59,7 +59,7 @@ namespace Chat
                 return;
             }
 
-            chatWindow.GetChatManager().CreateChatWindow(new ChatTabData(tabNameField.text, channels, true, null),
+            chatWindow.ChatRegister.CreateChatWindow(new ChatTabData(tabNameField.text, channels, true, null),
                 chatWindow, Vector2.zero);
 
             Close();

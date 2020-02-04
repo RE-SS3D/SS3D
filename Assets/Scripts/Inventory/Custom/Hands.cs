@@ -28,10 +28,12 @@ namespace Inventory.Custom
             }
         }
         
-        public void Drop()
+        private void Drop()
         {
-            var transform = GetItemInHand().transform;
-            inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], transform.position, transform.rotation);
+            if (GetItemInHand() == null) return;
+            
+            var itemTransform = GetItemInHand().transform;
+            inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], itemTransform.position, itemTransform.rotation);
         }
 
         public void Place(Vector3 position, Quaternion rotation)
