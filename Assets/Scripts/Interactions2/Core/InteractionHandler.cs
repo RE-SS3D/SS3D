@@ -57,8 +57,7 @@ namespace Interactions2.Core
         {
             // Get the target and tool
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if(!Physics.Raycast(ray, out hit, float.PositiveInfinity, selectionMask))
+            if (!Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask))
                 return;
 
             var target = hit.transform.gameObject;
@@ -122,8 +121,7 @@ namespace Interactions2.Core
         [Command]
         private void CmdRunInteraction(Ray ray, InteractionSource interactionSource, int indexInSource)
         {
-            RaycastHit hit;
-            Physics.Raycast(ray, out hit, float.PositiveInfinity, selectionMask);
+            Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask);
 
             var target = hit.transform.gameObject;
             var tool = GetActiveTool();
@@ -162,8 +160,7 @@ namespace Interactions2.Core
         [Command]
         private void CmdContinueInteraction(Ray ray)
         {
-            RaycastHit hit;
-            Physics.Raycast(ray, out hit, float.PositiveInfinity, selectionMask);
+            Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask);
 
             var tool = GetActiveTool();
             var target = hit.transform.gameObject;
@@ -203,10 +200,10 @@ namespace Interactions2.Core
             return GetComponent<Hands>().GetItemInHand()?.gameObject ?? GetComponent<Hands>().gameObject;
         }
 
-        private List<Interaction> GetInteractionsFrom(GameObject gameObject)
+        private static List<Interaction> GetInteractionsFrom(GameObject gameObject)
         {
             return gameObject.GetComponent<InteractionAttacher>()?.Interactions
-                ?? gameObject.GetComponents<InteractionComponent>().ToList<Interaction>();
+                ?? gameObject.GetComponents<Interaction>().ToList();
         }
 
         // Server and client track these seperately
