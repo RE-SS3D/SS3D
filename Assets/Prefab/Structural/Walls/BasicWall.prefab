@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 6206465271524443489}
   - component: {fileID: 703677637353132206}
   - component: {fileID: 5030442229095640432}
-  - component: {fileID: 656021698855872116}
   m_Layer: 0
   m_Name: BasicWall
   m_TagString: Untagged
@@ -129,18 +128,3 @@ MonoBehaviour:
   singularInteractions: []
   continuousInteractions:
   - {fileID: 11400000, guid: ed28f9f0b9f779a45b6f879411af4a87, type: 2}
---- !u!114 &656021698855872116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3591147544166670882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d899246eb752d341ba9115ae35e8b31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wallDeconstructKind: {fileID: 11400000, guid: 040f3cc32f7069a48809e772287af1cd,
-    type: 2}
-  tileToConstruct: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}

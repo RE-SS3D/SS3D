@@ -2,7 +2,7 @@
 using System.Collections;
 using Mirror;
 
-namespace Interactions2
+namespace Interactions2.Custom
 {
     public class Flashlight : MonoBehaviour, Core.ContinuousInteraction
     {
