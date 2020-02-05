@@ -4,10 +4,10 @@ using Mirror;
 
 namespace Interactions2.Custom
 {
-    public class Flashlight : MonoBehaviour, Core.ContinuousInteraction
+    public class Flashlight : NetworkBehaviour, Core.ContinuousInteraction
     {
         [SerializeField]
-        private Light light;
+        private new Light light = null;
 
         public NetworkConnection ConnectionToClient { get; set; }
 
@@ -23,6 +23,7 @@ namespace Interactions2.Custom
 
         public void Interact(GameObject tool, GameObject target, RaycastHit at)
         {
+            light.enabled = true;
             RpcSetLight(true);
         }
 
@@ -33,9 +34,11 @@ namespace Interactions2.Custom
 
         public void EndInteraction()
         {
+            light.enabled = false;
             RpcSetLight(false);
         }
 
+        [ClientRpc]
         private void RpcSetLight(bool value)
         {
             light.enabled = value;

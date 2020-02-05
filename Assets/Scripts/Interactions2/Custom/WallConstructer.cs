@@ -13,9 +13,9 @@ namespace Interactions2.Custom
     public class WallConstructer : Core.InteractionComponent
     {
         [SerializeField]
-        private Turf wallToConstruct;
+        private Turf wallToConstruct = null;
         [SerializeField]
-        private Turf floorToConstruct;
+        private Turf floorToConstruct = null;
 
         public override bool CanInteract(GameObject tool, GameObject target, RaycastHit at)
         {

@@ -13,7 +13,7 @@ namespace Interactions2.Custom
     public class TableConstructer : Core.InteractionComponent
     {
         [SerializeField]
-        private Fixture tableToConstruct;
+        private Fixture tableToConstruct = null;
 
         public override bool CanInteract(GameObject tool, GameObject target, RaycastHit at)
         {

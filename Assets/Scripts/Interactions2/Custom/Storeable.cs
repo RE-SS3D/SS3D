@@ -30,8 +30,7 @@ namespace Interactions2.Custom
         public override void Interact(GameObject tool, GameObject target, RaycastHit at)
         {
             var hands = tool.transform.root.GetComponent<Hands>();
-
-            tool.transform.root.GetComponent<Inventory.Inventory>().CmdMoveItemToDefault(hands.ContainerObject, hands.HeldSlot, target);
+            tool.transform.root.GetComponent<Inventory.Inventory>().MoveItem(hands.ContainerObject, hands.HeldSlot, target);
         }
 
         private bool CanStore()

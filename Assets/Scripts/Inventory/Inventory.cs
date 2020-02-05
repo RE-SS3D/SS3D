@@ -74,18 +74,14 @@ namespace Inventory
         /**
          * Add an item from the world into a container.
          */
-        [Command]
-        public void CmdAddItem(GameObject item, GameObject toContainer, int toIndex)
+        [Server]
+        public void AddItem(GameObject item, GameObject toContainer, int toIndex)
         {
             Despawn(item);
             toContainer.GetComponent<Container>().AddItem(toIndex, item);
         }
-
-        /**
-         * Add an item to the default place in the given container
-         */
-        [Command]
-        public void CmdAddItemToDefault(GameObject item, GameObject toContainer)
+        [Server]
+        public void AddItem(GameObject item, GameObject toContainer)
         {
             Despawn(item);
             toContainer.GetComponent<Container>().AddItem(item);
@@ -94,18 +90,18 @@ namespace Inventory
         /**
          * Place an item from a container into the world.
          */
-        [Command]
-        public void CmdPlaceItem(GameObject fromContainer, int fromIndex, Vector3 location, Quaternion rotation)
+        [Server]
+        public void PlaceItem(GameObject fromContainer, int fromIndex, Vector3 location, Quaternion rotation)
         {
             GameObject item = fromContainer.GetComponent<Container>().RemoveItem(fromIndex);
             Spawn(item, location, rotation);
         }
-        
+
         /**
          * Destroy an item in the container
          */
-        [Command]
-        public void CmdDestroyItem(GameObject fromContainer, int fromIndex)
+        [Server]
+        public void DestroyItem(GameObject fromContainer, int fromIndex)
         {
             GameObject item = fromContainer.GetComponent<Container>().RemoveItem(fromIndex);
             Despawn(item);
@@ -116,8 +112,8 @@ namespace Inventory
          * Move an item from one container to another.
          * This is intended to be called by the UI, when the user drags an item from one place to another
          */
-        [Command]
-        public void CmdMoveItem(GameObject fromContainer, int fromIndex, GameObject toContainer, int toIndex)
+        [Server]
+        public void MoveItem(GameObject fromContainer, int fromIndex, GameObject toContainer, int toIndex)
         {
             var from = fromContainer.GetComponent<Container>();
             var to = toContainer.GetComponent<Container>();
@@ -132,8 +128,8 @@ namespace Inventory
         /**
          * Move an item from one container to the default position at another.
          */
-        [Command]
-        public void CmdMoveItemToDefault(GameObject fromContainer, int fromIndex, GameObject toContainer)
+        [Server]
+        public void MoveItem(GameObject fromContainer, int fromIndex, GameObject toContainer)
         {
             var from = fromContainer.GetComponent<Container>();
             var to = toContainer.GetComponent<Container>();
@@ -145,6 +141,20 @@ namespace Inventory
             if (itemIndex == -1)
                 from.AddItem(fromIndex, item);
         }
+
+        // Note: You need a good reason to call ANY of these.
+        //       Currently, only the UIInventory calls these.
+
+        [Command]
+        public void CmdAddItem(GameObject item, GameObject toContainer, int toIndex) => AddItem(item, toContainer, toIndex);
+        [Command]
+        public void CmdAddItemToDefault(GameObject item, GameObject toContainer) => AddItem(item, toContainer);
+        [Command]
+        public void CmdPlaceItem(GameObject fromContainer, int fromIndex, Vector3 location, Quaternion rotation) => PlaceItem(fromContainer, fromIndex, location, rotation);
+        [Command]
+        public void CmdMoveItem(GameObject fromContainer, int fromIndex, GameObject toContainer, int toIndex) => MoveItem(fromContainer, fromIndex, toContainer, toIndex);
+        [Command]
+        public void CmdDestroyItem(GameObject fromContainer, int fromIndex) => DestroyItem(fromContainer, fromIndex);
 
         public List<Container> GetContainers()
         {

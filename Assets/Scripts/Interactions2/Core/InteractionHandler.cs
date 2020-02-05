@@ -33,7 +33,7 @@ namespace Interactions2.Core
         public void Update()
         {
             // Ensure that mouse isn't over ui (game objects aren't tracked by the eventsystem, so ispointer would return false
-            if (Camera.main == null || EventSystem.current.IsPointerOverGameObject())
+            if (!isLocalPlayer || Camera.main == null || EventSystem.current.IsPointerOverGameObject())
                 return;
 
             if (Input.GetButtonDown("Click"))
