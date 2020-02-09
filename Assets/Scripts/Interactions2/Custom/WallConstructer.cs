@@ -10,21 +10,24 @@ namespace Interactions2.Custom
      * 
      * <inheritdoc cref="Core.Interaction" />
      */
-    public class WallConstructer : Core.InteractionComponent
+    public class WallConstructer : MonoBehaviour, Core.Interaction
     {
         [SerializeField]
         private Turf wallToConstruct = null;
         [SerializeField]
         private Turf floorToConstruct = null;
 
-        public override bool CanInteract(GameObject tool, GameObject target, RaycastHit at)
-        {
-            targetTile = target.GetComponentInParent<TileObject>();
+        public Core.InteractionEvent Event { get; set; }
+        public string Name => ShouldDeconstruct ? "Deconstruct Wall" : "Construct Wall";
 
-            return tool == gameObject && targetTile != null;
+        public bool CanInteract()
+        {
+            targetTile = Event.target.GetComponentInParent<TileObject>();
+
+            return Event.tool == gameObject && targetTile != null;
         }
 
-        public override void Interact(GameObject tool, GameObject target, RaycastHit at)
+        public void Interact()
         {
             // Note: CanInteract is always called before Interact, so we KNOW targetTile is defined.
             var tileManager = FindObjectOfType<TileManager>();
@@ -42,6 +45,7 @@ namespace Interactions2.Custom
             tileManager.UpdateTile(targetTile.transform.position, tile);
         }
 
+        bool ShouldDeconstruct => targetTile.Tile.turf?.isWall == true;
         TileObject targetTile;
     }
 }

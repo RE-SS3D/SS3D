@@ -13,18 +13,20 @@ namespace Interactions2.Custom
      * <inheritdoc cref="Core.Interaction"/>
      */
     [CreateAssetMenu(fileName = "Pickup", menuName = "Interactions2/Pickup")]
-    public class Pickup : Core.InteractionSO
+    public class Pickup : InteractionSO
     {
-        public override bool CanInteract(GameObject tool, GameObject target, RaycastHit at)
+        public override string Name => "Pick Up";
+
+        public override bool CanInteract()
         {
             // TODO: Should also be within certain range.
-            return target.GetComponent<Item>() != null
-                && tool.transform.root.GetComponent<Hands>().GetItemInHand() == null;
+            return Event.target.GetComponent<Item>() != null
+                && Event.Player.GetComponent<Hands>().GetItemInHand() == null;
         }
 
-        public override void Interact(GameObject tool, GameObject target, RaycastHit at)
+        public override void Interact()
         {
-            tool.transform.root.GetComponent<Hands>().Pickup(target);
+            Event.Player.GetComponent<Hands>().Pickup(Event.target);
         }
     }
 }

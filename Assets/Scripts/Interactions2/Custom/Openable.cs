@@ -16,13 +16,15 @@ namespace Interactions2.Custom
      * <inheritdoc cref="Core.Interaction"/>
      */
     [RequireComponent(typeof(Animator))]
-    public class Openable : Core.InteractionComponent
+    public class Openable : MonoBehaviour, Core.Interaction
     {
         public bool Open { get; private set; }
+        public Core.InteractionEvent Event { get; set; }
+        public string Name => "Open";
 
-        public override bool CanInteract(GameObject tool, GameObject target, RaycastHit at) => target == gameObject;
+        public bool CanInteract() => Event.target == gameObject;
 
-        public override void Interact(GameObject tool, GameObject target, RaycastHit at)
+        public void Interact()
         {
             Open = !Open;
             // Start the animator on it's work

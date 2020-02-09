@@ -66,11 +66,16 @@ namespace Interactions2.Core
             var targetInteractions = GetInteractionsFrom(target);
             var toolInteractions = GetInteractionsFrom(tool);
 
+            var interactionEvent = new InteractionEvent(tool, target, hit);
+
             // Collect interactions
             List<Interaction> availableInteractions = targetInteractions.Concat(toolInteractions).Concat(universalInteractions).ToList();
 
             // Filter to usable ones
-            List<Interaction> viableInteractions = availableInteractions.Where(interaction => interaction.CanInteract(tool, target, hit)).ToList();
+            List<Interaction> viableInteractions = availableInteractions.Where(interaction => {
+                interaction.Event = interactionEvent;
+                return interaction.CanInteract();
+            }).ToList();
 
             // Order interactions
             // TODO: Prioritise interactions
@@ -142,16 +147,16 @@ namespace Interactions2.Core
             }
 
             var chosenInteraction = interactions[indexInSource];
+            chosenInteraction.Event = new InteractionEvent(tool, target, hit, connectionToClient);
 
             // Ensure the interaction can happen
-            if(!chosenInteraction.CanInteract(tool, target, hit))
+            if (!chosenInteraction.CanInteract())
             {
                 Debug.LogError($"Interaction recieved from client {gameObject.name} can not occur! Server-client misalignment.");
                 return;
             }
 
-            chosenInteraction.ConnectionToClient = connectionToClient;
-            chosenInteraction.Interact(tool, target, hit);
+            chosenInteraction.Interact();
 
             if(chosenInteraction is ContinuousInteraction)
                 continuousInteraction = chosenInteraction as ContinuousInteraction;
@@ -165,7 +170,8 @@ namespace Interactions2.Core
             var tool = GetActiveTool();
             var target = hit.transform.gameObject;
 
-            bool shouldContinue = continuousInteraction.ContinueInteracting(tool, target, hit);
+            continuousInteraction.Event = new InteractionEvent(tool, target, hit, connectionToClient);
+            bool shouldContinue = continuousInteraction.ContinueInteracting();
 
             if(!shouldContinue) {
                 continuousInteraction.EndInteraction();
@@ -202,8 +208,12 @@ namespace Interactions2.Core
 
         private static List<Interaction> GetInteractionsFrom(GameObject gameObject)
         {
-            return gameObject.GetComponent<InteractionAttacher>()?.Interactions
-                ?? gameObject.GetComponents<Interaction>().ToList();
+            var attachedInteractions = gameObject.GetComponent<InteractionAttacher>()?.interactions.ToList<Interaction>() ?? new List<Interaction>();
+            attachedInteractions.AddRange(gameObject.GetComponents<Interaction>());
+            
+            // TODO: use InteractionCreator
+
+            return attachedInteractions;
         }
 
         // Server and client track these seperately

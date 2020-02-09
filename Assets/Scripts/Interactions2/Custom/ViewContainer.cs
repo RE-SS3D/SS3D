@@ -11,27 +11,27 @@ namespace Interactions2.Custom
     public class ViewContainer : Core.InteractionSO
     {
         public float maxDistance = 5.0f;
+        public override string Name => "Open Container";
 
-        public override bool CanInteract(GameObject tool, GameObject target, RaycastHit at)
+        public override bool CanInteract()
         {
-            return target.GetComponent<Container>() && Vector3.Distance(tool.transform.position, target.transform.position) < maxDistance;
+            return Event.target.GetComponent<Container>() && Vector3.Distance(Event.tool.transform.position, Event.target.transform.position) < maxDistance;
         }
 
-        public override void Interact(GameObject tool, GameObject target, RaycastHit at)
+        public override void Interact()
         {
-            var player = tool.transform.root.gameObject;
-            var inventory = player.GetComponent<Inventory.Inventory>();
+            var inventory = Event.Player.GetComponent<Inventory.Inventory>();
 
-            if(!inventory.HasContainer(target)) {
+            if(!inventory.HasContainer(Event.target)) {
                 // Use the Container Attachment component, which will automatically disconnect the container if the player leaves range.
-                var attacher = player.AddComponent<ContainerAttachment>();
-                attacher.container = target.GetComponent<Container>();
+                var attacher = Event.Player.AddComponent<ContainerAttachment>();
+                attacher.container = Event.target.GetComponent<Container>();
                 attacher.inventory = inventory;
                 attacher.range = maxDistance;
             }
             else {
                 // If they have it open and they click on the target, we close the ui.
-                inventory.RemoveContainer(target);
+                inventory.RemoveContainer(Event.target);
             }
         }
     }

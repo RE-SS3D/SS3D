@@ -17,10 +17,12 @@ namespace Interactions2.Core
      */
     public abstract class InteractionSO : ScriptableObject, Interaction
     {
-        public NetworkConnection ConnectionToClient { get; set; }
+        public virtual InteractionEvent Event { get; set; }
+        public virtual string Name => name;
 
-        public abstract bool CanInteract(GameObject tool, GameObject target, RaycastHit at);
+        public abstract bool CanInteract();
 
-        public abstract void Interact(GameObject tool, GameObject target, RaycastHit at);
+        public abstract void Interact();
+
     }
 }

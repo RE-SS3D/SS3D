@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using Mirror;
 
 namespace Interactions2.Core
 {
@@ -21,14 +19,15 @@ namespace Interactions2.Core
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Word starts with I!")]
     public interface Interaction
     {
+        InteractionEvent Event { get; set; }
+        string Name { get; }
+
         /**
          * <summary>Whether a player is able to perform the given action</summary>
-         * <param name="tool">The tool activating the interaction</param>
-         * <param name="target">The target instance the interaction is occuring on</param>
-         * <param name="at">Specific information about exactly where the interaction occured</param>
          * <returns>Whether or not the interaction can occur.</returns>
          */
-        bool CanInteract(GameObject tool, GameObject target, RaycastHit at);
+        bool CanInteract();
+
         /**
          * <summary>Performs the interaction on the server</summary>
          * <remarks>
@@ -38,15 +37,7 @@ namespace Interactions2.Core
          *  
          *  You can assume that if this is called, <see cref="CanInteract(GameObject, GameObject, RaycastHit)"/> was called and returned true.
          * </remarks>
-         * <param name="tool">The tool activating the interaction</param>
-         * <param name="target">The target instance the interaction is occuring on</param>
-         * <param name="at">Specific information about exactly where the interaction occured</param>
          */
-        void Interact(GameObject tool, GameObject target, RaycastHit at);
-
-        /**
-         * <summary>This member can only be relied on being present inside <see cref="Interact(GameObject, GameObject, RaycastHit)"/></summary>
-         */
-        NetworkConnection ConnectionToClient { get; set; }
+        void Interact();
     }
 }

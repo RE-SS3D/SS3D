@@ -6,10 +6,10 @@ namespace Interactions2.Core
     public interface ContinuousInteraction : Interaction
     {
         /**
-         * <summary>Continues the interaction's occuring</summary>
+         * <summary>Continues the interaction's occuring. Will be called immediately after updating <see cref="Interaction.Event"/></summary>
          * <returns>Whether or not the interaction can continue. If not, then EndInteraction is called.</returns>
          */
-        bool ContinueInteracting(GameObject tool, GameObject target, RaycastHit hit);
+        bool ContinueInteracting();
 
         /**
          * <summary>Ends the interaction.</summary>

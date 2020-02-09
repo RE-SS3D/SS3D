@@ -15,25 +15,29 @@ namespace Interactions2.Custom
     [CreateAssetMenu(fileName = "Drops", menuName = "Interactions2/Drop")]
     public class Drops : Core.InteractionSO
     {
-        public override bool CanInteract(GameObject tool, GameObject target, RaycastHit at)
+        public override string Name => "Drop";
+
+        public override bool CanInteract()
         {
             // An item can be dropped on a floor or any fixture attached to a floor.
 
-            var tile = target.transform.parent?.GetComponent<TileObject>();
+            var tile = Event.Player?.GetComponent<TileObject>();
             var isFloor = (tile?.Tile.turf?.isWall ?? true) == false;
 
-            return tool.transform.root.GetComponent<Hands>().GetItemInHand() != null && isFloor;
+            hands = Event.Player.GetComponent<Hands>();
+
+            return hands.GetItemInHand() != null && isFloor;
         }
 
-        public override void Interact(GameObject tool, GameObject target, RaycastHit at)
+        public override void Interact()
         {
-            tool.transform.root
-                .GetComponent<Hands>()
-                .PlaceHeldItem(
-                    at.point + at.normal * 0.1f,
-                    // Item is rotated to point in direction of interaction from player
-                    Quaternion.LookRotation(tool.transform.root.up, at.point - tool.transform.root.position)
-                );
+            hands.PlaceHeldItem(
+                Event.at.point + Event.at.normal * 0.1f,
+                // Item is rotated to point in direction of interaction from player
+                Quaternion.LookRotation(Event.Player.transform.up, Event.at.point - Event.Player.transform.position)
+            );
         }
+
+        private Hands hands;
     }
 }

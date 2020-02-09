@@ -15,22 +15,25 @@ namespace Interactions2.Custom
      * <inheritdoc cref="Core.Interaction"/>
      */
     [RequireComponent(typeof(Container))]
-    public class Storeable : Core.InteractionComponent
+    public class Storeable : MonoBehaviour, Core.Interaction
     {
         /// <summary>Only allows storing when this object is open. Assumes that this object has Openable</summary>
         [SerializeField]
         private bool onlyWhenOpen = false;
 
-        public override bool CanInteract(GameObject tool, GameObject target, RaycastHit at)
+        public Core.InteractionEvent Event { get; set; }
+        public string Name => "Store";
+
+        public bool CanInteract()
         {
             // TODO: Should also be within certain range.
-            return target == gameObject && CanStore() && tool.transform.root.GetComponent<Hands>().GetItemInHand() != null;
+            playerHands = Event.Player.GetComponent<Hands>();
+            return Event.target == gameObject && CanStore() && playerHands.GetItemInHand() != null;
         }
 
-        public override void Interact(GameObject tool, GameObject target, RaycastHit at)
+        public void Interact()
         {
-            var hands = tool.transform.root.GetComponent<Hands>();
-            tool.transform.root.GetComponent<Inventory.Inventory>().MoveItem(hands.ContainerObject, hands.HeldSlot, target);
+            Event.Player.GetComponent<Inventory.Inventory>().MoveItem(playerHands.ContainerObject, playerHands.HeldSlot, Event.target);
         }
 
         private bool CanStore()
@@ -39,5 +42,8 @@ namespace Interactions2.Custom
                 return GetComponent<Openable>()?.Open ?? false;
             return true;
         }
+
+        // Set in CanInteract
+        private Hands playerHands;
     }
 }

@@ -9,29 +9,25 @@ namespace Interactions2.Custom
         [SerializeField]
         private new Light light = null;
 
-        public NetworkConnection ConnectionToClient { get; set; }
+        public Core.InteractionEvent Event { get; set; }
+        public string Name => "Turn on";
 
         public void OnEnable()
         {
             light.enabled = false;
         }
 
-        public bool CanInteract(GameObject tool, GameObject target, RaycastHit at)
+        public bool CanInteract()
         {
-            return tool == gameObject;
+            return Event.tool == gameObject;
         }
 
-        public void Interact(GameObject tool, GameObject target, RaycastHit at)
+        public void Interact()
         {
             light.enabled = true;
             RpcSetLight(true);
         }
-
-        public bool ContinueInteracting(GameObject tool, GameObject target, RaycastHit hit)
-        {
-            return true;
-        }
-
+        public bool ContinueInteracting() => true;
         public void EndInteraction()
         {
             light.enabled = false;

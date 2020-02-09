@@ -12,11 +12,8 @@ namespace Interactions2.Core
      */
     public class InteractionAttacher : MonoBehaviour
     {
-        public List<Interaction> Interactions => interactions.Union(GetComponents<Interaction>()).ToList();
-
         // WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO! Unity 2019.3 will support interface lists.
         // Meaning, when it comes out, we can do [SerializeReference] and Interaction can be a fucking Interface again!!
-        [SerializeField]
-        private InteractionSO[] interactions = null;
+        public InteractionSO[] interactions = null;
     }
 }
