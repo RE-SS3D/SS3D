@@ -14,13 +14,6 @@ namespace Interactions2.Core
      */
     public class InteractionHandler : NetworkBehaviour
     {
-        private enum InteractionSource
-        {
-            Target,
-            Tool,
-            Universal
-        }
-
         /// <summary>Interactions which should be included at all applicable times</summary>
         [SerializeField]
         [Tooltip("Interactions which should be included at all applicable times")]
@@ -30,6 +23,10 @@ namespace Interactions2.Core
         [Tooltip("Mask for physics to use when finding targets")]
         private LayerMask selectionMask = 0;
 
+        // Must be the one ui context menu prefab object
+        [SerializeField]
+        private GameObject menuPrefab = null;
+
         public void Update()
         {
             // Ensure that mouse isn't over ui (game objects aren't tracked by the eventsystem, so ispointer would return false
@@ -37,7 +34,18 @@ namespace Interactions2.Core
                 return;
 
             if (Input.GetButtonDown("Click"))
-                RunDefaultInteraction();
+            {
+                if(activeMenu != null) {
+                    Destroy(activeMenu.gameObject);
+                    return;
+                }
+                
+                // Run the most prioritised action
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                var viableInteractions = GetViableInteractions(ray);
+
+                CmdRunInteraction(ray, 0, viableInteractions[0].Name);
+            }
             else if (continuousInteraction != null && Input.GetButton("Click"))
             {
                 var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -48,61 +56,23 @@ namespace Interactions2.Core
                 CmdEndInteraction();
                 continuousInteraction = null;
             }
-        }
+            else if (Input.GetButtonDown("Secondary Click"))
+            {
+                if(activeMenu != null) {
+                    Destroy(activeMenu.gameObject);
+                }
 
-        /**
-         * Finds and determines the interaction to run.
-         */
-        private void RunDefaultInteraction()
-        {
-            // Get the target and tool
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (!Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask))
-                return;
+                // Create a menu that will run the given action when clicked
+                var obj = Instantiate(menuPrefab, transform);
+                activeMenu = obj.GetComponent<UI.MenuUI>();
 
-            var target = hit.transform.gameObject;
-            var tool = GetActiveTool();
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                var viableInteractions = GetViableInteractions(ray);
 
-            var targetInteractions = GetInteractionsFrom(target);
-            var toolInteractions = GetInteractionsFrom(tool);
-
-            var interactionEvent = new InteractionEvent(tool, target, hit);
-
-            // Collect interactions
-            List<Interaction> availableInteractions = targetInteractions.Concat(toolInteractions).Concat(universalInteractions).ToList();
-
-            // Filter to usable ones
-            List<Interaction> viableInteractions = availableInteractions.Where(interaction => {
-                interaction.Event = interactionEvent;
-                return interaction.CanInteract();
-            }).ToList();
-
-            // Order interactions
-            // TODO: Prioritise interactions
-
-            if (viableInteractions.Count == 0)
-                return;
-            var chosenInteraction = viableInteractions[0];
-
-            // TODO: Condense this code
-            var source = InteractionSource.Universal;
-            var indexInSource = 0;
-            if (targetInteractions.Contains(chosenInteraction)) {
-                source = InteractionSource.Target;
-                indexInSource = targetInteractions.IndexOf(chosenInteraction);
+                activeMenu.Position = Input.mousePosition;
+                activeMenu.Interactions = viableInteractions;
+                activeMenu.onSelect = interaction => CmdRunInteraction(ray, viableInteractions.IndexOf(interaction), interaction.Name);
             }
-            else if (toolInteractions.Contains(chosenInteraction)) {
-                source = InteractionSource.Tool;
-                indexInSource = toolInteractions.IndexOf(chosenInteraction);
-            }
-            else {
-                indexInSource = Array.IndexOf(universalInteractions, chosenInteraction);
-            }
-
-            if (chosenInteraction is ContinuousInteraction)
-                continuousInteraction = chosenInteraction as ContinuousInteraction;
-
-            CmdRunInteraction(ray, source, indexInSource);
         }
 
         /**
@@ -115,44 +85,28 @@ namespace Interactions2.Core
          * The ray the click came from. RaycastHit is not serializable and this ensures
          * that a user can't try to interact with something that should be invisible.
          * </param>
-         * <param name="interactionSource">
-         * What object the interaction came from.
+         * <param name="index">
+         * The index into the prioritised interaction list this interaction is at
          * </param>
-         * <param name="indexInSource">
-         * The index of the interaction in the (original) interaction list of the given object
+         * <param name="name">
+         * To confirm the interaction is the correctly selected one.
          * </param>
-         * TODO: Some third parameter about interaction (name?) to confirm that is the correct interaction
          */
         [Command]
-        private void CmdRunInteraction(Ray ray, InteractionSource interactionSource, int indexInSource)
+        private void CmdRunInteraction(Ray ray, int index, string name)
         {
-            Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask);
-
-            var target = hit.transform.gameObject;
-            var tool = GetActiveTool();
-
-            // Get the correct list of interactions based on the source
-            List<Interaction> interactions = null;
-            switch(interactionSource)    
-            {
-                case InteractionSource.Target:
-                    interactions = GetInteractionsFrom(target);
-                    break;
-                case InteractionSource.Tool:
-                    interactions = GetInteractionsFrom(tool);
-                    break;
-                case InteractionSource.Universal:
-                    interactions = universalInteractions.ToList<Interaction>();
-                    break;
-            }
-
-            var chosenInteraction = interactions[indexInSource];
-            chosenInteraction.Event = new InteractionEvent(tool, target, hit, connectionToClient);
+            var chosenInteraction = GetViableInteractions(ray)[index];
 
             // Ensure the interaction can happen
             if (!chosenInteraction.CanInteract())
             {
                 Debug.LogError($"Interaction recieved from client {gameObject.name} can not occur! Server-client misalignment.");
+                return;
+            }
+
+            if (chosenInteraction.Name != name)
+            {
+                Debug.LogError($"Interaction at index {index} did not have the expected name of {name}");
                 return;
             }
 
@@ -200,6 +154,34 @@ namespace Interactions2.Core
             continuousInteraction = null;
         }
 
+        private List<Interaction> GetViableInteractions(Ray ray)
+        {
+            // Get the target and tool
+            if (!Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask))
+                return new List<Interaction>();
+
+            var target = hit.transform.gameObject;
+            var tool = GetActiveTool();
+
+            var targetInteractions = GetInteractionsFrom(target);
+            var toolInteractions = GetInteractionsFrom(tool);
+
+            var interactionEvent = new InteractionEvent(tool, target, hit);
+
+            // Collect interactions
+            List<Interaction> availableInteractions = targetInteractions.Concat(toolInteractions).Concat(universalInteractions).ToList();
+
+            availableInteractions.ForEach(interaction => interaction.Event = interactionEvent);
+
+            // Order interactions
+            // TODO: Prioritise interactions
+
+            // Filter to usable ones
+            return availableInteractions
+                .Where(interaction => interaction.CanInteract())
+                .ToList();
+        }
+
         private GameObject GetActiveTool()
         {
             // TODO: Hands should extend a ToolHolder or something like that.
@@ -218,5 +200,6 @@ namespace Interactions2.Core
 
         // Server and client track these seperately
         private ContinuousInteraction continuousInteraction = null;
+        private UI.MenuUI activeMenu = null;
     }
 }

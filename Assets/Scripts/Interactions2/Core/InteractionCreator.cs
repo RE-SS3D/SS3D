@@ -11,9 +11,12 @@ namespace Interactions2.Core
      * <remarks>
      * TODO: Once Unity has C# 8 default interface implementations, Interaction and ContinuousInteraction could be made sub-interfaces of this.
      * </remarks>
+     * TODO: This is not used yet, just here for demonstration
      */
     public interface InteractionCreator
     {
+        string Name { get; }
+
         /**
          * <summary>Based on the interaction info, create a list of possible interactions</summary>
          * <returns>A list of interactions</returns>
@@ -27,22 +30,14 @@ namespace Interactions2.Core
     public class InteractionInstance : Interaction
     {
         // Used for that special { name = ... } construction
-        public readonly Action<InteractionEvent> interact;
-        public readonly string name;
+        public Action<InteractionEvent> interact;
+        public string name;
 
         public InteractionEvent Event { get; set; }
         public string Name => name;
 
-        public bool CanInteract()
-        {
-            // Assume if it's being returned in the Generate list, it's ok.
-            return true;
-        }
-
-        public void Interact()
-        {
-            interact.Invoke(Event);
-        }
+        public bool CanInteract() => true;
+        public void Interact() => interact.Invoke(Event);
     }
     /**
      * <summary>Allow creating of a ContinuousInteraction inline</summary>
@@ -50,31 +45,19 @@ namespace Interactions2.Core
     public class ContinuousInteractionInstance : ContinuousInteraction
     {
         // Used for that special { name = ... } construction
-        public readonly string name;
-        public readonly Action<InteractionEvent> beginInteraction;
-        public readonly Func<InteractionEvent, bool> continueInteraction;
-        public readonly Action endInteraction;
+        public string name;
+        public Action<InteractionEvent> beginInteraction;
+        public Func<InteractionEvent, bool> continueInteraction;
+        public Action endInteraction;
 
         public InteractionEvent Event { get; set; }
         public string Name => name;
 
-        public bool CanInteract()
-        {
-            // Assume if it's being returned in the Generate list, it's ok.
-            return true;
-        }
+        // Assume if it's being returned in the Generate list, it's ok.
+        public bool CanInteract() => true;
 
-        public void Interact()
-        {
-            beginInteraction.Invoke(Event);
-        }
-        public bool ContinueInteracting()
-        {
-            return continueInteraction.Invoke(Event);
-        }
-        public void EndInteraction()
-        {
-            endInteraction.Invoke();
-        }
+        public void Interact() => beginInteraction.Invoke(Event);
+        public bool ContinueInteracting() => continueInteraction.Invoke(Event);
+        public void EndInteraction() => endInteraction.Invoke();
     }
 }

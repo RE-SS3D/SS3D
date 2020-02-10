@@ -21,7 +21,7 @@ namespace Interactions2.Custom
         {
             // An item can be dropped on a floor or any fixture attached to a floor.
 
-            var tile = Event.Player?.GetComponent<TileObject>();
+            var tile = Event.target.transform.parent?.GetComponent<TileObject>();
             var isFloor = (tile?.Tile.turf?.isWall ?? true) == false;
 
             hands = Event.Player.GetComponent<Hands>();

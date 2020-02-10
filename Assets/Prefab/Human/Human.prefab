@@ -361,6 +361,8 @@ MonoBehaviour:
   selectionMask:
     serializedVersion: 2
     m_Bits: 1148723
+  menuPrefab: {fileID: 6380575431912782132, guid: 63bda78afb3955e41a15f4f84de4c89a,
+    type: 3}
 --- !u!114 &666907628477534858
 MonoBehaviour:
   m_ObjectHideFlags: 0
