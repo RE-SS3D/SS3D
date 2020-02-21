@@ -153,8 +153,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  m_AssetId: 808fc3b770e18cf4a8fe9dbd48fa2444
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 2810381394
 --- !u!114 &-5918456934534797284
 MonoBehaviour:
   m_ObjectHideFlags: 0
