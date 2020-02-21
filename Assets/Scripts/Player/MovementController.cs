@@ -32,7 +32,6 @@ namespace Mirror
             characterAnimator = GetComponent<Animator>();
             chatRegister = GetComponent<ChatRegister>();
             mainCamera = Camera.main;
-            heightOffGround = 10;
             //heightOffGround = transform.position.y;
         }
 
