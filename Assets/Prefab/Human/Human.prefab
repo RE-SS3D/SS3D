@@ -1,17 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &609207370
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1369577694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d6f043af44088e47bedc9553867edc8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &25488858976453876
 GameObject:
   m_ObjectHideFlags: 0
@@ -97,7 +85,7 @@ GameObject:
   - component: {fileID: 1958784860310624992}
   - component: {fileID: -471130512158292522}
   - component: {fileID: -6858114181086538097}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Human
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -130,7 +118,7 @@ Transform:
   - {fileID: 5595929412608051534}
   - {fileID: 1885641736918616361}
   - {fileID: 1078238172721072839}
-  - {fileID: 1369801982}
+  - {fileID: 5238271721860252886}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -166,8 +154,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  m_AssetId: 
-  m_SceneId: 1441387407
+  m_AssetId: 808fc3b770e18cf4a8fe9dbd48fa2444
+  m_SceneId: 0
 --- !u!114 &-5918456934534797284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4260,7 +4248,7 @@ Transform:
   m_Father: {fileID: 9114095814780560127}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1369677436
+--- !u!1001 &5238271721860128340
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -4269,7 +4257,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
       propertyPath: m_Name
-      value: BlobShadowProjector (1)
+      value: BlobShadowProjector
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4315,37 +4303,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 11900000, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
-      propertyPath: m_NearClipPlane
-      value: -0.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 11900000, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
-      propertyPath: m_FarClipPlane
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 11900000, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
-      propertyPath: m_OrthographicSize
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 11900000, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
-      propertyPath: m_Orthographic
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11900000, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
-      propertyPath: m_IgnoreLayers.m_Bits
-      value: 32768
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
---- !u!1 &1369577694 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 100002, guid: 28a5e79925e3ce04a82856c16a572cbe,
-    type: 3}
-  m_PrefabInstance: {fileID: 1369677436}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1369801982 stripped
+--- !u!4 &5238271721860252886 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe,
     type: 3}
-  m_PrefabInstance: {fileID: 1369677436}
+  m_PrefabInstance: {fileID: 5238271721860128340}
   m_PrefabAsset: {fileID: 0}
