@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Effects
 {
@@ -11,34 +12,23 @@ namespace Effects
         {
             parent = this.transform.parent;
 
-            TurnDynamicShadowsOnIfTrue(false);
+            SetDynamicShadowsOnParent(false);
         }
 
         private void OnDestroy()
         {
-            TurnDynamicShadowsOnIfTrue(true);
+            SetDynamicShadowsOnParent(true);
         }
 
-        private void TurnDynamicShadowsOnIfTrue(bool b)
+        private void SetDynamicShadowsOnParent(bool enabled)
         {
-            if (b)
+            var mode = enabled ? ShadowCastingMode.On : ShadowCastingMode.Off;
+            foreach (Transform child in parent)
             {
-                foreach (Transform child in parent)
+                var renderer = child.GetComponent<Renderer>();
+                if (renderer)
                 {
-                    if (child.GetComponent<Renderer>() != null)
-                    {
-                        child.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
-                    }
-                }
-            }
-            else
-            {
-                foreach (Transform child in parent)
-                {
-                    if (child.GetComponent<Renderer>() != null)
-                    {
-                        child.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-                    }
+                    renderer.shadowCastingMode = mode;
                 }
             }
         }
