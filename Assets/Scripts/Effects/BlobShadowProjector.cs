@@ -11,35 +11,34 @@ namespace Effects
         {
             parent = this.transform.parent;
 
-            TurnShadowCastingOffInChildren();
+            TurnDynamicShadowsOnIfTrue(false);
         }
 
         private void OnDestroy()
         {
-            TurnShadowCastingOnInChildren();
+            TurnDynamicShadowsOnIfTrue(true);
         }
 
-        //Turns dynamic shadows off for the parent transform
-        private void TurnShadowCastingOffInChildren()
+        private void TurnDynamicShadowsOnIfTrue(bool b)
         {
-
-            foreach (Transform child in parent)
+            if (b)
             {
-                if (child.GetComponent<Renderer>() != null)
+                foreach (Transform child in parent)
                 {
-                    child.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    if (child.GetComponent<Renderer>() != null)
+                    {
+                        child.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+                    }
                 }
             }
-        }
-
-        //Turns dynamic shadows on
-        private void TurnShadowCastingOnInChildren()
-        {
-            foreach (Transform child in parent)
+            else
             {
-                if (child.GetComponent<Renderer>() != null)
+                foreach (Transform child in parent)
                 {
-                    child.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+                    if (child.GetComponent<Renderer>() != null)
+                    {
+                        child.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    }
                 }
             }
         }
