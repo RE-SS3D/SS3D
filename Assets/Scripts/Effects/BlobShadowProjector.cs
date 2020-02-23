@@ -1,26 +1,46 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class BlobShadowProjector : MonoBehaviour
+namespace Effects
 {
-    private Transform parent = null;
 
-    void Start()
+    public class BlobShadowProjector : MonoBehaviour
     {
-        parent = this.transform.parent;
+        private Transform parent = null;
 
-        turnShadowCastingOffInChildren();
-    }
-
-    //Turns dynamic shadows off the parent transform
-    private void turnShadowCastingOffInChildren()
-    {
-
-        foreach (Transform child in parent)
+        void Start()
         {
-            if (child.GetComponent<Renderer>() != null) {
-                child.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            parent = this.transform.parent;
+
+            TurnShadowCastingOffInChildren();
+        }
+
+        private void OnDestroy()
+        {
+            TurnShadowCastingOnInChildren();
+        }
+
+        //Turns dynamic shadows off for the parent transform
+        private void TurnShadowCastingOffInChildren()
+        {
+
+            foreach (Transform child in parent)
+            {
+                if (child.GetComponent<Renderer>() != null)
+                {
+                    child.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                }
+            }
+        }
+
+        //Turns dynamic shadows on
+        private void TurnShadowCastingOnInChildren()
+        {
+            foreach (Transform child in parent)
+            {
+                if (child.GetComponent<Renderer>() != null)
+                {
+                    child.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+                }
             }
         }
     }
