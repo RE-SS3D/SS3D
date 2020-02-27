@@ -108,8 +108,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  m_AssetId: 
-  m_SceneId: 2070503490
+  localPlayerAuthority: 0
+  m_AssetId: f410120a6744faf42a497974e0c53846
+  m_SceneId: 0
 --- !u!114 &-2242808717679091692
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,7 +123,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncMode: 0
   syncInterval: 0.1
   compressRotation: 1
-  clientAuthority: 0
