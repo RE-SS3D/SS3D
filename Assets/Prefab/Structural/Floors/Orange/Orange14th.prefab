@@ -110,7 +110,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 5635720d7bf186943a5935a082cc1c0b
-  m_SceneId: 
+  m_SceneId: 0
 --- !u!114 &-5092149646150886050
 MonoBehaviour:
   m_ObjectHideFlags: 0
