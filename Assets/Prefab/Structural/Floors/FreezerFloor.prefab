@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2523290996575343201}
   - component: {fileID: 5870127389560564871}
   m_Layer: 0
-  m_Name: FreezerFloor
+  m_Name: FrozenFloor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
