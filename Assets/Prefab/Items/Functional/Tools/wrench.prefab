@@ -51,8 +51,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
+  localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 3760567697
+  m_SceneId: 3297768176
 --- !u!33 &9196258322038297090
 MeshFilter:
   m_ObjectHideFlags: 0
