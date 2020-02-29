@@ -6,35 +6,35 @@ labels: 'bug'
 assignees: ''
 
 ---
-<!-- Text within these arrows are notes for you and should be deleted -->
+<!-- Text within these arrows are notes for you and should be deleted. -->
 
 ### Summary
 
-<!-- Provide a general summary of the problem here and in the title -->
+<!-- Provide a general summary of the problem here and in the title. -->
 
 ### Current Behavior
 
-<!-- Give a consice explanation of the problem in more detail here -->
+<!-- Give a concise explanation of the problem in more detail here. -->
 
 ### Expected Behavior
 
-<!-- Explain what should be happening instead -->
+<!-- Explain what should be happening instead. -->
 
 ### Possible Solution
 
-<!-- Not obligatory, but suggest any potental causes or fixes for the bug -->
+<!-- Not obligatory, but suggest any potential causes/fixes for the bug. -->
 
 ### Steps to Reproduce
 
-<!-- Provide step by step instructions for reproducing the bug-->
+<!-- Provide step by step instructions for reproducing the bug.-->
 
-<!-- Include photos or videos if possible to help troubleshooters -->
+<!-- Include photos or videos if possible to help troubleshooters. -->
 
 ### Context (Environment)
 
 <!-- How has this issue affected you? What are you trying to accomplish? -->
 
-<!-- Providing context helps us come up with a solution -->
+<!-- Providing context helps us come up with a solution. -->
 
 <!-- What version of the client are you using? -->
 

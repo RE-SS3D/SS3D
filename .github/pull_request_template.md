@@ -1,32 +1,35 @@
-## Purpose
-Description for what this PR is meant to achieve. Can also explain how in depth the feature/fix is and what it still lacks.
-Example:
-*This PR aims to add a basic implementation for internal organ simulation for living creatures. It implements body organs as a concept, and adds methods for interactions between organs. Additionally it ties the organs into the body damage and limb detachment systems. Since we have eating and blood features, only the stomach and heart organs have been implemented. 
-This PR does not implement lungs, or brains because we don't have atmospherics or soul/conciousness mechanics.*
+<!-- Text within these arrows are notes for you and should be deleted. -->
 
-## Screenshots, gifs, videos (Encouraged, but optional)
-One or more screenshot or moving imagery of what his PR achieves. These will not be used anywhere, but is just to help reviewers know what is going on. You may want to submit the same image to the devblog.
+### Summary
 
-## Changes to existing Unity files (Optional if none)
-A list of every prefab and scene file that was changed and why/how they were changed.
-Example:
-- **Human.prefab** was changed to add an organs list to the Body component
-- **TorsoBodypart.prefab** was changed to add support for dismembered torsos still containing organs
-- **Monkey.prefab** was changed to add organ list to the Body component
-- **MainScene.unity** was changed to move the monkey in the scene away from the alcohol, as it can poison itself too early in the game.
+<!-- Provide a general summary of the problem here and in the title. -->
 
-## Technical implementation notes (Optional if exclusively visual changes)
-A more technical description of how the PR does what it does. This is mainly to help provide context for others when reviewing the changes.
-Example:
-*Organs and their associated features are mostly data in nature. Thus the general handling happens in the Body component. The possible internal organ types listed in the `InternalOrganType.cs` enum. Specific organs are arranged by creature and grouped by the organ type. Functionality is mostly handled through interfaces. There is general support of a physical representation of an organ in the game world (like during surgery or mutilation), but it has not been implemented at this time.*
+<!-- Follow with a more consice explanation of the change here. -->
 
-## Known issues (Optional if none)
-A list of things not working exactly as intended. Either because some other system is unfinished or due to being beyond the scope of this PR. In general, PRs with bugs directly related to the feature being introduced should not be submitted.
-Example:
-- Not all food has any effect on the stomach organ, as some foods are lacking nutritional/composition data.
-- This basic implementation does not support multiple organs of the same type in a body. We still need to decide how that would work.
+<!-- What features does this change include/not include? -->
 
-## Fixes (Optional if none)
-List of issues (or pull requests) that this pull request closes. The list has to have a format that is compatible with GitHub such that they will automatically closed upon merge of this pull request. One issue per line
-- Fixes #IssueNumber
+## Pictures/Videos (optional)
 
+<!-- Include photos or videos if possible to help reviewers. -->
+
+<!-- It may also be used in our monthly devblog. -->
+
+## Changes to Files (optional)
+
+<!-- List any major asset/scene changes and why/how they were changed. -->
+
+## Technical Notes (optional)
+
+<!-- Provide a more technical description of the changes to help save the reviewers some time. -->
+
+## Known issues (optional)
+
+<!-- List anything not working as intended, either because some other system is unfinished or due to being beyond the scope of this PR. -->
+
+<!-- Any known bugs will likely require sorting out before the PR merges. -->
+
+## Fixes (optional)
+
+<!-- List any issues or other PRs connected to this one. -->
+
+<!-- If this PR closes another from your list, add "Closes" before the number (e.g. "Closes #123"). -->
