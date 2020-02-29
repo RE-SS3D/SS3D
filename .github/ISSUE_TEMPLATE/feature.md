@@ -1,8 +1,8 @@
 ---
-name: 'Feature '
+name: Feature
 about: This is a feature to design and implement
-title: "[Feature] Feature Name"
-labels: feature
+title: "Feature Name"
+labels: 'feature'
 assignees: ''
 
 ---
