@@ -3,6 +3,10 @@
 This style guide is based on [this other C# style guide](https://github.com/raywenderlich/c-sharp-style-guide/blob/master/README.markdown)
 and expands upon it.
 
+You can use whatever file editor you want, but [Visual Studio](https://code.visualstudio.com/) is probably the most popular and recommended choice.
+It's free, has many features, and integrates well with Unity and Git.
+If you're a student, we recommend getting a copy of [ReSharper](https://www.jetbrains.com/resharper), which adds a lot of code hints and shortcuts that will significantly improve your code quality.
+
 Our overarching goals are **clarity**, **readability** and **simplicity**. Also, this guide is written to keep **Unity** in mind. 
 
 ## Inspiration
