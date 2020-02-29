@@ -59,9 +59,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
-  m_AssetId: 8b781e3bdcf41c8448d30c5d7954cdb5
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 859656046
 --- !u!1 &5181080420812569886
 GameObject:
   m_ObjectHideFlags: 0
@@ -351,7 +350,7 @@ Light:
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
-    m_Bias: 0.0004
+    m_Bias: 0.0033
     m_NormalBias: 0
     m_NearPlane: 0.08439999
     m_CullingMatrixOverride:
