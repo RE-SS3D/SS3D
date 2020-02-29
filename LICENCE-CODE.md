@@ -1,6 +1,6 @@
-MIT License
+# [MIT License](https://tldrlegal.com/license/mit-license)
 
-Copyright (c) 2019 RE:SS3D
+### Copyright (c) 2020 RE:SS3D
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
