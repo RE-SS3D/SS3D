@@ -6,34 +6,36 @@ labels: 'bug'
 assignees: ''
 
 ---
-<!--- Provide a general summary of the issue in the Title above -->
+<!-- Text within these arrows are notes for you and should be deleted -->
 
-### Expected Behavior
-<!--- Tell us what should happen -->
+### Summary
+
+<!-- Provide a general summary of the problem here and in the title -->
 
 ### Current Behavior
-<!--- Tell us what happens instead of the expected behavior -->
+
+<!-- Give a consice explanation of the problem in more detail here -->
+
+### Expected Behavior
+
+<!-- Explain what should be happening instead -->
 
 ### Possible Solution
-<!--- Not obligatory, but suggest any causes or fixes for the bug -->
+
+<!-- Not obligatory, but suggest any potental causes or fixes for the bug -->
 
 ### Steps to Reproduce
-<!--- Provide a link to a live example, or an unambiguous set of steps to -->
-<!--- reproduce this bug. Include code to reproduce, if relevant -->
 
-1.
-2.
-3.
-4.
+<!-- Provide step by step instructions for reproducing the bug-->
+
+<!-- Include photos or videos if possible to help troubleshooters -->
 
 ### Context (Environment)
-<!--- How has this issue affected you? What are you trying to accomplish? -->
-<!--- Providing context helps us come up with a solution that is most useful in the real world -->
 
-<!--- Provide a general summary of the issue in the Title above -->
+<!-- How has this issue affected you? What are you trying to accomplish? -->
 
-### Detailed Description
-<!--- Provide a detailed description of the change or addition you are proposing -->
+<!-- Providing context helps us come up with a solution -->
 
-### Possible Implementation
-<!--- Not obligatory, but suggest an idea for implementing addition or change -->
+<!-- What version of the client are you using? -->
+
+<!-- What operating system are you running? -->
