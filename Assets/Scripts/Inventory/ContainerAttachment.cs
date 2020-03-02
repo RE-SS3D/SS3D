@@ -22,7 +22,9 @@ namespace Inventory
         {
             var distance = inventory.transform.position - container.transform.position;
 
-            if (distance.sqrMagnitude > (range * range))
+            if (!inventory.HasContainer(container.gameObject))
+                Destroy(this);
+            else if (distance.sqrMagnitude > (range * range))
             {
                 inventory.RemoveContainer(container.gameObject);
                 Destroy(this);

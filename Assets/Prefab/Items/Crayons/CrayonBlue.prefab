@@ -15,8 +15,6 @@ GameObject:
   - component: {fileID: 6861260790797903332}
   - component: {fileID: 380944425635963224}
   - component: {fileID: 5645026291506796971}
-  - component: {fileID: 3103123075095989605}
-  - component: {fileID: 2199483822035725595}
   - component: {fileID: 6909165344461321721}
   m_Layer: 0
   m_Name: CrayonBlue
@@ -128,8 +126,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  m_AssetId: 
-  m_SceneId: 2890690206
+  m_AssetId: 703ced386fb467f4da4aeff0c2972cb0
+  m_SceneId: 0
 --- !u!114 &5645026291506796971
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,34 +144,6 @@ MonoBehaviour:
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 1072858492241738576}
---- !u!114 &3103123075095989605
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1072858492241738576}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f31cf7033044701bd2040285a11b93f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  singularInteractions:
-  - {fileID: 11400000, guid: 357e27d36e09bfb4cb7297745bb90664, type: 2}
-  continuousInteractions: []
---- !u!114 &2199483822035725595
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1072858492241738576}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 423fd31b2f264f39a59b5cfb1ea70904, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  kind: {fileID: 11400000, guid: 84d4df51de2c0b947bea8e92f52f3602, type: 2}
 --- !u!114 &6909165344461321721
 MonoBehaviour:
   m_ObjectHideFlags: 0

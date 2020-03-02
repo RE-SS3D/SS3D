@@ -82,9 +82,8 @@ GameObject:
   - component: {fileID: -4112737952016829400}
   - component: {fileID: -3295296730462155149}
   - component: {fileID: -1122543427383380906}
-  - component: {fileID: 1958784860310624992}
-  - component: {fileID: -471130512158292522}
-  - component: {fileID: -6858114181086538097}
+  - component: {fileID: 7747405895790833225}
+  - component: {fileID: 666907628477534858}
   m_Layer: 15
   m_Name: Human
   m_TagString: Untagged
@@ -153,8 +152,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  m_AssetId: 
-  m_SceneId: 2810381394
+  m_AssetId: 808fc3b770e18cf4a8fe9dbd48fa2444
+  m_SceneId: 0
 --- !u!114 &-5918456934534797284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -341,7 +340,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   prefab: {fileID: 5727570337167516730, guid: f86d70d91f583f44e95c5a20aea0fa31, type: 3}
---- !u!114 &1958784860310624992
+--- !u!114 &7747405895790833225
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -350,31 +349,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 289348138277843802}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b8dc905ed8643cb9704a20ea52a943e, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c0362743a29c3f4bb97acacf5ad39f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  interactionsOnClick:
-  - {fileID: 11400000, guid: 46238d5084f126546a9d4ce51fae93a0, type: 2}
-  - {fileID: 11400000, guid: 84d4df51de2c0b947bea8e92f52f3602, type: 2}
-  heldInteractionsOnClick:
-  - {fileID: 11400000, guid: f6a04c063494ad44c805f91d49c7eef4, type: 2}
---- !u!114 &-471130512158292522
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 289348138277843802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 549c7530dc91c894d89364d65c81b540, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
---- !u!114 &-6858114181086538097
+  universalInteractions:
+  - {fileID: 11400000, guid: 0c8a0483b71ea854a8abe65682ee4d01, type: 2}
+  - {fileID: 11400000, guid: 78045406f37bb914aad63bd7b716dd23, type: 2}
+  - {fileID: 11400000, guid: 70d69ad52c9116b42961f1e5cdc029d0, type: 2}
+  selectionMask:
+    serializedVersion: 2
+    m_Bits: 1148723
+  menuPrefab: {fileID: 6380575431912782132, guid: 63bda78afb3955e41a15f4f84de4c89a,
+    type: 3}
+--- !u!114 &666907628477534858
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
