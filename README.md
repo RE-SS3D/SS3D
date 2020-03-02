@@ -1,48 +1,50 @@
-# Space Station 3D
+### ![SS3D](Documents/Images/RESPACESTATION3D.png) Welcome to the repository for the game, RE: Space Station 3D. RE:SS3D is a resurrection of the original SS3D project, which was a demo attempting to recreate [Space Station 13](https://spacestation13.com/) in 3D.
 
-Welcome to the repository. Here you'll find Space Station 3D: a 3D remake of [Space Station 13](https://spacestation13.com/).
+___
 
-If you haven't been there already, the [Discord Server](https://discord.gg/Z3sPhyS) should probably be your first stop. 
-You'll find a lot of helpful people there, capable of answering any questions you may have.
+## CONTRIBUTING:
 
-## Setting up the project
+Head to [CONTRIBUTING.md](CONTRIBUTING.md) for information regarding technical contributions, including how to run the project, reporting bugs, pull requests, and styling code.
 
-### Quickstart Guide
+Also check out [https://ss3d.space/contribute/](https://ss3d.space/contribute/), which has more info and links, especially regarding todo boards and guides for contributing art assets.
 
-1. Clone the repository
-2. Checkout the desired branch
-    * Checkout the **master** branch for the latest stable version
-    * Checkout the **develop** branch for the development version
-3. Open the project in Unity
+# DOWNLOADS:
 
-### Tools and Setup
+[<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
 
-> **tldr;**
->
-> * **Unity 2019.2.0f1**
-> * Any **Git** client, see below.
-> * Whatever tool you need to do your thing
+This is the current state of the RE:SS3D project in a .zip file. You will have to unpack and build the game in Unity on your own.
 
-The game is developed in **Unity 2019.2.0** (you can get it here : https://unity3d.com/get-unity/download/archive). Regardless of if you make code or art, installing Unity will be helpful for getting your contribution in. Upgrading the unity project version is possible in the case that it would help you with a feature or a major update has been passed. However the lead dev is in charge of the upgrade so that the transition can be as smooth as possible across forks.
+[<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://github.com/RE-SS3D/SS3D/releases/latest)
 
-For coding, you can use whatever you want, but [Visual Studio](https://visualstudio.microsoft.com/) is probably the most popular choice. It's free and integrates well with Unity. If you're a student, we recommend getting a copy of [ReSharper](https://www.jetbrains.com/resharper), which adds a lot of code hints and shortcuts that will significantly improve your code quality.
+This is the latest official build of the RE:SS3D project. It currently works on Windows, but needs testing on other operating systems still.
 
-The art style guide recommends using **Blender** for 3D models, but as long as the look and performance match the existing assets, any 3D modeling tool is allowed.
+## COMMUNITY:
 
-To get a hold of the project, you need a **git client**. Git is the software that manages the source. GitHub is the website that we use to host it. Some of the popular options are:
+[<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
-* [GitHub Desktop](https://desktop.github.com/), recommended for beginners
-* [Sourcetree](https://www.sourcetreeapp.com/)
-* [Smart Git](https://www.syntevo.com/smartgit/)
-* [Git Kraken](https://www.gitkraken.com/)
-* [Git CLI](https://git-scm.com/), if you know what you're doing
+Discord is the primary communication for our community and devs.
+There's plenty of helpful people there, capable of answering most of your questions, as well as WIP content.
 
-## Contributing
+[<img src="Documents/Images/reddit.png" alt="Reddit" width="150" align="left">](https://www.reddit.com/r/RESS3D/)
 
-Have a look at [CONTRIBUTING.md](CONTRIBUTING.md) for documentation on how to get your stuff in the game.
+We also have a Reddit, where you will find similar discussion threads and posts showing off WIP content, although it is not as active as our Discord server.
 
-### Forking the repository
+## BOARDS:
 
-If you wish to contribute to this project, you should fork this repository on GitHub, using the Fork button on this page. This naturally requires a GitHub account. You will commit your changes to that repository and make a [pull request](#pull-requests) to merge it into our repository. See [the Contribution Guide](CONTRIBUTING.md)
+[<img src="Documents/Images/github.png" alt="github" width="150" align="left">](https://github.com/RE-SS3D/SS3D/projects)
 
-Soon you will probably find your fork to be out of date. GitHub has made a [pretty clear guide](https://help.github.com/articles/syncing-a-fork/) on how to sync your fork so it is up to date with the shared repository.
+This GitHub repo hosts the board for tracking the completion status of the game itself, via linking GitHub issues and pull requests.
+
+[<img src="Documents/Images/trello.png" alt="Trello" width="150" align="left">](https://trello.com/ress3d)
+
+Trello is used for pretty much everything else, including task boards for various art types (modeling, graphics, audio, etc.) and our management board.
+
+## INFO:
+
+**[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
+
+## LICENSING:
+
+**This project and it's code fall under the [MIT](LICENSE-CODE.md) license.**
+
+**All asset contributions fall under the [CC BY-NC-SA 4.0](LICENSE-ASSETS.md) license.**
