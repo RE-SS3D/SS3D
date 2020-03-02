@@ -1,6 +1,6 @@
 ---
-name: Feature
-about: This is a feature to design and implement
+name: Task
+about: This is a task to implement
 title: "Feature Name"
 labels: 'feature'
 assignees: ''
@@ -10,13 +10,13 @@ assignees: ''
 
 ### Summary
 
-<!-- Provide a general summary of the feature here and in the title -->
+<!-- Provide a general summary of the task here and in the title -->
 
 ### Context 
 
-<!-- Is your feature request related to a problem? Please describe -->
+<!-- Is the task related to a problem? Please describe -->
 
-<!-- Describe the goal of these changes, what is it trying to achieve? -->
+<!-- Describe the goal of the task, what is it trying to achieve? -->
 
 <!-- Describe alternatives you've considered -->
 
@@ -24,9 +24,9 @@ assignees: ''
 
 ### Document
 
-<!-- Is this feature already designed? If so, link the document -->
+<!-- Is the task already designed? If so, link the document -->
 
 ### Dependencies
-<!-- List any features that need to be completed before this one -->
+<!-- List any tasks that need to be completed before this one -->
 
-<!-- List any features that may be needed to validate this one -->
+<!-- List any tasks that may be needed to validate this one -->
