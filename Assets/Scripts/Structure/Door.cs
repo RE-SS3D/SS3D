@@ -135,8 +135,8 @@ public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
         for (int i = transform.childCount - 1; i > 0; --i) {
             var child = transform.GetChild(i);
             if (child.name.StartsWith("WallCap")) {
-                int num = 0;
-                bool success = int.TryParse(child.name.Substring(7), out num);
+                bool success = int.TryParse(child.name.Substring(7), out int num);
+
                 // Remove if no int, int out of bounds, or duplicate
                 if (!success || num > wallCaps.Length || num < 0 || (wallCaps[num] != null && wallCaps[num] != child.gameObject)) {
                     Debug.LogWarning($"Unusual child found whilst searching for wall caps: {child.name}, deleting");
