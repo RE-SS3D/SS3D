@@ -1,8 +1,8 @@
 ---
 name: Task
 about: This is a task to implement
-title: "Feature Name"
-labels: 'feature'
+title: "Task Name"
+labels: 'task'
 assignees: ''
 
 ---
