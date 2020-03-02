@@ -15,8 +15,6 @@ GameObject:
   - component: {fileID: 8099063624607413832}
   - component: {fileID: 8857300185401674424}
   - component: {fileID: 7952536363759554373}
-  - component: {fileID: 6959604250122872337}
-  - component: {fileID: 2821794404548730184}
   - component: {fileID: 5289911865508279092}
   m_Layer: 0
   m_Name: CrayonWhite
@@ -128,8 +126,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  m_AssetId: 
-  m_SceneId: 1583362118
+  m_AssetId: 0f96f7344359c274eb3e9c949eb893c1
+  m_SceneId: 0
 --- !u!114 &7952536363759554373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,34 +144,6 @@ MonoBehaviour:
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 7215848607974574521}
---- !u!114 &6959604250122872337
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7215848607974574521}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f31cf7033044701bd2040285a11b93f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  singularInteractions:
-  - {fileID: 11400000, guid: 357e27d36e09bfb4cb7297745bb90664, type: 2}
-  continuousInteractions: []
---- !u!114 &2821794404548730184
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7215848607974574521}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 423fd31b2f264f39a59b5cfb1ea70904, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  kind: {fileID: 11400000, guid: 84d4df51de2c0b947bea8e92f52f3602, type: 2}
 --- !u!114 &5289911865508279092
 MonoBehaviour:
   m_ObjectHideFlags: 0
