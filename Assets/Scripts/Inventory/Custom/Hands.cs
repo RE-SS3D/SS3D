@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Mirror;
 using UnityEngine;
 
@@ -7,43 +8,49 @@ namespace Inventory.Custom
     [RequireComponent(typeof(Inventory))]
     public class Hands : NetworkBehaviour
     {
-        public delegate void OnHandChange(int selectedHand);
-
         [SerializeField] private Container handContainer = null;
         [SerializeField] private float handRange = 0f;
 
-        [System.NonSerialized]
-        public int selectedHand = 0;
-        public event OnHandChange onHandChange;
-        
+        public event Action<int> onHandChange;
+        public int SelectedHand { get; private set; } = 0;
+
+        // Use these for inventory actions
+        public Container Container => handContainer;
+        public GameObject ContainerObject => Container.gameObject;
+        public int HeldSlot => handSlots[SelectedHand];
+
+        [Server]
         public void Pickup(GameObject target)
         {
             if (GetItemInHand() == null)
             {
-                inventory.CmdAddItem(target, handContainer.gameObject, handSlots[selectedHand]);
+                inventory.AddItem(target, ContainerObject, HeldSlot);
             }
             else
             {
                 Debug.LogWarning("Trying to pick up with a non-empty hand");
             }
         }
-        
-        private void Drop()
+
+        /*
+         * Command wrappers for inventory actions using the currently held item
+         */
+        [Server]
+        public void DropHeldItem()
         {
             if (GetItemInHand() == null) return;
-            
-            var itemTransform = GetItemInHand().transform;
-            inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], itemTransform.position, itemTransform.rotation);
-        }
 
-        public void Place(Vector3 position, Quaternion rotation)
-        {
-            inventory.CmdPlaceItem(handContainer.gameObject, handSlots[selectedHand], position, rotation);
+            var transform = GetItemInHand().transform;
+            inventory.PlaceItem(ContainerObject, HeldSlot, transform.position, transform.rotation);
         }
-        
-        public void DestroyItemInHand()
+        [Server]
+        public void PlaceHeldItem(Vector3 position, Quaternion rotation) => inventory.PlaceItem(ContainerObject, HeldSlot, position, rotation);
+        [Server]
+        public void DestroyHeldItem() => inventory.DestroyItem(ContainerObject, HeldSlot);
+
+        public Item GetItemInHand()
         {
-            inventory.CmdDestroyItem(handContainer.gameObject, handSlots[selectedHand]);
+            return handContainer.GetItem(HeldSlot);
         }
 
         /**
@@ -71,13 +78,11 @@ namespace Inventory.Custom
         private void Awake()
         {
             inventory = GetComponent<Inventory>();
-        }
-        public override void OnStartClient()
-        {
+
             // Find the indices in the hand container corresponding to the correct slots
+            // Because we just make calls to GetSlot, which is set pre-Awake, this is safe.
             handSlots = new int[2] { -1, -1 };
-            for (int i = 0; i < handContainer.Length(); ++i)
-            {
+            for (int i = 0; i < handContainer.Length(); ++i) {
                 if (handContainer.GetSlot(i) == Container.SlotType.LeftHand)
                     handSlots[0] = i;
                 else if (handContainer.GetSlot(i) == Container.SlotType.RightHand)
@@ -86,13 +91,17 @@ namespace Inventory.Custom
             if (handSlots[0] == -1 || handSlots[1] == -1)
                 Debug.LogWarning("Player container does not contain slots for hands upon initialization. Maybe they were severed though?");
 
+        }
+
+        public override void OnStartClient()
+        {
             handContainer.onChange += (a, b, c, d) =>
             {
                 //UpdateTool()
             };
             if (handContainer.GetItems().Count > 0)
             {
-                inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[selectedHand]);
+                inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[SelectedHand]);
                 //UpdateTool();
             }
         }
@@ -105,19 +114,20 @@ namespace Inventory.Custom
             // Hand-related buttons
             if (Input.GetButtonDown("Swap Active"))
             {
-                selectedHand = 1 - selectedHand;
-                inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[selectedHand]);
-                onHandChange?.Invoke(selectedHand);
-            
+                SelectedHand = 1 - SelectedHand;
+                inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[SelectedHand]);
+                onHandChange?.Invoke(SelectedHand);
+
                 //UpdateTool();
             }
-            
-            if (Input.GetButtonDown("Drop Item")) Drop();
+
+            if (Input.GetButtonDown("Drop Item")) CmdDropHeldItem();
         }
 
-        public Item GetItemInHand()
+        [Command]
+        private void CmdDropHeldItem()
         {
-            return handContainer.GetItem(handSlots[selectedHand]);
+            DropHeldItem();
         }
 
         // The indices in the container that contains the hands

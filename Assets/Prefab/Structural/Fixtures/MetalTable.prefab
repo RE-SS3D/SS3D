@@ -13,9 +13,6 @@ GameObject:
   - component: {fileID: 6984099654956712234}
   - component: {fileID: 3608857327747406091}
   - component: {fileID: 1683531520590988412}
-  - component: {fileID: 7148500711621885916}
-  - component: {fileID: 8197014655766703506}
-  - component: {fileID: 2622621003458583736}
   m_Layer: 0
   m_Name: MetalTable
   m_TagString: Untagged
@@ -53,7 +50,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8036950609662249464}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -127,46 +124,3 @@ MonoBehaviour:
     type: 3}
   xTriple: {fileID: -852506227573067607, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   xQuad: {fileID: 4989269521715750725, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
---- !u!114 &7148500711621885916
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8036950609662249464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f31cf7033044701bd2040285a11b93f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  singularInteractions: []
-  continuousInteractions:
-  - {fileID: 11400000, guid: ed28f9f0b9f779a45b6f879411af4a87, type: 2}
---- !u!114 &8197014655766703506
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8036950609662249464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 11855d57bad4bfe46b1339e7fea55f81, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tableDeconstructKind: {fileID: 11400000, guid: 34b05c7ea8dbb6b419f4285dd4a9e87b,
-    type: 2}
-  tableToRemove: {fileID: 11400000, guid: e361c0d934015604fa13db8b86d73f4b, type: 2}
---- !u!114 &2622621003458583736
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8036950609662249464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69cc41b77a8e45cea3892dc535c50cba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  kind: {fileID: 11400000, guid: 38eed80e5f8df1f4d840163dfa89fb11, type: 2}

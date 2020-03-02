@@ -173,7 +173,6 @@ GameObject:
   - component: {fileID: 1964808650632036043}
   - component: {fileID: 7103870224588809695}
   - component: {fileID: 6013080866524748623}
-  - component: {fileID: 7973566206868333241}
   m_Layer: 8
   m_Name: AirlockStandardRight
   m_TagString: Untagged
@@ -255,21 +254,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.004796059, y: 0.0036948281, z: 0.018677529}
   m_Center: {x: -0.0023972015, y: 0, z: 0.008961448}
---- !u!114 &7973566206868333241
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4234865420741084218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f31cf7033044701bd2040285a11b93f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  singularInteractions: []
-  continuousInteractions:
-  - {fileID: 11400000, guid: ed28f9f0b9f779a45b6f879411af4a87, type: 2}
 --- !u!1 &9056202478934583524
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,7 +266,6 @@ GameObject:
   - component: {fileID: 1045918853058958279}
   - component: {fileID: 5213922929823099796}
   - component: {fileID: 5373124778507072506}
-  - component: {fileID: 8638975421658692352}
   m_Layer: 8
   m_Name: AirlockStandardLeft
   m_TagString: Untagged
@@ -364,18 +347,3 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.004796059, y: 0.0036948281, z: 0.018677529}
   m_Center: {x: 0.0023972052, y: 0, z: 0.008961448}
---- !u!114 &8638975421658692352
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9056202478934583524}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f31cf7033044701bd2040285a11b93f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  singularInteractions: []
-  continuousInteractions:
-  - {fileID: 11400000, guid: ed28f9f0b9f779a45b6f879411af4a87, type: 2}
