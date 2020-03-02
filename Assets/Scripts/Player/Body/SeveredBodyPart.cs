@@ -1,4 +1,5 @@
 using UnityEngine;
+using Inventory;
 
 namespace Player.Body
 {
