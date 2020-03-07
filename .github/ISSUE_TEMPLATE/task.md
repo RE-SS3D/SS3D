@@ -1,14 +1,34 @@
 ---
 name: Task
-about: This is a technical task to be programmed
-title: "[Task] Task Name"
-labels: ''
+about: This is a task to implement
+title: "Task Name"
+labels: 'task'
 assignees: ''
 
 ---
+<!-- Text within these arrows are notes for you and should be deleted. -->
 
-**Description**
-A description of what should be done.
+### Summary
 
-**User Story Link**
-The link to the User Stories dependent on this task.
+<!-- Provide a general summary of the task here and in the title. -->
+
+### Goal 
+
+<!-- Is the task related to a problem? Describe the problem. -->
+
+<!-- Describe the goal of the task, what is it trying to achieve? -->
+
+<!-- Describe alternatives you've considered. -->
+
+### Media
+
+<!-- Any other context, art, pictures, concepts, etc. -->
+
+### Document
+
+<!-- Is the task already designed? If so, link the document. -->
+
+### Dependencies
+<!-- List any tasks that need to be completed before this one. -->
+
+<!-- List any tasks that may be needed to validate this one. -->

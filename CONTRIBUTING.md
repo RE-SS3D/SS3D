@@ -1,67 +1,61 @@
-# Contributing to Space Station 3D
+# How To Contribute To RE:Space Station 3D
 
-This document is a set of guidelines for contributing to the project.
-Use your best judgment if in doubt, or ask on the [Discord Server](https://discord.gg/Z3sPhyS).
+This document is for outlining the guidelines for contributing to the RE:SS3D project.
+If you have any questions, ask a council member on our [Discord Server](https://discord.gg/Z3sPhyS).
 
-## Code Maintainers
+**First, check out https://ss3d.space/contribute/, which has a breakdown of the different types of contributions as well as asset kits, guides, and todo boards for each. For programmers, we also have a [code style guide](Documents/C_SHARP.md).**
 
-A set of people are responsible for making sure thecontribution cycle runs smoothly and that the contributions made to project are wanted, correct, and functional.
-These people are refered to as code maintainers.
+## SETTING UP THE PROJECT
 
-The project maintainers have the follow goals:
+1. Clone this (SS3D) repository.
+2. [Download Unity 2019.2.0f1](https://unity3d.com/get-unity/download/archive) and open the folder containing the project in Unity.
 
-* To prioritize issues and pull requests so the most urgent and most wanted changes gets into the build quickly.
-* To make sure even minor contributions don't get overlooked. All contributions are created equal.
-* Make sure the contributions comply with our standards, will not break the project, and are wanted, before they are merged.
+### Project Maintainers:
 
-## How To Contribute
+The set of people responsible for making sure the contribution cycle runs smoothly and that the contributions made to the project are wanted, correct, and functional.
 
-There many things that you can do to help out, regardless if you're a maintainer, a visitor, a coder, or a player. At the most basic, reporting bugs is essential to making everything run flawlessly. People with skills and time to spare can help out by contributing work. Any help is appreciated.
+The project maintainers have the following goals:
 
-### Code or Asset Contributions
+* To prioritize issues and pull requests so the most important changes get focused on and added to the project first.
+* To make sure no contributions, however minor, don't get overlooked. Despite some contributions having greater priority, all contributions are created equal.
+* To verify that contributions comply with our standards, will not break the project, and are wanted, before they are accepted into the project.
 
-Making an actual change in the project is really admirable and also a simple but complicated process. To get started, choose a task on the [implementation board](https://github.com/RE-SS3D/SS3D/projects/2), hop on over to the discord, and request to be assigned. For asset contributions you might also want to check the [model list](https://trello.com/b/ZVcDitv0/ss3d-model-list).
+### Forking The Repository:
 
-Regardless of kind of asset you produce remember to head over to the [Style guide section](#style-guides) to make sure your contribution fits in with everyone else's.
+To start contributing via GitHub, first you should fork this GitHub repository, using the 'Fork' button in the upper right corner of this page. Naturally, this requires a GitHub account. You will commit your changes to your fork and then make a pull request to merge it into our repository. Learn more about pull requests [here](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-comparing-branches-in-pull-requests).
 
-### Reporting Bugs
+Over time your fork will become out-dated as the main project's repository continues to be added upon. GitHub has made a [pretty clear guide](https://help.github.com/articles/syncing-a-fork/) on how to sync your fork, to keep it up to date with the SS3D repository.
 
-Before creating a bug report, please check the issues in case the bug is already reported.
-They are tracked as [GitHub issues](https://guides.github.com/features/issues/).
-Use the template when creating the issue, as the information it asks for helps you help us help you more efficiently.
+### Reporting Bugs:
 
-Explain the problem clearly and include additional details to help maintainers reproduce the problem:
+Before reporting a bug, please check the [our issues](https://github.com/RE-SS3D/SS3D/issues) to see if the bug has already reported. If you are unfamiliar with issues, GitHub has a helpful guide [here](https://guides.github.com/features/issues/). Use the template when creating the issue, as the information it requests helps you help us help you more efficiently.
+
+Explain the problem clearly and include any additional details to help maintainers reproduce the problem:
 
 * **Use a clear and descriptive title** for the issue to identify the problem.
-* **Describe the steps which reproduce the problem** in as many details as possible. Be specific as any detail might matter.
-* **Describe the behavior you observed** and point out what exactly is the problem with that behavior.
-* **Describe what you expected to happen instead**
-* **Include screenshots and/or animated GIFs** which show you following the steps and demonstrate the problem.
-* **If you're reporting that the client crashed**, include a crash report with the error log. It's location depends on your operating system, so follow [this official guide](https://docs.unity3d.com/Manual/LogFiles.html).
-* **If the problem wasn't triggered by a specific action**, describe what you were doing before the problem happened.
-* **Include which version of the client are you running?** The version number should be written on the first screen when you launch the game.
+* **Describe the steps to reproduce the problem** as specifically and detailed as possible.
+* **Describe the behavior you observed** and point out the problem with that behavior.
+* **Describe the expected behavior** that should happen instead.
+* **Include pictures/videos** to show the steps taken to demonstrate the problem.
+* **Include your game/client version and OS** to help track if the problem is version specific.
+* **If you're reporting the client crashed**, include a crash report with the error log. It's location depends on your operating system, so follow [this official guide](https://docs.unity3d.com/Manual/LogFiles.html).
+* **If the problem isn't triggered by a specific action**, describe what you were doing before the problem happened.
 
-### Pull Requests
+### Pull Requests:
 
-Pull requests allow the maintainers to verify that any changes are wanted and don't break the existing code.
+Pull requests allow the maintainers to review any changes and verify they are wanted and don't break anything in the existing project.
 
-* Pull requests should merge into the *develop* branch
-* Do not include issue numbers in the PR title
-* Include screenshots and/or animated GIFs in your pull request whenever possible.
+* Pull requests should merge into the *release* branch.
+* The title should be clear and concise.
+* If the PR is attempting fix an issue, reference the issue number in the PR description ("Fixes #number").
+* Include pictures/videos in your pull request whenever possible.
 
-## Style guides
+### Git Clients:
 
-Follow these guidelines for good luck:
+To get a hold of the project, you need a git client. Git is the software that manages the source. GitHub is the website that we use to host it. If you are new, [GitHub Desktop](https://desktop.github.com/) is easiest for beginners.
 
-**The art style** of all assets should adhere to the **[Art Style Guide](StyleGuides/ART.md)**. The style guide was created by *beep.
+### Git Commit Messages:
 
-**All C# code** should follow the **[C# Style Guide](StyleGuides/C_SHARP.md)**. The style is open to debate, especially when it is about clarity or readability, but anything that comes down purely to personal preference should fall back on official style guides or community convention.
-
-### Git Commit Messages
-
-* These are just good habits. Pull requests take priority if you want to save your energy.
-* Use the present imperative tense ("Add feature" not "Added feature", "Move cursor to..." not "Moves cursor to...")
-* Limit the first line to 72 characters or less
-* Reference issues and pull requests liberally after the first line
-* Consider starting the commit message with an applicable emoji:
-  * :art: `:art:` when improving the format/structure of the code, :racehorse: `:racehorse:` when improving performance, etc.
+* Use the present imperative tense ("Add feature" not "Added feature", "Move cursor to..." not "Moves cursor to...").
+* Limit the first line to 72 characters or less.
+* Reference issues and pull requests liberally after the first line.
