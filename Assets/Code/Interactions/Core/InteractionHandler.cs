@@ -14,10 +14,6 @@ namespace Interactions.Core
      */
     public class InteractionHandler : NetworkBehaviour
     {
-        /// <summary>Interactions which should be included at all applicable times</summary>
-        [SerializeField]
-        [Tooltip("Interactions which should be included at all applicable times")]
-        private InteractionSO[] universalInteractions = null;
         /// <summary>Mask for physics to use when finding targets</summary>
         [SerializeField]
         [Tooltip("Mask for physics to use when finding targets")]
@@ -44,7 +40,8 @@ namespace Interactions.Core
                 var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 var viableInteractions = GetViableInteractions(ray);
 
-                CmdRunInteraction(ray, 0, viableInteractions[0].Name);
+                if (viableInteractions.Count > 0)
+                    CmdRunInteraction(ray, 0, viableInteractions[0].Name);
             }
             else if (continuousInteraction != null && Input.GetButton("Click"))
             {
@@ -163,13 +160,17 @@ namespace Interactions.Core
             var target = hit.transform.gameObject;
             var tool = GetActiveTool();
 
-            var targetInteractions = GetInteractionsFrom(target);
-            var toolInteractions = GetInteractionsFrom(tool);
-
             var interactionEvent = new InteractionEvent(tool, target, hit);
 
             // Collect interactions
-            List<Interaction> availableInteractions = targetInteractions.Concat(toolInteractions).Concat(universalInteractions).ToList();
+            List<Interaction> availableInteractions = 
+                (tool == gameObject
+                    ? new List<Interaction>()
+                    : tool.GetAllInteractions(interactionEvent)
+                )
+                    .Concat(target.GetAllInteractions(interactionEvent))
+                    .Concat(gameObject.GetAllInteractions(interactionEvent))
+                    .ToList();
 
             availableInteractions.ForEach(interaction => interaction.Event = interactionEvent);
 
@@ -186,16 +187,6 @@ namespace Interactions.Core
         {
             // TODO: Hands should extend a ToolHolder or something like that.
             return GetComponent<Hands>().GetItemInHand()?.gameObject ?? GetComponent<Hands>().gameObject;
-        }
-
-        private static List<Interaction> GetInteractionsFrom(GameObject gameObject)
-        {
-            var attachedInteractions = gameObject.GetComponent<InteractionAttacher>()?.interactions.ToList<Interaction>() ?? new List<Interaction>();
-            attachedInteractions.AddRange(gameObject.GetComponents<Interaction>());
-            
-            // TODO: use InteractionCreator
-
-            return attachedInteractions;
         }
 
         // Server and client track these seperately

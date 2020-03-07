@@ -8,7 +8,7 @@ namespace Interactions.Custom
      * <summary>Allows a player to 'open' a container in the UI and interact with it.</summary>
      */
     [CreateAssetMenu(fileName = "ViewContainer", menuName = "Interactions2/ViewContainer")]
-    public class ViewContainer : Core.InteractionSO
+    public class ViewContainer : Core.Extensions.InteractionSO
     {
         public float maxDistance = 5.0f;
         public override string Name => "Open Container";
