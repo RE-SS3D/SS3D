@@ -13,7 +13,7 @@ namespace Interactions.Custom
      * <inheritdoc cref="Core.Interaction"/>
      */
     [CreateAssetMenu(fileName = "Pickup", menuName = "Interactions2/Pickup")]
-    public class Pickup : InteractionSO
+    public class Pickup : Core.Extensions.InteractionSO
     {
         public override string Name => "Pick Up";
 

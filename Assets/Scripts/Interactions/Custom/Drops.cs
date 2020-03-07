@@ -13,7 +13,7 @@ namespace Interactions.Custom
      * <inheritdoc cref="Core.Interaction"/>
      */
     [CreateAssetMenu(fileName = "Drops", menuName = "Interactions2/Drop")]
-    public class Drops : Core.InteractionSO
+    public class Drops : Core.Extensions.InteractionSO
     {
         public override string Name => "Drop";
 
