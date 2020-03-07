@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Mirror;
 
-namespace Interactions.Core
+namespace Interactions.Core.Extensions
 {
     /**
      * <summary>
@@ -15,7 +14,7 @@ namespace Interactions.Core
      * TODO: When we switch to 2019.3, we can make and attach scripts which extend directly from
      *       Interaction, and attach them, rather than extending ScriptableObject and having to make an asset instance
      */
-    public abstract class InteractionSO : ScriptableObject, Interaction
+    public abstract class ContinuousInteractionSO : ScriptableObject, ContinuousInteraction
     {
         public virtual InteractionEvent Event { get; set; }
         public virtual string Name => name;
@@ -23,6 +22,7 @@ namespace Interactions.Core
         public abstract bool CanInteract();
 
         public abstract void Interact();
-
+        public abstract bool ContinueInteracting();
+        public abstract void EndInteraction();
     }
 }

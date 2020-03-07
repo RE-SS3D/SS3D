@@ -15,8 +15,6 @@ namespace Interactions.Core
      */
     public interface InteractionCreator
     {
-        string Name { get; }
-
         /**
          * <summary>Based on the interaction info, create a list of possible interactions</summary>
          * <returns>A list of interactions</returns>
