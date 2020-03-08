@@ -1,5 +1,6 @@
 ﻿using Chat;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class CameraFollow : MonoBehaviour
 {
@@ -55,11 +56,9 @@ public class CameraFollow : MonoBehaviour
      */
     public void Update()
     {
-        //Ignore camera controls when typing in chat
-        if (chatWindow != null && chatWindow.PlayerIsTyping())
-        {
+        // Ignore camera controls when the mouse is over the UI
+        if (EventSystem.current.IsPointerOverGameObject())
             return;
-        }
         
         // Check for double tap
         if (Input.GetButtonDown("Camera Rotation"))
