@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace TileMap
+namespace Engine.Tiles
 {
     /**
      * Describes a floor or wall on a tile

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace TileMap.Connections
+namespace Engine.Tiles.Connections
 {
     /**
      * Should be attached to a component to get notified whenever the same layer on an adjacent tile is modified

@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 
-namespace TileMap.Connections
+namespace Engine.Tiles.Connections
 {
     /**
      * Helper methods 

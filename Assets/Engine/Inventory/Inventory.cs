@@ -2,7 +2,7 @@ using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Inventory
+namespace Engine.Inventory
 {
     /**
      * This is the basic inventory system. Any inventory-capable creature should have this component.

@@ -1,5 +1,5 @@
 using UnityEngine;
-using Inventory;
+using Engine.Inventory;
 
 namespace Player.Body
 {

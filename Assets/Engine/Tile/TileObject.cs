@@ -2,10 +2,10 @@
 using UnityEngine;
 using UnityEditor;
 
-using TileMap.Connections;
-using TileMap.State;
+using Engine.Tiles.Connections;
+using Engine.Tiles.State;
 
-namespace TileMap
+namespace Engine.Tiles
 {
     /**
      * The tile object takes information about a tile and transforms it into the world gameobject.

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace TileMap {
+namespace Engine.Tiles {
     /**
      * Describes an object that is attached to a turf.
      */

@@ -1,6 +1,6 @@
 using Mirror;
 
-namespace TileMap
+namespace Engine.Tiles
 {
     /**
      * Handles making requests on behalf of the player to the TileManager

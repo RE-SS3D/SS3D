@@ -7,7 +7,7 @@ using System.IO;
 using UnityEngine;
 using Mirror;
 
-namespace TileMap {
+namespace Engine.Tiles {
     /**
      * Handles communication between tiles, and networking tile changes
      */

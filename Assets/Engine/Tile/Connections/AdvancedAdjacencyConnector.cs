@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
-using TileMap.Connections;
+using Engine.Tiles.Connections;
 using System;
 
-namespace TileMap.Connections
+namespace Engine.Tiles.Connections
 {
     /**
      * The advanced adjacency connector considers

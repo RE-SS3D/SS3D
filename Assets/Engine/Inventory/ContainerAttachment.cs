@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Inventory
+namespace Engine.Inventory
 {
     /**
      * Handles the attachment between a container and the inventory.

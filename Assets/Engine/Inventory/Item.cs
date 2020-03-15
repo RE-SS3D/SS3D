@@ -1,28 +1,31 @@
 ﻿using UnityEngine;
 using Mirror;
 
-/**
- * An item describes what is held in a container.
- */
-[DisallowMultipleComponent]
-public class Item : MonoBehaviour
+namespace Engine.Inventory
 {
-    // Distinguishes what can go in what slot
-    public enum ItemType
+    /**
+     * An item describes what is held in a container.
+     */
+    [DisallowMultipleComponent]
+    public class Item : MonoBehaviour
     {
-        Other,
-        Hat,
-        Glasses,
-        Mask,
-        Earpiece,
-        Shirt,
-        OverShirt,
-        Gloves,
-        Shoes
-    }
+        // Distinguishes what can go in what slot
+        public enum ItemType
+        {
+            Other,
+            Hat,
+            Glasses,
+            Mask,
+            Earpiece,
+            Shirt,
+            OverShirt,
+            Gloves,
+            Shoes
+        }
 
-    public Container    container;
-    public ItemType     itemType;
-    public Sprite       sprite;
-    public GameObject   prefab;
+        public Container container;
+        public ItemType itemType;
+        public Sprite sprite;
+        public GameObject prefab;
+    }
 }

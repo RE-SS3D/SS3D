@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Engine.Interactions.UI;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Inventory.UI
+namespace Engine.Inventory.UI
 {
     /**
     * This renders a container of variable length in a generic fashion

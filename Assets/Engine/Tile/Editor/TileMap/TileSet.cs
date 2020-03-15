@@ -6,7 +6,7 @@ using UnityEditor;
 using static Tile.TileMapEditorHelpers;
 
 
-namespace TileMap.Editor.TileMap
+namespace Engine.Tiles.Editor.TileMap
 {
     /**
      * Stores and keeps up to date info about the set of tiles

@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
-using TileMap.Connections;
+using Engine.Tiles.Connections;
 
-namespace TileMap.Connections
+namespace Engine.Tiles.Connections
 {
     /**
      * These classes are getting very specific...

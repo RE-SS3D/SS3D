@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
-using TileMap.Connections;
+using Engine.Tiles.Connections;
 using System;
 
-namespace TileMap.Connections
+namespace Engine.Tiles.Connections
 {
     /**
      * A simple adjacency connector uses 6 meshes and checks for all possible scenarios

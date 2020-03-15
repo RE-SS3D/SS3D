@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace TileMap.State
+namespace Engine.Tiles.State
 {
     /**
      * An interface used as a component for recieving and sending tile state.

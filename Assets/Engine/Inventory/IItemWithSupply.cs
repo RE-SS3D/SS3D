@@ -1,4 +1,4 @@
-﻿namespace Inventory
+﻿namespace Engine.Inventory
 {
     public interface IItemWithSupply
     {

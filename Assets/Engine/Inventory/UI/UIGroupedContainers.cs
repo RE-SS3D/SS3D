@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Engine.Interactions.UI;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Inventory.UI
+namespace Engine.Inventory.UI
 {
     /**
      * A component for rendering multiple seperate containers together as one group.

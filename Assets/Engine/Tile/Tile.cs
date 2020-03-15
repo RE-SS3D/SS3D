@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace TileMap {
+namespace Engine.Tiles {
     public enum Direction
     {
         North,

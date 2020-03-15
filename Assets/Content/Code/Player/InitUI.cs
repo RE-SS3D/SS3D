@@ -1,10 +1,10 @@
-﻿using Inventory.UI;
+﻿using Engine.Inventory.UI;
 using Mirror;
 using UnityEngine;
 
 namespace Player
 {
-    [RequireComponent(typeof(Inventory.Inventory))]
+    [RequireComponent(typeof(Engine.Inventory.Inventory))]
     public class InitUI : NetworkBehaviour
     {
         public GameObject prefab;
@@ -12,7 +12,7 @@ namespace Player
         public override void OnStartLocalPlayer()
         {
             var obj = Instantiate(prefab);
-            obj.GetComponent<UIInventory>().StartUI(GetComponent<Inventory.Inventory>());
+            obj.GetComponent<UIInventory>().StartUI(GetComponent<Engine.Inventory.Inventory>());
         }
     }
 }
