@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Chat
+namespace SS3D.Engine.Chat
 {
     /// <summary>
     /// Behaviour responsible for handling chat UI.

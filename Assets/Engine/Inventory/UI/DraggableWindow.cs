@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace Engine.Interactions.UI
+namespace SS3D.Engine.Interactions.UI
 {
     public class DraggableWindow : MonoBehaviour, IBeginDragHandler, IDragHandler
     {

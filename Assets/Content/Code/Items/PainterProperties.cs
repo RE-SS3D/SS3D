@@ -1,7 +1,7 @@
 using UnityEngine;
-using Engine.Inventory;
+using SS3D.Engine.Inventory;
 
-namespace Items
+namespace SS3D.Content.Code.Items
 {
     [CreateAssetMenu(fileName = "Painter Properties", menuName = "Painting/Painter Properties", order = 0)]
     public class PainterProperties : ScriptableObject

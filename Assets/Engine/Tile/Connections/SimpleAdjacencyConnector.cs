@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Engine.Tiles.Connections;
+using SS3D.Engine.Tiles.Connections;
 using System;
 
-namespace Engine.Tiles.Connections
+namespace SS3D.Engine.Tiles.Connections
 {
     /**
      * A simple adjacency connector uses 6 meshes and checks for all possible scenarios

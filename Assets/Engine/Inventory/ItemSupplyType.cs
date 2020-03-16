@@ -1,4 +1,4 @@
-namespace Engine.Inventory
+namespace SS3D.Engine.Inventory
 {
     public enum ItemSupplyType
     {

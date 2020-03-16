@@ -1,10 +1,13 @@
 ﻿using System;
 using UnityEngine;
 
-[Serializable]
-public struct ChatMessage
+namespace SS3D.Engine.Chat
 {
-    public string Sender;
-    public string Text;
-    public ChatChannel Channel;
+    [Serializable]
+    public struct ChatMessage
+    {
+        public string Sender;
+        public string Text;
+        public ChatChannel Channel;
+    }
 }

@@ -2,7 +2,7 @@
 using System.Collections;
 using Mirror;
 
-namespace Engine.Interactions.Extensions
+namespace SS3D.Engine.Interactions.Extensions
 {
     /**
      * <summary>

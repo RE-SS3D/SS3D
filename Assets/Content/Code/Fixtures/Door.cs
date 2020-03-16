@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using System;
 using UnityEditor;
-using Engine.Tiles;
-using Engine.Tiles.Connections;
-using Engine.Tiles.State;
+using SS3D.Engine.Tiles;
+using SS3D.Engine.Tiles.Connections;
+using SS3D.Engine.Tiles.State;
 
-namespace Fixtures
+namespace SS3D.Content.Code.Fixtures
 {
     // I'd like this to be internal, but if i make it anything but public
     // then OnStateUpdate complains

@@ -2,10 +2,10 @@
 using UnityEngine;
 using UnityEditor;
 
-using Engine.Tiles.Connections;
-using Engine.Tiles.State;
+using SS3D.Engine.Tiles.Connections;
+using SS3D.Engine.Tiles.State;
 
-namespace Engine.Tiles
+namespace SS3D.Engine.Tiles
 {
     /**
      * The tile object takes information about a tile and transforms it into the world gameobject.

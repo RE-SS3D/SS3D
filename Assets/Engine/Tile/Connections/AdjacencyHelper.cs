@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 
-namespace Engine.Tiles.Connections
+namespace SS3D.Engine.Tiles.Connections
 {
     /**
      * Helper methods 

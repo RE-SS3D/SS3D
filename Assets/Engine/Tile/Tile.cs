@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace Engine.Tiles {
+namespace SS3D.Engine.Tiles {
     public enum Direction
     {
         North,

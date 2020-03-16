@@ -1,8 +1,8 @@
-﻿using Engine.Inventory;
+﻿using SS3D.Engine.Inventory;
 using Mirror;
 using UnityEngine;
 
-namespace Items
+namespace SS3D.Content.Code.Items
 {
     /// <summary>
     /// Component to handle items that can be used to paint with.
@@ -11,30 +11,29 @@ namespace Items
     public class Painter : NetworkBehaviour, IItemWithSupply
     {
         [SerializeField] private PainterProperties propertiesPrefab = null;
-        private PainterProperties properties = null;
 
-        public PainterProperties Properties => properties;
+        public PainterProperties Properties { get; private set; } = null;
 
         private void Start()
         {
-            properties = Instantiate(propertiesPrefab);
-            properties.name = propertiesPrefab.name;
+            Properties = Instantiate(propertiesPrefab);
+            Properties.name = propertiesPrefab.name;
         }
 
         public int GetSupplyDrainRate()
         {
-            return properties.ItemSupply.DrainRate;
+            return Properties.ItemSupply.DrainRate;
         }
 
         public void ChangeSupply(int amount)
         {
-            int newValue = Mathf.Clamp(properties.ItemSupply.CurrentSupply + amount, 0, properties.ItemSupply.MaxSupply);
-            properties.ItemSupply = properties.ItemSupply.WithNewSupplyValue(newValue);
+            int newValue = Mathf.Clamp(Properties.ItemSupply.CurrentSupply + amount, 0, Properties.ItemSupply.MaxSupply);
+            Properties.ItemSupply = Properties.ItemSupply.WithNewSupplyValue(newValue);
         }
 
         public float GetRemainingSupplyPercentage()
         {
-            return Mathf.Round(properties.ItemSupply.CurrentSupply * 100 / properties.ItemSupply.MaxSupply) / 100;
+            return Mathf.Round(Properties.ItemSupply.CurrentSupply * 100 / Properties.ItemSupply.MaxSupply) / 100;
         }
     }
 }

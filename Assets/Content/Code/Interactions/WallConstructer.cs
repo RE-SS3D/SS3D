@@ -1,23 +1,22 @@
 ﻿using UnityEngine;
-using System.Collections;
-using Mirror;
-using Engine.Tiles;
+using SS3D.Engine.Tiles;
+using SS3D.Engine.Interactions;
 
-namespace Interactions.Custom
+namespace SS3D.Content.Code.Interactions
 {
     /**
      * Constructs and deconstructs tables
      * 
      * <inheritdoc cref="Core.Interaction" />
      */
-    public class WallConstructer : MonoBehaviour, Core.Interaction
+    public class WallConstructer : MonoBehaviour, Interaction
     {
         [SerializeField]
         private Turf wallToConstruct = null;
         [SerializeField]
         private Turf floorToConstruct = null;
 
-        public Core.InteractionEvent Event { get; set; }
+        public InteractionEvent Event { get; set; }
         public string Name => ShouldDeconstruct ? "Deconstruct Wall" : "Construct Wall";
 
         public bool CanInteract()

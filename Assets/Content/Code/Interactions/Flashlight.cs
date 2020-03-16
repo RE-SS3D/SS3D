@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
-using System.Collections;
 using Mirror;
+using SS3D.Engine.Interactions;
 
-namespace Interactions.Custom
+namespace SS3D.Content.Code.Interactions
 {
-    public class Flashlight : NetworkBehaviour, Core.ContinuousInteraction
+    public class Flashlight : NetworkBehaviour, ContinuousInteraction
     {
         [SerializeField]
         private new Light light = null;
 
-        public Core.InteractionEvent Event { get; set; }
+        public InteractionEvent Event { get; set; }
         public string Name => "Turn on";
 
         public void OnEnable()

@@ -7,7 +7,7 @@ using System.IO;
 using UnityEngine;
 using Mirror;
 
-namespace Engine.Tiles {
+namespace SS3D.Engine.Tiles {
     /**
      * Handles communication between tiles, and networking tile changes
      */

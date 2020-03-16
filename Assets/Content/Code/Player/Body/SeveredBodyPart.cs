@@ -1,7 +1,7 @@
 using UnityEngine;
-using Engine.Inventory;
+using SS3D.Engine.Inventory;
 
-namespace Player.Body
+namespace SS3D.Content.Code.Player.Body
 {
     /// <summary>
     /// MonoBehaviour exists to ensure a severed body part behaves as expected.

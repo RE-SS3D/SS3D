@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Utilities
+namespace SS3D.Engine.Server.Helpers
 {
     /// <summary>
     /// Helper class used to deserialize a json array

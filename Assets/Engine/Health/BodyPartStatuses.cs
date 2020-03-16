@@ -1,6 +1,6 @@
 using System;
 
-namespace Engine.Health
+namespace SS3D.Engine.Health
 {
     [Flags]
     public enum BodyPartStatuses

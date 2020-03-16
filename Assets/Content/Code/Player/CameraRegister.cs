@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class CameraRegister : NetworkBehaviour
+namespace SS3D.Content.Code.Player
 {
-    public override void OnStartLocalPlayer()
+    public class CameraRegister : NetworkBehaviour
     {
-        CameraFollow cameraFollow = Camera.main.GetComponent<CameraFollow>();
-        cameraFollow.SetTarget(gameObject);
-        cameraFollow.enabled = true;
+        public override void OnStartLocalPlayer()
+        {
+            CameraFollow cameraFollow = Camera.main.GetComponent<CameraFollow>();
+            cameraFollow.SetTarget(gameObject);
+            cameraFollow.enabled = true;
+        }
     }
 }

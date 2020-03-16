@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using Engine.Inventory.Extensions;
-using Engine.Interactions.UI;
+using SS3D.Engine.Inventory.Extensions;
+using SS3D.Engine.Interactions.UI;
 
-namespace Engine.Inventory.Extensions
+namespace SS3D.Engine.Inventory.Extensions
 {
 
     /**

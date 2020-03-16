@@ -1,9 +1,9 @@
-﻿using Engine.Inventory;
+﻿using SS3D.Engine.Inventory;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Engine.Interactions.UI
+namespace SS3D.Engine.Interactions.UI
 {
 
     /**

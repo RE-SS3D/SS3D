@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Engine.Interactions
+namespace SS3D.Engine.Interactions
 {
     public static class GameObjectExtensions
     {

@@ -1,12 +1,10 @@
-﻿using UnityEngine;
-using System;
-using System.Collections;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.EventSystems;
-using Engine.Inventory;
+using SS3D.Engine.Inventory;
 
-namespace Engine.Interactions.UI
+namespace SS3D.Engine.Interactions.UI
 {
 
     /**

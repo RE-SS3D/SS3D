@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Login.Data
+namespace SS3D.Engine.Server.Login.Data
 {
     /// <summary>
     /// Data class to used to deserialize a character data response from CentCom

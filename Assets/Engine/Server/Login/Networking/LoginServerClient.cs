@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.IO;
-using System.Net;
 using System.Text;
-using Login.Data;
 using UnityEngine;
 using UnityEngine.Networking;
-using Utilities;
+using SS3D.Engine.Server.Login.Data;
 
-namespace Login
+namespace SS3D.Engine.Server.Login.Networking
 {
     /// <summary>
     /// Class responsible for communicating with the Login API - CentCom.

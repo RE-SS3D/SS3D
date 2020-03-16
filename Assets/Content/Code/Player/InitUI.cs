@@ -1,8 +1,8 @@
-﻿using Engine.Inventory.UI;
+﻿using SS3D.Engine.Inventory.UI;
 using Mirror;
 using UnityEngine;
 
-namespace Player
+namespace SS3D.Content.Code.Player
 {
     [RequireComponent(typeof(Engine.Inventory.Inventory))]
     public class InitUI : NetworkBehaviour

@@ -1,7 +1,8 @@
-﻿using Chat;
-using UnityEngine;
+﻿using UnityEngine;
+using Mirror;
+using SS3D.Engine.Chat;
 
-namespace Mirror
+namespace SS3D.Content.Code.Player
 {
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]

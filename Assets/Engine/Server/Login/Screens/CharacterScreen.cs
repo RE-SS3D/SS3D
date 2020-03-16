@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Login.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using SS3D.Engine.Server.Login.Data;
 
-namespace Login.Screens
+namespace SS3D.Engine.Server.Login.Screens
 {
     /// <summary>
     /// MonoBehaviour responsible for reading user inputs from the character screen.

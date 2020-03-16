@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Chat
+namespace SS3D.Engine.Chat
 {
     public class ChatTab : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler
     {

@@ -1,6 +1,6 @@
-using Enums;
+using SS3D.Engine.Health;
 
-namespace Player.Body
+namespace SS3D.Content.Code.Player.Body
 {
     /// <summary>
     /// Class to store and add/remove damage caused to a bodypart
@@ -9,31 +9,27 @@ namespace Player.Body
     {
         public BodyPartDamage(DamageType damageType, float damageAmount)
         {
-            this.damageType = damageType;
-            this.damageAmount = damageAmount;
+            DamageType = damageType;
+            DamageAmount = damageAmount;
         }
 
-        private readonly DamageType damageType;
-        private float damageAmount;
-
-        public DamageType DamageType => damageType;
-
-        public float DamageAmount => damageAmount;
+        public DamageType DamageType { get; }
+        public float DamageAmount { get; private set; }
 
         public float Damage(float damageAmount)
         {
-            this.damageAmount += damageAmount;
-            return this.damageAmount;
+            DamageAmount += damageAmount;
+            return DamageAmount;
         }
 
         public float Heal(float healAmount)
         {
-            damageAmount -= healAmount;
-            if (damageAmount < 0)
+            DamageAmount -= healAmount;
+            if (DamageAmount < 0)
             {
-                damageAmount = 0;
+                DamageAmount = 0;
             }
-            return damageAmount;
+            return DamageAmount;
         }
     }
 }

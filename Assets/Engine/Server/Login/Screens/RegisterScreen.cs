@@ -1,9 +1,9 @@
 ﻿using System.Text.RegularExpressions;
-using Login.Data;
-using TMPro;
 using UnityEngine;
+using TMPro;
+using SS3D.Engine.Server.Login.Data;
 
-namespace Login.Screens
+namespace SS3D.Engine.Server.Login.Screens
 {
     /// <summary>
     /// MonoBehaviour responsible for reading user inputs from the registration screen.

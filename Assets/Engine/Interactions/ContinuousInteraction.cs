@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Engine.Interactions
+namespace SS3D.Engine.Interactions
 {
     public interface ContinuousInteraction : Interaction
     {

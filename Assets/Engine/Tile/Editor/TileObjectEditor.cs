@@ -3,9 +3,9 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Engine.Tiles.State;
+using SS3D.Engine.Tiles.State;
 
-namespace Engine.Tiles.Editor
+namespace SS3D.Engine.Tiles.Editor
 {
     [CustomEditor(typeof(TileObject))]
     public class TileObjectEditor : UnityEditor.Editor

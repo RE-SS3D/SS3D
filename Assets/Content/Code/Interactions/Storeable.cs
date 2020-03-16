@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
-using Engine.Inventory;
-using Engine.Inventory.Extensions;
+using SS3D.Engine.Inventory;
+using SS3D.Engine.Inventory.Extensions;
+using SS3D.Engine.Interactions;
 
-namespace Interactions.Custom
+namespace SS3D.Content.Code.Interactions
 {
     /**
      * <summary>
@@ -15,13 +16,13 @@ namespace Interactions.Custom
      * <inheritdoc cref="Core.Interaction"/>
      */
     [RequireComponent(typeof(Container))]
-    public class Storeable : MonoBehaviour, Core.Interaction
+    public class Storeable : MonoBehaviour, Interaction
     {
         /// <summary>Only allows storing when this object is open. Assumes that this object has Openable</summary>
         [SerializeField]
         private bool onlyWhenOpen = false;
 
-        public Core.InteractionEvent Event { get; set; }
+        public InteractionEvent Event { get; set; }
         public string Name => "Store";
 
         public bool CanInteract()

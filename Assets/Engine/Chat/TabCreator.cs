@@ -3,7 +3,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-namespace Chat
+namespace SS3D.Engine.Chat
 {
     public class TabCreator : MonoBehaviour
     {

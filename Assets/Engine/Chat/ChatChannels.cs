@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Chat
+namespace SS3D.Engine.Chat
 {
     [Serializable, CreateAssetMenu(fileName = "New Chat Channels", menuName = "Chat/Channels")]
     public class ChatChannels : ScriptableObject

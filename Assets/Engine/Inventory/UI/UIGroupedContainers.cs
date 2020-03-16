@@ -1,9 +1,9 @@
-﻿using Engine.Interactions.UI;
+﻿using SS3D.Engine.Interactions.UI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Engine.Inventory.UI
+namespace SS3D.Engine.Inventory.UI
 {
     /**
      * A component for rendering multiple seperate containers together as one group.

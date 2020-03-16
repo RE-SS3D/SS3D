@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Engine.Interactions.Extensions
+namespace SS3D.Engine.Interactions.Extensions
 {
     /**
      * <summary>Take all interactions from the parent object</summary>

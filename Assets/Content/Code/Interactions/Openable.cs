@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections;
+using SS3D.Engine.Interactions;
 
-namespace Interactions.Custom
+namespace SS3D.Content.Code.Interactions
 {
     /**
      * <summary>
@@ -16,10 +16,10 @@ namespace Interactions.Custom
      * <inheritdoc cref="Core.Interaction"/>
      */
     [RequireComponent(typeof(Animator))]
-    public class Openable : MonoBehaviour, Core.Interaction
+    public class Openable : MonoBehaviour, Interaction
     {
         public bool Open { get; private set; }
-        public Core.InteractionEvent Event { get; set; }
+        public InteractionEvent Event { get; set; }
         public string Name => "Open";
 
         public bool CanInteract() => Event.target == gameObject;

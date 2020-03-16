@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Engine.Tiles.Connections;
+using SS3D.Engine.Tiles.Connections;
 
-namespace Engine.Tiles.Connections
+namespace SS3D.Engine.Tiles.Connections
 {
     /**
      * These classes are getting very specific...

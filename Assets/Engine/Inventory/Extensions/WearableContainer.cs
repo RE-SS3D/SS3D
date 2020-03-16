@@ -2,7 +2,7 @@
 using Mirror;
 using UnityEngine;
 
-namespace Engine.Inventory.Extensions
+namespace SS3D.Engine.Inventory.Extensions
 {
     /**
      * A container for the items that a creature can display on their body

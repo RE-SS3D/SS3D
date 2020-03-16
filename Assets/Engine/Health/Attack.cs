@@ -1,12 +1,9 @@
-﻿using Enums;
-using Mirror;
-using Player.Body;
+﻿using Mirror;
 using UnityEngine;
+using SS3D.Content.Code.Player.Body; // TODO: This is bad.
 
-namespace Engine.Health
+namespace SS3D.Engine.Health
 {
-    // TODO: Delete
-
     /// <summary>
     /// Placeholder class to simulate attacks on other players. Inflicted damage will cause various effects
     /// like bruising and bleeding, but they don't do anything yet. Damage can also sever bodyparts, which is also

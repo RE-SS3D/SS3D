@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Engine.Interactions
+namespace SS3D.Engine.Interactions
 {
     /**
      * <summary>

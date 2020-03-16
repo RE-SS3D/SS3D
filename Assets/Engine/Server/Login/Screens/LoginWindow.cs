@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Login.Data;
-using Login.Screens;
 using UnityEngine;
-using Utilities;
+using SS3D.Engine.Server.Login.Networking;
+using SS3D.Engine.Server.Login.Data;
+using SS3D.Engine.Server.Helpers;
 
-namespace Login
+namespace SS3D.Engine.Server.Login.Screens
 {
     /// <summary>
     /// MonoBehaviour in charge of handling the login UI.

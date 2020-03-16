@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
-using System.Collections;
-using Engine.Inventory;
+using SS3D.Engine.Inventory;
+using SS3D.Engine.Interactions.Extensions;
 
-namespace Interactions.Custom
+namespace SS3D.Content.Code.Interactions
 {
     /**
      * <summary>Allows a player to 'open' a container in the UI and interact with it.</summary>
      */
     [CreateAssetMenu(fileName = "ViewContainer", menuName = "Interactions2/ViewContainer")]
-    public class ViewContainer : Core.Extensions.InteractionSO
+    public class ViewContainer : InteractionSO
     {
         public float maxDistance = 5.0f;
         public override string Name => "Open Container";

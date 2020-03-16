@@ -1,11 +1,11 @@
-using Engine.Interactions.UI;
+using SS3D.Engine.Interactions.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Engine.Inventory.UI
+namespace SS3D.Engine.Inventory.UI
 {
     /**
      * Connects a player's inventory with the UI.

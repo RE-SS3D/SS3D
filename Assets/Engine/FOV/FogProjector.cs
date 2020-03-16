@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FOV
+namespace SS3D.Engine.FOV
 {
     [RequireComponent(typeof(Projector))]
     public class FogProjector : MonoBehaviour

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Engine.Interactions.UI
+namespace SS3D.Engine.Interactions.UI
 {
     /**
      * Used for the context menu

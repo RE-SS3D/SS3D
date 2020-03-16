@@ -1,4 +1,4 @@
-namespace Engine.Health
+namespace SS3D.Engine.Health
 {
     public enum DamageType
     {

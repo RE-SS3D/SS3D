@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Engine.Inventory
+namespace SS3D.Engine.Inventory
 {
     /**
      * Handles the attachment between a container and the inventory.

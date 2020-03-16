@@ -1,4 +1,4 @@
-namespace Engine.Inventory
+namespace SS3D.Engine.Health
 {
     /// <summary>
     /// Used to reference the correct body part when severing them.

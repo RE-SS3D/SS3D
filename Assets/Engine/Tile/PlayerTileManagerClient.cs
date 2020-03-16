@@ -1,6 +1,6 @@
 using Mirror;
 
-namespace Engine.Tiles
+namespace SS3D.Engine.Tiles
 {
     /**
      * Handles making requests on behalf of the player to the TileManager

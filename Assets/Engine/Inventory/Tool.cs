@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Engine.Inventory
+namespace SS3D.Engine.Inventory
 {
 
     /**

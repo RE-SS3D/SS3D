@@ -3,7 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Engine.Tiles.State
+namespace SS3D.Engine.Tiles.State
 {
     /**
      * A component used by any tilemap tile to store data.

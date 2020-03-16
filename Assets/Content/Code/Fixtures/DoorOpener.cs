@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
-using Engine.Interactions;
+using SS3D.Engine.Interactions;
 
-namespace Fixtures
+namespace SS3D.Content.Code.Fixtures
 {
     /**
      * Animates the door opening and closing.

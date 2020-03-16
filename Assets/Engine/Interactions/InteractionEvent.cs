@@ -2,7 +2,7 @@
 using System.Collections;
 using Mirror;
 
-namespace Engine.Interactions
+namespace SS3D.Engine.Interactions
 {
     /**
      * <summary>Information that initiated an interaction</summary>

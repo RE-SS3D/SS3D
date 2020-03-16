@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Enums;
 using UnityEngine;
+using SS3D.Engine.Health;
 
-namespace Player.Body
+namespace SS3D.Content.Code.Player.Body
 {
     /// <summary>
     /// Class is responsible for handling state changes associated with a particular body part.
@@ -11,27 +11,18 @@ namespace Player.Body
     /// </summary>
     public class BodyPart : MonoBehaviour
     {
-        ///Specifies which body part this is
+        /// Specifies which body part this is
         [SerializeField] private BodyPartType bodyPartType = BodyPartType.Head;
-        ///Specifies prefab to spawn if this body part is detached
+        /// Specifies prefab to spawn if this body part is detached
         [SerializeField] private GameObject severedBodyPartPrefab = null;
-        ///List of children for this bodypart. For example, the hand should be a child of the arm, etc.
+        /// List of children for this bodypart. For example, the hand should be a child of the arm, etc.
         [SerializeField] private List<BodyPart> childrenParts = new List<BodyPart>();
-        ///Flag enum, storing the current active statuses for this bodypart
+        /// Flag enum, storing the current active statuses for this bodypart
         [SerializeField] private BodyPartStatuses bodyPartStatuses = BodyPartStatuses.Healthy;
-        ///The skinnedMeshRenderer associated with this bodypart. It will be hidden if the bodypart is detached
+        /// The skinnedMeshRenderer associated with this bodypart. It will be hidden if the bodypart is detached
         [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer = null;
-        ///The body component that this bodypart belongs to
+        /// The body component that this bodypart belongs to
         [SerializeField] private Body body;
-
-        //The types and amounts of damages that this bodypart has suffered
-        private List<BodyPartDamage> bodyPartDamages = new List<BodyPartDamage>
-        {
-            new BodyPartDamage(DamageType.Burn, 0f), 
-            new BodyPartDamage(DamageType.Brute, 0f),
-            new BodyPartDamage(DamageType.Toxic, 0f), 
-            new BodyPartDamage(DamageType.Suffocation, 0f)
-        };
 
         private void Start()
         {
@@ -53,7 +44,13 @@ namespace Player.Body
         public GameObject SeveredBodyPartPrefab => severedBodyPartPrefab;
         public List<BodyPart> ChildrenParts => childrenParts;
         public BodyPartStatuses BodyPartStatuses => bodyPartStatuses;
-        public List<BodyPartDamage> BodyPartDamages => bodyPartDamages;
+        public List<BodyPartDamage> BodyPartDamages { get; } = new List<BodyPartDamage>
+        {
+            new BodyPartDamage(DamageType.Burn, 0f),
+            new BodyPartDamage(DamageType.Brute, 0f),
+            new BodyPartDamage(DamageType.Toxic, 0f),
+            new BodyPartDamage(DamageType.Suffocation, 0f)
+        };
         public SkinnedMeshRenderer SkinnedMeshRenderer => skinnedMeshRenderer;
         public Body Body => body;
 

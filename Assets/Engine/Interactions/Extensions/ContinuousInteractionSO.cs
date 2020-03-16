@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Engine.Interactions.Extensions
+namespace SS3D.Engine.Interactions.Extensions
 {
     /**
      * <summary>

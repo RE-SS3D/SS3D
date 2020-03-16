@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Login
+namespace SS3D.Engine.Server.Login.Screens
 {
     /// <summary>
     /// MonoBehaviour responsible for registering listeners to the dynamically created character select and delete buttons.

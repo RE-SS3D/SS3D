@@ -1,8 +1,7 @@
 using System;
-using Enums;
 using UnityEngine;
 
-namespace Engine.Inventory
+namespace SS3D.Engine.Inventory
 {
     [Serializable]
     public struct ItemSupply

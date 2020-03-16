@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using Mirror;
 
-namespace Engine.Interactions
+namespace SS3D.Engine.Interactions
 {
     /**
      * <summary>An advanced form of interaction can produce multiple possible Interactions</summary>

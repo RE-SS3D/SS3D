@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Enums;
 using Mirror;
 using UnityEngine;
+using SS3D.Engine.Inventory;
+using SS3D.Engine.Health;
 
-namespace Player.Body
+namespace SS3D.Content.Code.Player.Body
 {
 	/// <summary>
 	/// Class deals with receiving damage to the player body and tracking the status of each individual BodyPart.

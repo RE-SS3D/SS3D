@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Chat
+namespace SS3D.Engine.Chat
 {
     public class ChatFilterOption : MonoBehaviour
     {

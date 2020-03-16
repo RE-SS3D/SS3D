@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Engine.Tiles {
+namespace SS3D.Engine.Tiles {
     /**
      * Describes an object that is attached to a turf.
      */

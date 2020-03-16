@@ -4,7 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Engine.Inventory
+namespace SS3D.Engine.Inventory
 {
 
     /**

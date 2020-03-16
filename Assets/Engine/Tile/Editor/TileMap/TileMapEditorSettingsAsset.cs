@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Engine.Tiles;
+using SS3D.Engine.Tiles;
 using System.Collections.Generic;
 using UnityEditor;
 
-namespace Engine.Tiles.Editor {
+namespace SS3D.Engine.Tiles.Editor {
 
     /**
      * This object is used to save the settings defined in the tilemap, so they may be retrieved later.

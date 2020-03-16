@@ -1,9 +1,9 @@
 ﻿using System;
-using Login.Data;
-using Mirror;
 using UnityEngine;
+using SS3D.Engine.Server.Login.Screens;
+using SS3D.Engine.Server.Login.Data;
 
-namespace Login
+namespace SS3D.Engine.Server.Login.Networking
 {
     /// <summary>
     /// MonoBehaviour responsible for beginning and ending the Login process, notifying NetworkManager about selected character with a callback.

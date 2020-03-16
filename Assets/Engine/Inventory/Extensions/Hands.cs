@@ -3,7 +3,7 @@ using System.Linq;
 using Mirror;
 using UnityEngine;
 
-namespace Engine.Inventory.Extensions
+namespace SS3D.Engine.Inventory.Extensions
 {
     [RequireComponent(typeof(Inventory))]
     public class Hands : NetworkBehaviour

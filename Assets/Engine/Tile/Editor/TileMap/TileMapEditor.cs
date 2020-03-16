@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using static Tile.TileMapEditorHelpers;
 
-namespace Engine.Tiles.Editor.TileMap
+namespace SS3D.Engine.Tiles.Editor.TileMap
 {
     public class TileMapEditor : EditorWindow
     {

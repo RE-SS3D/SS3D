@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-using static UIAbstractContainer;
-
-namespace Engine.Interactions.UI
+namespace SS3D.Engine.Interactions.UI
 {
+    using static UIAbstractContainer;
 
     /**
      * Handles an interface dragging event, from the start of the drag through to the end.

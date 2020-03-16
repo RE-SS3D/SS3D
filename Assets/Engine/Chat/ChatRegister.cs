@@ -4,7 +4,7 @@ using System.Linq;
 using Mirror;
 using UnityEngine;
 
-namespace Chat
+namespace SS3D.Engine.Chat
 {
     /// <summary>
     /// Behaviour responsible for storing chat messages and communicating new ones over the network.

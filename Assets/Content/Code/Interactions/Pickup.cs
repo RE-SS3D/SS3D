@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
-using Interactions.Core;
-using Engine.Inventory;
-using Engine.Inventory.Extensions;
+using SS3D.Engine.Interactions.Extensions;
+using SS3D.Engine.Inventory;
+using SS3D.Engine.Inventory.Extensions;
 
-namespace Interactions.Custom
+namespace SS3D.Content.Code.Interactions
 {
     /**
      * <remarks>
@@ -13,7 +13,7 @@ namespace Interactions.Custom
      * <inheritdoc cref="Core.Interaction"/>
      */
     [CreateAssetMenu(fileName = "Pickup", menuName = "Interactions2/Pickup")]
-    public class Pickup : Core.Extensions.InteractionSO
+    public class Pickup : InteractionSO
     {
         public override string Name => "Pick Up";
 

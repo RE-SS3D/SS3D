@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace Engine.Interactions.Extensions
+namespace SS3D.Engine.Interactions.Extensions
 {
     /**
      * <summary>

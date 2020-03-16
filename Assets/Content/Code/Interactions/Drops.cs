@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
-using Engine.Inventory.Extensions;
-using Engine.Tiles;
+using SS3D.Engine.Inventory.Extensions;
+using SS3D.Engine.Tiles;
+using SS3D.Engine.Interactions.Extensions;
 
-namespace Interactions.Custom
+namespace SS3D.Content.Code.Interactions
 {
     /**
      * <summary>
@@ -13,7 +13,7 @@ namespace Interactions.Custom
      * <inheritdoc cref="Core.Interaction"/>
      */
     [CreateAssetMenu(fileName = "Drops", menuName = "Interactions2/Drop")]
-    public class Drops : Core.Extensions.InteractionSO
+    public class Drops : InteractionSO
     {
         public override string Name => "Drop";
 

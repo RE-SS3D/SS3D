@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Mirror;
 
-namespace Engine.Inventory
+namespace SS3D.Engine.Inventory
 {
     /**
      * An item describes what is held in a container.

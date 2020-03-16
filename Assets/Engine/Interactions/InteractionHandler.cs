@@ -2,12 +2,12 @@
 using System.Collections;
 using Mirror;
 using UnityEngine.EventSystems;
-using Engine.Inventory.Extensions;
+using SS3D.Engine.Inventory.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System;
 
-namespace Engine.Interactions
+namespace SS3D.Engine.Interactions
 {
     /**
      * <summary>Attached to the player, initiates interactions.</summary>

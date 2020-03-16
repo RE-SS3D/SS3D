@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Tile.TileMapEditorHelpers;
 
-namespace Engine.Tiles.Editor.TileMap
+namespace SS3D.Engine.Tiles.Editor.TileMap
 {
     /**
      * Handles creating a dragging rect and converting that into real tiles in the scene.
