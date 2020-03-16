@@ -1,6 +1,6 @@
 ﻿using Mirror;
 using UnityEngine;
-using SS3D.Content.Code.Player.Body; // TODO: This is bad.
+using SS3D.Content.Systems.Player.Body; // TODO: This is bad.
 
 namespace SS3D.Engine.Health
 {
