@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using SS3D.Engine.Interactions;
+using SS3D.Engine.Interactions.Extensions;
 
-namespace SS3D.Engine.Interactions.Extensions
+namespace Interactions.Core.Extensions
 {
     /**
      * <summary>

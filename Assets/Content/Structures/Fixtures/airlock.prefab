@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2288187705956357922}
   - component: {fileID: 3200471162449789355}
   - component: {fileID: 282799240210152979}
-  - component: {fileID: 2702267551474872544}
+  - component: {fileID: 748112625432200897}
   - component: {fileID: 3166756185730088617}
   - component: {fileID: 7563412273890357443}
   m_Layer: 2
@@ -82,7 +82,7 @@ MonoBehaviour:
     orientation: 0
   wallCapPrefab: {fileID: 0}
   doorType: 0
---- !u!114 &2702267551474872544
+--- !u!114 &748112625432200897
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,7 +91,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1490845820242129346}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 260a78d6eb95aad4c8cfea6db02aa913, type: 3}
+  m_Script: {fileID: 11500000, guid: 3568e60178b285a40ba678b791a6b8e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
@@ -311,7 +311,7 @@ GameObject:
   - component: {fileID: 1964808650632036043}
   - component: {fileID: 7103870224588809695}
   - component: {fileID: 355715206035846065}
-  - component: {fileID: 5629567127406535321}
+  - component: {fileID: 5236323989524206191}
   m_Layer: 8
   m_Name: AirlockStandardRight
   m_TagString: Untagged
@@ -393,7 +393,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.004796059, y: 0.0036948281, z: 0.018677529}
   m_Center: {x: -0.0023972015, y: 0, z: 0.008961448}
---- !u!114 &5629567127406535321
+--- !u!114 &5236323989524206191
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -417,7 +417,7 @@ GameObject:
   - component: {fileID: 1045918853058958279}
   - component: {fileID: 5213922929823099796}
   - component: {fileID: 3511565084606815011}
-  - component: {fileID: 7269254450743531814}
+  - component: {fileID: 2716194651791017972}
   m_Layer: 8
   m_Name: AirlockStandardLeft
   m_TagString: Untagged
@@ -499,7 +499,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.004796059, y: 0.0036948281, z: 0.018677529}
   m_Center: {x: 0.0023972052, y: 0, z: 0.008961448}
---- !u!114 &7269254450743531814
+--- !u!114 &2716194651791017972
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

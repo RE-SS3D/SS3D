@@ -32,11 +32,11 @@ namespace SS3D.Content.Structures.Fixtures
 
         // As is the standard in the rest of the code, wallCap should face east.
         [SerializeField]
-        private GameObject wallCapPrefab = null; 
+        private GameObject wallCapPrefab = null;
 
         [SerializeField]
         private DoorType doorType;
-    
+
         private void Start()
         {
             // Note: 'Should' already be validated by the point the game starts.
@@ -78,18 +78,16 @@ namespace SS3D.Content.Structures.Fixtures
 
         private void OnValidate()
         {
-    #if UNITY_EDITOR
-            EditorApplication.delayCall += () =>
-            {
-                if (this)
-                {
+#if UNITY_EDITOR
+            EditorApplication.delayCall += () => {
+                if (this) {
                     OnStateUpdate();
                     ValidateChildren();
                 }
             };
-    #endif
+#endif
         }
-    
+
         /**
          * Adjusts the connections value based on the given new tile.
          * Returns whether value changed.
@@ -102,18 +100,18 @@ namespace SS3D.Content.Structures.Fixtures
 
         private void UpdateWallCaps()
         {
-            if(wallCapPrefab == null)
+            if (wallCapPrefab == null)
                 return;
 
             // Go through each direction and ensure the wallcap is present.
-            for(Direction direction = Direction.North; direction < Direction.NorthWest; direction += 2) {
+            for (Direction direction = Direction.North; direction < Direction.NorthWest; direction += 2) {
                 int i = (int)direction / 2;
 
                 // Get the direction this applies to for the external world
                 Direction outsideDirection = DirectionHelper.Apply(OrientationHelper.ToPrincipalDirection(TileState.orientation), direction);
                 bool isPresent = adjacents.Adjacent(outsideDirection) == 1;
 
-                if(isPresent && wallCaps[i] == null) {
+                if (isPresent && wallCaps[i] == null) {
                     wallCaps[i] = EditorAndRuntime.InstantiatePrefab(wallCapPrefab, transform);
                     wallCaps[i].name = $"WallCap{i}";
 
@@ -123,7 +121,7 @@ namespace SS3D.Content.Structures.Fixtures
                     wallCaps[i].transform.localRotation = Quaternion.Euler(0, rotation, 0);
                     wallCaps[i].transform.localPosition = new Vector3(cardinal.Item1, 0, cardinal.Item2);
                 }
-                else if(!isPresent && wallCaps[i] != null) {
+                else if (!isPresent && wallCaps[i] != null) {
                     EditorAndRuntime.Destroy(wallCaps[i]);
                     wallCaps[i] = null;
                 }

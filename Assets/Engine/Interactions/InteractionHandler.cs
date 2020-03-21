@@ -1,11 +1,10 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Mirror;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using SS3D.Engine.Inventory.Extensions;
-using System.Collections.Generic;
-using System.Linq;
-using System;
+using SS3D.Engine.Interactions.Extensions;
 
 namespace SS3D.Engine.Interactions
 {

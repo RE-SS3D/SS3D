@@ -16,26 +16,26 @@ assignees: ''
 
 <!-- Give a concise explanation of the problem in more detail here. -->
 
-### Expected Behavior
-
-<!-- Explain what should be happening instead. -->
-
-### Possible Solution
-
-<!-- Not obligatory, but suggest any potential causes/fixes for the bug. -->
-
 ### Steps to Reproduce
 
 <!-- Provide step by step instructions for reproducing the bug.-->
 
 <!-- Include photos or videos if possible to help troubleshooters. -->
 
-### Context (Environment)
+### Expected Behavior
+
+<!-- Explain what should be happening instead. -->
+
+### Possible Solution
+
+<!-- Suggest any potential causes for the bug. -->
+
+<!-- Suggest any potential fixes for the bug. -->
+
+### Context
 
 <!-- How has this issue affected you? What are you trying to accomplish? -->
 
-<!-- Providing context helps us come up with a solution. -->
-
-<!-- What version of the client are you using? -->
+<!-- What version of the game are you using? -->
 
 <!-- What operating system are you running? -->
