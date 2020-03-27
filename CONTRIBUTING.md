@@ -1,14 +1,16 @@
-# How To Contribute To RE:Space Station 3D
+# How To Contribute To RE: Space Station 3D
 
 This document is for outlining the guidelines for contributing to the RE:SS3D project.
 If you have any questions, ask a council member on our [Discord Server](https://discord.gg/Z3sPhyS).
 
-**First, check out https://ss3d.space/contribute/, which has a breakdown of the different types of contributions as well as asset kits, guides, and todo boards for each. For programmers, we also have a [code style guide](Documents/C_SHARP.md).**
+**First, check out https://ss3d.space/contribute/, which has a breakdown of the different types of contributions as well as asset kits, guides, and todo boards for each.
+
+The game itself is made in Unity and written in C#, check out our  [code (C#) style guide](Documents/C_SHARP.md). We use Mirror for networking and there is a helpful document explaining it's use with Unity [here](https://mirror-networking.com/docs/)**
 
 ## SETTING UP THE PROJECT
 
 1. Clone this (SS3D) repository.
-2. [Download Unity 2019.2.0f1](https://unity3d.com/get-unity/download/archive) and open the folder containing the project in Unity.
+2. [Download Unity 2019.2](https://unity3d.com/get-unity/download/archive) and open the folder containing the project in Unity.
 
 ### Project Maintainers:
 
