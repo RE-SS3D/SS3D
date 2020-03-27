@@ -5,7 +5,7 @@ If you have any questions, ask a council member on our [Discord Server](https://
 
 **First, check out https://ss3d.space/contribute/, which has a breakdown of the different types of contributions as well as asset kits, guides, and todo boards for each.
 
-The game itself is made in Unity and written in C#, check out our  [code (C#) style guide](Documents/C_SHARP.md). We use mirror for networking and there is a helpful document explaining it's use with Unity [here](https://mirror-networking.com/docs/)**
+The game itself is made in Unity and written in C#, check out our  [code (C#) style guide](Documents/C_SHARP.md). We use Mirror for networking and there is a helpful document explaining it's use with Unity [here](https://mirror-networking.com/docs/)**
 
 ## SETTING UP THE PROJECT
 
