@@ -10,7 +10,7 @@ The game itself is made in Unity and written in C#, check out our  [code (C#) st
 ## SETTING UP THE PROJECT
 
 1. Clone this (SS3D) repository.
-2. [Download Unity 2019.2](https://unity3d.com/get-unity/download/archive) and open the folder containing the project in Unity.
+2. [Download Unity 2019.3.7 or newer](https://unity3d.com/get-unity/download/archive) and open the folder containing the project in Unity.
 
 ### Project Maintainers:
 
