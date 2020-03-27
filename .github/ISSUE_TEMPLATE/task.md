@@ -2,7 +2,7 @@
 name: Task
 about: This is a task to implement
 title: "Task Name"
-labels: 'task'
+labels: ''
 assignees: ''
 
 ---
