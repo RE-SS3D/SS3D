@@ -1,4 +1,4 @@
-### ![SS3D](Documents/Images/RESPACESTATION3D.png) Welcome to the repository for the game, RE: Space Station 3D. RE:SS3D is a resurrection of the original SS3D project, which was a demo attempting to recreate [Space Station 13](https://spacestation13.com/) in 3D.
+### ![SS3D](Documents/Images/RESPACESTATION3D.png) Welcome to the repository for the game, RE: Space Station 3D. RE:SS3D is a resurrection of the original SS3D project, which was an attempt to recreate [Space Station 13](https://spacestation13.com/) in 3D.
 
 ___
 
@@ -10,13 +10,13 @@ Also check out [https://ss3d.space/contribute/](https://ss3d.space/contribute/),
 
 # DOWNLOADS:
 
-[<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
-
-This is the current state of the RE:SS3D project in a .zip file. You will have to unpack and build the game in Unity on your own.
-
 [<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://github.com/RE-SS3D/SS3D/releases/latest)
 
 This is the latest official build of the RE:SS3D project. It currently works on Windows, but needs testing on other operating systems still.
+
+[<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
+
+This is the current state of the RE:SS3D project in a .zip file. You will have to unpack and build the game in Unity on your own.
 
 ## COMMUNITY:
 

@@ -4,7 +4,7 @@
 
 <!-- Provide a general summary of the problem here and in the title. -->
 
-<!-- Follow with a more consice explanation of the change here. -->
+<!-- Follow with a more concise explanation of the change here. -->
 
 <!-- What features does this change include/not include? -->
 

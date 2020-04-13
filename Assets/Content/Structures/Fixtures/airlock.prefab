@@ -49,7 +49,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.8768699, z: 2.042543}
+  m_Size: {x: 1, y: 1.8768699, z: 1}
   m_Center: {x: -3.138727e-17, y: 0.909181, z: 0.017160833}
 --- !u!114 &3200471162449789355
 MonoBehaviour:
@@ -64,7 +64,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  m_AssetId: e12dbb8448e720a499f1bc632e16fd32
+  m_AssetId: 
   m_SceneId: 0
 --- !u!114 &282799240210152979
 MonoBehaviour:
@@ -355,6 +355,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -461,6 +462,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
