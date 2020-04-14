@@ -62,6 +62,7 @@ namespace SS3D.Engine.Interactions.UI
             }
 
             foreach(var interaction in interactions) {
+
                 var button = Instantiate(buttonPrefab, contentPanel.transform);
 
                 button.GetComponentInChildren<TextMeshProUGUI>().text = interaction.Name;

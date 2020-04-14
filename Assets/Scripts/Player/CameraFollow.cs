@@ -1,4 +1,4 @@
-﻿using Chat;
+﻿using SS3D.Engine.Chat;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -101,7 +101,10 @@ public class CameraFollow : MonoBehaviour
         {
             return;
         }
-        
+
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+
         // Smooth the distance and angle before using it
         curHorizontalAngle = Mathf.LerpAngle(curHorizontalAngle, angle, Time.deltaTime * ANGLE_ACCELERATION);
         currentDistance = Mathf.MoveTowards(currentDistance, distance, Time.deltaTime * DISTANCE_ACCELERATION);

@@ -182,7 +182,7 @@ namespace Mirror
         //    connected yet (no need to connect it before server was fully set up).
         //    in other words, we need this to know which mode we are running in
         //    during FinishLoadScene.
-        public NetworkManagerMode mode { get; private set; }
+        public NetworkManagerMode mode { get; protected set; }
 
         /// <summary>
         /// Obsolete: Use <see cref="NetworkClient"/> directly
@@ -668,7 +668,7 @@ namespace Mirror
 #endif
         }
 
-        void InitializeSingleton()
+        protected void InitializeSingleton()
         {
             if (singleton != null && singleton == this)
             {
@@ -711,7 +711,7 @@ namespace Mirror
             NetworkServer.RegisterHandler<ErrorMessage>(OnServerErrorInternal, false);
         }
 
-        void RegisterClientMessages()
+        protected void RegisterClientMessages()
         {
             NetworkClient.RegisterHandler<ConnectMessage>(OnClientConnectInternal, false);
             NetworkClient.RegisterHandler<DisconnectMessage>(OnClientDisconnectInternal, false);
@@ -1179,7 +1179,7 @@ namespace Mirror
         }
 
         // called after successful authentication
-        void OnClientAuthenticated(NetworkConnection conn)
+        protected void OnClientAuthenticated(NetworkConnection conn)
         {
             if (LogFilter.Debug) Debug.Log("NetworkManager.OnClientAuthenticated");
 

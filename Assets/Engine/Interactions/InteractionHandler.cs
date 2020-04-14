@@ -54,16 +54,21 @@ namespace SS3D.Engine.Interactions
             }
             else if (Input.GetButtonDown("Secondary Click"))
             {
-                if(activeMenu != null) {
+                if(activeMenu != null ) {
                     Destroy(activeMenu.gameObject);
+                }
+
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                var viableInteractions = GetViableInteractions(ray);
+
+                if (viableInteractions.Count < 1)
+                {
+                    return;
                 }
 
                 // Create a menu that will run the given action when clicked
                 var obj = Instantiate(menuPrefab, transform);
                 activeMenu = obj.GetComponent<UI.MenuUI>();
-
-                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                var viableInteractions = GetViableInteractions(ray);
 
                 activeMenu.Position = Input.mousePosition;
                 activeMenu.Interactions = viableInteractions;
