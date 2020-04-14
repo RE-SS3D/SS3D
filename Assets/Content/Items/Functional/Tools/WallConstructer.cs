@@ -32,6 +32,12 @@ namespace SS3D.Content.Items.Functional.Tools
             var tileManager = FindObjectOfType<TileManager>();
 
             var tile = targetTile.Tile;
+
+            if (tile.fixture != null) // Prevent construction if the tile is occupied by a fixture. 
+            {
+                return;
+            }
+
             if (tile.turf?.isWall == true) // Deconstruct
                 tile.turf = floorToConstruct;
             else // Construct
