@@ -17,6 +17,9 @@ namespace SS3D.Content.Items.Functional.Tools
         public InteractionEvent Event { get; set; }
         public string Name => ShouldDeconstruct ? "Deconstruct Table" : "Construct Table";
 
+        // The distance in which to allow constructing tables.
+        public float buildDistance = 3f;
+
         public bool CanInteract()
         {
             targetTile = Event.target.GetComponentInParent<TileObject>();
@@ -30,6 +33,15 @@ namespace SS3D.Content.Items.Functional.Tools
             var tileManager = FindObjectOfType<TileManager>();
 
             var tile = targetTile.Tile;
+
+            // The player using this item.
+            var player = transform.root;
+
+            // Cancel interaction if the target tile is outside the build range.
+            if (Vector3.Distance(player.transform.position, targetTile.transform.position) > buildDistance)
+            {
+                return;
+            }
 
             if (tile.fixture != null) // If there is a fixture on the place
             {
