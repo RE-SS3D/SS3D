@@ -26,7 +26,41 @@ namespace SS3D.Content.Items.Functional.Tools
         {
             targetTile = Event.target.GetComponentInParent<TileObject>();
 
-            return Event.tool == gameObject && targetTile != null;
+            // Note: I didn't write the failure conditions over here, just rewrote in a different way.
+            // Not quite sure what the second one does.
+
+            // If target tile exists.
+            if (targetTile == null)
+            {
+                return false;
+            }
+
+            if (Event.tool != gameObject)
+            {
+                return false;
+            }
+
+            var tile = targetTile.Tile;
+
+            if (tile.fixture != null) // Prevent construction if the tile is occupied by a fixture. 
+            {
+                return false;
+            }
+
+
+            // The player using this item.
+            var player = transform.root;
+            if (player != gameObject) // Check if there even is a player.
+            {
+                // Cancel interaction if the target tile is outside the build range.
+                if (Vector3.Distance(player.transform.position, targetTile.transform.position) > buildDistance)
+                {
+                    return false;
+                }
+            }
+
+
+            return true;
         }
 
         public void Interact()
@@ -35,20 +69,6 @@ namespace SS3D.Content.Items.Functional.Tools
             var tileManager = FindObjectOfType<TileManager>();
 
             var tile = targetTile.Tile;
-
-            // The player using this item.
-            var player = transform.root;
-
-            // Cancel interaction if the target tile is outside the build range.
-            if (Vector3.Distance(player.transform.position, targetTile.transform.position) > buildDistance)
-            {
-                return;
-            }
-
-            if (tile.fixture != null) // Prevent construction if the tile is occupied by a fixture. 
-            {
-                return;
-            }
 
             if (tile.turf?.isWall == true) // Deconstruct
                 tile.turf = floorToConstruct;
