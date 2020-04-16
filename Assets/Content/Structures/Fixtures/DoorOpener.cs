@@ -26,8 +26,11 @@ namespace SS3D.Content.Structures.Fixtures
         [SerializeField] private Transform leftPanel = null;
         [SerializeField] private Transform rightPanel = null;
 
-        [SerializeField] private AudioSource openSfx = null;
-        [SerializeField] private AudioSource closeSfx = null;
+        [SerializeField] private GameObject[] airlockLights;
+
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip openSfx = null;
+        [SerializeField] private AudioClip closeSfx = null;
 
         [SerializeField] private LayerMask doorTriggerLayers = -1;
 
@@ -79,6 +82,11 @@ namespace SS3D.Content.Structures.Fixtures
 
         public void Awake()
         {
+            foreach (GameObject light in airlockLights)
+            {
+                MaterialChanger.ChangeObjectEmissionColor(light, MaterialChanger.Palette01.black);
+            }
+
             closedLeft = leftPanel.localPosition;
             closedRight = rightPanel.localPosition;
         }
@@ -129,13 +137,29 @@ namespace SS3D.Content.Structures.Fixtures
 
             if (isClient)
             {
-                (open ? openSfx : closeSfx).Play();
-
+                audioSource.PlayOneShot(open ? openSfx : closeSfx);
+                
                 // Stop any previous animations
                 if (animation != null)
                     StopCoroutine(animation);
 
                 animation = StartCoroutine(RunDoorAnim(open));
+                StartCoroutine(ChangeLights());
+            }
+        }
+
+        private IEnumerator ChangeLights()
+        {
+            foreach (GameObject light in airlockLights)
+            {
+                MaterialChanger.ChangeObjectEmissionColor(light, MaterialChanger.Palette01.green);
+            }
+
+            yield return new WaitForSeconds(2);
+
+            foreach (GameObject light in airlockLights)
+            {
+                MaterialChanger.ChangeObjectEmissionColor(light, MaterialChanger.Palette01.black);
             }
         }
 

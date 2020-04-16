@@ -26,7 +26,9 @@ namespace SS3D.Engine.Interactions
         {
             // Ensure that mouse isn't over ui (game objects aren't tracked by the eventsystem, so ispointer would return false
             if (!isLocalPlayer || Camera.main == null || EventSystem.current.IsPointerOverGameObject())
+            {
                 return;
+            }
 
             if (Input.GetButtonDown("Click"))
             {

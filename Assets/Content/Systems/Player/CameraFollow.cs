@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using SS3D.Engine.Chat;
+using UnityEngine.EventSystems;
 
 namespace SS3D.Content.Systems.Player
 {
@@ -59,6 +60,8 @@ namespace SS3D.Content.Systems.Player
         {
             //Ignore camera controls when typing in chat
             if (chatWindow != null && chatWindow.PlayerIsTyping()) return;
+
+            if (EventSystem.current.IsPointerOverGameObject()) return;
 
             // Check for double tap
             if (Input.GetButtonDown("Camera Rotation"))
