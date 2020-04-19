@@ -20,14 +20,11 @@ namespace SS3D.Content.Items.Functional.Tools
         public string Name => ShouldDeconstruct ? "Deconstruct Wall" : "Construct Wall";
 
         // The distance in which to allow constructing walls
-        public float buildDistance = 3f;
+        public float buildDistance = 1.5f;
 
         public bool CanInteract()
         {
             targetTile = Event.target.GetComponentInParent<TileObject>();
-
-            // Note: I didn't write the failure conditions over here, just rewrote in a different way.
-            // Not quite sure what the second one does.
 
             // If target tile exists.
             if (targetTile == null)
@@ -35,30 +32,27 @@ namespace SS3D.Content.Items.Functional.Tools
                 return false;
             }
 
+            //Dont construct if picking up the item.
             if (Event.tool != gameObject)
             {
                 return false;
             }
 
-            var tile = targetTile.Tile;
-
-            if (tile.fixture != null) // Prevent construction if the tile is occupied by a fixture. 
+            // Range check
+            if (Vector3.Distance(Event.Player.transform.position, Event.target.transform.position) > 3f)
             {
                 return false;
             }
 
 
-            // The player using this item.
-            var player = transform.root;
-            if (player != gameObject) // Check if there even is a player.
-            {
-                // Cancel interaction if the target tile is outside the build range.
-                if (Vector3.Distance(player.transform.position, targetTile.transform.position) > buildDistance)
-                {
-                    return false;
-                }
-            }
+            //The target tile's.... Tile.
+            var tile = targetTile.Tile;
 
+            // Prevent construction if the tile is occupied by a fixture. 
+            if (tile.fixture != null) 
+            {
+                return false;
+            }
 
             return true;
         }

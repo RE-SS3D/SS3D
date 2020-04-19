@@ -18,7 +18,7 @@ namespace SS3D.Content.Items.Functional.Tools
         public string Name => ShouldDeconstruct ? "Deconstruct Table" : "Construct Table";
 
         // The distance in which to allow constructing tables.
-        public float buildDistance = 3f;
+        public float buildDistance = 1.5f;
 
         public bool CanInteract()
         {
@@ -33,7 +33,14 @@ namespace SS3D.Content.Items.Functional.Tools
                 return false;
             }
 
+            // Dont construct if picking up the item.
             if (Event.tool != gameObject)
+            {
+                return false;
+            }
+
+            // Range check
+            if (Vector3.Distance(Event.Player.transform.position, Event.target.transform.position) > 3f)
             {
                 return false;
             }
@@ -42,15 +49,6 @@ namespace SS3D.Content.Items.Functional.Tools
             if (targetTile.Tile.turf?.isWall == true)
             {
                 return false;
-            }
-
-            var player = transform.root;
-            if (player != gameObject)
-            {
-                if (Vector3.Distance(player.transform.position, targetTile.transform.position) > buildDistance)
-                {
-                    return false;
-                }
             }
 
             return true;
