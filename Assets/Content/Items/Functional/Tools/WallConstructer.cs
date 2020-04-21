@@ -39,7 +39,7 @@ namespace SS3D.Content.Items.Functional.Tools
             }
 
             // Range check
-            if (Vector3.Distance(Event.Player.transform.position, Event.target.transform.position) > 3f)
+            if (Vector3.Distance(Event.Player.transform.position, Event.target.transform.position) > 1.5f)
             {
                 return false;
             }
