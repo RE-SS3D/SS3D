@@ -17,11 +17,41 @@ namespace SS3D.Content.Items.Functional.Tools
         public InteractionEvent Event { get; set; }
         public string Name => ShouldDeconstruct ? "Deconstruct Table" : "Construct Table";
 
+        // The distance in which to allow constructing tables.
+        public float buildDistance = 1.5f;
+
         public bool CanInteract()
         {
             targetTile = Event.target.GetComponentInParent<TileObject>();
 
-            return Event.tool == gameObject && targetTile != null && targetTile.Tile.turf?.isWall == false;
+            // Note: I didn't write the failure conditions over here, just rewrote in a different way.
+            // Not quite sure what the second one does.
+
+            // If target tile exists.
+            if (targetTile == null)
+            {
+                return false;
+            }
+
+            // Dont construct if picking up the item.
+            if (Event.tool != gameObject)
+            {
+                return false;
+            }
+
+            // Range check
+            if (Vector3.Distance(Event.Player.transform.position, Event.target.transform.position) > 1.5f)
+            {
+                return false;
+            }
+
+            // Make sure there's not a wall on the turf.
+            if (targetTile.Tile.turf?.isWall == true)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public void Interact()
@@ -31,10 +61,17 @@ namespace SS3D.Content.Items.Functional.Tools
 
             var tile = targetTile.Tile;
 
-            if (tile.fixture == tableToConstruct) // Deconstruct
-                tile.fixture = null;
-            else // Construct
-                tile.fixture = tableToConstruct;
+            if (tile.fixture != null) // If there is a fixture on the place
+            {
+                if (tile.fixture == tableToConstruct) // If the fixture is a table
+                {
+                    tile.fixture = null; // Deconstruct
+                }
+            }
+            else // If there is no fixture on place
+            {
+                tile.fixture = tableToConstruct; // Construct
+            }
 
             // TODO: Make an easier way of doing this.
             tile.subStates = new object[2];
