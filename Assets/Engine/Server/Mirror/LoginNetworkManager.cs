@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using SS3D.Engine.Server.Login.Data;
 using SS3D.Engine.Server.Login.Networking;
-using Round;
+using SS3D.Engine.Server.Round;
 
 namespace Mirror
 {
@@ -43,7 +43,7 @@ namespace Mirror
         }
 
         /**
-         * Information aboout the player's chosen character sent from client to server
+         * Information about the player's chosen character sent from client to server
          */
         public class CharacterSelectMessage : MessageBase
         {
