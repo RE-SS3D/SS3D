@@ -19,11 +19,42 @@ namespace SS3D.Content.Items.Functional.Tools
         public InteractionEvent Event { get; set; }
         public string Name => ShouldDeconstruct ? "Deconstruct Wall" : "Construct Wall";
 
+        // The distance in which to allow constructing walls
+        public float buildDistance = 1.5f;
+
         public bool CanInteract()
         {
             targetTile = Event.target.GetComponentInParent<TileObject>();
 
-            return Event.tool == gameObject && targetTile != null;
+            // If target tile exists.
+            if (targetTile == null)
+            {
+                return false;
+            }
+
+            //Dont construct if picking up the item.
+            if (Event.tool != gameObject)
+            {
+                return false;
+            }
+
+            // Range check
+            if (Vector3.Distance(Event.Player.transform.position, Event.target.transform.position) > 1.5f)
+            {
+                return false;
+            }
+
+
+            //The target tile's.... Tile.
+            var tile = targetTile.Tile;
+
+            // Prevent construction if the tile is occupied by a fixture. 
+            if (tile.fixture != null) 
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public void Interact()
@@ -32,6 +63,7 @@ namespace SS3D.Content.Items.Functional.Tools
             var tileManager = FindObjectOfType<TileManager>();
 
             var tile = targetTile.Tile;
+
             if (tile.turf?.isWall == true) // Deconstruct
                 tile.turf = floorToConstruct;
             else // Construct

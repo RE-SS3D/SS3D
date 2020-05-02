@@ -17,6 +17,8 @@ namespace SS3D.Content.Systems.Interactions
     {
         public override string Name => "Drop";
 
+        public float dropDistance = 1.5f;
+
         public override bool CanInteract()
         {
             // An item can be dropped on a floor or any fixture attached to a floor.
@@ -26,7 +28,23 @@ namespace SS3D.Content.Systems.Interactions
 
             hands = Event.Player.GetComponent<Hands>();
 
-            return hands.GetItemInHand() != null && isFloor;
+            if (hands.GetItemInHand() == null)
+            {
+                return false;
+            }
+
+            if (!isFloor)
+            {
+                return false;
+            }
+
+            // Range check
+            if (Vector3.Distance(Event.Player.transform.position, Event.target.transform.position) > dropDistance)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public override void Interact()

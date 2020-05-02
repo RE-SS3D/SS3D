@@ -17,11 +17,28 @@ namespace SS3D.Content.Systems.Interactions
     {
         public override string Name => "Pick Up";
 
+        public float pickupDistance = 1.5f;
+
         public override bool CanInteract()
         {
-            // TODO: Should also be within certain range.
-            return Event.target.GetComponent<Item>() != null
-                && Event.Player.GetComponent<Hands>().GetItemInHand() == null;
+            // Below are some failure conditions for interactions:
+
+            if (Event.target.GetComponent<Item>() == null)
+            {
+                return false;
+            }
+
+            if (Event.Player.GetComponent<Hands>().GetItemInHand() != null)
+            {
+                return false;
+            }
+
+            if (Vector3.Distance(Event.Player.transform.position, Event.target.transform.position) > pickupDistance)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public override void Interact()

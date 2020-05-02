@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  m_AssetId: 7becfab153276864f9fc7636a839d837
+  m_AssetId: 
   m_SceneId: 0
 --- !u!33 &5851963053719667412
 MeshFilter:
@@ -74,6 +74,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -140,9 +141,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 1
-  m_CookingOptions: 14
+  m_CookingOptions: 30
   m_Mesh: {fileID: 8918077550557095614, guid: 8f2f2c0dc3e66ab4fafad982b8bea8ab, type: 3}
 --- !u!114 &7861503108559545368
 MonoBehaviour:
@@ -158,3 +159,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wallToConstruct: {fileID: 11400000, guid: cede127f2ecc46345ab2c1fad9cbd507, type: 2}
   floorToConstruct: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
+  buildDistance: 3
