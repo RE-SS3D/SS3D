@@ -30,6 +30,9 @@ namespace SS3D.Content.Structures.Fixtures
             Double
         };
 
+        /** <summary>Based on peculiarities of the model, the appropriate position of the wall cap</summary> */
+        private const float WALL_CAP_DISTANCE_FROM_CENTRE = 0.979f;
+
         // As is the standard in the rest of the code, wallCap should face east.
         [SerializeField]
         private GameObject wallCapPrefab = null;
@@ -76,17 +79,17 @@ namespace SS3D.Content.Structures.Fixtures
             UpdateWallCaps();
         }
 
+#if UNITY_EDITOR
         private void OnValidate()
         {
-#if UNITY_EDITOR
             EditorApplication.delayCall += () => {
                 if (this) {
                     OnStateUpdate();
                     ValidateChildren();
                 }
             };
-#endif
         }
+#endif
 
         /**
          * Adjusts the connections value based on the given new tile.
@@ -112,14 +115,8 @@ namespace SS3D.Content.Structures.Fixtures
                 bool isPresent = adjacents.Adjacent(outsideDirection) == 1;
 
                 if (isPresent && wallCaps[i] == null) {
-                    wallCaps[i] = EditorAndRuntime.InstantiatePrefab(wallCapPrefab, transform);
+                    wallCaps[i] = SpawnWallCap(direction);
                     wallCaps[i].name = $"WallCap{i}";
-
-                    var cardinal = DirectionHelper.ToCardinalVector(DirectionHelper.Apply(Direction.East, direction));
-                    var rotation = DirectionHelper.AngleBetween(Direction.South, direction);
-
-                    wallCaps[i].transform.localRotation = Quaternion.Euler(0, rotation, 0);
-                    wallCaps[i].transform.localPosition = new Vector3(cardinal.Item1, 0, cardinal.Item2);
                 }
                 else if (!isPresent && wallCaps[i] != null) {
                     EditorAndRuntime.Destroy(wallCaps[i]);
@@ -147,6 +144,23 @@ namespace SS3D.Content.Structures.Fixtures
                     wallCaps[num] = child.gameObject;
                 }
             }
+        }
+
+        /**
+         * <summary>Spawns a wall cap facing a direction, with appropriate position & settings</summary>
+         * <param name="direction">Direction from the centre of the door</param>
+         */
+        private GameObject SpawnWallCap(Direction direction)
+        {
+            var wallCap = EditorAndRuntime.InstantiatePrefab(wallCapPrefab, transform);
+
+            var cardinal = DirectionHelper.ToCardinalVector(DirectionHelper.Apply(Direction.East, direction));
+            var rotation = DirectionHelper.AngleBetween(Direction.South, direction);
+
+            wallCap.transform.localRotation = Quaternion.Euler(0, rotation, 0);
+            wallCap.transform.localPosition = new Vector3(cardinal.Item1 * WALL_CAP_DISTANCE_FROM_CENTRE, 0, cardinal.Item2 * WALL_CAP_DISTANCE_FROM_CENTRE);
+
+            return wallCap;
         }
 
         // WallCap gameobjects, North, East, South, West. Null if not present.
