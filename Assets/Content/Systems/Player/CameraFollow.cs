@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using SS3D.Engine.Chat;
 
 namespace SS3D.Content.Systems.Player
@@ -22,7 +23,6 @@ namespace SS3D.Content.Systems.Player
 
         private const float CARDINAL_SNAP_TIME = 0.3f;
 
-
         // The object to follow
         public GameObject target = null;
 
@@ -30,14 +30,6 @@ namespace SS3D.Content.Systems.Player
         public float distance = 3f; // total distance from the target
         public float angle = 90f;   // horizontal angle of the camera (around the z axis)
         public float vAngle = 60f;  // angle above the player
-
-        //This exists to stop camera controls from working if a player is typing
-        private ChatWindow chatWindow;
-
-        public void Start()
-        {
-            chatWindow = FindObjectOfType<ChatWindow>();
-        }
 
         /**
          * Updates the target the camera is meant to follow
@@ -57,8 +49,9 @@ namespace SS3D.Content.Systems.Player
          */
         public void Update()
         {
-            //Ignore camera controls when typing in chat
-            if (chatWindow != null && chatWindow.PlayerIsTyping()) return;
+            // Ignore camera controls when the mouse is over the UI
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
 
             // Check for double tap
             if (Input.GetButtonDown("Camera Rotation"))
@@ -66,7 +59,7 @@ namespace SS3D.Content.Systems.Player
 
             // If a double tap actually works
             // Round to closest 90 degree angle, going up or down based on whether axis is positive or negative
-            if (Input.GetButtonUp("Camera Rotation") && Time.time - prevHorizontalAxisPress < CARDINAL_SNAP_TIME) {
+            if (Input.GetButtonUp("Camera Rotation") && (Time.time - prevHorizontalAxisPress) < CARDINAL_SNAP_TIME) {
                 angle = Mathf.Round((angle + (Input.GetAxis("Camera Rotation") > 0 ? 45.1f : -45.1f)) / 90.0f) * 90.0f;
                 prevHorizontalAxisPress = 0.0f;
                 return;
@@ -77,7 +70,9 @@ namespace SS3D.Content.Systems.Player
             float angleDelta = 0.0f;
             float vAngleDelta = 0.0f;
 
-            if (Input.GetButton("Camera Rotation") && Time.time - prevHorizontalAxisPress > CARDINAL_SNAP_TIME) angleDelta = Input.GetAxis("Camera Rotation") * HORIZONTAL_ROTATION_SENSITIVITY * Time.deltaTime;
+            if (Input.GetButton("Camera Rotation") && (Time.time - prevHorizontalAxisPress) > CARDINAL_SNAP_TIME) {
+                angleDelta = Input.GetAxis("Camera Rotation") * HORIZONTAL_ROTATION_SENSITIVITY * Time.deltaTime;
+            }
             if (Input.GetButton("Camera Vertical Rotation"))
                 vAngleDelta = Input.GetAxis("Camera Vertical Rotation") * VERTICAL_ROTATION_SENSITIVITY * Time.deltaTime;
 
@@ -93,7 +88,9 @@ namespace SS3D.Content.Systems.Player
         public void LateUpdate()
         {
             // if there is no target exit out of update
-            if (!target) return;
+            if (!target) {
+                return;
+            }
 
             // Smooth the distance and angle before using it
             curHorizontalAngle = Mathf.LerpAngle(curHorizontalAngle, angle, Time.deltaTime * ANGLE_ACCELERATION);
