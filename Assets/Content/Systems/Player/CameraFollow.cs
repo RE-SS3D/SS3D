@@ -31,14 +31,6 @@ namespace SS3D.Content.Systems.Player
         public float angle = 90f;   // horizontal angle of the camera (around the z axis)
         public float vAngle = 60f;  // angle above the player
 
-        //This exists to stop camera controls from working if a player is typing
-        private ChatWindow chatWindow;
-
-        private void Start()
-        {
-            chatWindow = FindObjectOfType<ChatWindow>();
-        }
-
         /**
          * Updates the target the camera is meant to follow
          */
@@ -109,8 +101,8 @@ namespace SS3D.Content.Systems.Player
             Vector3 targetPosition = target.transform.position + playerOffset;
 
             // Look at that part from the correct position
-            this.transform.position = targetPosition + relativePosition;
-            this.transform.LookAt(targetPosition);
+            transform.position = targetPosition + relativePosition;
+            transform.LookAt(targetPosition);
         }
 
         // Previous button downs for left and right axis movement
