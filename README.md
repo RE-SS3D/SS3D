@@ -4,9 +4,9 @@ ___
 
 ## CONTRIBUTING:
 
-Head to [CONTRIBUTING.md](CONTRIBUTING.md) for information regarding technical contributions, including how to run the project, reporting bugs, pull requests, and styling code.
+[CONTRIBUTING.md](CONTRIBUTING.md) contains the information regarding technical contributions, including what version of Unity the project uses, how to set-up and run the project, reporting bugs, pull requests, and styling code.
 
-Also check out [https://ss3d.space/contribute/](https://ss3d.space/contribute/), which has more info and links, especially regarding todo boards and guides for contributing art assets.
+[https://ss3d.space/contribute/](https://ss3d.space/contribute/) has a breakdown of the different contribution types (including art assets) with links to helpful guides and todo boards, making contributing art assets a lot easier for new contributors.
 
 # DOWNLOADS:
 
@@ -16,28 +16,27 @@ This is the latest official build of the RE:SS3D project. It currently works on 
 
 [<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
 
-This is the current state of the RE:SS3D project in a .zip file. You will have to unpack and build the game in Unity on your own.
+This is the current state of the RE:SS3D project in a .zip file. You will have to unpack the file and build the game in Unity on your own.
 
 ## COMMUNITY:
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
-Discord is the primary communication for our community and devs.
-There's plenty of helpful people there, capable of answering most of your questions, as well as WIP content.
+Discord is the primary communication for our community and devs. There's plenty of helpful people there, capable of answering most of your questions, as well as WIP content.
 
 [<img src="Documents/Images/reddit.png" alt="Reddit" width="150" align="left">](https://www.reddit.com/r/RESS3D/)
 
-We also have a Reddit, where you will find similar discussion threads and posts showing off WIP content, although it is not as active as our Discord server.
+We also have a subreddit, where you will find similar discussion threads and posts showing off art & WIP content, although it is not as active as our Discord server.
 
 ## BOARDS:
 
 [<img src="Documents/Images/github.png" alt="github" width="150" align="left">](https://github.com/RE-SS3D/SS3D/projects)
 
-This GitHub repo hosts the board for tracking the completion status of the game itself, via linking GitHub issues and pull requests.
+This GitHub repo hosts our project board for tracking the completion status of the game itself, via linking GitHub issues and pull requests.
 
 [<img src="Documents/Images/trello.png" alt="Trello" width="150" align="left">](https://trello.com/ress3d)
 
-Trello is used for pretty much everything else, including task boards for various art types (modeling, graphics, audio, etc.) and our management board.
+Trello hosts all our other boards, including the task boards for our various asset types (3D, 2D, audio, etc.) and our management board.
 
 ## INFO:
 
