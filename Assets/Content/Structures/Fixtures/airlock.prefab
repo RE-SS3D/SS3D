@@ -80,7 +80,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileState:
     orientation: 0
-  wallCapPrefab: {fileID: 0}
+  wallCapPrefab: {fileID: 5532353597398885135, guid: 1257cb58aa84aeb48a09c63963a02e38,
+    type: 3}
   doorType: 0
 --- !u!114 &748112625432200897
 MonoBehaviour:
