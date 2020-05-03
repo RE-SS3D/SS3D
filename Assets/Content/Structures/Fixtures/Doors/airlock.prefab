@@ -470,19 +470,11 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   animator: {fileID: 7885291965431829243}
-  leftPanel: {fileID: 5971583558199218247}
-  rightPanel: {fileID: 4947755427424542480}
-  airlockLights:
-  - {fileID: 943789654853366942}
-  - {fileID: 5148747249652853934}
-  audioSource: {fileID: 3744248093295846519}
-  openSfx: {fileID: 8300000, guid: 34297ba204a9f3944872f100baaa2369, type: 3}
-  closeSfx: {fileID: 8300000, guid: fc2485e75c5d3ab4e86e814043c9e9cb, type: 3}
+  openSound: {fileID: 8300000, guid: 34297ba204a9f3944872f100baaa2369, type: 3}
+  closeSound: {fileID: 8300000, guid: fc2485e75c5d3ab4e86e814043c9e9cb, type: 3}
   doorTriggerLayers:
     serializedVersion: 2
     m_Bits: 32768
-  openLeft: {x: 0.5, y: 0, z: 0}
-  openRight: {x: -0.5, y: 0, z: 0}
 --- !u!82 &3744248093295846519
 AudioSource:
   m_ObjectHideFlags: 0
@@ -631,17 +623,11 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   animator: {fileID: 0}
-  leftPanel: {fileID: 0}
-  rightPanel: {fileID: 0}
-  airlockLights: []
-  audioSource: {fileID: 0}
-  openSfx: {fileID: 0}
-  closeSfx: {fileID: 0}
+  openSound: {fileID: 0}
+  closeSound: {fileID: 0}
   doorTriggerLayers:
     serializedVersion: 2
     m_Bits: 32768
-  openLeft: {x: 0.5, y: 0, z: 0}
-  openRight: {x: -0.5, y: 0, z: 0}
 --- !u!114 &3200471162449789355
 MonoBehaviour:
   m_ObjectHideFlags: 0

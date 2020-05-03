@@ -23,9 +23,8 @@ namespace SS3D.Content.Structures.Fixtures
         private const float DOOR_WAIT_CLOSE_TIME = 2.0f;
 
         [SerializeField] private Animator animator = null;
-
-        [SerializeField] private GameObject[] airlockLights;
-
+        [SerializeField] private AudioClip openSound = null;
+        [SerializeField] private AudioClip closeSound = null;
         [SerializeField] private LayerMask doorTriggerLayers = -1;
 
         [SyncVar(hook = "OnDoorStateChange")]
@@ -36,7 +35,7 @@ namespace SS3D.Content.Structures.Fixtures
         // Used for ensuring correct timing on certain actions
         private DateTime lastInteraction; // Server Only
 
-        private new Coroutine animation; // Client Only
+        private AudioSource audioSource;
 
         // Interaction stuff
         
@@ -54,6 +53,15 @@ namespace SS3D.Content.Structures.Fixtures
             lastInteraction = DateTime.Now;
         }
 
+        /// <summary>
+        /// Gets called by AnimationEvents
+        /// </summary>
+        /// <param name="clipType">"open" or "close"</param>
+        public void PlaySound(string clipType)
+        {
+            audioSource.PlayOneShot(clipType == "open" ? openSound : closeSound);
+        }
+
         // Overriding (non-interesting) methods
 
         public void OnValidate()
@@ -66,6 +74,8 @@ namespace SS3D.Content.Structures.Fixtures
         {
             base.OnStartClient();
         
+            audioSource = GetComponent<AudioSource>();
+
             if (isClientOnly)
                 OnDoorStateChange(openState);
         }
