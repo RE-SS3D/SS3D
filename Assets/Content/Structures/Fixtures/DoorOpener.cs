@@ -82,13 +82,9 @@ namespace SS3D.Content.Structures.Fixtures
 
         public void Awake()
         {
-            foreach (GameObject light in airlockLights)
-            {
-                MaterialChanger.ChangeObjectEmissionColor(light, MaterialChanger.Palette01.black);
-            }
-
             closedLeft = leftPanel.localPosition;
             closedRight = rightPanel.localPosition;
+            SetLights(false);
         }
 
         public override void OnStartClient()
@@ -144,22 +140,6 @@ namespace SS3D.Content.Structures.Fixtures
                     StopCoroutine(animation);
 
                 animation = StartCoroutine(RunDoorAnim(open));
-                StartCoroutine(ChangeLights());
-            }
-        }
-
-        private IEnumerator ChangeLights()
-        {
-            foreach (GameObject light in airlockLights)
-            {
-                MaterialChanger.ChangeObjectEmissionColor(light, MaterialChanger.Palette01.green);
-            }
-
-            yield return new WaitForSeconds(2);
-
-            foreach (GameObject light in airlockLights)
-            {
-                MaterialChanger.ChangeObjectEmissionColor(light, MaterialChanger.Palette01.black);
             }
         }
 
@@ -170,6 +150,7 @@ namespace SS3D.Content.Structures.Fixtures
         private IEnumerator RunDoorAnim(bool open)
         {
             // 1.0f = open, 0.0f = closed.
+            SetLights(open);
             while (animTime <= 1.0f && animTime >= 0.0f) {
                 animTime = animTime + (open ? Time.deltaTime : -Time.deltaTime) / DOOR_TRANSITION_TIME;
 
@@ -178,6 +159,7 @@ namespace SS3D.Content.Structures.Fixtures
 
                 yield return new WaitForEndOfFrame();
             }
+            SetLights(false);
             animTime = open ? 1.0f : 0.0f;
 
             leftPanel.localPosition = open ? openLeft : closedLeft;
@@ -185,6 +167,15 @@ namespace SS3D.Content.Structures.Fixtures
 
             // Now that the animation is over, clear the animation Coroutine.
             animation = null;
+        }
+
+        private void SetLights(bool on)
+        {
+            var colour = on ? MaterialChanger.Palette01.green : MaterialChanger.Palette01.black;
+
+            foreach (GameObject light in airlockLights) {
+                MaterialChanger.ChangeObjectEmissionColor(light, colour);
+            }
         }
 
         private IEnumerator RunCloseEventually(float time)
