@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5040101673087779077}
-  - component: {fileID: 3765006029881532162}
+  - component: {fileID: 8363832041584505504}
   - component: {fileID: 2625419194947841312}
   m_Layer: 8
   m_Name: AirlockStandardLeftLight
@@ -32,7 +32,7 @@ Transform:
   m_Father: {fileID: 5971583558199218247}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3765006029881532162
+--- !u!33 &8363832041584505504
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -387,7 +387,7 @@ GameObject:
   - component: {fileID: 639650920067254485}
   - component: {fileID: 3744248093295846519}
   m_Layer: 2
-  m_Name: airlockfix
+  m_Name: airlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -451,7 +451,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileState:
     orientation: 0
-  wallCapPrefab: {fileID: 0}
+  wallCapPrefab: {fileID: 5532353597398885135, guid: 1257cb58aa84aeb48a09c63963a02e38,
+    type: 3}
   doorType: 0
 --- !u!114 &639650920067254485
 MonoBehaviour:
@@ -577,3 +578,60 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &282799240210152979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 159a9ad506a2d794d80a59383b84ac83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    orientation: 0
+  wallCapPrefab: {fileID: 5532353597398885135, guid: 1257cb58aa84aeb48a09c63963a02e38,
+    type: 3}
+  doorType: 0
+--- !u!114 &748112625432200897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3568e60178b285a40ba678b791a6b8e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  leftPanel: {fileID: 0}
+  rightPanel: {fileID: 0}
+  airlockLights: []
+  audioSource: {fileID: 0}
+  openSfx: {fileID: 0}
+  closeSfx: {fileID: 0}
+  doorTriggerLayers:
+    serializedVersion: 2
+    m_Bits: 32768
+  openLeft: {x: 0.5, y: 0, z: 0}
+  openRight: {x: -0.5, y: 0, z: 0}
+--- !u!114 &3200471162449789355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serverOnly: 0
+  m_AssetId: 
+  m_SceneId: 0
