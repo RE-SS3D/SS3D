@@ -107,7 +107,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1180121664117246704}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.004878044, y: 0, z: -0.004480511}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5040101673087779077}
@@ -293,7 +293,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6272381660155635246}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.004878044, y: 0, z: -0.004480511}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 97981178372053927}
@@ -386,6 +386,7 @@ GameObject:
   - component: {fileID: 6645371873850636973}
   - component: {fileID: 639650920067254485}
   - component: {fileID: 3744248093295846519}
+  - component: {fileID: 7885291965431829243}
   m_Layer: 2
   m_Name: airlock
   m_TagString: Untagged
@@ -408,7 +409,7 @@ Transform:
   - {fileID: 4947755427424542480}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!65 &411176053582851246
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -468,6 +469,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  animator: {fileID: 7885291965431829243}
   leftPanel: {fileID: 5971583558199218247}
   rightPanel: {fileID: 4947755427424542480}
   airlockLights:
@@ -493,7 +495,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 24300002, guid: deedf379b82c89646b8bb39e6a3870aa,
     type: 2}
   m_audioClip: {fileID: 8300000, guid: 34297ba204a9f3944872f100baaa2369, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.11
   m_Pitch: 1
   Loop: 0
@@ -578,6 +580,25 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!95 &7885291965431829243
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754494191455933398}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 77f0d30d555c23240a80d7d85e9c2d6d, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 1
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &282799240210152979
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -609,6 +630,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  animator: {fileID: 0}
   leftPanel: {fileID: 0}
   rightPanel: {fileID: 0}
   airlockLights: []
