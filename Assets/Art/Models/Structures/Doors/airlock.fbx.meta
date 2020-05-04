@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 749289600d9779b44b8c5bfc6e0aaadd
+guid: 1a17e85244fe63d49a84f10b29ebdf67
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable: []
@@ -7,7 +7,7 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Emissive Red (Off)
+      name: DoorLight
     second: {fileID: 2100000, guid: 583ec5095c87a4543a564d1e7211889b, type: 2}
   - first:
       type: UnityEngine:Material
@@ -15,7 +15,7 @@ ModelImporter:
       name: Palette01
     second: {fileID: 2100000, guid: db5a4f016f22afc4f8f074192ce277e8, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 1
