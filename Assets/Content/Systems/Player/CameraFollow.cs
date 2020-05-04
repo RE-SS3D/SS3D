@@ -53,6 +53,8 @@ namespace SS3D.Content.Systems.Player
             if (EventSystem.current.IsPointerOverGameObject())
                 return;
 
+            if (EventSystem.current.IsPointerOverGameObject()) return;
+
             // Check for double tap
             if (Input.GetButtonDown("Camera Rotation"))
                 prevHorizontalAxisPress = Time.time;

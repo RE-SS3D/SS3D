@@ -19,7 +19,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - IgnorePlayerCollision
   - Player
   - Item
   - 

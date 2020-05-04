@@ -62,8 +62,11 @@ namespace SS3D.Content.Items.Functional.Tools
             // Note: CanInteract is always called before Interact, so we KNOW targetTile is defined.
             var tileManager = FindObjectOfType<TileManager>();
 
+
             var tile = targetTile.Tile;
 
+            if (tile.fixture != null) // Prevent construction if the tile is occupied by a fixture. 
+                return;
             if (tile.turf?.isWall == true) // Deconstruct
                 tile.turf = floorToConstruct;
             else // Construct

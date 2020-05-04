@@ -26,7 +26,9 @@ namespace SS3D.Engine.Interactions
         {
             // Ensure that mouse isn't over ui (game objects aren't tracked by the eventsystem, so ispointer would return false
             if (!isLocalPlayer || Camera.main == null || EventSystem.current.IsPointerOverGameObject())
+            {
                 return;
+            }
 
             if (Input.GetButtonDown("Click"))
             {
@@ -54,16 +56,21 @@ namespace SS3D.Engine.Interactions
             }
             else if (Input.GetButtonDown("Secondary Click"))
             {
-                if(activeMenu != null) {
+                if(activeMenu != null ) {
                     Destroy(activeMenu.gameObject);
+                }
+
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                var viableInteractions = GetViableInteractions(ray);
+
+                if (viableInteractions.Count < 1)
+                {
+                    return;
                 }
 
                 // Create a menu that will run the given action when clicked
                 var obj = Instantiate(menuPrefab, transform);
                 activeMenu = obj.GetComponent<UI.MenuUI>();
-
-                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                var viableInteractions = GetViableInteractions(ray);
 
                 activeMenu.Position = Input.mousePosition;
                 activeMenu.Interactions = viableInteractions;

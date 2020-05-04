@@ -31,7 +31,7 @@ namespace SS3D.Content.Structures.Fixtures
         };
 
         /** <summary>Based on peculiarities of the model, the appropriate position of the wall cap</summary> */
-        private const float WALL_CAP_DISTANCE_FROM_CENTRE = 0.979f;
+        private const float WALL_CAP_DISTANCE_FROM_CENTRE = 1.0f;
 
         // As is the standard in the rest of the code, wallCap should face east.
         [SerializeField]
@@ -40,7 +40,7 @@ namespace SS3D.Content.Structures.Fixtures
         [SerializeField]
         private DoorType doorType;
 
-        private void Start()
+        private void OnEnable()
         {
             // Note: 'Should' already be validated by the point the game starts.
             // So the only purpose is when loading map from scene to correctly load children.
@@ -135,7 +135,7 @@ namespace SS3D.Content.Structures.Fixtures
                     bool success = int.TryParse(child.name.Substring(7), out int num);
 
                     // Remove if no int, int out of bounds, or duplicate
-                    if (!success || num > wallCaps.Length || num < 0 || (wallCaps[num] != null && wallCaps[num] != child.gameObject)) {
+                    if (!success || num > wallCaps.Length || num < 0 || (wallCaps[num] != null && !ReferenceEquals(wallCaps[num], child.gameObject))) {
                         Debug.LogWarning($"Unusual child found whilst searching for wall caps: {child.name}, deleting");
                         EditorAndRuntime.Destroy(child.gameObject);
                         continue;

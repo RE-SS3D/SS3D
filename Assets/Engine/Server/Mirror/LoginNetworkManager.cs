@@ -4,6 +4,7 @@ using UnityEngine;
 using SS3D.Engine.Server.Login.Data;
 using SS3D.Engine.Server.Login.Networking;
 using SS3D.Engine.Server.Round;
+using System.Net;
 
 namespace Mirror
 {
@@ -74,7 +75,24 @@ namespace Mirror
             loginManager.ApiHeartbeat(ConfirmLoginServer);
         }
 
-        
+        /// <summary>
+        /// Starts the client using an input field to determine the URI
+        /// </summary>
+        /// <param name="inputField"></param>
+        public void StartClient(TMPro.TMP_InputField inputField)
+        {
+            UriBuilder uriBuilder = new UriBuilder();
+            uriBuilder.Scheme = "tcp4";
+            if (IPAddress.TryParse(inputField.text, out IPAddress address)) {
+                uriBuilder.Host = address.ToString();
+            } else {
+                uriBuilder.Host = "localhost";
+            }
+
+            var uri = new Uri(uriBuilder.ToString(), UriKind.Absolute);
+            StartClient(uri);
+        }
+
         /// <summary>
         /// Initial server setup
         /// </summary>
@@ -223,8 +241,7 @@ namespace Mirror
             StartCoroutine(SpawnPlayerAfterRoundStart(conn, characterSelection));
         }
 
-        private IEnumerator SpawnPlayerAfterRoundStart(NetworkConnection conn,
-            CharacterSelectMessage characterSelection)
+        private IEnumerator SpawnPlayerAfterRoundStart(NetworkConnection conn, CharacterSelectMessage characterSelection)
         {
             yield return new WaitUntil(() => roundManager.IsRoundStarted);
 

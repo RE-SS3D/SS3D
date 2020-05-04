@@ -26,8 +26,11 @@ namespace SS3D.Content.Structures.Fixtures
         [SerializeField] private Transform leftPanel = null;
         [SerializeField] private Transform rightPanel = null;
 
-        [SerializeField] private AudioSource openSfx = null;
-        [SerializeField] private AudioSource closeSfx = null;
+        [SerializeField] private GameObject[] airlockLights;
+
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip openSfx = null;
+        [SerializeField] private AudioClip closeSfx = null;
 
         [SerializeField] private LayerMask doorTriggerLayers = -1;
 
@@ -81,6 +84,7 @@ namespace SS3D.Content.Structures.Fixtures
         {
             closedLeft = leftPanel.localPosition;
             closedRight = rightPanel.localPosition;
+            SetLights(false);
         }
 
         public override void OnStartClient()
@@ -129,8 +133,8 @@ namespace SS3D.Content.Structures.Fixtures
 
             if (isClient)
             {
-                (open ? openSfx : closeSfx).Play();
-
+                audioSource.PlayOneShot(open ? openSfx : closeSfx);
+                
                 // Stop any previous animations
                 if (animation != null)
                     StopCoroutine(animation);
@@ -146,6 +150,7 @@ namespace SS3D.Content.Structures.Fixtures
         private IEnumerator RunDoorAnim(bool open)
         {
             // 1.0f = open, 0.0f = closed.
+            SetLights(open);
             while (animTime <= 1.0f && animTime >= 0.0f) {
                 animTime = animTime + (open ? Time.deltaTime : -Time.deltaTime) / DOOR_TRANSITION_TIME;
 
@@ -154,6 +159,7 @@ namespace SS3D.Content.Structures.Fixtures
 
                 yield return new WaitForEndOfFrame();
             }
+            SetLights(false);
             animTime = open ? 1.0f : 0.0f;
 
             leftPanel.localPosition = open ? openLeft : closedLeft;
@@ -161,6 +167,15 @@ namespace SS3D.Content.Structures.Fixtures
 
             // Now that the animation is over, clear the animation Coroutine.
             animation = null;
+        }
+
+        private void SetLights(bool on)
+        {
+            var colour = on ? MaterialChanger.Palette01.green : MaterialChanger.Palette01.black;
+
+            foreach (GameObject light in airlockLights) {
+                MaterialChanger.ChangeObjectEmissionColor(light, colour);
+            }
         }
 
         private IEnumerator RunCloseEventually(float time)
