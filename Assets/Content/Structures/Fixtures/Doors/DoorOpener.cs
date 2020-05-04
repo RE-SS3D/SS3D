@@ -18,11 +18,12 @@ namespace SS3D.Content.Structures.Fixtures
      *      probably be stored in the same place as wires and other state?
      */
     [RequireComponent(typeof(Collider))]
+    [RequireComponent(typeof(AudioSource))]
+    [RequireComponent(typeof(Animator))]
     public class DoorOpener : NetworkBehaviour, Interaction
     {
         private const float DOOR_WAIT_CLOSE_TIME = 2.0f;
 
-        [SerializeField] private Animator animator = null;
         [SerializeField] private AudioClip openSound = null;
         [SerializeField] private AudioClip closeSound = null;
         [SerializeField] private LayerMask doorTriggerLayers = -1;
@@ -35,6 +36,7 @@ namespace SS3D.Content.Structures.Fixtures
         // Used for ensuring correct timing on certain actions
         private DateTime lastInteraction; // Server Only
 
+        private Animator animator;
         private AudioSource audioSource;
 
         // Interaction stuff
@@ -75,6 +77,7 @@ namespace SS3D.Content.Structures.Fixtures
             base.OnStartClient();
         
             audioSource = GetComponent<AudioSource>();
+            animator = GetComponent<Animator>();
 
             if (isClientOnly)
                 OnDoorStateChange(openState);

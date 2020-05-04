@@ -81,8 +81,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.8344817, z: 1.1504102}
-  m_Center: {x: 0, y: 0.87856793, z: 0}
+  m_Size: {x: 1.5, y: 1.85, z: 1}
+  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!114 &8485078801564578719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,7 +97,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  animator: {fileID: 269803425871263521}
   openSound: {fileID: 8300000, guid: 34297ba204a9f3944872f100baaa2369, type: 3}
   closeSound: {fileID: 8300000, guid: fc2485e75c5d3ab4e86e814043c9e9cb, type: 3}
   doorTriggerLayers:
