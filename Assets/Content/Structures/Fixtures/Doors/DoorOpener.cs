@@ -18,28 +18,15 @@ namespace SS3D.Content.Structures.Fixtures
      *      probably be stored in the same place as wires and other state?
      */
     [RequireComponent(typeof(Collider))]
+    [RequireComponent(typeof(AudioSource))]
+    [RequireComponent(typeof(Animator))]
     public class DoorOpener : NetworkBehaviour, Interaction
     {
-        private const float DOOR_WAIT_CLOSE_TIME = 1.0f;
-        private const float DOOR_TRANSITION_TIME = 0.6667f;
+        private const float DOOR_WAIT_CLOSE_TIME = 2.0f;
 
-        [SerializeField] private Transform leftPanel = null;
-        [SerializeField] private Transform rightPanel = null;
-
-        [SerializeField] private GameObject[] airlockLights;
-
-        [SerializeField] private AudioSource audioSource;
-        [SerializeField] private AudioClip openSfx = null;
-        [SerializeField] private AudioClip closeSfx = null;
-
+        [SerializeField] private AudioClip openSound = null;
+        [SerializeField] private AudioClip closeSound = null;
         [SerializeField] private LayerMask doorTriggerLayers = -1;
-
-        // Part of the animations
-        [SerializeField] private Vector3 openLeft = new Vector3();
-        [SerializeField] private Vector3 openRight = new Vector3();
-
-        private Vector3 closedLeft;
-        private Vector3 closedRight;
 
         [SyncVar(hook = "OnDoorStateChange")]
         private bool openState; // Server Only
@@ -49,8 +36,8 @@ namespace SS3D.Content.Structures.Fixtures
         // Used for ensuring correct timing on certain actions
         private DateTime lastInteraction; // Server Only
 
-        private float animTime; // Client Only
-        private new Coroutine animation; // Client Only
+        private Animator animator;
+        private AudioSource audioSource;
 
         // Interaction stuff
         
@@ -60,16 +47,21 @@ namespace SS3D.Content.Structures.Fixtures
         public void Interact() {
             openState = !openState;
 
-            if (closeTimer != null) // Reset previous timer
-                StopCoroutine(closeTimer);
-
             if (openState == true) { // If we are now open, we need to start the timer to close again
                 // Wait an additional amount of time for the door to open before closing again
-                float timeLeftInCurrentInteraction = Math.Min((float)(DateTime.Now - lastInteraction).TotalSeconds, DOOR_TRANSITION_TIME);
-                closeTimer = StartCoroutine(RunCloseEventually(DOOR_WAIT_CLOSE_TIME + timeLeftInCurrentInteraction));
+                closeTimer = StartCoroutine(RunCloseEventually(DOOR_WAIT_CLOSE_TIME));
             }
 
             lastInteraction = DateTime.Now;
+        }
+
+        /// <summary>
+        /// Gets called by AnimationEvents
+        /// </summary>
+        /// <param name="clipType">"open" or "close"</param>
+        public void PlaySound(string clipType)
+        {
+            audioSource.PlayOneShot(clipType == "open" ? openSound : closeSound);
         }
 
         // Overriding (non-interesting) methods
@@ -80,17 +72,13 @@ namespace SS3D.Content.Structures.Fixtures
                 doorTriggerLayers = LayerMask.NameToLayer("Player");
         }
 
-        public void Awake()
-        {
-            closedLeft = leftPanel.localPosition;
-            closedRight = rightPanel.localPosition;
-            SetLights(false);
-        }
-
         public override void OnStartClient()
         {
             base.OnStartClient();
         
+            audioSource = GetComponent<AudioSource>();
+            animator = GetComponent<Animator>();
+
             if (isClientOnly)
                 OnDoorStateChange(openState);
         }
@@ -133,48 +121,7 @@ namespace SS3D.Content.Structures.Fixtures
 
             if (isClient)
             {
-                audioSource.PlayOneShot(open ? openSfx : closeSfx);
-                
-                // Stop any previous animations
-                if (animation != null)
-                    StopCoroutine(animation);
-
-                animation = StartCoroutine(RunDoorAnim(open));
-            }
-        }
-
-        /*
-         * Runs the animation.
-         * TODO: Replace this with a real animation.
-         */
-        private IEnumerator RunDoorAnim(bool open)
-        {
-            // 1.0f = open, 0.0f = closed.
-            SetLights(open);
-            while (animTime <= 1.0f && animTime >= 0.0f) {
-                animTime = animTime + (open ? Time.deltaTime : -Time.deltaTime) / DOOR_TRANSITION_TIME;
-
-                leftPanel.localPosition = Vector3.Lerp(closedLeft, openLeft, animTime);
-                rightPanel.localPosition = Vector3.Lerp(closedRight, openRight, animTime);
-
-                yield return new WaitForEndOfFrame();
-            }
-            SetLights(false);
-            animTime = open ? 1.0f : 0.0f;
-
-            leftPanel.localPosition = open ? openLeft : closedLeft;
-            rightPanel.localPosition = open ? openRight : closedRight;
-
-            // Now that the animation is over, clear the animation Coroutine.
-            animation = null;
-        }
-
-        private void SetLights(bool on)
-        {
-            var colour = on ? MaterialChanger.Palette01.green : MaterialChanger.Palette01.black;
-
-            foreach (GameObject light in airlockLights) {
-                MaterialChanger.ChangeObjectEmissionColor(light, colour);
+                animator.SetBool("Open", open);
             }
         }
 
