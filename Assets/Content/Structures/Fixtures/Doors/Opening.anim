@@ -72,7 +72,8 @@ AnimationClip:
     - time: 0
       value: {fileID: 2100000, guid: 720795a6c519e7a44bf0ac6135fd3c94, type: 2}
     - time: 1
-      value: {fileID: 2100000, guid: 583ec5095c87a4543a564d1e7211889b, type: 2}
+      value: {fileID: -7899175794840378474, guid: 589c2b3dac19d8e4e99831ffd9a1b883,
+        type: 3}
     attribute: m_Materials.Array.data[0]
     path: LeftDoor
     classID: 23
@@ -81,7 +82,8 @@ AnimationClip:
     - time: 0
       value: {fileID: 2100000, guid: 720795a6c519e7a44bf0ac6135fd3c94, type: 2}
     - time: 1
-      value: {fileID: 2100000, guid: 583ec5095c87a4543a564d1e7211889b, type: 2}
+      value: {fileID: -7899175794840378474, guid: 589c2b3dac19d8e4e99831ffd9a1b883,
+        type: 3}
     attribute: m_Materials.Array.data[0]
     path: RightDoor
     classID: 23
@@ -123,9 +125,9 @@ AnimationClip:
       isPPtrCurve: 1
     pptrCurveMapping:
     - {fileID: 2100000, guid: 720795a6c519e7a44bf0ac6135fd3c94, type: 2}
-    - {fileID: 2100000, guid: 583ec5095c87a4543a564d1e7211889b, type: 2}
+    - {fileID: -7899175794840378474, guid: 589c2b3dac19d8e4e99831ffd9a1b883, type: 3}
     - {fileID: 2100000, guid: 720795a6c519e7a44bf0ac6135fd3c94, type: 2}
-    - {fileID: 2100000, guid: 583ec5095c87a4543a564d1e7211889b, type: 2}
+    - {fileID: -7899175794840378474, guid: 589c2b3dac19d8e4e99831ffd9a1b883, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
