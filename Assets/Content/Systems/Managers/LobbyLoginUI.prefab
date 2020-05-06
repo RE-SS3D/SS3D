@@ -433,7 +433,7 @@ GameObject:
   - component: {fileID: 8493443366305957834}
   - component: {fileID: 7028539187934584737}
   m_Layer: 5
-  m_Name: NetworkUI
+  m_Name: LoginUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

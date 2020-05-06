@@ -34,6 +34,7 @@ namespace Mirror
     /// </summary>
     public class LoginNetworkManager : NetworkManager
     {
+        [SerializeField] bool useLoginSystemOnLocalHost;
         /**
          * Information about the login server sent to the client.
          */
@@ -68,11 +69,15 @@ namespace Mirror
             // TODO: Should this be called everywhere?
 
             // Set the defaults for the login manager
-            var loginManagerGameObject = Instantiate(loginManagerPrefab);
-            loginManager = loginManagerGameObject.GetComponent<LoginManager>();
-            loginManager.UpdateApiAddress(loginServerAddress,
-                character => SpawnPlayerWithLoginServer(NetworkServer.localConnection, character));
-            loginManager.ApiHeartbeat(ConfirmLoginServer);
+
+            if (useLoginSystemOnLocalHost)
+            {
+                var loginManagerGameObject = Instantiate(loginManagerPrefab);
+                loginManager = loginManagerGameObject.GetComponent<LoginManager>();
+                loginManager.UpdateApiAddress(loginServerAddress,
+                    character => SpawnPlayerWithLoginServer(NetworkServer.localConnection, character));
+                loginManager.ApiHeartbeat(ConfirmLoginServer);
+            }
         }
 
         /// <summary>
