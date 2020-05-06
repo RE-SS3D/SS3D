@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4624638347417356164}
   - component: {fileID: 7019306849142290962}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: DummyPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,4 +45,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 835489861
+  m_SceneId: 0
