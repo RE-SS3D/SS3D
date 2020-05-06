@@ -248,6 +248,7 @@ namespace Mirror
 
         private IEnumerator SpawnPlayerAfterRoundStart(NetworkConnection conn, CharacterSelectMessage characterSelection)
         {
+            // TODO: Should store players in an object until round is started, then spawn them all at once.
             yield return new WaitUntil(() => roundManager.IsRoundStarted);
 
             //Something has gone horribly wrong
@@ -259,6 +260,8 @@ namespace Mirror
                 ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
                 : Instantiate(playerPrefab);
             player.name = characterSelection.character.name;
+
+            // NetworkServer.ReplacePlayerForConnection(conn, player);
             //Destroy dummy player
             NetworkServer.DestroyPlayerForConnection(conn);
             //Spawn actual player

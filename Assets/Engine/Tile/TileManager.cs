@@ -20,6 +20,15 @@ namespace SS3D.Engine.Tiles {
             public TileDefinition definition;
         }
 
+        public static bool IsOnServer(GameObject tileChild)
+        {
+            return tileChild.transform.root.GetComponent<NetworkIdentity>().isServer;
+        }
+        public static bool IsOnClient(GameObject tileChild)
+        {
+            return tileChild.transform.root.GetComponent<NetworkIdentity>().isClient;
+        }
+
         public Vector3 Origin => origin;
         public int Count => tiles.Count;
 
