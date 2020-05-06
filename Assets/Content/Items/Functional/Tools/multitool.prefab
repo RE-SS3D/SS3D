@@ -1,5 +1,19 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!64 &-5281145030408409906
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6814766556652304684}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -405258063262372677, guid: 920182fefed625c44afd365212ffca6a, type: 3}
 --- !u!1001 &9206868664000835079
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25,7 +39,7 @@ PrefabInstance:
     - target: {fileID: 1660963557818230072, guid: 9c8363ee7f934bd4b8ee5a2e30da1269,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.6427876
       objectReference: {fileID: 0}
     - target: {fileID: 1660963557818230072, guid: 9c8363ee7f934bd4b8ee5a2e30da1269,
         type: 3}
@@ -40,7 +54,7 @@ PrefabInstance:
     - target: {fileID: 1660963557818230072, guid: 9c8363ee7f934bd4b8ee5a2e30da1269,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7660445
       objectReference: {fileID: 0}
     - target: {fileID: 1660963557818230072, guid: 9c8363ee7f934bd4b8ee5a2e30da1269,
         type: 3}
@@ -50,7 +64,7 @@ PrefabInstance:
     - target: {fileID: 1660963557818230072, guid: 9c8363ee7f934bd4b8ee5a2e30da1269,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 1660963557818230072, guid: 9c8363ee7f934bd4b8ee5a2e30da1269,
         type: 3}
@@ -66,6 +80,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: multitool
+      objectReference: {fileID: 0}
+    - target: {fileID: 3487825135003959297, guid: 9c8363ee7f934bd4b8ee5a2e30da1269,
+        type: 3}
+      propertyPath: m_IsKinematic
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4137508821802886135, guid: 9c8363ee7f934bd4b8ee5a2e30da1269,
         type: 3}
@@ -123,5 +142,12 @@ PrefabInstance:
       propertyPath: m_Center.x
       value: -0.000000055879354
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8770469700115247661, guid: 9c8363ee7f934bd4b8ee5a2e30da1269, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 9c8363ee7f934bd4b8ee5a2e30da1269, type: 3}
+--- !u!1 &6814766556652304684 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2402587210622244651, guid: 9c8363ee7f934bd4b8ee5a2e30da1269,
+    type: 3}
+  m_PrefabInstance: {fileID: 9206868664000835079}
+  m_PrefabAsset: {fileID: 0}
