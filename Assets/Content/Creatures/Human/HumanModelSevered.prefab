@@ -437,6 +437,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -630,6 +631,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -882,6 +884,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1011,6 +1014,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1175,6 +1179,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1310,7 +1315,6 @@ GameObject:
   - component: {fileID: -6017801602675652448}
   - component: {fileID: 8229646440758677250}
   - component: {fileID: 6850072202715529765}
-  - component: {fileID: -365188936181880124}
   m_Layer: 15
   m_Name: HumanModelSevered
   m_TagString: Untagged
@@ -1377,7 +1381,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 1
   m_AssetId: 
   m_SceneId: 0
 --- !u!114 &6850072202715529766
@@ -1392,8 +1395,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   animator: {fileID: 8421994563860563016}
+  clientAuthority: 0
 --- !u!114 &6850072202715529767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1406,8 +1411,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   compressRotation: 1
+  clientAuthority: 0
 --- !u!143 &6850072202715529763
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1438,6 +1445,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3efa57f7de3b8d44982dc618446dddf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   runSpeed: 5
   walkSpeed: 2
@@ -1453,20 +1461,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8056a0e760f77c441b1d2418e701d7a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
-  bodyParts:
-  - {fileID: 1903259415010948184}
-  - {fileID: 8746797839868163853}
-  - {fileID: 3291334341940294444}
-  - {fileID: 8996461472011561313}
-  - {fileID: 4040678651569690357}
-  - {fileID: 3037573119208291311}
-  - {fileID: 5439284932066326749}
-  - {fileID: 735844182605997609}
-  - {fileID: 8889837685357318779}
-  - {fileID: 1124637067884402731}
-  - {fileID: 5949131190728675574}
-  - {fileID: 4211533769812448533}
 --- !u!114 &1994183711920205137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1479,6 +1475,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c49aa1e5ada94de1b51bd69341f36078, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
 --- !u!114 &1028998233664674745
 MonoBehaviour:
@@ -1492,6 +1489,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f0cfe7ad268bc44b2e36b581d0086c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   containerName: Human Equppable
   containerType: 1
@@ -1518,6 +1516,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cb0dec8ad091bb468e4dfb0f4d4f75b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   handContainer: {fileID: 1028998233664674745}
   handRange: 5
@@ -1533,7 +1532,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc0556901c8047ec9c6e4283a9f1f7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  chatChannels: {fileID: 0}
+  chatWindowPrefab: {fileID: 0}
+  restrictedChannels:
+  - System
+  messages: []
 --- !u!114 &8229646440758677250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1546,6 +1551,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3e846f0e0548b54eb8bfb9afad9191a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   prefab: {fileID: 5727570337167516730, guid: f86d70d91f583f44e95c5a20aea0fa31, type: 3}
 --- !u!114 &6850072202715529765
@@ -1560,24 +1566,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbcf283d261054d41a00d301c9c97de9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
---- !u!114 &-365188936181880124
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3184525931660991265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84bbfbdac69ea744fb5d55752afa9fca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncInterval: 0.1
-  attackParticleEffect: {fileID: 7714517724079113232, guid: b604ce3224264694392255a281108306,
-    type: 3}
-  attackType: 1
-  damageAmount: 5
 --- !u!1 &3346638281543974701
 GameObject:
   m_ObjectHideFlags: 0
@@ -1778,6 +1768,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1999,6 +1990,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2159,6 +2151,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2796,6 +2789,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2986,6 +2980,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -3300,6 +3295,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -3529,6 +3525,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

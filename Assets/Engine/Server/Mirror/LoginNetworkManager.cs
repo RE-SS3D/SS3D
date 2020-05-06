@@ -34,6 +34,8 @@ namespace Mirror
     /// </summary>
     public class LoginNetworkManager : NetworkManager
     {
+        // This is a server-only field. On the client it will mean nothing.
+        [SerializeField] bool useLoginSystemOnLocalHost;
         /**
          * Information about the login server sent to the client.
          */
@@ -160,8 +162,11 @@ namespace Mirror
         public override void OnServerConnect(NetworkConnection conn)
         {
             base.OnServerConnect(conn);
+
+            bool userMustLogin = useLoginSystemOnLocalHost && hasLoginServer;
+
             // Must always send a message, so the client knows if they should spawn through the login server or not
-            conn.Send(new LoginServerMessage() {serverAddress = hasLoginServer ? loginServerAddress : null});
+            conn.Send(new LoginServerMessage() {serverAddress = userMustLogin ? loginServerAddress : null});
         }
 
         /**
