@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<< HEAD:Assets/Art/Models/Items/Functional/Generic/boombox.fbx.meta
 guid: e564e7acccd642f49957838e73ca2383
-=======
-guid: a3fef7f1f6a452c408beac3449f64ea8
->>>>>>> upstream/master:Assets/Art/Models/Structures/Wall Mounts/lights.fbx.meta
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable: []
