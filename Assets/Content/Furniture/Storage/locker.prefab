@@ -144,7 +144,6 @@ GameObject:
   - component: {fileID: 3374379410763890910}
   - component: {fileID: 7176282325643906320}
   - component: {fileID: 4872040872125276036}
-  - component: {fileID: 1720095400386925131}
   m_Layer: 0
   m_Name: locker
   m_TagString: Untagged
@@ -328,15 +327,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   onlyWhenOpen: 1
---- !u!114 &1720095400386925131
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5599841925940684376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2adb5f3d02742c2478c5bdbe844dc18a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
