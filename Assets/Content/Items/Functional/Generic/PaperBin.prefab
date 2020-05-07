@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -1451627117481347402}
   - component: {fileID: 3671379023228470128}
   - component: {fileID: -7486481738808961961}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: PaperBin
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3236041210663208848}
   - component: {fileID: 1172037334395915260}
   - component: {fileID: 5525009969537148598}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: boombox
   m_TagString: Untagged
   m_Icon: {fileID: 0}

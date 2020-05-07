@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7197267929087900581}
   - component: {fileID: 7025247159963221394}
   - component: {fileID: 2103335400371539285}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Toolbox Lid Red
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 7385895525476329529}
   - component: {fileID: 1462698143497783154}
   - component: {fileID: 7791039897351842816}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Toolbox Bottom Red
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -172,7 +172,7 @@ GameObject:
   - component: {fileID: 2081909342595332650}
   - component: {fileID: 1358342656361913515}
   - component: {fileID: 2884915648782529247}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: toolbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
