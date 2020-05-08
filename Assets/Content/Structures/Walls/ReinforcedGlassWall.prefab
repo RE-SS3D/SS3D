@@ -41,7 +41,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3591147544166670882}
-  m_Mesh: {fileID: -3883599904296470933, guid: 5c9d86b309de57c49878a03237aa0045, type: 3}
+  m_Mesh: {fileID: 2359981176013129390, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
 --- !u!23 &6696866361892651655
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -56,6 +56,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -108,12 +109,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: reinforced_glass_wall
   genericType: wall
-  o: {fileID: -3883599904296470933, guid: 5c9d86b309de57c49878a03237aa0045, type: 3}
-  c: {fileID: -2952498432498863949, guid: 5c9d86b309de57c49878a03237aa0045, type: 3}
-  i: {fileID: -5354531561721815620, guid: 5c9d86b309de57c49878a03237aa0045, type: 3}
-  iBorder: {fileID: -5599065017360440738, guid: 5c9d86b309de57c49878a03237aa0045,
-    type: 3}
-  iAlone: {fileID: -8694556720088512617, guid: 5c9d86b309de57c49878a03237aa0045, type: 3}
-  l: {fileID: -5358775503445513408, guid: 5c9d86b309de57c49878a03237aa0045, type: 3}
-  t: {fileID: -2166039601955632070, guid: 5c9d86b309de57c49878a03237aa0045, type: 3}
-  x: {fileID: -1298742747684075316, guid: 5c9d86b309de57c49878a03237aa0045, type: 3}
+  o: {fileID: 2359981176013129390, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  c: {fileID: 3600995788326575383, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  i: {fileID: -3802093582204879292, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  iBorder: {fileID: 1398590566993244046, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  iAlone: {fileID: -2738000148823052286, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  l: {fileID: 799833698545232237, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  t: {fileID: 3306210025996113934, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  x: {fileID: -7134552139136920322, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
