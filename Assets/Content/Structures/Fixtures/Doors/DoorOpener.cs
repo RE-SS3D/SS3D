@@ -3,6 +3,7 @@ using System.Collections;
 using Mirror;
 using UnityEngine;
 using SS3D.Engine.Interactions;
+using SS3D.Engine.Tiles;
 
 namespace SS3D.Content.Structures.Fixtures
 {
@@ -20,7 +21,7 @@ namespace SS3D.Content.Structures.Fixtures
     [RequireComponent(typeof(Collider))]
     [RequireComponent(typeof(AudioSource))]
     [RequireComponent(typeof(Animator))]
-    public class DoorOpener : NetworkBehaviour, Interaction
+    public class DoorOpener : MonoBehaviour, Interaction
     {
         private const float DOOR_WAIT_CLOSE_TIME = 2.0f;
 
@@ -28,13 +29,9 @@ namespace SS3D.Content.Structures.Fixtures
         [SerializeField] private AudioClip closeSound = null;
         [SerializeField] private LayerMask doorTriggerLayers = -1;
 
-        [SyncVar(hook = "OnDoorStateChange")]
-        private bool openState; // Server Only
-
+        private bool openState; // Server and Client
         private int playersInTrigger; // Server Only
         private Coroutine closeTimer; // Server Only
-        // Used for ensuring correct timing on certain actions
-        private DateTime lastInteraction; // Server Only
 
         private Animator animator;
         private AudioSource audioSource;
@@ -45,14 +42,21 @@ namespace SS3D.Content.Structures.Fixtures
         public string Name => openState ? "Close Door" : "Open Door";
         public bool CanInteract() => true;
         public void Interact() {
-            openState = !openState;
+            CommunicateDoorState(!openState);
 
             if (openState == true) { // If we are now open, we need to start the timer to close again
                 // Wait an additional amount of time for the door to open before closing again
                 closeTimer = StartCoroutine(RunCloseEventually(DOOR_WAIT_CLOSE_TIME));
             }
+        }
 
-            lastInteraction = DateTime.Now;
+        public void OnSetDoorState(bool open)
+        {
+            if (openState == open)
+                return;
+            openState = open;
+
+            animator.SetBool("Open", open);
         }
 
         /// <summary>
@@ -72,20 +76,21 @@ namespace SS3D.Content.Structures.Fixtures
                 doorTriggerLayers = LayerMask.NameToLayer("Player");
         }
 
-        public override void OnStartClient()
+        public void Start()
         {
-            base.OnStartClient();
+            // base.OnStartClient();
         
             audioSource = GetComponent<AudioSource>();
             animator = GetComponent<Animator>();
 
-            if (isClientOnly)
-                OnDoorStateChange(openState);
+            // TODO: Sometime when we're not using a shitty networker
+            // if (isClientOnly)
+            //     OnSetDoorState(openState);
         }
     
         public void OnTriggerEnter(Collider other)
         {
-            if ((1 << other.gameObject.layer & doorTriggerLayers) == 0 || !isServer) return;
+            if ((1 << other.gameObject.layer & doorTriggerLayers) == 0 || !TileManager.IsOnServer(gameObject)) return;
 
             if (playersInTrigger == 0)
             {
@@ -94,7 +99,7 @@ namespace SS3D.Content.Structures.Fixtures
                     closeTimer = null;
                 }
 
-                openState = true;
+                CommunicateDoorState(true);
             }
 
             playersInTrigger += 1;
@@ -102,7 +107,7 @@ namespace SS3D.Content.Structures.Fixtures
 
         public void OnTriggerExit(Collider other)
         {
-            if ((1 << other.gameObject.layer & doorTriggerLayers) == 0 || !isServer) return;
+            if ((1 << other.gameObject.layer & doorTriggerLayers) == 0 || !TileManager.IsOnServer(gameObject)) return;
 
             if (playersInTrigger == 1)
             {
@@ -113,22 +118,16 @@ namespace SS3D.Content.Structures.Fixtures
             playersInTrigger = Math.Max(playersInTrigger - 1, 0);
         }
 
-        private void OnDoorStateChange(bool open)
+        private void CommunicateDoorState(bool open)
         {
-            if (openState == open)
-                return;
-            openState = open;
-
-            if (isClient)
-            {
-                animator.SetBool("Open", open);
-            }
+            OnSetDoorState(open);
+            transform.root.gameObject.GetComponent<TileServerManager>().SetDoorOpen(transform.parent.gameObject, open);
         }
 
         private IEnumerator RunCloseEventually(float time)
         {
             yield return new WaitForSeconds(time);
-            openState = false;
+            CommunicateDoorState(false);
         }
     }
 }
