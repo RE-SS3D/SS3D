@@ -117,7 +117,7 @@ namespace SS3D.Engine.Inventory.Extensions
                 SelectedHand = 1 - SelectedHand;
                 inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[SelectedHand]);
                 onHandChange?.Invoke(SelectedHand);
-
+                CmdSetActiveHand(SelectedHand);
                 //UpdateTool();
             }
 
@@ -128,6 +128,19 @@ namespace SS3D.Engine.Inventory.Extensions
         private void CmdDropHeldItem()
         {
             DropHeldItem();
+        }
+
+        [Command]
+        private void CmdSetActiveHand(int selectedHand)
+        {
+            if (selectedHand >= 0 && selectedHand < handSlots.Length)
+            {
+                SelectedHand = selectedHand;
+            }
+            else
+            {
+                Debug.Log($"Invalid hand index {selectedHand}");   
+            }
         }
 
         // The indices in the container that contains the hands
