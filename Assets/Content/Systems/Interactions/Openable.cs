@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 using SS3D.Engine.Interactions;
 
 namespace SS3D.Content.Systems.Interactions
@@ -16,7 +17,7 @@ namespace SS3D.Content.Systems.Interactions
      * <inheritdoc cref="Core.Interaction"/>
      */
     [RequireComponent(typeof(Animator))]
-    public class Openable : MonoBehaviour, Interaction
+    public class Openable : NetworkBehaviour, Interaction
     {
         public bool Open { get; private set; }
         public InteractionEvent Event { get; set; }
@@ -27,8 +28,15 @@ namespace SS3D.Content.Systems.Interactions
         public void Interact()
         {
             Open = !Open;
-            // Start the animator on it's work
             animator.SetBool(OpenAnimator, Open);
+            RpcInteract(Open);
+        }
+
+        [ClientRpc]
+        private void RpcInteract(bool open)
+        {
+            Open = open;
+            animator.SetBool(OpenAnimator, open);
         }
 
         private void Awake()
