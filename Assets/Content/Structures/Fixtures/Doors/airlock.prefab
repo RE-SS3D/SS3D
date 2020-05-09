@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -6833891496423765305}
   - component: {fileID: 269803425871263521}
   m_Layer: 0
-  m_Name: Airlock
+  m_Name: airlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37,7 +37,7 @@ Transform:
   - {fileID: 2937230833095573163}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!114 &3510679456161649683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81,7 +81,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.5, y: 1.85, z: 1}
+  m_Size: {x: 1, y: 1.85, z: 1}
   m_Center: {x: 0, y: 0.92, z: 0}
 --- !u!114 &8485078801564578719
 MonoBehaviour:
