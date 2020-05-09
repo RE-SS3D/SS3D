@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using SS3D.Engine.Interactions;
 
 namespace SS3D.Content.Systems.Interactions
@@ -28,7 +28,7 @@ namespace SS3D.Content.Systems.Interactions
         {
             Open = !Open;
             // Start the animator on it's work
-            animator.SetBool("open", Open);
+            animator.SetBool(OpenAnimator, Open);
         }
 
         private void Awake()
@@ -37,5 +37,6 @@ namespace SS3D.Content.Systems.Interactions
         }
 
         private Animator animator;
+        private static readonly int OpenAnimator = Animator.StringToHash("Open");
     }
 }
