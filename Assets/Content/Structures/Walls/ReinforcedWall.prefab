@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5423264426121296638}
   - component: {fileID: 6696866361892651655}
   - component: {fileID: -3559051840117011521}
-  - component: {fileID: 7000063926587974731}
+  - component: {fileID: -1603528896830197534}
   m_Layer: 0
   m_Name: ReinforcedWall
   m_TagString: Untagged
@@ -94,7 +94,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.0000005, y: 2, z: 1}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &7000063926587974731
+--- !u!114 &-1603528896830197534
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -103,13 +103,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 3591147544166670882}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 961b31fd1d838b9418d00d2675f3a9ab, type: 3}
+  m_Script: {fileID: 11500000, guid: aa3fb3fb0fa47e54bad7580218ea1e05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   type: wall
   o: {fileID: 5994527953264751044, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   c: {fileID: -5232576218442233994, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   i: {fileID: -3717823834887968953, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  l: {fileID: -7695084701698530544, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  t: {fileID: -2563544273700514151, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  x: {fileID: -1105522344434329162, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  lNone: {fileID: -7695084701698530544, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  lSingle: {fileID: 8708524644065605111, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  tNone: {fileID: -2563544273700514151, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  tSingleRight: {fileID: -6397331943524740619, guid: a8afca278d289ca469539bd9a57ce244,
+    type: 3}
+  tSingleLeft: {fileID: 6348234511471611404, guid: a8afca278d289ca469539bd9a57ce244,
+    type: 3}
+  tDouble: {fileID: 7680504983793102251, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  xNone: {fileID: -1105522344434329162, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  xSingle: {fileID: 545326363990284991, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  xSide: {fileID: -3509257606983051108, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  xOpposite: {fileID: 6204147465193756974, guid: a8afca278d289ca469539bd9a57ce244,
+    type: 3}
+  xTriple: {fileID: -5636990741897013130, guid: a8afca278d289ca469539bd9a57ce244,
+    type: 3}
+  xQuad: {fileID: 3597665157861519443, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
