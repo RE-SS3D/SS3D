@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using SS3D.Engine.Interactions;
 
 namespace SS3D.Content.Systems.Interactions
@@ -20,7 +20,7 @@ namespace SS3D.Content.Systems.Interactions
     {
         public bool Open { get; private set; }
         public InteractionEvent Event { get; set; }
-        public string Name => "Open";
+        public string Name => Open ? "Close" : "Open";
 
         public bool CanInteract() => Event.target == gameObject;
 
