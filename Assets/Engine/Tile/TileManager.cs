@@ -422,6 +422,8 @@ namespace SS3D.Engine.Tiles {
      */
     public static class TileNetworkingProperties
     {
+        // TODO: This could be made more efficient. Especially when the subStates are all nulls.
+
         public static void WriteNetworkableTileDefinition(this NetworkWriter writer, TileDefinition definition)
         {
             writer.WriteString(definition.turf?.name ?? "");
@@ -430,14 +432,16 @@ namespace SS3D.Engine.Tiles {
             // Use C# serializer to serialize the object array, cos the Mirror one isn't powerful enough.
             
             // Can't serialize null values so put a boolean indicating array presence first
-            writer.WriteBoolean(definition.subStates != null);
+            if (definition.subStates == null || definition.subStates.All(obj => obj == null)) {
+                writer.WriteBoolean(false);
+            }
+            else {
+                writer.WriteBoolean(true);
 
-            if(definition.subStates == null)
-                return;
-
-            using(var stream = new MemoryStream()) {
-                new BinaryFormatter().Serialize(stream, definition.subStates);
-                writer.WriteBytesAndSize(stream.ToArray());
+                using(var stream = new MemoryStream()) {
+                    new BinaryFormatter().Serialize(stream, definition.subStates);
+                    writer.WriteBytesAndSize(stream.ToArray());
+                }
             }
         }
         public static TileDefinition ReadNetworkableTileDefinition(this NetworkReader reader)
@@ -465,6 +469,8 @@ namespace SS3D.Engine.Tiles {
                     tileDefinition.subStates = new BinaryFormatter().Deserialize(stream) as object[];
                 }
             }
+
+            // TODO: Should substates be initialized to null array?
 
             return tileDefinition;
         }
