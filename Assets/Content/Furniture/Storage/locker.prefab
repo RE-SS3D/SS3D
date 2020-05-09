@@ -144,6 +144,7 @@ GameObject:
   - component: {fileID: 3374379410763890910}
   - component: {fileID: 7176282325643906320}
   - component: {fileID: 4872040872125276036}
+  - component: {fileID: 5431817562195804954}
   m_Layer: 0
   m_Name: locker
   m_TagString: Untagged
@@ -254,7 +255,7 @@ Animator:
   m_GameObject: {fileID: 5599841925940684376}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1e8b9c4db7e2d1648abfaef10146caf5, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -327,3 +328,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   onlyWhenOpen: 1
+--- !u!114 &5431817562195804954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5599841925940684376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2adb5f3d02742c2478c5bdbe844dc18a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 using SS3D.Engine.Interactions;
 
 namespace SS3D.Content.Systems.Interactions
@@ -16,19 +17,26 @@ namespace SS3D.Content.Systems.Interactions
      * <inheritdoc cref="Core.Interaction"/>
      */
     [RequireComponent(typeof(Animator))]
-    public class Openable : MonoBehaviour, Interaction
+    public class Openable : NetworkBehaviour, Interaction
     {
         public bool Open { get; private set; }
         public InteractionEvent Event { get; set; }
-        public string Name => "Open";
+        public string Name => Open ? "Close" : "Open";
 
         public bool CanInteract() => Event.target == gameObject;
 
         public void Interact()
         {
             Open = !Open;
-            // Start the animator on it's work
-            animator.SetBool("open", Open);
+            animator.SetBool(OpenAnimator, Open);
+            RpcInteract(Open);
+        }
+
+        [ClientRpc]
+        private void RpcInteract(bool open)
+        {
+            Open = open;
+            animator.SetBool(OpenAnimator, open);
         }
 
         private void Awake()
@@ -37,5 +45,6 @@ namespace SS3D.Content.Systems.Interactions
         }
 
         private Animator animator;
+        private static readonly int OpenAnimator = Animator.StringToHash("Open");
     }
 }
