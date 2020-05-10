@@ -15,4 +15,3 @@ MonoBehaviour:
   id: metal_table
   genericType: table
   prefab: {fileID: 8036950609662249464, guid: 6caa99f8281726e40a793826d5c047db, type: 3}
-  connects: 1

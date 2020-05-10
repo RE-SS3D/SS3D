@@ -15,4 +15,4 @@ MonoBehaviour:
   id: reinforced_wall
   genericType: wall
   isWall: 1
-  prefab: {fileID: 3591147544166670882, guid: 6e6257fcfea4f46418ac01d93fd37115, type: 3}
+  prefab: {fileID: 3591147544166670882, guid: d11a68992658b7741bd28ffdf04165ba, type: 3}
