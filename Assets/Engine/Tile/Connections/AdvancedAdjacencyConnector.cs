@@ -24,8 +24,10 @@ namespace SS3D.Engine.Tiles.Connections
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
-        [Tooltip("A mesh where the east edge is connected")]
+
+        [Tooltip("A mesh where east connects to same type")]
         public Mesh c;
+
         [Tooltip("A mesh where east and west edges are connected")]
         public Mesh i;
 
@@ -127,7 +129,7 @@ namespace SS3D.Engine.Tiles.Connections
                 // We check for if any of the following bitfields matches the connection bitfield
                 // N+NE+E = 0/1/2, E+SE+S = 2/3/4, S+SW+W = 4/5/6, W+NW+N = 6/7/0
                 bool isFilled = (adjacents.Connections & 0b00000111) == 0b00000111 || (adjacents.Connections & 0b00011100) == 0b00011100 || (adjacents.Connections & 0b01110000) == 0b01110000 || (adjacents.Connections & 0b11000001) == 0b11000001;
-                mesh = isFilled ? lNone : lSingle;
+                mesh = isFilled ? lSingle : lNone;
                 rotation = DirectionHelper.AngleBetween(Direction.SouthEast, cardinalInfo.GetCornerDirection());
             }
             else if(cardinalInfo.IsT())
@@ -138,10 +140,10 @@ namespace SS3D.Engine.Tiles.Connections
                             + ((1 - cardinalInfo.east) * 2 | (1 - cardinalInfo.south)) * adjacents.Adjacent(Direction.NorthWest)
                             + ((1 - cardinalInfo.south) * 2 | (1 - cardinalInfo.west)) * adjacents.Adjacent(Direction.NorthEast)
                             + ((1 - cardinalInfo.west) * 2 | (1 - cardinalInfo.north)) * adjacents.Adjacent(Direction.SouthEast);
-                mesh = corners == 0 ? tDouble
+                mesh = corners == 0 ? tNone
                     : corners == 1 ? tSingleLeft
                     : corners == 2 ? tSingleRight
-                    : tNone;
+                    : tDouble;
 
                 rotation = DirectionHelper.AngleBetween(Direction.West, cardinalInfo.GetOnlyNegative());
             }
@@ -153,11 +155,11 @@ namespace SS3D.Engine.Tiles.Connections
 
                 switch (diagonals.numConnections) {
                     case 0:
-                        mesh = xQuad;
+                        mesh = xNone;
                         break;
                     case 1:
-                        mesh = xTriple;
-                        rotation = DirectionHelper.AngleBetween(Direction.West, diagonals.GetOnlyNegative());
+                        mesh = xSingle;
+                        rotation = DirectionHelper.AngleBetween(Direction.West, diagonals.GetOnlyPositive());
                         break;
                     case 2:
                         if(diagonals.north == diagonals.south) {
@@ -170,11 +172,11 @@ namespace SS3D.Engine.Tiles.Connections
                         }
                         break;
                     case 3:
-                        mesh = xSingle;
+                        mesh = xTriple;
                         rotation = DirectionHelper.AngleBetween(Direction.East, diagonals.GetOnlyNegative());
                         break;
                     default:
-                        mesh = xNone;
+                        mesh = xQuad;
                         break;
                 }
             }
