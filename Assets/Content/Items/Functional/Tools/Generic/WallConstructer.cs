@@ -9,21 +9,26 @@ namespace SS3D.Content.Items.Functional.Tools
      * 
      * <inheritdoc cref="Core.Interaction" />
      */
-    public class WallConstructer : MonoBehaviour, Interaction
+    public class WallConstructer : DelayedInteraction
     {
         [SerializeField]
         private Turf wallToConstruct = null;
         [SerializeField]
         private Turf floorToConstruct = null;
 
-        public InteractionEvent Event { get; set; }
-        public string Name => ShouldDeconstruct ? "Deconstruct Wall" : "Construct Wall";
+        public override InteractionEvent Event { get; set; }
+        public override string Name => ShouldDeconstruct ? "Deconstruct Wall" : "Construct Wall";
 
         // The distance in which to allow constructing walls
         public float buildDistance = 1.5f;
 
-        public bool CanInteract()
+        public override bool CanInteract()
         {
+            if (!base.CanInteract())
+            {
+                return false;
+            }
+            
             targetTile = Event.target.GetComponentInParent<TileObject>();
 
             // If target tile exists.
@@ -57,7 +62,7 @@ namespace SS3D.Content.Items.Functional.Tools
             return true;
         }
 
-        public void Interact()
+        protected override void InteractDelayed()
         {
             // Note: CanInteract is always called before Interact, so we KNOW targetTile is defined.
             var tileManager = FindObjectOfType<TileManager>();
