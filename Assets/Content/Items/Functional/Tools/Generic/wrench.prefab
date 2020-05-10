@@ -156,5 +156,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0291a0f79bd921a488ebe7b902f7cfa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  Delay: 2
+  LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
+    type: 3}
   tableToConstruct: {fileID: 11400000, guid: e361c0d934015604fa13db8b86d73f4b, type: 2}
   buildDistance: 1.5
