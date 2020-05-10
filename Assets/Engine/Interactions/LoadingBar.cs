@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace SS3D.Content.Systems.Interactions
+namespace SS3D.Engine.Interactions
 {
     /// <summary>
     /// Manages loading bar progress, should be attached to loading bar prefab
@@ -31,7 +31,7 @@ namespace SS3D.Content.Systems.Interactions
             }
 
             // Adjust slider
-            TargetSlider.value = Time.time - StartTime / Duration;
+            TargetSlider.value = (Time.time - StartTime) / Duration;
         }
     }
 }
