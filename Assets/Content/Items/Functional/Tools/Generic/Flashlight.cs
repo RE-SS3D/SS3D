@@ -4,13 +4,13 @@ using SS3D.Engine.Interactions;
 
 namespace SS3D.Content.Items.Functional.Tools
 {
-    public class Flashlight : NetworkBehaviour, ContinuousInteraction
+    public class Flashlight : NetworkBehaviour, Interaction
     {
         [SerializeField]
         private new Light light = null;
 
         public InteractionEvent Event { get; set; }
-        public string Name => "Turn on";
+        public string Name => "Turn On/Off";
 
         public void OnEnable()
         {
@@ -24,14 +24,8 @@ namespace SS3D.Content.Items.Functional.Tools
 
         public void Interact()
         {
-            light.enabled = true;
-            RpcSetLight(true);
-        }
-        public bool ContinueInteracting() => true;
-        public void EndInteraction()
-        {
-            light.enabled = false;
-            RpcSetLight(false);
+            light.enabled = !light.enabled;
+            RpcSetLight(light.enabled);
         }
 
         [ClientRpc]
