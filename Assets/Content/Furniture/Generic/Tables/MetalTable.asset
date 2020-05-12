@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f55f41c36d703aa4b9b6025fa003c12a, type: 3}
-  m_Name: ReinforcedWall
+  m_Script: {fileID: 11500000, guid: 903cb7b2e43eaa14abbf1cb220fdd7c3, type: 3}
+  m_Name: MetalTable
   m_EditorClassIdentifier: 
-  id: reinforced_wall
-  genericType: wall
-  isWall: 1
-  prefab: {fileID: 3591147544166670882, guid: d11a68992658b7741bd28ffdf04165ba, type: 3}
+  id: metal_table
+  genericType: table
+  prefab: {fileID: 8036950609662249464, guid: 6caa99f8281726e40a793826d5c047db, type: 3}

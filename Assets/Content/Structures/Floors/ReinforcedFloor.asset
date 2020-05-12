@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f55f41c36d703aa4b9b6025fa003c12a, type: 3}
-  m_Name: ReinforcedWall
-  m_EditorClassIdentifier: 
-  id: reinforced_wall
-  genericType: wall
-  isWall: 1
-  prefab: {fileID: 3591147544166670882, guid: d11a68992658b7741bd28ffdf04165ba, type: 3}
+  m_Name: ReinforcedFloor
+  m_EditorClassIdentifier: Assembly-CSharp:TileMap:Turf
+  id: reinforced_floor
+  genericType: floor
+  isWall: 0
+  prefab: {fileID: 8597721773267636030, guid: df4cf328d472de046bcbc073cbda2868, type: 3}
