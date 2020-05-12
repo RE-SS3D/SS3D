@@ -215,6 +215,11 @@ namespace SS3D.Engine.Inventory
         private void Spawn(GameObject item, Vector3 position)
         {
             item.transform.position = position;
+            item.transform.LookAt(transform);
+            Vector3 transformRotation = item.transform.rotation.eulerAngles;
+            transformRotation.x = 0f;
+            transformRotation.z = 0f;
+            item.transform.rotation = Quaternion.Euler(transformRotation);
             item.SetActive(true);
 
             if (isServer)
