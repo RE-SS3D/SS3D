@@ -9,19 +9,24 @@ namespace SS3D.Content.Items.Functional.Tools
      * 
      * <inheritdoc cref="Core.Interaction" />
      */
-    public class TableConstructer : MonoBehaviour, Interaction
+    public class TableConstructer : DelayedInteraction
     {
         [SerializeField]
         private Fixture tableToConstruct = null;
 
-        public InteractionEvent Event { get; set; }
-        public string Name => ShouldDeconstruct ? "Deconstruct Table" : "Construct Table";
+        public override InteractionEvent Event { get; set; }
+        public override string Name => ShouldDeconstruct ? "Deconstruct Table" : "Construct Table";
 
         // The distance in which to allow constructing tables.
         public float buildDistance = 1.5f;
 
-        public bool CanInteract()
+        public override bool CanInteract()
         {
+            if (!base.CanInteract())
+            {
+                return false;
+            }
+            
             targetTile = Event.target.GetComponentInParent<TileObject>();
 
             // Note: I didn't write the failure conditions over here, just rewrote in a different way.
@@ -54,7 +59,7 @@ namespace SS3D.Content.Items.Functional.Tools
             return true;
         }
 
-        public void Interact()
+        protected override void InteractDelayed()
         {
             // Note: CanInteract is always called before Interact, so we KNOW targetTile is defined.
             var tileManager = FindObjectOfType<TileManager>();
