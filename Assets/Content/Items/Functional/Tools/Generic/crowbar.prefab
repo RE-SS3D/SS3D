@@ -157,6 +157,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dca8718fcae48c84ea7fffa1f4eddec4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  Delay: 2
+  LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
+    type: 3}
   wallToConstruct: {fileID: 11400000, guid: cede127f2ecc46345ab2c1fad9cbd507, type: 2}
   floorToConstruct: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
   buildDistance: 3
