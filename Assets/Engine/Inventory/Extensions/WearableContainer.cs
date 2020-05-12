@@ -10,6 +10,15 @@ namespace SS3D.Engine.Inventory.Extensions
     public class WearableContainer : Container
     {
         public GameObject[] displays;
+        private Quaternion[] originalRotations;
+
+        public void Start()
+        {
+            if (displays != null)
+            {
+                originalRotations = new Quaternion[displays.Length];
+            }
+        }
 
         // Override add item so any changes refresh the interaction system's tool
         public override void AddItem(int index, GameObject item)
@@ -63,6 +72,13 @@ namespace SS3D.Engine.Inventory.Extensions
             if (item.GetComponent<NetworkTransform>())
                 item.GetComponent<NetworkTransform>().enabled = false;
 
+            // Back up old rotation
+            if (originalRotations != null)
+            {
+                originalRotations[index] = item.transform.rotation;
+            }
+            
+            
             item.transform.SetParent(displays[index].transform, false);
             item.transform.localPosition = new Vector3();
             item.transform.localRotation = new Quaternion();
@@ -92,6 +108,12 @@ namespace SS3D.Engine.Inventory.Extensions
                 item.GetComponent<NetworkTransform>().enabled = true;
 
             item.transform.SetParent(null);
+            
+            // Restore old rotation
+            if (originalRotations != null)
+            {
+                item.transform.rotation = originalRotations[index];
+            }
 
             if (isServer)
                 RpcUnplaceItem(index, item);
