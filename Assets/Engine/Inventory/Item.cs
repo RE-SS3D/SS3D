@@ -1,8 +1,8 @@
-﻿using System;
-using UnityEngine;
-using Mirror;
+﻿using UnityEngine;
 using UnityEditor;
+#if UNITY_EDITOR
 using UnityEditor.Experimental.SceneManagement;
+#endif
 
 namespace SS3D.Engine.Inventory
 {
