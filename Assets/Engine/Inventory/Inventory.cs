@@ -91,10 +91,10 @@ namespace SS3D.Engine.Inventory
          * Place an item from a container into the world.
          */
         [Server]
-        public void PlaceItem(GameObject fromContainer, int fromIndex, Vector3 location, Quaternion rotation)
+        public void PlaceItem(GameObject fromContainer, int fromIndex, Vector3 location)
         {
             GameObject item = fromContainer.GetComponent<Container>().RemoveItem(fromIndex);
-            Spawn(item, location, rotation);
+            Spawn(item, location);
         }
 
         /**
@@ -150,7 +150,7 @@ namespace SS3D.Engine.Inventory
         [Command]
         public void CmdAddItemToDefault(GameObject item, GameObject toContainer) => AddItem(item, toContainer);
         [Command]
-        public void CmdPlaceItem(GameObject fromContainer, int fromIndex, Vector3 location, Quaternion rotation) => PlaceItem(fromContainer, fromIndex, location, rotation);
+        public void CmdPlaceItem(GameObject fromContainer, int fromIndex, Vector3 location) => PlaceItem(fromContainer, fromIndex, location);
         [Command]
         public void CmdMoveItem(GameObject fromContainer, int fromIndex, GameObject toContainer, int toIndex) => MoveItem(fromContainer, fromIndex, toContainer, toIndex);
         [Command]
@@ -195,8 +195,6 @@ namespace SS3D.Engine.Inventory
          */
         private void Despawn(GameObject item)
         {
-            // If on server we can do things to the transform
-            item.transform.SetPositionAndRotation(new Vector3(), new Quaternion());
             item.SetActive(false);
 
             if (isServer)
@@ -214,20 +212,25 @@ namespace SS3D.Engine.Inventory
          * Graphically adds the item back into the world (for server and all clients).
          * Must be called from server initially
          */
-        private void Spawn(GameObject item, Vector3 position, Quaternion rotation = new Quaternion())
+        private void Spawn(GameObject item, Vector3 position)
         {
-            item.transform.SetPositionAndRotation(position, rotation);
+            item.transform.position = position;
+            item.transform.LookAt(transform);
+            Vector3 transformRotation = item.transform.rotation.eulerAngles;
+            transformRotation.x = 0f;
+            transformRotation.z = 0f;
+            item.transform.rotation = Quaternion.Euler(transformRotation);
             item.SetActive(true);
 
             if (isServer)
-                RpcSpawn(item, position, rotation);
+                RpcSpawn(item, position);
         }
 
         [ClientRpc]
-        private void RpcSpawn(GameObject item, Vector3 position, Quaternion rotation)
+        private void RpcSpawn(GameObject item, Vector3 position)
         {
             if (!isServer) // Silly thing to prevent looping when server and client are one
-                Spawn(item, position, rotation);
+                Spawn(item, position);
         }
 
         // All objects containing containers usable by this player

@@ -50,9 +50,7 @@ namespace SS3D.Content.Systems.Interactions
         public override void Interact()
         {
             hands.PlaceHeldItem(
-                Event.at.point + Event.at.normal * 0.1f,
-                // Item is rotated to point in direction of interaction from player
-                Quaternion.LookRotation(Event.Player.transform.up, Event.at.point - Event.Player.transform.position)
+                Event.at.point + Event.at.normal * 0.1f
             );
         }
 

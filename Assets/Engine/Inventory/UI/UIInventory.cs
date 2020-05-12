@@ -92,7 +92,7 @@ namespace SS3D.Engine.Inventory.UI
             if(!found)
                 return;
         
-            inventory.CmdPlaceItem(from.gameObject, fromSlot, hit.point + hit.normal * 0.2f, new Quaternion());
+            inventory.CmdPlaceItem(from.gameObject, fromSlot, hit.point + hit.normal * 0.2f);
         }
 
         private void OnInventoryChange()
