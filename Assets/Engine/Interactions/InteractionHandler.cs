@@ -24,6 +24,18 @@ namespace SS3D.Engine.Interactions
 
         public void Update()
         {
+            // Run server interactions
+            if (isServer && activeInteraction != null)
+            {
+                bool continueInteracting = activeInteraction.ContinueInteracting();
+                if (!continueInteracting)
+                {
+                    activeInteraction.EndInteraction();
+                    activeInteraction = null;
+                    TargetSetDoingInteraction(connectionToClient, false);
+                }
+            }
+            
             // Ensure that mouse isn't over ui (game objects aren't tracked by the eventsystem, so ispointer would return false
             if (!isLocalPlayer || Camera.main == null || EventSystem.current.IsPointerOverGameObject())
             {
@@ -43,16 +55,6 @@ namespace SS3D.Engine.Interactions
 
                 if (viableInteractions.Count > 0)
                     CmdRunInteraction(ray, 0, viableInteractions[0].Name);
-            }
-            else if (continuousInteraction != null && Input.GetButton("Click"))
-            {
-                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                CmdContinueInteraction(ray);
-            }
-            else if (continuousInteraction != null && Input.GetButtonUp("Click")) 
-            {
-                CmdEndInteraction();
-                continuousInteraction = null;
             }
             else if (Input.GetButtonDown("Secondary Click"))
             {
@@ -98,14 +100,13 @@ namespace SS3D.Engine.Interactions
         [Command]
         private void CmdRunInteraction(Ray ray, int index, string name)
         {
-            var chosenInteraction = GetViableInteractions(ray)[index];
-
-            // Ensure the interaction can happen
-            if (!chosenInteraction.CanInteract())
+            List<Interaction> viableInteractions = GetViableInteractions(ray);
+            if (index >= viableInteractions.Count)
             {
                 Debug.LogError($"Interaction recieved from client {gameObject.name} can not occur! Server-client misalignment.");
                 return;
             }
+            var chosenInteraction = viableInteractions[index];
 
             if (chosenInteraction.Name != name)
             {
@@ -115,8 +116,15 @@ namespace SS3D.Engine.Interactions
 
             chosenInteraction.Interact();
 
-            if(chosenInteraction is ContinuousInteraction)
-                continuousInteraction = chosenInteraction as ContinuousInteraction;
+            if (chosenInteraction is ContinuousInteraction interaction)
+            {
+                // Make sure to end any current interaction
+                activeInteraction?.EndInteraction();
+                activeInteraction = interaction;
+                // Notify client of interaction
+                TargetSetDoingInteraction(connectionToClient, true);
+            }
+                
         }
 
         [Command]
@@ -127,34 +135,33 @@ namespace SS3D.Engine.Interactions
             var tool = GetActiveTool();
             var target = hit.transform.gameObject;
 
-            continuousInteraction.Event = new InteractionEvent(tool, target, hit, connectionToClient);
-            bool shouldContinue = continuousInteraction.ContinueInteracting();
+            activeInteraction.Event = new InteractionEvent(tool, target, hit, connectionToClient);
+            bool shouldContinue = activeInteraction.ContinueInteracting();
 
             if(!shouldContinue) {
-                continuousInteraction.EndInteraction();
+                activeInteraction.EndInteraction();
 
                 // Inform the client we stopped the 
-                TargetClearContinuousInteraction(connectionToClient);
-                continuousInteraction = null;
+                activeInteraction = null;
             }
         }
 
         [Command]
         private void CmdEndInteraction()
         {
-            if(continuousInteraction == null)
+            if(activeInteraction == null)
             {
-                Debug.LogError("CmdEndInteraction was called despite not having a continuous interaction");
+                Debug.LogError("CmdEndInteraction was called despite not having a active interaction");
                 return;
             }
 
-            continuousInteraction.EndInteraction();
+            activeInteraction.EndInteraction();
         }
 
         [TargetRpc]
-        private void TargetClearContinuousInteraction(NetworkConnection target)
+        private void TargetSetDoingInteraction(NetworkConnection target, bool isDoing)
         {
-            continuousInteraction = null;
+            doingInteraction = isDoing;
         }
 
         private List<Interaction> GetViableInteractions(Ray ray)
@@ -166,7 +173,7 @@ namespace SS3D.Engine.Interactions
             var target = hit.transform.gameObject;
             var tool = GetActiveTool();
 
-            var interactionEvent = new InteractionEvent(tool, target, hit);
+            var interactionEvent = new InteractionEvent(tool, target, hit, isServer ? connectionToClient : null);
 
             // Collect interactions
             List<Interaction> availableInteractions = 
@@ -196,7 +203,9 @@ namespace SS3D.Engine.Interactions
         }
 
         // Server and client track these seperately
-        private ContinuousInteraction continuousInteraction = null;
+        private ContinuousInteraction activeInteraction = null;
         private UI.MenuUI activeMenu = null;
+        // Tracked on client, causing it to notify the server
+        private bool doingInteraction = false;
     }
 }
