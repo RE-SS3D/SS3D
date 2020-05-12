@@ -64,8 +64,30 @@ namespace SS3D.Engine.Inventory.Extensions
                 item.GetComponent<NetworkTransform>().enabled = false;
 
             item.transform.SetParent(displays[index].transform, false);
-            item.transform.localPosition = new Vector3();
-            item.transform.localRotation = new Quaternion();
+            // Check if a custom attachment point should be used
+            Item component = item.GetComponent<Item>();
+            Transform attachmentPoint = component.attachmentPoint;
+            if (component != null && attachmentPoint != null)
+            {
+                // Create new (temporary) point
+                // HACK: Required because rotation pivot can be different
+                GameObject temporaryPoint = new GameObject();
+                temporaryPoint.transform.parent = displays[index].transform;
+                temporaryPoint.transform.localPosition = Vector3.zero;
+                temporaryPoint.transform.rotation = attachmentPoint.root.rotation *  attachmentPoint.localRotation;
+                
+                // Assign parent
+                item.transform.parent = temporaryPoint.transform;
+                // Assign the relative position between the attachment point and the object
+                item.transform.localPosition = -attachmentPoint.localPosition;
+                item.transform.localRotation = Quaternion.identity;
+            }
+            else
+            {
+                item.transform.localPosition = new Vector3();
+                item.transform.localRotation = new Quaternion();
+            }
+            
 
             if (isServer)
                 RpcPlaceItem(index, item);
@@ -91,6 +113,12 @@ namespace SS3D.Engine.Inventory.Extensions
             if (item.GetComponent<NetworkTransform>())
                 item.GetComponent<NetworkTransform>().enabled = true;
 
+            if (item.transform.parent != displays[index].transform)
+            {
+                // Destroy temporary attachment point
+                Destroy(item.transform.parent.gameObject);
+            }
+            
             item.transform.SetParent(null);
 
             if (isServer)
