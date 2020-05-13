@@ -59,10 +59,11 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -8532224439395276194, guid: 9a2187a082e184042b7bf3ce5e4f08a7, type: 3}
+  - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -126,7 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  m_AssetId: 2c58777df633d2b429f8442a298ef62c
+  m_AssetId: 
   m_SceneId: 0
 --- !u!114 &4226876622130882062
 MonoBehaviour:
@@ -144,6 +145,7 @@ MonoBehaviour:
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 6421678819902797759}
+  attachmentPoint: {fileID: 0}
 --- !u!114 &645931460658309619
 MonoBehaviour:
   m_ObjectHideFlags: 0

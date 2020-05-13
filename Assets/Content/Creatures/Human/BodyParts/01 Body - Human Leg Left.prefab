@@ -50,11 +50,12 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 4835078630258379571, guid: 19e6e3a6594def0459da07a718282e99, type: 3}
-  - {fileID: -4093226344146330725, guid: 19e6e3a6594def0459da07a718282e99, type: 3}
+  - {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
+  - {fileID: 2100000, guid: 1f8078dee7dfc354ebc752f6c3c8e0db, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -128,9 +129,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 49752237346604910}
+  attachmentPoint: {fileID: 0}
 --- !u!114 &6442339566317176053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,6 +159,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
-  m_AssetId: 4f869bcb1ae6e4b45b121ee768dc357d
+  m_AssetId: 
   m_SceneId: 0

@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: -4478029607378754758}
   - component: {fileID: 8379247326048628573}
   - component: {fileID: -1451627117481347402}
-  - component: {fileID: 3671379023228470128}
   - component: {fileID: -7486481738808961961}
+  - component: {fileID: 2434564844979155009}
   m_Layer: 16
   m_Name: PaperBin
   m_TagString: Untagged
@@ -29,13 +29,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2889814160293510354}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &-5088896461503029715
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -77,7 +77,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -8532224439395276194, guid: e564e7acccd642f49957838e73ca2383, type: 3}
+  - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -108,8 +108,8 @@ SkinnedMeshRenderer:
   - 0
   m_RootBone: {fileID: 0}
   m_AABB:
-    m_Center: {x: 0.00000023841858, y: 0.00000048428774, z: 0.051870525}
-    m_Extent: {x: 0.16748257, y: 0.2115503, z: 0.05187054}
+    m_Center: {x: -0.00043955445, y: 0.053956807, z: 0.000928849}
+    m_Extent: {x: 0.16996914, y: 0.05351013, z: 0.2141341}
   m_DirtyAABB: 0
 --- !u!54 &-1451627117481347402
 Rigidbody:
@@ -127,19 +127,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &3671379023228470128
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2889814160293510354}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.33496514, y: 0.42310068, z: 0.1037411}
-  m_Center: {x: 0.00000023841858, y: 0.00000048428785, z: 0.051870536}
 --- !u!114 &-7486481738808961961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,3 +143,17 @@ MonoBehaviour:
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 2889814160293510354}
+  attachmentPoint: {fileID: 0}
+--- !u!65 &2434564844979155009
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2889814160293510354}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.33993828, y: 0.10702026, z: 0.4282682}
+  m_Center: {x: -0.00043955445, y: 0.053956807, z: 0.000928849}
