@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &1728052814042607062
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 64488714424754145, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_AssetId
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3236301110145356733, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 3787143306631608313, guid: c50b827f8ce281c428d83e4d145f3bbd,
+        type: 3}
+    - target: {fileID: 5886943626103466379, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5886943626103466379, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5886943626103466379, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5886943626103466379, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5886943626103466379, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5886943626103466379, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5886943626103466379, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5886943626103466379, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5886943626103466379, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5886943626103466379, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5886943626103466379, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7487790533422832536, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_Name
+      value: Light Bulb Broken
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f63030d9eed5bc3408dd5913166449c2, type: 3}
