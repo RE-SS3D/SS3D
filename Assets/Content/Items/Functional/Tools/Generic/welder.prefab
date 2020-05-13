@@ -67,6 +67,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: welder
       objectReference: {fileID: 0}
+    - target: {fileID: 4137508821802886135, guid: 9c8363ee7f934bd4b8ee5a2e30da1269,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
     - target: {fileID: 5069735567088243538, guid: 9c8363ee7f934bd4b8ee5a2e30da1269,
         type: 3}
       propertyPath: m_AssetId
