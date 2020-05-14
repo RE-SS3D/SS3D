@@ -16,8 +16,8 @@ MonoBehaviour:
   - turf: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
     fixture: {fileID: 0}
   - turf: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
-    fixture: {fileID: 11400000, guid: aabb77678877b63448eafa8163661cd4, type: 2}
-  - turf: {fileID: 11400000, guid: cede127f2ecc46345ab2c1fad9cbd507, type: 2}
+    fixture: {fileID: 0}
+  - turf: {fileID: 11400000, guid: c4f20fbebbaf46f4f85293a69e3c0d7d, type: 2}
     fixture: {fileID: 0}
   - turf: {fileID: 11400000, guid: bb5b6d96476c1414f924e9805ca225a8, type: 2}
     fixture: {fileID: 0}
