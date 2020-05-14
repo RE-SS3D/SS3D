@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 9f619fa7a581e9c4aa983af44dcf9008
+guid: 1fa72a3feeb97854b820c0ef021338c0
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable: []
@@ -7,18 +7,13 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Emissive Red (Off)
+      name: Palette05
+    second: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Palette05 Emission
     second: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Glass
-    second: {fileID: 2100000, guid: 4156b958be0668e49b2e9f5120660e50, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Palette01
-    second: {fileID: 2100000, guid: db5a4f016f22afc4f8f074192ce277e8, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -104,7 +99,7 @@ ModelImporter:
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 1
+  avatarSetup: 0
   additionalBone: 0
   userData: 
   assetBundleName: 
