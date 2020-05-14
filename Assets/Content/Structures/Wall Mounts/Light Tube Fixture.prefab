@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8648403125281566512}
   - component: {fileID: 2374786706335407539}
   m_Layer: 0
-  m_Name: LightTube Frame
+  m_Name: Light Tube Fixture
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -120,7 +120,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 583ec5095c87a4543a564d1e7211889b, type: 2}
+  - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
