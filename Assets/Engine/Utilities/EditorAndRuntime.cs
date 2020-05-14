@@ -18,18 +18,10 @@ public static class EditorAndRuntime
 
     public static GameObject InstantiatePrefab(GameObject gameObject)
     {
-#if UNITY_EDITOR
-        return (GameObject)PrefabUtility.InstantiatePrefab(gameObject);
-#else
         return GameObject.Instantiate(gameObject);
-#endif
     }
     public static GameObject InstantiatePrefab(GameObject gameObject, Transform transform)
     {
-#if UNITY_EDITOR
-        return (GameObject)PrefabUtility.InstantiatePrefab(gameObject, transform);
-#else
         return GameObject.Instantiate(gameObject, transform);
-#endif
     }
 }
