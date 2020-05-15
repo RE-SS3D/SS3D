@@ -102,7 +102,8 @@ MonoBehaviour:
   target: {fileID: 0}
   distance: 10
   angle: 0
-  vAngle: 60
+  vAngle: 62.25
+  yOffset: 0.75
 --- !u!45 &8192375152356925987
 Skybox:
   m_ObjectHideFlags: 0
