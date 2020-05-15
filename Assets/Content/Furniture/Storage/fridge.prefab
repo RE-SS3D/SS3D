@@ -230,7 +230,7 @@ GameObject:
   - component: {fileID: 2328583508320183080}
   - component: {fileID: 4285060363148910370}
   - component: {fileID: 5443252286308906427}
-  m_Layer: 2
+  m_Layer: 14
   m_Name: LockerBasicDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}

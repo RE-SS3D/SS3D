@@ -36,6 +36,10 @@ namespace Mirror
     {
         // This is a server-only field. On the client it will mean nothing.
         [SerializeField] bool useLoginSystemOnLocalHost;
+
+        // Warmup time until round starts
+        [Range(3, 3600)]
+        [SerializeField] int warmupTime;
         /**
          * Information about the login server sent to the client.
          */
@@ -129,6 +133,7 @@ namespace Mirror
             GameObject roundManagerGameObject = Instantiate(roundManagerPrefab);
             NetworkServer.Spawn(roundManagerGameObject);
             roundManager = roundManagerGameObject.GetComponent<RoundManager>();
+            roundManager.SetWarmupTime(warmupTime);
             roundManager.StartWarmup();
         }
 
