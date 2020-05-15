@@ -30,6 +30,7 @@ namespace SS3D.Content.Systems.Player
         public float distance = 3f; // total distance from the target
         public float angle = 90f;   // horizontal angle of the camera (around the z axis)
         public float vAngle = 60f;  // angle above the player
+        public float yOffset = 1f;
 
         /**
          * Updates the target the camera is meant to follow
@@ -100,7 +101,7 @@ namespace SS3D.Content.Systems.Player
             // The position is determined by the orientation and the distance, where distance has an exponential effect.
             Vector3 relativePosition = Quaternion.Euler(0, curHorizontalAngle, vAngle) * new Vector3(Mathf.Pow(DISTANCE_SCALING, currentDistance), 0, 0);
             // Determine the part of the target we want to follow
-            Vector3 targetPosition = target.transform.position + playerOffset;
+            Vector3 targetPosition = target.transform.position + new Vector3(playerOffset.x,playerOffset.y-yOffset,playerOffset.z);
 
             // Look at that part from the correct position
             transform.position = targetPosition + relativePosition;

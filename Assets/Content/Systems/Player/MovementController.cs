@@ -39,7 +39,7 @@ namespace SS3D.Content.Systems.Player
         void Update()
         {
             ForceHeightLevel();
-            
+
             //Must be the local player, or they cannot move
             if (!isLocalPlayer)
             {
@@ -66,8 +66,8 @@ namespace SS3D.Content.Systems.Player
 
             // Smoothly transition to next intended movement
             Vector2 intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
-            currentMovement = Vector2.MoveTowards(currentMovement, intendedMovement, Time.deltaTime * ACCELERATION);
-
+            currentMovement = Vector2.LerpUnclamped(currentMovement, intendedMovement, Time.deltaTime * ACCELERATION);
+            
             // Move the player
             if (currentMovement.magnitude > 0)
             {
@@ -75,10 +75,13 @@ namespace SS3D.Content.Systems.Player
                 Vector3 absoluteMovement =
                     currentMovement.y * Vector3.Cross(mainCamera.transform.right, Vector3.up).normalized +
                     currentMovement.x * Vector3.Cross(Vector3.up, mainCamera.transform.forward).normalized;
-                // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
 
-                characterController.Move((absoluteMovement * Time.deltaTime));
-                transform.rotation = Quaternion.LookRotation(absoluteMovement);
+                // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
+                characterController.Move(absoluteMovement * Time.deltaTime);
+
+                // avoid unwanted rotation when you rotate the camera but isn't doing movement input, comment the "if" to see it
+                if (intendedMovement.magnitude > 0)
+                    transform.rotation = Quaternion.LerpUnclamped(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 10);
             }
         }
 
@@ -98,11 +101,13 @@ namespace SS3D.Content.Systems.Player
             {
                 return;
             }
-            
+
             // TODO: Might eventually want more animation options. E.g. when in 0-gravity and 'clambering' via a surface
             //characterAnimator.SetBool("Floating", false); // Note: Player can be floating and still move
-            characterAnimator.SetFloat("Speed",
-                currentMovement.magnitude / runSpeed); // animation Speed is a proportion of maximum runSpeed
+
+            // animation Speed is a proportion of maximum runSpeed, and we smoothly transitions the speed with the Lerp
+            float newSpeed = Mathf.LerpUnclamped(characterAnimator.GetFloat("Speed"), currentMovement.magnitude / runSpeed, Time.deltaTime * 10);
+            characterAnimator.SetFloat("Speed", newSpeed);
         }
     }
 }

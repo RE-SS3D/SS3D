@@ -8,8 +8,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Palette05
-    second: {fileID: -8532224439395276194, guid: 58b7f3e337f2e6f44be25698b715ffe4,
-      type: 3}
+    second: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule

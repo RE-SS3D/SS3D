@@ -107,6 +107,11 @@ PrefabInstance:
       propertyPath: m_Size.z
       value: 0.1389192
       objectReference: {fileID: 0}
+    - target: {fileID: 7817880274887278369, guid: 772da386eb7b01745913050fee544c32,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9196258322038297090, guid: 772da386eb7b01745913050fee544c32,
         type: 3}
       propertyPath: m_Mesh
