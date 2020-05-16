@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ShadowProjector
+  m_Name: ShadowProjectorPlayer
   m_Shader: {fileID: 4800000, guid: 01a668cc78047034a8a0c5ca2d24c6f7, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -28,8 +28,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FalloffTex:
-        m_Texture: {fileID: 2800000, guid: 710d4713962d553409a55bca0f3192b3, type: 3}
-        m_Scale: {x: 1, y: 0}
+        m_Texture: {fileID: 2800000, guid: 23740055e2b119e40a939138ab8070f8, type: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _HiliteTex:
         m_Texture: {fileID: 2800000, guid: f7a0a732ad112a541100162a44295342, type: 3}
@@ -41,7 +41,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _ShadowTex:
         m_Texture: {fileID: 2800000, guid: 1c4f83b94f185014ab5da7b29291a736, type: 3}
-        m_Scale: {x: 1, y: 0}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats: []
     m_Colors:
