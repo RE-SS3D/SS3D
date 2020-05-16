@@ -1,6 +1,6 @@
 // Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt)
 
-Shader "Custom/DeferredShading2" {
+Shader "Custom/DeferredShadingWrap" {
 Properties {
     _LightTexture0 ("", any) = "" {}
     _LightTextureB0 ("", 2D) = "" {}

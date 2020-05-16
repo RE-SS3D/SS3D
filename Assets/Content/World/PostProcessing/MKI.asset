@@ -1450,9 +1450,9 @@ MonoBehaviour:
     value: 1.25
   color:
     overrideState: 1
-    value: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 1}
+    value: {r: 0.16037738, g: 0.16037738, b: 0.16037738, a: 1}
   ambientOnly:
-    overrideState: 0
+    overrideState: 1
     value: 0
   noiseFilterTolerance:
     overrideState: 0
@@ -1473,8 +1473,8 @@ MonoBehaviour:
     overrideState: 1
     value: 0.1
   quality:
-    overrideState: 0
-    value: 2
+    overrideState: 1
+    value: 3
 --- !u!114 &4375730050868664868
 MonoBehaviour:
   m_ObjectHideFlags: 3
