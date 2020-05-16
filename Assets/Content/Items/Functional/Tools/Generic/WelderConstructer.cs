@@ -43,7 +43,7 @@ namespace SS3D.Content.Items.Functional.Tools
             }
 
             //Only shows if the welder is on
-            if (!controller.pSystem.isEmitting)
+            if (!controller.hotFlame.isEmitting)
             {
                 return false;
             }

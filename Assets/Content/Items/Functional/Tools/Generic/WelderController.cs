@@ -7,14 +7,18 @@ namespace SS3D.Content.Items.Functional.Tools
     public class WelderController : NetworkBehaviour, Interaction
     {
         [SerializeField]
-        public ParticleSystem pSystem;
+        public ParticleSystem hotFlame;
+        [SerializeField]
+        public ParticleSystem coldFlame;
+        [SerializeField]
+        public ParticleSystem lightParticle;
 
         public InteractionEvent Event { get; set; }
         public string Name => "Turn On/Off";
 
         public void OnEnable()
         {
-            pSystem.enableEmission = false;
+            hotFlame.enableEmission = false;
         }
 
         public bool CanInteract()
@@ -24,15 +28,19 @@ namespace SS3D.Content.Items.Functional.Tools
 
         public void Interact()
         {
-            pSystem.enableEmission = !pSystem.enableEmission;
-            if (pSystem.isEmitting)
+            hotFlame.enableEmission = !hotFlame.enableEmission;
+            if (hotFlame.isEmitting)
             {
-                pSystem.Stop();
+                hotFlame.Stop();
+                coldFlame.Stop();
+                lightParticle.Stop();
             } else
             {
-                pSystem.Play();
+                hotFlame.Play();
+                coldFlame.Play();
+                lightParticle.Play();
             }
-            RpcTurnOn(!pSystem.isEmitting);
+            RpcTurnOn(!hotFlame.isEmitting);
         }
 
         [ClientRpc]
@@ -40,11 +48,15 @@ namespace SS3D.Content.Items.Functional.Tools
         {
             if (value)
             {
-                pSystem.Stop();
+                hotFlame.Stop();
+                coldFlame.Stop();
+                lightParticle.Stop();
             }
             else
             {
-                pSystem.Play();
+                hotFlame.Play();
+                coldFlame.Play();
+                lightParticle.Play();
             }
         }
     }
