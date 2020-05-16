@@ -92,7 +92,11 @@ namespace SS3D.Engine.Interactions.UI
 
                     // If we can't move to the holding slot, we have to quit
                     if (!uiInventory.CanMoveItem(origin.container, origin.index, holding.container, holding.index))
+                    {
+                        Destroy(draggingSprite);
+                        draggingSprite = null;
                         return false;
+                    }
 
                     uiInventory.MoveItem(origin.container, origin.index, holding.container, holding.index);
                     holding.uiSlot.Transparent = true;
@@ -146,8 +150,11 @@ namespace SS3D.Engine.Interactions.UI
             holding.uiSlot.Transparent = false;
 
             // Revert the dragging object
-            Destroy(draggingSprite);
-            draggingSprite = null;
+            if (draggingSprite != null)
+            {
+                Destroy(draggingSprite);
+                draggingSprite = null;
+            }
             prevHover = new UISlotRef();
             prevHoverSlot = new SlotInfo();
 
