@@ -49,7 +49,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   warmupTimeSeconds: 5
-  roundTimeSeconds: 300
+  roundTimeSeconds: 600
   timerText: {fileID: 1373592125188122138}
   timerUi: {fileID: 7328702168961304135}
   controlUi: {fileID: 7328702168961304135}
