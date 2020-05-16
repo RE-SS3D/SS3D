@@ -145,7 +145,12 @@ namespace SS3D.Engine.Inventory.Extensions
                 item.GetComponent<NetworkTransform>().enabled = true;
 
             // Destroy temporary attachment point
-            Destroy(item.transform.parent.gameObject);
+            if (item.transform.parent.gameObject.name == "TempPivotPoint")
+            {
+                Destroy(item.transform.parent.gameObject);
+            }
+
+            // Just use the parent if no displays are set up
             if (displays[index] != null)
             {
                 item.transform.SetParent(displays[index].transform, false);

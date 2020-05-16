@@ -214,6 +214,9 @@ namespace SS3D.Engine.Inventory
          */
         private void Spawn(GameObject item, Vector3 position)
         {
+            // World will be the parent
+            item.transform.parent = null;
+
             item.transform.position = position;
             item.transform.LookAt(transform);
             Vector3 transformRotation = item.transform.rotation.eulerAngles;
