@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7027750089843885471
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2463027294668934287}
+  m_Layer: 16
+  m_Name: FlameTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2463027294668934287
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7027750089843885471}
+  m_LocalRotation: {x: -0.965926, y: 0.00000009256072, z: 0.2588186, w: -0.00000034544203}
+  m_LocalPosition: {x: -0.076, y: -0, z: -0.572}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 9062342788380200759}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: -180, y: 30, z: -0.000015258789}
 --- !u!1001 &7696376121547713039
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -115,3 +145,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9c8363ee7f934bd4b8ee5a2e30da1269, type: 3}
+--- !u!4 &9062342788380200759 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1660963557818230072, guid: 9c8363ee7f934bd4b8ee5a2e30da1269,
+    type: 3}
+  m_PrefabInstance: {fileID: 7696376121547713039}
+  m_PrefabAsset: {fileID: 0}
