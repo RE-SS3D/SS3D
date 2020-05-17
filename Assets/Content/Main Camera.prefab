@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 8192375152356925987}
   - component: {fileID: 8192375152356925986}
   - component: {fileID: 8192375152356925989}
-  - component: {fileID: 1842255997}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -68,7 +67,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 82231
+    m_Bits: 65847
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -191,39 +190,3 @@ MonoBehaviour:
   blendDistance: 0
   weight: 1
   priority: 0
---- !u!114 &1842255997
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8192375152356925988}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5720f3e4091d5649966a31a0c9adc84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rotationCount: 4
-  stepCount: 16
-  radius: 3.5
-  expStart: 1
-  expFactor: 1.05
-  jitterSamples: 1
-  GIBoost: 25
-  lightBufferHDR: 1
-  lightBufferResolution: 2
-  LnDlOffset: 0
-  nDlOffset: 0
-  power: 1
-  thickness: 1
-  falloff: 1
-  multiBounceAO: 0
-  directLightingAO: 1
-  fallbackMethod: 0
-  cubemapFallback: {fileID: 0}
-  resolutionDownscale: 2
-  reuseCount: 5
-  temporalEnabled: 1
-  temporalResponse: 0.35
-  debugMode: 7
-  lightOnly: 0
