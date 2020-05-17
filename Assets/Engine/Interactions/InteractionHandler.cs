@@ -3,8 +3,6 @@ using System.Linq;
 using Mirror;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using SS3D.Engine.Inventory.Extensions;
-using SS3D.Engine.Interactions.Extensions;
 
 namespace SS3D.Engine.Interactions
 {
@@ -24,18 +22,6 @@ namespace SS3D.Engine.Interactions
 
         public void Update()
         {
-            // Run server interactions
-            if (isServer && activeInteraction != null)
-            {
-                bool continueInteracting = activeInteraction.ContinueInteracting();
-                if (!continueInteracting)
-                {
-                    activeInteraction.EndInteraction();
-                    activeInteraction = null;
-                    TargetSetDoingInteraction(connectionToClient, false);
-                }
-            }
-            
             // Ensure that mouse isn't over ui (game objects aren't tracked by the eventsystem, so ispointer would return false
             if (!isLocalPlayer || Camera.main == null || EventSystem.current.IsPointerOverGameObject())
             {
@@ -51,10 +37,13 @@ namespace SS3D.Engine.Interactions
                 
                 // Run the most prioritised action
                 var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                var viableInteractions = GetViableInteractions(ray);
+                var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
 
                 if (viableInteractions.Count > 0)
-                    CmdRunInteraction(ray, 0, viableInteractions[0].Name);
+                {
+                    CmdRunInteraction(ray, 0, viableInteractions[0].GetName(interactionEvent));
+                }
+                    
             }
             else if (Input.GetButtonDown("Secondary Click"))
             {
@@ -63,7 +52,7 @@ namespace SS3D.Engine.Interactions
                 }
 
                 var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                var viableInteractions = GetViableInteractions(ray);
+                var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
 
                 if (viableInteractions.Count < 1)
                 {
@@ -75,8 +64,13 @@ namespace SS3D.Engine.Interactions
                 activeMenu = obj.GetComponent<UI.MenuUI>();
 
                 activeMenu.Position = Input.mousePosition;
+                activeMenu.Event = interactionEvent;
                 activeMenu.Interactions = viableInteractions;
-                activeMenu.onSelect = interaction => CmdRunInteraction(ray, viableInteractions.IndexOf(interaction), interaction.Name);
+                activeMenu.onSelect = interaction =>
+                {
+                    CmdRunInteraction(ray, viableInteractions.IndexOf(interaction),
+                            interaction.GetName(interactionEvent));
+                };
             }
         }
 
@@ -100,112 +94,86 @@ namespace SS3D.Engine.Interactions
         [Command]
         private void CmdRunInteraction(Ray ray, int index, string name)
         {
-            List<Interaction> viableInteractions = GetViableInteractions(ray);
+            List<IInteraction> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
             if (index >= viableInteractions.Count)
             {
-                Debug.LogError($"Interaction recieved from client {gameObject.name} can not occur! Server-client misalignment.");
+                Debug.LogError($"Interaction received from client {gameObject.name} can not occur! Server-client misalignment.");
                 return;
             }
             var chosenInteraction = viableInteractions[index];
 
-            if (chosenInteraction.Name != name)
+            if (chosenInteraction.GetName(interactionEvent) != name)
             {
                 Debug.LogError($"Interaction at index {index} did not have the expected name of {name}");
                 return;
             }
 
-            chosenInteraction.Interact();
-
-            if (chosenInteraction is ContinuousInteraction interaction)
-            {
-                // Make sure to end any current interaction
-                activeInteraction?.EndInteraction();
-                activeInteraction = interaction;
-                // Notify client of interaction
-                TargetSetDoingInteraction(connectionToClient, true);
-            }
-                
+            InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenInteraction);
+            RpcConfirmInteraction(ray, index, name, reference.Id);
+            // TODO: Keep track of interactions for cancellation
         }
 
-        [Command]
-        private void CmdContinueInteraction(Ray ray)
+        /// <summary>
+        /// Confirms an interaction issued by a client
+        /// </summary>
+        [ClientRpc]
+        private void RpcConfirmInteraction(Ray ray, int index, string name, int referenceId)
         {
-            Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask);
-
-            var tool = GetActiveTool();
-            var target = hit.transform.gameObject;
-
-            activeInteraction.Event = new InteractionEvent(tool, target, hit, connectionToClient);
-            bool shouldContinue = activeInteraction.ContinueInteracting();
-
-            if(!shouldContinue) {
-                activeInteraction.EndInteraction();
-
-                // Inform the client we stopped the 
-                activeInteraction = null;
-            }
-        }
-
-        [Command]
-        private void CmdEndInteraction()
-        {
-            if(activeInteraction == null)
+            List<IInteraction> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+            if (index >= viableInteractions.Count)
             {
-                Debug.LogError("CmdEndInteraction was called despite not having a active interaction");
+                Debug.LogWarning($"Interaction received from server {gameObject.name} can not occur! Server-client misalignment.");
                 return;
             }
+            var chosenInteraction = viableInteractions[index];
 
-            activeInteraction.EndInteraction();
+            if (chosenInteraction.GetName(interactionEvent) != name)
+            {
+                return;
+            }
+            
+            interactionEvent.Source.ClientInteract(interactionEvent, chosenInteraction, new InteractionReference(referenceId));
         }
 
-        [TargetRpc]
-        private void TargetSetDoingInteraction(NetworkConnection target, bool isDoing)
+        private List<IInteraction> GetViableInteractions(Ray ray, out InteractionEvent interactionEvent)
         {
-            doingInteraction = isDoing;
+            IInteractionSource source = GetActiveInteractionSource();
+            if (source == null)
+            {
+                interactionEvent = null;
+                return new List<IInteraction>();
+            }
+            
+            IInteractionTarget target = null;
+            Vector3 point = Vector3.zero;
+            if (Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask))
+            {
+                point = hit.point;
+                GameObject targetGo = hit.transform.gameObject;
+                target = targetGo.GetComponent<IInteractionTarget>() ?? new InteractionGameObject(targetGo);
+                if (!source.CanInteractWithTarget(target))
+                {
+                    interactionEvent = null;
+                    return new List<IInteraction>();
+                }
+            }
+
+            interactionEvent = new InteractionEvent(source, target, point);
+            
+            IInteraction[] availableInteractions =
+                source.GenerateInteractions(target != null ? new[] {target} : new IInteractionTarget[0]);
+
+            InteractionEvent @event = interactionEvent;
+            return availableInteractions.Where(i => i.CanInteract(@event)).ToList();
         }
 
-        private List<Interaction> GetViableInteractions(Ray ray)
+        private IInteractionSource GetActiveInteractionSource()
         {
-            // Get the target and tool
-            if (!Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask))
-                return new List<Interaction>();
-
-            var target = hit.transform.gameObject;
-            var tool = GetActiveTool();
-
-            var interactionEvent = new InteractionEvent(tool, target, hit, isServer ? connectionToClient : null);
-
-            // Collect interactions
-            List<Interaction> availableInteractions = 
-                (tool == gameObject
-                    ? new List<Interaction>()
-                    : tool.GetAllInteractions(interactionEvent)
-                )
-                    .Concat(target.GetAllInteractions(interactionEvent))
-                    .Concat(gameObject.GetAllInteractions(interactionEvent))
-                    .ToList();
-
-            availableInteractions.ForEach(interaction => interaction.Event = interactionEvent);
-
-            // Order interactions
-            // TODO: Prioritise interactions
-
-            // Filter to usable ones
-            return availableInteractions
-                .Where(interaction => interaction.CanInteract())
-                .ToList();
+            IToolHolder toolHolder = GetComponent<IToolHolder>();
+            IInteractionSource activeTool = toolHolder?.GetActiveTool();
+            return activeTool ?? GetComponent<IInteractionSource>();
         }
-
-        private GameObject GetActiveTool()
-        {
-            // TODO: Hands should extend a ToolHolder or something like that.
-            return GetComponent<Hands>().GetItemInHand()?.gameObject ?? GetComponent<Hands>().gameObject;
-        }
-
-        // Server and client track these seperately
-        private ContinuousInteraction activeInteraction = null;
+        
         private UI.MenuUI activeMenu = null;
-        // Tracked on client, causing it to notify the server
-        private bool doingInteraction = false;
     }
 }
