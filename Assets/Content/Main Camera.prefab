@@ -218,7 +218,7 @@ MonoBehaviour:
   thickness: 1
   falloff: 1
   multiBounceAO: 0
-  directLightingAO: 0
+  directLightingAO: 1
   fallbackMethod: 0
   cubemapFallback: {fileID: 0}
   resolutionDownscale: 2
