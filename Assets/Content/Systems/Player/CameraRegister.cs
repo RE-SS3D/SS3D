@@ -9,14 +9,12 @@ namespace SS3D.Content.Systems.Player
     {
         void Start()
         {
-            Debug.Log(isLocalPlayer);
-            if(!isLocalPlayer)
+            if(isLocalPlayer)
             {
-                return;
+                CameraFollow cameraFollow = Camera.main.GetComponent<CameraFollow>();
+                cameraFollow.SetTarget(gameObject);
+                cameraFollow.enabled = true;
             }
-            CameraFollow cameraFollow = Camera.main.GetComponent<CameraFollow>();
-            cameraFollow.SetTarget(gameObject);
-            cameraFollow.enabled = true;
         }
     }
 }
