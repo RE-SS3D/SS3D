@@ -113,6 +113,9 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   light: {fileID: 5674409998555339756}
+  offMaterial: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+  onMaterial: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  lightBulb: {fileID: 5294707152616912772}
 --- !u!1 &3531470905858699050
 GameObject:
   m_ObjectHideFlags: 0
@@ -264,7 +267,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

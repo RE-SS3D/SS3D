@@ -8,6 +8,12 @@ namespace SS3D.Content.Items.Functional.Tools
     {
         [SerializeField]
         private new Light light = null;
+        [SerializeField]
+        private Material offMaterial;
+        [SerializeField]
+        private Material onMaterial;
+        [SerializeField]
+        private GameObject lightBulb;
 
         public InteractionEvent Event { get; set; }
         public string Name => "Turn On/Off";
@@ -26,12 +32,28 @@ namespace SS3D.Content.Items.Functional.Tools
         {
             light.enabled = !light.enabled;
             RpcSetLight(light.enabled);
+            if (light.enabled)
+            {
+                lightBulb.GetComponent<MeshRenderer>().material = onMaterial;
+            }
+            else
+            {
+                lightBulb.GetComponent<MeshRenderer>().material = offMaterial;
+            }
         }
 
         [ClientRpc]
         private void RpcSetLight(bool value)
         {
             light.enabled = value;
+            if (light.enabled)
+            {
+                lightBulb.GetComponent<MeshRenderer>().material = onMaterial;
+            }
+            else
+            {
+                lightBulb.GetComponent<MeshRenderer>().material = offMaterial;
+            }
         }
     }
 }
