@@ -2,9 +2,12 @@
 
 namespace SS3D.Engine.Interactions
 {
-    public class InteractionGameObject : IInteractionTarget, IGameObjectProvider
+    /// <summary>
+    /// Interaction target for target game objects without their own interaction target 
+    /// </summary>
+    public class InteractionTargetGameObject : IInteractionTarget, IGameObjectProvider
     {
-        public InteractionGameObject(GameObject gameObject)
+        public InteractionTargetGameObject(GameObject gameObject)
         {
             GameObject = gameObject;
         }
