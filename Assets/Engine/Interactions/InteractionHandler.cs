@@ -150,7 +150,7 @@ namespace SS3D.Engine.Interactions
             {
                 point = hit.point;
                 GameObject targetGo = hit.transform.gameObject;
-                target = targetGo.GetComponent<IInteractionTarget>() ?? new InteractionGameObject(targetGo);
+                target = targetGo.GetComponent<IInteractionTarget>() ?? new InteractionTargetGameObject(targetGo);
                 if (!source.CanInteractWithTarget(target))
                 {
                     interactionEvent = null;
