@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace SS3D.Content.Furniture.Storage
 {
-    public class StorageContainer : Openable
+    public class StorageContainer : NetworkedOpenable
     {
         public bool OnlyStoreWhenOpen = false;
         public float MaxDistance = 5f;

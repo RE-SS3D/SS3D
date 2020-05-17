@@ -33,7 +33,7 @@ namespace SS3D.Content.Systems.Interactions
         private bool CanStore(GameObject target)
         {
             if(OnlyWhenOpen)
-                return target.GetComponent<Openable>()?.IsOpen() ?? false;
+                return target.GetComponent<NetworkedOpenable>()?.IsOpen() ?? false;
             return true;
         }
 

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace SS3D.Content.Furniture
 {
     [RequireComponent(typeof(Animator))]
-    public class Openable : InteractionTargetNetworkBehaviour
+    public class NetworkedOpenable : InteractionTargetNetworkBehaviour
     {
         private Animator animator;
         private static readonly int Open = Animator.StringToHash("Open");
