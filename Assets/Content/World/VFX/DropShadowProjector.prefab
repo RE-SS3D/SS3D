@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 11900000}
   - component: {fileID: 7979759708815140015}
   m_Layer: 0
-  m_Name: BlobShadowProjector
+  m_Name: DropShadowProjector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,8 +41,8 @@ Projector:
   m_GameObject: {fileID: 100002}
   m_Enabled: 1
   serializedVersion: 2
-  m_NearClipPlane: -0.02
-  m_FarClipPlane: 2
+  m_NearClipPlane: 0
+  m_FarClipPlane: 0.6
   m_FieldOfView: 30
   m_AspectRatio: 1
   m_Orthographic: 1
