@@ -17,8 +17,7 @@ GameObject:
   - component: {fileID: 5951043273896807154}
   - component: {fileID: 5524012885757289377}
   - component: {fileID: 138009056528592495}
-  - component: {fileID: 2441512976116694267}
-  - component: {fileID: 2962446110367408229}
+  - component: {fileID: 3646364236061738243}
   m_Layer: 0
   m_Name: microwave
   m_TagString: Untagged
@@ -190,7 +189,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
---- !u!114 &2441512976116694267
+--- !u!114 &3646364236061738243
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -199,24 +198,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 3444034143536514343}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec9656a10b23fca459eb99eccdfdc5f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onlyWhenOpen: 1
---- !u!114 &2962446110367408229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3444034143536514343}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2adb5f3d02742c2478c5bdbe844dc18a, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  OnlyStoreWhenOpen: 1
 --- !u!1 &6704569312823119817
 GameObject:
   m_ObjectHideFlags: 0
