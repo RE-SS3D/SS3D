@@ -36,7 +36,7 @@ public class TileServerManager : NetworkBehaviour
     private void RpcSetDoorOpen(int x, int y, int open)
     {
         if (!isServer) { 
-            tileManager.GetTile(x, y).GetComponentInChildren<DoorOpener>().OnSetDoorState(open == 1);
+            tileManager.GetTile(x, y).GetComponentInChildren<DoorOpener>().SetOpen(open == 1);
         }
     }
 
