@@ -91,5 +91,10 @@ namespace SS3D.Engine.Server.Round
             string timer =  timeSpan.ToString(@"hh\:mm\:ss");
             return IsRoundStarted ? $"Round Time: {timer}" : $"Round Start In: {timer}";
         }
+
+        public void SetWarmupTime(int newTime)
+        {
+            warmupTimeSeconds = newTime;
+        }
     }
 }

@@ -77,9 +77,17 @@ namespace SS3D.Engine.Inventory.Extensions
             {
                 originalRotations[index] = item.transform.rotation;
             }
-            
-            
-            item.transform.SetParent(displays[index].transform, false);
+
+            // Just use the parent if no displays are set up
+            if (displays[index] != null)
+            {
+                item.transform.SetParent(displays[index].transform, false);
+            }
+            else
+            {
+                item.transform.SetParent(this.transform);
+            }
+
             // Check if a custom attachment point should be used
             Item component = item.GetComponent<Item>();
             Transform attachmentPoint = component.attachmentPoint;
@@ -87,8 +95,15 @@ namespace SS3D.Engine.Inventory.Extensions
             {
                 // Create new (temporary) point
                 // HACK: Required because rotation pivot can be different
-                GameObject temporaryPoint = new GameObject();
-                temporaryPoint.transform.parent = displays[index].transform;
+                GameObject temporaryPoint = new GameObject("TempPivotPoint");
+                if (displays[index] != null)
+                {
+                    temporaryPoint.transform.parent = displays[index].transform;
+                }
+                else
+                {
+                    temporaryPoint.transform.parent = this.transform;
+                }
                 temporaryPoint.transform.localPosition = Vector3.zero;
                 temporaryPoint.transform.rotation = attachmentPoint.root.rotation *  attachmentPoint.localRotation;
                 
