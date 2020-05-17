@@ -109,7 +109,11 @@ namespace SS3D.Engine.Interactions
             }
 
             InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenInteraction);
-            RpcConfirmInteraction(ray, index, name, reference.Id);
+            if (chosenInteraction.CreateClient(interactionEvent) != null)
+            {
+                RpcExecuteClientInteraction(ray, index, name, reference.Id);
+            }
+            
             // TODO: Keep track of interactions for cancellation
         }
 
@@ -117,12 +121,12 @@ namespace SS3D.Engine.Interactions
         /// Confirms an interaction issued by a client
         /// </summary>
         [ClientRpc]
-        private void RpcConfirmInteraction(Ray ray, int index, string name, int referenceId)
+        private void RpcExecuteClientInteraction(Ray ray, int index, string name, int referenceId)
         {
             List<IInteraction> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
             if (index >= viableInteractions.Count)
             {
-                Debug.LogWarning($"Interaction received from server {gameObject.name} can not occur! Server-client misalignment.");
+                Debug.LogWarning($"Interaction received from server can not occur! Server-client misalignment on object {gameObject.name}.", this);
                 return;
             }
             var chosenInteraction = viableInteractions[index];
