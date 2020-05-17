@@ -12,5 +12,24 @@
 
             return current;
         }
+        
+        public static T GetComponentInTree<T>(this IInteractionSource source) where T: class
+        {
+            IInteractionSource current = source;
+            while (current != null)
+            {
+                if (current is IGameObjectProvider provider)
+                {
+                    T component = provider.GameObject.GetComponent<T>();
+                    if (component != null)
+                    {
+                        return component;
+                    }
+                }
+                current = current.Parent;
+            }
+
+            return null;
+        }
     }
 }
