@@ -7,8 +7,13 @@ namespace SS3D.Content.Systems.Player
 {
     public class CameraRegister : NetworkBehaviour
     {
-        public override void OnStartLocalPlayer()
+        void Start()
         {
+            Debug.Log(isLocalPlayer);
+            if(!isLocalPlayer)
+            {
+                return;
+            }
             CameraFollow cameraFollow = Camera.main.GetComponent<CameraFollow>();
             cameraFollow.SetTarget(gameObject);
             cameraFollow.enabled = true;
