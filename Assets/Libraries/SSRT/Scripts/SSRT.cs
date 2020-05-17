@@ -331,11 +331,11 @@ public class SSRT : MonoBehaviour
 	{
 		renderResolution = new Vector2(cam.pixelWidth, cam.pixelHeight);
 
-        if ((renderResolution.x % 2 == 1 || renderResolution.y % 2 == 1) && resolutionDownscale != ResolutionDownscale.Full)
+       /* if ((renderResolution.x % 2 == 1 || renderResolution.y % 2 == 1) && resolutionDownscale != ResolutionDownscale.Full)
         {
-            Debug.LogWarning("SSRT: Using uneven camera resolution (" + renderResolution.x + ", " + renderResolution.y + 
+           Debug.LogWarning("SSRT: Using uneven camera resolution (" + renderResolution.x + ", " + renderResolution.y + 
 				") with downscaling can introduce artifacts! Use a fixed resolution instead of free aspect.");
-        }
+        }*/
 
 		if (ssrtBuffer != null)
 		{
