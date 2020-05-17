@@ -144,7 +144,16 @@ namespace SS3D.Engine.Inventory.Extensions
 
             Transform transformParent = item.transform.parent;
             item.transform.SetParent(null);
-            if (transformParent != displays[index].transform)
+            Transform displayTransform = null;
+            if (displays != null && displays.Length > index)
+            {
+                GameObject display = displays[index];
+                if (display != null)
+                {
+                    displayTransform = display.transform;
+                }
+            }
+            if (transformParent != displayTransform && transformParent != transform)
             {
                 // Destroy temporary attachment point
                 Destroy(transformParent.gameObject);
