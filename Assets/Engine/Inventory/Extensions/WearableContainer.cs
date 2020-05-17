@@ -121,21 +121,19 @@ namespace SS3D.Engine.Inventory.Extensions
      */
         private void UnplaceItem(int index, GameObject item)
         {
-            item.SetActive(false);
-
             // Determine physics status
             item.GetComponent<Rigidbody>().isKinematic = false;
             item.GetComponent<Collider>().enabled = true;
             if (item.GetComponent<NetworkTransform>())
                 item.GetComponent<NetworkTransform>().enabled = true;
 
-            if (item.transform.parent != displays[index].transform)
+            Transform transformParent = item.transform.parent;
+            item.transform.SetParent(null);
+            if (transformParent != displays[index].transform)
             {
                 // Destroy temporary attachment point
-                Destroy(item.transform.parent.gameObject);
+                Destroy(transformParent.gameObject);
             }
-            
-            item.transform.SetParent(null);
             
             // Restore old rotation
             if (originalRotations != null)
