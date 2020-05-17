@@ -22,7 +22,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: GreyFloor
   m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: _NORMALMAP _SPECULARHIGHLIGHTS_OFF
+  m_ShaderKeywords: ENABLE_BLOOD _NORMALMAP _SPECULARHIGHLIGHTS_OFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -35,6 +35,10 @@ Material:
     - _BaseMap:
         m_Texture: {fileID: 2800000, guid: c0c9752929d205f4e8db032530e2110d, type: 3}
         m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BloodTex:
+        m_Texture: {fileID: 2800000, guid: 97a2aa304fdb4844d8c58bd98e793383, type: 3}
+        m_Scale: {x: 0.5, y: 0.5}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 2800000, guid: 95d154472d689ef42abc9332645738ab, type: 3}
@@ -64,6 +68,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NormalTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -79,6 +87,9 @@ Material:
     m_Floats:
     - _AlphaClip: 0
     - _Blend: 0
+    - _Blood: 1
+    - _BloodSmoothness: 0.5
+    - _Bloodiness: 0.5
     - _BumpScale: 1
     - _Cull: 2
     - _Cutoff: 0.5
@@ -104,6 +115,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BloodColor: {r: 0.6666667, g: 0, b: 0, a: 1}
     - _Color: {r: 0.8962264, g: 0.8962264, b: 0.8962264, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
