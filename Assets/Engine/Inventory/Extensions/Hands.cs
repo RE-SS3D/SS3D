@@ -8,13 +8,14 @@ using SS3D.Engine.Interactions;
 namespace SS3D.Engine.Inventory.Extensions
 {
     [RequireComponent(typeof(Inventory))]
-    public class Hands : InteractionSourceNetworkBehaviour, IToolHolder
+    public class Hands : InteractionSourceNetworkBehaviour, IToolHolder, IInteractionRangeLimit
     {
         [SerializeField] private Container handContainer = null;
         [SerializeField] private float handRange = 0f;
 
         public event Action<int> onHandChange;
         public int SelectedHand { get; private set; } = 0;
+        public float Range = 1.5f;
 
         // Use these for inventory actions
         public Container Container => handContainer;
@@ -179,6 +180,11 @@ namespace SS3D.Engine.Inventory.Extensions
                 interactions.Insert(0, new PickupInteraction());
             }
             return interactions.ToArray();
+        }
+
+        public float GetInteractionRange()
+        {
+            return Range;
         }
     }
 }
