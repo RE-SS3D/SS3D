@@ -1,4 +1,5 @@
 ﻿using SS3D.Engine.Interactions;
+using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Tiles;
 using UnityEngine;
 
@@ -22,16 +23,15 @@ namespace SS3D.Content.Systems.Interactions
 
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
+            if (!InteractionHelpers.RangeCheck(interactionEvent))
+            {
+                return false;
+            }
+            
             if (interactionEvent.Target is IGameObjectProvider targetBehaviour)
             {
                 TileObject targetTile = targetBehaviour.GameObject.GetComponentInParent<TileObject>();
                 if (targetTile == null)
-                {
-                    return false;
-                }
-
-                GameObject sourceObject = (interactionEvent.Source as IGameObjectProvider)?.GameObject;
-                if (sourceObject != null && Vector3.Distance(sourceObject.transform.position, targetBehaviour.GameObject.transform.position) > 1.5f)
                 {
                     return false;
                 }

@@ -21,6 +21,10 @@ namespace SS3D.Content.Systems.Interactions
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
+            if (!InteractionHelpers.RangeCheck(interactionEvent))
+            {
+                return false;
+            }
             return (interactionEvent.Target as IGameObjectProvider)?.GameObject?.GetComponent<Container>() != null;
         }
 

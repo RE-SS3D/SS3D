@@ -1,4 +1,6 @@
 ﻿using SS3D.Engine.Interactions;
+using SS3D.Engine.Interactions.Extensions;
+using UnityEngine;
 
 namespace SS3D.Engine.Inventory.Extensions
 {
@@ -16,7 +18,12 @@ namespace SS3D.Engine.Inventory.Extensions
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
-            return interactionEvent.Source.Parent is Hands;
+            if (!(interactionEvent.Source.Parent is Hands))
+            {
+                return false;
+            }
+
+            return InteractionHelpers.RangeCheck(interactionEvent);
         }
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)

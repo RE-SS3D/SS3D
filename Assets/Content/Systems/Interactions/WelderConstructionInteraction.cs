@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SS3D.Engine.Interactions;
+using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Tiles;
 using UnityEngine;
 
@@ -27,6 +28,11 @@ namespace SS3D.Content.Systems.Interactions
         {
             GameObject target = (interactionEvent.Target as IGameObjectProvider)?.GameObject;
             if (target == null)
+            {
+                return false;
+            }
+            
+            if (!InteractionHelpers.RangeCheck(interactionEvent))
             {
                 return false;
             }

@@ -1,11 +1,11 @@
 ﻿using SS3D.Engine.Interactions;
+using SS3D.Engine.Interactions.Extensions;
 using UnityEngine;
 
 namespace SS3D.Engine.Inventory.Extensions
 {
     public class PickupInteraction : IInteraction
     {
-        public float PickupDistance { get; set; } = 1.5f;
 
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
@@ -26,14 +26,7 @@ namespace SS3D.Engine.Inventory.Extensions
                     return false;
                 }
 
-                if (interactionEvent.Source is IGameObjectProvider sourceBehaviour &&
-                    Vector3.Distance(sourceBehaviour.GameObject.transform.position, targetBehaviour.GameObject.transform.position) >
-                    PickupDistance)
-                {
-                    return false;
-                }
-
-                return true;
+                return InteractionHelpers.RangeCheck(interactionEvent);
             }
 
             return false;

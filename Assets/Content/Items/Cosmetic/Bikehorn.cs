@@ -2,6 +2,7 @@
 using System.Linq;
 using Mirror;
 using SS3D.Engine.Interactions;
+using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Inventory;
 using UnityEngine;
 
@@ -26,6 +27,10 @@ namespace SS3D.Content.Items.Cosmetic
             {
                 if (interactionEvent.Target is Bikehorn horn)
                 {
+                    if (!InteractionHelpers.RangeCheck(interactionEvent))
+                    {
+                        return false;
+                    }
                     return !horn.IsHonking();
                 }
                 if (interactionEvent.Source is Bikehorn horn1)

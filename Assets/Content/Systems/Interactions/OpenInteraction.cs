@@ -1,5 +1,6 @@
 ﻿using System;
 using SS3D.Engine.Interactions;
+using SS3D.Engine.Interactions.Extensions;
 using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
@@ -21,7 +22,11 @@ namespace SS3D.Content.Systems.Interactions
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
-            // TODO: Range check
+            if (!InteractionHelpers.RangeCheck(interactionEvent))
+            {
+                return false;
+            }
+            
             if (interactionEvent.Target is IGameObjectProvider target)
             {
                 return target.GameObject.GetComponent<Animator>() != null;

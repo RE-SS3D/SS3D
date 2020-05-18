@@ -1,5 +1,6 @@
 ﻿using SS3D.Content.Furniture;
 using SS3D.Engine.Interactions;
+using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Inventory;
 using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
@@ -22,6 +23,11 @@ namespace SS3D.Content.Systems.Interactions
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
+            if (!InteractionHelpers.RangeCheck(interactionEvent))
+            {
+                return false;
+            }
+            
             if (interactionEvent.Source.Parent is Hands hands && interactionEvent.Target is IGameObjectProvider target)
             {
                 return hands.GetItemInHand() != null && CanStore(target.GameObject);
