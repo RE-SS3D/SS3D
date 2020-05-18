@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using SS3D.Engine.Interactions.Extensions;
+using UnityEngine;
 
 namespace SS3D.Engine.Interactions
 {
@@ -7,6 +8,7 @@ namespace SS3D.Engine.Interactions
         public float Delay { get; set; }
         public GameObject LoadingBarPrefab { get; set; }
 
+        private static readonly Vector3 LoadingBarOffset = new Vector3(0, 2f, 0);
         private GameObject loadingBarInstance;
 
         public virtual bool ClientStart(InteractionEvent interactionEvent)
@@ -16,10 +18,10 @@ namespace SS3D.Engine.Interactions
                 return false;
             }
             
-            if (interactionEvent.Source is IGameObjectProvider source)
+            if (interactionEvent.Source.GetRootSource() is IGameObjectProvider source)
             {
-                loadingBarInstance = GameObject.Instantiate(LoadingBarPrefab, source.GameObject.transform);
-                loadingBarInstance.transform.localPosition = Vector3.zero;
+                loadingBarInstance = Object.Instantiate(LoadingBarPrefab, source.GameObject.transform);
+                loadingBarInstance.transform.localPosition = LoadingBarOffset;
                 loadingBarInstance.GetComponent<LoadingBar>().Duration = Delay;
             }
 
