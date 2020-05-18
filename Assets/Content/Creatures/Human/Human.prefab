@@ -74,7 +74,7 @@ GameObject:
   - component: {fileID: -5918456934534797284}
   - component: {fileID: 2898001805863503684}
   - component: {fileID: -5804938744367538470}
-  - component: {fileID: 6919995861608590307}
+  - component: {fileID: 3952038737195694225}
   - component: {fileID: 6196629324959543869}
   - component: {fileID: -587293498524188288}
   - component: {fileID: 593928988720118032}
@@ -119,7 +119,6 @@ Transform:
   - {fileID: 1885641736918616361}
   - {fileID: 1078238172721072839}
   - {fileID: 3333020641093754006}
-  - {fileID: 5203197187838829959}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -207,7 +206,7 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.81, z: 0}
---- !u!114 &6919995861608590307
+--- !u!114 &3952038737195694225
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -216,15 +215,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 289348138277843802}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 243d155dbae3ddb4ea9f0c9fae5c60c7, type: 3}
+  m_Script: {fileID: 11500000, guid: f3efa57f7de3b8d44982dc618446dddf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
   runSpeed: 5
   walkSpeed: 2
-  chestBone: {fileID: 8816584030875756}
-  chestIK: {fileID: 8796676004837559584}
 --- !u!114 &6196629324959543869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1940,37 +1937,6 @@ Transform:
   - {fileID: 3751670382339045068}
   m_Father: {fileID: 8200820077652235051}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &3008952246847479829
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5203197187838829959}
-  m_Layer: 15
-  m_Name: IK
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5203197187838829959
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3008952246847479829}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 8796676004837559584}
-  m_Father: {fileID: 3627826803242844489}
-  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3142991917847240270
 GameObject:
@@ -3768,36 +3734,6 @@ Transform:
   m_Children:
   - {fileID: 7446993108761181854}
   m_Father: {fileID: 8200820077652235051}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &7748248524277460502
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8796676004837559584}
-  m_Layer: 0
-  m_Name: ChestIK
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8796676004837559584
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7748248524277460502}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.1078247, z: 0.689}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 5203197187838829959}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7841765792695227580
