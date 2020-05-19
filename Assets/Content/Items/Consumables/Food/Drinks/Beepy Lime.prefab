@@ -1,12 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &6132964158906658734
+--- !u!1001 &7492733917701218414
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1480860017537655097, guid: 34cf1e9d82659b14d86bff1e51d9ca42,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -3121665046239243768, guid: c1169b60804c0aa41bb17b72ba87985b,
+        type: 3}
     - target: {fileID: 1967009132522758767, guid: 34cf1e9d82659b14d86bff1e51d9ca42,
         type: 3}
       propertyPath: m_AssetId
@@ -16,7 +22,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 2608438801982286396, guid: c1169b60804c0aa41bb17b72ba87985b,
+      objectReference: {fileID: -3121665046239243768, guid: c1169b60804c0aa41bb17b72ba87985b,
         type: 3}
     - target: {fileID: 5340007258419713029, guid: 34cf1e9d82659b14d86bff1e51d9ca42,
         type: 3}
@@ -76,8 +82,7 @@ PrefabInstance:
     - target: {fileID: 8953399703975470614, guid: 34cf1e9d82659b14d86bff1e51d9ca42,
         type: 3}
       propertyPath: m_Name
-      value: soda_blue
+      value: Beepy Lime
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 2121776480442016099, guid: 34cf1e9d82659b14d86bff1e51d9ca42, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 34cf1e9d82659b14d86bff1e51d9ca42, type: 3}

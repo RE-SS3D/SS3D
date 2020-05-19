@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 7240675062361723594}
   - component: {fileID: 7885899405949514044}
   - component: {fileID: 8153169928142850015}
-  - component: {fileID: -2044300076915751048}
+  - component: {fileID: 1480860017537655097}
   m_Layer: 16
   m_Name: soda_red
   m_TagString: Untagged
@@ -162,8 +162,8 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8953399703975470614}
   attachmentPoint: {fileID: 3742603716422439940}
---- !u!65 &-2044300076915751048
-BoxCollider:
+--- !u!64 &1480860017537655097
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -172,6 +172,7 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.12485768, y: 0.22105704, z: 0.12485765}
-  m_Center: {x: -0.000000020489097, y: 0.11052851, z: 0}
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8942028629563659555, guid: c1169b60804c0aa41bb17b72ba87985b, type: 3}
