@@ -65,17 +65,17 @@ namespace SS3D.Content.Items.Functional.Tools
             var tileManager = FindObjectOfType<TileManager>();
 
             var tile = targetTile.Tile;
-
-            if (tile.fixture != null) // If there is a fixture on the place
+            var fixture = tile.GetFixtureAtLayer(FixtureLayers.Furniture);
+            if (fixture != null) // If there is a fixture on the place
             {
-                if (tile.fixture == tableToConstruct) // If the fixture is a table
+                if (fixture == tableToConstruct) // If the fixture is a table
                 {
-                    tile.fixture = null; // Deconstruct
+                    fixture = null; // Deconstruct
                 }
             }
             else // If there is no fixture on place
             {
-                tile.fixture = tableToConstruct; // Construct
+                fixture = tableToConstruct; // Construct
             }
 
             // TODO: Make an easier way of doing this.
@@ -86,7 +86,7 @@ namespace SS3D.Content.Items.Functional.Tools
             tileManager.UpdateTile(targetTile.transform.position, tile);
         }
 
-        bool ShouldDeconstruct => targetTile.Tile.fixture == tableToConstruct;
+        bool ShouldDeconstruct => targetTile.Tile.GetFixtureAtLayer(FixtureLayers.Furniture) == tableToConstruct;
         TileObject targetTile;
     }
 }

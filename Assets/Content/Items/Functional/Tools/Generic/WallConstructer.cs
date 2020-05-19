@@ -49,12 +49,11 @@ namespace SS3D.Content.Items.Functional.Tools
                 return false;
             }
 
-
             //The target tile's.... Tile.
             var tile = targetTile.Tile;
 
-            // Prevent construction if the tile is occupied by a fixture. 
-            if (tile.fixture != null) 
+            // Prevent construction if the tile is occupied by a furniture fixture. 
+            if (tile.GetFixtureAtLayer(FixtureLayers.Furniture) != null) 
             {
                 return false;
             }
@@ -69,15 +68,16 @@ namespace SS3D.Content.Items.Functional.Tools
 
 
             var tile = targetTile.Tile;
+            var furniture = tile.GetFixtureAtLayer(FixtureLayers.Furniture);
 
-            if (tile.fixture != null) // Prevent construction if the tile is occupied by a fixture. 
+            if (furniture != null) // Prevent construction if the tile is occupied by a fixture. 
                 return;
             if (tile.turf?.isWall == true) // Deconstruct
                 tile.turf = floorToConstruct;
             else // Construct
                 tile.turf = wallToConstruct;
 
-            tile.fixture = null;
+            furniture = null;
             // TODO: Make an easier way of doing this.
             tile.subStates = new object[2];
 
