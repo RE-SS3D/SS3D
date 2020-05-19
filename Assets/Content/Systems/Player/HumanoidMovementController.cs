@@ -33,6 +33,9 @@ namespace SS3D.Content.Systems.Player
         [SerializeField] private Transform chestBone;
         [SerializeField] private Transform chestIK;
 
+        [SerializeField] private Transform headBone;
+        [SerializeField] private Transform headIK;
+
         private void Start()
         {
             characterController = GetComponent<CharacterController>();
@@ -84,17 +87,29 @@ namespace SS3D.Content.Systems.Player
 
                 // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
                 characterController.Move(absoluteMovement * Time.deltaTime);
-                chestIK.position = Vector3.Lerp(chestIK.position, transform.position + transform.forward + absoluteMovement, Time.deltaTime * 5);
 
                 // avoid unwanted rotation when you rotate the camera but isn't doing movement input, comment the "if" to see it
                 if (intendedMovement.magnitude > 0)
                 {
+                    Vector3 newChestIKPosition = Vector3.Lerp(chestIK.position, new Vector3(0, chestBone.position.y, 0) + transform.position + absoluteMovement, Time.deltaTime * 22);
+                    Vector3 newHeadIKPosition = Vector3.Lerp(headIK.position, new Vector3(0, headBone.position.y, 0) + transform.position + absoluteMovement, Time.deltaTime * 26);
+
+                    //chestIK.position = newChestIKPosition;
+                    //headIK.position = newHeadIKPosition;
+
+                    Quaternion newChestIKRotation = Quaternion.LerpUnclamped(chestIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 70);
+                    Quaternion newHeadIKRotation = Quaternion.LerpUnclamped(headIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 50);
+
+                    chestIK.rotation = newChestIKRotation;
+                    headIK.rotation = newHeadIKRotation;
+
                     transform.rotation = Quaternion.LerpUnclamped(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * Mathf.Pow(intendedMovement.magnitude, 2));
                 }
             }
             else
             {
-                chestIK.position = Vector3.Lerp(chestIK.position, transform.position + transform.forward, Time.deltaTime * 50);
+                //chestIK.position = Vector3.Lerp(chestIK.position, new Vector3(0, chestBone.position.y, 0) + transform.position + transform.forward, Time.deltaTime * 85);
+                //headIK.position = Vector3.Lerp(headIK.position, new Vector3(0, headBone.position.y, 0) + transform.position + transform.forward, Time.deltaTime * 120);
             }
         }
 
@@ -115,14 +130,25 @@ namespace SS3D.Content.Systems.Player
                 return;
             }
 
-            chestBone.transform.LookAt(new Vector3(chestIK.position.x, chestBone.position.y, chestIK.position.z));
+            Debug.Log(chestBone.localEulerAngles.y);
+            Debug.Log(headBone.localEulerAngles.y);
 
+            if (chestBone.localRotation.y < 55 || chestBone.localRotation.y > -55)
+            {
+                chestBone.RotateAroundLocal(Vector3.up, chestIK.localRotation.y);
+            }
+
+            if (headBone.localRotation.y < 70 || headBone.localRotation.y > -70)
+            {
+                headBone.RotateAroundLocal(Vector3.up, headIK.localRotation.y);
+            }
+           
             // TODO: Might eventually want more animation options. E.g. when in 0-gravity and 'clambering' via a surface
             //characterAnimator.SetBool("Floating", false); // Note: Player can be floating and still move
 
             // animation Speed is a proportion of maximum runSpeed, and we smoothly transitions the speed with the Lerp
-            
-            float newSpeed = Mathf.LerpUnclamped(characterAnimator.GetFloat("Speed"), currentMovement.magnitude / runSpeed, Time.deltaTime * 20);
+
+            float newSpeed = Mathf.LerpUnclamped(characterAnimator.GetFloat("Speed"), currentMovement.magnitude / runSpeed, Time.deltaTime * 30);
             characterAnimator.SetFloat("Speed", newSpeed);
         }
     }
