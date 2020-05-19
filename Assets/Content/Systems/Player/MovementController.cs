@@ -6,7 +6,7 @@ namespace SS3D.Content.Systems.Player
 {
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
-    public class MovementController : NetworkBehaviour
+    public class HumanoidMovementController : NetworkBehaviour
     {
         public const float ACCELERATION = 25f;
 
@@ -22,10 +22,19 @@ namespace SS3D.Content.Systems.Player
 
         // Current movement the player is making.
         private Vector2 currentMovement = new Vector2();
+        private Vector2 intendedMovement = new Vector2();
+        private Vector3 absoluteMovement = new Vector3();
+
         private bool isWalking = false;
         //Required to detect if player is typing and stop accepting movement input
         private ChatRegister chatRegister;
         private float heightOffGround;
+
+        [SerializeField] private Transform chestBone;
+        [SerializeField] private Transform chestIK;
+
+        [SerializeField] private Transform headBone;
+        [SerializeField] private Transform headIK;
 
         private void Start()
         {
@@ -65,15 +74,14 @@ namespace SS3D.Content.Systems.Player
             float y = Input.GetAxisRaw("Vertical");
 
             // Smoothly transition to next intended movement
-            Vector2 intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
+            intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
+            currentMovement = Vector2.LerpUnclamped(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 9.5f, 3) / 5));
 
-           currentMovement = Vector2.LerpUnclamped(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION/9.5f, 3)/5));
-            
             // Move the player
             if (currentMovement.magnitude > 0)
             {
                 // Determine the absolute movement by aligning input to the camera's looking direction
-                Vector3 absoluteMovement =
+                absoluteMovement =
                     currentMovement.y * Vector3.Cross(mainCamera.transform.right, Vector3.up).normalized +
                     currentMovement.x * Vector3.Cross(Vector3.up, mainCamera.transform.forward).normalized;
 
@@ -82,7 +90,26 @@ namespace SS3D.Content.Systems.Player
 
                 // avoid unwanted rotation when you rotate the camera but isn't doing movement input, comment the "if" to see it
                 if (intendedMovement.magnitude > 0)
-                    transform.rotation = Quaternion.LerpUnclamped(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 10);
+                {
+                    Vector3 newChestIKPosition = Vector3.Lerp(chestIK.position, new Vector3(0, chestBone.position.y, 0) + transform.position + absoluteMovement, Time.deltaTime * 22);
+                    Vector3 newHeadIKPosition = Vector3.Lerp(headIK.position, new Vector3(0, headBone.position.y, 0) + transform.position + absoluteMovement, Time.deltaTime * 26);
+
+                    //chestIK.position = newChestIKPosition;
+                    //headIK.position = newHeadIKPosition;
+
+                    Quaternion newChestIKRotation = Quaternion.LerpUnclamped(chestIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 70);
+                    Quaternion newHeadIKRotation = Quaternion.LerpUnclamped(headIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 50);
+
+                    chestIK.rotation = newChestIKRotation;
+                    headIK.rotation = newHeadIKRotation;
+
+                    transform.rotation = Quaternion.LerpUnclamped(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * Mathf.Pow(intendedMovement.magnitude, 2));
+                }
+            }
+            else
+            {
+                //chestIK.position = Vector3.Lerp(chestIK.position, new Vector3(0, chestBone.position.y, 0) + transform.position + transform.forward, Time.deltaTime * 85);
+                //headIK.position = Vector3.Lerp(headIK.position, new Vector3(0, headBone.position.y, 0) + transform.position + transform.forward, Time.deltaTime * 120);
             }
         }
 
@@ -103,12 +130,27 @@ namespace SS3D.Content.Systems.Player
                 return;
             }
 
+            Debug.Log(chestBone.localEulerAngles.y);
+            Debug.Log(headBone.localEulerAngles.y);
+
+            if (chestBone.localRotation.y < 55 || chestBone.localRotation.y > -55)
+            {
+                chestBone.RotateAroundLocal(Vector3.up, chestIK.localRotation.y);
+            }
+
+            if (headBone.localRotation.y < 70 || headBone.localRotation.y > -70)
+            {
+                headBone.RotateAroundLocal(Vector3.up, headIK.localRotation.y);
+            }
+           
             // TODO: Might eventually want more animation options. E.g. when in 0-gravity and 'clambering' via a surface
             //characterAnimator.SetBool("Floating", false); // Note: Player can be floating and still move
 
             // animation Speed is a proportion of maximum runSpeed, and we smoothly transitions the speed with the Lerp
-            float newSpeed = Mathf.LerpUnclamped(characterAnimator.GetFloat("Speed"), currentMovement.magnitude / runSpeed, Time.deltaTime * 20);
+
+            float newSpeed = Mathf.LerpUnclamped(characterAnimator.GetFloat("Speed"), currentMovement.magnitude / runSpeed, Time.deltaTime * 30);
             characterAnimator.SetFloat("Speed", newSpeed);
         }
     }
+    
 }
