@@ -174,19 +174,8 @@ namespace SS3D.Engine.Tiles
             }
 
             int i = 0;
-            var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
-            //if (tile.fixtures == null)
-            //{
-            //    Debug.LogWarning("Tile.fixtures is found null... creating new one");
-            //    tile.fixtures = new Fixture[layers.Length];
-            //}
-            //if (tile.fixtures.Length != 6)
-            //{
-            //    Debug.LogWarning("Fixtures array is of wrong size, creating one");
-            //    tile.fixtures = new Fixture[layers.Length];
-            //}
-            if (tile == null)
-                Debug.LogError("No tile found huh...");
+            var layers = TileDefinition.GetFixtureLayerNames();
+
             if (tile.fixtures != null)
             {
                 foreach (var tileFixture in tile.fixtures)
@@ -194,13 +183,18 @@ namespace SS3D.Engine.Tiles
                     if (tileFixture != null)
                     {
 
-                        string layerName = Enum.GetName(typeof(FixtureLayers), layers[i]);
+                        string layerName = layers[i].ToString();
                         fixtures[i] = transform.Find("fixture_" + layerName.ToLower() + "_" + tileFixture.id)?.gameObject;
-                        // GameObject oldFurniture = fixtures[i] = transform.Find("fixture_" + tile.fixtures[i].id)?.gameObject;
 
                         if (fixtures[i] != null)
                         {
                             fixtureConnectors[i] = fixtures[i].GetComponent<AdjacencyConnector>();
+                        }
+                        else if (fixtures[i] = transform.Find("fixture_" + tile.fixtures[i].id)?.gameObject)
+                        {
+                            fixtureConnectors[i] = fixtures[i].GetComponent<AdjacencyConnector>();
+                            if (shouldWarn)
+                                Debug.LogWarning("Old furniture found, updating:" + tile.fixtures[i].name);
                         }
                         else
                         {
@@ -224,13 +218,13 @@ namespace SS3D.Engine.Tiles
                 // fixtures = null;
                 // fixtureConnectors = null;
                 
-                fixtureConnectors = new AdjacencyConnector[Enum.GetValues(typeof(FixtureLayers)).Length];
+                fixtureConnectors = new AdjacencyConnector[TileDefinition.GetFixtureLayerSize()];
             }
 
             if (fixtures == null)
             {
                 Debug.LogWarning("Repairing fixtures");
-                fixtures = new GameObject[Enum.GetValues(typeof(FixtureLayers)).Length];
+                fixtures = new GameObject[TileDefinition.GetFixtureLayerSize()];
             }
 
             UpdateChildrenFromSubData(tile);
@@ -243,8 +237,6 @@ namespace SS3D.Engine.Tiles
 
                 if (child != turf && !fixtures.Contains(child))
                 {
-                    if (transform.childCount > 3)
-                        Debug.LogWarning("TileObject: " + this.name + " has more than 3 children");
                     if (shouldWarn)
                         Debug.LogWarning("Unknown object found in tile " + name + ": " + child.name + ", deleting.");
                     EditorAndRuntime.Destroy(child);
@@ -303,58 +295,33 @@ namespace SS3D.Engine.Tiles
             }
         }
 
-        // TODO loopify
         private void UpdateChildrenFromSubData(TileDefinition newTile)
         {
             if (newTile.subStates != null && newTile.subStates.Length >= 1 && newTile.subStates[0] != null)
                 turf?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[0]);
 
-            if (newTile.subStates != null && newTile.subStates.Length >= 2 && newTile.subStates[1] != null)
-                fixtures[0]?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[1]);
-
-            if (newTile.subStates != null && newTile.subStates.Length >= 3 && newTile.subStates[2] != null)
-                fixtures[1]?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[2]);
-
-            if (newTile.subStates != null && newTile.subStates.Length >= 4 && newTile.subStates[3] != null)
-                fixtures[2]?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[3]);
-
-            if (newTile.subStates != null && newTile.subStates.Length >= 5 && newTile.subStates[4] != null)
-                fixtures[3]?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[4]);
-
-            if (newTile.subStates != null && newTile.subStates.Length >= 6 && newTile.subStates[5] != null)
-                fixtures[4]?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[5]);
-
-            if (newTile.subStates != null && newTile.subStates.Length >= 7 && newTile.subStates[6] != null)
-                fixtures[5]?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[6]);
+            int i = 0;
+            foreach (GameObject fixture in fixtures)
+            {
+                if (newTile.subStates != null && newTile.subStates.Length >= i+2 && newTile.subStates[i + 1] != null)
+                {
+                    fixtures[i]?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[i + 1]);
+                }
+                i++;
+            }
         }
 
-        // TODO loopify
         private void UpdateSubDataFromChildren()
         {
-            if (turf == null)
+            // Turf + all fixtures layers
+            tile.subStates = new object[1 + TileDefinition.GetFixtureLayerSize()];
+            tile.subStates[0] = turf?.GetComponent<TileStateCommunicator>()?.GetTileState();
+
+            int i = 1;
+            foreach (GameObject fixture in fixtures)
             {
-                Debug.LogWarning("UpdateSubDataFromChildren fixtues is null");
-                tile.subStates = new object[] {
-                turf?.GetComponent<TileStateCommunicator>()?.GetTileState(),
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-            };
-            }
-            else
-            {
-                tile.subStates = new object[] {
-                turf?.GetComponent<TileStateCommunicator>()?.GetTileState(),
-                fixtures?[0]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
-                fixtures?[1]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
-                fixtures?[2]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
-                fixtures?[3]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
-                fixtures?[4]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
-                fixtures?[5]?.GetComponent<TileStateCommunicator>()?.GetTileState()
-            };
+                tile.subStates[i] = fixture?.GetComponent<TileStateCommunicator>()?.GetTileState();
+                i++;
             }
         }
 

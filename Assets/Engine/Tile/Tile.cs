@@ -96,6 +96,16 @@ namespace SS3D.Engine.Tiles {
 
         public static TileDefinition NullObject = new TileDefinition { turf = null, fixtures = null, subStates = null };
 
+        public static int GetFixtureLayerSize()
+        {
+            return Enum.GetValues(typeof(FixtureLayers)).Length;
+        }
+
+        public static FixtureLayers[] GetFixtureLayerNames()
+        {
+            return (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
+        }
+
         public static bool operator ==(TileDefinition a, TileDefinition b)
         {
             return a.turf == b.turf && a.fixtures.Equals(b.fixtures) && a.subStates.Equals(b.subStates);
@@ -126,12 +136,7 @@ namespace SS3D.Engine.Tiles {
 
         public Fixture GetFixtureAtLayer(FixtureLayers layer)
         {
-            return fixtures[GetFixtureIndex(layer)];
-        }
-
-        public int GetFixtureIndex(FixtureLayers layers)
-        {
-            return (int)layers;
+            return fixtures[(int)layer];
         }
     }
 }
