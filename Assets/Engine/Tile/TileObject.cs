@@ -26,7 +26,6 @@ namespace SS3D.Engine.Tiles
          */
         public void UpdateSingleAdjacency(Direction direction, TileDefinition tile, FixtureLayers layer)
         {
-            // TODO create static method to get index
             int index = (int)layer;
             turfConnector?.UpdateSingle(direction, tile);
             fixtureConnectors[index]?.UpdateSingle(direction, tile);

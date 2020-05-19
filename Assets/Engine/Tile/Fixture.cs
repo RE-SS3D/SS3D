@@ -11,7 +11,6 @@ namespace SS3D.Engine.Tiles {
         Pipes_1,
         Pipes_2,
         Pipes_3,
-        // NumberOfLayers, // Small trick to allocate the array to the correct size
     }
 
     /**
