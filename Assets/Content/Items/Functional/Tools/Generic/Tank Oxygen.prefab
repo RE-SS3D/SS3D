@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 522285173667959925}
   - component: {fileID: 5961632564149227706}
   m_Layer: 16
-  m_Name: Tank_Oxygen
+  m_Name: Tank Oxygen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89,7 +89,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6908174893348925811}
-  m_Mesh: {fileID: -6166224077057157758, guid: 1fad161604ea69445b69ac49b84c196a, type: 3}
+  m_Mesh: {fileID: -6166224077057157758, guid: c087e4cfb6e27b44f87d637f6ff4a46c, type: 3}
 --- !u!23 &5179722837996832175
 MeshRenderer:
   m_ObjectHideFlags: 0
