@@ -12,7 +12,7 @@ namespace SS3D.Engine.Tiles.Connections
      * 'close' the glass window.
      */
     [RequireComponent(typeof(MeshFilter))]
-    public class TieredIAdjacencyConnector : MonoBehaviour, AdjacencyConnector
+    public class TieredAdjacencyConnector : MonoBehaviour, AdjacencyConnector
     {
         // Id that adjacent objects must be to count. If null, any id is accepted
         public string id;
