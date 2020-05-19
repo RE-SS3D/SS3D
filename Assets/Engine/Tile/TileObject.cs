@@ -5,6 +5,7 @@ using UnityEditor;
 using SS3D.Engine.Tiles.Connections;
 using SS3D.Engine.Tiles.State;
 using System;
+using System.Linq;
 
 namespace SS3D.Engine.Tiles
 {
@@ -174,61 +175,77 @@ namespace SS3D.Engine.Tiles
 
             int i = 0;
             var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
-
-
-            if (tile.fixtures == null)
+            //if (tile.fixtures == null)
+            //{
+            //    Debug.LogWarning("Tile.fixtures is found null... creating new one");
+            //    tile.fixtures = new Fixture[layers.Length];
+            //}
+            //if (tile.fixtures.Length != 6)
+            //{
+            //    Debug.LogWarning("Fixtures array is of wrong size, creating one");
+            //    tile.fixtures = new Fixture[layers.Length];
+            //}
+            if (tile == null)
+                Debug.LogError("No tile found huh...");
+            if (tile.fixtures != null)
             {
-                Debug.LogWarning("Tile.fixtures is found null... creating new one");
-                tile.fixtures = new Fixture[layers.Length];
-            }
-            if (tile.fixtures.Length != 6)
-            {
-                Debug.LogWarning("Fixtures array is of wrong size, creating one");
-                tile.fixtures = new Fixture[layers.Length];
-            }
-            foreach (var fixture in fixtures)
-            {
-                if (tile.fixtures[i] != null)
+                foreach (var tileFixture in tile.fixtures)
                 {
-
-                    string layerName = Enum.GetName(typeof(FixtureLayers), layers[i]);
-                    fixtures[i] = transform.Find("fixture_" +  layerName + "_" + tile.fixtures[i].id)?.gameObject;
-
-                    if (fixture != null)
+                    if (tileFixture != null)
                     {
-                        fixtureConnectors[i] = fixture.GetComponent<AdjacencyConnector>();
-                    }
-                    else if (fixtures[i] = transform.Find("fixture_" + tile.fixtures[i].id)?.gameObject)
-                    {
-                        Debug.LogWarning("Fixture was found without new layer system");
-                        fixtureConnectors[i] = fixture.GetComponent<AdjacencyConnector>();
+
+                        string layerName = Enum.GetName(typeof(FixtureLayers), layers[i]);
+                        fixtures[i] = transform.Find("fixture_" + layerName.ToLower() + "_" + tileFixture.id)?.gameObject;
+                        // GameObject oldFurniture = fixtures[i] = transform.Find("fixture_" + tile.fixtures[i].id)?.gameObject;
+
+                        if (fixtures[i] != null)
+                        {
+                            fixtureConnectors[i] = fixtures[i].GetComponent<AdjacencyConnector>();
+                        }
+                        else
+                        {
+                            // Update our tile object to make up for the fact that the object doesn't exist in the world.
+                            // A user would have to fuck around in the editor to get to this point.
+                            if (shouldWarn)
+                                Debug.LogWarning("Fixture in Tile but not in TileObject. Creating: " + tile.fixtures[i].name);
+                            CreateFixture(tile.fixtures[i], layers[i]);
+                        }
                     }
                     else
                     {
-                        // Update our tile object to make up for the fact that the object doesn't exist in the world.
-                        // A user would have to fuck around in the editor to get to this point.
-                        if (shouldWarn)
-                            Debug.LogWarning("Tile's fixture was not created?");
-                        CreateFixture(tile.fixtures[i], layers[i]);
+                        fixtures[i] = null;
+                        fixtureConnectors[i] = null;
                     }
+                    i++;
                 }
-                else
-                {
-                    fixtures[i] = null;
-                    fixtureConnectors[i] = null;
-                }
-                i++;
+            }
+            else
+            {
+                // fixtures = null;
+                // fixtureConnectors = null;
+                
+                fixtureConnectors = new AdjacencyConnector[Enum.GetValues(typeof(FixtureLayers)).Length];
+            }
+
+            if (fixtures == null)
+            {
+                Debug.LogWarning("Repairing fixtures");
+                fixtures = new GameObject[Enum.GetValues(typeof(FixtureLayers)).Length];
             }
 
             UpdateChildrenFromSubData(tile);
             UpdateSubDataFromChildren();
 
             // As extra fuckery ensure no NEW objects have been added either
-            for (int j = transform.childCount - 1; j >= 0; j--) {
+            for (int j = transform.childCount - 1; j >= 0; j--)
+            {
                 var child = transform.GetChild(j).gameObject;
 
-                if (child != turf && child != fixtures[j]) {
-                    if(shouldWarn)
+                if (child != turf && !fixtures.Contains(child))
+                {
+                    if (transform.childCount > 3)
+                        Debug.LogWarning("TileObject: " + this.name + " has more than 3 children");
+                    if (shouldWarn)
                         Debug.LogWarning("Unknown object found in tile " + name + ": " + child.name + ", deleting.");
                     EditorAndRuntime.Destroy(child);
                 }
@@ -251,6 +268,10 @@ namespace SS3D.Engine.Tiles
                 EditorAndRuntime.Destroy(fixtures[index]);
 
             if (fixtureDefinition != null) {
+                if (fixtures[index] != null)
+                {
+                    Debug.LogWarning("Trying to overwrite fixture");
+                }
                 fixtures[index] = EditorAndRuntime.InstantiatePrefab(fixtureDefinition.prefab, transform);
                 fixtureConnectors[index] = fixtures[index].GetComponent<AdjacencyConnector>();
             }
@@ -269,9 +290,15 @@ namespace SS3D.Engine.Tiles
             var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
             int i = 0;
 
+            if (fixturesDefinitation == null)
+                Debug.LogError("fixturesDefinition is empty");
+
             foreach (Fixture fixture in fixturesDefinitation)
             {
-                CreateFixture(fixture, layers[i]);
+                if (fixture != null)
+                {
+                    CreateFixture(fixture, layers[i]);
+                }
                 i++;
             }
         }
@@ -304,15 +331,31 @@ namespace SS3D.Engine.Tiles
         // TODO loopify
         private void UpdateSubDataFromChildren()
         {
-            tile.subStates = new object[] {
+            if (turf == null)
+            {
+                Debug.LogWarning("UpdateSubDataFromChildren fixtues is null");
+                tile.subStates = new object[] {
                 turf?.GetComponent<TileStateCommunicator>()?.GetTileState(),
-                fixtures[0]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
-                fixtures[1]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
-                fixtures[2]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
-                fixtures[3]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
-                fixtures[4]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
-                fixtures[5]?.GetComponent<TileStateCommunicator>()?.GetTileState()
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
             };
+            }
+            else
+            {
+                tile.subStates = new object[] {
+                turf?.GetComponent<TileStateCommunicator>()?.GetTileState(),
+                fixtures?[0]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
+                fixtures?[1]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
+                fixtures?[2]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
+                fixtures?[3]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
+                fixtures?[4]?.GetComponent<TileStateCommunicator>()?.GetTileState(),
+                fixtures?[5]?.GetComponent<TileStateCommunicator>()?.GetTileState()
+            };
+            }
         }
 
         [SerializeField]

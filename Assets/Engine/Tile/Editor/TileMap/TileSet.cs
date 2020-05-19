@@ -29,6 +29,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
          */
         public void Update(TileManager tileManager)
         {
+            if (tileManager == null)
+                Debug.LogError("TileManager not existing");
+
             if (savedSettings == null) {
                 savedSettings = TileMapEditorSettingsAsset.LoadFromAsset();
                 serializedSettings = new SerializedObject(savedSettings);
@@ -77,7 +80,12 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         public void Add()
         {
-            savedSettings.tiles.Add(new TileDefinition());
+            TileDefinition def = new TileDefinition
+            {
+                fixtures = new Fixture[System.Enum.GetValues(typeof(FixtureLayers)).Length]
+            };
+
+            savedSettings.tiles.Add(def);
             Objects.Add(null);
             Editors.Add(null);
         }
