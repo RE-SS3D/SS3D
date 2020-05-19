@@ -45,7 +45,7 @@ namespace SS3D.Content.Systems.Player
             heightOffGround = transform.position.y;
         }
 
-        void Update()
+        void FixedUpdate()
         {
             ForceHeightLevel();
 
@@ -78,7 +78,7 @@ namespace SS3D.Content.Systems.Player
             currentMovement = Vector2.LerpUnclamped(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 9.5f, 3) / 5));
 
             // Move the player
-            if (currentMovement.magnitude > 0)
+            if (currentMovement != Vector2.zero)
             {
                 // Determine the absolute movement by aligning input to the camera's looking direction
                 absoluteMovement =
@@ -89,16 +89,16 @@ namespace SS3D.Content.Systems.Player
                 characterController.Move(absoluteMovement * Time.deltaTime);
 
                // Rotate the chest and head IKs objects
-                Quaternion newChestIKRotation = Quaternion.LerpUnclamped(chestIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 70);
-                Quaternion newHeadIKRotation = Quaternion.LerpUnclamped(headIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 50);
+                Quaternion newChestIKRotation = Quaternion.Lerp(chestIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 70);
+                Quaternion newHeadIKRotation = Quaternion.Lerp(headIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 50);
 
                 chestIK.rotation = newChestIKRotation;  
                 headIK.rotation = newHeadIKRotation;
 
                 // avoid unwanted rotation when you rotate the camera but isn't doing movement input, comment the "if" to see it
-                if (intendedMovement.magnitude > 0)
+                if (intendedMovement != Vector2.zero)
                 {
-                    transform.rotation = Quaternion.LerpUnclamped(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * Mathf.Pow(intendedMovement.magnitude, 2));
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * Mathf.Pow(intendedMovement.magnitude, 2));
                 }
             }
         }
