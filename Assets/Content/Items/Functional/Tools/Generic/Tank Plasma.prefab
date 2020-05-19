@@ -41,7 +41,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: -7708853041333698002, guid: 1fad161604ea69445b69ac49b84c196a,
+      objectReference: {fileID: -7708853041333698002, guid: c087e4cfb6e27b44f87d637f6ff4a46c,
         type: 3}
     - target: {fileID: 4094371859740095754, guid: bb47e4c617abae44fa1f33321f9616ad,
         type: 3}
@@ -91,7 +91,7 @@ PrefabInstance:
     - target: {fileID: 6908174893348925811, guid: bb47e4c617abae44fa1f33321f9616ad,
         type: 3}
       propertyPath: m_Name
-      value: Tank_Plasma
+      value: Tank Plasma
       objectReference: {fileID: 0}
     - target: {fileID: 7603656916732167008, guid: bb47e4c617abae44fa1f33321f9616ad,
         type: 3}
