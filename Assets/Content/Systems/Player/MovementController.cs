@@ -66,7 +66,8 @@ namespace SS3D.Content.Systems.Player
 
             // Smoothly transition to next intended movement
             Vector2 intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
-            currentMovement = Vector2.LerpUnclamped(currentMovement, intendedMovement, Time.deltaTime * ACCELERATION);
+
+           currentMovement = Vector2.LerpUnclamped(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION/9.5f, 3)/5));
             
             // Move the player
             if (currentMovement.magnitude > 0)
@@ -106,7 +107,7 @@ namespace SS3D.Content.Systems.Player
             //characterAnimator.SetBool("Floating", false); // Note: Player can be floating and still move
 
             // animation Speed is a proportion of maximum runSpeed, and we smoothly transitions the speed with the Lerp
-            float newSpeed = Mathf.LerpUnclamped(characterAnimator.GetFloat("Speed"), currentMovement.magnitude / runSpeed, Time.deltaTime * 10);
+            float newSpeed = Mathf.LerpUnclamped(characterAnimator.GetFloat("Speed"), currentMovement.magnitude / runSpeed, Time.deltaTime * 20);
             characterAnimator.SetFloat("Speed", newSpeed);
         }
     }
