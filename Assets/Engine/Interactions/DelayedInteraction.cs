@@ -69,7 +69,7 @@ namespace SS3D.Engine.Interactions
                 // Create loading bar in scene
                 GameObject loadingBar = Instantiate(LoadingBarPrefab, transform);
                 // TODO: Set position above object
-                loadingBar.transform.localPosition = Vector3.zero;
+                loadingBar.transform.localPosition = Vector3.up;
                 LoadingBar bar = loadingBar.GetComponent<LoadingBar>();
                 Assert.IsNotNull(bar, "Loading bar prefab has no LoadingBar component");
                 // Set loading bar delay

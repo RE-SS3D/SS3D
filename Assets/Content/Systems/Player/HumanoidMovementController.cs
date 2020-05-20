@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using Mirror;
 using SS3D.Engine.Chat;
+using System.Numerics;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
+using Quaternion = UnityEngine.Quaternion;
 
 namespace SS3D.Content.Systems.Player
 {
@@ -75,30 +79,49 @@ namespace SS3D.Content.Systems.Player
 
             // Smoothly transition to next intended movement
             intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
-            currentMovement = Vector2.LerpUnclamped(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 9.5f, 3) / 5));
+            currentMovement = Vector2.Lerp(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 9.5f, 3) / 6));
+
+            // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
+            characterController.Move(absoluteMovement * Time.deltaTime);
 
             // Move the player
             if (currentMovement != Vector2.zero)
             {
                 // Determine the absolute movement by aligning input to the camera's looking direction
-                absoluteMovement =
-                    currentMovement.y * Vector3.Cross(mainCamera.transform.right, Vector3.up).normalized +
-                    currentMovement.x * Vector3.Cross(Vector3.up, mainCamera.transform.forward).normalized;
+                Vector3 absoluteMovement =
+                currentMovement.y * Vector3.Cross(mainCamera.transform.right, Vector3.up).normalized +
+                currentMovement.x * Vector3.Cross(Vector3.up, mainCamera.transform.forward).normalized;
 
-                // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
-                characterController.Move(absoluteMovement * Time.deltaTime);
-
-               // Rotate the chest and head IKs objects
-                Quaternion newChestIKRotation = Quaternion.Lerp(chestIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 70);
-                Quaternion newHeadIKRotation = Quaternion.Lerp(headIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 50);
-
-                chestIK.rotation = newChestIKRotation;  
-                headIK.rotation = newHeadIKRotation;
-
-                // avoid unwanted rotation when you rotate the camera but isn't doing movement input, comment the "if" to see it
                 if (intendedMovement != Vector2.zero)
                 {
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * Mathf.Pow(intendedMovement.magnitude, 2));
+                   
+                    //absoluteMovement = Vector3.Lerp(absoluteMovement, newAbsoluteMovement, Time.deltaTime * 2);
+                    // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
+                    characterController.Move(absoluteMovement * Time.deltaTime);
+
+                    // avoid unwanted rotation when you rotate the camera but isn't doing movement input, comment the "if" to see it
+
+                    // Rotate the chest and head IKs objects
+                    Quaternion newChestIKRotation = Quaternion.Lerp(chestIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * (isWalking ? 3 : 10));
+                    Quaternion newHeadIKRotation = Quaternion.Lerp(headIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * (isWalking ? 15 : 5));
+
+                    //float rotationDiference = Quaternion.
+                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * (isWalking ? 5 : 7));
+                    //Mathf.Pow(intendedMovement.magnitude, 2)
+
+                    chestIK.rotation = newChestIKRotation;
+                    headIK.rotation = newHeadIKRotation;
+                }
+                if (intendedMovement == Vector2.zero)
+                {
+                    Quaternion newChestIKRotation = Quaternion.Lerp(chestIK.rotation, transform.rotation, Time.deltaTime * 3);
+                    Quaternion newHeadIKRotation = Quaternion.Lerp(headIK.rotation, transform.rotation, Time.deltaTime * 8);
+
+                    absoluteMovement = Vector3.Lerp(absoluteMovement, Vector3.zero, Time.deltaTime * 5);
+                    characterController.Move(absoluteMovement * Time.deltaTime);
+
+                    chestIK.rotation = newChestIKRotation;
+                    headIK.rotation = newHeadIKRotation;
                 }
             }
         }
@@ -121,10 +144,10 @@ namespace SS3D.Content.Systems.Player
             }
 
             // Limits the rotation of the bones, this is here because animations work on Update()
-            if (chestBone.localRotation.y < 55 || chestBone.localRotation.y > -55)
+            if (chestBone.localRotation.y < 70 || chestBone.localRotation.y > -70)
                 chestBone.RotateAroundLocal(Vector3.up, chestIK.localRotation.y);
         
-            if (headBone.localRotation.y < 70 || headBone.localRotation.y > -70)
+            if (headBone.localRotation.y < 88 || headBone.localRotation.y > -88)
                 headBone.RotateAroundLocal(Vector3.up, headIK.localRotation.y);
            
             // TODO: Might eventually want more animation options. E.g. when in 0-gravity and 'clambering' via a surface
