@@ -9,6 +9,8 @@ namespace SS3D.Engine.Tiles.Connections
      */
     public interface AdjacencyConnector
     {
+        FixtureLayers Layer { get; set; }
+
         /**
          * When a single adjacent turf is updated
          */
@@ -19,7 +21,5 @@ namespace SS3D.Engine.Tiles.Connections
          * Turfs are ordered by direction, i.e. North, NorthEast, East ... NorthWest
          */
         void UpdateAll(TileDefinition[] tiles);
-
-        void SetLayer(FixtureLayers layer);
     }
 }

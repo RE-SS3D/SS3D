@@ -6,6 +6,8 @@ using SS3D.Engine.Tiles.Connections;
 using SS3D.Engine.Tiles.State;
 using System;
 using System.Linq;
+using System.IO;
+using System.Collections.Generic;
 
 namespace SS3D.Engine.Tiles
 {
@@ -47,8 +49,12 @@ namespace SS3D.Engine.Tiles
         public void UpdateAllAdjacencies(TileDefinition[] tiles, FixtureLayers layer)
         {
             int index = (int)layer;
-            fixtureConnectors[index]?.SetLayer(layer);
-            fixtureConnectors[index]?.UpdateAll(tiles);
+            AdjacencyConnector ac = fixtureConnectors[index];
+            if (ac != null)
+            {
+                ac.Layer = layer;
+                ac?.UpdateAll(tiles);
+            }
         }
 
         public void UpdateAllAdjacencies(TileDefinition[] tiles)
@@ -231,9 +237,18 @@ namespace SS3D.Engine.Tiles
                 if (child != turf && !fixtures.Contains(child))
                 {
                     if (shouldWarn)
+                    {
+                        MigrateTileDefinition();
                         Debug.LogWarning("Unknown object found in tile " + name + ": " + child.name + ", deleting.");
+                    }
                     EditorAndRuntime.Destroy(child);
                 }
+            }
+
+            if (tile.fixtures?.Length != TileDefinition.GetFixtureLayerSize())
+            {
+                tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
+                Debug.Log("Changed fixture size");
             }
         }
 
@@ -321,13 +336,57 @@ namespace SS3D.Engine.Tiles
             }
         }
 
+        private bool MigrateTileDefinition()
+        {
+            // set array to proper size
+            tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
+            Fixture oldFurniture = null;
+
+            // Determine all assets
+            List<Fixture> fixtureList = new List<Fixture>();
+            string[] aMaterialFiles = Directory.GetFiles(Application.dataPath, "*.asset", SearchOption.AllDirectories);
+            foreach (string matFile in aMaterialFiles)
+            {
+                string assetPath = "Assets" + matFile.Replace(Application.dataPath, "").Replace('\\', '/');
+                Fixture sourceFixture = (Fixture)AssetDatabase.LoadAssetAtPath(assetPath, typeof(Fixture));
+                if (sourceFixture != null)
+                    fixtureList.Add(sourceFixture);
+            }
+
+            // find old fixture
+            foreach (Transform child in transform)
+            {
+                if (child.gameObject.name.Contains("fixture"))
+                {
+                    fixtures[0] = child.gameObject;
+                    string assetName = fixtures[0].name.Replace("fixture_", "");
+                    foreach (Fixture fix in fixtureList)
+                    {
+                        if (fix.id.Equals(assetName))
+                            oldFurniture = fix;
+                    }
+                    // Rename fixture to new name
+
+                }
+            }
+
+            // update reference
+            if (oldFurniture != null)
+            {
+                tile.fixtures[0] = oldFurniture;
+                Debug.Log("Migrated fixture: " + oldFurniture.name);
+                return true;
+            }
+            return false;
+        }
+
         [SerializeField]
         private TileDefinition tile = new TileDefinition();
 
         private GameObject turf = null;
         private AdjacencyConnector turfConnector = null; // may be null
 
-        private GameObject[] fixtures = new GameObject[Enum.GetValues(typeof(FixtureLayers)).Length];
-        private AdjacencyConnector[] fixtureConnectors = new AdjacencyConnector[Enum.GetValues(typeof(FixtureLayers)).Length];
+        private GameObject[] fixtures = new GameObject[TileDefinition.GetFixtureLayerSize()];
+        private AdjacencyConnector[] fixtureConnectors = new AdjacencyConnector[TileDefinition.GetFixtureLayerSize()];
     }
 }

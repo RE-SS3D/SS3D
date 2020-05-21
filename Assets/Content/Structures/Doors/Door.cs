@@ -163,8 +163,15 @@ namespace SS3D.Content.Structures.Fixtures
             return wallCap;
         }
 
+        public void SetLayer(FixtureLayers layer)
+        {
+            return;
+        }
+
         // WallCap gameobjects, North, East, South, West. Null if not present.
         private GameObject[] wallCaps = new GameObject[4];
         private AdjacencyBitmap adjacents = new AdjacencyBitmap();
+
+        public FixtureLayers Layer { get; set; }
     }
 }

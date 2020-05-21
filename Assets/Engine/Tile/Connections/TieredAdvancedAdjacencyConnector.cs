@@ -18,7 +18,7 @@ namespace SS3D.Engine.Tiles.Connections
         // Id to match against
         public string id;
         public string genericType;
-        FixtureLayers layer;
+        public FixtureLayers Layer { get; set; }
 
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
@@ -94,15 +94,15 @@ namespace SS3D.Engine.Tiles.Connections
          */
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
-            int index = (int)layer;
+            int index = (int)Layer;
 
             bool isGeneric = (tile.turf && (tile.turf.genericType == genericType || genericType == null));
-            // if (tile.fixtures.GetType().IsArray)
-                // isGeneric = isGeneric || (tile.fixtures?[index] && (tile.fixtures?[index].genericType == genericType || genericType == null));
+            if (tile.fixtures != null)
+                isGeneric = isGeneric || (tile.fixtures[index] && (tile.fixtures[index].genericType == genericType || genericType == null));
 
             bool isSpecific = (tile.turf && (tile.turf.id == id || id == null));
-            // if (tile.fixtures != null)
-                // isSpecific = isSpecific || (tile.fixtures?[index] && (tile.fixtures?[index].id == id || id == null));
+            if (tile.fixtures != null)
+                isSpecific = isSpecific || (tile.fixtures[index] && (tile.fixtures[index].id == id || id == null));
 
             bool changed = generalAdjacents.UpdateDirection(direction, isGeneric, true);
             changed |= specificAdjacents.UpdateDirection(direction, isSpecific, true);
@@ -211,11 +211,6 @@ namespace SS3D.Engine.Tiles.Connections
 
             filter.mesh = mesh;
             transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, rotation, transform.localRotation.eulerAngles.z);
-        }
-
-        public void SetLayer(FixtureLayers layer)
-        {
-            this.layer = layer;
         }
 
         // A bitfield of connections. Total of 8 connections -> 8 bits, ascending order with direction.
