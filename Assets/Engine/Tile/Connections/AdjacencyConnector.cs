@@ -19,5 +19,7 @@ namespace SS3D.Engine.Tiles.Connections
          * Turfs are ordered by direction, i.e. North, NorthEast, East ... NorthWest
          */
         void UpdateAll(TileDefinition[] tiles);
+
+        void SetLayer(FixtureLayers layer);
     }
 }

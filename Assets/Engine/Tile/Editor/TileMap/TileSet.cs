@@ -29,9 +29,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
          */
         public void Update(TileManager tileManager)
         {
-            if (tileManager == null)
-                Debug.LogError("TileManager not existing");
-
             if (savedSettings == null) {
                 savedSettings = TileMapEditorSettingsAsset.LoadFromAsset();
                 serializedSettings = new SerializedObject(savedSettings);
@@ -59,14 +56,23 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
             // Now ensure each object is correct
             for (int i = 0; i < Definitions.Count; ++i) {
-                if (Objects[i] == null && !Definitions[i].IsEmpty()) {
+
+                // Clone the Fixture array to avoid having the same reference in the editor and tileobject
+                Fixture[] f = (Fixture[])Definitions[i].fixtures.Clone();
+                TileDefinition def = Definitions[i];
+                def.fixtures = f;
+                Definitions[i] = def;
+
+                if (Objects[i] == null && !Definitions[i].IsEmpty())
+                {
                     // Create an element in this place to match the definition
                     Objects[i] = CreateGhostTile(tileManager, Definitions[i], "(" + i + ")");
                     HideTile(i);
 
                     Editors[i] = (TileObjectEditor)UnityEditor.Editor.CreateEditor(Objects[i]);
                 }
-                else if (Objects[i] != null && Definitions[i].IsEmpty()) {
+                else if (Objects[i] != null && Definitions[i].IsEmpty())
+                {
                     // Remove the object as the definition no longer exists
                     Object.DestroyImmediate(Objects[i]);
                     Object.DestroyImmediate(Editors[i]);
@@ -74,7 +80,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                     Editors[i] = null;
                 }
                 else if (Objects[i] != null && !Objects[i].Tile.Equals(Definitions[i])) // Update the object
+                {
                     Objects[i].Tile = Definitions[i];
+                }
             }
         }
 

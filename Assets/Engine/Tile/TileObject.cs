@@ -27,12 +27,13 @@ namespace SS3D.Engine.Tiles
         public void UpdateSingleAdjacency(Direction direction, TileDefinition tile, FixtureLayers layer)
         {
             int index = (int)layer;
-            turfConnector?.UpdateSingle(direction, tile);
             fixtureConnectors[index]?.UpdateSingle(direction, tile);
         }
 
         public void UpdateSingleAdjacency(Direction direction, TileDefinition tile)
         {
+            turfConnector?.UpdateSingle(direction, tile);
+
             var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
             foreach (FixtureLayers layer in layers)
             {
@@ -46,12 +47,15 @@ namespace SS3D.Engine.Tiles
         public void UpdateAllAdjacencies(TileDefinition[] tiles, FixtureLayers layer)
         {
             int index = (int)layer;
-            turfConnector?.UpdateAll(tiles);
+            fixtureConnectors[index]?.SetLayer(layer);
             fixtureConnectors[index]?.UpdateAll(tiles);
         }
 
         public void UpdateAllAdjacencies(TileDefinition[] tiles)
         {
+            // Update turf first
+            turfConnector?.UpdateAll(tiles);
+
             // Update every layer
             var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
             foreach (FixtureLayers layer in layers)
@@ -126,6 +130,8 @@ namespace SS3D.Engine.Tiles
          */
         private void SetContents(TileDefinition newTile)
         {
+
+
             if (newTile.turf != tile.turf)
                 CreateTurf(newTile.turf);
             if (newTile.fixtures != tile.fixtures)
@@ -189,12 +195,6 @@ namespace SS3D.Engine.Tiles
                         {
                             fixtureConnectors[i] = fixtures[i].GetComponent<AdjacencyConnector>();
                         }
-                        else if (fixtures[i] = transform.Find("fixture_" + tile.fixtures[i].id)?.gameObject)
-                        {
-                            fixtureConnectors[i] = fixtures[i].GetComponent<AdjacencyConnector>();
-                            if (shouldWarn)
-                                Debug.LogWarning("Old furniture found, updating:" + tile.fixtures[i].name);
-                        }
                         else
                         {
                             // Update our tile object to make up for the fact that the object doesn't exist in the world.
@@ -212,19 +212,13 @@ namespace SS3D.Engine.Tiles
                     i++;
                 }
             }
-            else
-            {
-                // fixtures = null;
-                // fixtureConnectors = null;
+            //else
+            //{
+            //    // fixtures = null;
+            //    // fixtureConnectors = null;
                 
-                fixtureConnectors = new AdjacencyConnector[TileDefinition.GetFixtureLayerSize()];
-            }
-
-            if (fixtures == null)
-            {
-                Debug.LogWarning("Repairing fixtures");
-                fixtures = new GameObject[TileDefinition.GetFixtureLayerSize()];
-            }
+            //    fixtureConnectors = new AdjacencyConnector[TileDefinition.GetFixtureLayerSize()];
+            //}
 
             UpdateChildrenFromSubData(tile);
             UpdateSubDataFromChildren();
@@ -276,22 +270,24 @@ namespace SS3D.Engine.Tiles
             fixtures[index].name = "fixture_" + layerName + "_" + fixtureDefinition.id;
         }
 
-        private void CreateFixtures(Fixture[] fixturesDefinitation)
+        private void CreateFixtures(Fixture[] fixturesDefinition)
         {
             var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
-            int i = 0;
 
-            if (fixturesDefinitation == null)
-                Debug.LogError("fixturesDefinition is empty");
-
-            foreach (Fixture fixture in fixturesDefinitation)
+            //int i = 0;
+            for (int i = 0; i < fixturesDefinition.Length; i++)
             {
-                if (fixture != null)
-                {
-                    CreateFixture(fixture, layers[i]);
-                }
-                i++;
+                CreateFixture(fixturesDefinition[i], layers[i]);
             }
+
+            //foreach (Fixture fixture in fixturesDefinition)
+            //{
+            //    if (fixture != null)
+            //    {
+            //        CreateFixture(fixture, layers[i]);
+            //    }
+            //    i++;
+            //}
         }
 
         private void UpdateChildrenFromSubData(TileDefinition newTile)
@@ -319,7 +315,8 @@ namespace SS3D.Engine.Tiles
             int i = 1;
             foreach (GameObject fixture in fixtures)
             {
-                tile.subStates[i] = fixture?.GetComponent<TileStateCommunicator>()?.GetTileState();
+                if (fixture)
+                    tile.subStates[i] = fixture?.GetComponent<TileStateCommunicator>()?.GetTileState();
                 i++;
             }
         }
