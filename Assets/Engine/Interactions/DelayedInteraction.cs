@@ -74,32 +74,6 @@ namespace SS3D.Engine.Interactions
         }
 
         public abstract void Cancel(InteractionEvent interactionEvent, InteractionReference reference);
-        public void EndInteraction()
-        {
-            // If start time is not zero, the interaction was interrupted
-            if (startTime != 0)
-            {
-                startTime = 0;
-                // Notify the client of the interruption
-                TargetEndInteraction(Event.connectionToClient);
-            }
-        }
-
-        [TargetRpc]
-        public void TargetStartInteraction(NetworkConnection target, float delay)
-        {
-            if (LoadingBarPrefab != null)
-            {
-                // Create loading bar in scene
-                GameObject loadingBar = Instantiate(LoadingBarPrefab, transform);
-                // TODO: Set position above object
-                loadingBar.transform.localPosition = Vector3.up;
-                LoadingBar bar = loadingBar.GetComponent<LoadingBar>();
-                Assert.IsNotNull(bar, "Loading bar prefab has no LoadingBar component");
-                // Set loading bar delay
-                bar.Duration = delay;
-            }
-        }
 
         protected abstract void StartDelayed(InteractionEvent interactionEvent);
     }
