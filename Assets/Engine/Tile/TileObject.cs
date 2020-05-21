@@ -136,8 +136,6 @@ namespace SS3D.Engine.Tiles
          */
         private void SetContents(TileDefinition newTile)
         {
-
-
             if (newTile.turf != tile.turf)
                 CreateTurf(newTile.turf);
             if (newTile.fixtures != tile.fixtures)
@@ -218,13 +216,10 @@ namespace SS3D.Engine.Tiles
                     i++;
                 }
             }
-            //else
-            //{
-            //    // fixtures = null;
-            //    // fixtureConnectors = null;
-                
-            //    fixtureConnectors = new AdjacencyConnector[TileDefinition.GetFixtureLayerSize()];
-            //}
+            else
+            {
+                fixtureConnectors = new AdjacencyConnector[TileDefinition.GetFixtureLayerSize()];
+            }
 
             UpdateChildrenFromSubData(tile);
             UpdateSubDataFromChildren();
@@ -245,11 +240,9 @@ namespace SS3D.Engine.Tiles
                 }
             }
 
+            // Set fixture layer size if not set
             if (tile.fixtures?.Length != TileDefinition.GetFixtureLayerSize())
-            {
                 tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
-                Debug.Log("Changed fixture size");
-            }
         }
 
         private void CreateTurf(Turf turfDefinition)
@@ -288,21 +281,10 @@ namespace SS3D.Engine.Tiles
         private void CreateFixtures(Fixture[] fixturesDefinition)
         {
             var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
-
-            //int i = 0;
             for (int i = 0; i < fixturesDefinition.Length; i++)
             {
                 CreateFixture(fixturesDefinition[i], layers[i]);
             }
-
-            //foreach (Fixture fixture in fixturesDefinition)
-            //{
-            //    if (fixture != null)
-            //    {
-            //        CreateFixture(fixture, layers[i]);
-            //    }
-            //    i++;
-            //}
         }
 
         private void UpdateChildrenFromSubData(TileDefinition newTile)
@@ -336,6 +318,9 @@ namespace SS3D.Engine.Tiles
             }
         }
 
+        /**
+         * Migrates existing fixtures that do not have a fixturelayer set.
+         */
         private bool MigrateTileDefinition()
         {
             // set array to proper size
@@ -365,8 +350,6 @@ namespace SS3D.Engine.Tiles
                         if (fix.id.Equals(assetName))
                             oldFurniture = fix;
                     }
-                    // Rename fixture to new name
-
                 }
             }
 
