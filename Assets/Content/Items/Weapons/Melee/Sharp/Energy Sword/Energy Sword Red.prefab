@@ -15,10 +15,7 @@ GameObject:
   - component: {fileID: 4990654379235175600}
   - component: {fileID: 6685713788759461778}
   - component: {fileID: 351750458048978072}
-<<<<<<< HEAD
   - component: {fileID: 4277373946606689906}
-=======
->>>>>>> upstream/master
   m_Layer: 16
   m_Name: Energy Sword Red
   m_TagString: Untagged
@@ -117,12 +114,9 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   animator: {fileID: 351750458048978072}
-<<<<<<< HEAD
   audio: {fileID: 4277373946606689906}
   soundOn: {fileID: 8300000, guid: 7522924b6c9c2e542915dc7b7e2723b6, type: 3}
   soundOff: {fileID: 8300000, guid: 31651461e985ff04db6df3ea51be8d47, type: 3}
-=======
->>>>>>> upstream/master
 --- !u!95 &351750458048978072
 Animator:
   serializedVersion: 3
@@ -142,7 +136,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
-<<<<<<< HEAD
 --- !u!82 &4277373946606689906
 AudioSource:
   m_ObjectHideFlags: 0
@@ -240,8 +233,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-=======
->>>>>>> upstream/master
 --- !u!1 &2198113341863956492
 GameObject:
   m_ObjectHideFlags: 0
