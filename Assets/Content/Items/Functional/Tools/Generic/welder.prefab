@@ -129,7 +129,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.071778804, y: 0.69508946, z: 0.16216916}
   m_Center: {x: -0.00000004284084, y: 0.23052968, z: 0.0045213364}
---- !u!114 &5115399049645579501
+--- !u!114 &5326020026906252167
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -153,11 +153,11 @@ MonoBehaviour:
   lightParticle: {fileID: 8119560912167204694}
   commonWall: {fileID: 11400000, guid: cede127f2ecc46345ab2c1fad9cbd507, type: 2}
   reinforcedWall: {fileID: 11400000, guid: 0f82dbffde7735b46b2b558862706f89, type: 2}
-  commonFloor: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
+  commonFloor: {fileID: 11400000, guid: 59e44bb6917ce814eb795fea1f1c347e, type: 2}
   reinforcedFloor: {fileID: 11400000, guid: 60102906e670c1c4f85f1b28c8b7262d, type: 2}
   LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
     type: 3}
-  Delay: 1
+  Delay: 1.5
 --- !u!1 &7027750089843885471
 GameObject:
   m_ObjectHideFlags: 0
