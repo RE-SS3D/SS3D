@@ -107,13 +107,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7b3e281d9432934888433dc5fed26a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: reinforced_glass_wall
+  id: reinforced_window
   genericType: wall
   o: {fileID: 2359981176013129390, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   c: {fileID: 3600995788326575383, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   i: {fileID: -3802093582204879292, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  iBorder: {fileID: 1398590566993244046, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  iAlone: {fileID: -2738000148823052286, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  iBorder: {fileID: -2738000148823052286, guid: a8afca278d289ca469539bd9a57ce244,
+    type: 3}
+  iAlone: {fileID: 1398590566993244046, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   lNone: {fileID: 799833698545232237, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   lSingle: {fileID: -721615812398171940, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   tNone: {fileID: 3306210025996113934, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
