@@ -40,7 +40,7 @@ namespace SS3D.Content.Creatures.Human
                 characterController.enabled = !enabled;
             }
             
-            MovementController movementController = GetComponent<MovementController>();
+            HumanoidMovementController movementController = GetComponent<HumanoidMovementController>();
             if (movementController != null)
             {
                 movementController.enabled = !enabled;
