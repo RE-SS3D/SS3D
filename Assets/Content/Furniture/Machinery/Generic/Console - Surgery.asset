@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: surgery_console
   genericType: console
-  prefab: {fileID: 6477574049359786441, guid: 2da7813a6f2688b40aec806ec41d1957, type: 3}
+  prefab: {fileID: 753184307525108975, guid: 0ff3a1978c699ef4a9aba480f38c83fb, type: 3}

@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using SS3D.Engine.Utilities;
 #if UNITY_EDITOR
 using UnityEditor.Experimental.SceneManagement;
 #endif
@@ -32,23 +31,6 @@ namespace SS3D.Engine.Inventory
         public Sprite sprite;
         public GameObject prefab;
         public Transform attachmentPoint;
-
-        [ContextMenu("Create Icon")]
-        private void Start()
-        {
-            GenerateNewIcon();
-        }
-        public void GenerateNewIcon()
-        {
-            RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
-            RuntimePreviewGenerator.OrthographicMode = false;
-
-            Texture2D texture = RuntimePreviewGenerator.GenerateModelPreview(this.transform, 128, 128, false);
-            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
-            sprite.name = transform.name;
-        }
-
-        
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()
