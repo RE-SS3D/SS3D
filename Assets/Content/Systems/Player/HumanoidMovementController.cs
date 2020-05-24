@@ -16,10 +16,9 @@ namespace SS3D.Content.Systems.Player
 
         // The base speed at which the given character can move
         [SyncVar] public float runSpeed = 5f;
+
         // The base speed for the character when walking. To disable walkSpeed, set it to runSpeed
         [SyncVar] public float walkSpeed = 2f;
-
-        private bool isWalking = false;
 
         private Animator characterAnimator;
         private CharacterController characterController;
@@ -30,12 +29,16 @@ namespace SS3D.Content.Systems.Player
         private Vector2 intendedMovement = new Vector2();
         private Vector3 absoluteMovement = new Vector3();
 
+        private bool isWalking = false;
         //Required to detect if player is typing and stop accepting movement input
         private ChatRegister chatRegister;
+        private float heightOffGround;
 
-        [SerializeField] private float heightOffGround = 0;
+        [SerializeField] private Transform chestBone;
+        [SerializeField] private Transform chestIK;
 
-        [SerializeField] SimpleBodyPartLookAt[] LookAt;
+        [SerializeField] private Transform headBone;
+        [SerializeField] private Transform headIK;
 
         private void Start()
         {
@@ -43,6 +46,7 @@ namespace SS3D.Content.Systems.Player
             characterAnimator = GetComponent<Animator>();
             chatRegister = GetComponent<ChatRegister>();
             mainCamera = Camera.main;
+            heightOffGround = transform.position.y;
         }
 
         void FixedUpdate()
@@ -75,38 +79,50 @@ namespace SS3D.Content.Systems.Player
 
             // Smoothly transition to next intended movement
             intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
-            currentMovement = Vector2.MoveTowards(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 5f, 3) / 5));
+            currentMovement = Vector2.Lerp(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 9.5f, 3) / 6));
 
-            absoluteMovement = new Vector3(absoluteMovement.x, 0, absoluteMovement.z);
             // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
-            //characterController.Move(absoluteMovement * Time.deltaTime);
+            characterController.Move(absoluteMovement * Time.deltaTime);
 
             // Move the player
             if (currentMovement != Vector2.zero)
             {
                 // Determine the absolute movement by aligning input to the camera's looking direction
-                // this also prevents moving without input
-                Vector3 newAbsoluteMovement =
+                Vector3 absoluteMovement =
                 currentMovement.y * Vector3.Cross(mainCamera.transform.right, Vector3.up).normalized +
                 currentMovement.x * Vector3.Cross(Vector3.up, mainCamera.transform.forward).normalized;
 
-                newAbsoluteMovement = new Vector3(newAbsoluteMovement.x, 0, newAbsoluteMovement.z);
-
                 if (intendedMovement != Vector2.zero)
                 {
-                    absoluteMovement = Vector3.Lerp(absoluteMovement, newAbsoluteMovement, 8 / Time.deltaTime);
+                   
+                    //absoluteMovement = Vector3.Lerp(absoluteMovement, newAbsoluteMovement, Time.deltaTime * 2);
                     // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
+                    characterController.Move(absoluteMovement * Time.deltaTime);
 
-                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(newAbsoluteMovement), Time.deltaTime * ((isWalking ? walkSpeed : runSpeed) * 2));
+                    // avoid unwanted rotation when you rotate the camera but isn't doing movement input, comment the "if" to see it
+
+                    // Rotate the chest and head IKs objects
+                    Quaternion newChestIKRotation = Quaternion.Lerp(chestIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * (isWalking ? 3 : 10));
+                    Quaternion newHeadIKRotation = Quaternion.Lerp(headIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * (isWalking ? 15 : 5));
+
+                    //float rotationDiference = Quaternion.
+                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * (isWalking ? 5 : 7));
+                    //Mathf.Pow(intendedMovement.magnitude, 2)
+
+                    chestIK.rotation = newChestIKRotation;
+                    headIK.rotation = newHeadIKRotation;
                 }
-
                 if (intendedMovement == Vector2.zero)
                 {
-                    // avoid unwanted rotation when you rotate the camera but isn't doing movement input
-                    absoluteMovement = Vector3.Lerp(absoluteMovement, Vector3.zero, Time.deltaTime);
+                    Quaternion newChestIKRotation = Quaternion.Lerp(chestIK.rotation, transform.rotation, Time.deltaTime * 3);
+                    Quaternion newHeadIKRotation = Quaternion.Lerp(headIK.rotation, transform.rotation, Time.deltaTime * 8);
 
+                    absoluteMovement = Vector3.Lerp(absoluteMovement, Vector3.zero, Time.deltaTime * 5);
+                    characterController.Move(absoluteMovement * Time.deltaTime);
+
+                    chestIK.rotation = newChestIKRotation;
+                    headIK.rotation = newHeadIKRotation;
                 }
-                characterController.Move(absoluteMovement * Time.deltaTime);
             }
         }
 
@@ -127,33 +143,21 @@ namespace SS3D.Content.Systems.Player
                 return;
             }
 
-            foreach (SimpleBodyPartLookAt part in LookAt)
-            {
-                part.MoveTarget();
-
-                Vector3 forward = transform.TransformDirection(Vector3.forward).normalized;
-                Vector3 toOther = (part.target.position - transform.position).normalized;
-
-                Vector3 targetLookAt = part.target.position - part.transform.position;
-                Quaternion targetRotation = Quaternion.FromToRotation(forward, targetLookAt.normalized);
-                targetRotation = Quaternion.RotateTowards(part.currentRot, targetRotation, Time.deltaTime * part.rotationSpeed * Mathf.Rad2Deg);
-
-                float targetAngle = Mathf.Abs(Quaternion.Angle(Quaternion.identity, targetRotation));
-                if (targetAngle > part.minRotationLimit && targetAngle < part.maxRotationLimit)
-                {
-                    part.currentRot = targetRotation;
-                }
-                part.transform.localRotation = part.currentRot;
-            }
-            
+            // Limits the rotation of the bones, this is here because animations work on Update()
+            if (chestBone.localRotation.y < 70 || chestBone.localRotation.y > -70)
+                chestBone.RotateAroundLocal(Vector3.up, chestIK.localRotation.y);
+        
+            if (headBone.localRotation.y < 88 || headBone.localRotation.y > -88)
+                headBone.RotateAroundLocal(Vector3.up, headIK.localRotation.y);
+           
             // TODO: Might eventually want more animation options. E.g. when in 0-gravity and 'clambering' via a surface
             //characterAnimator.SetBool("Floating", false); // Note: Player can be floating and still move
 
             // animation Speed is a proportion of maximum runSpeed, and we smoothly transitions the speed with the Lerp
-            float currentSpeed = characterAnimator.GetFloat("Speed");
-            float newSpeed = Mathf.LerpUnclamped(characterAnimator.GetFloat("Speed"), currentMovement.magnitude / runSpeed, Time.deltaTime * 30);
+
+            float newSpeed = Mathf.LerpUnclamped(characterAnimator.GetFloat("Speed"), currentMovement.magnitude / runSpeed, Time.deltaTime * 35);
             characterAnimator.SetFloat("Speed", newSpeed);
         }
     }
-
+    
 }
