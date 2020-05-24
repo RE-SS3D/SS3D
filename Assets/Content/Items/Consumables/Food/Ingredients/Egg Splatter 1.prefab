@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7084552893140909366}
   - component: {fileID: 4330448704306833335}
   - component: {fileID: 5431582348971710345}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Egg Splatter 1 Shell c
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 2951298438764097659}
   - component: {fileID: 6857499590730081236}
   - component: {fileID: 5583586157620204599}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Egg Splatter 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -186,7 +186,7 @@ GameObject:
   - component: {fileID: 3169486901125214383}
   - component: {fileID: 8480914603360771664}
   - component: {fileID: 1635961374080059202}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Egg Splatter 1 Shell a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -265,7 +265,7 @@ GameObject:
   - component: {fileID: 6350760833437877317}
   - component: {fileID: 2978457626589760306}
   - component: {fileID: 34926831629622498}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Egg Splatter 1 Shell b
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -344,7 +344,7 @@ GameObject:
   - component: {fileID: 2938145541930455249}
   - component: {fileID: 627937672404751616}
   - component: {fileID: 2131688753546946140}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Egg Splatter 1 Yolk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
