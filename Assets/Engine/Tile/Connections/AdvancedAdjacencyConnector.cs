@@ -175,7 +175,7 @@ namespace SS3D.Engine.Tiles.Connections
 
                 if(opaque)
                 {
-                    viewObstacles[0].SetActive(false);
+                    viewObstacles[0].SetActive(corners>=3);
                     viewObstacles[1].SetActive(true);
                     viewObstacles[2].SetActive(true);
                     viewObstacles[3].SetActive(true);

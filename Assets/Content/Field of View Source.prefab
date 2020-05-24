@@ -99,11 +99,11 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 256
-  meshResolution: 4
+  meshResolution: 3
   maskCutawayDistance: 0
-  edgeResolveIterations: 6
+  edgeResolveIterations: 5
   edgeDistanceThreshold: 0.2
-  detectionOffset: {x: 0, y: 0, z: 0}
+  detectionOffset: {x: 0, y: 0.2, z: 0}
 --- !u!1 &7562155009407836087
 GameObject:
   m_ObjectHideFlags: 0
