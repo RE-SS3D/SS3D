@@ -103,7 +103,7 @@ MonoBehaviour:
   maskCutawayDistance: 0
   edgeResolveIterations: 6
   edgeDistanceThreshold: 0.2
-  detectionOffset: {x: 0, y: -0.5, z: 0}
+  detectionOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &7562155009407836087
 GameObject:
   m_ObjectHideFlags: 0
