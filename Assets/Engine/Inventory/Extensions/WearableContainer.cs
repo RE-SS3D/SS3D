@@ -136,30 +136,29 @@ namespace SS3D.Engine.Inventory.Extensions
      */
         private void UnplaceItem(int index, GameObject item)
         {
-            item.SetActive(false);
-
             // Determine physics status
             item.GetComponent<Rigidbody>().isKinematic = false;
             item.GetComponent<Collider>().enabled = true;
             if (item.GetComponent<NetworkTransform>())
                 item.GetComponent<NetworkTransform>().enabled = true;
 
-            // Destroy temporary attachment point
-            if (item.transform.parent.gameObject.name == "TempPivotPoint")
+            Transform transformParent = item.transform.parent;
+            item.transform.SetParent(null);
+            Transform displayTransform = null;
+            if (displays != null && displays.Length > index)
             {
-                Destroy(item.transform.parent.gameObject);
+                GameObject display = displays[index];
+                if (display != null)
+                {
+                    displayTransform = display.transform;
+                }
             }
-
-            // Just use the parent if no displays are set up
-            if (displays[index] != null)
+            if (transformParent != displayTransform && transformParent != transform)
             {
-                item.transform.SetParent(displays[index].transform, false);
+                // Destroy temporary attachment point
+                Destroy(transformParent.gameObject);
             }
-            else
-            {
-                item.transform.SetParent(this.transform);
-            }
-
+            
             // Restore old rotation
             if (originalRotations != null)
             {

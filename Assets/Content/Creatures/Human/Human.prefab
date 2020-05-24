@@ -82,7 +82,6 @@ GameObject:
   - component: {fileID: -3295296730462155149}
   - component: {fileID: -1122543427383380906}
   - component: {fileID: 7747405895790833225}
-  - component: {fileID: 1331234245669865348}
   - component: {fileID: 666907628477534858}
   - component: {fileID: 3809031586969339676}
   m_Layer: 15
@@ -346,23 +345,6 @@ MonoBehaviour:
     m_Bits: 1148723
   menuPrefab: {fileID: 6380575431912782132, guid: 63bda78afb3955e41a15f4f84de4c89a,
     type: 3}
---- !u!114 &1331234245669865348
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 289348138277843802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5971b94ebba2f8e4faffec44cfb255b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactions:
-  - {fileID: 11400000, guid: 0c8a0483b71ea854a8abe65682ee4d01, type: 2}
-  - {fileID: 11400000, guid: 78045406f37bb914aad63bd7b716dd23, type: 2}
-  - {fileID: 11400000, guid: 70d69ad52c9116b42961f1e5cdc029d0, type: 2}
-  continuousInteractions: []
 --- !u!114 &666907628477534858
 MonoBehaviour:
   m_ObjectHideFlags: 0
