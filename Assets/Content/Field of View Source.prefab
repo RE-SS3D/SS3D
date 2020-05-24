@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5958183850568138497}
   m_Layer: 9
   m_Name: Field of View Source
-  m_TagString: Untagged
+  m_TagString: FieldOfView
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48,6 +48,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -87,19 +88,19 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4473329490942956389}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a78f1bcb0b2ed6641aa29766ee037de6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  viewRange: 15
+  viewRange: 20
   viewConeWidth: 360
   obstacleMask:
     serializedVersion: 2
     m_Bits: 256
-  meshResolution: 0.4
-  maskCutawayDistance: 0.4
+  meshResolution: 4
+  maskCutawayDistance: 0
   edgeResolveIterations: 6
   edgeDistanceThreshold: 0.2
   detectionOffset: {x: 0, y: -0.5, z: 0}
@@ -164,7 +165,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 15
+  orthographic size: 20
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -194,7 +195,7 @@ Projector:
   m_FieldOfView: 60
   m_AspectRatio: 1
   m_Orthographic: 1
-  m_OrthographicSize: 15
+  m_OrthographicSize: 20
   m_Material: {fileID: 2100000, guid: 0192c6bbbc1737a4082178aa610d9ddf, type: 2}
   m_IgnoreLayers:
     serializedVersion: 2
@@ -231,7 +232,7 @@ MonoBehaviour:
     m_Bits: 1024
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
-  antialiasingMode: 0
+  antialiasingMode: 2
   temporalAntialiasing:
     jitterSpread: 0.75
     sharpness: 0.25

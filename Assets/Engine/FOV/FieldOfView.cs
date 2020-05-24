@@ -7,7 +7,7 @@ namespace SS3D.Engine.FOV
     [RequireComponent(typeof(MeshFilter))]
     public class FieldOfView : MonoBehaviour
     {
-        [SerializeField] private Transform target = null;
+        [SerializeField] public Transform target = null;
 
         [Space]
         [SerializeField]
