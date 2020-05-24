@@ -27,7 +27,7 @@ namespace SS3D.Content.Systems.Player
         // Current movement the player is making.
         private Vector2 currentMovement = new Vector2();
         private Vector2 intendedMovement = new Vector2();
-        private Vector3 absoluteMovement = new Vector3();
+        public Vector3 AbsoluteMovement = new Vector3();
 
         private bool isWalking = false;
         //Required to detect if player is typing and stop accepting movement input
@@ -81,14 +81,11 @@ namespace SS3D.Content.Systems.Player
             intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
             currentMovement = Vector2.Lerp(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 9.5f, 3) / 6));
 
-            // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
-            characterController.Move(absoluteMovement * Time.deltaTime);
-
             // Move the player
             if (currentMovement != Vector2.zero)
             {
                 // Determine the absolute movement by aligning input to the camera's looking direction
-                Vector3 absoluteMovement =
+                AbsoluteMovement =
                 currentMovement.y * Vector3.Cross(mainCamera.transform.right, Vector3.up).normalized +
                 currentMovement.x * Vector3.Cross(Vector3.up, mainCamera.transform.forward).normalized;
 
@@ -97,16 +94,16 @@ namespace SS3D.Content.Systems.Player
                    
                     //absoluteMovement = Vector3.Lerp(absoluteMovement, newAbsoluteMovement, Time.deltaTime * 2);
                     // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
-                    characterController.Move(absoluteMovement * Time.deltaTime);
+                    characterController.Move(AbsoluteMovement * Time.deltaTime);
 
                     // avoid unwanted rotation when you rotate the camera but isn't doing movement input, comment the "if" to see it
 
                     // Rotate the chest and head IKs objects
-                    Quaternion newChestIKRotation = Quaternion.Lerp(chestIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * (isWalking ? 3 : 10));
-                    Quaternion newHeadIKRotation = Quaternion.Lerp(headIK.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * (isWalking ? 15 : 5));
+                    Quaternion newChestIKRotation = Quaternion.Lerp(chestIK.rotation, Quaternion.LookRotation(AbsoluteMovement), Time.deltaTime * (isWalking ? 3 : 10));
+                    Quaternion newHeadIKRotation = Quaternion.Lerp(headIK.rotation, Quaternion.LookRotation(AbsoluteMovement), Time.deltaTime * (isWalking ? 15 : 5));
 
                     //float rotationDiference = Quaternion.
-                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * (isWalking ? 5 : 7));
+                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(AbsoluteMovement), Time.deltaTime * (isWalking ? 5 : 7));
                     //Mathf.Pow(intendedMovement.magnitude, 2)
 
                     chestIK.rotation = newChestIKRotation;
@@ -117,8 +114,8 @@ namespace SS3D.Content.Systems.Player
                     Quaternion newChestIKRotation = Quaternion.Lerp(chestIK.rotation, transform.rotation, Time.deltaTime * 3);
                     Quaternion newHeadIKRotation = Quaternion.Lerp(headIK.rotation, transform.rotation, Time.deltaTime * 8);
 
-                    absoluteMovement = Vector3.Lerp(absoluteMovement, Vector3.zero, Time.deltaTime * 5);
-                    characterController.Move(absoluteMovement * Time.deltaTime);
+                    AbsoluteMovement = Vector3.Lerp(AbsoluteMovement, Vector3.zero, Time.deltaTime * 5);
+                    characterController.Move(AbsoluteMovement * Time.deltaTime);
 
                     chestIK.rotation = newChestIKRotation;
                     headIK.rotation = newHeadIKRotation;
