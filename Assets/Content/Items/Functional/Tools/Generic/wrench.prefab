@@ -23,13 +23,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 755027775867772024}
-  m_LocalRotation: {x: 0.7071068, y: 0.7071068, z: -0, w: 0}
-  m_LocalPosition: {x: 0.009082138, y: 0.0001, z: -0.031}
+  m_LocalRotation: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
+  m_LocalPosition: {x: 0.0017, y: 0.0001, z: -0.0003}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 199471781468022836}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 180, y: 0, z: -90}
+  m_LocalEulerAnglesHint: {x: 90, y: -90, z: -90}
 --- !u!1 &3792017003477948967
 GameObject:
   m_ObjectHideFlags: 0
@@ -44,8 +44,7 @@ GameObject:
   - component: {fileID: 3216455597806939899}
   - component: {fileID: 2715522631516638477}
   - component: {fileID: 7817880274887278369}
-  - component: {fileID: 4177878182878968814}
-  - component: {fileID: 2547023945867236343}
+  - component: {fileID: 1022902389129981048}
   m_Layer: 16
   m_Name: wrench
   m_TagString: Untagged
@@ -157,9 +156,9 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.18558191, y: 0.05234096, z: 0.5433806}
-  m_Center: {x: -0.025919877, y: 0.00076315925, z: -0.11619277}
---- !u!114 &4177878182878968814
+  m_Size: {x: 0.0401574, y: 0.55074775, z: 0.19200845}
+  m_Center: {x: 0.0010162629, y: 0.11615805, z: 0.026164286}
+--- !u!114 &1022902389129981048
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -168,30 +167,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 3792017003477948967}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Script: {fileID: 11500000, guid: c56dcacd69c4432fa7b4092e007f03f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3792017003477948967}
   attachmentPoint: {fileID: 8876393141157652533}
---- !u!114 &2547023945867236343
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3792017003477948967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0291a0f79bd921a488ebe7b902f7cfa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  Delay: 2
   LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
     type: 3}
-  tableToConstruct: {fileID: 11400000, guid: e361c0d934015604fa13db8b86d73f4b, type: 2}
-  buildDistance: 1.5
+  TableToConstruct: {fileID: 11400000, guid: e361c0d934015604fa13db8b86d73f4b, type: 2}
+  Delay: 1

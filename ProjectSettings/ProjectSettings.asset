@@ -80,7 +80,7 @@ PlayerSettings:
   bakeCollisionMeshes: 0
   forceSingleInstance: 0
   useFlipModelSwapchain: 1
-  resizableWindow: 0
+  resizableWindow: 1
   useMacAppStoreValidation: 0
   macAppStoreCategory: public.app-category.games
   gpuSkinning: 1
@@ -277,7 +277,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: e7a22c8a656ea9744a15c0d06be0fd06, type: 3}
+      m_Icon: {fileID: 2800000, guid: 0dbf8ed9b00b2b74b89a6faafe013249, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0

@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using SS3D.Engine.Interactions;
+using SS3D.Engine.Inventory.Extensions;
+using UnityEngine;
 using UnityEditor;
 #if UNITY_EDITOR
 using UnityEditor.Experimental.SceneManagement;
@@ -10,7 +14,7 @@ namespace SS3D.Engine.Inventory
      * An item describes what is held in a container.
      */
     [DisallowMultipleComponent]
-    public class Item : MonoBehaviour
+    public class Item : InteractionSourceNetworkBehaviour
     {
         // Distinguishes what can go in what slot
         public enum ItemType
@@ -31,6 +35,13 @@ namespace SS3D.Engine.Inventory
         public Sprite sprite;
         public GameObject prefab;
         public Transform attachmentPoint;
+
+        public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
+        {
+            List<IInteraction> interactions = base.GenerateInteractions(targets).ToList();
+            interactions.Add(new DropInteraction());
+            return interactions.ToArray();
+        }
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()
