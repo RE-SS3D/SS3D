@@ -143,8 +143,7 @@ GameObject:
   - component: {fileID: 3525001371724016013}
   - component: {fileID: 3374379410763890910}
   - component: {fileID: 7176282325643906320}
-  - component: {fileID: 4872040872125276036}
-  - component: {fileID: 5431817562195804954}
+  - component: {fileID: 5221039376922892593}
   m_Layer: 0
   m_Name: locker
   m_TagString: Untagged
@@ -315,7 +314,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
---- !u!114 &4872040872125276036
+--- !u!114 &5221039376922892593
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -324,21 +323,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5599841925940684376}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec9656a10b23fca459eb99eccdfdc5f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onlyWhenOpen: 1
---- !u!114 &5431817562195804954
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5599841925940684376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2adb5f3d02742c2478c5bdbe844dc18a, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  Openable: 1
+  OnlyStoreWhenOpen: 1
