@@ -120,6 +120,13 @@ namespace SS3D.Engine.Tiles.Connections
             {
                 mesh = c;
                 rotation = DirectionHelper.AngleBetween(Direction.East, cardinalInfo.GetOnlyPositive());
+                if(opaque)
+                {
+                    viewObstacles[0].SetActive(false);
+                    viewObstacles[1].SetActive(true);
+                    viewObstacles[2].SetActive(false);
+                    viewObstacles[3].SetActive(false);
+                }
             }
             else if(cardinalInfo.IsI())
             {
