@@ -377,6 +377,7 @@ MonoBehaviour:
   syncInterval: 0.1
   runSpeed: 5
   walkSpeed: 2
+  AbsoluteMovement: {x: 0, y: 0, z: 0}
   chestBone: {fileID: 8816584030875756}
   chestIK: {fileID: 8796676004837559584}
   headBone: {fileID: 6681181371901804768}
@@ -1438,6 +1439,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6681181371901804768}
   - component: {fileID: 3420469997494009254}
+  - component: {fileID: 4487458991691251741}
   m_Layer: 15
   m_Name: head
   m_TagString: Untagged
@@ -1486,6 +1488,19 @@ MonoBehaviour:
   bodyPartStatuses: 0
   skinnedMeshRenderer: {fileID: 4396348641062937663}
   body: {fileID: 0}
+--- !u!135 &4487458991691251741
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1497768525724101046}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.13
+  m_Center: {x: 0, y: 0.11, z: 0.02}
 --- !u!1 &1556632828458685282
 GameObject:
   m_ObjectHideFlags: 0
