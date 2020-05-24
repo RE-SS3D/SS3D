@@ -114,6 +114,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   animator: {fileID: 351750458048978072}
+  blade: {fileID: 7492178598015881337}
   audio: {fileID: 4277373946606689906}
   soundOn: {fileID: 8300000, guid: 7522924b6c9c2e542915dc7b7e2723b6, type: 3}
   soundOff: {fileID: 8300000, guid: 31651461e985ff04db6df3ea51be8d47, type: 3}
@@ -257,12 +258,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2198113341863956492}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.441, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8404333355598822097}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!108 &6865098693849225335
 Light:
@@ -385,8 +386,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8741594312887385892}
-  - {fileID: 7492178598015881337}
   - {fileID: 2228408407297344825}
+  - {fileID: 7492178598015881337}
   m_Father: {fileID: 3536461814911951490}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -467,7 +468,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8404333355598822097}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1518940438225014788
 MeshFilter:

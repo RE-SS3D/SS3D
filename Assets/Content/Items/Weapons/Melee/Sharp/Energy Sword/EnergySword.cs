@@ -10,6 +10,9 @@ public class EnergySword : NetworkBehaviour, Interaction
     private Animator animator;
 
     [SerializeField]
+    private Transform blade;
+
+    [SerializeField]
     private AudioSource audio;
     [SerializeField]
     private AudioClip soundOn;
@@ -38,6 +41,7 @@ public class EnergySword : NetworkBehaviour, Interaction
             return;
 
         on = !on;
+
         animator.SetBool("On", on);
 
         audio.clip = on ? soundOn : soundOff;

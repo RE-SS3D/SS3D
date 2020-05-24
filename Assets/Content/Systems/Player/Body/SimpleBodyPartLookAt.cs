@@ -12,10 +12,12 @@ public class SimpleBodyPartLookAt : MonoBehaviour
     [SerializeField] public Transform target;
     private Vector3 mousePos = Vector3.zero;
 
-    [SerializeField] public Vector3 minRotationLimit;
-    [SerializeField] public Vector3 maxRotationLimit;
+    [SerializeField] public Quaternion currentRot;
 
-    [Range(5, 100)]
+    [SerializeField] public float minRotationLimit;
+    [SerializeField] public float maxRotationLimit;
+
+    [Range(0.5f, 10)]
     [SerializeField] public float rotationSpeed = 5;
 
     [SerializeField] public Limits limits;
@@ -68,6 +70,7 @@ public class SimpleBodyPartLookAt : MonoBehaviour
     private void Start()
     {
         target.position = transform.position;
+        currentRot = Quaternion.identity;
     }
 
     public void MoveTarget() {

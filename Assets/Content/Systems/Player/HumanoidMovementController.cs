@@ -97,14 +97,13 @@ namespace SS3D.Content.Systems.Player
                     absoluteMovement = Vector3.Lerp(absoluteMovement, newAbsoluteMovement, 8 / Time.deltaTime);
                     // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
 
-
-                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(newAbsoluteMovement), Time.deltaTime * (isWalking ? 5 : 7));
+                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(newAbsoluteMovement), Time.deltaTime * ((isWalking ? walkSpeed : runSpeed) * 2));
                 }
 
                 if (intendedMovement == Vector2.zero)
                 {
                     // avoid unwanted rotation when you rotate the camera but isn't doing movement input
-                    absoluteMovement = Vector3.Lerp(absoluteMovement, Vector3.zero, Time.deltaTime * 5);
+                    absoluteMovement = Vector3.Lerp(absoluteMovement, Vector3.zero, Time.deltaTime);
 
                 }
                 characterController.Move(absoluteMovement * Time.deltaTime);
@@ -132,28 +131,27 @@ namespace SS3D.Content.Systems.Player
             {
                 part.MoveTarget();
 
-                Vector3 forward = transform.TransformDirection(Vector3.forward);
-                Vector3 toOther = part.target.position - transform.position;
+                Vector3 forward = transform.TransformDirection(Vector3.forward).normalized;
+                Vector3 toOther = (part.target.position - transform.position).normalized;
 
                 Vector3 targetLookAt = part.target.position - part.transform.position;
-                targetLookAt = Vector3.RotateTowards(part.transform.position, targetLookAt, Time.deltaTime * part.rotationSpeed, 0f);
+                Quaternion targetRotation = Quaternion.FromToRotation(forward, targetLookAt.normalized);
+                targetRotation = Quaternion.RotateTowards(part.currentRot, targetRotation, Time.deltaTime * part.rotationSpeed * Mathf.Rad2Deg);
 
-                if (Vector3.Dot(forward, toOther) > 0)
+                float targetAngle = Mathf.Abs(Quaternion.Angle(Quaternion.identity, targetRotation));
+                if (targetAngle > part.minRotationLimit && targetAngle < part.maxRotationLimit)
                 {
-                    part.transform.rotation = Quaternion.LookRotation(targetLookAt);
+                    part.currentRot = targetRotation;
                 }
-                if (Vector3.Dot(forward, toOther) < 0)
-                {
-                    part.transform.localRotation = Quaternion.Lerp(part.transform.localRotation, Quaternion.identity, Time.deltaTime);
-                }
+                part.transform.localRotation = part.currentRot;
             }
-
-
+            
             // TODO: Might eventually want more animation options. E.g. when in 0-gravity and 'clambering' via a surface
             //characterAnimator.SetBool("Floating", false); // Note: Player can be floating and still move
 
             // animation Speed is a proportion of maximum runSpeed, and we smoothly transitions the speed with the Lerp
-            float newSpeed = Mathf.LerpUnclamped(characterAnimator.GetFloat("Speed"), currentMovement.magnitude / runSpeed, Time.deltaTime * 35);
+            float currentSpeed = characterAnimator.GetFloat("Speed");
+            float newSpeed = Mathf.LerpUnclamped(characterAnimator.GetFloat("Speed"), currentMovement.magnitude / runSpeed, Time.deltaTime * 30);
             characterAnimator.SetFloat("Speed", newSpeed);
         }
     }
