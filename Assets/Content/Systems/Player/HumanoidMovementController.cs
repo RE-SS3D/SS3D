@@ -49,7 +49,7 @@ namespace SS3D.Content.Systems.Player
             heightOffGround = transform.position.y;
         }
 
-        void FixedUpdate()
+        void Update()
         {
             ForceHeightLevel();
 
@@ -120,7 +120,18 @@ namespace SS3D.Content.Systems.Player
                     chestIK.rotation = newChestIKRotation;
                     headIK.rotation = newHeadIKRotation;
                 }
+<<<<<<< Updated upstream
+=======
+
+               
+                characterController.Move(absoluteMovement * Time.deltaTime);
+>>>>>>> Stashed changes
             }
+            // animation Speed is a proportion of maximum runSpeed, and we smoothly transitions the speed with the Lerp
+            float currentSpeed = characterAnimator.GetFloat("Speed");
+            float newSpeed = Mathf.LerpUnclamped(currentSpeed, currentMovement.magnitude / runSpeed , Time.deltaTime * (isWalking ? walkSpeed : runSpeed) * 3);
+            characterAnimator.SetFloat("Speed", newSpeed);
+
         }
 
         private void ForceHeightLevel()
@@ -150,10 +161,13 @@ namespace SS3D.Content.Systems.Player
             // TODO: Might eventually want more animation options. E.g. when in 0-gravity and 'clambering' via a surface
             //characterAnimator.SetBool("Floating", false); // Note: Player can be floating and still move
 
+<<<<<<< Updated upstream
             // animation Speed is a proportion of maximum runSpeed, and we smoothly transitions the speed with the Lerp
 
             float newSpeed = Mathf.LerpUnclamped(characterAnimator.GetFloat("Speed"), currentMovement.magnitude / runSpeed, Time.deltaTime * 35);
             characterAnimator.SetFloat("Speed", newSpeed);
+=======
+>>>>>>> Stashed changes
         }
     }
     
