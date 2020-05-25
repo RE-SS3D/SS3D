@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 190711725925060395}
   - component: {fileID: 2229347982406089160}
   - component: {fileID: 8261796892599394164}
+  - component: {fileID: 7166567432907061237}
   m_Layer: 16
   m_Name: dough_round
   m_TagString: Untagged
@@ -127,6 +128,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  ItemId: dough
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -146,6 +150,26 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -5377715398667767560, guid: 63ecbe31bc18b3947b6f6e61af7095c8, type: 3}
+--- !u!114 &7166567432907061237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411035571888707585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08d34622e2244bb480f165f94f94feb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Roll out
+  ItemId: rolling_pin
+  Consume: 0
+  ResultingObjects:
+  - Prefab: {fileID: 4462294093420203598, guid: 824793a63c105e14785008e3f1b2a5c8,
+      type: 3}
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
 --- !u!1 &3274284041065487966
 GameObject:
   m_ObjectHideFlags: 0

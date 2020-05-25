@@ -612,8 +612,10 @@ MonoBehaviour:
   - {fileID: 5297952924634552147, guid: c42f46e927c4d02458b0b39466700928, type: 3}
   - {fileID: 289348138277843802, guid: 808fc3b770e18cf4a8fe9dbd48fa2444, type: 3}
   - {fileID: 197787038674958444, guid: 049558f02528ebb4199a7b557ae60715, type: 3}
+  - {fileID: 4462294093420203598, guid: 824793a63c105e14785008e3f1b2a5c8, type: 3}
+  - {fileID: 8025821132411324115, guid: 82018d13b985aaf4a9e389170d41e55a, type: 3}
   useLoginSystemOnLocalHost: 0
-  warmupTime: 0
+  warmupTime: 3
   loginServerAddress: http://35.198.114.92
   playerDummyPrefab: {fileID: 5297952924634552147, guid: c42f46e927c4d02458b0b39466700928,
     type: 3}
