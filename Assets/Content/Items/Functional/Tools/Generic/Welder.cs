@@ -33,6 +33,7 @@ namespace SS3D.Content.Items.Functional.Tools
         public void Start()
         {
             reinforceDict = new Dictionary<Turf, Turf> {{commonWall, reinforcedWall}, {commonFloor, reinforcedFloor}};
+            GenerateNewIcon();
         }
 
         public void OnEnable()
@@ -70,7 +71,8 @@ namespace SS3D.Content.Items.Functional.Tools
                 hotFlame.Stop();
                 coldFlame.Stop();
                 lightParticle.Stop();
-            } else
+            } 
+            else
             {
                 hotFlame.Play();
                 coldFlame.Play();
