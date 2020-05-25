@@ -221,6 +221,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   MicrowaveDuration: 5
+  DestroyedItemPrefab: {fileID: 8232994725938073509, guid: fd6710f330c47a047ac75f869035fee0,
+    type: 3}
 --- !u!1 &6704569312823119817
 GameObject:
   m_ObjectHideFlags: 0

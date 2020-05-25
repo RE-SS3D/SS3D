@@ -12,6 +12,7 @@ using UnityEngine;
 public class Microwave : InteractionTargetNetworkBehaviour
 {
     public float MicrowaveDuration = 5;
+    public GameObject DestroyedItemPrefab;
     private bool isOn;
     private StorageContainer storageContainer;
     private Container container;
@@ -82,6 +83,10 @@ public class Microwave : InteractionTargetNetworkBehaviour
             {
                 
                 ItemHelpers.ReplaceItem(item, ItemHelpers.CreateItem(microwaveable.ResultingObject));
+            }
+            else
+            {
+                ItemHelpers.ReplaceItem(item, ItemHelpers.CreateItem(DestroyedItemPrefab));
             }
         }
     }
