@@ -31,6 +31,7 @@ namespace SS3D.Engine.Inventory
             Shoes
         }
 
+        public string ItemId;
         public Container container;
         public ItemType itemType;
         public Sprite sprite;
