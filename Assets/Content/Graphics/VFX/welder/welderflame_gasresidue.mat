@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: welderflame_gasresidue
   m_Shader: {fileID: 211, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: _ALPHABLEND_ON _COLORADDSUBDIFF_ON _EMISSION _FADING_ON
+  m_ShaderKeywords: _ALPHABLEND_ON _COLORADDSUBDIFF_ON _FADING_ON
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -72,7 +72,7 @@ Material:
     - _DistortionStrength: 1
     - _DistortionStrengthScaled: 0.1
     - _DstBlend: 1
-    - _EmissionEnabled: 1
+    - _EmissionEnabled: 0
     - _FlipbookMode: 0
     - _GlossMapScale: 1
     - _Glossiness: 1
@@ -92,7 +92,7 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 0.29411766}
+    - _Color: {r: 1.319508, g: 1.319508, b: 1.319508, a: 0.019607844}
     - _ColorAddSubDiff: {r: -1, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 2.3736603, g: 2.3736603, b: 2.3736603, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 1, b: 0, a: 0}
