@@ -32,7 +32,7 @@ namespace SS3D.Content.Systems.Interactions
                 return false;
             }
             
-            if (!InteractionHelpers.RangeCheck(interactionEvent))
+            if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
                 return false;
             }

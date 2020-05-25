@@ -2,7 +2,7 @@
 
 namespace SS3D.Engine.Interactions.Extensions
 {
-    public static class InteractionHelpers
+    public static class InteractionExtensions
     {
         public static bool RangeCheck(InteractionEvent interactionEvent)
         {

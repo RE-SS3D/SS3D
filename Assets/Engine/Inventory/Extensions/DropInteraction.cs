@@ -23,7 +23,7 @@ namespace SS3D.Engine.Inventory.Extensions
                 return false;
             }
 
-            return InteractionHelpers.RangeCheck(interactionEvent);
+            return InteractionExtensions.RangeCheck(interactionEvent);
         }
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
