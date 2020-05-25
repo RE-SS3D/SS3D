@@ -494,8 +494,8 @@ MonoBehaviour:
   button: {fileID: 7934058634246471720}
   emptySprite: {fileID: 0}
   itemSupplySlider: {fileID: 7260149451116668596}
-  highlightedColor: {r: 0.6666667, g: 0.6666667, b: 0.6666667, a: 1}
-  selectedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  highlightedColor: {r: 1, g: 1, b: 1, a: 1}
+  selectedColor: {r: 0.8679245, g: 0.85564256, b: 0.85564256, a: 1}
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   disabledColor: {r: 0.33333334, g: 0.33333334, b: 0.33333334, a: 1}
   itemSupplyFullColor: {r: 0.10980393, g: 0.26666668, b: 0.16470589, a: 1}
