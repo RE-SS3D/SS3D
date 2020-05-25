@@ -71,6 +71,7 @@ namespace SS3D.Content.Items.Cosmetic
         public void Start()
         {
             audioSource = GetComponent<AudioSource>();
+            GenerateNewIcon(); 
         }
 
         private bool IsHonking()

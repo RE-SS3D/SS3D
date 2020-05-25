@@ -209,7 +209,7 @@ MonoBehaviour:
   expStart: 1
   expFactor: 1.05
   jitterSamples: 1
-  GIBoost: 25
+  GIBoost: 10
   lightBufferHDR: 0
   lightBufferResolution: 2
   LnDlOffset: 0
@@ -224,6 +224,6 @@ MonoBehaviour:
   resolutionDownscale: 2
   reuseCount: 5
   temporalEnabled: 1
-  temporalResponse: 0.35
+  temporalResponse: 0.5
   debugMode: 7
   lightOnly: 0
