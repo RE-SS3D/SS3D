@@ -180,7 +180,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  containerName: locker
+  containerName: fridge
   containerType: 0
   slots: 00000000000000000000000000000000
   displays:
