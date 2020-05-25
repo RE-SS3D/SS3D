@@ -14,9 +14,18 @@ public class EnergySword : Item, IToggleable
     private bool on;
     private static readonly int OnHash = Animator.StringToHash("On");
 
+    [SerializeField]
+    private AudioSource audio;
+    [SerializeField]
+    private AudioClip soundOn;
+    [SerializeField]
+    private AudioClip soundOff;
+
     [ClientRpc]
     private void RpcSetBlade(bool on)
     {
+        audio.clip = on ? soundOn : soundOff;
+        audio.Play();
         animator.SetBool(OnHash, on);
     }
 
@@ -27,7 +36,14 @@ public class EnergySword : Item, IToggleable
 
     public void Toggle()
     {
+        if (audio.isPlaying && animator.IsInTransition(0))
+            return;
+
         on = !on;
+
+        audio.clip = on ? soundOn : soundOff;
+        audio.Play();
+
         animator.SetBool(OnHash, on);
         RpcSetBlade(on);
     }

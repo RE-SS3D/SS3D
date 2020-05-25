@@ -31,7 +31,7 @@ namespace SS3D.Content.Creatures.Human
             Vector3 movement = Vector3.zero;
             if (movementController != null)
             {
-                movement = movementController.AbsoluteMovement;
+                movement = movementController.absoluteMovement;
             }
             
             foreach (Rigidbody body in ArmatureRoot.GetComponentsInChildren<Rigidbody>())
