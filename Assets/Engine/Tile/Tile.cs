@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using UnityEditor;
 using System.Collections.Generic;
+using SS3D.Engine.Atmospherics;
 
 namespace SS3D.Engine.Tiles {
     public enum Direction
@@ -77,6 +78,7 @@ namespace SS3D.Engine.Tiles {
     {
         Turf,
         Fixture,
+        AtmosObject,
     }
 
     /**
@@ -87,6 +89,7 @@ namespace SS3D.Engine.Tiles {
     {
         public Turf turf;
         public Fixture fixture;
+        public AtmosObject atmos;
 
         // An array of serializable objects containing the state of each subtile object.
         // If a subtile object has state, it will be stored at the corresponding index (turf=0, fixture=1).

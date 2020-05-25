@@ -408,6 +408,11 @@ namespace SS3D.Engine.Tiles {
             return ((ulong)y << 32) + (ulong)x;
         }
 
+        public List<TileObject> GetAllTiles()
+        {
+            return tiles.Values.ToList<TileObject>();
+        }
+
         // TODO: This is an inefficient data structure for our purposes.
         // TODO: Allow negatives
         // The key is the concatenated y,x position of the tile.

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using SS3D.Engine.Tiles;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -38,7 +39,7 @@ namespace SS3D.Engine.Atmospherics
         Plasma
     }
 
-    public class AtmosObject : MonoBehaviour
+    public class AtmosObject : ScriptableObject
     {
         private AtmosManager manager;
 
@@ -48,7 +49,8 @@ namespace SS3D.Engine.Atmospherics
         private float[] tileFlux = { 0f, 0f, 0f, 0f };
 
         private AtmosStates state = AtmosStates.Active;
-        private AtmosObject[] neighbours;
+        private TileObject[] tileNeighbours = { null, null, null, null };
+        private AtmosObject[] atmosNeighbours = { null, null, null, null };
 
         // Gass constants
         private const float dt = 0.1f;              // Delta time
@@ -64,24 +66,44 @@ namespace SS3D.Engine.Atmospherics
                 false,  // Top AtmosObject active
                 false,  // Bottom AtmosObject active
                 false,  // Left AtmosObject active
-                false   // Bottom AtmosObject active
+                false   // Right AtmosObject active
             };
 
-
-        // Start is called before the first frame update
-        void Start()
+        public void setTileNeighbour(TileObject neighbour, int index)
         {
-            MakeEmpty();
+            tileNeighbours[index] = neighbour;
         }
 
-        void Update()
+        public void setAtmosNeighbours()
         {
-
+            int i = 0;
+            foreach (TileObject tile in tileNeighbours)
+            {
+                if (tile != null)
+                    atmosNeighbours[i] = tile.atmos;
+            }
         }
 
         public AtmosStates GetState()
         {
             return state;
+        }
+
+        public void SetBlocked(bool blocked)
+        {
+            if (!blocked)
+            {
+                state = AtmosStates.Active;
+            }
+            else
+            {
+                state = AtmosStates.Blocked;
+            }
+        }
+
+        public void RemoveFlux()
+        {
+            tileFlux = new float[]{ 0f, 0f, 0f, 0f} ;
         }
 
         public void AddGas(AtmosGasses gas, float amount)
@@ -199,7 +221,7 @@ namespace SS3D.Engine.Atmospherics
             };
 
             int i = 0;
-            foreach (AtmosObject tile in neighbours)
+            foreach (AtmosObject tile in atmosNeighbours)
             {
                 if (tile != null && tile.state != AtmosStates.Blocked)
                 {
@@ -255,7 +277,7 @@ namespace SS3D.Engine.Atmospherics
                     if (gasses[i] > 0f)
                     {
                         int k = 0;
-                        foreach (AtmosObject tile in neighbours)
+                        foreach (AtmosObject tile in atmosNeighbours)
                         {
                             if (tileFlux[k] > 0f)
                             {
@@ -278,7 +300,7 @@ namespace SS3D.Engine.Atmospherics
 
                 float difference;
                 int j = 0;
-                foreach (AtmosObject tile in neighbours)
+                foreach (AtmosObject tile in atmosNeighbours)
                 {
                     if (activeDirection[j] == true)
                     {
