@@ -148,25 +148,26 @@ namespace SS3D.Engine.Interactions
                 return new List<IInteraction>();
             }
             
-            IInteractionTarget target = null;
+            List<IInteractionTarget> targets = new List<IInteractionTarget>();
             Vector3 point = Vector3.zero;
             if (Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask))
             {
                 point = hit.point;
                 GameObject targetGo = hit.transform.gameObject;
-                target = targetGo.GetComponent<IInteractionTarget>() ?? new InteractionTargetGameObject(targetGo);
-                if (!source.CanInteractWithTarget(target))
+                targets.AddRange(targetGo.GetComponents<IInteractionTarget>().Where(x =>
+                    (x as MonoBehaviour)?.enabled != false && source.CanInteractWithTarget(x)));
+                if (targets.Count < 1)
                 {
-                    interactionEvent = null;
-                    return new List<IInteraction>();
+                    targets.Add(new InteractionTargetGameObject(targetGo));
                 }
             }
 
-            interactionEvent = new InteractionEvent(source, target, point);
+            // TODO: Please god have mercy on my rotten soul
+            interactionEvent = new InteractionEvent(source, targets[0], point);
             
             IInteraction[] availableInteractions =
-                source.GenerateInteractions(target != null ? new[] {target} : new IInteractionTarget[0]);
-
+                source.GenerateInteractions(targets.ToArray());
+            
             InteractionEvent @event = interactionEvent;
             return availableInteractions.Where(i => i.CanInteract(@event)).ToList();
         }
