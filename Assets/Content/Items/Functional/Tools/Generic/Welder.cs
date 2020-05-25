@@ -32,8 +32,8 @@ namespace SS3D.Content.Items.Functional.Tools
         
         public void Start()
         {
-            GenerateNewIcon();
             reinforceDict = new Dictionary<Turf, Turf> {{commonWall, reinforcedWall}, {commonFloor, reinforcedFloor}};
+            GenerateNewIcon();
         }
 
         public void OnEnable()

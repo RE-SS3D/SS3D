@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.UIElements;
-
 public class SimpleBodyPartLookAt : MonoBehaviour
 {
     [SerializeField] public Transform target;
@@ -30,8 +24,9 @@ public class SimpleBodyPartLookAt : MonoBehaviour
         public bool z;
     }
 
-    // This class is resposable of displaying the bools properly. Values are hardcoded for lack of better means.
-    [CustomPropertyDrawer(typeof(Limits))]
+#if UNITY_EDITOR
+    // This class is resposable of displaying the bools properly. Values are hardcoded for lack of better means. (Currently unused)
+    //[CustomPropertyDrawer(typeof(Limits))]
     private class LimitsUIE : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -66,6 +61,7 @@ public class SimpleBodyPartLookAt : MonoBehaviour
             EditorGUI.EndProperty();
         }
     }
+#endif
 
     private void Start()
     {
