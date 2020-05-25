@@ -73,6 +73,10 @@ public class Microwave : InteractionTargetNetworkBehaviour
         for (var i = 0; i < items.Count; i++)
         {
             Item item = items[i];
+            if (item == null)
+            {
+                continue;
+            }
             Microwaveable microwaveable = item.GetComponent<Microwaveable>();
             if (microwaveable != null)
             {
