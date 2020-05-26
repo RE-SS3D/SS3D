@@ -7,12 +7,19 @@ using SS3D.Engine.Interactions;
 using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Inventory;
 using UnityEngine;
+using Mirror;
 
 [RequireComponent(typeof(Container))]
+[RequireComponent(typeof(AudioSource))]
 public class Microwave : InteractionTargetNetworkBehaviour
 {
     public float MicrowaveDuration = 5;
     public GameObject DestroyedItemPrefab;
+
+    private AudioSource audioSource;
+    public AudioClip onSound;
+    public AudioClip finishSound;
+
     private bool isOn;
     private StorageContainer storageContainer;
     private Container container;
@@ -21,6 +28,7 @@ public class Microwave : InteractionTargetNetworkBehaviour
     {
         storageContainer = GetComponent<StorageContainer>();
         container = GetComponent<Container>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
@@ -49,6 +57,7 @@ public class Microwave : InteractionTargetNetworkBehaviour
     private void TurnOn(InteractionEvent interactionEvent, InteractionReference reference)
     {
         SetActivated(true);
+        PlayOnSnd();
         StartCoroutine(BlastShit());
     }
 
@@ -64,6 +73,7 @@ public class Microwave : InteractionTargetNetworkBehaviour
     private IEnumerator BlastShit()
     {
         yield return new WaitForSeconds(MicrowaveDuration);
+        PlayFinishSnd();
         SetActivated(false);
         CookItems();
     }
@@ -81,7 +91,7 @@ public class Microwave : InteractionTargetNetworkBehaviour
             Microwaveable microwaveable = item.GetComponent<Microwaveable>();
             if (microwaveable != null)
             {
-                
+
                 ItemHelpers.ReplaceItem(item, ItemHelpers.CreateItem(microwaveable.ResultingObject));
             }
             else
@@ -89,5 +99,41 @@ public class Microwave : InteractionTargetNetworkBehaviour
                 ItemHelpers.ReplaceItem(item, ItemHelpers.CreateItem(DestroyedItemPrefab));
             }
         }
+    }
+
+    [Server]
+    private void PlayFinishSnd()
+    {
+        audioSource.Stop();
+        audioSource.loop = false;
+        audioSource.PlayOneShot(finishSound);
+        RpcPlayFinishSnd();
+    }
+
+    [ClientRpc]
+    private void RpcPlayFinishSnd()
+    {
+        audioSource.Stop();
+        audioSource.loop = false;
+        audioSource.PlayOneShot(finishSound);
+    }
+
+    [Server]
+    private void PlayOnSnd()
+    {
+        audioSource.Stop();
+        audioSource.loop = true;
+        audioSource.clip = onSound;
+        audioSource.Play();
+        RpcPlayOnSnd();
+    }
+
+    [ClientRpc]
+    private void RpcPlayOnSnd()
+    {
+        audioSource.Stop();
+        audioSource.loop = true;
+        audioSource.clip = onSound;
+        audioSource.Play();
     }
 }
