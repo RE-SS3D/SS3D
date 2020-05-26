@@ -105,7 +105,6 @@ public class Microwave : InteractionTargetNetworkBehaviour
     private void PlayFinishSnd()
     {
         audioSource.Stop();
-        audioSource.loop = false;
         audioSource.PlayOneShot(finishSound);
         RpcPlayFinishSnd();
     }
@@ -114,7 +113,6 @@ public class Microwave : InteractionTargetNetworkBehaviour
     private void RpcPlayFinishSnd()
     {
         audioSource.Stop();
-        audioSource.loop = false;
         audioSource.PlayOneShot(finishSound);
     }
 
@@ -122,7 +120,6 @@ public class Microwave : InteractionTargetNetworkBehaviour
     private void PlayOnSnd()
     {
         audioSource.Stop();
-        audioSource.loop = true;
         audioSource.clip = onSound;
         audioSource.Play();
         RpcPlayOnSnd();
@@ -132,7 +129,6 @@ public class Microwave : InteractionTargetNetworkBehaviour
     private void RpcPlayOnSnd()
     {
         audioSource.Stop();
-        audioSource.loop = true;
         audioSource.clip = onSound;
         audioSource.Play();
     }
