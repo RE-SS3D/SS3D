@@ -51,6 +51,7 @@ namespace SS3D.Engine.Atmospherics
         private AtmosStates state = AtmosStates.Active;
         private TileObject[] tileNeighbours = { null, null, null, null };
         private AtmosObject[] atmosNeighbours = { null, null, null, null };
+        private bool tempSetting = false;
 
         // Gass constants
         private const float dt = 0.1f;              // Delta time
@@ -81,6 +82,7 @@ namespace SS3D.Engine.Atmospherics
             {
                 if (tile != null)
                     atmosNeighbours[i] = tile.atmos;
+                i++;
             }
         }
 
@@ -99,6 +101,16 @@ namespace SS3D.Engine.Atmospherics
             {
                 state = AtmosStates.Blocked;
             }
+        }
+
+        public float[] GetGasses()
+        {
+            return gasses;
+        }
+
+        public float GetTemperature()
+        {
+            return temperature;
         }
 
         public void RemoveFlux()
@@ -191,6 +203,22 @@ namespace SS3D.Engine.Atmospherics
             return (GetPartialPressure(AtmosGasses.Oxygen) >= 16f && GetPartialPressure(AtmosGasses.CarbonDioxide) < 8f);
         }
 
+        public void ValidateVacuum()
+        {
+            // If a tile has no neighbour and is not a wall, consider it vacuum
+            bool emptyTileFound = false;
+            foreach (TileObject tile in tileNeighbours)
+            {
+                if (tile == null)
+                    emptyTileFound = true;
+            }
+            if (emptyTileFound && state != AtmosStates.Blocked)
+            {
+                state = AtmosStates.Vacuum;
+                MakeEmpty();
+            }
+        }
+
         public float GetSpecificHeat()
         {
             float temp = 0f;
@@ -220,19 +248,24 @@ namespace SS3D.Engine.Atmospherics
                 0f      // Bottom flux
             };
 
-            int i = 0;
-            foreach (AtmosObject tile in atmosNeighbours)
+            if (state == AtmosStates.Active)
             {
-                if (tile != null && tile.state != AtmosStates.Blocked)
-                {
-                    otherTilesFlux[i] = Mathf.Min(tileFlux[i] * drag + (GetPressure() - tile.GetPressure()) * dt, 1000f);
-                    activeDirection[i] = true;
 
-                    if (otherTilesFlux[i] < 0f)
+                int i = 0;
+                foreach (AtmosObject tile in atmosNeighbours)
+                {
+                    if (tile != null && tile.state != AtmosStates.Blocked)
                     {
-                        tile.state = AtmosStates.Active;
-                        otherTilesFlux[i] = 0f;
+                        otherTilesFlux[i] = Mathf.Min(tileFlux[i] * drag + (GetPressure() - tile.GetPressure()) * dt, 1000f);
+                        activeDirection[i] = true;
+
+                        if (otherTilesFlux[i] < 0f)
+                        {
+                            tile.state = AtmosStates.Active;
+                            otherTilesFlux[i] = 0f;
+                        }
                     }
+                    i++;
                 }
 
                 if (otherTilesFlux[0] > fluxEpsilon || otherTilesFlux[1] > fluxEpsilon || otherTilesFlux[2] > fluxEpsilon || otherTilesFlux[3] > fluxEpsilon)
@@ -251,15 +284,13 @@ namespace SS3D.Engine.Atmospherics
                     {
                         tileFlux[j] = 0;
                     }
+                    if (!tempSetting) { state = AtmosStates.Semiactive; } else { tempSetting = false; }
                 }
-
-                i++;
-
             }
-
 			if (state == AtmosStates.Active || state == AtmosStates.Semiactive)
 			{
-				SimulateMixing();
+                
+                SimulateMixing();
 			}
         }
 
@@ -310,6 +341,7 @@ namespace SS3D.Engine.Atmospherics
                         {
                             tile.temperature += difference;
                             temperature -= difference;
+                            tempSetting = true;
                         }
                     }
                     j++;
@@ -323,126 +355,130 @@ namespace SS3D.Engine.Atmospherics
 
         public void SimulateMixing()
         {
-            return; 
+            // return; 
             bool mixed = false;
             float[] difference = new float[AtmosManager.numOfGases];
 
-            /*for (int i = 0; i < _numOfGases; ++i)
-			{
-				if (gases[i] > 0f)
-				{
-					if (y < grid.GetLength(1) - 1 && grid[x, y + 1].state != States.blocked)
-					{
-						difference = (gases[i] - grid[x, y + 1].gases[i]) * 0.2f;
+            // Check the mole difference between each gas
+            for (int i = 0; i < AtmosManager.numOfGases; i++)
+            {
+                // There must be gas of course...
+                if (gasses[i] > 0f)
+                {
+                    // Go through all neighbours
+                    foreach (AtmosObject atmosObject in atmosNeighbours)
+                    {
+                        if (atmosObject == null)
+                            continue;
+                        if (atmosObject.state != AtmosStates.Blocked)
+                        {
+                            difference[i] = gasses[i] - atmosObject.gasses[i] * 0.2f;
+                            if (difference[i] > 0.1f)
+                            {
+                                // Increase neighbouring tiles moles
+                                atmosObject.gasses[i] += difference[i];
+                                atmosObject.state = AtmosStates.Semiactive;
 
-						if (difference > 0.1f)
-						{
-							grid[x, y + 1].gases[i] += difference;
-							grid[x, y + 1].state = States.semiactive;
-							gases[i] -= difference;
-							mixed = true;
-						}
-					}
-					/*if (y > 0 && grid[x, y - 1].state != States.blocked)
-					{
-						difference = (gases[i] - grid[x, y - 1].gases[i]) * 0.2f;
+                                // Decrease our own moles
+                                gasses[i] -= difference[i];
+                                mixed = true;
+                            }
+                        }
+                    }
+                }
+            }
 
-						if (difference > 0.1f)
-						{
-							grid[x, y - 1].gases[i] += difference;
-							grid[x, y - 1].state = States.semiactive;
-							gases[i] -= difference;
-							mixed = true;
-						}
-					}
-					if (x > 0 && grid[x - 1, y].state != States.blocked)
-					{
-						difference = (gases[i] - grid[x - 1, y].gases[i]) * 0.2f;
+            foreach (AtmosObject atmosObject in atmosNeighbours)
+            {
+                if (atmosObject == null)
+                    continue;
+                if (atmosObject.state != AtmosStates.Blocked)
+                {
+                    // Get difference in total moles and individual gasses
+                    float pressure = GetTotalMoles();
+                    float neighbourPressure = atmosObject.GetTotalMoles();
+                    difference = ArrayDiff(gasses, atmosObject.gasses);
 
-						if (difference > 0.1f)
-						{
-							grid[x - 1, y].gases[i] += difference;
-							grid[x - 1, y].state = States.semiactive;
-							gases[i] -= difference;
-							mixed = true;
-						}
-					}
-					if (x < grid.GetLength(0) - 1 && grid[x + 1, y].state != States.blocked)
-					{
-						difference = (gases[i] - grid[x + 1, y].gases[i]) * 0.2f;
+                    // If our moles / mixrate > 0.1f
+                    if (ArrayZero(difference))
+                    {
+                        // Set neighbour gasses to the normalized 
+                        atmosObject.gasses = ArrayNorm(ArraySum(atmosObject.gasses, difference), neighbourPressure);
 
-						if (difference > 0.1f)
-						{
-							grid[x + 1, y].gases[i] += difference;
-							grid[x, y + 1].state = States.semiactive;
-							gases[i] -= difference;
-							mixed = true;
-						}
-					}*//*
-				}
-			}*/
+                        if (atmosObject.state == AtmosStates.Inactive)
+                        {
+                            atmosObject.state = AtmosStates.Semiactive;
+                        }
 
-            /*if (y < grid.GetLength(1) - 1 && grid[x, y + 1].state != TileStates.Blocked)
-			{
-				difference = ArrayDiff(gasses, grid[x, y + 1].gasses);
-				float pressure = GetMoles();
-				float pressureOther = grid[x, y + 1].GetMoles();
+                        // Set our own gasses to the normalized
+                        gasses = ArrayNorm(ArrayDiff(gasses, difference), pressure);
+                        mixed = true;
+                    }
+                }
+            }
 
-				if (!ArrayZero(difference))
-				{
-					grid[x, y + 1].gasses = ArrayNorm(ArraySum(grid[x, y + 1].gasses, difference), pressureOther);
-					if (grid[x, y + 1].state == TileStates.Inactive) { grid[x, y + 1].state = TileStates.Semiactive; }
-					gasses = ArrayNorm(ArrayDiff(gasses, difference), pressure);
-					mixed = true;
-				}
-			}
-			if (y > 0 && grid[x, y - 1].state != TileStates.Blocked)
-			{
-				difference = ArrayDiff(gasses, grid[x, y - 1].gasses);
-				float pressure = GetMoles();
-				float pressureOther = grid[x, y - 1].GetMoles();
+            if (!mixed && state == AtmosStates.Semiactive)
+            {
+                state = AtmosStates.Inactive;
+            }
+        }
 
-				if (!ArrayZero(difference))
-				{
-					grid[x, y - 1].gasses = ArrayNorm(ArraySum(grid[x, y - 1].gasses, difference), pressureOther);
-					if (grid[x, y - 1].state == TileStates.Inactive) { grid[x, y - 1].state = TileStates.Semiactive; }
-					gasses = ArrayNorm(ArrayDiff(gasses, difference), pressure);
-					mixed = true;
-				}
-			}
-			if (x > 0 && grid[x - 1, y].state != TileStates.Blocked)
-			{
-				difference = ArrayDiff(gasses, grid[x - 1, y].gasses);
-				float pressure = GetMoles();
-				float pressureOther = grid[x - 1, y].GetMoles();
+        private float[] ArrayDiff(float[] arr1, float[] arr2)
+        {
+            float[] difference = new float[AtmosManager.numOfGases];
 
-				if (!ArrayZero(difference))
-				{
-					grid[x - 1, y].gasses = ArrayNorm(ArraySum(grid[x - 1, y].gasses, difference), pressureOther);
-					if (grid[x - 1, y].state == TileStates.Inactive) { grid[x - 1, y].state = TileStates.Semiactive; }
-					gasses = ArrayNorm(ArrayDiff(gasses, difference), pressure);
-					mixed = true;
-				}
-			}
-			if (x < grid.GetLength(0) - 1 && grid[x + 1, y].state != TileStates.Blocked)
-			{
-				difference = ArrayDiff(gasses, grid[x + 1, y].gasses);
-				float pressure = GetMoles();
-				float pressureOther = grid[x + 1, y].GetMoles();
+            for (int i = 0; i < AtmosManager.numOfGases; ++i)
+            {
+                difference[i] = (arr1[i] - arr2[i]) * mixRate;
+            }
 
-				if (!ArrayZero(difference))
-				{
-					grid[x + 1, y].gasses = ArrayNorm(ArraySum(grid[x + 1, y].gasses, difference), pressureOther);
-					if (grid[x + 1, y].state == TileStates.Inactive) { grid[x + 1, y].state = TileStates.Semiactive; }
-					gasses = ArrayNorm(ArrayDiff(gasses, difference), pressure);
-					mixed = true;
-				}
-			}
+            return difference;
+        }
 
-			if (!mixed && state == TileStates.Semiactive)
-			{
-				state = TileStates.Inactive;
-			}*/
+        private float[] ArrayNorm(float[] arr, float normal)
+        {
+            float div = ArraySize(arr);
+
+            for (int i = 0; i < AtmosManager.numOfGases; ++i)
+            {
+                arr[i] = arr[i] / div * normal;
+            }
+
+            return arr;
+        }
+
+        private float[] ArraySum(float[] arr1, float[] arr2)
+        {
+            float[] sum = new float[AtmosManager.numOfGases];
+
+            for (int i = 0; i < AtmosManager.numOfGases; ++i)
+            {
+                sum[i] = arr1[i] + arr2[i];
+            }
+
+            return sum;
+        }
+
+        private float ArraySize(float[] arr)
+        {
+            float size = 0f;
+
+            for (int i = 0; i < AtmosManager.numOfGases; ++i)
+            {
+                size += arr[i];
+            }
+
+            return size;
+        }
+
+        private bool ArrayZero(float[] arr)
+        {
+            for (int i = 0; i < AtmosManager.numOfGases; ++i)
+            {
+                if (arr[i] / mixRate > 0.1f) { return false; }
+            }
+
+            return true;
         }
     }
 }

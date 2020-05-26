@@ -1,4 +1,5 @@
 ﻿using SS3D.Engine.Tiles;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -6,7 +7,7 @@ using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
-
+    // TODO, move to editors
     public class AtmosDebug : EditorWindow
     {
 
@@ -71,29 +72,34 @@ namespace SS3D.Engine.Atmospherics
             //    if (hit != Vector3.down)
             //    {
             //        // For each tile in the tilemap
-            //        foreach (Tile in tilemap)
+            //        foreach (TileObject tile in tileManager.GetAllTiles())
             //        {
-            //            Vector3 draw = new Vector3(i, 0, j) / 1f;
+            //            // ugly hack to get coordinates
+            //            string[] coords = tile.name.Split(',');
+            //            int x = Int32.Parse(coords[0].Replace("[", ""));
+            //            int y = Int32.Parse(coords[1].Replace("]", ""));
+
+            //            Vector3 draw = new Vector3(x, 0, y) / 1f;
 
             //            if (Vector3.Distance(draw, hit) < drawRadius || drawAll)
             //            {
             //                Color state;
-            //                switch (atmos.GetTile(i, j).GetState())
+            //                switch (tile.atmos.GetState())
             //                {
-            //                    case TileStates.Active: state = new Color(0, 0, 0, 0); break;
-            //                    case TileStates.Semiactive: state = new Color(0, 0, 0, 0.8f); break;
-            //                    case TileStates.Inactive: state = new Color(0, 0, 0, 0.8f); break;
+            //                    case AtmosStates.Active: state = new Color(0, 0, 0, 0); break;
+            //                    case AtmosStates.Semiactive: state = new Color(0, 0, 0, 0.8f); break;
+            //                    case AtmosStates.Inactive: state = new Color(0, 0, 0, 0.8f); break;
             //                    default: state = new Color(0, 0, 0, 1); break;
             //                }
 
             //                float pressure;
 
-            //                if (atmos.GetTile(i, j).GetState() == TileStates.Blocked)
+            //                if (tile.atmos.GetState() == AtmosStates.Blocked)
             //                {
             //                    Gizmos.color = new Color(0.2f, 0.2f, 0.2f, 1f);
 
             //                    // Draw black cube where atmos flow is blocked
-            //                    Gizmos.DrawCube(new Vector3(i, 0.5f, j), new Vector3(1, 1, 1));
+            //                    Gizmos.DrawCube(new Vector3(x, 0.5f, y), new Vector3(1, 1, 1));
             //                }
             //                else
             //                {
@@ -107,33 +113,33 @@ namespace SS3D.Engine.Atmospherics
 
             //                            for (int k = 0; k < 4; ++k)
             //                            {
-            //                                float moles = atmos.GetTile(i, j).GetGasses()[k] / 30f;
+            //                                float moles = tile.atmos.GetGasses()[k] / 30f;
 
             //                                if (moles != 0f)
             //                                {
             //                                    Gizmos.color = colors[k] - state;
-            //                                    Gizmos.DrawCube(new Vector3(i, moles / 2f + offset, j), new Vector3(1, moles, 1));
+            //                                    Gizmos.DrawCube(new Vector3(x, moles / 2f + offset, y), new Vector3(1, moles, 1));
             //                                    offset += moles;
             //                                }
             //                            }
             //                            break;
             //                        case ViewType.Pressure:
-            //                            pressure = atmos.GetTile(i, j).GetPressure() / 30f;
+            //                            pressure = tile.atmos.GetPressure() / 30f;
 
             //                            Gizmos.color = Color.white - state;
-            //                            Gizmos.DrawCube(new Vector3(i, pressure / 2f, j), new Vector3(1, pressure, 1));
+            //                            Gizmos.DrawCube(new Vector3(x, pressure / 2f, y), new Vector3(1, pressure, 1));
             //                            break;
             //                        case ViewType.Temperature:
-            //                            float temperatue = atmos.GetTile(i, j).GetTemperature() / 100f;
+            //                            float temperatue = tile.atmos.GetTemperature() / 100f;
 
             //                            Gizmos.color = Color.red - state;
-            //                            Gizmos.DrawCube(new Vector3(i, temperatue / 2f, j), new Vector3(1, temperatue, 1));
+            //                            Gizmos.DrawCube(new Vector3(x, temperatue / 2f, y), new Vector3(1, temperatue, 1));
             //                            break;
             //                        case ViewType.Combined:
-            //                            pressure = atmos.GetTile(i, j).GetPressure() / 30f;
+            //                            pressure = tile.atmos.GetPressure() / 30f;
 
-            //                            Gizmos.color = new Color(atmos.GetTile(i, j).GetTemperature() / 500f, 0, 0, 1) - state;
-            //                            Gizmos.DrawCube(new Vector3(i, pressure / 2f, j), new Vector3(1, pressure, 1));
+            //                            Gizmos.color = new Color(tile.atmos.GetTemperature() / 500f, 0, 0, 1) - state;
+            //                            Gizmos.DrawCube(new Vector3(x, pressure / 2f, y), new Vector3(1, pressure, 1));
             //                            break;
             //                    }
             //                }

@@ -10,6 +10,7 @@ namespace SS3D.Engine.Atmospherics
     public class AtmosManager : MonoBehaviour
     {
         public static int numOfGases = System.Enum.GetNames(typeof(AtmosStates)).Length;
+        private enum ViewType { Content, Pressure, Temperature, Combined };
 
         public float updateRate = 0f;
 
@@ -21,20 +22,21 @@ namespace SS3D.Engine.Atmospherics
         private int activeTiles = 0;
         private bool threadDone = true;
         private float lastStep;
+        private bool drawDebug = false;
 
-        // Start is called before the first frame update
         void Start()
         {
             tileManager = FindObjectOfType<TileManager>();
             atmosTiles = new List<AtmosObject>();
 
             // Ugly hack to wait for all tiles to be initialized
-            StartCoroutine(Initialize());
+            //StartCoroutine(Initialize());
+            Initialize();
         }
 
-        private IEnumerator Initialize()
+        private void Initialize()
         {
-            yield return new WaitForSeconds(5);
+            // yield return new WaitForSeconds(1);
             Debug.Log("AtmosManager: Initializing tiles");
 
             // Initialize all tiles with atmos
@@ -92,25 +94,45 @@ namespace SS3D.Engine.Atmospherics
             foreach (TileObject tile in tileObjects)
             {
                 tile.atmos.setAtmosNeighbours();
+                tile.atmos.ValidateVacuum();
             }
             Debug.Log("AtmosManager: Finished initializing tiles");
             lastStep = Time.fixedTime;
+            drawDebug = true;
         }
 
         void Update()
         {
-            Debug.Log("AtmosManager: Running update");
             if (Time.fixedTime >= lastStep && threadDone)
             {
                 activeTiles = Step();
-                Debug.Log("Ran for " + (Time.fixedTime - lastStep) + " seconds, simulating " + activeTiles + " atmos tiles");
+                if (activeTiles > 0)
+                    Debug.Log("Ran for " + (Time.fixedTime - lastStep) + " seconds, simulating " + activeTiles + " atmos tiles");
 
                 threadDone = true; // false
-                // new Thread(Thread).Start();
-                
+                                   // new Thread(Thread).Start();
+
 
                 activeTiles = 0;
                 lastStep = Time.fixedTime + updateRate;
+            }
+
+            Vector3 hit = GetMouse();
+            Vector3 position = new Vector3(hit.x, 0, hit.z);
+
+            Vector3 snappedPosition = tileManager.GetPositionClosestTo(position);
+            if (snappedPosition != null)
+            {
+                TileObject tile = tileManager.GetTile(snappedPosition);
+
+                if (Input.GetMouseButton(0))
+                {
+                    tile.atmos.AddGas(AtmosGasses.Oxygen, 60f);
+                }
+                else if (Input.GetMouseButton(1))
+                {
+                    tile.atmos.MakeEmpty();
+                }
             }
         }
 
@@ -145,6 +167,117 @@ namespace SS3D.Engine.Atmospherics
             }
 
             return activeTiles;
+        }
+
+        private Vector3 GetMouse()
+        {
+            Plane plane = new Plane(Vector3.up, Vector3.zero);
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            float distance;
+
+            if (plane.Raycast(ray, out distance))
+            {
+                return ray.GetPoint(distance);
+            }
+
+            return Vector3.down;
+        }
+
+        private void OnDrawGizmos()
+        {
+            bool drawAll = true;
+            float drawRadius = 3.5f;
+            ViewType drawView = ViewType.Content;
+
+            if (drawDebug)
+            {
+                Vector3 hit = GetMouse();
+
+                if (hit != Vector3.down)
+                {
+                    // For each tile in the tilemap
+                    foreach (TileObject tile in tileManager.GetAllTiles())
+                    {
+                        // ugly hack to get coordinates
+                        string[] coords = tile.name.Split(',');
+                        int xTemp = Int32.Parse(coords[0].Replace("[", ""));
+                        int yTemp = Int32.Parse(coords[1].Replace("]", ""));
+
+                        var realcoords = tileManager.GetPosition(xTemp, yTemp);
+                        float x = realcoords.x;
+                        float y = realcoords.z;
+
+                        Vector3 sizeFactor = new Vector3(0.1f, 0.1f, 0.1f);
+
+                        Vector3 draw = new Vector3(x, 0, y) / 1f;
+
+                        if (Vector3.Distance(draw, hit) < drawRadius || drawAll)
+                        {
+                            Color state;
+                            switch (tile.atmos.GetState())
+                            {
+                                case AtmosStates.Active: state = new Color(0, 0, 0, 0); break;
+                                case AtmosStates.Semiactive: state = new Color(0, 0, 0, 0.8f); break;
+                                case AtmosStates.Inactive: state = new Color(1, 0, 0, 0.8f); break;
+                                default: state = new Color(0, 0, 0, 1); break;
+                            }
+
+                            float pressure;
+
+                            if (tile.atmos.GetState() == AtmosStates.Blocked)
+                            {
+                                Gizmos.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+
+                                // Draw black cube where atmos flow is blocked
+                                Gizmos.DrawCube(new Vector3(x, 0.5f, y), new Vector3(1, 2, 1));
+                            }
+                            else
+                            {
+                                switch (drawView)
+                                {
+                                    case ViewType.Content:
+                                        float[] gases = new float[5];
+                                        Color[] colors = new Color[] { Color.blue, Color.red, Color.gray, Color.magenta };
+
+                                        float offset = 0f;
+
+                                        for (int k = 0; k < 4; ++k)
+                                        {
+                                            float moles = tile.atmos.GetGasses()[k] / 30f;
+
+                                            if (moles != 0f)
+                                            {
+                                                Gizmos.color = colors[k] - state;
+                                                Gizmos.DrawCube(new Vector3(x, moles / 2f + offset, y), new Vector3(1, moles, 1));
+                                                offset += moles;
+                                            }
+                                        }
+                                        break;
+                                    case ViewType.Pressure:
+                                        pressure = tile.atmos.GetPressure() / 160f; // 30f
+
+                                        Gizmos.color = Color.white - state;
+                                        Gizmos.DrawCube(new Vector3(x, pressure / 2f, y), new Vector3(0.8f, pressure, 0.8f)); // 1f
+                                        break;
+                                    case ViewType.Temperature:
+                                        float temperatue = tile.atmos.GetTemperature() / 100f;
+
+                                        Gizmos.color = Color.red - state;
+                                        Gizmos.DrawCube(new Vector3(x, temperatue / 2f, y), new Vector3(1, temperatue, 1));
+                                        break;
+                                    case ViewType.Combined:
+                                        pressure = tile.atmos.GetPressure() / 30f;
+
+                                        Gizmos.color = new Color(tile.atmos.GetTemperature() / 500f, 0, 0, 1) - state;
+                                        Gizmos.DrawCube(new Vector3(x, pressure / 2f, y), new Vector3(1, pressure, 1));
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
         }
     }
 }
