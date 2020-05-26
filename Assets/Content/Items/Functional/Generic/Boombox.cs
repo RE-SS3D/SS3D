@@ -116,6 +116,7 @@ namespace SS3D.Content.Items.Cosmetic
         public void ChangeCurrentMusic()
         {
             audioSource.Stop();
+            audioSource.time = 0f;
             enableTime = 0f;
             if (currentMusic < musics.Length-1)
             {
