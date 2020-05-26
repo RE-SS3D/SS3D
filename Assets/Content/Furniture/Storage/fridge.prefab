@@ -128,7 +128,7 @@ Animator:
   m_GameObject: {fileID: 4214221335928705926}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 1e8b9c4db7e2d1648abfaef10146caf5, type: 2}
+  m_Controller: {fileID: 9100000, guid: aadde5c8203d6d04d9be02cce2d89e00, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -180,7 +180,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  containerName: locker
+  containerName: fridge
   containerType: 0
   slots: 00000000000000000000000000000000
   displays:
@@ -203,6 +203,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   OnlyStoreWhenOpen: 1
+  MaxDistance: 1.5
 --- !u!1 &5240830354732226920
 GameObject:
   m_ObjectHideFlags: 0
@@ -218,7 +219,7 @@ GameObject:
   - component: {fileID: 4285060363148910370}
   - component: {fileID: 5443252286308906427}
   m_Layer: 14
-  m_Name: LockerBasicDoor
+  m_Name: Fridge Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
