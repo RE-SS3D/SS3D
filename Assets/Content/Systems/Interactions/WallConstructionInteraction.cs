@@ -23,7 +23,7 @@ namespace SS3D.Content.Systems.Interactions
 
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
-            if (!InteractionHelpers.RangeCheck(interactionEvent))
+            if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
                 return false;
             }

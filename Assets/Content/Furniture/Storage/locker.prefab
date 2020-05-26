@@ -328,5 +328,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  Openable: 1
   OnlyStoreWhenOpen: 1
+  MaxDistance: 1.5
