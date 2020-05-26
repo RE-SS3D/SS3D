@@ -37,7 +37,7 @@ namespace SS3D.Engine.Inventory.UI
                 slotStartIndex += container.Length();
             }
 
-            rectTransform.sizeDelta = new Vector2(Math.Min(slotStartIndex, 4) * 52f + 52f, Mathf.Ceil(slotStartIndex / 4f) * 52f + 2f);
+            rectTransform.sizeDelta = new Vector2(Math.Min(slotStartIndex, 4) * 30f + 30f, Mathf.Ceil(slotStartIndex / 4f) * 30f + 2f);
         }
 
         /**
@@ -64,7 +64,7 @@ namespace SS3D.Engine.Inventory.UI
 
         private Vector2 GetPositionFromIndex(int i)
         {
-            return new Vector2((i % 4) * 52f + 52f, (i / 4) * 52f + 2f);
+            return new Vector2((i % 4) * 30f + 30f, (i / 4) * 30f + 2f);
         }
 
         private void Awake()
