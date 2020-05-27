@@ -1,14 +1,17 @@
-﻿namespace SS3D.Engine.Interactions
+﻿using System.Collections.Generic;
+
+namespace SS3D.Engine.Interactions
 {
     public interface IInteractionSource
     {
         IInteractionSource Parent { get; set; }
+
         /// <summary>
-        /// Generates an ordered array of all interactions (not checked against CanExecute)
+        /// Allows the source to manipulate existing interactions and add new ones
         /// </summary>
-        /// <param name="targets">The interaction targets to check</param>
-        /// <returns>The interactions, ordered by priority</returns>
-        IInteraction[] GenerateInteractions(IInteractionTarget[] targets);
+        /// <param name="targets">The interaction targets of this interaction</param>
+        /// <param name="interactions">The already present interactions</param>
+        void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions);
         /// <summary>
         /// Checks if this source can interact with a certain target
         /// </summary>
