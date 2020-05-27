@@ -85,6 +85,7 @@ GameObject:
   - component: {fileID: 666907628477534858}
   - component: {fileID: 3809031586969339676}
   - component: {fileID: 6524441915444712897}
+  - component: {fileID: 2059713297401845381}
   m_Layer: 15
   m_Name: Human
   m_TagString: Untagged
@@ -396,6 +397,14 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ArmatureRoot: {fileID: 1078238172721072839}
+--- !u!81 &2059713297401845381
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Enabled: 1
 --- !u!1 &290878266594310021
 GameObject:
   m_ObjectHideFlags: 0
