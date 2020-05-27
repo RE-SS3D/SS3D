@@ -90,7 +90,7 @@ namespace SS3D.Content.Items.Functional.Tools
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
             List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
-            list.Insert(0, new ToggleInteraction {OnName = "Turn off", OffName = "Turn on"});
+            list.Add(new ToggleInteraction {OnName = "Turn off", OffName = "Turn on"});
             return list.ToArray();
         }
     }

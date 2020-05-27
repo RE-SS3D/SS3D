@@ -16,7 +16,7 @@ namespace SS3D.Content.Items.Functional.Tools
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
             List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
-            list.Insert(0, new FlashlightInteraction());
+            list.Add(new FlashlightInteraction());
             return list.ToArray();
         }
     }

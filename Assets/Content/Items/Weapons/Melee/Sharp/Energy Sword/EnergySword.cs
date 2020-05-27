@@ -51,7 +51,7 @@ public class EnergySword : Item, IToggleable
     public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
     {
         List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
-        list.Insert(0, new ToggleInteraction
+        list.Add(new ToggleInteraction
         {
             OnName = "Turn off", OffName = "Turn on"
         });
