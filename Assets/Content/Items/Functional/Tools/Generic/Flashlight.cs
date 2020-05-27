@@ -12,13 +12,12 @@ namespace SS3D.Content.Items.Functional.Tools
     {
         [SerializeField]
         public new Light light = null;
-        
-        public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
+
+        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
-            List<IInteraction> generateInteractions = base.GenerateInteractions(targets).ToList();
-            var flashlightInteraction = new FlashlightInteraction();
-            generateInteractions.Insert(0, flashlightInteraction);
-            return generateInteractions.ToArray();
+            List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
+            list.Insert(0, new FlashlightInteraction());
+            return list.ToArray();
         }
     }
 }

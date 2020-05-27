@@ -81,13 +81,17 @@ namespace SS3D.Content.Items.Functional.Tools
             RpcTurnOn(!hotFlame.isEmitting);
         }
 
-        public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
+        public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            List<IInteraction> interactions = base.GenerateInteractions(targets).ToList();
-            interactions.Insert(0, new WelderConstructionInteraction {TurfReinforceList = reinforceDict, LoadingBarPrefab = LoadingBarPrefab, Delay = Delay});
-            ToggleInteraction toggleInteraction = new ToggleInteraction {OnName = "Turn off", OffName = "Turn on"};
-            interactions.Insert(GetState() ? 1 : 0, toggleInteraction);
-            return interactions.ToArray();
+            base.CreateInteractions(targets, interactions);
+            interactions.Insert(0, new InteractionEntry(targets[0], new WelderConstructionInteraction {TurfReinforceList = reinforceDict, LoadingBarPrefab = LoadingBarPrefab, Delay = Delay}));
+        }
+
+        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        {
+            List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
+            list.Insert(0, new ToggleInteraction {OnName = "Turn off", OffName = "Turn on"});
+            return list.ToArray();
         }
     }
 }
