@@ -1,5 +1,6 @@
 ﻿using System;
 using SS3D.Engine.Interactions;
+using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
 {
@@ -8,6 +9,7 @@ namespace SS3D.Content.Systems.Interactions
     /// </summary>
     public class SimpleInteraction : IInteraction
     {
+        public Sprite icon;
         public string Name { get; set; }
         /// <summary>
         /// Checks if the interaction should be possible
@@ -26,6 +28,11 @@ namespace SS3D.Content.Systems.Interactions
         public string GetName(InteractionEvent interactionEvent)
         {
             return Name;
+        
+        }
+        public Sprite GetIcon(InteractionEvent interactionEvent)
+        {
+            return icon;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

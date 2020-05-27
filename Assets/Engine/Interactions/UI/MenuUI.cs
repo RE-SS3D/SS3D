@@ -43,6 +43,7 @@ namespace SS3D.Engine.Interactions.UI
         
         public Action<IInteraction> onSelect;
 
+
         private void Update()
         {
             if(Input.GetButtonDown("Click") || Input.GetButtonDown("Secondary Click")) {

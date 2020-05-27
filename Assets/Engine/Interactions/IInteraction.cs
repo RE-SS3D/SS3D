@@ -1,4 +1,6 @@
-﻿namespace SS3D.Engine.Interactions
+﻿using UnityEngine;
+
+namespace SS3D.Engine.Interactions
 {
     /// <summary>
     /// Represents an interaction which can be performed
@@ -15,6 +17,12 @@
         /// <param name="interactionEvent">The source used in the interaction</param>
         /// <returns>The display name of the interaction</returns>
         string GetName(InteractionEvent interactionEvent);
+
+        /// <summary>
+        /// Gets the interaction icon
+        /// </summary>
+        Sprite GetIcon(InteractionEvent interactionEvent);
+
         /// <summary>
         /// Checks if this interaction can be executed
         /// </summary>

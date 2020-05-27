@@ -14,6 +14,9 @@ namespace SS3D.Content.Items.Cosmetic
     {
         private class HonkInteraction : IInteraction
         {
+
+            public Sprite icon;
+
             public IClientInteraction CreateClient(InteractionEvent interactionEvent)
             {
                 return null;
@@ -22,6 +25,11 @@ namespace SS3D.Content.Items.Cosmetic
             public string GetName(InteractionEvent interactionEvent)
             {
                 return "Honk";
+            }
+
+            public Sprite GetIcon(InteractionEvent interactionEvent)
+            {
+                return icon;
             }
 
             public bool CanInteract(InteractionEvent interactionEvent)

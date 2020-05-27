@@ -4,8 +4,11 @@ using UnityEngine;
 
 namespace SS3D.Engine.Inventory.Extensions
 {
-    public class DropInteraction : IInteraction
+    public class DropInteraction : MonoBehaviour, IInteraction
     {
+
+        public static Sprite icon;
+
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
             return null;
@@ -14,6 +17,11 @@ namespace SS3D.Engine.Inventory.Extensions
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Drop";
+        }
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
+        {
+            return icon;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

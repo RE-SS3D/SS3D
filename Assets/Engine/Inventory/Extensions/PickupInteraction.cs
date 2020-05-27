@@ -4,8 +4,10 @@ using UnityEngine;
 
 namespace SS3D.Engine.Inventory.Extensions
 {
-    public class PickupInteraction : IInteraction
+    public class PickupInteraction : MonoBehaviour, IInteraction
     {
+
+        public static Sprite icon;
 
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
@@ -15,6 +17,11 @@ namespace SS3D.Engine.Inventory.Extensions
         public string GetName(InteractionEvent interactionEvent)
         {
             return "Pick up";
+        }
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
+        {
+            return icon;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

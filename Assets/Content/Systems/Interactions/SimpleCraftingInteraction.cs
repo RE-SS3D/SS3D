@@ -10,6 +10,8 @@ using UnityEngine;
 
 public class SimpleCraftingInteraction : IInteraction
 {
+    public Sprite icon;
+
     /// <summary>
     /// The id of the necessary item
     /// </summary>
@@ -39,6 +41,11 @@ public class SimpleCraftingInteraction : IInteraction
     public string GetName(InteractionEvent interactionEvent)
     {
         return Name;
+    }
+
+    public Sprite GetIcon(InteractionEvent interactionEvent)
+    {
+        return icon;
     }
 
     public bool CanInteract(InteractionEvent interactionEvent)

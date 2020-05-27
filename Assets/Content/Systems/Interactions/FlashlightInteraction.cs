@@ -1,10 +1,12 @@
 ﻿using SS3D.Content.Items.Functional.Tools;
 using SS3D.Engine.Interactions;
+using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
 {
     public class FlashlightInteraction : IInteraction
     {
+        public Sprite icon;
         private class ClientFlashlightInteraction : IClientInteraction
         {
             public bool ClientStart(InteractionEvent interactionEvent)
@@ -44,6 +46,11 @@ namespace SS3D.Content.Systems.Interactions
             }
 
             return "Turn On";
+        }
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
+        {
+            return icon;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

@@ -8,6 +8,7 @@ namespace SS3D.Engine.Interactions
     /// </summary>
     public abstract class DelayedInteraction : IInteraction
     {
+        public Sprite icon;
         /// <summary>
         /// The delay in seconds before performing the interaction
         /// </summary>
@@ -32,6 +33,8 @@ namespace SS3D.Engine.Interactions
         }
 
         public abstract string GetName(InteractionEvent interactionEvent);
+
+        public virtual Sprite GetIcon(InteractionEvent interactionEvent) { return icon; }
         public abstract bool CanInteract(InteractionEvent interactionEvent);
 
         public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)

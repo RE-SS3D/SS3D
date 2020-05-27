@@ -61,7 +61,7 @@ namespace SS3D.Engine.Interactions
 
                 // Create a menu that will run the given action when clicked
                 var obj = Instantiate(menuPrefab, transform);
-                activeMenu = obj.GetComponent<UI.MenuUI>();
+                activeMenu = obj.GetComponent<UI.RadialInteractionMenuUI>();
 
                 activeMenu.Position = Input.mousePosition;
                 activeMenu.Event = interactionEvent;
@@ -179,6 +179,6 @@ namespace SS3D.Engine.Interactions
             return activeTool ?? GetComponent<IInteractionSource>();
         }
         
-        private UI.MenuUI activeMenu = null;
+        private UI.RadialInteractionMenuUI activeMenu = null;
     }
 }
