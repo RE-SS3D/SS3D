@@ -1,4 +1,4 @@
-﻿using SS3D.Engine.Interactions;
+using SS3D.Engine.Interactions;
 using SS3D.Engine.Interactions.Extensions;
 using UnityEngine;
 
@@ -21,12 +21,13 @@ namespace SS3D.Engine.Inventory.Extensions
         {
             if (interactionEvent.Target is IGameObjectProvider targetBehaviour)
             {
-                if (targetBehaviour.GameObject.GetComponent<Item>() == null)
+                Item item = targetBehaviour.GameObject.GetComponent<Item>();
+                if (item == null)
                 {
                     return false;
                 }
 
-                return InteractionExtensions.RangeCheck(interactionEvent);
+                return InteractionExtensions.RangeCheck(interactionEvent) && !item.InContainer();
             }
 
             return false;
