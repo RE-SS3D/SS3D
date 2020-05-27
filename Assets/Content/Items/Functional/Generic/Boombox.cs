@@ -61,10 +61,6 @@ namespace SS3D.Content.Items.Cosmetic
                     }
                     return boom.radioOn;
                 }
-                if (interactionEvent.Source is Boombox boom1)
-                {
-                    return boom1.radioOn;
-                }
 
                 return false;
             }
@@ -74,10 +70,6 @@ namespace SS3D.Content.Items.Cosmetic
                 if (interactionEvent.Target is Boombox boom)
                 {
                     boom.ChangeCurrentMusic();
-                }
-                if (interactionEvent.Source is Boombox boom1)
-                {
-                    boom1.ChangeCurrentMusic();
                 }
                 return false;
             }
@@ -156,12 +148,12 @@ namespace SS3D.Content.Items.Cosmetic
             return radioOn;
         }
 
-        public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
+        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
-            List<IInteraction> interactions = base.GenerateInteractions(targets).ToList();
-            interactions.Insert(0, new ChangeMusic());
+            List<IInteraction> interactions = base.GenerateInteractions(interactionEvent).ToList();
+            interactions.Add(new ChangeMusic());
             ToggleInteraction toggleInteraction = new ToggleInteraction { OnName = "Turn off", OffName = "Turn on" };
-            interactions.Insert(GetState() ? 1 : 0, toggleInteraction);
+            interactions.Insert(GetState() ? interactions.Count - 1 : interactions.Count - 2, toggleInteraction);
             return interactions.ToArray();
         }
     }
