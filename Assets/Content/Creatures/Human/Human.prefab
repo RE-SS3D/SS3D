@@ -280,6 +280,7 @@ MonoBehaviour:
   handContainer: {fileID: 593928988720118032}
   handRange: 5
   Range: 1.5
+  pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
 --- !u!114 &-4112737952016829400
 MonoBehaviour:
   m_ObjectHideFlags: 0

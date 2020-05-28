@@ -40,7 +40,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6162726184803424071}
   - component: {fileID: 347299427399917869}
-  - component: {fileID: 4268423880182923346}
   - component: {fileID: 8281474460980884094}
   - component: {fileID: 7341448804302632082}
   - component: {fileID: -5913540670884337423}
@@ -85,19 +84,6 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   m_SceneId: 0
---- !u!65 &4268423880182923346
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7195977086062962004}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.13119145, y: 0.13119143, z: 0.30096218}
-  m_Center: {x: -0.000000007450581, y: -0.000000067055225, z: -0.08592312}
 --- !u!54 &8281474460980884094
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -126,7 +112,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.13119145, y: 0.13119143, z: 0.30096218}
-  m_Center: {x: -0.000000007450581, y: -0.000000067055225, z: -0.08592312}
+  m_Center: {x: -0.000000067055225, y: -0.000000029802322, z: 0.08592312}
 --- !u!82 &-5913540670884337423
 AudioSource:
   m_ObjectHideFlags: 0
@@ -300,9 +286,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  ItemId: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 7195977086062962004}
   attachmentPoint: {fileID: 3201361005074650950}
   honkSound: {fileID: 8300000, guid: 8c8823796bbcb23438fcf68260070383, type: 3}
+  useIcon: {fileID: 21300000, guid: facda86cccb56594eb7155ed03ebbb9e, type: 3}

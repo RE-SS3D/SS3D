@@ -157,6 +157,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 679e79545485afe4f8c68617c36b2f1d, type: 3}
   radioOn: 0
   currentMusic: 0
+  interactionIcon: {fileID: 21300000, guid: facda86cccb56594eb7155ed03ebbb9e, type: 3}
+  interactionIconOn: {fileID: 21300000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
 --- !u!82 &7154395493564269582
 AudioSource:
   m_ObjectHideFlags: 0

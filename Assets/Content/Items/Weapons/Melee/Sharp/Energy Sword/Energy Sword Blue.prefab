@@ -105,6 +105,7 @@ MonoBehaviour:
   audio: {fileID: 111644857273378981}
   soundOn: {fileID: 8300000, guid: 81842472797700d479c0ea5aef90fe57, type: 3}
   soundOff: {fileID: 8300000, guid: ae6a0d3a332b67f4d968b477273cea56, type: 3}
+  turnOnIcon: {fileID: 21300000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
 --- !u!95 &351750458048978072
 Animator:
   serializedVersion: 3

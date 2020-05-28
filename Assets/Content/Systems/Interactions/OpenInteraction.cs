@@ -6,7 +6,7 @@ using UnityEngine;
 namespace SS3D.Content.Systems.Interactions
 {
     [Serializable]
-    public class OpenInteraction : MonoBehaviour, IInteraction
+    public class OpenInteraction : ScriptableObject, IInteraction
     {
         public Sprite icon;
 

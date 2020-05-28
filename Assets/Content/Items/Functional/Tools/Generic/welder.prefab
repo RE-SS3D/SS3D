@@ -143,6 +143,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  ItemId: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -158,6 +159,8 @@ MonoBehaviour:
   LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
     type: 3}
   Delay: 1.5
+  turnOnIcon: {fileID: 21300000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
+  constructIcon: {fileID: 21300000, guid: 23d865b338954604e9e48be58edf53ad, type: 3}
 --- !u!1 &7027750089843885471
 GameObject:
   m_ObjectHideFlags: 0

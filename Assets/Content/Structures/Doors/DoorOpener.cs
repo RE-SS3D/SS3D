@@ -29,7 +29,7 @@ namespace SS3D.Content.Structures.Fixtures
         [SerializeField] private AudioClip openSound = null;
         [SerializeField] private AudioClip closeSound = null;
         [SerializeField] private LayerMask doorTriggerLayers = -1;
-
+        
         private bool openState; // Server and Client
         private int playersInTrigger; // Server Only
         private Coroutine closeTimer; // Server Only

@@ -28,6 +28,9 @@ namespace SS3D.Content.Items.Functional.Tools
         public GameObject LoadingBarPrefab;
         public float Delay;
 
+        public Sprite turnOnIcon;
+        public Sprite constructIcon;
+
         private Dictionary<Turf, Turf> reinforceDict;
         
         public void Start()
@@ -84,8 +87,20 @@ namespace SS3D.Content.Items.Functional.Tools
         public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
         {
             List<IInteraction> interactions = base.GenerateInteractions(targets).ToList();
-            interactions.Insert(0, new WelderConstructionInteraction {TurfReinforceList = reinforceDict, LoadingBarPrefab = LoadingBarPrefab, Delay = Delay});
-            ToggleInteraction toggleInteraction = new ToggleInteraction {OnName = "Turn off", OffName = "Turn on"};
+            interactions.Insert(0, new WelderConstructionInteraction 
+            {
+                TurfReinforceList = reinforceDict,
+                LoadingBarPrefab = LoadingBarPrefab,
+                Delay = Delay,
+                icon = constructIcon
+            });
+            ToggleInteraction toggleInteraction = new ToggleInteraction 
+            {
+                OnName = "Turn off",
+                OffName = "Turn on",
+                iconOn = turnOnIcon,
+                iconOff = turnOnIcon 
+            };
             interactions.Insert(GetState() ? 1 : 0, toggleInteraction);
             return interactions.ToArray();
         }

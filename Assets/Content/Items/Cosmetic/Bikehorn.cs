@@ -77,6 +77,8 @@ namespace SS3D.Content.Items.Cosmetic
         [SerializeField] private AudioClip honkSound = null;
         private AudioSource audioSource;
 
+        public Sprite useIcon;
+
         public void Start()
         {
             audioSource = GetComponent<AudioSource>();
@@ -104,13 +106,13 @@ namespace SS3D.Content.Items.Cosmetic
         public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
         {
             List<IInteraction> interactions = base.GenerateInteractions(targets).ToList();
-            interactions.Insert(0, new HonkInteraction());
+            interactions.Insert(0, new HonkInteraction{ icon = useIcon });
             return interactions.ToArray();
         }
 
         public IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[]{new HonkInteraction()};
+            return new IInteraction[]{ new HonkInteraction{ icon = useIcon }};
         }
     }
 }

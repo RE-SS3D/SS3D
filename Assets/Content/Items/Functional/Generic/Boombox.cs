@@ -17,6 +17,10 @@ namespace SS3D.Content.Items.Cosmetic
         public bool radioOn;
         public int currentMusic;
 
+        // I hate my life
+        public Sprite interactionIcon;
+        public Sprite interactionIconOn;
+
         private bool toEnable = false;
         private float enableTime;
 
@@ -49,6 +53,15 @@ namespace SS3D.Content.Items.Cosmetic
             public string GetName(InteractionEvent interactionEvent)
             {
                 return "Change Music";
+            }
+
+            public Sprite GetIcon(InteractionEvent interactionEvent)
+            {
+                if (interactionEvent.Target is Boombox boom)
+                    return boom.interactionIcon;
+                if (interactionEvent.Source is Boombox boom1)
+                    return boom1.interactionIcon;
+                return null;
             }
 
             public bool CanInteract(InteractionEvent interactionEvent)
@@ -161,6 +174,11 @@ namespace SS3D.Content.Items.Cosmetic
             List<IInteraction> interactions = base.GenerateInteractions(targets).ToList();
             interactions.Insert(0, new ChangeMusic());
             ToggleInteraction toggleInteraction = new ToggleInteraction { OnName = "Turn off", OffName = "Turn on" };
+
+            // haha programms go zzzzzzzzzzzzzzz
+            toggleInteraction.iconOn = interactionIconOn;
+            toggleInteraction.iconOff = interactionIconOn;
+
             interactions.Insert(GetState() ? 1 : 0, toggleInteraction);
             return interactions.ToArray();
         }

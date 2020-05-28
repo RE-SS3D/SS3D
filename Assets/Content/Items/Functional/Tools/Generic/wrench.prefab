@@ -172,6 +172,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  ItemId: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -181,3 +182,4 @@ MonoBehaviour:
     type: 3}
   TableToConstruct: {fileID: 11400000, guid: e361c0d934015604fa13db8b86d73f4b, type: 2}
   Delay: 1
+  constructIcon: {fileID: 21300000, guid: e1b5b9fab3120ad4c91ea3deb5197a7b, type: 3}

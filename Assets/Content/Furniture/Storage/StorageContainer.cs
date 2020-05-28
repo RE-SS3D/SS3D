@@ -14,11 +14,14 @@ namespace SS3D.Content.Furniture.Storage
         public float MaxDistance = 5f;
         private Animator animator;
 
+        [SerializeField] private Sprite viewContainerIcon;
+
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = base.GenerateInteractions(interactionEvent).ToList();
             StoreInteraction storeInteraction = new StoreInteraction {OnlyWhenOpen = OnlyStoreWhenOpen};
-            ViewContainerInteraction view = new ViewContainerInteraction {MaxDistance = MaxDistance};
+            ViewContainerInteraction view = new ViewContainerInteraction {MaxDistance = MaxDistance, icon = viewContainerIcon};
+
             if (IsOpen())
             {
                 interactions.Insert(0, storeInteraction);

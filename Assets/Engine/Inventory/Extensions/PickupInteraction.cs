@@ -1,13 +1,15 @@
 ﻿using SS3D.Engine.Interactions;
 using SS3D.Engine.Interactions.Extensions;
+using System;
 using UnityEngine;
 
 namespace SS3D.Engine.Inventory.Extensions
 {
-    public class PickupInteraction : MonoBehaviour, IInteraction
+    [Serializable]
+    [CreateAssetMenu(fileName = "Pickup Interaction")]
+    public class PickupInteraction : IInteraction
     {
-
-        public static Sprite icon;
+        public Sprite icon;
 
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {

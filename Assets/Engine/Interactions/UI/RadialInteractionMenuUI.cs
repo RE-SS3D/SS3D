@@ -11,11 +11,18 @@ namespace SS3D.Engine.Interactions.UI
     public class RadialInteractionMenuUI : MonoBehaviour
     {
         public Animator menuAnimator;
+        
+        public RectTransform indicator;
+        public RectTransform selectedPetal;
+
         public PetalsManager petalsManager;
         private Canvas parentCanvas;
-        public Button close;
+        public RectTransform close;
 
         public Sprite missingIcon;
+
+        // Current selected object
+        GameObject obj = null;
 
         private static RadialInteractionMenuUI contextMenuManagerInstance = null;
 
@@ -66,12 +73,17 @@ namespace SS3D.Engine.Interactions.UI
         }
         private void Update()
         {
-            if (Input.GetButtonDown("Click") || Input.GetButtonDown("Secondary Click"))
+            float currentAngle = indicator.eulerAngles.z;
+
+            if (selectedPetal != null)
+                indicator.eulerAngles = new Vector3(0, 0, Mathf.LerpAngle(currentAngle, selectedPetal.eulerAngles.z, Time.deltaTime * 15));
+            
+            bool hasSelfAsParent = false;
+            obj = EventSystem.current?.currentSelectedGameObject;
+
+            if (Input.GetButtonDown("Secondary Click"))
             {
                 // Check for self as parent of click
-                bool hasSelfAsParent = false;
-
-                var obj = EventSystem.current?.currentSelectedGameObject?.transform;
                 while (obj != null)
                 {
                     if (obj == transform)
@@ -80,7 +92,7 @@ namespace SS3D.Engine.Interactions.UI
                         break;
                     }
 
-                    obj = obj.parent;
+                    obj = obj.transform.parent.gameObject;
                 }
 
                 if (!hasSelfAsParent)
@@ -89,6 +101,14 @@ namespace SS3D.Engine.Interactions.UI
                     Destroy(gameObject);
                 }
             }
+            // Deletes the object and calls the interaction if it exists when mouse 1 is up
+            if (Input.GetMouseButtonUp(1))
+            {
+                if (selectedPetal != null)
+                    selectedPetal.GetComponentInChildren<Button>().onClick.Invoke();
+                Destroy(gameObject);
+            }
+
         }
 
         private void UpdateInteractions()
@@ -108,19 +128,20 @@ namespace SS3D.Engine.Interactions.UI
                     string name = interaction.GetName(Event);
 
                     Petal newPetal = petalsManager.AddPetalToFolder(icon, name);
+                    RadialMenuButton petalButton = newPetal.GetComponentInChildren<RadialMenuButton>();
 
-                    close.onClick.AddListener(() =>
-                    {
-                        Destroy(gameObject);
-                    });
-                        newPetal.GetComponentInChildren<Button>().onClick.AddListener(() =>
-                    {
-                        Destroy(gameObject);
-                        onSelect?.Invoke(interaction);
-                    });
+                    petalButton.menu = GetComponent<RadialInteractionMenuUI>();
+                    petalButton.interaction = name;
+                    petalButton.center = close.GetComponentInChildren<TextMeshProUGUI>();
+
+                    petalButton.onClick.AddListener(() =>
+                {
+                    Destroy(gameObject);
+                    onSelect?.Invoke(interaction);
+                });
                 }
-                
             }
+
             else if (Input.GetMouseButtonUp(1))
             {
                 Disappear();
@@ -128,10 +149,10 @@ namespace SS3D.Engine.Interactions.UI
             int val = Input.GetAxis("Camera Zoom") > 0 ? -1 : Input.GetAxis("Camera Zoom") < 0 ? 1 : 0;
             GetPetalsManager().MoveIndex(val);
         }
-      
+
         public bool Appear(Vector2 screenPos, float scale, PetalFolder spawnFolder)
         {
-            Debug.Log("appear called");
+            //Debug.Log("appear called");
             //this.transform.position
             if (menuAnimator.GetBool("Visible") == true)
                 return (false);
@@ -146,7 +167,7 @@ namespace SS3D.Engine.Interactions.UI
 
         public bool Disappear()
         {
-            Debug.Log("disappear called");
+            //Debug.Log("disappear called");
             menuAnimator.SetBool("Visible", false);
             menuAnimator.SetBool("ReturnButtonVisible", false);
             return (true);
@@ -154,7 +175,7 @@ namespace SS3D.Engine.Interactions.UI
 
         public void Return()
         {
-            Debug.Log("return called");
+            //Debug.Log("return called");
             petalsManager.Return();
         }
 

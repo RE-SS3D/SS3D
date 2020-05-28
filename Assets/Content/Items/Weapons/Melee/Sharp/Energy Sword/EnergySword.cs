@@ -21,6 +21,8 @@ public class EnergySword : Item, IToggleable
     [SerializeField]
     private AudioClip soundOff;
 
+    public Sprite turnOnIcon;
+
     [ClientRpc]
     private void RpcSetBlade(bool on)
     {
@@ -53,8 +55,11 @@ public class EnergySword : Item, IToggleable
         List<IInteraction> interactions = base.GenerateInteractions(targets).ToList();
         interactions.Insert(0, new ToggleInteraction
         {
-            OnName = "Turn off", OffName = "Turn on"
-        });
+            OnName = "Turn off",
+            OffName = "Turn on",
+            iconOn = turnOnIcon,
+            iconOff = turnOnIcon
+        }); ;
         return interactions.ToArray();
     }
 }
