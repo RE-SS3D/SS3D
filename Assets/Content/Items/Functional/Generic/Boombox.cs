@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using SS3D.Content.Systems.Interactions;
@@ -153,7 +153,7 @@ namespace SS3D.Content.Items.Cosmetic
             List<IInteraction> interactions = base.GenerateInteractions(interactionEvent).ToList();
             interactions.Add(new ChangeMusic());
             ToggleInteraction toggleInteraction = new ToggleInteraction { OnName = "Turn off", OffName = "Turn on" };
-            interactions.Insert(GetState() ? interactions.Count - 1 : interactions.Count - 2, toggleInteraction);
+            interactions.Insert(GetState() ? interactions.Count: interactions.Count - 1, toggleInteraction);
             return interactions.ToArray();
         }
     }
