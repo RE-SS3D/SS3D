@@ -139,10 +139,11 @@ namespace SS3D.Engine.Interactions
                 }
             }
         }
+        
 
-        public virtual IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
+        public virtual void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            return targets.SelectMany(t => t.GenerateInteractions(new InteractionEvent(this, t))).ToArray();
+            
         }
 
         public virtual bool CanInteractWithTarget(IInteractionTarget target)

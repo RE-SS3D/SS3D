@@ -172,16 +172,6 @@ namespace SS3D.Engine.Inventory.Extensions
             return interactionSource;
         }
 
-        public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
-        {
-            List<IInteraction> interactions = base.GenerateInteractions(targets).ToList();
-            if (GetItemInHand() == null)
-            {
-                interactions.Insert(0, new PickupInteraction());
-            }
-            return interactions.ToArray();
-        }
-
         public float GetInteractionRange()
         {
             return Range;

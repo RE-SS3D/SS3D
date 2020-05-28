@@ -15,7 +15,7 @@ namespace SS3D.Engine.Inventory
      * An item describes what is held in a container.
      */
     [DisallowMultipleComponent]
-    public class Item : InteractionSourceNetworkBehaviour
+    public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget
     {
         // Distinguishes what can go in what slot
         public enum ItemType
@@ -52,12 +52,12 @@ namespace SS3D.Engine.Inventory
             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
             sprite.name = transform.name;
         }
-
-        public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
+        
+        public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            List<IInteraction> interactions = base.GenerateInteractions(targets).ToList();
-            interactions.Add(new DropInteraction());
-            return interactions.ToArray();
+            base.CreateInteractions(targets, interactions);
+            DropInteraction dropInteraction = new DropInteraction();
+            interactions.Insert(0, new InteractionEntry(null, dropInteraction));
         }
 
 #if UNITY_EDITOR
@@ -97,5 +97,14 @@ namespace SS3D.Engine.Inventory
         }
 
 #endif
+        public virtual IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        {
+            return new IInteraction[] {new PickupInteraction()};
+        }
+
+        public bool InContainer()
+        {
+            return container != null;
+        }
     }
 }
