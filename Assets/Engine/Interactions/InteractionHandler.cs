@@ -117,7 +117,7 @@ namespace SS3D.Engine.Interactions
             if (showMenu)
             {
                 var obj = Instantiate(menuPrefab, transform);
-                activeMenu = obj.GetComponent<UI.MenuUI>();
+                activeMenu = obj.GetComponent<UI.RadialInteractionMenuUI>();
 
                 activeMenu.Position = Input.mousePosition;
                 activeMenu.Event = interactionEvent;

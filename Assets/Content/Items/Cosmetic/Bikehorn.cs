@@ -98,7 +98,7 @@ namespace SS3D.Content.Items.Cosmetic
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
             List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
-            list.Add(0, new HonkInteraction{ icon = useIcon });
+            list.Add(new HonkInteraction{ icon = useIcon });
             return list.ToArray();
         }
     }

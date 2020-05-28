@@ -24,7 +24,7 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
                 Delay = Delay, 
                 LoadingBarPrefab = LoadingBarPrefab,
                 icon = constructIcon
-            };
+            }));
         }
     }
 }

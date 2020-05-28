@@ -87,16 +87,14 @@ namespace SS3D.Content.Items.Functional.Tools
         public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
             base.CreateInteractions(targets, interactions);
-            interactions.Insert(0, new WelderConstructionInteraction 
+            interactions.Insert(0, new InteractionEntry(targets[0], new WelderConstructionInteraction
             {
                 TurfReinforceList = reinforceDict,
                 LoadingBarPrefab = LoadingBarPrefab,
                 Delay = Delay,
                 icon = constructIcon
-            });
-          
-            interactions.Insert(GetState() ? 1 : 0, toggleInteraction);
-            return interactions.ToArray();
+            }));
+        }
 
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
