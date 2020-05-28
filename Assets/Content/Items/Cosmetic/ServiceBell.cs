@@ -34,10 +34,6 @@ namespace SS3D.Content.Items.Cosmetic
                     }
                     return true;
                 }
-                if (interactionEvent.Source is ServiceBell bell1)
-                {
-                    return true;
-                }
 
                 return false;
             }
@@ -47,10 +43,6 @@ namespace SS3D.Content.Items.Cosmetic
                 if (interactionEvent.Target is ServiceBell bell)
                 {
                     bell.Bell();
-                }
-                if (interactionEvent.Source is ServiceBell bell1)
-                {
-                    bell1.Bell();
                 }
                 return false;
             }
@@ -88,16 +80,11 @@ namespace SS3D.Content.Items.Cosmetic
             audioSource.PlayOneShot(bellSound);
         }
 
-        public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
+        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
-            List<IInteraction> interactions = base.GenerateInteractions(targets).ToList();
+            List<IInteraction> interactions = base.GenerateInteractions(interactionEvent).ToList();
             interactions.Insert(0, new BellInteraction());
             return interactions.ToArray();
-        }
-
-        public IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
-        {
-            return new IInteraction[]{new BellInteraction()};
         }
     }
 }

@@ -1,7 +1,11 @@
 ﻿using SS3D.Engine.Interactions.UI;
 using System;
 using System.Collections.Generic;
+using Mirror;
+using SS3D.Engine.Interactions;
+using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace SS3D.Engine.Inventory.UI
 {
@@ -73,6 +77,30 @@ namespace SS3D.Engine.Inventory.UI
         {
             // As we dont ever have to instantiate objects, it should be fast enough to just do a complete rerender
             RenderContainers(owner, containers);
+        }
+
+        public override void OnPress(UIItemSlot slot, PointerEventData.InputButton button)
+        {
+            if (button == PointerEventData.InputButton.Middle)
+            {
+                return;
+            }
+            
+            SlotInfo info = GetSlotLink(slot);
+            Container.SlotType slotType = info.container.GetSlot(info.index);
+            // TODO: Hack, this should be decoupled in some way
+            GameObject playerObject = info.container.gameObject;
+            GameObject item = info.container.GetItem(info.index)?.gameObject;
+            InteractionHandler handler = playerObject.GetComponent<InteractionHandler>();
+            Hands hands = playerObject.GetComponent<Hands>();
+
+            if (handler != null && hands != null && hands.GetActiveTool() != null && item != null && (slotType == Container.SlotType.LeftHand || slotType == Container.SlotType.RightHand))
+            {
+                handler.InteractInHand(item, playerObject, button == PointerEventData.InputButton.Right);
+                return;
+            }
+
+            base.OnPress(slot, button);
         }
 
         // Used to store delegate used for performance reasons
