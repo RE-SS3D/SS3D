@@ -9,7 +9,7 @@ namespace SS3D.Content.Systems.Interactions
         {
             public bool ClientStart(InteractionEvent interactionEvent)
             {
-                if (interactionEvent.Source is Flashlight flashlight)
+                if (interactionEvent.Target is Flashlight flashlight)
                 {
                     flashlight.light.enabled = !flashlight.light.enabled;
                 }
@@ -35,7 +35,7 @@ namespace SS3D.Content.Systems.Interactions
 
         public string GetName(InteractionEvent interactionEvent)
         {
-            if (interactionEvent.Source is Flashlight flashlight)
+            if (interactionEvent.Target is Flashlight flashlight)
             {
                 if (flashlight.light.enabled)
                 {

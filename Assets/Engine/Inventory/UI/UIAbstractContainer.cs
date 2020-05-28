@@ -124,11 +124,11 @@ namespace SS3D.Engine.Interactions.UI
         protected abstract void RenderContainer(Container container);
 
         // Implement interfaces
-        void UIItemSlot.SlotInteractor.OnPress(UIItemSlot slot)
+        public virtual void OnPress(UIItemSlot slot, PointerEventData.InputButton button)
         {
             var info = GetSlotLink(slot);
 
-            if (info.container != null)
+            if (button == PointerEventData.InputButton.Left && info.container != null)
                 inventoryHandler.MoveSelectedItem(info.container, info.index);
         }
 

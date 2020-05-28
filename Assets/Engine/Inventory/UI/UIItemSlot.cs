@@ -10,12 +10,12 @@ namespace SS3D.Engine.Interactions.UI
      * Controls a single slot that displays a single item
      */
     [ExecuteInEditMode]
-    public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler
+    public class UIItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IPointerClickHandler
     {
         public interface SlotInteractor
         {
             // When the given item slot is tapped
-            void OnPress(UIItemSlot slot);
+            void OnPress(UIItemSlot slot, PointerEventData.InputButton button);
             void OnDragStart(UIItemSlot from, PointerEventData eventData);
 
             // When the item is being dragged, and it hovers over the given slot
@@ -92,11 +92,7 @@ namespace SS3D.Engine.Interactions.UI
                 CalculateColors();
             }
         }
-
-        public void Press()
-        {
-            slotInteractor.OnPress(this);
-        }
+        
         public GameObject CreateDraggableSprite(Vector2 position, Quaternion quaternion, Transform parent)
         {
             var itemObject = Instantiate(itemContainer.gameObject, position, quaternion, transform);
@@ -182,5 +178,9 @@ namespace SS3D.Engine.Interactions.UI
         private bool transparent = false;
 
         private ColorBlock buttonColors;
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            slotInteractor.OnPress(this, eventData.button);
+        }
     }
 }

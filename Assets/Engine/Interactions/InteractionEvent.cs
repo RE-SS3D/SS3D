@@ -11,7 +11,7 @@ namespace SS3D.Engine.Interactions
         /// <summary>
         /// The target of the interaction, can be null
         /// </summary>
-        public IInteractionTarget Target { get; }
+        public IInteractionTarget Target { get; set; }
         /// <summary>
         /// The point at which the interaction took place
         /// </summary>

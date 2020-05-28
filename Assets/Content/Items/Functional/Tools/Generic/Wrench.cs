@@ -13,16 +13,14 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
         public GameObject LoadingBarPrefab;
         public Fixture TableToConstruct;
         public float Delay;
-        
-        public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
+
+        public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            List<IInteraction> generateInteractions = base.GenerateInteractions(targets).ToList();
-            var tableConstruction = new TableConstructionInteraction
+            base.CreateInteractions(targets, interactions);
+            interactions.Insert(0, new InteractionEntry(targets[0], new TableConstructionInteraction
             {
                 TableToConstruct = TableToConstruct, Delay = Delay, LoadingBarPrefab = LoadingBarPrefab
-            };
-            generateInteractions.Insert(0, tableConstruction);
-            return generateInteractions.ToArray();
+            }));
         }
     }
 }
