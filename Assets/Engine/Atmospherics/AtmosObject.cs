@@ -47,6 +47,7 @@ namespace SS3D.Engine.Atmospherics
         private float[] gasses = new float[AtmosManager.numOfGases];
         private float temperature = 293f;
         private float[] tileFlux = { 0f, 0f, 0f, 0f };
+        private Vector2 velocity = Vector2.zero;
 
         private AtmosStates state = AtmosStates.Active;
         private TileObject[] tileNeighbours = { null, null, null, null };
@@ -113,6 +114,11 @@ namespace SS3D.Engine.Atmospherics
             return temperature;
         }
 
+        public Vector2 GetVelocity()
+        {
+            return velocity;
+        }
+
         public void RemoveFlux()
         {
             tileFlux = new float[]{ 0f, 0f, 0f, 0f} ;
@@ -120,8 +126,11 @@ namespace SS3D.Engine.Atmospherics
 
         public void AddGas(AtmosGasses gas, float amount)
         {
-            gasses[(int)gas] = Mathf.Max(gasses[(int)gas] + amount, 0);
-            state = AtmosStates.Active;
+            if (state != AtmosStates.Blocked)
+            {
+                gasses[(int)gas] = Mathf.Max(gasses[(int)gas] + amount, 0);
+                state = AtmosStates.Active;
+            }
         }
 
         public void SetGasses(float[] amounts)
@@ -290,7 +299,7 @@ namespace SS3D.Engine.Atmospherics
 			if (state == AtmosStates.Active || state == AtmosStates.Semiactive)
 			{
                 
-                SimulateMixing();
+                // SimulateMixing();
 			}
         }
 
@@ -346,6 +355,10 @@ namespace SS3D.Engine.Atmospherics
                     }
                     j++;
                 }
+                float velVertical = tileFlux[0] - tileFlux[1];    // Top - bottom flux
+                float velHorizontal = tileFlux[2] - tileFlux[3];      // Left - right flux
+
+                velocity = new Vector2(velHorizontal, velVertical);
             }
             else if (state == AtmosStates.Semiactive)
             {
@@ -355,7 +368,9 @@ namespace SS3D.Engine.Atmospherics
 
         public void SimulateMixing()
         {
-            // return; 
+            if (AtmosHelper.ArrayZero(gasses, mixRate))
+                return;
+
             bool mixed = false;
             float[] difference = new float[AtmosManager.numOfGases];
 
@@ -372,7 +387,7 @@ namespace SS3D.Engine.Atmospherics
                             continue;
                         if (atmosObject.state != AtmosStates.Blocked)
                         {
-                            difference[i] = gasses[i] - atmosObject.gasses[i] * 0.2f;
+                            difference[i] = (gasses[i] - atmosObject.gasses[i]) * 0.2f;
                             if (difference[i] > 0.1f)
                             {
                                 // Increase neighbouring tiles moles
@@ -397,13 +412,13 @@ namespace SS3D.Engine.Atmospherics
                     // Get difference in total moles and individual gasses
                     float pressure = GetTotalMoles();
                     float neighbourPressure = atmosObject.GetTotalMoles();
-                    difference = ArrayDiff(gasses, atmosObject.gasses);
+                    difference = AtmosHelper.ArrayDiff(gasses, atmosObject.gasses, mixRate);
 
                     // If our moles / mixrate > 0.1f
-                    if (ArrayZero(difference))
+                    if (AtmosHelper.ArrayZero(difference, mixRate))
                     {
                         // Set neighbour gasses to the normalized 
-                        atmosObject.gasses = ArrayNorm(ArraySum(atmosObject.gasses, difference), neighbourPressure);
+                        atmosObject.gasses = AtmosHelper.ArrayNorm(AtmosHelper.ArraySum(atmosObject.gasses, difference), neighbourPressure);
 
                         if (atmosObject.state == AtmosStates.Inactive)
                         {
@@ -411,7 +426,7 @@ namespace SS3D.Engine.Atmospherics
                         }
 
                         // Set our own gasses to the normalized
-                        gasses = ArrayNorm(ArrayDiff(gasses, difference), pressure);
+                        gasses = AtmosHelper.ArrayNorm(AtmosHelper.ArrayDiff(gasses, difference, mixRate), pressure);
                         mixed = true;
                     }
                 }
@@ -421,64 +436,6 @@ namespace SS3D.Engine.Atmospherics
             {
                 state = AtmosStates.Inactive;
             }
-        }
-
-        private float[] ArrayDiff(float[] arr1, float[] arr2)
-        {
-            float[] difference = new float[AtmosManager.numOfGases];
-
-            for (int i = 0; i < AtmosManager.numOfGases; ++i)
-            {
-                difference[i] = (arr1[i] - arr2[i]) * mixRate;
-            }
-
-            return difference;
-        }
-
-        private float[] ArrayNorm(float[] arr, float normal)
-        {
-            float div = ArraySize(arr);
-
-            for (int i = 0; i < AtmosManager.numOfGases; ++i)
-            {
-                arr[i] = arr[i] / div * normal;
-            }
-
-            return arr;
-        }
-
-        private float[] ArraySum(float[] arr1, float[] arr2)
-        {
-            float[] sum = new float[AtmosManager.numOfGases];
-
-            for (int i = 0; i < AtmosManager.numOfGases; ++i)
-            {
-                sum[i] = arr1[i] + arr2[i];
-            }
-
-            return sum;
-        }
-
-        private float ArraySize(float[] arr)
-        {
-            float size = 0f;
-
-            for (int i = 0; i < AtmosManager.numOfGases; ++i)
-            {
-                size += arr[i];
-            }
-
-            return size;
-        }
-
-        private bool ArrayZero(float[] arr)
-        {
-            for (int i = 0; i < AtmosManager.numOfGases; ++i)
-            {
-                if (arr[i] / mixRate > 0.1f) { return false; }
-            }
-
-            return true;
         }
     }
 }

@@ -15,12 +15,10 @@ namespace SS3D.Engine.Atmospherics
         public float updateRate = 0f;
 
         private TileManager tileManager;
-
         private List<TileObject> tileObjects;
         private List<AtmosObject> atmosTiles;
 
         private int activeTiles = 0;
-        private bool threadDone = true;
         private float lastStep;
         private bool drawDebug = false;
 
@@ -29,14 +27,11 @@ namespace SS3D.Engine.Atmospherics
             tileManager = FindObjectOfType<TileManager>();
             atmosTiles = new List<AtmosObject>();
 
-            // Ugly hack to wait for all tiles to be initialized
-            //StartCoroutine(Initialize());
             Initialize();
         }
 
         private void Initialize()
         {
-            // yield return new WaitForSeconds(1);
             Debug.Log("AtmosManager: Initializing tiles");
 
             // Initialize all tiles with atmos
@@ -94,7 +89,7 @@ namespace SS3D.Engine.Atmospherics
             foreach (TileObject tile in tileObjects)
             {
                 tile.atmos.setAtmosNeighbours();
-                tile.atmos.ValidateVacuum();
+                // tile.atmos.ValidateVacuum();
             }
             Debug.Log("AtmosManager: Finished initializing tiles");
             lastStep = Time.fixedTime;
@@ -103,14 +98,12 @@ namespace SS3D.Engine.Atmospherics
 
         void Update()
         {
-            if (Time.fixedTime >= lastStep && threadDone)
+            if (Time.fixedTime >= lastStep)
             {
                 activeTiles = Step();
                 if (activeTiles > 0)
                     Debug.Log("Ran for " + (Time.fixedTime - lastStep) + " seconds, simulating " + activeTiles + " atmos tiles");
 
-                threadDone = true; // false
-                                   // new Thread(Thread).Start();
 
 
                 activeTiles = 0;
@@ -124,6 +117,8 @@ namespace SS3D.Engine.Atmospherics
             if (snappedPosition != null)
             {
                 TileObject tile = tileManager.GetTile(snappedPosition);
+                if (tile == null)
+                    return;
 
                 if (Input.GetMouseButton(0))
                 {
@@ -133,19 +128,17 @@ namespace SS3D.Engine.Atmospherics
                 {
                     tile.atmos.MakeEmpty();
                 }
+                else if (Input.GetMouseButton(3))
+                {
+                    tile.atmos.AddGas(AtmosGasses.Plasma, 60f);
+                }
+                else if (Input.GetMouseButton(4))
+                {
+                    Debug.Log("Oxygen content: " + tile.atmos.GetGasses()[0] + " Pressure: " + tile.atmos.GetPressure());
+                    Debug.Log("Plasma content: " + tile.atmos.GetGasses()[3]);
+                    Debug.Log("Velocity: " + tile.atmos.GetVelocity());
+                }
             }
-        }
-
-        // TODO
-        //
-        // Set neighbouring tiles
-        // Set blocked state if wall or active state if floor -> Done
-        // Set airlock blocked state based on if door open
-
-        private void Thread()
-        {
-            activeTiles = Step();
-            threadDone = true;
         }
 
         private int Step()
@@ -163,11 +156,42 @@ namespace SS3D.Engine.Atmospherics
             {
                 tile.SimulateFlux();
                 if (tile.GetState() == AtmosStates.Active)
+                {
                     activeTiles++;
+                }
+            }
+
+            // Step 3: Move items according to the wind velocity
+            foreach (TileObject tile in tileObjects)
+            {
+                Vector2 velocity = tile.atmos.GetVelocity();
+                if (velocity != Vector2.zero)
+                {
+                    MoveVelocity(tile);
+                }
             }
 
             return activeTiles;
         }
+
+        private void MoveVelocity(TileObject tileObject)
+        {
+            Vector2 velocity = tileObject.atmos.GetVelocity();
+            if (velocity.x > 1f || velocity.y > 1f)
+            {
+                velocity *= 0.3f;
+                Collider[] colliders = Physics.OverlapBox(tileObject.transform.position, new Vector3(1, 2.5f, 1));
+
+                foreach (Collider collider in colliders)
+                {
+                    if (collider != null)
+                    {
+                        collider.attachedRigidbody?.AddForce(new Vector3(velocity.x, 0, velocity.y));
+                    }
+                }
+            }
+        }
+
 
         private Vector3 GetMouse()
         {
@@ -187,7 +211,7 @@ namespace SS3D.Engine.Atmospherics
         {
             bool drawAll = true;
             float drawRadius = 3.5f;
-            ViewType drawView = ViewType.Content;
+            ViewType drawView = ViewType.Pressure;
 
             if (drawDebug)
             {
@@ -218,7 +242,7 @@ namespace SS3D.Engine.Atmospherics
                             {
                                 case AtmosStates.Active: state = new Color(0, 0, 0, 0); break;
                                 case AtmosStates.Semiactive: state = new Color(0, 0, 0, 0.8f); break;
-                                case AtmosStates.Inactive: state = new Color(1, 0, 0, 0.8f); break;
+                                case AtmosStates.Inactive: state = new Color(0, 0, 0, 0.8f); break;
                                 default: state = new Color(0, 0, 0, 1); break;
                             }
 
@@ -237,17 +261,17 @@ namespace SS3D.Engine.Atmospherics
                                 {
                                     case ViewType.Content:
                                         float[] gases = new float[5];
-                                        Color[] colors = new Color[] { Color.blue, Color.red, Color.gray, Color.magenta };
+                                        Color[] colors = new Color[] { Color.white, Color.white, Color.gray, Color.magenta };
 
                                         float offset = 0f;
 
-                                        for (int k = 0; k < 4; ++k)
+                                        //for (int k = 3)//(int k = 0; k < 4; ++k)
                                         {
-                                            float moles = tile.atmos.GetGasses()[k] / 30f;
+                                            float moles = tile.atmos.GetGasses()[3] / 30f; // k
 
                                             if (moles != 0f)
                                             {
-                                                Gizmos.color = colors[k] - state;
+                                                Gizmos.color = colors[3] - state;  // 
                                                 Gizmos.DrawCube(new Vector3(x, moles / 2f + offset, y), new Vector3(1, moles, 1));
                                                 offset += moles;
                                             }
