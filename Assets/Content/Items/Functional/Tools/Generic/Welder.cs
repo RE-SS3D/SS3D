@@ -84,9 +84,9 @@ namespace SS3D.Content.Items.Functional.Tools
             RpcTurnOn(!hotFlame.isEmitting);
         }
 
-        public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
+        public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            List<IInteraction> interactions = base.GenerateInteractions(targets).ToList();
+            base.CreateInteractions(targets, interactions);
             interactions.Insert(0, new WelderConstructionInteraction 
             {
                 TurfReinforceList = reinforceDict,
@@ -94,6 +94,14 @@ namespace SS3D.Content.Items.Functional.Tools
                 Delay = Delay,
                 icon = constructIcon
             });
+          
+            interactions.Insert(GetState() ? 1 : 0, toggleInteraction);
+            return interactions.ToArray();
+
+        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        {
+            List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
+            
             ToggleInteraction toggleInteraction = new ToggleInteraction 
             {
                 OnName = "Turn off",
@@ -101,8 +109,8 @@ namespace SS3D.Content.Items.Functional.Tools
                 iconOn = turnOnIcon,
                 iconOff = turnOnIcon 
             };
-            interactions.Insert(GetState() ? 1 : 0, toggleInteraction);
-            return interactions.ToArray();
+            list.Add(toggleInteraction);
+            return list.ToArray();
         }
     }
 }

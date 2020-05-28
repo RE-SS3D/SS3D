@@ -15,19 +15,16 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
         public float Delay;
 
         public Sprite constructIcon;
-        
-        public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
+
+        public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            List<IInteraction> generateInteractions = base.GenerateInteractions(targets).ToList();
-            var tableConstruction = new TableConstructionInteraction
-            {
-                TableToConstruct = TableToConstruct, 
+            base.CreateInteractions(targets, interactions);
+            interactions.Insert(0, new InteractionEntry(targets[0], new TableConstructionInteraction
+            {       TableToConstruct = TableToConstruct, 
                 Delay = Delay, 
                 LoadingBarPrefab = LoadingBarPrefab,
                 icon = constructIcon
             };
-            generateInteractions.Insert(0, tableConstruction);
-            return generateInteractions.ToArray();
         }
     }
 }

@@ -14,13 +14,12 @@ namespace SS3D.Content.Items.Functional.Tools
         public new Light light = null;
         public Sprite turnOnIcon;
         
-        public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
+        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
-            List<IInteraction> generateInteractions = base.GenerateInteractions(targets).ToList();
-            var flashlightInteraction = new FlashlightInteraction();
-            flashlightInteraction.icon = turnOnIcon;
+            List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
+            list.Add(new FlashlightInteraction{ icon = turnOnIcon; };
             generateInteractions.Insert(0, flashlightInteraction);
-            return generateInteractions.ToArray();
+            return list.ToArray();
         }
     }
 }

@@ -16,10 +16,10 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
         public float Delay;
 
         public Sprite constructIcon;
-        
-        public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
+     
+        public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            List<IInteraction> generateInteractions = base.GenerateInteractions(targets).ToList();
+            base.CreateInteractions(targets, interactions);
             var wallConstructionInteraction = new WallConstructionInteraction
             {
                 WallToConstruct = WallToConstruct,
@@ -28,9 +28,8 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
                 LoadingBarPrefab = LoadingBarPrefab,
                 icon = constructIcon
             };
-            generateInteractions.Insert(0, wallConstructionInteraction);
-            return generateInteractions.ToArray();
+            interactions.Insert(0, new InteractionEntry(targets[0], wallConstructionInteraction));
         }
-        
+
     }
 }

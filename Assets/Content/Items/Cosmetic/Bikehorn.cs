@@ -10,7 +10,7 @@ using UnityEngine;
 namespace SS3D.Content.Items.Cosmetic
 {
     [RequireComponent(typeof(AudioSource))]
-    public class Bikehorn : Item, IInteractionTarget
+    public class Bikehorn : Item
     {
         private class HonkInteraction : IInteraction
         {
@@ -42,10 +42,6 @@ namespace SS3D.Content.Items.Cosmetic
                     }
                     return !horn.IsHonking();
                 }
-                if (interactionEvent.Source is Bikehorn horn1)
-                {
-                    return !horn1.IsHonking();
-                }
 
                 return false;
             }
@@ -55,10 +51,6 @@ namespace SS3D.Content.Items.Cosmetic
                 if (interactionEvent.Target is Bikehorn horn)
                 {
                     horn.Honk();
-                }
-                if (interactionEvent.Source is Bikehorn horn1)
-                {
-                    horn1.Honk();
                 }
                 return false;
             }
@@ -102,17 +94,12 @@ namespace SS3D.Content.Items.Cosmetic
         {
             audioSource.PlayOneShot(honkSound);
         }
-
-        public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
+        
+        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
-            List<IInteraction> interactions = base.GenerateInteractions(targets).ToList();
-            interactions.Insert(0, new HonkInteraction{ icon = useIcon });
-            return interactions.ToArray();
-        }
-
-        public IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
-        {
-            return new IInteraction[]{ new HonkInteraction{ icon = useIcon }};
+            List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
+            list.Add(0, new HonkInteraction{ icon = useIcon });
+            return list.ToArray();
         }
     }
 }

@@ -49,17 +49,17 @@ public class EnergySword : Item, IToggleable
         animator.SetBool(OnHash, on);
         RpcSetBlade(on);
     }
-
-    public override IInteraction[] GenerateInteractions(IInteractionTarget[] targets)
+    
+    public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
     {
-        List<IInteraction> interactions = base.GenerateInteractions(targets).ToList();
-        interactions.Insert(0, new ToggleInteraction
+        List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
+        list.Add(new ToggleInteraction
         {
             OnName = "Turn off",
             OffName = "Turn on",
             iconOn = turnOnIcon,
             iconOff = turnOnIcon
         }); ;
-        return interactions.ToArray();
+        return list.ToArray();
     }
 }
