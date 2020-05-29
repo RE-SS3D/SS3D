@@ -38,7 +38,7 @@ public class EnergySword : Item, IToggleable
 
     public void Toggle()
     {
-        if (audio.isPlaying && animator.IsInTransition(0))
+        if (audio.isPlaying || animator.IsInTransition(0))
             return;
 
         on = !on;

@@ -38,12 +38,8 @@ namespace SS3D.Engine.Inventory
         public GameObject prefab;
         public Transform attachmentPoint;
 
-        // this should be done differently, not defining on every prefab
-        public Sprite pickUpIcon;
-        public Sprite dropIcon;
-
         [ContextMenu("Create Icon")]
-        private void Start()
+        public void Start()
         {
             GenerateNewIcon();
         }
@@ -61,7 +57,7 @@ namespace SS3D.Engine.Inventory
         public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
             base.CreateInteractions(targets, interactions);
-            DropInteraction dropInteraction = new DropInteraction { icon = dropIcon };
+            DropInteraction dropInteraction = new DropInteraction {  };
             interactions.Insert(0, new InteractionEntry(null, dropInteraction));
         }
 
@@ -104,7 +100,7 @@ namespace SS3D.Engine.Inventory
 #endif
         public virtual IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] { new PickupInteraction { icon = pickUpIcon } };
+            return new IInteraction[] { new PickupInteraction { icon = sprite } };
         }
 
         public bool InContainer()

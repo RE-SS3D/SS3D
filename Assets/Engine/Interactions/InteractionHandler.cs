@@ -32,11 +32,12 @@ namespace SS3D.Engine.Interactions
 
             if (Input.GetButtonDown("Click"))
             {
-                if(activeMenu != null) {
+                if (activeMenu != null)
+                {
                     Destroy(activeMenu.gameObject);
                     return;
                 }
-                
+
                 // Run the most prioritised action
                 var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
@@ -46,34 +47,33 @@ namespace SS3D.Engine.Interactions
                     interactionEvent.Target = viableInteractions[0].Target;
                     CmdRunInteraction(ray, 0, viableInteractions[0].Interaction.GetName(interactionEvent));
                 }
-                    
+
             }
             else if (Input.GetButtonDown("Secondary Click"))
             {
-                if(activeMenu != null ) {
+                if (activeMenu != null)
+                {
                     Destroy(activeMenu.gameObject);
                 }
 
                 var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
-
-                if (viableInteractions.Count < 1)
+                if (viableInteractions.Select(x => x.Interaction).ToList().Count > 0)
                 {
-                    return;
+                    //Debug.LogError(viableInteractions.Count);
+                    // Create a menu that will run the given action when clicked
+                    var obj = Instantiate(menuPrefab, transform.root.transform);
+                    activeMenu = obj.GetComponentInChildren<UI.RadialInteractionMenuUI>();
+
+                    activeMenu.Position = Input.mousePosition;
+                    activeMenu.Event = interactionEvent;
+                    activeMenu.Interactions = viableInteractions.Select(x => x.Interaction).ToList();
+                    activeMenu.onSelect = interaction =>
+                    {
+                        CmdRunInteraction(ray, viableInteractions.FindIndex(x => x.Interaction == interaction),
+                                interaction.GetName(interactionEvent));
+                    };
                 }
-
-                // Create a menu that will run the given action when clicked
-                var obj = Instantiate(menuPrefab, transform);
-                activeMenu = obj.GetComponent<UI.RadialInteractionMenuUI>();
-
-                activeMenu.Position = Input.mousePosition;
-                activeMenu.Event = interactionEvent; 
-                activeMenu.Interactions = viableInteractions.Select(x => x.Interaction).ToList();
-                activeMenu.onSelect = interaction =>
-                {
-                    CmdRunInteraction(ray, viableInteractions.FindIndex(x => x.Interaction == interaction),
-                            interaction.GetName(interactionEvent));
-                };
             }
 
             if (Input.GetButtonDown("Activate"))
@@ -114,10 +114,11 @@ namespace SS3D.Engine.Interactions
             }
 
             interactionEvent.Target = entries[0].Target;
-            if (showMenu)
+            if (showMenu && entries.Select(x => x.Interaction).ToList().Count > 0)
             {
-                var obj = Instantiate(menuPrefab, transform);
-                activeMenu = obj.GetComponent<UI.RadialInteractionMenuUI>();
+                //Debug.LogError(entries[0]);
+                var obj = Instantiate(menuPrefab, transform.root.transform);
+                activeMenu = obj.GetComponentInChildren<UI.RadialInteractionMenuUI>();
 
                 activeMenu.Position = Input.mousePosition;
                 activeMenu.Event = interactionEvent;

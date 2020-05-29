@@ -100,6 +100,8 @@ namespace SS3D.Content.Items.Cosmetic
 
         void Start()
         {
+            GenerateNewIcon();
+
             audioSource = GetComponent<AudioSource>();
             audioSource.clip = musics[0];
         }

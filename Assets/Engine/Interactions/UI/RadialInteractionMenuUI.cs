@@ -10,6 +10,10 @@ namespace SS3D.Engine.Interactions.UI
 {
     public class RadialInteractionMenuUI : MonoBehaviour
     {
+        public Transform parent;
+        [Range(1.5f, 3f)]
+        public float menuScale = 1;
+
         public Animator menuAnimator;
         
         public RectTransform indicator;
@@ -17,7 +21,9 @@ namespace SS3D.Engine.Interactions.UI
 
         public PetalsManager petalsManager;
         private Canvas parentCanvas;
-        public RectTransform close;
+
+        public TextMeshProUGUI objectName;
+        public TextMeshProUGUI interactionName;
 
         public Sprite missingIcon;
 
@@ -73,6 +79,10 @@ namespace SS3D.Engine.Interactions.UI
         }
         private void Update()
         {
+            //parent.GetComponent<CanvasScaler>().scaleFactor = scale;
+            parent.localScale = new Vector2(menuScale, menuScale);
+
+
             float currentAngle = indicator.eulerAngles.z;
 
             if (selectedPetal != null)
@@ -113,41 +123,34 @@ namespace SS3D.Engine.Interactions.UI
 
         private void UpdateInteractions()
         {
-            if (Input.GetMouseButtonDown(1))
+            if (Event == null || interactions == null || interactions.Count < 1)
             {
-                if (Event == null || interactions == null)
-                {
-                    return;
-                }
-
-                PetalFolder folder = new PetalFolder(GetPetalPrefab());
-                Appear(new Vector2(Input.mousePosition.x, Input.mousePosition.y), 1, folder);
-                foreach (IInteraction interaction in Interactions)
-                {
-                    Sprite icon = interaction.GetIcon(Event) ? interaction.GetIcon(Event) : missingIcon;
-                    string name = interaction.GetName(Event);
-
-                    Petal newPetal = petalsManager.AddPetalToFolder(icon, name);
-                    RadialMenuButton petalButton = newPetal.GetComponentInChildren<RadialMenuButton>();
-
-                    petalButton.menu = GetComponent<RadialInteractionMenuUI>();
-                    petalButton.interaction = name;
-                    petalButton.center = close.GetComponentInChildren<TextMeshProUGUI>();
-
-                    petalButton.onClick.AddListener(() =>
-                {
-                    Destroy(gameObject);
-                    onSelect?.Invoke(interaction);
-                });
-                }
+                return;
             }
 
-            else if (Input.GetMouseButtonUp(1))
+            PetalFolder folder = new PetalFolder(GetPetalPrefab());
+            Appear(new Vector2(Input.mousePosition.x, Input.mousePosition.y), 1, folder);
+            foreach (IInteraction interaction in Interactions)
             {
-                Disappear();
+                Sprite icon = interaction.GetIcon(Event) ? interaction.GetIcon(Event) : missingIcon;
+                string name = interaction.GetName(Event);
+                string objectName = Event.Target.ToString();
+
+                //Debug.LogError(name);
+
+                Petal newPetal = petalsManager.AddPetalToFolder(icon, name);
+                RadialMenuButton petalButton = newPetal.GetComponentInChildren<RadialMenuButton>();
+
+                petalButton.menu = GetComponent<RadialInteractionMenuUI>();
+                petalButton.interaction = name;
+                petalButton.objectName = objectName;
+
+                petalButton.onClick.AddListener(() =>
+            {
+                Destroy(gameObject);
+                onSelect?.Invoke(interaction);
+            });
             }
-            int val = Input.GetAxis("Camera Zoom") > 0 ? -1 : Input.GetAxis("Camera Zoom") < 0 ? 1 : 0;
-            GetPetalsManager().MoveIndex(val);
         }
 
         public bool Appear(Vector2 screenPos, float scale, PetalFolder spawnFolder)
