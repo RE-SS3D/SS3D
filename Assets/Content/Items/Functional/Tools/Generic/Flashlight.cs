@@ -12,11 +12,12 @@ namespace SS3D.Content.Items.Functional.Tools
     {
         [SerializeField]
         public new Light light = null;
-
+        public Sprite turnOnIcon;
+        
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
             List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
-            list.Add(new FlashlightInteraction());
+            list.Add(new FlashlightInteraction{ icon = turnOnIcon });
             return list.ToArray();
         }
     }

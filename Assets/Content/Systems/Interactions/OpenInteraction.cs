@@ -5,8 +5,11 @@ using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
 {
-    public class OpenInteraction : IInteraction
+    [Serializable]
+    public class OpenInteraction : ScriptableObject, IInteraction
     {
+        public Sprite icon;
+
         public event EventHandler<bool> OpenStateChange;
         private static readonly int OpenId = Animator.StringToHash("Open");
 
@@ -18,6 +21,11 @@ namespace SS3D.Content.Systems.Interactions
         public string GetName(InteractionEvent interactionEvent)
         {
             return ((IGameObjectProvider)interactionEvent.Target).GameObject.GetComponent<Animator>().GetBool(OpenId) ? "Close" : "Open";
+        }
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
+        {
+            return icon;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

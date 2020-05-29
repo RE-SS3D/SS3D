@@ -268,6 +268,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3568e60178b285a40ba678b791a6b8e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  openInteractionIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987,
+    type: 3}
   openSound: {fileID: 8300000, guid: 34297ba204a9f3944872f100baaa2369, type: 3}
   closeSound: {fileID: 8300000, guid: fc2485e75c5d3ab4e86e814043c9e9cb, type: 3}
   doorTriggerLayers:

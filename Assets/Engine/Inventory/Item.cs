@@ -39,10 +39,11 @@ namespace SS3D.Engine.Inventory
         public Transform attachmentPoint;
 
         [ContextMenu("Create Icon")]
-        private void Start()
+        public void Start()
         {
             GenerateNewIcon();
         }
+
         public void GenerateNewIcon()
         {
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
@@ -56,7 +57,7 @@ namespace SS3D.Engine.Inventory
         public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
             base.CreateInteractions(targets, interactions);
-            DropInteraction dropInteraction = new DropInteraction();
+            DropInteraction dropInteraction = new DropInteraction {  };
             interactions.Insert(0, new InteractionEntry(null, dropInteraction));
         }
 
@@ -99,7 +100,7 @@ namespace SS3D.Engine.Inventory
 #endif
         public virtual IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] {new PickupInteraction()};
+            return new IInteraction[] { new PickupInteraction { icon = sprite } };
         }
 
         public bool InContainer()

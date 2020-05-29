@@ -14,12 +14,16 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
         public Fixture TableToConstruct;
         public float Delay;
 
+        public Sprite constructIcon;
+
         public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
             base.CreateInteractions(targets, interactions);
             interactions.Insert(0, new InteractionEntry(targets[0], new TableConstructionInteraction
-            {
-                TableToConstruct = TableToConstruct, Delay = Delay, LoadingBarPrefab = LoadingBarPrefab
+            {       TableToConstruct = TableToConstruct, 
+                Delay = Delay, 
+                LoadingBarPrefab = LoadingBarPrefab,
+                icon = constructIcon
             }));
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using SS3D.Engine.Interactions;
+using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
 {
@@ -8,6 +9,8 @@ namespace SS3D.Content.Systems.Interactions
     /// </summary>
     public class ToggleInteraction : IInteraction
     {
+        public Sprite iconOn;
+        public Sprite iconOff;
         /// <summary>
         /// Checks if the interaction should be possible
         /// </summary>
@@ -36,6 +39,20 @@ namespace SS3D.Content.Systems.Interactions
             {
                 return toggle.GetState() ? OnName : OffName;
             } 
+
+            return null;
+        }
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
+        {
+            if (interactionEvent.Target is IToggleable toggle1)
+            {
+                return toggle1.GetState() ? iconOn : iconOff;
+            }
+            if (interactionEvent.Source is IToggleable toggle)
+            {
+                return toggle.GetState() ? iconOn : iconOff;
+            }
 
             return null;
         }

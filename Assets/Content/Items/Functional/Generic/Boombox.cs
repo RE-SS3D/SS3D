@@ -17,6 +17,10 @@ namespace SS3D.Content.Items.Cosmetic
         public bool radioOn;
         public int currentMusic;
 
+        // I hate my life
+        public Sprite interactionIcon;
+        public Sprite interactionIconOn;
+
         private bool toEnable = false;
         private float enableTime;
 
@@ -49,6 +53,15 @@ namespace SS3D.Content.Items.Cosmetic
             public string GetName(InteractionEvent interactionEvent)
             {
                 return "Change Music";
+            }
+
+            public Sprite GetIcon(InteractionEvent interactionEvent)
+            {
+                if (interactionEvent.Target is Boombox boom)
+                    return boom.interactionIcon;
+                if (interactionEvent.Source is Boombox boom1)
+                    return boom1.interactionIcon;
+                return null;
             }
 
             public bool CanInteract(InteractionEvent interactionEvent)
@@ -87,6 +100,8 @@ namespace SS3D.Content.Items.Cosmetic
 
         void Start()
         {
+            GenerateNewIcon();
+
             audioSource = GetComponent<AudioSource>();
             audioSource.clip = musics[0];
         }
@@ -152,7 +167,18 @@ namespace SS3D.Content.Items.Cosmetic
         {
             List<IInteraction> interactions = base.GenerateInteractions(interactionEvent).ToList();
             interactions.Add(new ChangeMusic());
-            ToggleInteraction toggleInteraction = new ToggleInteraction { OnName = "Turn off", OffName = "Turn on" };
+            ToggleInteraction toggleInteraction = new ToggleInteraction
+            {
+                OnName = "Turn off",
+                OffName = "Turn on",
+                iconOn = interactionIconOn,
+                iconOff = interactionIconOn,
+            };
+
+            // haha programms go zzzzzzzzzzzzzzz
+            toggleInteraction.iconOn = interactionIconOn;
+            toggleInteraction.iconOff = interactionIconOn;
+
             interactions.Insert(GetState() ? interactions.Count: interactions.Count - 1, toggleInteraction);
             return interactions.ToArray();
         }
@@ -162,7 +188,13 @@ namespace SS3D.Content.Items.Cosmetic
             // Blame cosmic lol
             base.CreateInteractions(targets, interactions);
             interactions.Add(new InteractionEntry(this, new ChangeMusic()));
-            ToggleInteraction toggleInteraction = new ToggleInteraction { OnName = "Turn off", OffName = "Turn on" };
+            ToggleInteraction toggleInteraction = new ToggleInteraction 
+            {
+                OnName = "Turn off",
+                OffName = "Turn on", 
+                iconOn = interactionIconOn,
+                iconOff = interactionIconOn,
+            };
             interactions.Insert(GetState() ? interactions.Count : interactions.Count - 1, new InteractionEntry(this, toggleInteraction));
         }
     }

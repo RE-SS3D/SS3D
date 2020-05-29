@@ -3,7 +3,13 @@ guid: b8e907cf58c0ce0439d34cd7cf644216
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - container: {instanceID: 0}
+  - sprite: {instanceID: 0}
+  - prefab: {instanceID: 0}
+  - attachmentPoint: {instanceID: 0}
+  - pickUpIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
+  - dropIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

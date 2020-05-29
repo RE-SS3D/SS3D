@@ -96,7 +96,7 @@ namespace SS3D.Engine.Inventory.UI
 
             if (handler != null && hands != null && hands.GetActiveTool() != null && item != null && (slotType == Container.SlotType.LeftHand || slotType == Container.SlotType.RightHand))
             {
-                handler.InteractInHand(item, playerObject, button == PointerEventData.InputButton.Right);
+                handler.InteractInHand(item, playerObject);
                 return;
             }
 

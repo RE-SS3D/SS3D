@@ -15,12 +15,18 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
         public Turf FloorToConstruct;
         public float Delay;
 
+        public Sprite constructIcon;
+     
         public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
             base.CreateInteractions(targets, interactions);
             var wallConstructionInteraction = new WallConstructionInteraction
             {
-                WallToConstruct = WallToConstruct, FloorToConstruct = FloorToConstruct, Delay = Delay, LoadingBarPrefab = LoadingBarPrefab
+                WallToConstruct = WallToConstruct,
+                FloorToConstruct = FloorToConstruct,
+                Delay = Delay,
+                LoadingBarPrefab = LoadingBarPrefab,
+                icon = constructIcon
             };
             interactions.Insert(0, new InteractionEntry(targets[0], wallConstructionInteraction));
         }

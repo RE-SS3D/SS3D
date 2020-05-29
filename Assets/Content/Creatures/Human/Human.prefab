@@ -280,6 +280,7 @@ MonoBehaviour:
   handContainer: {fileID: 593928988720118032}
   handRange: 5
   Range: 1.5
+  pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
 --- !u!114 &-4112737952016829400
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -346,7 +347,7 @@ MonoBehaviour:
   selectionMask:
     serializedVersion: 2
     m_Bits: 1148723
-  menuPrefab: {fileID: 6380575431912782132, guid: 63bda78afb3955e41a15f4f84de4c89a,
+  menuPrefab: {fileID: 6380575431912782132, guid: 69782ec738cf5ad40809cf5f548be89a,
     type: 3}
 --- !u!114 &666907628477534858
 MonoBehaviour:

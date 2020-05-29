@@ -12,6 +12,8 @@ namespace SS3D.Content.Items.Cosmetic
     [RequireComponent(typeof(AudioSource))]
     public class ServiceBell : Item, IInteractionTarget
     {
+        public Sprite interactionIcon;
+
         private class BellInteraction : IInteraction
         {
             public IClientInteraction CreateClient(InteractionEvent interactionEvent)
@@ -22,6 +24,15 @@ namespace SS3D.Content.Items.Cosmetic
             public string GetName(InteractionEvent interactionEvent)
             {
                 return "Bell";
+            }
+
+            public Sprite GetIcon(InteractionEvent interactionEvent)
+            {
+                if (interactionEvent.Target is ServiceBell bell)
+                    return bell.interactionIcon;
+                if (interactionEvent.Source is ServiceBell bell1)
+                    return bell1.interactionIcon;
+                return null;
             }
 
             public bool CanInteract(InteractionEvent interactionEvent)

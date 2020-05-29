@@ -11,9 +11,12 @@ namespace SS3D.Content.Furniture
         private Animator animator;
         private static readonly int Open = Animator.StringToHash("Open");
 
+        [SerializeField] private Sprite OpenIcon;
+
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
             OpenInteraction openInteraction = new OpenInteraction();
+            openInteraction.icon = OpenIcon;
             openInteraction.OpenStateChange += OnOpenStateChange;
             return new IInteraction[] { openInteraction };
         }

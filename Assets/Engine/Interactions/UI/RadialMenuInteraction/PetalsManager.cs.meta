@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b2a3626ce9d6315428c379f68b0b76f1
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - petalPrefab: {fileID: 3570932070029213282, guid: 54b58758efcc0d842bdd136a4f02af76,
+      type: 3}
+  - petalParent: {instanceID: 0}
+  - contextMenu: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
