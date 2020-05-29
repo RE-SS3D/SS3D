@@ -38,11 +38,16 @@ namespace SS3D.Engine.Inventory
         public GameObject prefab;
         public Transform attachmentPoint;
 
+        // this should be done differently, not defining on every prefab
+        public Sprite pickUpIcon;
+        public Sprite dropIcon;
+
         [ContextMenu("Create Icon")]
         private void Start()
         {
             GenerateNewIcon();
         }
+
         public void GenerateNewIcon()
         {
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
@@ -56,7 +61,7 @@ namespace SS3D.Engine.Inventory
         public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
             base.CreateInteractions(targets, interactions);
-            DropInteraction dropInteraction = new DropInteraction();
+            DropInteraction dropInteraction = new DropInteraction { icon = dropIcon };
             interactions.Insert(0, new InteractionEntry(null, dropInteraction));
         }
 
@@ -99,7 +104,7 @@ namespace SS3D.Engine.Inventory
 #endif
         public virtual IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] {new PickupInteraction()};
+            return new IInteraction[] { new PickupInteraction { icon = pickUpIcon } };
         }
 
         public bool InContainer()

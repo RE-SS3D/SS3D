@@ -67,7 +67,7 @@ namespace SS3D.Engine.Interactions
                 activeMenu = obj.GetComponent<UI.RadialInteractionMenuUI>();
 
                 activeMenu.Position = Input.mousePosition;
-                activeMenu.Event = interactionEvent;
+                activeMenu.Event = interactionEvent; 
                 activeMenu.Interactions = viableInteractions.Select(x => x.Interaction).ToList();
                 activeMenu.onSelect = interaction =>
                 {

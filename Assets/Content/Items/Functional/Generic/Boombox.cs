@@ -165,7 +165,13 @@ namespace SS3D.Content.Items.Cosmetic
         {
             List<IInteraction> interactions = base.GenerateInteractions(interactionEvent).ToList();
             interactions.Add(new ChangeMusic());
-            ToggleInteraction toggleInteraction = new ToggleInteraction { OnName = "Turn off", OffName = "Turn on" };
+            ToggleInteraction toggleInteraction = new ToggleInteraction
+            {
+                OnName = "Turn off",
+                OffName = "Turn on",
+                iconOn = interactionIconOn,
+                iconOff = interactionIconOn,
+            };
 
             // haha programms go zzzzzzzzzzzzzzz
             toggleInteraction.iconOn = interactionIconOn;
@@ -180,7 +186,13 @@ namespace SS3D.Content.Items.Cosmetic
             // Blame cosmic lol
             base.CreateInteractions(targets, interactions);
             interactions.Add(new InteractionEntry(this, new ChangeMusic()));
-            ToggleInteraction toggleInteraction = new ToggleInteraction { OnName = "Turn off", OffName = "Turn on" };
+            ToggleInteraction toggleInteraction = new ToggleInteraction 
+            {
+                OnName = "Turn off",
+                OffName = "Turn on", 
+                iconOn = interactionIconOn,
+                iconOff = interactionIconOn,
+            };
             interactions.Insert(GetState() ? interactions.Count : interactions.Count - 1, new InteractionEntry(this, toggleInteraction));
         }
     }
