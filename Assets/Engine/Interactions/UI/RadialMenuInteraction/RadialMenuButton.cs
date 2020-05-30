@@ -10,22 +10,40 @@ public class RadialMenuButton : Button
 {
     public string objectName;
     public string interaction;
+    [HideInInspector]
+    public float angle;
 
     public RadialInteractionMenuUI menu;
 
     // Sets menu's selected petal and the interaction name
-    public override void OnPointerEnter(PointerEventData eventData)
+    void PetalSelect()
     {
         menu.selectedPetal = transform.GetComponent<RectTransform>();
         menu.interactionName.text = interaction;
         menu.objectName.text = objectName;
-        base.OnPointerEnter(eventData);
     }
-    public override void OnPointerExit(PointerEventData eventData)
+    void PetalDeselect()
     {
         menu.selectedPetal = null;
         menu.interactionName.text = null;
         menu.objectName.text = null;
-        base.OnPointerExit(eventData);
+    }
+
+    private void Update()
+    {
+        if (menu != null)
+        {
+            if (menu.mouseAngle >= angle - menu.buttonAngle
+                && menu.mouseAngle < angle + menu.buttonAngle)
+            {
+                if (menu.mouseDistance > menu.buttonMaxDistance)
+                {
+                    PetalSelect();
+                } else
+                {
+                    PetalDeselect();
+                }
+            }
+        }
     }
 }
