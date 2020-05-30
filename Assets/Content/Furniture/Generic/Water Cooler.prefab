@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 3983915163610624697}
   - component: {fileID: 5365327852086030798}
   - component: {fileID: 5914893391797201027}
+  - component: {fileID: 4590706144857518426}
+  - component: {fileID: 4497921957389231919}
   m_Layer: 0
   m_Name: Water Cooler
   m_TagString: Untagged
@@ -110,3 +112,32 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 7757149436502535050, guid: 9b3ccbd5b5dd6f34cb9c0fb39ba88d8a, type: 3}
+--- !u!114 &4590706144857518426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 260173893888736664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9feeb703d0314349836b03dcc586d5b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Substance: water
+  Moles: 5.555555
+--- !u!114 &4497921957389231919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 260173893888736664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf385ea816dbc904faa47acf2d48ace6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CupPrefab: {fileID: 298201769935591731, guid: 74ead4cc2020eb640a1c074780eb5081,
+    type: 3}
+  NumberOfCups: 25

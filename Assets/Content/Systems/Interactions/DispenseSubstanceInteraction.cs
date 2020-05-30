@@ -1,30 +1,27 @@
 ﻿using System;
 using SS3D.Engine.Interactions;
-using UnityEngine;
 using SS3D.Engine.Interactions.Extensions;
+using SS3D.Engine.Substances;
+using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
 {
-    /// <summary>
-    /// Utility class for simple interactions
-    /// </summary>
-    public class SimpleInteraction : IInteraction
+    public class DispenseSubstanceInteraction : IInteraction
     {
-        public Sprite icon;
-        public string Name { get; set; }
+        public string Name { get; set; } = "Dispense";
+        /// <summary>
+        /// The substance to dispense
+        /// </summary>
+        public SubstanceEntry Substance { get; set; }
         /// <summary>
         /// Checks if the interaction should be possible
         /// </summary>
         public Predicate<InteractionEvent> CanInteractCallback { get; set; } = _ => true;
         /// <summary>
-        /// Executed when the interaction takes place
-        /// </summary>
-        public Action<InteractionEvent, InteractionReference> Interact { get; set; }
-        /// <summary>
         /// If a range check should be automatically performed
         /// </summary>
         public bool RangeCheck { get; set; }
-
+        
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
             return null;
@@ -33,11 +30,11 @@ namespace SS3D.Content.Systems.Interactions
         public string GetName(InteractionEvent interactionEvent)
         {
             return Name;
-        
         }
+
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return icon;
+            return null;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -46,23 +43,41 @@ namespace SS3D.Content.Systems.Interactions
             {
                 return false;
             }
+
+            var provider = interactionEvent.Source as IGameObjectProvider;
+            if (provider == null)
+            {
+                return false;
+            }
+            if (provider.GameObject.GetComponent<SubstanceContainer>() == null)
+            {
+                return false;
+            }
             return CanInteractCallback.Invoke(interactionEvent);
         }
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Interact.Invoke(interactionEvent, reference);
+            if (interactionEvent.Source is IGameObjectProvider provider)
+            {
+                SubstanceContainer container = provider.GameObject.GetComponent<SubstanceContainer>();
+                if (container != null)
+                {
+                    container.AddSubstance(Substance.Substance, Substance.Moles);
+                }
+            }
+
             return false;
         }
 
         public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            throw new NotImplementedException();
+            throw new System.NotImplementedException();
         }
 
         public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            throw new NotImplementedException();
+            throw new System.NotImplementedException();
         }
     }
 }
