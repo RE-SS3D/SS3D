@@ -33,7 +33,6 @@ namespace SS3D.Content.Systems.Substances
         private void UpdateDisplay()
         {
             float relativeVolume = Container.CurrentVolume / Container.Volume;
-            Debug.Log(relativeVolume);
             transform.localPosition = Vector3.Lerp(EmptyPosition, FullPosition, Mathf.Min(relativeVolume, 1));
             transform.localScale = new Vector3(ScaleX.Evaluate(relativeVolume), ScaleY.Evaluate(relativeVolume), ScaleZ.Evaluate(relativeVolume));
             meshRenderer.material.color = CalculateColor();
