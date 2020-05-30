@@ -144,6 +144,8 @@ MonoBehaviour:
   petalSprite: {fileID: 3082409339457483930}
   rotator: {fileID: 5183414801896660950}
   iconImage: {fileID: 3201369813672997825}
+  button: {fileID: 3701692769903448893}
+  parentAnimator: {fileID: 0}
 --- !u!1 &5145590555156341316
 GameObject:
   m_ObjectHideFlags: 0
@@ -260,9 +262,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+  objectName: 
   interaction: 
+  angle: 0
   menu: {fileID: 0}
-  center: {fileID: 0}
 --- !u!1 &5183414801896660950
 GameObject:
   m_ObjectHideFlags: 0

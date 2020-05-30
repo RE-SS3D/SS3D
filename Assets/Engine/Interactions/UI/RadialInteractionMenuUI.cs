@@ -20,11 +20,18 @@ namespace SS3D.Engine.Interactions.UI
         public RectTransform selectedPetal;
 
         public PetalsManager petalsManager;
+        private PetalFolder folder;
         private Canvas parentCanvas;
 
         public TextMeshProUGUI objectName;
         public TextMeshProUGUI interactionName;
 
+        [HideInInspector]
+        public float mouseAngle;
+        public float buttonAngle = 22.5f;
+        public float buttonMaxDistance = 38f;
+        [HideInInspector]
+        public float mouseDistance;
         public Sprite missingIcon;
 
         // Current selected object
@@ -118,7 +125,12 @@ namespace SS3D.Engine.Interactions.UI
                     selectedPetal.GetComponentInChildren<Button>().onClick.Invoke();
                 Destroy(gameObject);
             }
+            Vector3 mouse = Input.mousePosition;
+            Vector3 dir = (mouse - indicator.position).normalized;
 
+            float atan = Mathf.Atan2(dir.y, dir.x);
+            mouseAngle = (atan > 0 ? atan : (2 * Mathf.PI + atan)) * 360 / (2 * Mathf.PI);
+            mouseDistance = Vector3.Distance(mouse, indicator.position);
         }
 
         private void UpdateInteractions()
@@ -128,7 +140,7 @@ namespace SS3D.Engine.Interactions.UI
                 return;
             }
 
-            PetalFolder folder = new PetalFolder(GetPetalPrefab());
+            folder = new PetalFolder(GetPetalPrefab());
             Appear(new Vector2(Input.mousePosition.x, Input.mousePosition.y), 1, folder);
             foreach (IInteraction interaction in Interactions)
             {
@@ -146,10 +158,10 @@ namespace SS3D.Engine.Interactions.UI
                 petalButton.objectName = objectName;
 
                 petalButton.onClick.AddListener(() =>
-            {
-                Destroy(gameObject);
-                onSelect?.Invoke(interaction);
-            });
+                {
+                    Destroy(gameObject);
+                    onSelect?.Invoke(interaction);
+                });
             }
         }
 
@@ -160,6 +172,7 @@ namespace SS3D.Engine.Interactions.UI
             if (menuAnimator.GetBool("Visible") == true)
                 return (false);
             this.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 1));
+            folder = spawnFolder;
             if (spawnFolder != null)
             {
                 petalsManager.SetFolder(spawnFolder, true);
