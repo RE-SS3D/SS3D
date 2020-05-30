@@ -1,4 +1,6 @@
-﻿namespace SS3D.Engine.Interactions.Extensions
+﻿using SS3D.Engine.Inventory.Extensions;
+
+namespace SS3D.Engine.Interactions.Extensions
 {
     public static class InteractionSourceExtension
     {
@@ -36,6 +38,11 @@
         {
             IInteractionRangeLimit limit = source.GetComponentInTree<IInteractionRangeLimit>();
             return limit?.GetInteractionRange() ?? float.MaxValue;
+        }
+
+        public static Hands GetHands(this IInteractionSource source)
+        {
+            return source.GetComponentInTree<Hands>();
         }
     }
 }

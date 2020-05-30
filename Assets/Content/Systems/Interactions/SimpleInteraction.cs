@@ -1,6 +1,7 @@
 ﻿using System;
 using SS3D.Engine.Interactions;
 using UnityEngine;
+using SS3D.Engine.Interactions.Extensions;
 
 namespace SS3D.Content.Systems.Interactions
 {
@@ -19,6 +20,10 @@ namespace SS3D.Content.Systems.Interactions
         /// Executed when the interaction takes place
         /// </summary>
         public Action<InteractionEvent, InteractionReference> Interact { get; set; }
+        /// <summary>
+        /// If a range check should be automatically performed
+        /// </summary>
+        public bool RangeCheck { get; set; }
 
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
@@ -37,6 +42,10 @@ namespace SS3D.Content.Systems.Interactions
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
+            if (RangeCheck && !InteractionExtensions.RangeCheck(interactionEvent))
+            {
+                return false;
+            }
             return CanInteractCallback.Invoke(interactionEvent);
         }
 
