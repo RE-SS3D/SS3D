@@ -620,6 +620,7 @@ MonoBehaviour:
   - {fileID: 3792017003477948967, guid: 772da386eb7b01745913050fee544c32, type: 3}
   - {fileID: 1888703706215615217, guid: 7becfab153276864f9fc7636a839d837, type: 3}
   - {fileID: 5447298468117708068, guid: 4b57ef9a7f221f749be5edc010605894, type: 3}
+  - {fileID: 298201769935591731, guid: 74ead4cc2020eb640a1c074780eb5081, type: 3}
   useLoginSystemOnLocalHost: 0
   warmupTime: 3
   loginServerAddress: http://35.198.114.92
