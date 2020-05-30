@@ -2,6 +2,7 @@
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Substances;
+using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
 {
@@ -29,6 +30,11 @@ namespace SS3D.Content.Systems.Interactions
         public string GetName(InteractionEvent interactionEvent)
         {
             return Name;
+        }
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
+        {
+            return null;
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
