@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 5879712906965031080}
   - component: {fileID: 3251426394744480099}
   - component: {fileID: 2596605630319959798}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: paper cup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -194,7 +194,7 @@ GameObject:
   - component: {fileID: 4958409094668074371}
   - component: {fileID: 671047080012750474}
   - component: {fileID: 854743654657205891}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -358,7 +358,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5123673251067320675}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Attachment Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -372,10 +372,10 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9008414907510223263}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.13052624, y: 0, z: 0, w: 0.9914449}
+  m_LocalPosition: {x: 0, y: 0.045, z: -0.0447}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5495680865964428083}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -15, y: 0, z: 0}
