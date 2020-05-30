@@ -57,8 +57,8 @@ namespace SS3D.Engine.Inventory
         public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
             base.CreateInteractions(targets, interactions);
-            DropInteraction dropInteraction = new DropInteraction {  };
-            interactions.Insert(0, new InteractionEntry(null, dropInteraction));
+            DropInteraction dropInteraction = new DropInteraction();
+            interactions.Add(new InteractionEntry(null, dropInteraction));
         }
 
 #if UNITY_EDITOR
