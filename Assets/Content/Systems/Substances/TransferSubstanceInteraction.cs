@@ -4,23 +4,14 @@ using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Substances;
 using UnityEngine;
 
-namespace SS3D.Content.Systems.Interactions
+namespace SS3D.Content.Systems.Substances
 {
-    public class DispenseSubstanceInteraction : IInteraction
+    public class TransferSubstanceInteraction : IInteraction
     {
-        public string Name { get; set; } = "Dispense";
-        /// <summary>
-        /// The substance to dispense
-        /// </summary>
-        public SubstanceEntry Substance { get; set; }
         /// <summary>
         /// Checks if the interaction should be possible
         /// </summary>
         public Predicate<InteractionEvent> CanInteractCallback { get; set; } = _ => true;
-        /// <summary>
-        /// If a range check should be automatically performed
-        /// </summary>
-        public bool RangeCheck { get; set; }
         
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
@@ -29,7 +20,7 @@ namespace SS3D.Content.Systems.Interactions
 
         public string GetName(InteractionEvent interactionEvent)
         {
-            return Name;
+            return "Transfer";
         }
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
@@ -39,7 +30,7 @@ namespace SS3D.Content.Systems.Interactions
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
-            if (RangeCheck && !InteractionExtensions.RangeCheck(interactionEvent))
+            if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
                 return false;
             }
@@ -49,10 +40,18 @@ namespace SS3D.Content.Systems.Interactions
             {
                 return false;
             }
-            if (provider.GameObject.GetComponent<SubstanceContainer>() == null)
+
+            var container = provider.GameObject.GetComponent<SubstanceContainer>();
+            if (container == null)
             {
                 return false;
             }
+
+            if (container.IsEmpty())
+            {
+                return false;
+            }
+            
             return CanInteractCallback.Invoke(interactionEvent);
         }
 
@@ -63,8 +62,10 @@ namespace SS3D.Content.Systems.Interactions
                 SubstanceContainer container = provider.GameObject.GetComponent<SubstanceContainer>();
                 if (container != null)
                 {
-                    container.AddSubstance(Substance.Substance, Substance.Moles);
+                    var targetContainer = interactionEvent.Target.GetComponent<SubstanceContainer>();
+                    container.TransferVolume(targetContainer, 25);
                     container.MarkDirty();
+                    targetContainer.MarkDirty();
                 }
             }
 
