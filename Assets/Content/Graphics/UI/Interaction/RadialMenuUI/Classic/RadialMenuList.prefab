@@ -461,10 +461,14 @@ MonoBehaviour:
   menuScale: 1.814
   menuAnimator: {fileID: 1729488106850954084}
   indicator: {fileID: 1211205269070496839}
-  selectedPetal: {fileID: 0}
+  selectedPetal: {fileID: 9019100725063611485}
   petalsManager: {fileID: 8945940273956631362}
   objectName: {fileID: 1052630082417477366}
   interactionName: {fileID: 1430271003328113193}
+  mouseAngle: 0
+  buttonAngle: 22.5
+  buttonMaxDistance: 38
+  mouseDistance: 0
   missingIcon: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
 --- !u!95 &1729488106850954084
 Animator:
