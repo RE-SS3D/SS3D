@@ -140,3 +140,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CupPrefab: {fileID: 298201769935591731, guid: 74ead4cc2020eb640a1c074780eb5081,
     type: 3}
+  NumberOfCups: 25

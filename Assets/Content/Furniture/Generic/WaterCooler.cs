@@ -9,6 +9,7 @@ namespace SS3D.Content.Furniture.Generic
     public class WaterCooler : InteractionTargetBehaviour
     {
         public GameObject CupPrefab;
+        public int NumberOfCups;
     
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
@@ -23,13 +24,14 @@ namespace SS3D.Content.Furniture.Generic
 
         private bool CanDispenseCup(InteractionEvent interactionEvent)
         {
-            return interactionEvent.GetSourceItem() == null && interactionEvent.Source.GetHands() != null;
+            return NumberOfCups > 0 && interactionEvent.GetSourceItem() == null && interactionEvent.Source.GetHands() != null;
         }
 
         private void DispenseCup(InteractionEvent interactionEvent, InteractionReference arg2)
         {
             Item cup = ItemHelpers.CreateItem(CupPrefab);
             interactionEvent.Source.GetHands().Pickup(cup.gameObject);
+            NumberOfCups--;
         }
     }
 }
