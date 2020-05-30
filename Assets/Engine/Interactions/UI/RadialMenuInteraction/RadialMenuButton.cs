@@ -22,12 +22,6 @@ public class RadialMenuButton : Button
         menu.interactionName.text = interaction;
         menu.objectName.text = objectName;
     }
-    void PetalDeselect()
-    {
-        menu.selectedPetal = null;
-        menu.interactionName.text = null;
-        menu.objectName.text = null;
-    }
 
     private void Update()
     {
@@ -39,9 +33,6 @@ public class RadialMenuButton : Button
                 if (menu.mouseDistance > menu.buttonMaxDistance)
                 {
                     PetalSelect();
-                } else
-                {
-                    PetalDeselect();
                 }
             }
         }
