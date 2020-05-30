@@ -131,7 +131,6 @@ namespace SS3D.Engine.Interactions.UI
             float atan = Mathf.Atan2(dir.y, dir.x);
             mouseAngle = (atan > 0 ? atan : (2 * Mathf.PI + atan)) * 360 / (2 * Mathf.PI);
             mouseDistance = (mouse - indicator.position).magnitude;
-            Debug.Log("Distance: " + mouseDistance);
             if (mouseDistance < buttonMaxDistance)
             {
                 selectedPetal = null;
