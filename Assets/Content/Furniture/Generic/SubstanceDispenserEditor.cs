@@ -4,6 +4,7 @@ using UnityEditor;
 
 namespace SS3D.Content.Furniture.Generic
 {
+    #if UNITY_EDITOR
     [CustomEditor(typeof(SubstanceDispenser))]
     public class SubstanceDispenserEditor : Editor
     {
@@ -49,4 +50,5 @@ namespace SS3D.Content.Furniture.Generic
             serializedObject.ApplyModifiedProperties();
         }
     }
+    #endif
 }
