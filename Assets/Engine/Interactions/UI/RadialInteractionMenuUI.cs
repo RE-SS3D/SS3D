@@ -34,6 +34,10 @@ namespace SS3D.Engine.Interactions.UI
         public float mouseDistance;
         public Sprite missingIcon;
 
+        private Image indicatorImage;
+        private Color indicatorBaseColor;
+        private Color indicatorOffColor;
+
         // Current selected object
         GameObject obj = null;
 
@@ -83,6 +87,10 @@ namespace SS3D.Engine.Interactions.UI
             else
                 contextMenuManagerInstance = this;
             parentCanvas = GetComponentInParent<Canvas>();
+
+            indicatorImage = indicator.GetComponent<Image>();
+            indicatorOffColor = indicatorImage.color;
+            indicatorBaseColor = new Color(indicatorOffColor.r, indicatorOffColor.g, indicatorOffColor.b, .69f);
         }
         private void Update()
         {
@@ -137,6 +145,8 @@ namespace SS3D.Engine.Interactions.UI
                 interactionName.text = null;
                 objectName.text = null;
             }
+
+            indicatorImage.color = (selectedPetal == null) ? indicatorOffColor : indicatorBaseColor;
         }
 
         private void UpdateInteractions()
