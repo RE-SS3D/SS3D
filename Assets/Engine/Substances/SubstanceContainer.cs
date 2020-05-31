@@ -200,7 +200,15 @@ namespace SS3D.Engine.Substances
                 float entryMoles = entry.Moles * relativeMoles;
                 entry.Moles -= entryMoles;
                 other.AddSubstance(entry.Substance, entryMoles);
-                Substances[i] = entry;
+                if (entry.Moles <= 0.0000001)
+                {
+                    Substances.RemoveAt(i);
+                    i--;
+                }
+                else
+                {
+                    Substances[i] = entry;
+                }
             }
         }
 
