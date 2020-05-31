@@ -133,7 +133,9 @@ namespace SS3D.Engine.Interactions
                 var obj = Instantiate(menuPrefab, transform.root.transform);
                 activeMenu = obj.GetComponentInChildren<UI.RadialInteractionMenuUI>();
 
-                activeMenu.Position = Input.mousePosition;
+                Vector3 mousePosition = Input.mousePosition;
+                mousePosition.y = Mathf.Max(obj.transform.GetChild(0).GetComponent<RectTransform>().rect.height, mousePosition.y);
+                activeMenu.Position = mousePosition;
                 activeMenu.Event = interactionEvent;
                 activeMenu.Interactions = entries.Select(x => x.Interaction).ToList();
                 activeMenu.onSelect = interaction =>
