@@ -78,5 +78,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Light Bulb Broken
       objectReference: {fileID: 0}
+    - target: {fileID: 8564003696829877426, guid: f63030d9eed5bc3408dd5913166449c2,
+        type: 3}
+      propertyPath: m_Mass
+      value: 0.03
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f63030d9eed5bc3408dd5913166449c2, type: 3}
