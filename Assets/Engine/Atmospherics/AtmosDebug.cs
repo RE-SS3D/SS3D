@@ -42,7 +42,6 @@ namespace SS3D.Engine.Atmospherics
                 tileManager = FindObjectOfType<TileManager>();
                 if (tileManager == null)
                 {
-                    Debug.LogWarning("Editor opened while in runmode");
                     return;
                 }
                 atmosManager = tileManager.GetComponent<AtmosManager>();

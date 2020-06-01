@@ -53,6 +53,7 @@ namespace SS3D.Engine.Atmospherics
                 tile.atmos.MakeEmpty();
                 tile.atmos.MakeAir();
                 tile.atmos.RemoveFlux();
+
                 if (tile.Tile.turf.isWall)
                 {
                     tile.atmos.SetBlocked(true);
@@ -92,6 +93,15 @@ namespace SS3D.Engine.Atmospherics
             {
                 tile.atmos.setAtmosNeighbours();
                 // tile.atmos.ValidateVacuum();
+
+                // Set airlocks to blocked
+                if (tile.Tile.fixture != null)
+                {
+                    if (tile.Tile.fixture.name.Contains("Airlock"))
+                    {
+                        tile.atmos.SetBlocked(true);
+                    }
+                }
             }
             Debug.Log($"AtmosManager: Finished initializing {tilesInstantiated} tiles");
 
