@@ -1,91 +1,83 @@
-﻿using Mirror;
+﻿using System;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace SS3D.Engine.Interactions
 {
     /// <summary>
-    /// Base class for interactions which occur after a delay
+    /// Base class for interactions which execute after a delay
     /// </summary>
-    public abstract class DelayedInteraction : /* Hack (no multiple inheritance) */ NetworkBehaviour, ContinuousInteraction
+    public abstract class DelayedInteraction : IInteraction
     {
+        public Sprite icon;
         /// <summary>
-        /// The delay in seconds before the interaction is performed
+        /// The delay in seconds before performing the interaction
         /// </summary>
-        public float Delay;
+        public float Delay { get; set; }
+        /// <summary>
+        /// The loading bar prefab to use on the client
+        /// </summary>
+        public GameObject LoadingBarPrefab { get; set; }
+        /// <summary>
+        /// The interval in seconds in which CanInteract is checked
+        /// </summary>
+        protected float CheckInterval { get; set; }
         private float startTime;
-
-        /// <summary>
-        /// The prefab to use as a loading bar. If this value is null no bar is shown.
-        /// </summary>
-        public GameObject LoadingBarPrefab;
+        private float lastCheck;
         
-        public abstract InteractionEvent Event { get; set; }
-        public abstract string Name { get; }
-
-        public virtual bool CanInteract()
+        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
-            // Prevents multiple people from interacting at the same time
-            // Is this a good idea?
-            return startTime == 0;
+            return new ClientDelayedInteraction
+            {
+                Delay = Delay, LoadingBarPrefab = LoadingBarPrefab
+            };
         }
 
-        public void Interact()
+        public abstract string GetName(InteractionEvent interactionEvent);
+
+        public virtual Sprite GetIcon(InteractionEvent interactionEvent) { return icon; }
+        public abstract bool CanInteract(InteractionEvent interactionEvent);
+
+        public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             startTime = Time.time;
-            TargetStartInteraction(Event.connectionToClient, Delay);
+            lastCheck = startTime;
+            return true;
         }
 
-        public bool ContinueInteracting()
+        public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            // Delay has been reached
+            if (lastCheck + CheckInterval < Time.time)
+            {
+                if (!CanInteract(interactionEvent))
+                {
+                    // Cancel own interaction
+                    interactionEvent.Source.CancelInteraction(reference);
+                    return true;
+                }
+
+                lastCheck = Time.time;
+            }
+            
             if (startTime + Delay < Time.time)
             {
-                // Perform the actual interaction
-                InteractDelayed();
-                startTime = 0;
-                return false;
+                if (CanInteract(interactionEvent))
+                {
+                    StartDelayed(interactionEvent);
+                    return false;
+                }
+                else
+                {
+                    // Cancel own interaction
+                    interactionEvent.Source.CancelInteraction(reference);
+                    return true;
+                }
             }
 
             return true;
         }
 
-        public void EndInteraction()
-        {
-            // If start time is not zero, the interaction was interrupted
-            if (startTime != 0)
-            {
-                startTime = 0;
-                // Notify the client of the interruption
-                TargetEndInteraction(Event.connectionToClient);
-            }
-        }
+        public abstract void Cancel(InteractionEvent interactionEvent, InteractionReference reference);
 
-        [TargetRpc]
-        public void TargetStartInteraction(NetworkConnection target, float delay)
-        {
-            if (LoadingBarPrefab != null)
-            {
-                // Create loading bar in scene
-                GameObject loadingBar = Instantiate(LoadingBarPrefab, transform);
-                // TODO: Set position above object
-                loadingBar.transform.localPosition = Vector3.up;
-                LoadingBar bar = loadingBar.GetComponent<LoadingBar>();
-                Assert.IsNotNull(bar, "Loading bar prefab has no LoadingBar component");
-                // Set loading bar delay
-                bar.Duration = delay;
-            }
-        }
-
-        [TargetRpc]
-        public void TargetEndInteraction(NetworkConnection target)
-        {
-            Destroy(GetComponentInChildren<LoadingBar>().gameObject);
-        }
-        
-        /// <summary>
-        /// The method which gets called after the delay
-        /// </summary>
-        protected abstract void InteractDelayed();
+        protected abstract void StartDelayed(InteractionEvent interactionEvent);
     }
 }

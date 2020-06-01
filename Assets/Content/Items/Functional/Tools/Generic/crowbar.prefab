@@ -13,9 +13,8 @@ GameObject:
   - component: {fileID: 5851963053719667412}
   - component: {fileID: 147158701279559213}
   - component: {fileID: 926100782}
-  - component: {fileID: 2986641575226085218}
   - component: {fileID: 769153401460545782}
-  - component: {fileID: 7861503108559545368}
+  - component: {fileID: 7755032100304685975}
   m_Layer: 16
   m_Name: crowbar
   m_TagString: Untagged
@@ -116,23 +115,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &2986641575226085218
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1888703706215615217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  container: {fileID: 0}
-  itemType: 0
-  sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
-  prefab: {fileID: 1888703706215615217}
-  attachmentPoint: {fileID: 4263568945307503621}
 --- !u!64 &769153401460545782
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -147,7 +129,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 2165947640806648972, guid: 445d281ce446e2c40ad19c1a217dca0f, type: 3}
---- !u!114 &7861503108559545368
+--- !u!114 &7755032100304685975
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -156,17 +138,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 1888703706215615217}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dca8718fcae48c84ea7fffa1f4eddec4, type: 3}
+  m_Script: {fileID: 11500000, guid: 62eb33d2cbd24df381927489c5548591, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  Delay: 2
+  ItemId: 
+  container: {fileID: 0}
+  itemType: 0
+  sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
+  prefab: {fileID: 1888703706215615217}
+  attachmentPoint: {fileID: 4263568945307503621}
   LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
     type: 3}
-  wallToConstruct: {fileID: 11400000, guid: cede127f2ecc46345ab2c1fad9cbd507, type: 2}
-  floorToConstruct: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
-  buildDistance: 3
+  WallToConstruct: {fileID: 11400000, guid: cede127f2ecc46345ab2c1fad9cbd507, type: 2}
+  FloorToConstruct: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
+  Delay: 1.5
+  constructIcon: {fileID: 21300000, guid: e1b5b9fab3120ad4c91ea3deb5197a7b, type: 3}
 --- !u!1 &2468349444349537438
 GameObject:
   m_ObjectHideFlags: 0

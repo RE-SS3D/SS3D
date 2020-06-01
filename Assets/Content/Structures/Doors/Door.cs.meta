@@ -3,7 +3,9 @@ guid: 159a9ad506a2d794d80a59383b84ac83
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - wallCapPrefab: {fileID: 5532353597398885135, guid: 1257cb58aa84aeb48a09c63963a02e38,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

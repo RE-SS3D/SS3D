@@ -154,6 +154,23 @@ namespace SS3D.Engine.Inventory
          */
         public SlotType GetSlot(int slot) => slots[slot];
         public int Length() => slots.Length;
+        /// <summary>
+        /// Returns the slot an item is in
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns>The slot the item is in or -1 if it is not present</returns>
+        public int GetSlotFromItem(Item item)
+        {
+            for (var i = 0; i < items.Count; i++)
+            {
+                if (items[i] == item.gameObject)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
 
         public override void OnStartServer()
         {

@@ -1,5 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using SS3D.Engine.Interactions;
+using SS3D.Engine.Inventory.Extensions;
+using UnityEngine;
 using UnityEditor;
+using SS3D.Engine.Utilities;
 #if UNITY_EDITOR
 using UnityEditor.Experimental.SceneManagement;
 #endif
@@ -10,7 +15,7 @@ namespace SS3D.Engine.Inventory
      * An item describes what is held in a container.
      */
     [DisallowMultipleComponent]
-    public class Item : MonoBehaviour
+    public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget
     {
         // Distinguishes what can go in what slot
         public enum ItemType
@@ -26,11 +31,35 @@ namespace SS3D.Engine.Inventory
             Shoes
         }
 
+        public string ItemId;
         public Container container;
         public ItemType itemType;
         public Sprite sprite;
         public GameObject prefab;
         public Transform attachmentPoint;
+
+        [ContextMenu("Create Icon")]
+        public void Start()
+        {
+            GenerateNewIcon();
+        }
+
+        public void GenerateNewIcon()
+        {
+            RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
+            RuntimePreviewGenerator.OrthographicMode = true;
+
+            Texture2D texture = RuntimePreviewGenerator.GenerateModelPreview(this.transform, 128, 128, false);
+            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
+            sprite.name = transform.name;
+        }
+        
+        public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        {
+            base.CreateInteractions(targets, interactions);
+            DropInteraction dropInteraction = new DropInteraction();
+            interactions.Add(new InteractionEntry(null, dropInteraction));
+        }
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()
@@ -69,5 +98,14 @@ namespace SS3D.Engine.Inventory
         }
 
 #endif
+        public virtual IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        {
+            return new IInteraction[] { new PickupInteraction { icon = sprite } };
+        }
+
+        public bool InContainer()
+        {
+            return container != null;
+        }
     }
 }

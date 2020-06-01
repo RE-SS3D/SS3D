@@ -1,23 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using UnityEngine;
+using SS3D.Engine.Interactions;
 
 namespace SS3D.Engine.Inventory.Extensions
 {
     [RequireComponent(typeof(Inventory))]
-    public class Hands : NetworkBehaviour
+    public class Hands : InteractionSourceNetworkBehaviour, IToolHolder, IInteractionRangeLimit
     {
         [SerializeField] private Container handContainer = null;
         [SerializeField] private float handRange = 0f;
 
         public event Action<int> onHandChange;
         public int SelectedHand { get; private set; } = 0;
+        public float Range = 1.5f;
+
+        public Sprite pickupIcon;
 
         // Use these for inventory actions
         public Container Container => handContainer;
         public GameObject ContainerObject => Container.gameObject;
         public int HeldSlot => handSlots[SelectedHand];
+
+        public void Start()
+        {
+            SupportsMultipleInteractions = true;
+        }
 
         [Server]
         public void Pickup(GameObject target)
@@ -106,8 +116,10 @@ namespace SS3D.Engine.Inventory.Extensions
             }
         }
 
-        private void Update()
+        public override void Update()
         {
+            base.Update();
+            
             if (!isLocalPlayer)
                 return;
 
@@ -146,5 +158,24 @@ namespace SS3D.Engine.Inventory.Extensions
         // The indices in the container that contains the hands
         private int[] handSlots;
         private Inventory inventory;
+        public IInteractionSource GetActiveTool()
+        {
+            Item itemInHand = GetItemInHand();
+            if (itemInHand == null)
+            {
+                return null;
+            }
+
+            IInteractionSource interactionSource = itemInHand.prefab.GetComponent<IInteractionSource>();
+            if (interactionSource != null)
+            {
+                interactionSource.Parent = this;
+            }
+            return interactionSource;
+        }
+        public float GetInteractionRange()
+        {
+            return Range;
+        }
     }
 }

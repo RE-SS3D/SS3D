@@ -14,6 +14,11 @@ namespace SS3D.Engine.Tiles {
     [ExecuteAlways]
     public class TileManager : NetworkBehaviour
     {
+        /// <summary>
+        /// How many tiles are serialized per rpc
+        /// </summary>
+        private const int TilesSentPerCall = 50;
+        
         private struct NetworkableTileObject
         {
             public Vector2Int position;
@@ -149,14 +154,30 @@ namespace SS3D.Engine.Tiles {
         [Server]
         public void SendTilesToClient(NetworkConnection connection)
         {
-            TargetInitializeTilesFromServer(
-                connection,
-                origin,
-                tiles.Values.Select(tile => new NetworkableTileObject {
-                    position = GetIndexAt(tile.transform.position),
-                    definition = tile.Tile
-                }).ToArray()
-            );
+            NetworkableTileObject[] tileObjects = tiles.Values.Select(tile => new NetworkableTileObject {
+                position = GetIndexAt(tile.transform.position),
+                definition = tile.Tile
+            }).ToArray();
+            
+            NetworkableTileObject[][] chunks = new NetworkableTileObject[(tileObjects.Length + TilesSentPerCall - 1) / TilesSentPerCall][];
+            for (var i = 0; i < chunks.Length; i++)
+            {
+                int chunkLength = i == chunks.Length - 1 ? tileObjects.Length % TilesSentPerCall : TilesSentPerCall;
+                NetworkableTileObject[] chunk = new NetworkableTileObject[chunkLength];
+                Array.Copy(tileObjects, i * TilesSentPerCall, chunk, 0, 
+                    chunkLength);
+                chunks[i] = chunk;
+            }
+            
+            TargetStartTileStream(connection, origin);
+            foreach (NetworkableTileObject[] chunk in chunks)
+            {
+                TargetReceiveChunkFromServer(
+                    connection,
+                    chunk
+                );
+            }
+            TargetTilemapEnd(connection);
         }
 
         public override void OnStartServer() => ReinitializeFromChildren();
@@ -175,23 +196,39 @@ namespace SS3D.Engine.Tiles {
         }
 #endif
 
-        /**
-         * Create a series of tiles at the given positions
-         */
+        /// <summary>
+        /// Signals to the client that the server will send the tilemap
+        /// </summary>
+        /// <param name="origin">The origin point of the tilemap</param>
         [TargetRpc]
-        private void TargetInitializeTilesFromServer(NetworkConnection connection, Vector3 origin, NetworkableTileObject[] tileList)
+        private void TargetStartTileStream(NetworkConnection connection, Vector3 origin)
         {
             DestroyChildren();
 
             this.origin = origin;
+        }
+
+        /// <summary>
+        /// Called when the server has sent all tilemap chunks
+        /// </summary>
+        [TargetRpc]
+        private void TargetTilemapEnd(NetworkConnection connection)
+        {
+            UpdateAllTileAdjacencies();
+        }
+
+        /// <summary>
+        /// Sends a chunk to a client
+        /// </summary>
+        /// <param name="tileList">The tiles in this chunk</param>
+        [TargetRpc]
+        private void TargetReceiveChunkFromServer(NetworkConnection connection, NetworkableTileObject[] tileList)
+        {
             foreach (var item in tileList) {
                 ulong key = GetKey(item.position.x, item.position.y);
                 tiles[key] = SpawnTileObject(item.position.x, item.position.y);
                 tiles[key].Tile = item.definition;
             }
-
-            // Once they are all made go through and update all adjacencies.
-            UpdateAllTileAdjacencies();
         }
 
         /*

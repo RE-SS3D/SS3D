@@ -22,7 +22,7 @@ namespace SS3D.Engine.Interactions.UI
             get => gameObject.transform.GetChild(0).position;
             set => gameObject.transform.GetChild(0).position = value;
         }
-        public List<Interaction> Interactions {
+        public List<IInteraction> Interactions {
             get => interactions;
             set
             {
@@ -30,7 +30,19 @@ namespace SS3D.Engine.Interactions.UI
                 UpdateInteractions();
             }
         }
-        public Action<Interaction> onSelect;
+
+        public InteractionEvent Event
+        {
+            get => interactionEvent;
+            set
+            {
+                interactionEvent = value;
+                UpdateInteractions();
+            }
+        }
+        
+        public Action<IInteraction> onSelect;
+
 
         private void Update()
         {
@@ -61,11 +73,16 @@ namespace SS3D.Engine.Interactions.UI
                 Destroy(contentPanel.transform.GetChild(i));
             }
 
+            if (Event == null || interactions == null)
+            {
+                return;
+            }
+
             foreach(var interaction in interactions) {
 
                 var button = Instantiate(buttonPrefab, contentPanel.transform);
 
-                button.GetComponentInChildren<TextMeshProUGUI>().text = interaction.Name;
+                button.GetComponentInChildren<TextMeshProUGUI>().text = interaction.GetName(Event);
                 button.GetComponent<Button>().onClick.AddListener(() => {
                     Destroy(gameObject);
                     onSelect?.Invoke(interaction);
@@ -73,6 +90,7 @@ namespace SS3D.Engine.Interactions.UI
             }
         }
 
-        private List<Interaction> interactions;
+        private List<IInteraction> interactions;
+        private InteractionEvent interactionEvent;
     }
 }

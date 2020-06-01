@@ -45,6 +45,8 @@ GameObject:
   - component: {fileID: 3232963276106930532}
   - component: {fileID: 6692222832881912123}
   - component: {fileID: 3497183203355209607}
+  - component: {fileID: 5602736186390864255}
+  - component: {fileID: 4543423368307729912}
   m_Layer: 16
   m_Name: dough_flat
   m_TagString: Untagged
@@ -171,8 +173,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  ItemId: dough_flat
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 4462294093420203598}
   attachmentPoint: {fileID: 8241018880143899740}
+--- !u!114 &5602736186390864255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4462294093420203598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08d34622e2244bb480f165f94f94feb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Slice
+  ItemId: knife_kitchen
+  Consume: 0
+  ResultingObjects:
+  - Prefab: {fileID: 8025821132411324115, guid: 82018d13b985aaf4a9e389170d41e55a,
+      type: 3}
+    Position: {x: 0.1, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+  - Prefab: {fileID: 8025821132411324115, guid: 82018d13b985aaf4a9e389170d41e55a,
+      type: 3}
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+  - Prefab: {fileID: 8025821132411324115, guid: 82018d13b985aaf4a9e389170d41e55a,
+      type: 3}
+    Position: {x: -0.1, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+--- !u!114 &4543423368307729912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4462294093420203598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e7fcbbb8007d640ba8d048369ff665, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ResultingObject: {fileID: 3586434867307094036, guid: 5f721ca3320ab2f4b883121e62bdc722,
+    type: 3}
