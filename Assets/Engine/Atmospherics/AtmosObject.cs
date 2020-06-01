@@ -27,8 +27,8 @@ namespace SS3D.Engine.Atmospherics
         Active,     // Tile is active; equalizes pressures, temperatures and mixes gasses
         Semiactive, // No pressure equalization, but mixes gasses
         Inactive,   // Do nothing
-        Vacuum,
-        Blocked
+        Vacuum,     // Drain other tiles
+        Blocked     // Wall, skips calculations
     }
 
     public enum AtmosGasses
@@ -169,7 +169,7 @@ namespace SS3D.Engine.Atmospherics
 
         public void RemoveHeat(float temp)
         {
-            temperature -= Mathf.Max(temperature - temp, 0f) / GetSpecificHeat() * (100 / GetTotalMoles()) * dt;
+            temperature -= Mathf.Max(temp - temperature, 0f) / GetSpecificHeat() * (100 / GetTotalMoles()) * dt;
             if (temperature < 0f)
             {
                 temperature = 0f;

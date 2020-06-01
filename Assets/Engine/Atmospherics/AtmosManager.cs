@@ -36,6 +36,8 @@ namespace SS3D.Engine.Atmospherics
 
             // Initialize all tiles with atmos
             tileObjects = tileManager.GetAllTiles();
+
+            int tilesInstantiated = 0;
             foreach (TileObject tile in tileObjects)
             {
                 tile.atmos = ScriptableObject.CreateInstance<AtmosObject>();
@@ -52,8 +54,6 @@ namespace SS3D.Engine.Atmospherics
                 int x = Int32.Parse(coords[0].Replace("[", ""));
                 int y = Int32.Parse(coords[1].Replace("]", ""));
 
-
-                // Ugly AF, needs to be loopified
                 // Top
                 Tuple<int, int> tileCoordinates = DirectionHelper.ToCardinalVector(Direction.North);
                 TileObject tileNeighbour = tileManager.GetTile(tileCoordinates.Item1 + x, tileCoordinates.Item2 + y);
@@ -74,15 +74,8 @@ namespace SS3D.Engine.Atmospherics
                 TileObject tileNeighbour4 = tileManager.GetTile(tileCoordinates4.Item1 + x, tileCoordinates4.Item2 + y);
                 tile.atmos.setTileNeighbour(tileNeighbour4, 3);
 
-
-                //for (Direction direction = Direction.North; direction <= Direction.West; direction++)
-                //{
-                //    Tuple<int, int> tileCoordinates = DirectionHelper.ToCardinalVector(direction);
-                //    TileObject tileNeighbour = tileManager.GetTile(tileCoordinates.Item1 + x, tileCoordinates.Item2 + y);
-                //    tile.atmos.setTileNeighbour(tileNeighbour, (int)direction);
-                //}
-
                 atmosTiles.Add(tile.atmos);
+                tilesInstantiated++;
             }
 
             // Set neighbouring atmos after all are created
@@ -91,7 +84,7 @@ namespace SS3D.Engine.Atmospherics
                 tile.atmos.setAtmosNeighbours();
                 // tile.atmos.ValidateVacuum();
             }
-            Debug.Log("AtmosManager: Finished initializing tiles");
+            Debug.Log($"AtmosManager: Finished initializing {tilesInstantiated} tiles");
             lastStep = Time.fixedTime;
             drawDebug = true;
         }
@@ -132,11 +125,20 @@ namespace SS3D.Engine.Atmospherics
                 {
                     tile.atmos.AddGas(AtmosGasses.Plasma, 60f);
                 }
+                else if (Input.GetKeyDown("h"))
+                {
+                    tile.atmos.AddHeat(2000f);
+                }
+                else if (Input.GetKeyDown("j"))
+                {
+                    tile.atmos.RemoveHeat(2000f);
+                }
                 else if (Input.GetMouseButton(4))
                 {
-                    Debug.Log("Oxygen content: " + tile.atmos.GetGasses()[0] + " Pressure: " + tile.atmos.GetPressure());
-                    Debug.Log("Plasma content: " + tile.atmos.GetGasses()[3]);
-                    Debug.Log("Velocity: " + tile.atmos.GetVelocity());
+                    // Debug.Log("Oxygen content: " + tile.atmos.GetGasses()[0] + " Pressure: " + tile.atmos.GetPressure());
+                    // Debug.Log("Plasma content: " + tile.atmos.GetGasses()[3]);
+                    // Debug.Log("Velocity: " + tile.atmos.GetVelocity());
+                    Debug.Log("Pressure (kPa): " + tile.atmos.GetPressure() + " Temperature (K): = " + tile.atmos.GetTemperature());
                 }
             }
         }
@@ -177,9 +179,9 @@ namespace SS3D.Engine.Atmospherics
         private void MoveVelocity(TileObject tileObject)
         {
             Vector2 velocity = tileObject.atmos.GetVelocity();
-            if (velocity.x > 1f || velocity.y > 1f)
+            if (velocity.x > 0.5f || velocity.y > 0.5f)
             {
-                velocity *= 0.3f;
+                velocity *= 0.2f;
                 Collider[] colliders = Physics.OverlapBox(tileObject.transform.position, new Vector3(1, 2.5f, 1));
 
                 foreach (Collider collider in colliders)
@@ -211,7 +213,7 @@ namespace SS3D.Engine.Atmospherics
         {
             bool drawAll = true;
             float drawRadius = 3.5f;
-            ViewType drawView = ViewType.Pressure;
+            ViewType drawView = ViewType.Temperature;
 
             if (drawDebug)
             {
