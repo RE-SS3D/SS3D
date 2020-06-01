@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
@@ -11,7 +12,7 @@ namespace SS3D.Engine.Atmospherics
     public class AtmosManager : MonoBehaviour
     {
         public static int numOfGases = System.Enum.GetNames(typeof(AtmosStates)).Length;
-        public enum ViewType { Pressure, Content, Temperature, Combined };
+        public enum ViewType { Pressure, Content, Temperature, Combined, Wind };
         public bool drawDebug = false;
         public bool drawAll = true;
         public bool drawWall = true;
@@ -31,6 +32,10 @@ namespace SS3D.Engine.Atmospherics
 
         private ViewType drawView = ViewType.Pressure;
 
+        // Performance markers
+        static ProfilerMarker s_PreparePerfMarker = new ProfilerMarker("Atmospherics.Initialize");
+        static ProfilerMarker s_StepPerfMarker = new ProfilerMarker("Atmospherics.Step");
+
         void Start()
         {
             tileManager = FindObjectOfType<TileManager>();
@@ -40,6 +45,8 @@ namespace SS3D.Engine.Atmospherics
 
         private void Initialize()
         {
+            s_PreparePerfMarker.Begin();
+
             drawDebug = false;
             Debug.Log("AtmosManager: Initializing tiles");
 
@@ -106,6 +113,7 @@ namespace SS3D.Engine.Atmospherics
             Debug.Log($"AtmosManager: Finished initializing {tilesInstantiated} tiles");
 
             lastStep = Time.fixedTime;
+            s_PreparePerfMarker.End();
         }
 
         void Update()
@@ -162,6 +170,7 @@ namespace SS3D.Engine.Atmospherics
 
         private int Step()
         {
+            s_StepPerfMarker.Begin();
             int activeTiles = 0;
 
             // Step 1: Calculate flux
@@ -189,15 +198,15 @@ namespace SS3D.Engine.Atmospherics
                     MoveVelocity(tile);
                 }
             }
-
+            s_StepPerfMarker.End();
             return activeTiles;
         }
 
         private void MoveVelocity(TileObject tileObject)
         {
             Vector2 velocity = tileObject.atmos.GetVelocity();
-            if (velocity.x > 0.5f || velocity.y > 0.5f)
-            {
+            // if (velocity.x > 0.5f || velocity.y > 0.5f)
+            //{
                 velocity *= 0.2f;
                 Collider[] colliders = Physics.OverlapBox(tileObject.transform.position, new Vector3(1, 2.5f, 1));
 
@@ -208,7 +217,8 @@ namespace SS3D.Engine.Atmospherics
                         collider.attachedRigidbody?.AddForce(new Vector3(velocity.x, 0, velocity.y));
                     }
                 }
-            }
+                // tileObject.atmos.RemoveFlux();
+            // }
         }
 
         public void SetUpdateRate(float updateRate)
@@ -328,6 +338,10 @@ namespace SS3D.Engine.Atmospherics
 
                                 Gizmos.color = new Color(tile.atmos.GetTemperature() / 500f, 0, 0, 1) - state;
                                 Gizmos.DrawCube(new Vector3(x, pressure / 2f, y), new Vector3(1 * drawSize, pressure, 1 * drawSize));
+                                break;
+                            case ViewType.Wind:
+                                Gizmos.color = Color.white;
+                                Gizmos.DrawLine(new Vector3(x, 0, y), new Vector3(x + Mathf.Clamp(tile.atmos.GetVelocity().x, -1, 1), 0, y + Mathf.Clamp(tile.atmos.GetVelocity().y, -1, 1)));
                                 break;
                         }
                     }
