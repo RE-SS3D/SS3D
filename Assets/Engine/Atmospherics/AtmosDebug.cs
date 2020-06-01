@@ -29,6 +29,12 @@ namespace SS3D.Engine.Atmospherics
 
         }
 
+        public void OnDisable()
+        {
+            atmosManager.drawDebug = false;
+            atmosManager.isAddingGas = false;
+        }
+
         public void OnGUI()
         {
             if (tileManager == null)
