@@ -248,6 +248,12 @@ namespace SS3D.Engine.Atmospherics
             return mass;     // Mass in grams
         }
 
+        public bool IsBurnable()
+        {
+            // TODO determine minimum burn ratio
+            return (gasses[(int)AtmosGasses.Oxygen] > 1f && gasses[(int)AtmosGasses.Plasma] > 1f);
+        }
+
         public void CalculateFlux()
         {
             float[] otherTilesFlux = {
@@ -356,7 +362,7 @@ namespace SS3D.Engine.Atmospherics
                     j++;
                 }
                 float velVertical = tileFlux[0] - tileFlux[1];    // Top - bottom flux
-                float velHorizontal = tileFlux[2] - tileFlux[3];      // Left - right flux
+                float velHorizontal = tileFlux[2] - tileFlux[3];  // Left - right flux
 
                 velocity = new Vector2(velHorizontal, velVertical);
             }
