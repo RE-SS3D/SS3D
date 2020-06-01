@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using SS3D.Engine.Chat;
+using SS3D.Engine.FOV;
 
 namespace SS3D.Content.Systems.Player
 {
@@ -26,10 +27,13 @@ namespace SS3D.Content.Systems.Player
         // The object to follow
         public GameObject target = null;
 
+        // field of view object
+        public FieldOfView fieldOfView = null;
+
         // the offset
         public float distance = 3f; // total distance from the target
-        public float angle = 90f;   // horizontal angle of the camera (around the z axis)
-        public float vAngle = 60f;  // angle above the player
+        public float angle = 90f; // horizontal angle of the camera (around the z axis)
+        public float vAngle = 60f; // angle above the player
         public float yOffset = 1f;
 
         /**
@@ -38,6 +42,8 @@ namespace SS3D.Content.Systems.Player
         public void SetTarget(GameObject target)
         {
             this.target = target;
+            fieldOfView.target = target.transform;
+            fieldOfView.enabled = true;
 
             // Set the player height based on the character controller, if one is found
             var character = target.GetComponent<CharacterController>();
@@ -62,7 +68,8 @@ namespace SS3D.Content.Systems.Player
 
             // If a double tap actually works
             // Round to closest 90 degree angle, going up or down based on whether axis is positive or negative
-            if (Input.GetButtonUp("Camera Rotation") && (Time.time - prevHorizontalAxisPress) < CARDINAL_SNAP_TIME) {
+            if (Input.GetButtonUp("Camera Rotation") && (Time.time - prevHorizontalAxisPress) < CARDINAL_SNAP_TIME)
+            {
                 angle = Mathf.Round((angle + (Input.GetAxis("Camera Rotation") > 0 ? 45.1f : -45.1f)) / 90.0f) * 90.0f;
                 prevHorizontalAxisPress = 0.0f;
                 return;
@@ -73,11 +80,14 @@ namespace SS3D.Content.Systems.Player
             float angleDelta = 0.0f;
             float vAngleDelta = 0.0f;
 
-            if (Input.GetButton("Camera Rotation") && (Time.time - prevHorizontalAxisPress) > CARDINAL_SNAP_TIME) {
+            if (Input.GetButton("Camera Rotation") && (Time.time - prevHorizontalAxisPress) > CARDINAL_SNAP_TIME)
+            {
                 angleDelta = Input.GetAxis("Camera Rotation") * HORIZONTAL_ROTATION_SENSITIVITY * Time.deltaTime;
             }
+
             if (Input.GetButton("Camera Vertical Rotation"))
-                vAngleDelta = Input.GetAxis("Camera Vertical Rotation") * VERTICAL_ROTATION_SENSITIVITY * Time.deltaTime;
+                vAngleDelta = Input.GetAxis("Camera Vertical Rotation") * VERTICAL_ROTATION_SENSITIVITY *
+                              Time.deltaTime;
 
             // Determine new values, clamping as necessary
             distance = Mathf.Clamp(distance - zoom, MIN_DISTANCE, MAX_DISTANCE);
@@ -91,7 +101,8 @@ namespace SS3D.Content.Systems.Player
         public void LateUpdate()
         {
             // if there is no target exit out of update
-            if (!target) {
+            if (!target)
+            {
                 return;
             }
 
@@ -99,9 +110,11 @@ namespace SS3D.Content.Systems.Player
             curHorizontalAngle = Mathf.LerpAngle(curHorizontalAngle, angle, Time.deltaTime * ANGLE_ACCELERATION);
             currentDistance = Mathf.MoveTowards(currentDistance, distance, Time.deltaTime * DISTANCE_ACCELERATION);
             // The position is determined by the orientation and the distance, where distance has an exponential effect.
-            Vector3 relativePosition = Quaternion.Euler(0, curHorizontalAngle, vAngle) * new Vector3(Mathf.Pow(DISTANCE_SCALING, currentDistance), 0, 0);
+            Vector3 relativePosition = Quaternion.Euler(0, curHorizontalAngle, vAngle) *
+                                       new Vector3(Mathf.Pow(DISTANCE_SCALING, currentDistance), 0, 0);
             // Determine the part of the target we want to follow
-            Vector3 targetPosition = target.transform.position + new Vector3(playerOffset.x,playerOffset.y-yOffset,playerOffset.z);
+            Vector3 targetPosition = target.transform.position +
+                                     new Vector3(playerOffset.x, playerOffset.y - yOffset, playerOffset.z);
 
             // Look at that part from the correct position
             transform.position = targetPosition + relativePosition;

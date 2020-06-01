@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Engine.FOV
@@ -7,7 +8,14 @@ namespace SS3D.Engine.FOV
     [RequireComponent(typeof(MeshFilter))]
     public class FieldOfView : MonoBehaviour
     {
-        [SerializeField] private Transform target = null;
+        [SerializeField]
+        public bool showDebug;
+
+        [SerializeField]
+        private GameObject fog;
+
+        [SerializeField]
+        public Transform target = null;
 
         [Space]
         [SerializeField]
@@ -25,11 +33,6 @@ namespace SS3D.Engine.FOV
         [SerializeField]
         [Tooltip("Raycasts per degree")]
         private float meshResolution = .1f;
-
-        [SerializeField]
-        [Tooltip("How \"deep\" the field of view penetrates the wall")]
-        private float maskCutawayDistance = 0.1f;
-
 
         [Header("Edge Detection")]
         [SerializeField]
@@ -49,6 +52,24 @@ namespace SS3D.Engine.FOV
         private MeshFilter viewMeshFilter;
         private Mesh viewMesh;
 
+        const int MAX_VERTICES = 800;
+
+        [HideInInspector]
+        public List<Vector3> viewPoints = new List<Vector3>(MAX_VERTICES / 2);
+
+        private List<Vector3> vertices = new List<Vector3>(MAX_VERTICES);
+        private List<int> triangles = new List<int>(MAX_VERTICES * 3);
+
+        private void OnEnable()
+        {
+            fog.SetActive(true);
+        }
+
+        private void OnDisable()
+        {
+            fog.SetActive(false);
+        }
+
         private void Start()
         {
             viewMeshFilter = GetComponent<MeshFilter>();
@@ -56,11 +77,9 @@ namespace SS3D.Engine.FOV
             viewMesh = new Mesh();
             viewMesh.name = "View Mesh";
             viewMeshFilter.mesh = viewMesh;
-
-            transform.parent = target.parent;
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             transform.position = target.position;
             DrawFieldOfView();
@@ -76,79 +95,89 @@ namespace SS3D.Engine.FOV
             return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
         }
 
+        private void AddNeededItems(List<Vector3> list, int required)
+        {
+            int originalCount = list.Count;
+            if (required > originalCount)
+            {
+                for (int i = 0; i < required - originalCount; i++)
+                {
+                    list.Add(new Vector3());
+                }
+            }
+        }
+
+        private void AddNeededItems(List<int> list, int required)
+        {
+            int originalCount = list.Count;
+            if (required > originalCount)
+            {
+                for (int i = 0; i < required - originalCount; i++)
+                {
+                    list.Add(0);
+                }
+            }
+        }
+
         public void DrawFieldOfView()
         {
-            var viewPoints = CalculateViewPoints();
+            CalculateViewPoints();
 
             int vertexCount = viewPoints.Count + 1;
-            Vector3[] vertices = new Vector3[vertexCount];
-            int[] triangles = new int[(vertexCount - 2) * 3];
-//        Color[] colors = new Color[vertexCount];
-//        Vector2[] uvs = new Vector2[vertexCount];
+            vertices.Clear();
+            triangles.Clear();
+            AddNeededItems(vertices, vertexCount);
+            AddNeededItems(triangles, (vertexCount - 2) * 3);
 
-
-            vertices[0] = Vector3.zero;
-//        colors[0] = new Color(0, 0, 0, 0);
-//        uvs[0] = new Vector2(0, 0);
+            vertices[0] = transform.InverseTransformPoint(target.transform.position);
 
             for (int i = 0; i < vertexCount - 1; i++)
             {
-                vertices[i + 1] = transform.InverseTransformPoint(viewPoints[i] - detectionOffset);
+                vertices[i + 1] = transform.InverseTransformPoint(viewPoints[i]);
 
                 if (i < vertexCount - 2)
                 {
                     triangles[i * 3] = 0;
                     triangles[i * 3 + 1] = i + 1;
                     triangles[i * 3 + 2] = i + 2;
-
-//                uvs[i + 1] = new Vector2(0, 1);
-//                uvs[i + 2] = new Vector2(0, 1);
-
-//                colors[i + 1] = new Color(0, 0, 0, 1);
-//                colors[i + 2] = new Color(0, 0, 0, 1);
                 }
             }
 
             viewMesh.Clear();
-            viewMesh.vertices = vertices;
-            viewMesh.triangles = triangles;
-//        viewMesh.colors = colors;
-//        viewMesh.uv = uvs;
+            viewMesh.SetVertices(vertices);
+            viewMesh.SetTriangles(triangles, 0);
         }
 
-
-        // TODO: Implement RaycastCommand https://docs.unity3d.com/ScriptReference/RaycastCommand.html
-        public List<Vector3> CalculateViewPoints()
+        public void CalculateViewPoints()
         {
             int stepCount = Mathf.RoundToInt(viewConeWidth * meshResolution);
             float stepAngleSize = viewConeWidth / stepCount;
 
-            List<Vector3> viewPoints = new List<Vector3>();
+            int pointCount = 0;
+
+            viewPoints.Clear();
             ViewCastInfo oldViewCast = new ViewCastInfo();
             for (int i = 0; i <= stepCount; i++)
             {
                 float angle = transform.eulerAngles.y - viewConeWidth / 2 + stepAngleSize * i;
                 ViewCastInfo newViewCast = ViewCast(angle);
 
-                if (i > 0)
+                bool edgeDistanceThresholdExceeded =
+                    Mathf.Abs(oldViewCast.Distance - newViewCast.Distance) > edgeDistanceThreshold;
+                if (oldViewCast.Hit != newViewCast.Hit ||
+                    (oldViewCast.Hit && newViewCast.Hit && oldViewCast.Normal != newViewCast.Normal &&
+                     edgeDistanceThresholdExceeded))
                 {
-                    bool edgeDistanceThresholdExceeded =
-                        Mathf.Abs(oldViewCast.Distance - newViewCast.Distance) > edgeDistanceThreshold;
-                    if (oldViewCast.Hit != newViewCast.Hit ||
-                        (oldViewCast.Hit && newViewCast.Hit && oldViewCast.Normal != newViewCast.Normal &&
-                         edgeDistanceThresholdExceeded))
-                    {
-                        EdgeInfo edge = FindEdge(oldViewCast, newViewCast);
-                        if (edge.PointA != Vector3.zero) viewPoints.Add(edge.PointA);
-                        if (edge.PointB != Vector3.zero) viewPoints.Add(edge.PointB);
-                    }
+                    EdgeInfo edge = FindEdge(oldViewCast, newViewCast);
+                    if (edge.PointA != Vector3.zero) viewPoints.Add(edge.PointA);
+                    if (edge.PointB != Vector3.zero) viewPoints.Add(edge.PointB);
                 }
 
+                pointCount++;
+                AddNeededItems(viewPoints, pointCount);
                 viewPoints.Add(newViewCast.Point);
                 oldViewCast = newViewCast;
             }
-
-            return viewPoints;
         }
 
         private EdgeInfo FindEdge(ViewCastInfo minViewCast, ViewCastInfo maxViewCast)
@@ -184,14 +213,14 @@ namespace SS3D.Engine.FOV
         {
             Vector3 dir = DirectionFromAngle(globalAngle, true);
 
-            if (Physics.Raycast((transform.position + detectionOffset), dir, out var hit, viewRange, obstacleMask))
+            if (Physics.Raycast(target.transform.position, dir, out var hit, viewRange, obstacleMask))
             {
-                // Applying maskCutawayDistance to make sure the walls remain visible.
-                return new ViewCastInfo(true, hit.point + (-hit.normal * maskCutawayDistance), hit.distance, globalAngle,
+                return new ViewCastInfo(true, hit.point, hit.distance,
+                    globalAngle,
                     hit.normal);
             }
 
-            return new ViewCastInfo(false, (transform.position + detectionOffset) + dir * viewRange, viewRange,
+            return new ViewCastInfo(false, target.transform.position + dir * viewRange, viewRange,
                 globalAngle, hit.normal);
         }
 
