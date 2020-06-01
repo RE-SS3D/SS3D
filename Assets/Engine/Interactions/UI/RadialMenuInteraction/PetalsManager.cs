@@ -111,7 +111,7 @@ public class PetalsManager : MonoBehaviour
         Petal newPetal = Instantiate(petalPrefab, petalParent.transform).GetComponent<Petal>();
         newPetal.iconImage.texture = icon.texture;
         newPetal.name = name;
-        newPetal.transform.parent = petalParent.transform;
+        newPetal.transform.SetParent(petalParent.transform, false);
         folder.AddPetal(newPetal);
         folder.isDirty = true;
         return (newPetal);
