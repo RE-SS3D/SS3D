@@ -75,6 +75,9 @@ namespace SS3D.Content.Structures.Fixtures
             // TODO: Sometime when we're not using a shitty networker
             // if (isClientOnly)
             //     OnSetDoorState(openState);
+
+            TileObject tile = this.GetComponentInParent<TileObject>();
+            tile.atmos.SetBlocked(true);
         }
     
         public void OnTriggerEnter(Collider other)
@@ -111,6 +114,9 @@ namespace SS3D.Content.Structures.Fixtures
         private void CommunicateDoorState(bool open)
         {
             transform.root.gameObject.GetComponent<TileServerManager>().SetDoorOpen(transform.parent.gameObject, open);
+
+            TileObject tile = this.GetComponentInParent<TileObject>();
+            tile.atmos.SetBlocked(!open);
         }
 
         private IEnumerator RunCloseEventually(float time)

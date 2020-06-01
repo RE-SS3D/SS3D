@@ -4,6 +4,7 @@ using UnityEditor;
 
 using SS3D.Engine.Tiles.Connections;
 using SS3D.Engine.Tiles.State;
+using SS3D.Engine.Atmospherics;
 
 namespace SS3D.Engine.Tiles
 {
@@ -233,5 +234,9 @@ namespace SS3D.Engine.Tiles
 
         private GameObject fixture = null;
         private AdjacencyConnector fixtureConnector = null; // may be null
+
+
+        // TODO, make private
+        public AtmosObject atmos;
     }
 }
