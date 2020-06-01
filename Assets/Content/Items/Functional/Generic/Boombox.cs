@@ -17,6 +17,8 @@ namespace SS3D.Content.Items.Cosmetic
         public bool radioOn;
         public int currentMusic;
 
+        public ParticleSystem particleSystem;
+
         // I hate my life
         public Sprite interactionIcon;
         public Sprite interactionIconOn;
@@ -111,10 +113,12 @@ namespace SS3D.Content.Items.Cosmetic
             radioOn = !radioOn;
             if (!radioOn)
             {
+                particleSystem.Stop();
                 audioSource.Stop();
             }
             else
             {
+                particleSystem.Play();
                 audioSource.Play();
             }
             RpcTurnOn(radioOn);
@@ -150,10 +154,12 @@ namespace SS3D.Content.Items.Cosmetic
         {
             if (!value)
             {
+                particleSystem.Stop();
                 audioSource.Stop();
             }
             else
             {
+                particleSystem.Play();
                 audioSource.Play();
             }
         }

@@ -172,6 +172,14 @@ namespace SS3D.Engine.Inventory
             return -1;
         }
 
+        public void Purge()
+        {
+           foreach(var item in items)
+            {
+                Destroy(item);
+            }
+        }
+
         public override void OnStartServer()
         {
             for (int i = 0; i < slots.Length; ++i)
