@@ -11,7 +11,6 @@ namespace SS3D.Engine.Atmospherics
     [ExecuteAlways]
     public class AtmosManager : MonoBehaviour
     {
-        public static int numOfGases = System.Enum.GetNames(typeof(AtmosStates)).Length;
         public enum ViewType { Pressure, Content, Temperature, Combined, Wind };
         public bool drawDebug = false;
         public bool drawAll = true;
@@ -20,7 +19,6 @@ namespace SS3D.Engine.Atmospherics
         public bool isAddingGas = false;
         private AtmosGasses gasToAdd = AtmosGasses.Oxygen;
 
-        
         private TileManager tileManager;
         private List<TileObject> tileObjects;
         private List<AtmosObject> atmosTiles;
@@ -29,7 +27,6 @@ namespace SS3D.Engine.Atmospherics
         private int activeTiles = 0;
         private float lastStep;
         private float lastClick;
-
         private ViewType drawView = ViewType.Pressure;
 
         // Performance markers
@@ -151,11 +148,11 @@ namespace SS3D.Engine.Atmospherics
                             }
                             else
                             {
-                                Debug.Log("Pressure (kPa): " + tile.atmos.GetPressure() + " Temperature (K): = " + tile.atmos.GetTemperature() + " State: " + tile.atmos.GetState().ToString() + "\t" + 
-                                    " Oxygen content: " + tile.atmos.GetGasses()[0] +
-                                    " Nitrogen content: " + tile.atmos.GetGasses()[1] +
-                                    " Carbon Dioxide content: " + tile.atmos.GetGasses()[2] +
-                                    " Plasma content: " + tile.atmos.GetGasses()[3]);
+                                Debug.Log("Pressure (kPa): " + tile.atmos.GetPressure() + " Temperature (K): = " + tile.atmos.GetAtmosContainer().GetTemperature() + " State: " + tile.atmos.GetState().ToString() + "\t" + 
+                                    " Oxygen content: " + tile.atmos.GetAtmosContainer().GetGasses()[0] +
+                                    " Nitrogen content: " + tile.atmos.GetAtmosContainer().GetGasses()[1] +
+                                    " Carbon Dioxide content: " + tile.atmos.GetAtmosContainer().GetGasses()[2] +
+                                    " Plasma content: " + tile.atmos.GetAtmosContainer().GetGasses()[3]);
                                 lastClick = Time.fixedTime;
                             }
                         }
@@ -205,9 +202,9 @@ namespace SS3D.Engine.Atmospherics
         private void MoveVelocity(TileObject tileObject)
         {
             Vector2 velocity = tileObject.atmos.GetVelocity();
-            // if (velocity.x > 0.5f || velocity.y > 0.5f)
-            //{
-                velocity *= 0.2f;
+             if (Mathf.Abs(velocity.x) > Gas.minimumWind || Mathf.Abs(velocity.y) > Gas.minimumWind)
+            {
+                velocity *= Gas.windFactor;
                 Collider[] colliders = Physics.OverlapBox(tileObject.transform.position, new Vector3(1, 2.5f, 1));
 
                 foreach (Collider collider in colliders)
@@ -217,8 +214,7 @@ namespace SS3D.Engine.Atmospherics
                         collider.attachedRigidbody?.AddForce(new Vector3(velocity.x, 0, velocity.y));
                     }
                 }
-                // tileObject.atmos.RemoveFlux();
-            // }
+            }
         }
 
         public void SetUpdateRate(float updateRate)
@@ -305,7 +301,7 @@ namespace SS3D.Engine.Atmospherics
 
                                 for (int k = 0; k < 4; ++k)
                                 {
-                                    float moles = tile.atmos.GetGasses()[k] / 30f;
+                                    float moles = tile.atmos.GetAtmosContainer().GetGasses()[k] / 30f;
 
                                     if (moles != 0f)
                                     {
@@ -328,7 +324,7 @@ namespace SS3D.Engine.Atmospherics
                                 }
                                 break;
                             case ViewType.Temperature:
-                                float temperatue = tile.atmos.GetTemperature() / 100f;
+                                float temperatue = tile.atmos.GetAtmosContainer().GetTemperature() / 100f;
 
                                 Gizmos.color = Color.red - state;
                                 Gizmos.DrawCube(new Vector3(x, temperatue / 2f, y), new Vector3(1 * drawSize, temperatue, 1 * drawSize));
@@ -336,7 +332,7 @@ namespace SS3D.Engine.Atmospherics
                             case ViewType.Combined:
                                 pressure = tile.atmos.GetPressure() / 30f;
 
-                                Gizmos.color = new Color(tile.atmos.GetTemperature() / 500f, 0, 0, 1) - state;
+                                Gizmos.color = new Color(tile.atmos.GetAtmosContainer().GetTemperature() / 500f, 0, 0, 1) - state;
                                 Gizmos.DrawCube(new Vector3(x, pressure / 2f, y), new Vector3(1 * drawSize, pressure, 1 * drawSize));
                                 break;
                             case ViewType.Wind:
