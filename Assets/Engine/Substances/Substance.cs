@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SS3D.Engine.Substances
 {
     [Serializable]
-    [CreateAssetMenu(menuName = "Substance")]
+    [CreateAssetMenu(menuName = "SS3D/Substances/Substance")]
     public class Substance : ScriptableObject
     {
         public string Id;

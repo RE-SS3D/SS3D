@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SS3D.Content.Systems.Substances;
+using SS3D.Engine.Interactions;
 using UnityEngine;
 
 namespace SS3D.Engine.Substances
@@ -8,7 +10,7 @@ namespace SS3D.Engine.Substances
     /// <summary>
     /// Stores substances
     /// </summary>
-    public class SubstanceContainer : MonoBehaviour
+    public class SubstanceContainer : InteractionTargetBehaviour
     {
         /// <summary>
         /// A list of all substances in this container
@@ -23,20 +25,45 @@ namespace SS3D.Engine.Substances
         /// The total number of moles
         /// </summary>
         public float TotalMoles => Substances.Sum(x => x.Moles);
+
         /// <summary>
         /// The filled volume in ml
         /// </summary>
         public float CurrentVolume => Substances.Sum(x => x.Moles * x.Substance.MillilitersPerMole);
+
         /// <summary>
         /// The remaining volume in milliliters that fit in this container
         /// </summary>
         public float RemainingVolume => Volume - CurrentVolume;
         /// <summary>
+        /// Multiplier to convert moles in this container to volume
+        /// </summary>
+        public float MolesToVolume
+        {
+            get
+            {
+                float val = 0;
+                float total = TotalMoles;
+                foreach (var entry in Substances)
+                {
+                    val += entry.Substance.MillilitersPerMole * (entry.Moles / total);
+                }
+                return val;
+            }
+        }
+
+        /// <summary>
         /// The capacity of this container in milliliters
         /// </summary>
         public float Volume;
-        
+
+        /// <summary>
+        /// The temperature of the container
+        /// </summary>
+        public float Temperature;
+
         public delegate void OnContentChanged(SubstanceContainer container);
+
         public event OnContentChanged ContentsChanged;
 
         [SerializeField] private List<SubstanceEntry> substances;
@@ -86,9 +113,8 @@ namespace SS3D.Engine.Substances
                 entry.Moles += moles;
                 Substances[index] = entry;
             }
-            OnContentsChanged();
         }
-        
+
         /// <summary>
         /// Checks if this container contains the desired substance
         /// </summary>
@@ -111,9 +137,10 @@ namespace SS3D.Engine.Substances
             {
                 return;
             }
+
             SubstanceEntry entry = Substances[index];
             float newAmount = entry.Moles - moles;
-            if (newAmount <= 0)
+            if (newAmount <= 0.000001)
             {
                 Substances.RemoveAt(index);
             }
@@ -122,7 +149,6 @@ namespace SS3D.Engine.Substances
                 entry.Moles = newAmount;
                 Substances[index] = entry;
             }
-            OnContentsChanged();
         }
 
         /// <summary>
@@ -131,7 +157,6 @@ namespace SS3D.Engine.Substances
         public void Empty()
         {
             Substances.Clear();
-            OnContentsChanged();
         }
 
         /// <summary>
@@ -145,14 +170,13 @@ namespace SS3D.Engine.Substances
             {
                 moles = totalMoles;
             }
-            
+
             for (var i = 0; i < Substances.Count; i++)
             {
                 SubstanceEntry entry = Substances[i];
                 entry.Moles -= entry.Moles / totalMoles * moles;
                 Substances[i] = entry;
             }
-            OnContentsChanged();
         }
 
         /// <summary>
@@ -167,16 +191,35 @@ namespace SS3D.Engine.Substances
             {
                 moles = totalMoles;
             }
-            
+
+            float relativeMoles = moles / totalMoles;
+
             for (var i = 0; i < Substances.Count; i++)
             {
                 SubstanceEntry entry = Substances[i];
-                float entryMoles = entry.Moles / totalMoles * moles;
+                float entryMoles = entry.Moles * relativeMoles;
                 entry.Moles -= entryMoles;
                 other.AddSubstance(entry.Substance, entryMoles);
-                Substances[i] = entry;
+                if (entry.Moles <= 0.0000001)
+                {
+                    Substances.RemoveAt(i);
+                    i--;
+                }
+                else
+                {
+                    Substances[i] = entry;
+                }
             }
-            OnContentsChanged();
+        }
+
+        /// <summary>
+        /// Transfers volume (ml) to a different container
+        /// </summary>
+        /// <param name="other">The other container</param>
+        /// <param name="milliliters">How many milliliters to transfer</param>
+        public void TransferVolume(SubstanceContainer other, float milliliters)
+        {
+            TransferMoles(other, milliliters / MolesToVolume);
         }
 
         /// <summary>
@@ -197,9 +240,26 @@ namespace SS3D.Engine.Substances
             return -1;
         }
 
+        /// <summary>
+        /// Informs the system that the contents of this container have changed
+        /// </summary>
+        public void MarkDirty()
+        {
+            OnContentsChanged();
+        }
+
         protected virtual void OnContentsChanged()
         {
+            SubstanceRegistry.Current.ProcessContainer(this);
             ContentsChanged?.Invoke(this);
+        }
+
+        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        {
+            return new IInteraction[]
+            {
+                new TransferSubstanceInteraction()
+            };
         }
     }
 }

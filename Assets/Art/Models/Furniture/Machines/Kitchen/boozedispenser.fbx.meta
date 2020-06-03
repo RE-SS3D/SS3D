@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: d6d036e5391b25743b0d62e39eaa30b6
+guid: 431a3bb040eae6b48866cf8d3203263d
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable: []
@@ -14,16 +14,6 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Palette05 Emission
     second: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Palette05 Glass
-    second: {fileID: 2100000, guid: 4156b958be0668e49b2e9f5120660e50, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Palette05.001
-    second: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -78,7 +68,7 @@ ModelImporter:
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
-    useFileScale: 0
+    useFileScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
