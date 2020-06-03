@@ -348,7 +348,7 @@ namespace SS3D.Engine.Atmospherics
                     ArrayDiff(gasDifference, gasses, atmosObject.atmosContainer.GetGasses(), Gas.mixRate);
 
                     // If our moles / mixrate > 0.1f
-                    if (AtmosHelper.ArrayZero(gasDifference, Gas.mixRate))
+                    if (!AtmosHelper.ArrayZero(gasDifference, Gas.mixRate))
                     {
                         // Set neighbour gasses to the normalized 
                         ArraySum(atmosObject.atmosContainer.GetGasses(), gasDifference);
