@@ -226,11 +226,6 @@ namespace SS3D.Engine.Tiles
             };
         }
 
-        public TileDefinition GetTileDefinition()
-        {
-            return tile;
-        }
-
         [SerializeField]
         private TileDefinition tile = new TileDefinition();
 
