@@ -166,6 +166,19 @@ namespace SS3D.Engine.Atmospherics
             return (atmosContainer.GetGas(AtmosGasses.Oxygen) > 1f && atmosContainer.GetGas(AtmosGasses.Plasma) > 1f);
         }
 
+        public bool CheckOverPressure()
+        {
+            if (state == AtmosStates.Blocked)
+            {
+                foreach (AtmosObject tile in atmosNeighbours)
+                {
+                    if (tile?.atmosContainer.GetPressure() > 2000)
+                        return true;
+                }
+            }
+            return false;
+        }
+
         public void CalculateFlux()
         {
             s_CalculateFluxPerfMarker.Begin();

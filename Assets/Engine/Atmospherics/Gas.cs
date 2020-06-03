@@ -20,36 +20,40 @@ using UnityEngine;
 * Plasma	        Ignites at high pressures in the presence of oxygen
 */
 
-public enum AtmosStates
+namespace SS3D.Engine.Atmospherics
 {
-    Active,     // Tile is active; equalizes pressures, temperatures and mixes gasses
-    Semiactive, // No pressure equalization, but mixes gasses
-    Inactive,   // Do nothing
-    Vacuum,     // Drain other tiles
-    Blocked     // Wall, skips calculations
-}
 
-public enum AtmosGasses
-{
-    Oxygen,
-    Nitrogen,
-    CarbonDioxide,
-    Plasma
-}
+    public enum AtmosStates
+    {
+        Active,     // Tile is active; equalizes pressures, temperatures and mixes gasses
+        Semiactive, // No pressure equalization, but mixes gasses
+        Inactive,   // Do nothing
+        Vacuum,     // Drain other tiles
+        Blocked     // Wall, skips calculations
+    }
 
-public static class Gas
-{
-    // Gass constants
-    public const float dt = 0.1f;               // Delta time
-    public const float gasConstant = 8.314f;    // Universal gas constant
-    public const float drag = 0.95f;            // Fluid drag, slows down flux so that gases don't infinitely slosh
-    public const float thermalBase = 0.024f;    // * volume | Rate of temperature equalization
-    public const float mixRate = 0.1f;          // Rate of gas mixing
-    public const float fluxEpsilon = 0.025f;    // Minimum pressure difference to simulate
-    public const float thermalEpsilon = 0.01f;	// Minimum temperature difference to simulate
+    public enum AtmosGasses
+    {
+        Oxygen,
+        Nitrogen,
+        CarbonDioxide,
+        Plasma
+    }
 
-    public const float windFactor = 0.2f;       // How much force will any wind apply
-    public const float minimumWind = 1f;        // Minimum wind required to move items
+    public static class Gas
+    {
+        // Gass constants
+        public const float dt = 0.1f;               // Delta time
+        public const float gasConstant = 8.314f;    // Universal gas constant
+        public const float drag = 0.95f;            // Fluid drag, slows down flux so that gases don't infinitely slosh
+        public const float thermalBase = 0.024f;    // * volume | Rate of temperature equalization
+        public const float mixRate = 0.1f;          // Rate of gas mixing
+        public const float fluxEpsilon = 0.025f;    // Minimum pressure difference to simulate
+        public const float thermalEpsilon = 0.01f;  // Minimum temperature difference to simulate
 
-    public static int numOfGases = Enum.GetNames(typeof(AtmosStates)).Length;
+        public const float windFactor = 0.2f;       // How much force will any wind apply
+        public const float minimumWind = 1f;        // Minimum wind required to move items
+
+        public static int numOfGases = Enum.GetNames(typeof(AtmosStates)).Length;
+    }
 }

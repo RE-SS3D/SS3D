@@ -11,6 +11,9 @@ namespace SS3D.Engine.Atmospherics
     [ExecuteAlways]
     public class AtmosManager : MonoBehaviour
     {
+        // Test
+        public Turf floor;
+
         public enum ViewType { Pressure, Content, Temperature, Combined, Wind };
         public bool drawDebug = false;
         public bool drawAll = true;
@@ -169,6 +172,7 @@ namespace SS3D.Engine.Atmospherics
         {
             s_StepPerfMarker.Begin();
             int activeTiles = 0;
+            bool overPressureEvent = false;
 
             // Step 1: Calculate flux
             foreach (AtmosObject tile in atmosTiles)
@@ -177,22 +181,32 @@ namespace SS3D.Engine.Atmospherics
             }
 
             // Step 2: Simulate
-            foreach (AtmosObject tile in atmosTiles)
+            foreach (TileObject tile in tileObjects)
             {
-                tile.SimulateFlux();
-                if (tile.GetState() == AtmosStates.Active)
+                tile.atmos.SimulateFlux();
+                if (tile.atmos.GetState() == AtmosStates.Active)
                 {
                     activeTiles++;
                 }
-            }
 
-            // Step 3: Move items according to the wind velocity
-            foreach (TileObject tile in tileObjects)
-            {
+                // Step 3: Move items according to the wind velocity
                 Vector2 velocity = tile.atmos.GetVelocity();
                 if (velocity != Vector2.zero)
                 {
                     MoveVelocity(tile);
+                }
+
+                // Step 4: Destroy tiles with to much pressure
+                if (tile.atmos.CheckOverPressure() && !overPressureEvent)
+                {
+                    TileDefinition oldDefinition = tile.Tile;
+                    if (oldDefinition.turf?.isWall == true)
+                    {
+                        oldDefinition.turf = floor;
+                        tileManager.UpdateTile(tile.transform.position, oldDefinition);
+                        tile.atmos.SetBlocked(false);
+                        overPressureEvent = true;
+                    }
                 }
             }
             s_StepPerfMarker.End();
