@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using SS3D.Engine.Tiles;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,73 +7,17 @@ using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
-    /*
-     * Ideal Gas Law
-     * PV = nRT
-     * 
-     * P - Measured in pascals, 101.3 kPa
-     * V - Measured in cubic meters, 1 m^3
-     * n - Moles
-     * R - Gas constant, 8.314
-     * T - Measured in kelvin, 293 K
-     * 
-     * Human air consumption is 0.016 moles of oxygen per minute
-     * 
-     * Oxygen	        Needed for breathing, less than 16kPa causes suffocation
-     * Carbon Dioxide   Causes suffocation at 8kPa
-     * Plasma	        Ignites at high pressures in the presence of oxygen
-     */
-
-    public enum AtmosStates
-    {
-        Active,     // Tile is active; equalizes pressures, temperatures and mixes gasses
-        Semiactive, // No pressure equalization, but mixes gasses
-        Inactive,   // Do nothing
-        Vacuum,     // Drain other tiles
-        Blocked     // Wall, skips calculations
-    }
-
-    public enum AtmosGasses
-    {
-        Oxygen,
-        Nitrogen,
-        CarbonDioxide,
-        Plasma
-    }
-
-    [CreateAssetMenu(fileName = "AtmosObject", menuName = "ScriptableObjects/Atmos")]
     public class AtmosObject : ScriptableObject
     {
         private AtmosManager manager;
+        private AtmosContainer atmosContainer = new AtmosContainer();
 
-        // Gass stuff
-        private float[] gasses = new float[AtmosManager.numOfGases];
-        private float temperature = 293f;
         private float[] tileFlux = { 0f, 0f, 0f, 0f };
         private Vector2 velocity = Vector2.zero;
-
         private AtmosStates state = AtmosStates.Active;
         private TileObject[] tileNeighbours = { null, null, null, null };
         private AtmosObject[] atmosNeighbours = { null, null, null, null };
         private bool tempSetting = false;
-
-        // Gass constants
-        private const float dt = 0.1f;              // Delta time
-        private const float gasConstant = 8.314f;   // Universal gas constant
-        private const float volume = 2.5f;          // Volume of each tile in cubic meters
-        private const float drag = 0.95f;           // Fluid drag, slows down flux so that gases don't infinitely slosh
-        private const float thermalRate = 0.024f * volume;  // Rate of temperature equalization
-        private const float mixRate = 0.02f;        // Rate of gas mixing
-        private const float fluxEpsilon = 0.025f;   // Minimum pressure difference to simulate
-        private const float thermalEpsilon = 0.01f;	// Minimum temperature difference to simulate
-
-        // Performance makers
-        static ProfilerMarker s_CalculateFluxPerfMarker = new ProfilerMarker("AtmosObject.CalculateFlux");
-        static ProfilerMarker s_CalculateFluxOnePerfMarker = new ProfilerMarker("AtmosObject.CalculateFlux.One");
-        static ProfilerMarker s_SimulateFluxPerfMarker = new ProfilerMarker("AtmosObject.SimulateFlux");
-        static ProfilerMarker s_SimlateMixingPerfMarker = new ProfilerMarker("AtmosObject.SimulateMixing");
-
-        // Array allocation
         private bool[] activeDirection = {
                 false,  // Top AtmosObject active
                 false,  // Bottom AtmosObject active
@@ -81,8 +25,14 @@ namespace SS3D.Engine.Atmospherics
                 false   // Right AtmosObject active
             };
 
-        private float[] gasDifference = new float[AtmosManager.numOfGases];
+        private float[] gasDifference = new float[Gas.numOfGases];
         private float[] neighbourFlux = new float[4];
+
+        // Performance makers
+        static ProfilerMarker s_CalculateFluxPerfMarker = new ProfilerMarker("AtmosObject.CalculateFlux");
+        static ProfilerMarker s_CalculateFluxOnePerfMarker = new ProfilerMarker("AtmosObject.CalculateFlux.One");
+        static ProfilerMarker s_SimulateFluxPerfMarker = new ProfilerMarker("AtmosObject.SimulateFlux");
+        static ProfilerMarker s_SimlateMixingPerfMarker = new ProfilerMarker("AtmosObject.SimulateMixing");
 
         public void setTileNeighbour(TileObject neighbour, int index)
         {
@@ -117,16 +67,6 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
-        public float[] GetGasses()
-        {
-            return gasses;
-        }
-
-        public float GetTemperature()
-        {
-            return temperature;
-        }
-
         public Vector2 GetVelocity()
         {
             return velocity;
@@ -141,88 +81,71 @@ namespace SS3D.Engine.Atmospherics
         {
             if (state != AtmosStates.Blocked)
             {
-                gasses[(int)gas] = Mathf.Max(gasses[(int)gas] + amount, 0);
+                atmosContainer.AddGas(gas, amount);
                 state = AtmosStates.Active;
             }
         }
 
         public void SetGasses(float[] amounts)
         {
-            for (int i = 0; i < Mathf.Min(amounts.GetLength(0), AtmosManager.numOfGases); ++i)
-            {
-                gasses[i] = Mathf.Max(amounts[i], 0);
-            }
-
+            atmosContainer.SetGasses(amounts);
             state = AtmosStates.Active;
         }
 
         public void MakeEmpty()
         {
-
-            for (int i = 0; i < AtmosManager.numOfGases; ++i)
-            {
-                gasses[i] = 0f;
-            }
+            atmosContainer.MakeEmpty();
         }
 
         public void MakeAir()
         {
             MakeEmpty();
 
-            gasses[(int)AtmosGasses.Oxygen] = 20.79f;
-            gasses[(int)AtmosGasses.Nitrogen] = 83.17f;
-            temperature = 293f;
+            atmosContainer.AddGas(AtmosGasses.Oxygen, 20.79f);
+            atmosContainer.AddGas(AtmosGasses.Nitrogen, 83.17f);
+            atmosContainer.SetTemperature(293f);;
         }
 
         public void AddHeat(float temp)
         {
-            temperature += Mathf.Max(temp - temperature, 0f) / GetSpecificHeat() * (100 / GetTotalMoles()) * dt;
+            atmosContainer.AddHeat(temp);
             state = AtmosStates.Active;
         }
 
         public void RemoveHeat(float temp)
         {
-            temperature -= Mathf.Max(temp - temperature, 0f) / GetSpecificHeat() * (100 / GetTotalMoles()) * dt;
-            if (temperature < 0f)
-            {
-                temperature = 0f;
-            }
+            atmosContainer.RemoveHeat(temp);
             state = AtmosStates.Active;
         }
 
         public float GetTotalMoles()
         {
-            float moles = 0f;
-            for (int i = 0; i < AtmosManager.numOfGases; ++i)
-            {
-                moles += gasses[i];
-            }
-            return moles;
+            return atmosContainer.GetTotalMoles();
         }
 
         public float GetPressure()
         {
-            float pressure = 0f;
-            for (int i = 0; i < AtmosManager.numOfGases; ++i)
-            {
-                pressure += (gasses[i] * gasConstant * temperature) / volume;
-            }
-            return pressure / 1000f;    // Convert to KiloPascals
+            return atmosContainer.GetPressure();
         }
 
         public float GetPartialPressure(int index)
         {
-            return (gasses[index] * gasConstant * temperature) / volume / 1000f;
+            return atmosContainer.GetPartialPressure(index);
         }
 
         public float GetPartialPressure(AtmosGasses gas)
         {
-            return (gasses[(int)gas] * gasConstant * temperature) / volume / 1000f;
+            return atmosContainer.GetPartialPressure(gas);
         }
 
         public bool IsBreathable()
         {
             return (GetPartialPressure(AtmosGasses.Oxygen) >= 16f && GetPartialPressure(AtmosGasses.CarbonDioxide) < 8f);
+        }
+
+        public AtmosContainer GetAtmosContainer()
+        {
+            return atmosContainer;
         }
 
         public void ValidateVacuum()
@@ -241,30 +164,23 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
-        public float GetSpecificHeat()
-        {
-            float temp = 0f;
-            temp += gasses[(int)AtmosGasses.Oxygen] * 2f;           // Oxygen, 20
-            temp += gasses[(int)AtmosGasses.Nitrogen] * 20f;        // Nitrogen, 200
-            temp += gasses[(int)AtmosGasses.CarbonDioxide] * 3f;    // Carbon Dioxide, 30
-            temp += gasses[(int)AtmosGasses.Plasma] * 1f;           // Plasma, 10
-            return temp / GetTotalMoles();
-        }
-
-        public float GetMass()
-        {
-            float mass = 0f;
-            mass += gasses[(int)AtmosGasses.Oxygen] * 32f;          // Oxygen
-            mass += gasses[(int)AtmosGasses.Nitrogen] * 28f;        // Nitrogen
-            mass += gasses[(int)AtmosGasses.CarbonDioxide] * 44f;   // Carbon Dioxide
-            mass += gasses[(int)AtmosGasses.Plasma] * 78f;          // Plasma
-            return mass;     // Mass in grams
-        }
-
         public bool IsBurnable()
         {
             // TODO determine minimum burn ratio
-            return (gasses[(int)AtmosGasses.Oxygen] > 1f && gasses[(int)AtmosGasses.Plasma] > 1f);
+            return (atmosContainer.GetGas(AtmosGasses.Oxygen) > 1f && atmosContainer.GetGas(AtmosGasses.Plasma) > 1f);
+        }
+
+        public bool CheckOverPressure()
+        {
+            if (state == AtmosStates.Blocked)
+            {
+                foreach (AtmosObject tile in atmosNeighbours)
+                {
+                    if (tile?.atmosContainer.GetPressure() > 2000)
+                        return true;
+                }
+            }
+            return false;
         }
 
         public void CalculateFlux()
@@ -278,7 +194,7 @@ namespace SS3D.Engine.Atmospherics
             {
                 if (tile != null && tile.state != AtmosStates.Blocked)
                 {
-                    neighbourFlux[i] = Mathf.Min(tileFlux[i] * drag + (pressure - tile.GetPressure()) * dt, 1000f);
+                    neighbourFlux[i] = Mathf.Min(tileFlux[i] * Gas.drag + (pressure - tile.GetPressure()) * Gas.dt, 1000f);
                     activeDirection[i] = true;
 
                     if (neighbourFlux[i] < 0f)
@@ -293,11 +209,11 @@ namespace SS3D.Engine.Atmospherics
 
             s_CalculateFluxOnePerfMarker.End();
 
-            if (neighbourFlux[0] > fluxEpsilon || neighbourFlux[1] > fluxEpsilon || neighbourFlux[2] > fluxEpsilon ||
-                neighbourFlux[3] > fluxEpsilon)
+            if (neighbourFlux[0] > Gas.fluxEpsilon || neighbourFlux[1] > Gas.fluxEpsilon || neighbourFlux[2] > Gas.fluxEpsilon ||
+                neighbourFlux[3] > Gas.fluxEpsilon)
             {
                 float scalingFactor = Mathf.Min(1,
-                    pressure / (neighbourFlux[0] + neighbourFlux[1] + neighbourFlux[2] + neighbourFlux[3]) / dt);
+                    pressure / (neighbourFlux[0] + neighbourFlux[1] + neighbourFlux[2] + neighbourFlux[3]) / Gas.dt);
 
                 for (int j = 0; j < 4; j++)
                 {
@@ -328,11 +244,13 @@ namespace SS3D.Engine.Atmospherics
         public void SimulateFlux()
         {
             s_SimulateFluxPerfMarker.Begin();
+            float[] gasses = atmosContainer.GetGasses();
+
             if (state == AtmosStates.Active)
             {
                 float pressure = GetPressure();
 
-                for (int i = 0; i < AtmosManager.numOfGases; i++)
+                for (int i = 0; i < Gas.numOfGases; i++)
                 {
                     if (gasses[i] < 1f)
                         gasses[i] = 0f;
@@ -347,7 +265,7 @@ namespace SS3D.Engine.Atmospherics
                                 float factor = gasses[i] * (tileFlux[k] / pressure);
                                 if (tile.state != AtmosStates.Vacuum)
                                 {
-                                    tile.gasses[i] += factor;
+                                    tile.atmosContainer.GetGasses()[i] += factor;
                                     tile.state = AtmosStates.Active;
                                 }
                                 else
@@ -367,12 +285,12 @@ namespace SS3D.Engine.Atmospherics
                 {
                     if (activeDirection[j] == true)
                     {
-                        difference = (temperature - tile.temperature) * thermalRate; // / (GetSpecificHeat() * 5f);
+                        difference = (atmosContainer.GetTemperature() - tile.atmosContainer.GetTemperature()) * Gas.thermalBase * atmosContainer.Volume; // / (GetSpecificHeat() * 5f);
 
-                        if (difference > thermalEpsilon)
+                        if (difference > Gas.thermalEpsilon)
                         {
-                            tile.temperature += difference;
-                            temperature -= difference;
+                            tile.atmosContainer.SetTemperature(tile.atmosContainer.GetTemperature() + difference);
+                            atmosContainer.SetTemperature(atmosContainer.GetTemperature() - difference);
                             tempSetting = true;
                         }
                     }
@@ -409,7 +327,9 @@ namespace SS3D.Engine.Atmospherics
 
         public void SimulateMixing()
         {
-            if (AtmosHelper.ArrayZero(gasses, mixRate))
+            float[] gasses = atmosContainer.GetGasses();
+
+            if (AtmosHelper.ArrayZero(gasses, Gas.mixRate))
                 return;
 
             s_SimlateMixingPerfMarker.Begin();
@@ -425,14 +345,14 @@ namespace SS3D.Engine.Atmospherics
                     // Get difference in total moles and individual gasses
                     float pressure = GetTotalMoles();
                     float neighbourPressure = atmosObject.GetTotalMoles();
-                    ArrayDiff(gasDifference, gasses, atmosObject.gasses, mixRate);
+                    ArrayDiff(gasDifference, gasses, atmosObject.atmosContainer.GetGasses(), Gas.mixRate);
 
                     // If our moles / mixrate > 0.1f
-                    if (AtmosHelper.ArrayZero(gasDifference, mixRate))
+                    if (!AtmosHelper.ArrayZero(gasDifference, Gas.mixRate))
                     {
                         // Set neighbour gasses to the normalized 
-                        ArraySum(atmosObject.gasses, gasDifference);
-                        AtmosHelper.ArrayNorm(atmosObject.gasses, neighbourPressure);
+                        ArraySum(atmosObject.atmosContainer.GetGasses(), gasDifference);
+                        AtmosHelper.ArrayNorm(atmosObject.atmosContainer.GetGasses(), neighbourPressure);
 
                         if (atmosObject.state == AtmosStates.Inactive)
                         {
@@ -440,7 +360,7 @@ namespace SS3D.Engine.Atmospherics
                         }
 
                         // Set our own gasses to the normalized
-                        ArrayDiff(gasses, gasses, gasDifference, mixRate);
+                        ArrayDiff(gasses, gasses, gasDifference, Gas.mixRate);
                         AtmosHelper.ArrayNorm(gasses, pressure);
                         mixed = true;
                     }
@@ -456,7 +376,7 @@ namespace SS3D.Engine.Atmospherics
 
         public void ArrayDiff(float[] difference, float[] arr1, float[] arr2, float mixRate)
         {
-            for (int i = 0; i < AtmosManager.numOfGases; ++i)
+            for (int i = 0; i < Gas.numOfGases; ++i)
             {
                 difference[i] = (arr1[i] - arr2[i]) * mixRate;
             }
@@ -464,7 +384,7 @@ namespace SS3D.Engine.Atmospherics
 
         public void ArraySum(float[] arr1, float[] arr2)
         {
-            for (int i = 0; i < AtmosManager.numOfGases; ++i)
+            for (int i = 0; i < Gas.numOfGases; ++i)
             {
                 arr1[i] = arr1[i] + arr2[i];
             }
