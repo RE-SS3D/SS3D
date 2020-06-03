@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Runtime.CompilerServices;
 
 namespace SS3D.Engine.Atmospherics
 {
@@ -10,7 +8,7 @@ namespace SS3D.Engine.Atmospherics
         {
             float div = ArraySize(arr);
 
-            for (int i = 0; i < AtmosManager.numOfGases; ++i)
+            for (int i = 0; i < arr.Length; ++i)
             {
                 arr[i] = arr[i] / div * normal;
             }
@@ -18,13 +16,14 @@ namespace SS3D.Engine.Atmospherics
             return arr;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float ArraySize(float[] arr)
         {
             float size = 0f;
 
-            for (int i = 0; i < AtmosManager.numOfGases; ++i)
+            foreach (float t in arr)
             {
-                size += arr[i];
+                size += t;
             }
 
             return size;
@@ -32,10 +31,11 @@ namespace SS3D.Engine.Atmospherics
 
         public static bool ArrayZero(float[] arr, float mixRate)
         {
-            for (int i = 0; i < AtmosManager.numOfGases; ++i)
+            foreach (float t in arr)
             {
-                if (arr[i] / mixRate > 0.1f) { return false; }
+                if (t / mixRate > 0.1f) { return false; }
             }
+
             return true;
         }
     }
