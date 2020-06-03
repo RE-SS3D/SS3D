@@ -176,16 +176,25 @@ namespace SS3D.Engine.Atmospherics
             // Step 1: Calculate flux
             foreach (AtmosObject tile in atmosTiles)
             {
-                tile.CalculateFlux();
+                if (tile.GetState() == AtmosStates.Active)
+                {
+                    tile.CalculateFlux();
+                }
             }
 
             // Step 2: Simulate
             foreach (AtmosObject tile in atmosTiles)
             {
-                tile.SimulateFlux();
-                if (tile.GetState() == AtmosStates.Active)
+                AtmosStates state = tile.GetState();
+                switch (state)
                 {
-                    activeTiles++;
+                    case AtmosStates.Active:
+                        tile.SimulateFlux();
+                        activeTiles++;
+                        break;
+                    case AtmosStates.Semiactive:
+                        tile.SimulateFlux();
+                        break;
                 }
             }
 
