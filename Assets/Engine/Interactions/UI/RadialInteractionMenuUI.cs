@@ -29,10 +29,14 @@ namespace SS3D.Engine.Interactions.UI
         [HideInInspector]
         public float mouseAngle;
         public float buttonAngle = 22.5f;
-        public float buttonMaxDistance = 38f;
+        public float buttonMaxDistance = 40f;
         [HideInInspector]
         public float mouseDistance;
         public Sprite missingIcon;
+
+        private Image indicatorImage;
+        private Color indicatorBaseColor;
+        private Color indicatorOffColor;
 
         // Current selected object
         GameObject obj = null;
@@ -83,6 +87,10 @@ namespace SS3D.Engine.Interactions.UI
             else
                 contextMenuManagerInstance = this;
             parentCanvas = GetComponentInParent<Canvas>();
+
+            indicatorImage = indicator.GetComponent<Image>();
+            indicatorOffColor = indicatorImage.color;
+            indicatorBaseColor = new Color(indicatorOffColor.r, indicatorOffColor.g, indicatorOffColor.b, .69f);
         }
         private void Update()
         {
@@ -130,7 +138,15 @@ namespace SS3D.Engine.Interactions.UI
 
             float atan = Mathf.Atan2(dir.y, dir.x);
             mouseAngle = (atan > 0 ? atan : (2 * Mathf.PI + atan)) * 360 / (2 * Mathf.PI);
-            mouseDistance = Vector3.Distance(mouse, indicator.position);
+            mouseDistance = (mouse - indicator.position).magnitude;
+            if (mouseDistance < buttonMaxDistance)
+            {
+                selectedPetal = null;
+                interactionName.text = null;
+                objectName.text = null;
+            }
+
+            indicatorImage.color = (selectedPetal == null) ? indicatorOffColor : indicatorBaseColor;
         }
 
         private void UpdateInteractions()

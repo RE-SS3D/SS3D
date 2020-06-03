@@ -23,12 +23,15 @@ namespace Effects
         private void SetDynamicShadowsOnParent(bool enabled)
         {
             var mode = enabled ? ShadowCastingMode.On : ShadowCastingMode.Off;
-            foreach (Transform child in parent)
+            if (parent)
             {
-                var renderer = child.GetComponent<Renderer>();
-                if (renderer)
+                foreach (Transform child in parent)
                 {
-                    renderer.shadowCastingMode = mode;
+                    var renderer = child.GetComponent<Renderer>();
+                    if (renderer)
+                    {
+                        renderer.shadowCastingMode = mode;
+                    }
                 }
             }
         }
