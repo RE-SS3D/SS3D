@@ -21,7 +21,7 @@ namespace SS3D.Engine.Atmospherics
         private AtmosGasses gasToAdd = AtmosGasses.Oxygen;
 
         
-        private TileManager tileManager;
+        public TileManager tileManager;
         private List<TileObject> tileObjects;
         private List<AtmosObject> atmosTiles;
 
@@ -38,7 +38,10 @@ namespace SS3D.Engine.Atmospherics
 
         void Start()
         {
-            tileManager = FindObjectOfType<TileManager>();
+            if (tileManager == null)
+            {
+                tileManager = FindObjectOfType<TileManager>();
+            }
             atmosTiles = new List<AtmosObject>();
             Initialize();
         }

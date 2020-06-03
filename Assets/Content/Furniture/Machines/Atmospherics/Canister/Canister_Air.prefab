@@ -10,6 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1776047900387873493}
   - component: {fileID: 5174533277249303235}
+  - component: {fileID: 3207827706040772379}
+  - component: {fileID: 3436621957576136614}
+  - component: {fileID: 7182705585173552431}
   m_Layer: 0
   m_Name: Canister_Air
   m_TagString: Untagged
@@ -86,3 +89,48 @@ SkinnedMeshRenderer:
     m_Center: {x: 0, y: 0.50002635, z: 0.0059218556}
     m_Extent: {x: 0.25942945, y: 0.50002635, z: 0.2653513}
   m_DirtyAABB: 0
+--- !u!114 &3207827706040772379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466349050614861878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a55a29bb6f6ee084486e08ea167eaccf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gas: 0
+  valvePressure: 1
+--- !u!114 &3436621957576136614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466349050614861878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serverOnly: 0
+  m_AssetId: 
+  m_SceneId: 0
+--- !u!114 &7182705585173552431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466349050614861878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0

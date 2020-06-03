@@ -41,6 +41,7 @@ namespace SS3D.Engine.Atmospherics
         Plasma
     }
 
+    [CreateAssetMenu(fileName = "AtmosObject", menuName = "ScriptableObjects/Atmos")]
     public class AtmosObject : ScriptableObject
     {
         private AtmosManager manager;
