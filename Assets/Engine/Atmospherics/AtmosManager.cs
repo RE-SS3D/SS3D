@@ -25,6 +25,7 @@ namespace SS3D.Engine.Atmospherics
         private TileManager tileManager;
         private List<TileObject> tileObjects;
         private List<AtmosObject> atmosTiles;
+        private List<PipeObject> pipeTiles;
 
         private float updateRate = 0f;
         private int activeTiles = 0;
@@ -40,6 +41,7 @@ namespace SS3D.Engine.Atmospherics
         {
             tileManager = FindObjectOfType<TileManager>();
             atmosTiles = new List<AtmosObject>();
+            pipeTiles = new List<PipeObject>();
             Initialize();
         }
 
@@ -54,6 +56,8 @@ namespace SS3D.Engine.Atmospherics
             tileObjects = tileManager.GetAllTiles();
 
             int tilesInstantiated = 0;
+            int pipesInstantiated = 0;
+
             foreach (TileObject tile in tileObjects)
             {
                 tile.atmos = ScriptableObject.CreateInstance<AtmosObject>();
@@ -61,6 +65,7 @@ namespace SS3D.Engine.Atmospherics
                 tile.atmos.MakeAir();
                 tile.atmos.RemoveFlux();
 
+                // Set walls blocked
                 if (tile.Tile.turf.isWall)
                 {
                     tile.atmos.SetBlocked(true);
@@ -92,13 +97,32 @@ namespace SS3D.Engine.Atmospherics
                 tile.atmos.setTileNeighbour(tileNeighbour4, 3);
 
                 atmosTiles.Add(tile.atmos);
+
+
+                // Pipe init
+                PipeObject pipe = tile.GetComponentInChildren<PipeObject>();
+                if (pipe != null)
+                {
+                    pipe.setTileNeighbour(tileNeighbour, 0);
+                    pipe.setTileNeighbour(tileNeighbour2, 1);
+                    pipe.setTileNeighbour(tileNeighbour3, 2);
+                    pipe.setTileNeighbour(tileNeighbour4, 3);
+                    pipeTiles.Add(pipe);
+                    pipesInstantiated++;
+                }
+
                 tilesInstantiated++;
             }
 
             // Set neighbouring atmos after all are created
             foreach (TileObject tile in tileObjects)
             {
+                // Atmos tiles and pipes
                 tile.atmos.setAtmosNeighbours();
+                PipeObject pipe = tile.GetComponentInChildren<PipeObject>();
+                if (pipe)
+                    pipe.setPipeNeighbours();
+
                 // tile.atmos.ValidateVacuum();
 
                 // Set airlocks to blocked
@@ -110,7 +134,7 @@ namespace SS3D.Engine.Atmospherics
                     }
                 }
             }
-            Debug.Log($"AtmosManager: Finished initializing {tilesInstantiated} tiles");
+            Debug.Log($"AtmosManager: Finished initializing {tilesInstantiated} tiles and {pipesInstantiated} pipes");
 
             lastStep = Time.fixedTime;
             s_PreparePerfMarker.End();
@@ -218,8 +242,49 @@ namespace SS3D.Engine.Atmospherics
                     }
                 }
             }
+
+            // Step 5: Do pipes as well
+            StepPipe();
+
             s_StepPerfMarker.End();
             return activeTiles;
+        }
+
+        private int StepPipe()
+        {
+            int activePipes = 0;
+            bool overPressureEvent = false;
+
+            foreach (PipeObject pipe in pipeTiles)
+            {
+                if (pipe.GetState() == AtmosStates.Active)
+                {
+                    pipe.CalculateFlux();
+                }
+            }
+
+            foreach (PipeObject pipe in pipeTiles)
+            {
+                AtmosStates state = pipe.GetState();
+                switch (state)
+                {
+                    case AtmosStates.Active:
+                        pipe.SimulateFlux();
+                        activeTiles++;
+                        break;
+                    case AtmosStates.Semiactive:
+                        pipe.SimulateFlux();
+                        break;
+                }
+
+                // Check for pipe overpressure
+                if (pipe.CheckOverPressure() && !overPressureEvent)
+                {
+                    // TODO
+                }
+            }
+
+            return activePipes;
         }
 
         private void MoveVelocity(TileObject tileObject)
