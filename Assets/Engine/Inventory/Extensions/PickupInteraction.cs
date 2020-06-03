@@ -28,8 +28,13 @@ namespace SS3D.Engine.Inventory.Extensions
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
-            if (interactionEvent.Target is IGameObjectProvider targetBehaviour)
+            if (interactionEvent.Target is IGameObjectProvider targetBehaviour && interactionEvent.Source is Hands hands)
             {
+                if (hands.GetItemInHand() != null)
+                {
+                    return false;
+                }
+                
                 Item item = targetBehaviour.GameObject.GetComponent<Item>();
                 if (item == null)
                 {

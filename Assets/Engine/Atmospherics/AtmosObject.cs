@@ -1,4 +1,5 @@
-﻿using SS3D.Engine.Tiles;
+﻿using System;
+using SS3D.Engine.Tiles;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Profiling;
@@ -23,6 +24,9 @@ namespace SS3D.Engine.Atmospherics
                 false,  // Left AtmosObject active
                 false   // Right AtmosObject active
             };
+
+        private float[] gasDifference = new float[AtmosManager.numOfGases];
+        private float[] neighbourFlux = new float[4];
 
         // Performance makers
         static ProfilerMarker s_CalculateFluxPerfMarker = new ProfilerMarker("AtmosObject.CalculateFlux");
@@ -182,58 +186,58 @@ namespace SS3D.Engine.Atmospherics
         public void CalculateFlux()
         {
             s_CalculateFluxPerfMarker.Begin();
-            float[] otherTilesFlux = {
-                0f,     // Top flux
-                0f,     // Bottom flux
-                0f,     // Left flux
-                0f      // Bottom flux
-            };
-
-            if (state == AtmosStates.Active)
+            Array.Clear(neighbourFlux, 0, neighbourFlux.Length);
+            s_CalculateFluxOnePerfMarker.Begin();
+            int i = 0;
+            float pressure = GetPressure();
+            foreach (AtmosObject tile in atmosNeighbours)
             {
-                s_CalculateFluxOnePerfMarker.Begin();
-                int i = 0;
-                foreach (AtmosObject tile in atmosNeighbours)
+                if (tile != null && tile.state != AtmosStates.Blocked)
                 {
-                    if (tile != null && tile.state != AtmosStates.Blocked)
-                    {
-                        otherTilesFlux[i] = Mathf.Min(tileFlux[i] * Gas.drag + (GetPressure() - tile.GetPressure()) * Gas.dt, 1000f);
-                        activeDirection[i] = true;
+                    neighbourFlux[i] = Mathf.Min(tileFlux[i] * drag + (pressure - tile.GetPressure()) * dt, 1000f);
+                    activeDirection[i] = true;
 
-                        if (otherTilesFlux[i] < 0f)
-                        {
-                            tile.state = AtmosStates.Active;
-                            otherTilesFlux[i] = 0f;
-                        }
+                    if (neighbourFlux[i] < 0f)
+                    {
+                        tile.state = AtmosStates.Active;
+                        neighbourFlux[i] = 0f;
                     }
-                    i++;
                 }
-                s_CalculateFluxOnePerfMarker.End();
 
-                if (otherTilesFlux[0] > Gas.fluxEpsilon || otherTilesFlux[1] > Gas.fluxEpsilon || otherTilesFlux[2] > Gas.fluxEpsilon || otherTilesFlux[3] > Gas.fluxEpsilon)
+                i++;
+            }
+
+            s_CalculateFluxOnePerfMarker.End();
+
+            if (neighbourFlux[0] > fluxEpsilon || neighbourFlux[1] > fluxEpsilon || neighbourFlux[2] > fluxEpsilon ||
+                neighbourFlux[3] > fluxEpsilon)
+            {
+                float scalingFactor = Mathf.Min(1,
+                    pressure / (neighbourFlux[0] + neighbourFlux[1] + neighbourFlux[2] + neighbourFlux[3]) / dt);
+
+                for (int j = 0; j < 4; j++)
                 {
-                    float scalingFactor = Mathf.Min(1, GetPressure() / (otherTilesFlux[0] + otherTilesFlux[1] + otherTilesFlux[2] + otherTilesFlux[3]) / Gas.dt);
+                    neighbourFlux[j] *= scalingFactor;
+                    tileFlux[j] = neighbourFlux[j];
+                }
+            }
+            else
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    tileFlux[j] = 0;
+                }
 
-                    for (int j = 0; j < 4; j++)
-                    {
-                        otherTilesFlux[j] *= scalingFactor;
-                        tileFlux[j] = otherTilesFlux[j];
-                    }
+                if (!tempSetting)
+                {
+                    state = AtmosStates.Semiactive;
                 }
                 else
                 {
-                    for (int j = 0; j < 4; j++)
-                    {
-                        tileFlux[j] = 0;
-                    }
-                    if (!tempSetting) { state = AtmosStates.Semiactive; } else { tempSetting = false; }
+                    tempSetting = false;
                 }
             }
-			if (state == AtmosStates.Active || state == AtmosStates.Semiactive)
-			{
-                
-                // SimulateMixing();
-			}
+
             s_CalculateFluxPerfMarker.End();
         }
 
@@ -330,33 +334,35 @@ namespace SS3D.Engine.Atmospherics
 
             s_SimlateMixingPerfMarker.Begin();
             bool mixed = false;
-            float[] difference = new float[Gas.numOfGases];
+            Array.Clear(gasDifference, 0, gasDifference.Length);
 
-            // Check the mole difference between each gas
-            for (int i = 0; i < Gas.numOfGases; i++)
+            foreach (AtmosObject atmosObject in atmosNeighbours)
             {
-                // There must be gas of course...
-                if (gasses[i] > 0f)
+                if (atmosObject == null)
+                    continue;
+                if (atmosObject.state != AtmosStates.Blocked)
                 {
-                    // Go through all neighbours
-                    foreach (AtmosObject atmosObject in atmosNeighbours)
-                    {
-                        if (atmosObject == null)
-                            continue;
-                        if (atmosObject.state != AtmosStates.Blocked)
-                        {
-                            difference[i] = (gasses[i] - atmosObject.atmosContainer.GetGasses()[i]) * Gas.mixRate;
-                            if (difference[i] > 0.1f)
-                            {
-                                // Increase neighbouring tiles moles
-                                atmosObject.atmosContainer.GetGasses()[i] += difference[i];
-                                atmosObject.state = AtmosStates.Semiactive;
+                    // Get difference in total moles and individual gasses
+                    float pressure = GetTotalMoles();
+                    float neighbourPressure = atmosObject.GetTotalMoles();
+                    ArrayDiff(gasDifference, gasses, atmosObject.gasses, mixRate);
 
-                                // Decrease our own moles
-                                gasses[i] -= difference[i];
-                                mixed = true;
-                            }
+                    // If our moles / mixrate > 0.1f
+                    if (AtmosHelper.ArrayZero(gasDifference, mixRate))
+                    {
+                        // Set neighbour gasses to the normalized 
+                        ArraySum(atmosObject.gasses, gasDifference);
+                        AtmosHelper.ArrayNorm(atmosObject.gasses, neighbourPressure);
+
+                        if (atmosObject.state == AtmosStates.Inactive)
+                        {
+                            atmosObject.state = AtmosStates.Semiactive;
                         }
+
+                        // Set our own gasses to the normalized
+                        ArrayDiff(gasses, gasses, gasDifference, mixRate);
+                        AtmosHelper.ArrayNorm(gasses, pressure);
+                        mixed = true;
                     }
                 }
             }
@@ -366,6 +372,22 @@ namespace SS3D.Engine.Atmospherics
                 state = AtmosStates.Inactive;
             }
             s_SimlateMixingPerfMarker.End();
+        }
+
+        public void ArrayDiff(float[] difference, float[] arr1, float[] arr2, float mixRate)
+        {
+            for (int i = 0; i < AtmosManager.numOfGases; ++i)
+            {
+                difference[i] = (arr1[i] - arr2[i]) * mixRate;
+            }
+        }
+
+        public void ArraySum(float[] arr1, float[] arr2)
+        {
+            for (int i = 0; i < AtmosManager.numOfGases; ++i)
+            {
+                arr1[i] = arr1[i] + arr2[i];
+            }
         }
     }
 }

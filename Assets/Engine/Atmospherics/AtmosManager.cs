@@ -177,16 +177,25 @@ namespace SS3D.Engine.Atmospherics
             // Step 1: Calculate flux
             foreach (AtmosObject tile in atmosTiles)
             {
-                tile.CalculateFlux();
+                if (tile.GetState() == AtmosStates.Active)
+                {
+                    tile.CalculateFlux();
+                }
             }
 
             // Step 2: Simulate
             foreach (TileObject tile in tileObjects)
             {
-                tile.atmos.SimulateFlux();
-                if (tile.atmos.GetState() == AtmosStates.Active)
+                AtmosStates state = tile.GetState();
+                switch (state)
                 {
-                    activeTiles++;
+                    case AtmosStates.Active:
+                        tile.SimulateFlux();
+                        activeTiles++;
+                        break;
+                    case AtmosStates.Semiactive:
+                        tile.SimulateFlux();
+                        break;
                 }
 
                 // Step 3: Move items according to the wind velocity
