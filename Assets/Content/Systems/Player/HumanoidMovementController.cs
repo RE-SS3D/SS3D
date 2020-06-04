@@ -48,7 +48,6 @@ namespace SS3D.Content.Systems.Player
 
         void Update()
         {
-            ForceHeightLevel();
 
             //Must be the local player, or they cannot move
             if (!isLocalPlayer)
@@ -105,15 +104,13 @@ namespace SS3D.Content.Systems.Player
             float currentSpeed = characterAnimator.GetFloat("Speed");
             float newSpeed = Mathf.LerpUnclamped(currentSpeed, currentMovement.magnitude / runSpeed , Time.deltaTime * (isWalking ? walkSpeed : runSpeed) * 3);
             characterAnimator.SetFloat("Speed", newSpeed);
+
+            ForceHeightLevel();
         }
 
         private void ForceHeightLevel()
         {
-            var currentPosition = transform.position;
-            if (currentPosition.y > heightOffGround)
-            {
-                transform.position = new Vector3(currentPosition.x, heightOffGround, currentPosition.z);
-            }
+                transform.position = new Vector3(transform.position.x, heightOffGround, transform.position.z);
         }
 
         private void LateUpdate()
