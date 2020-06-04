@@ -16,10 +16,12 @@ namespace SS3D.Engine.Atmospherics
 
         public enum ViewType { Pressure, Content, Temperature, Combined, Wind };
         public bool drawDebug = false;
+        public bool drawTiles = true;
         public bool drawAll = true;
         public bool drawWall = true;
         public bool showMessages = false;
         public bool isAddingGas = false;
+        public bool showPipes = false;
         private AtmosGasses gasToAdd = AtmosGasses.Oxygen;
 
         private TileManager tileManager;
@@ -169,18 +171,46 @@ namespace SS3D.Engine.Atmospherics
                     {
                         if (Input.GetMouseButton(0))
                         {
-                            if (isAddingGas)
+                            if (drawTiles)
                             {
-                                tile.atmos.AddGas(gasToAdd, 60f);
+                                if (isAddingGas)
+                                {
+                                    tile.atmos.AddGas(gasToAdd, 60f);
+                                }
+                                else
+                                {
+                                    Debug.Log("Tile, Pressure (kPa): " + tile.atmos.GetPressure() + " Temperature (K): " + tile.atmos.GetAtmosContainer().GetTemperature() + " State: " + tile.atmos.GetState().ToString() + "\t" +
+                                        " Oxygen content: " + tile.atmos.GetAtmosContainer().GetGasses()[0] +
+                                        " Nitrogen content: " + tile.atmos.GetAtmosContainer().GetGasses()[1] +
+                                        " Carbon Dioxide content: " + tile.atmos.GetAtmosContainer().GetGasses()[2] +
+                                        " Plasma content: " + tile.atmos.GetAtmosContainer().GetGasses()[3]);
+                                    lastClick = Time.fixedTime;
+                                }
                             }
-                            else
+                            else if (showPipes)
                             {
-                                Debug.Log("Pressure (kPa): " + tile.atmos.GetPressure() + " Temperature (K): = " + tile.atmos.GetAtmosContainer().GetTemperature() + " State: " + tile.atmos.GetState().ToString() + "\t" + 
-                                    " Oxygen content: " + tile.atmos.GetAtmosContainer().GetGasses()[0] +
-                                    " Nitrogen content: " + tile.atmos.GetAtmosContainer().GetGasses()[1] +
-                                    " Carbon Dioxide content: " + tile.atmos.GetAtmosContainer().GetGasses()[2] +
-                                    " Plasma content: " + tile.atmos.GetAtmosContainer().GetGasses()[3]);
-                                lastClick = Time.fixedTime;
+                                PipeObject pipe = tile.GetComponentInChildren<PipeObject>();
+                                if (pipe)
+                                {
+                                    if (isAddingGas)
+                                    {
+                                        pipe.AddGas(gasToAdd, 30f);
+                                    }
+                                    else
+                                    {
+                                        Debug.Log("Pipe, Pressure (kPa): " + pipe.GetPressure() + " Temperature (K): " + pipe.GetAtmosContainer().GetTemperature() + " State: " + pipe.GetState().ToString() + "\t" +
+                                            " Oxygen content: " + pipe.GetAtmosContainer().GetGasses()[0] +
+                                            " Nitrogen content: " + pipe.GetAtmosContainer().GetGasses()[1] +
+                                            " Carbon Dioxide content: " + pipe.GetAtmosContainer().GetGasses()[2] +
+                                            " Plasma content: " + pipe.GetAtmosContainer().GetGasses()[3]);
+                                        lastClick = Time.fixedTime;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.Log("No pipe found on the clicked tile");
+                                    lastClick = Time.fixedTime;
+                                }
                             }
                         }
                         else if (Input.GetKeyDown(KeyCode.Escape))
@@ -369,64 +399,121 @@ namespace SS3D.Engine.Atmospherics
 
                     float pressure;
 
-                    if (tile.atmos.GetState() == AtmosStates.Blocked)
+                    if (drawTiles)
                     {
-                        Gizmos.color = new Color(0.2f, 0.2f, 0.2f, 1f);
-
-                        // Draw black cube where atmos flow is blocked
-                        if (drawWall)
-                            Gizmos.DrawCube(new Vector3(x, 0.5f, y), new Vector3(1, 2, 1));
-                    }
-                    else
-                    {
-                        switch (drawView)
+                        if (tile.atmos.GetState() == AtmosStates.Blocked)
                         {
-                            case ViewType.Content:
-                                float[] gases = new float[5];
+                            Gizmos.color = new Color(0.2f, 0.2f, 0.2f, 1f);
 
-                                Color[] colors = new Color[] { Color.yellow, Color.white, Color.gray, Color.magenta };
-                                float offset = 0f;
+                            // Draw black cube where atmos flow is blocked
+                            if (drawWall)
+                                Gizmos.DrawCube(new Vector3(x, 0.5f, y), new Vector3(1, 2, 1));
+                        }
+                        else
+                        {
+                            switch (drawView)
+                            {
+                                case ViewType.Content:
+                                    float[] gases = new float[5];
 
-                                for (int k = 0; k < 4; ++k)
-                                {
-                                    float moles = tile.atmos.GetAtmosContainer().GetGasses()[k] / 30f;
+                                    Color[] colors = new Color[] { Color.yellow, Color.white, Color.gray, Color.magenta };
+                                    float offset = 0f;
 
-                                    if (moles != 0f)
+                                    for (int k = 0; k < 4; ++k)
                                     {
-                                        Gizmos.color = colors[k] - state;
-                                        if (drawAll || k == 3) // Only draw plasma
+                                        float moles = tile.atmos.GetAtmosContainer().GetGasses()[k] / 30f;
+
+                                        if (moles != 0f)
                                         {
-                                            Gizmos.DrawCube(new Vector3(x, moles / 2f + offset, y), new Vector3(1 * drawSize, moles, 1 * drawSize));
-                                            offset += moles;
+                                            Gizmos.color = colors[k] - state;
+                                            if (drawAll || k == 3) // Only draw plasma
+                                            {
+                                                Gizmos.DrawCube(new Vector3(x, moles / 2f + offset, y), new Vector3(1 * drawSize, moles, 1 * drawSize));
+                                                offset += moles;
+                                            }
                                         }
                                     }
-                                }
-                                break;
-                            case ViewType.Pressure:
-                                pressure = tile.atmos.GetPressure() / 160f;
+                                    break;
+                                case ViewType.Pressure:
+                                    pressure = tile.atmos.GetPressure() / 160f;
 
-                                if (drawAll || tile.atmos.GetState() == AtmosStates.Active)
-                                {
-                                    Gizmos.color = Color.white - state;
+                                    if (drawAll || tile.atmos.GetState() == AtmosStates.Active)
+                                    {
+                                        Gizmos.color = Color.white - state;
+                                        Gizmos.DrawCube(new Vector3(x, pressure / 2f, y), new Vector3(1 * drawSize, pressure, 1 * drawSize));
+                                    }
+                                    break;
+                                case ViewType.Temperature:
+                                    float temperatue = tile.atmos.GetAtmosContainer().GetTemperature() / 100f;
+
+                                    Gizmos.color = Color.red - state;
+                                    Gizmos.DrawCube(new Vector3(x, temperatue / 2f, y), new Vector3(1 * drawSize, temperatue, 1 * drawSize));
+                                    break;
+                                case ViewType.Combined:
+                                    pressure = tile.atmos.GetPressure() / 30f;
+
+                                    Gizmos.color = new Color(tile.atmos.GetAtmosContainer().GetTemperature() / 500f, 0, 0, 1) - state;
                                     Gizmos.DrawCube(new Vector3(x, pressure / 2f, y), new Vector3(1 * drawSize, pressure, 1 * drawSize));
-                                }
-                                break;
-                            case ViewType.Temperature:
-                                float temperatue = tile.atmos.GetAtmosContainer().GetTemperature() / 100f;
+                                    break;
+                                case ViewType.Wind:
+                                    Gizmos.color = Color.white;
+                                    Gizmos.DrawLine(new Vector3(x, 0, y), new Vector3(x + Mathf.Clamp(tile.atmos.GetVelocity().x, -1, 1), 0, y + Mathf.Clamp(tile.atmos.GetVelocity().y, -1, 1)));
+                                    break;
+                            }
+                        }
+                    }
 
-                                Gizmos.color = Color.red - state;
-                                Gizmos.DrawCube(new Vector3(x, temperatue / 2f, y), new Vector3(1 * drawSize, temperatue, 1 * drawSize));
-                                break;
-                            case ViewType.Combined:
-                                pressure = tile.atmos.GetPressure() / 30f;
+                    // Draw pipe contents
+                    if (showPipes)
+                    {
+                        PipeObject pipe = tile.GetComponentInChildren<PipeObject>();
+                        if (pipe)
+                        {
+                            switch (drawView)
+                            {
+                                case ViewType.Content:
+                                    float[] gases = new float[5];
 
-                                Gizmos.color = new Color(tile.atmos.GetAtmosContainer().GetTemperature() / 500f, 0, 0, 1) - state;
-                                Gizmos.DrawCube(new Vector3(x, pressure / 2f, y), new Vector3(1 * drawSize, pressure, 1 * drawSize));
-                                break;
-                            case ViewType.Wind:
-                                Gizmos.color = Color.white;
-                                Gizmos.DrawLine(new Vector3(x, 0, y), new Vector3(x + Mathf.Clamp(tile.atmos.GetVelocity().x, -1, 1), 0, y + Mathf.Clamp(tile.atmos.GetVelocity().y, -1, 1)));
-                                break;
+                                    Color[] colors = new Color[] { Color.yellow, Color.white, Color.gray, Color.magenta };
+                                    float offset = 0f;
+
+                                    for (int k = 0; k < 4; ++k)
+                                    {
+                                        float moles = pipe.GetAtmosContainer().GetGasses()[k] / 30f;
+
+                                        if (moles != 0f)
+                                        {
+                                            Gizmos.color = colors[k] - state;
+                                            if (drawAll || k == 3) // Only draw plasma
+                                            {
+                                                Gizmos.DrawCube(new Vector3(x, moles / 2f + offset, y), new Vector3(0.5f * drawSize, moles, 0.5f * drawSize));
+                                                offset += moles;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                case ViewType.Pressure:
+                                    pressure = pipe.GetPressure() / 160f;
+
+                                    if (drawAll || pipe.GetState() == AtmosStates.Active)
+                                    {
+                                        Gizmos.color = Color.white - state;
+                                        Gizmos.DrawCube(new Vector3(x, pressure / 2f, y), new Vector3(0.5f * drawSize, pressure, 0.5f * drawSize));
+                                    }
+                                    break;
+                                case ViewType.Temperature:
+                                    float temperatue = pipe.GetAtmosContainer().GetTemperature() / 100f;
+
+                                    Gizmos.color = Color.red - state;
+                                    Gizmos.DrawCube(new Vector3(x, temperatue / 2f, y), new Vector3(0.5f * drawSize, temperatue, 0.5f * drawSize));
+                                    break;
+                                case ViewType.Combined:
+                                    pressure = pipe.GetPressure() / 30f;
+
+                                    Gizmos.color = new Color(pipe.GetAtmosContainer().GetTemperature() / 500f, 0, 0, 1) - state;
+                                    Gizmos.DrawCube(new Vector3(x, pressure / 2f, y), new Vector3(0.5f * drawSize, pressure, 0.5f * drawSize));
+                                    break;
+                            }
                         }
                     }
                 }

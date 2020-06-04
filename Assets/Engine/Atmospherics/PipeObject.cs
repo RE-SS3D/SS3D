@@ -11,6 +11,7 @@ namespace SS3D.Engine.Atmospherics
         private const float maxPipePressure = 2000f;
 
         private AtmosContainer atmosContainer = new AtmosContainer();
+
         private float[] tileFlux = { 0f, 0f, 0f, 0f };
         private AtmosStates state = AtmosStates.Active;
         private TileObject[] tileNeighbours = { null, null, null, null };
@@ -25,6 +26,16 @@ namespace SS3D.Engine.Atmospherics
 
         private float[] gasDifference = new float[Gas.numOfGases];
         private float[] neighbourFlux = new float[4];
+
+        private void Start()
+        {
+            atmosContainer.Volume = 1f;
+        }
+
+        public AtmosContainer GetAtmosContainer()
+        {
+            return atmosContainer;
+        }
 
         public void setTileNeighbour(TileObject neighbour, int index)
         {

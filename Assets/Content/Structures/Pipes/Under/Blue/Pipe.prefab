@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -1074477776341974781}
   - component: {fileID: -4998431523760016775}
   - component: {fileID: 7337957460488820975}
+  - component: {fileID: 2183948917681095833}
   m_Layer: 0
   m_Name: Pipe
   m_TagString: Untagged
@@ -111,7 +112,19 @@ MonoBehaviour:
   type: pipe
   o: {fileID: -2681825065733092250, guid: 589c2b3dac19d8e4e99831ffd9a1b883, type: 3}
   c: {fileID: -2681825065733092250, guid: 589c2b3dac19d8e4e99831ffd9a1b883, type: 3}
-  i: {fileID: -2681825065733092250, guid: 589c2b3dac19d8e4e99831ffd9a1b883, type: 3}
+  i: {fileID: -5701515088838758426, guid: 589c2b3dac19d8e4e99831ffd9a1b883, type: 3}
   l: {fileID: 3251683547710458907, guid: 589c2b3dac19d8e4e99831ffd9a1b883, type: 3}
   t: {fileID: 833885736438500232, guid: 589c2b3dac19d8e4e99831ffd9a1b883, type: 3}
   x: {fileID: -5701515088838758426, guid: 589c2b3dac19d8e4e99831ffd9a1b883, type: 3}
+--- !u!114 &2183948917681095833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fb7ede8181b28b4082944d5e44dd86e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

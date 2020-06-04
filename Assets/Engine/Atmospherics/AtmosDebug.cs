@@ -58,8 +58,10 @@ namespace SS3D.Engine.Atmospherics
             EditorGUILayout.Space();
             GUILayout.Label("View Settings", EditorStyles.boldLabel);
             drawDebug = EditorGUILayout.BeginToggleGroup("Draw debug:", drawDebug);
-            drawAll = EditorGUILayout.Toggle("Draw invisible: ", drawAll);
-            drawWall = EditorGUILayout.Toggle("Draw walls: ", drawWall);
+            drawTiles = EditorGUILayout.Toggle("Show tiles: ", drawTiles);
+            showPipes = EditorGUILayout.Toggle("Show pipes: ", showPipes);
+            drawAll = EditorGUILayout.Toggle("Show invisible: ", drawAll);
+            drawWall = EditorGUILayout.Toggle("Show walls: ", drawWall);
             EditorGUILayout.EndToggleGroup();
 
             EditorGUILayout.Space();
@@ -83,6 +85,7 @@ namespace SS3D.Engine.Atmospherics
             }
 
             atmosManager.drawDebug = drawDebug;
+            atmosManager.drawTiles = drawTiles;
             atmosManager.drawAll = drawAll;
             atmosManager.drawWall = drawWall;
 
@@ -90,6 +93,9 @@ namespace SS3D.Engine.Atmospherics
             atmosManager.SetViewType(drawView);
             atmosManager.SetUpdateRate(updateRate);
             atmosManager.SetAddGas(gassSelection);
+            
+
+            atmosManager.showPipes = showPipes;
 
             // HandleUtility.Repaint();
         }
@@ -98,10 +104,12 @@ namespace SS3D.Engine.Atmospherics
         private AtmosManager atmosManager;
 
         private bool drawDebug = true;
+        private bool drawTiles = true;
         private bool drawAll = true;
         private bool drawWall = true;
 
         private bool showMessages = false;
+        private bool showPipes = false;
         private float updateRate = 0f;
 
         private AtmosManager.ViewType drawView;
