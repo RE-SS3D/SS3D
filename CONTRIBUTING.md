@@ -1,26 +1,28 @@
-# How To Contribute To RE: Space Station 3D
+# How To Contribute To RE:SS3D
 
 This document outlines the guidelines for contributing to the RE:SS3D project.
-If you have any questions, ask a council member on our [Discord Server](https://discord.gg/Z3sPhyS).
+If you have any questions, ask a centcom member on our [Discord Server](https://discord.gg/Z3sPhyS).
 
 First, check out https://ss3d.space/contribute/, which has a breakdown of the different types of contributions as well as asset kits, guides, and todo boards for each.
 
-The game itself is made in Unity and written in C#, check out our  [code (C#) style guide](Documents/C_SHARP.md). We use Mirror for networking and there is a helpful document explaining it's use with Unity [here](https://mirror-networking.com/docs/)
+The game itself is made in Unity and written in C#, check out our  [code (C#) style guide](Documents/C_SHARP.md). We use Mirror for networking and there is a helpful document explaining it's use with Unity [here](https://mirror-networking.com/docs/).
 
-## SETTING UP THE PROJECT
+## Setting Up The Project
 
 1. Clone this (SS3D) repository.
 2. [Download Unity 2019.3.12 or newer](https://unity3d.com/get-unity/download/archive) and open the folder containing the project in Unity.
 
-### Project Maintainers:
+## Project Maintainers:
 
-The set of people responsible for making sure the contribution cycle runs smoothly and that the contributions made to the project are wanted, correct, and functional.
+The set of people responsible for making sure the contribution cycle runs smoothly and that the contributions made to the project are wanted, correct, and functional. On the Github these people are labeled "members", and on the Discord they are known as "Centcom".
 
 The project maintainers have the following goals:
 
 * To prioritize issues and pull requests so the most important changes get focused on and added to the project first.
 * To make sure no contributions, however minor, don't get overlooked. Despite some contributions having greater priority, all contributions are created equal.
 * To verify that contributions comply with our standards, will not break the project, and are wanted, before they are accepted into the project.
+
+## Using Github
 
 ### Forking The Repository:
 
@@ -48,7 +50,7 @@ Explain the problem clearly and include any additional details to help maintaine
 Pull requests allow the maintainers to review any changes and verify they are wanted and don't break anything in the existing project.
 
 * Pull requests should merge into the *release* branch.
-* The title should be clear and concise.
+* The title and description should be clear and concise.
 * If the PR is attempting fix an issue, reference the issue number in the PR description ("Fixes #number").
 * Include pictures/videos in your pull request whenever possible.
 
