@@ -4,6 +4,7 @@ using SS3D.Engine.Interactions;
 using SS3D.Engine.Tiles;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -20,16 +21,29 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics {
         [SerializeField] float content;
         [SerializeField] float maxContent;
 
+        [SerializeField] GameObject menuUIPrefab;
+        [SerializeField] CanisterUI canisterUI;
+
         private void Start()
         {
             currentAtmosObject = transform.GetComponentInParent<TileObject>().atmos;
+            canisterUI = Instantiate(menuUIPrefab).GetComponent<CanisterUI>();
+
+            //TODO: replace with singleton variable sometime 
+            canisterUI.Init(GameObject.FindGameObjectWithTag("MainCanvas").GetComponent<Canvas>());
+            canisterUI.gameObject.SetActive(false);
+
+            canisterUI.label.text = transform.name;
         }
 
         private void FixedUpdate()
         {
-            if (currentAtmosObject != null && content - valvePressure > 0 && valvePressure > 0)
+            if (currentAtmosObject != null && content - valvePressure > 0 && valvePressure > 0 && valveOpen)
             {
                 currentAtmosObject.AddGas(gas, valvePressure);
+                canisterUI.releasePressure.text = valvePressure.ToString();
+                canisterUI.pressure.text = content.ToString();
+                
                 content -= valvePressure / 10;
             }
         }
@@ -48,7 +62,7 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics {
 
         private void ValveInteract(InteractionEvent interactionEvent, InteractionReference arg2)
         {
-
+            canisterUI.gameObject.SetActive(true);
         }
     }
 }

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3207827706040772379}
   - component: {fileID: 3436621957576136614}
   - component: {fileID: 7182705585173552431}
+  - component: {fileID: 7394184406077612064}
   m_Layer: 0
   m_Name: Canister_Air
   m_TagString: Untagged
@@ -103,6 +104,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gas: 0
   valvePressure: 1
+  valveOpen: 1
+  content: 0
+  maxContent: 0
+  menuUIPrefab: {fileID: 5132141291517980175, guid: 7c93c05ad2f5fa14489b94e1db0cc85c,
+    type: 3}
+  canisterUI: {fileID: 7436486508200489181, guid: 7c93c05ad2f5fa14489b94e1db0cc85c,
+    type: 3}
 --- !u!114 &3436621957576136614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,3 +142,17 @@ MonoBehaviour:
   syncInterval: 0.1
   compressRotation: 1
   clientAuthority: 0
+--- !u!64 &7394184406077612064
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466349050614861878}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8744087458408792856, guid: bd512b41d297ad5428ac6db3a3712f9a, type: 3}
