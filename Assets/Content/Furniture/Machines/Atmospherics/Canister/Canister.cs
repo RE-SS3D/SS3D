@@ -27,13 +27,16 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics {
         private void Start()
         {
             currentAtmosObject = transform.GetComponentInParent<TileObject>().atmos;
-            canisterUI = Instantiate(menuUIPrefab).GetComponent<CanisterUI>();
+           
+            // Big TODO: work on the UI panel because it's weird
+            
+            //canisterUI = Instantiate(menuUIPrefab).GetComponent<CanisterUI>();
 
-            //TODO: replace with singleton variable sometime 
-            canisterUI.Init(GameObject.FindGameObjectWithTag("MainCanvas").GetComponent<Canvas>());
-            canisterUI.gameObject.SetActive(false);
+           //TODO: replace with singleton variable sometime 
+            //canisterUI.Init(GameObject.FindGameObjectWithTag("MainCanvas").GetComponent<Canvas>());
+            //canisterUI.gameObject.SetActive(false);
 
-            canisterUI.label.text = transform.name;
+            //canisterUI.label.text = transform.name;
         }
 
         private void FixedUpdate()
@@ -41,8 +44,8 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics {
             if (currentAtmosObject != null && content - valvePressure > 0 && valvePressure > 0 && valveOpen)
             {
                 currentAtmosObject.AddGas(gas, valvePressure);
-                canisterUI.releasePressure.text = valvePressure.ToString();
-                canisterUI.pressure.text = content.ToString();
+                //canisterUI.releasePressure.text = valvePressure.ToString();
+                //canisterUI.pressure.text = content.ToString();
                 
                 content -= valvePressure / 10;
             }
@@ -54,15 +57,34 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics {
             {
                 new SimpleInteraction
                 {
-                    Name = "Valve", Interact = ValveInteract, RangeCheck = true
+                    Name = valveOpen ? "Close valve" : "Open valve", Interact = ValveInteract, RangeCheck = true
+                },
+                new SimpleInteraction
+                {
+                    Name = "Increase pressure", Interact = IncreasePressure, RangeCheck = true
+                },
+                new SimpleInteraction
+                {
+                    Name = "Decrease pressure", Interact = DecreasePressure, RangeCheck = true
                 }
             };
         }
 
+        private void IncreasePressure(InteractionEvent interactionEvent, InteractionReference arg2)
+        {
+            valvePressure += 20;
+        }
+        private void DecreasePressure(InteractionEvent interactionEvent, InteractionReference arg2)
+        {
+            if (valvePressure - 20 > 0)
+            valvePressure -= 20;
+        }
 
         private void ValveInteract(InteractionEvent interactionEvent, InteractionReference arg2)
         {
-            canisterUI.gameObject.SetActive(true);
+            valveOpen = !valveOpen;
+
+            //canisterUI.gameObject.SetActive(true);
         }
     }
 }

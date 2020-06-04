@@ -2559,8 +2559,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 39.6}
-  m_SizeDelta: {x: -0.000030517578, y: -79.18817}
+  m_AnchoredPosition: {x: 0, y: 0.002960205}
+  m_SizeDelta: {x: -0.000030517578, y: 0.00592041}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6439695976965107986
 CanvasRenderer:
@@ -2959,7 +2959,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.227451, g: 0.20392159, b: 0.20392159, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -2992,7 +2992,7 @@ MonoBehaviour:
   holdingLabel: {fileID: 0}
   holdingPressure: {fileID: 0}
   releasePressure: {fileID: 566066701398017716}
-  scale: 0
+  scale: 0.8
 --- !u!223 &2259950154087505965
 Canvas:
   m_ObjectHideFlags: 0
@@ -3005,7 +3005,7 @@ Canvas:
   m_RenderMode: 2
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
-  m_PixelPerfect: 0
+  m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
@@ -3024,7 +3024,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1856706101460840111}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4520,8 +4520,8 @@ MonoBehaviour:
   m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 245.12, y: 58.9}
-  m_Spacing: {x: 0, y: 4.7}
+  m_CellSize: {x: 245.12, y: 54.31}
+  m_Spacing: {x: 0, y: 11}
   m_Constraint: 1
   m_ConstraintCount: 1
 --- !u!1 &8155310918266189483

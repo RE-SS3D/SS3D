@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gas: 0
-  valvePressure: 1
+  valvePressure: 0.7
   valveOpen: 1
   content: 0
   maxContent: 0
