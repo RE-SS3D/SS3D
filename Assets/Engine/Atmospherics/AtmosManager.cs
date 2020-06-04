@@ -28,6 +28,7 @@ namespace SS3D.Engine.Atmospherics
         private List<TileObject> tileObjects;
         private List<AtmosObject> atmosTiles;
         private List<PipeObject> pipeTiles;
+        private List<PumpObject> pumpTiles;
 
         private float updateRate = 0f;
         private int activeTiles = 0;
@@ -44,6 +45,7 @@ namespace SS3D.Engine.Atmospherics
             tileManager = FindObjectOfType<TileManager>();
             atmosTiles = new List<AtmosObject>();
             pipeTiles = new List<PipeObject>();
+            pumpTiles = new List<PumpObject>();
             Initialize();
         }
 
@@ -113,6 +115,15 @@ namespace SS3D.Engine.Atmospherics
                     pipesInstantiated++;
                 }
 
+                // Do pumps
+                PumpObject pump = tile.GetComponentInChildren<PumpObject>();
+                if (pump != null)
+                {
+                    pump.setTileNeighbour(tileNeighbour, 0);
+                    pump.setTileNeighbour(tileNeighbour2, 1);
+                    pumpTiles.Add(pump);
+                }
+
                 tilesInstantiated++;
             }
 
@@ -124,6 +135,10 @@ namespace SS3D.Engine.Atmospherics
                 PipeObject pipe = tile.GetComponentInChildren<PipeObject>();
                 if (pipe)
                     pipe.setPipeNeighbours();
+
+                PumpObject pump = tile.GetComponentInChildren<PumpObject>();
+                if (pump)
+                    pump.setPipeNeighbours();
 
                 // tile.atmos.ValidateVacuum();
 
@@ -273,11 +288,20 @@ namespace SS3D.Engine.Atmospherics
                 }
             }
 
-            // Step 5: Do pipes as well
+            // Step 5: Do pumps and pipes as well
+            StepPump();
             StepPipe();
 
             s_StepPerfMarker.End();
             return activeTiles;
+        }
+
+        private void StepPump()
+        {
+            foreach (PumpObject pump in pumpTiles)
+            {
+                pump.Step();
+            }
         }
 
         private int StepPipe()

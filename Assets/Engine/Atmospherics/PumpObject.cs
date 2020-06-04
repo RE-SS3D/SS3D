@@ -11,19 +11,10 @@ namespace SS3D.Engine.Atmospherics
         private PipeObject[] atmosNeighbours = { null, null };
 
         private const float maxPressureSetting = 4500f;
+        private const float molesPerStep = 5f;
+
         private float currentPressureSetting = 1000f;
-        private bool pumpActive= false;
-        private float[] tempGasses = new float[Gas.numOfGases];
-
-        void Start()
-        {
-
-        }
-
-        void Update()
-        {
-
-        }
+        public bool pumpActive= false;
 
         public void Step()
         {
@@ -36,7 +27,19 @@ namespace SS3D.Engine.Atmospherics
                 // And the output pressure is acceptable
                 if (output.GetPressure() < currentPressureSetting - 100f)
                 {
-                    tempGasses = input.GetAtmosContainer().GetGasses();
+                    float[] inputGasses = input.GetAtmosContainer().GetGasses();
+                    float[] outputGasses = output.GetAtmosContainer().GetGasses();
+
+                    for (int i=0; i < Gas.numOfGases; i++)
+                    {
+                        if (inputGasses[i] >= molesPerStep)
+                        {
+                            inputGasses[i] -= molesPerStep;
+                            outputGasses[i] += molesPerStep;
+                            input.SetStateActive();
+                            output.SetStateActive();
+                        }
+                    }
                 }
             }
         }
