@@ -118,13 +118,13 @@ GameObject:
   - component: {fileID: 5704408125105873323}
   - component: {fileID: 5390108753956062062}
   - component: {fileID: 1330223843533572245}
-  m_Layer: 9
-  m_Name: Plane
+  m_Layer: 10
+  m_Name: Fog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5704408125105873323
 Transform:
   m_ObjectHideFlags: 0
@@ -132,13 +132,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5268569067789147257}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: -0.15, z: 0}
   m_LocalScale: {x: 3, y: 1, z: 3}
   m_Children: []
   m_Father: {fileID: 7079336122480111449}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!33 &5390108753956062062
 MeshFilter:
   m_ObjectHideFlags: 0
