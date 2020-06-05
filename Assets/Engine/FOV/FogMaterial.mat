@@ -75,11 +75,11 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _Height: 2.15
+    - _Height: 2.35
     - _Metallic: 0
     - _Mode: 0
-    - _NoiseStrength: 0
-    - _NumberOfStacks: 20
+    - _NoiseStrength: 0.0007
+    - _NumberOfStacks: 35
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
