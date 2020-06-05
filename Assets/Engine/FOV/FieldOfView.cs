@@ -131,7 +131,7 @@ namespace SS3D.Engine.FOV
 
             vertices[0] = transform.InverseTransformPoint(target.transform.position);
 
-            for (int i = 0; i < vertexCount - 1; i++)
+            for (int i = 1; i < vertexCount - 1; i++)
             {
                 vertices[i + 1] = transform.InverseTransformPoint(viewPoints[i]);
 
