@@ -14,6 +14,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Palette05 Glass
     second: {fileID: 2100000, guid: 4156b958be0668e49b2e9f5120660e50, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WallTop
+    second: {fileID: 2100000, guid: b16864a2572634c4ca3ef9ab752bb66f, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
