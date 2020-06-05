@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
-    public class PumpObject : MonoBehaviour
+    public class PumpObject : MonoBehaviour, IAtmosStep
     {
         public enum PumpType
         {
@@ -20,7 +20,7 @@ namespace SS3D.Engine.Atmospherics
         private const float maxPressureSetting = 4500f;
         private const float molesPerStep = 5f;
 
-        private float currentPressureSetting = 1000f;
+        public float currentPressureSetting = 1000f;
         public PumpType pumpType;
         public bool pumpActive= false;
 
@@ -93,5 +93,9 @@ namespace SS3D.Engine.Atmospherics
             this.pumpActive = pumpActive;
         }
 
+        public void Init()
+        {
+            setPipeNeighbours();
+        }
     }
 }

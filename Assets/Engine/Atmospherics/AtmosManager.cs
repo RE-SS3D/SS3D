@@ -27,8 +27,11 @@ namespace SS3D.Engine.Atmospherics
         private TileManager tileManager;
         private List<TileObject> tileObjects;
         private List<AtmosObject> atmosTiles;
+
+        // TODO make interface for these
         private List<PipeObject> pipeTiles;
         private List<PumpObject> pumpTiles;
+        private List<InjectorObject> injectorTiles;
 
         private float updateRate = 0f;
         private int activeTiles = 0;
@@ -46,6 +49,7 @@ namespace SS3D.Engine.Atmospherics
             atmosTiles = new List<AtmosObject>();
             pipeTiles = new List<PipeObject>();
             pumpTiles = new List<PumpObject>();
+            injectorTiles = new List<InjectorObject>();
             Initialize();
         }
 
@@ -122,6 +126,14 @@ namespace SS3D.Engine.Atmospherics
                     pump.setTileNeighbour(tileNeighbour, 0);
                     pump.setTileNeighbour(tileNeighbour2, 1);
                     pumpTiles.Add(pump);
+                }
+
+                InjectorObject injector = tile.GetComponentInChildren<InjectorObject>();
+                if (injector != null)
+                {
+                    injector.setTileNeighbour(tileNeighbour);
+                    injectorTiles.Add(injector);
+                    injector.Init();
                 }
 
                 tilesInstantiated++;
@@ -291,6 +303,7 @@ namespace SS3D.Engine.Atmospherics
             // Step 5: Do pumps and pipes as well
             StepPump();
             StepPipe();
+            StepInjector();
 
             s_StepPerfMarker.End();
             return activeTiles;
@@ -301,6 +314,14 @@ namespace SS3D.Engine.Atmospherics
             foreach (PumpObject pump in pumpTiles)
             {
                 pump.Step();
+            }
+        }
+
+        private void StepInjector()
+        {
+            foreach (InjectorObject injector in injectorTiles)
+            {
+                injector.Step();
             }
         }
 

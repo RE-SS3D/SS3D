@@ -20,7 +20,7 @@ namespace SS3D.Engine.Atmospherics
         void Start()
         {
             pipe = GetComponent<PipeObject>();
-            if (isEnabled)
+            if (!isEnabled)
             {
                 pipe.SetBlocked(true);
             }
@@ -33,7 +33,7 @@ namespace SS3D.Engine.Atmospherics
         // Update is called once per frame
         void Update()
         {
-            if (isEnabled)
+            if (!isEnabled)
             {
                 pipe.SetBlocked(true);
             }
