@@ -7,6 +7,13 @@ namespace SS3D.Engine.Atmospherics
 {
     public class PumpObject : MonoBehaviour
     {
+        public enum PumpType
+        {
+            Pressure,
+            Volume
+        }
+
+
         private TileObject[] tileNeighbours = { null, null };
         private PipeObject[] atmosNeighbours = { null, null };
 
@@ -14,6 +21,7 @@ namespace SS3D.Engine.Atmospherics
         private const float molesPerStep = 5f;
 
         private float currentPressureSetting = 1000f;
+        public PumpType pumpType;
         public bool pumpActive= false;
 
         public void Step()
@@ -25,12 +33,32 @@ namespace SS3D.Engine.Atmospherics
                 PipeObject output = atmosNeighbours[1];
 
                 // And the output pressure is acceptable
-                if (output.GetPressure() < currentPressureSetting - 100f)
+                if (pumpType == PumpType.Pressure)
+                {
+                    if (output.GetPressure() < currentPressureSetting - 100f)
+                    {
+                        float[] inputGasses = input.GetAtmosContainer().GetGasses();
+                        float[] outputGasses = output.GetAtmosContainer().GetGasses();
+
+                        for (int i = 0; i < Gas.numOfGases; i++)
+                        {
+                            if (inputGasses[i] >= molesPerStep)
+                            {
+                                inputGasses[i] -= molesPerStep;
+                                outputGasses[i] += molesPerStep;
+                                input.SetStateActive();
+                                output.SetStateActive();
+                            }
+                        }
+                    }
+                }
+                // TODO: different pump speeds between volume/pressure pumps
+                else if (pumpType == PumpType.Volume)
                 {
                     float[] inputGasses = input.GetAtmosContainer().GetGasses();
                     float[] outputGasses = output.GetAtmosContainer().GetGasses();
 
-                    for (int i=0; i < Gas.numOfGases; i++)
+                    for (int i = 0; i < Gas.numOfGases; i++)
                     {
                         if (inputGasses[i] >= molesPerStep)
                         {

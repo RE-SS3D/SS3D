@@ -63,6 +63,18 @@ namespace SS3D.Engine.Atmospherics
             state = AtmosStates.Active;
         }
 
+        public void SetBlocked(bool blocked)
+        {
+            if (!blocked)
+            {
+                state = AtmosStates.Active;
+            }
+            else
+            {
+                state = AtmosStates.Blocked;
+            }
+        }
+
         public void RemoveFlux()
         {
             tileFlux = new float[] { 0f, 0f, 0f, 0f };
