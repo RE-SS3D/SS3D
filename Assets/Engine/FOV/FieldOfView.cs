@@ -81,6 +81,7 @@ namespace SS3D.Engine.FOV
 
         private void Update()
         {
+            if(!target) return;
             transform.position = target.position;
             DrawFieldOfView();
         }
