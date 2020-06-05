@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 3497183203355209607}
   - component: {fileID: 5602736186390864255}
   - component: {fileID: 4543423368307729912}
+  - component: {fileID: 7026458861616161635}
   m_Layer: 16
   m_Name: dough_flat
   m_TagString: Untagged
@@ -223,3 +224,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ResultingObject: {fileID: 3586434867307094036, guid: 5f721ca3320ab2f4b883121e62bdc722,
     type: 3}
+--- !u!114 &7026458861616161635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4462294093420203598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7711980866157604178}
   - component: {fileID: 3218971402796315495}
   - component: {fileID: 1034187669133064040}
+  - component: {fileID: 3860049973622285676}
   m_Layer: 0
   m_Name: Disposal Bin
   m_TagString: Untagged
@@ -125,6 +126,22 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -7358294440733958505, guid: 7b17d139e50e2eb428fa937613b3a830, type: 3}
+--- !u!114 &3860049973622285676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6905024007199924851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0
 --- !u!1 &7531797193249841566
 GameObject:
   m_ObjectHideFlags: 0

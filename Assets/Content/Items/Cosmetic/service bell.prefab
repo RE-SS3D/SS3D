@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5618550802946622641}
   - component: {fileID: -777820845504046829}
   - component: {fileID: 6795323695665378604}
+  - component: {fileID: 3735125773130614824}
   m_Layer: 16
   m_Name: service bell
   m_TagString: Untagged
@@ -248,6 +249,22 @@ MonoBehaviour:
   attachmentPoint: {fileID: 6532719851440739237}
   interactionIcon: {fileID: 0}
   bellSound: {fileID: 8300000, guid: f22e34e83e0f9874e8ebc28d164810c2, type: 3}
+--- !u!114 &3735125773130614824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1520063555836420535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0
 --- !u!1 &3169917709920511976
 GameObject:
   m_ObjectHideFlags: 0
