@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -4998431523760016775}
   - component: {fileID: 2183948917681095833}
   - component: {fileID: 7664829981479568445}
+  - component: {fileID: 6424998480104776442}
   m_Layer: 0
   m_Name: Valve
   m_TagString: Untagged
@@ -109,6 +110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fb7ede8181b28b4082944d5e44dd86e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  volume: 1
 --- !u!114 &7664829981479568445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,5 +124,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   valveType: 0
-  pipe: {fileID: 0}
   isEnabled: 0
+--- !u!65 &6424998480104776442
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.1937924, y: 0.3214464, z: 0.2527011}
+  m_Center: {x: 0.0000000037252903, y: -0.016348373, z: 0.10945436}

@@ -1,10 +1,12 @@
-﻿using System.Collections;
+﻿using SS3D.Content.Systems.Interactions;
+using SS3D.Engine.Interactions;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
-    public class ValveObject : MonoBehaviour
+    public class ValveObject : MonoBehaviour, IInteractionTarget
     {
         public enum ValveType
         {
@@ -16,10 +18,9 @@ namespace SS3D.Engine.Atmospherics
         private PipeObject pipe;
         public bool isEnabled;
 
-        // Start is called before the first frame update
-        void Start()
+        private void SetValve(bool enable)
         {
-            pipe = GetComponent<PipeObject>();
+            isEnabled = enable;
             if (!isEnabled)
             {
                 pipe.SetBlocked(true);
@@ -30,17 +31,26 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
-        // Update is called once per frame
-        void Update()
+        void Start()
         {
-            if (!isEnabled)
+            pipe = GetComponent<PipeObject>();
+            SetValve(false);
+        }
+
+        public IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        {
+            return new IInteraction[]
             {
-                pipe.SetBlocked(true);
-            }
-            else
-            {
-                pipe.SetBlocked(false);
-            }
+                new SimpleInteraction
+                {
+                    Name = isEnabled ? "Close valve" : "Open valve", Interact = ValveInteract, RangeCheck = true
+                }
+            };
+        }
+        
+        private void ValveInteract(InteractionEvent interactionEvent, InteractionReference arg2)
+        {
+            SetValve(!isEnabled);
         }
     }
 }

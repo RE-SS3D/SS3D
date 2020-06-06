@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Unity.Profiling;
+using UnityEditor;
 using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
@@ -161,78 +162,81 @@ namespace SS3D.Engine.Atmospherics
 
         void Update()
         {
-            if (Time.fixedTime >= lastStep)
+            if (EditorApplication.isPlaying)
             {
-                activeTiles = Step();
-                if (showMessages)
-                    Debug.Log("Atmos loop took: " + (Time.fixedTime - lastStep) + " seconds, simulating " + activeTiles + " atmos tiles. Fixed update rate: " + updateRate);
-
-                activeTiles = 0;
-                lastStep = Time.fixedTime + updateRate;
-            }
-
-            // Display atmos tile contents if the editor window is open
-            if (drawDebug)
-            {
-                Vector3 hit = GetMouse();
-                Vector3 position = new Vector3(hit.x, 0, hit.z);
-
-                Vector3 snappedPosition = tileManager.GetPositionClosestTo(position);
-                if (snappedPosition != null)
+                if (Time.fixedTime >= lastStep)
                 {
-                    TileObject tile = tileManager.GetTile(snappedPosition);
-                    if (tile == null)
-                        return;
+                    activeTiles = Step();
+                    if (showMessages)
+                        Debug.Log("Atmos loop took: " + (Time.fixedTime - lastStep) + " seconds, simulating " + activeTiles + " atmos tiles. Fixed update rate: " + updateRate);
 
-                    if (Time.fixedTime > lastClick + 1)
+                    activeTiles = 0;
+                    lastStep = Time.fixedTime + updateRate;
+                }
+
+                // Display atmos tile contents if the editor window is open
+                if (drawDebug)
+                {
+                    Vector3 hit = GetMouse();
+                    Vector3 position = new Vector3(hit.x, 0, hit.z);
+
+                    Vector3 snappedPosition = tileManager.GetPositionClosestTo(position);
+                    if (snappedPosition != null)
                     {
-                        if (Input.GetMouseButton(0))
+                        TileObject tile = tileManager.GetTile(snappedPosition);
+                        if (tile == null)
+                            return;
+
+                        if (Time.fixedTime > lastClick + 1)
                         {
-                            if (drawTiles)
+                            if (Input.GetMouseButton(0))
                             {
-                                if (isAddingGas)
-                                {
-                                    tile.atmos.AddGas(gasToAdd, 60f);
-                                }
-                                else
-                                {
-                                    Debug.Log("Tile, Pressure (kPa): " + tile.atmos.GetPressure() + " Temperature (K): " + tile.atmos.GetAtmosContainer().GetTemperature() + " State: " + tile.atmos.GetState().ToString() + "\t" +
-                                        " Oxygen content: " + tile.atmos.GetAtmosContainer().GetGasses()[0] +
-                                        " Nitrogen content: " + tile.atmos.GetAtmosContainer().GetGasses()[1] +
-                                        " Carbon Dioxide content: " + tile.atmos.GetAtmosContainer().GetGasses()[2] +
-                                        " Plasma content: " + tile.atmos.GetAtmosContainer().GetGasses()[3]);
-                                    lastClick = Time.fixedTime;
-                                }
-                            }
-                            else if (showPipes)
-                            {
-                                PipeObject pipe = tile.GetComponentInChildren<PipeObject>();
-                                if (pipe)
+                                if (drawTiles)
                                 {
                                     if (isAddingGas)
                                     {
-                                        pipe.AddGas(gasToAdd, 30f);
+                                        tile.atmos.AddGas(gasToAdd, 60f);
                                     }
                                     else
                                     {
-                                        Debug.Log("Pipe, Pressure (kPa): " + pipe.GetPressure() + " Temperature (K): " + pipe.GetAtmosContainer().GetTemperature() + " State: " + pipe.GetState().ToString() + "\t" +
-                                            " Oxygen content: " + pipe.GetAtmosContainer().GetGasses()[0] +
-                                            " Nitrogen content: " + pipe.GetAtmosContainer().GetGasses()[1] +
-                                            " Carbon Dioxide content: " + pipe.GetAtmosContainer().GetGasses()[2] +
-                                            " Plasma content: " + pipe.GetAtmosContainer().GetGasses()[3]);
+                                        Debug.Log("Tile, Pressure (kPa): " + tile.atmos.GetPressure() + " Temperature (K): " + tile.atmos.GetAtmosContainer().GetTemperature() + " State: " + tile.atmos.GetState().ToString() + "\t" +
+                                            " Oxygen content: " + tile.atmos.GetAtmosContainer().GetGasses()[0] +
+                                            " Nitrogen content: " + tile.atmos.GetAtmosContainer().GetGasses()[1] +
+                                            " Carbon Dioxide content: " + tile.atmos.GetAtmosContainer().GetGasses()[2] +
+                                            " Plasma content: " + tile.atmos.GetAtmosContainer().GetGasses()[3]);
                                         lastClick = Time.fixedTime;
                                     }
                                 }
-                                else
+                                else if (showPipes)
                                 {
-                                    Debug.Log("No pipe found on the clicked tile");
-                                    lastClick = Time.fixedTime;
+                                    PipeObject pipe = tile.GetComponentInChildren<PipeObject>();
+                                    if (pipe)
+                                    {
+                                        if (isAddingGas)
+                                        {
+                                            pipe.AddGas(gasToAdd, 30f);
+                                        }
+                                        else
+                                        {
+                                            Debug.Log("Pipe, Pressure (kPa): " + pipe.GetPressure() + " Temperature (K): " + pipe.GetAtmosContainer().GetTemperature() + " State: " + pipe.GetState().ToString() + "\t" +
+                                                " Oxygen content: " + pipe.GetAtmosContainer().GetGasses()[0] +
+                                                " Nitrogen content: " + pipe.GetAtmosContainer().GetGasses()[1] +
+                                                " Carbon Dioxide content: " + pipe.GetAtmosContainer().GetGasses()[2] +
+                                                " Plasma content: " + pipe.GetAtmosContainer().GetGasses()[3]);
+                                            lastClick = Time.fixedTime;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Debug.Log("No pipe found on the clicked tile");
+                                        lastClick = Time.fixedTime;
+                                    }
                                 }
                             }
-                        }
-                        else if (Input.GetKeyDown(KeyCode.Escape))
-                        {
-                            isAddingGas = false;
+                            else if (Input.GetKeyDown(KeyCode.Escape))
+                            {
+                                isAddingGas = false;
+                            }
                         }
                     }
                 }
@@ -498,6 +502,14 @@ namespace SS3D.Engine.Atmospherics
                         PipeObject pipe = tile.GetComponentInChildren<PipeObject>();
                         if (pipe)
                         {
+                            switch (pipe.GetState())
+                            {
+                                case AtmosStates.Active: state = new Color(0, 0, 0, 0); break;
+                                case AtmosStates.Semiactive: state = new Color(0, 0, 0, 0.8f); break;
+                                case AtmosStates.Inactive: state = new Color(0, 0, 0, 0.8f); break;
+                                default: state = new Color(0, 0, 0, 1); break;
+                            }
+
                             switch (drawView)
                             {
                                 case ViewType.Content:

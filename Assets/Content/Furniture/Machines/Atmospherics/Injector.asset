@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 903cb7b2e43eaa14abbf1cb220fdd7c3, type: 3}
   m_Name: Injector
   m_EditorClassIdentifier: 
-  id: 
-  genericType: 
-  prefab: {fileID: 0}
+  id: injector
+  genericType: pipe
+  prefab: {fileID: 9154955770433736351, guid: 36f74b2aa9856f345853bcaa60926f19, type: 3}

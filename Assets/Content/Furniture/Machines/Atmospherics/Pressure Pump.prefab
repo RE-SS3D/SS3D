@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7421499587493591509}
   - component: {fileID: 5090598363769821286}
   - component: {fileID: 1905454501847610042}
+  - component: {fileID: 1086702479451356118}
   m_Layer: 0
   m_Name: Pressure Pump
   m_TagString: Untagged
@@ -108,4 +109,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 027089b94bcd58c4ab5753b5659f8e15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentPressureSetting: 1000
+  pumpType: 0
   pumpActive: 0
+--- !u!65 &1086702479451356118
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.24769372, y: 1.0000004, z: 0.2726938}
+  m_Center: {x: 0, y: -0.000000021494099, z: 0.0901528}

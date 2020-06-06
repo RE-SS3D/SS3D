@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7421499587493591509}
   - component: {fileID: 5090598363769821286}
   - component: {fileID: 1905454501847610042}
+  - component: {fileID: 4045515480274896508}
   m_Layer: 0
   m_Name: Volume Pump
   m_TagString: Untagged
@@ -109,4 +110,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pumpType: 1
+  currentPressureSetting: 1000
+  currentVolumeSetting: 200
   pumpActive: 0
+--- !u!65 &4045515480274896508
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.24769376, y: 1.0000002, z: 0.24769382}
+  m_Center: {x: 0, y: -0.000000018513866, z: 0.07765279}
