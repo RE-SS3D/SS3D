@@ -27,11 +27,8 @@ namespace SS3D.Engine.Atmospherics
         private TileManager tileManager;
         private List<TileObject> tileObjects;
         private List<AtmosObject> atmosTiles;
-
-        // TODO make interface for these
         private List<PipeObject> pipeTiles;
-        private List<PumpObject> pumpTiles;
-        private List<InjectorObject> injectorTiles;
+        private List<IAtmosLoop> deviceTiles;
 
         private float updateRate = 0f;
         private int activeTiles = 0;
@@ -48,8 +45,7 @@ namespace SS3D.Engine.Atmospherics
             tileManager = FindObjectOfType<TileManager>();
             atmosTiles = new List<AtmosObject>();
             pipeTiles = new List<PipeObject>();
-            pumpTiles = new List<PumpObject>();
-            injectorTiles = new List<InjectorObject>();
+            deviceTiles = new List<IAtmosLoop>();
             Initialize();
         }
 
@@ -65,6 +61,7 @@ namespace SS3D.Engine.Atmospherics
 
             int tilesInstantiated = 0;
             int pipesInstantiated = 0;
+            int devicesInstantiated = 0;
 
             foreach (TileObject tile in tileObjects)
             {
@@ -111,29 +108,22 @@ namespace SS3D.Engine.Atmospherics
                 PipeObject pipe = tile.GetComponentInChildren<PipeObject>();
                 if (pipe != null)
                 {
-                    pipe.setTileNeighbour(tileNeighbour, 0);
-                    pipe.setTileNeighbour(tileNeighbour2, 1);
-                    pipe.setTileNeighbour(tileNeighbour3, 2);
-                    pipe.setTileNeighbour(tileNeighbour4, 3);
+                    pipe.SetTileNeighbour(tileNeighbour, 0);
+                    pipe.SetTileNeighbour(tileNeighbour2, 1);
+                    pipe.SetTileNeighbour(tileNeighbour3, 2);
+                    pipe.SetTileNeighbour(tileNeighbour4, 3);
                     pipeTiles.Add(pipe);
                     pipesInstantiated++;
                 }
 
-                // Do pumps
-                PumpObject pump = tile.GetComponentInChildren<PumpObject>();
-                if (pump != null)
+                //// Do pumps
+                IAtmosLoop device = tile.GetComponentInChildren<IAtmosLoop>();
+                if (device != null)
                 {
-                    pump.setTileNeighbour(tileNeighbour, 0);
-                    pump.setTileNeighbour(tileNeighbour2, 1);
-                    pumpTiles.Add(pump);
-                }
-
-                InjectorObject injector = tile.GetComponentInChildren<InjectorObject>();
-                if (injector != null)
-                {
-                    injector.setTileNeighbour(tileNeighbour);
-                    injectorTiles.Add(injector);
-                    injector.Init();
+                    device.SetTileNeighbour(tileNeighbour, 0);
+                    device.SetTileNeighbour(tileNeighbour2, 1);
+                    deviceTiles.Add(device);
+                    devicesInstantiated++;
                 }
 
                 tilesInstantiated++;
@@ -146,11 +136,11 @@ namespace SS3D.Engine.Atmospherics
                 tile.atmos.setAtmosNeighbours();
                 PipeObject pipe = tile.GetComponentInChildren<PipeObject>();
                 if (pipe)
-                    pipe.setPipeNeighbours();
+                    pipe.SetAtmosNeighbours();
 
-                PumpObject pump = tile.GetComponentInChildren<PumpObject>();
-                if (pump)
-                    pump.setPipeNeighbours();
+                IAtmosLoop device = tile.GetComponentInChildren<IAtmosLoop>();
+                if (device != null)
+                    device.Initialize();
 
                 // tile.atmos.ValidateVacuum();
 
@@ -163,7 +153,7 @@ namespace SS3D.Engine.Atmospherics
                     }
                 }
             }
-            Debug.Log($"AtmosManager: Finished initializing {tilesInstantiated} tiles and {pipesInstantiated} pipes");
+            Debug.Log($"AtmosManager: Finished initializing {tilesInstantiated} tiles, {pipesInstantiated} pipes and {devicesInstantiated} devices");
 
             lastStep = Time.fixedTime;
             s_PreparePerfMarker.End();
@@ -301,29 +291,23 @@ namespace SS3D.Engine.Atmospherics
             }
 
             // Step 5: Do pumps and pipes as well
-            StepPump();
+            StepDevices();
             StepPipe();
-            StepInjector();
+            
 
             s_StepPerfMarker.End();
             return activeTiles;
         }
 
-        private void StepPump()
+        private void StepDevices()
         {
-            foreach (PumpObject pump in pumpTiles)
+            foreach (IAtmosLoop device in deviceTiles)
             {
-                pump.Step();
+                device.Step();
             }
         }
 
-        private void StepInjector()
-        {
-            foreach (InjectorObject injector in injectorTiles)
-            {
-                injector.Step();
-            }
-        }
+
 
         private int StepPipe()
         {

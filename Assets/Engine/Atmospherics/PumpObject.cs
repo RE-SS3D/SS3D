@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
-    public class PumpObject : MonoBehaviour, IAtmosStep
+    public class PumpObject : MonoBehaviour, IAtmosLoop
     {
         public enum PumpType
         {
@@ -72,12 +72,12 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
-        public void setTileNeighbour(TileObject neighbour, int index)
+        public void SetTileNeighbour(TileObject neighbour, int index)
         {
             tileNeighbours[index] = neighbour;
         }
 
-        public void setPipeNeighbours()
+        public void SetAtmosNeighbours()
         {
             int i = 0;
             foreach (TileObject tile in tileNeighbours)
@@ -93,9 +93,9 @@ namespace SS3D.Engine.Atmospherics
             this.pumpActive = pumpActive;
         }
 
-        public void Init()
+        public void Initialize()
         {
-            setPipeNeighbours();
+            SetAtmosNeighbours();
         }
     }
 }
