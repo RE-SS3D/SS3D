@@ -101,6 +101,11 @@ namespace SS3D.Engine.Atmospherics
             atmosContainer.MakeEmpty();
         }
 
+        public float GetTemperature()
+        {
+            return atmosContainer.GetTemperature();
+        }
+
         public void AddHeat(float temp)
         {
             atmosContainer.AddHeat(temp);

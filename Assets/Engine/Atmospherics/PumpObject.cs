@@ -15,7 +15,6 @@ namespace SS3D.Engine.Atmospherics
             Volume
         }
 
-
         private TileObject[] tileNeighbours = { null, null };
         private PipeObject[] atmosNeighbours = { null, null };
 
@@ -25,8 +24,8 @@ namespace SS3D.Engine.Atmospherics
         private const float stepsToEqualize = 10f;
 
         public PumpType pumpType;
-        public float currentPressureSetting = 1000f;
-        public float currentVolumeSetting = 200f;
+        public float TargetPressure = 300f;
+        public float CurrentVolumeSetting = 200f;
         public bool pumpActive= false;
 
         public void Step()
@@ -46,12 +45,12 @@ namespace SS3D.Engine.Atmospherics
                 // And the output pressure is acceptable
                 if (pumpType == PumpType.Pressure)
                 {
-                    if (output.GetPressure() < currentPressureSetting - 1)
+                    if (output.GetPressure() <= TargetPressure - 0.1f)
                     {
                         float totalMoles = input.GetTotalMoles();
                         
                         // Calculate necessary moles to transfer using PV=nRT
-                        float pressureDifference = currentPressureSetting - output.GetPressure();
+                        float pressureDifference = TargetPressure - output.GetPressure();
                         float transferMoles = pressureDifference * 1000 * output.volume / (output.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
 
                         // Reach our target pressure in N steps
@@ -79,7 +78,7 @@ namespace SS3D.Engine.Atmospherics
                 else if (pumpType == PumpType.Volume)
                 {
                     // At 200 L/s
-                    float inputVolume = input.volume * 1000 / currentVolumeSetting;
+                    float inputVolume = input.volume * 1000 / CurrentVolumeSetting;
                     float transferMoles = input.GetPressure() * 1000 * inputVolume / (input.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
                     float totalMoles = input.GetTotalMoles();
 
@@ -106,7 +105,8 @@ namespace SS3D.Engine.Atmospherics
 
         public void SetTileNeighbour(TileObject neighbour, int index)
         {
-            tileNeighbours[index] = neighbour;
+            if (index == 0 || index == 1)
+                tileNeighbours[index] = neighbour;
         }
 
         public void SetAtmosNeighbours()

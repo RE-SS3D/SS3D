@@ -123,6 +123,8 @@ namespace SS3D.Engine.Atmospherics
                 {
                     device.SetTileNeighbour(tileNeighbour, 0);
                     device.SetTileNeighbour(tileNeighbour2, 1);
+                    device.SetTileNeighbour(tileNeighbour3, 2);
+                    device.SetTileNeighbour(tileNeighbour4, 3);
                     deviceTiles.Add(device);
                     devicesInstantiated++;
                 }
@@ -404,6 +406,9 @@ namespace SS3D.Engine.Atmospherics
         private void OnDrawGizmos()
         {
             float drawSize = 0.8f;
+
+            if (!EditorApplication.isPlaying)
+                return;
 
             if (drawDebug)
             {
