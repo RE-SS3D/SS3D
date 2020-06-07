@@ -37,15 +37,14 @@ namespace SS3D.Engine.Atmospherics
         {
             if (atmosNeighbour)
             {
-                if (atmosNeighbour.GetPressure() > 0f)
+                if (atmosNeighbour.GetTotalMoles() > 0.1f)
                 {
                     float[] tileGas = tile.atmos.GetAtmosContainer().GetGasses();
                     for (int i = 0; i < Gas.numOfGases; i++)
                     {
-                        tileGas[i] += atmosNeighbour.GetAtmosContainer().GetGasses()[i];
-                        atmosNeighbour.GetAtmosContainer().GetGasses()[i] = 0f;
-                        atmosNeighbour.SetStateActive();
-                        tile.atmos.SetBlocked(false);
+                        float gasToTransfer = atmosNeighbour.GetAtmosContainer().GetGas(i);
+                        tile.atmos.AddGas(i, gasToTransfer);
+                        atmosNeighbour.RemoveGas(i, gasToTransfer);
                     }
                 }
             }

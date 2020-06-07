@@ -24,6 +24,11 @@ namespace SS3D.Engine.Atmospherics
             return gasses[(int)index];
         }
 
+        public float GetGas(int index)
+        {
+            return gasses[index];
+        }
+
         public float[] GetGasses()
         {
             return gasses;
@@ -45,9 +50,19 @@ namespace SS3D.Engine.Atmospherics
             gasses[(int)gas] = Mathf.Max(gasses[(int)gas] + amount, 0);
         }
 
+        public void AddGas(int index, float amount)
+        {
+            gasses[index] = Mathf.Max(gasses[index] + amount, 0);
+        }
+
         public void RemoveGas(AtmosGasses gas, float amount)
         {
             gasses[(int)gas] = Mathf.Max(gasses[(int)gas] - amount, 0);
+        }
+
+        public void RemoveGas(int index, float amount)
+        {
+            gasses[index] = Mathf.Max(gasses[index] - amount, 0);
         }
 
         public void SetGasses(float[] amounts)

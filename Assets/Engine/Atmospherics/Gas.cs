@@ -47,7 +47,7 @@ namespace SS3D.Engine.Atmospherics
         public const float gasConstant = 8.314f;    // Universal gas constant
         public const float drag = 0.95f;            // Fluid drag, slows down flux so that gases don't infinitely slosh
         public const float thermalBase = 0.024f;    // * volume | Rate of temperature equalization
-        public const float mixRate = 0.05f;         // Rate of gas mixing
+        public const float mixRate = 0.05f;        // Rate of gas mixing
         public const float fluxEpsilon = 0.025f;    // Minimum pressure difference to simulate
         public const float thermalEpsilon = 0.01f;  // Minimum temperature difference to simulate
 

@@ -10,7 +10,7 @@ namespace SS3D.Engine.Atmospherics
     {
         private const float maxPipePressure = 2000f;
 
-        public float volume = 2.5f;
+        public float volume = 1f;
 
         private AtmosContainer atmosContainer = new AtmosContainer();
         private float[] tileFlux = { 0f, 0f, 0f, 0f };
@@ -86,6 +86,15 @@ namespace SS3D.Engine.Atmospherics
             if (state != AtmosStates.Blocked)
             {
                 atmosContainer.AddGas(gas, amount);
+                state = AtmosStates.Active;
+            }
+        }
+
+        public void RemoveGas(int index, float amount)
+        {
+            if (state != AtmosStates.Blocked)
+            {
+                atmosContainer.RemoveGas(index, amount);
                 state = AtmosStates.Active;
             }
         }
@@ -206,43 +215,30 @@ namespace SS3D.Engine.Atmospherics
 
         public void SimulateFlux()
         {
-            float[] gasses = atmosContainer.GetGasses();
-
-            float plasmaIn = gasses[3];
-            foreach (PipeObject pipe in atmosNeighbours)
-            {
-                if (pipe)
-                    plasmaIn += pipe.GetAtmosContainer().GetGasses()[3];
-            }
-
-
             if (state == AtmosStates.Active)
             {
                 float pressure = GetPressure();
 
                 for (int i = 0; i < Gas.numOfGases; i++)
                 {
-                    //if (gasses[i] < 1f)
-                    //    gasses[i] = 0f;
-
-                    if (gasses[i] > 0f)
+                    if (atmosContainer.GetGasses()[i] > 0f)
                     {
                         int k = 0;
                         foreach (PipeObject pipe in atmosNeighbours)
                         {
                             if (tileFlux[k] > 0f)
                             {
-                                float factor = gasses[i] * (tileFlux[k] / pressure);
+                                float factor = atmosContainer.GetGasses()[i] * (tileFlux[k] / pressure);
                                 if (pipe.state != AtmosStates.Vacuum)
                                 {
-                                    pipe.atmosContainer.GetGasses()[i] += factor;
+                                    pipe.atmosContainer.AddGas(i, factor);
                                     pipe.state = AtmosStates.Active;
                                 }
                                 else
                                 {
                                     activeDirection[k] = false;
                                 }
-                                gasses[i] -= factor;
+                                atmosContainer.RemoveGas(i, factor);
                             }
                             k++;
                         }
@@ -271,33 +267,12 @@ namespace SS3D.Engine.Atmospherics
             {
                 SimulateMixing();
             }
-
-            float plasmaOut = gasses[3];
-            foreach (PipeObject pipe in atmosNeighbours)
-            {
-                if (pipe)
-                    plasmaOut += pipe.GetAtmosContainer().GetGasses()[3];
-            }
-
-            if (Mathf.Abs(plasmaIn - plasmaOut) > 0.01f)
-                Debug.Log("Plasma leak in SimulateFlux()! Going in: " + plasmaIn + " Going out: " + plasmaOut);
         }
 
         public void SimulateMixing()
         {
-            float[] gasses = atmosContainer.GetGasses();
 
-            float plasmaIn = gasses[3];
-            foreach (PipeObject pipe in atmosNeighbours)
-            {
-                if (pipe)
-                    plasmaIn += pipe.GetAtmosContainer().GetGasses()[3];
-            }
-            //if (plasmaIn > 0.1)
-            //    Debug.Log("Plasma in: " + plasmaIn);
-
-
-            if (AtmosHelper.ArrayZero(gasses, Gas.mixRate))
+            if (AtmosHelper.ArrayZero(atmosContainer.GetGasses(), Gas.mixRate))
                 return;
 
             bool mixed = false;
@@ -307,7 +282,7 @@ namespace SS3D.Engine.Atmospherics
             for (int i = 0; i < Gas.numOfGases; i++)
             {
                 // There must be gas of course...
-                if (gasses[i] > 0f)
+                if (atmosContainer.GetGasses()[i] > 0f)
                 {
                     // Go through all neighbours
                     foreach (PipeObject atmosObject in atmosNeighbours)
@@ -316,12 +291,12 @@ namespace SS3D.Engine.Atmospherics
                             continue;
                         if (atmosObject.state != AtmosStates.Blocked)
                         {
-                            difference[i] = (gasses[i] - atmosObject.GetAtmosContainer().GetGasses()[i]) * Gas.mixRate;
+                            difference[i] = (atmosContainer.GetGasses()[i] - atmosObject.GetAtmosContainer().GetGasses()[i]) * Gas.mixRate;
                             if (difference[i] > 0.01f)
                             {
                                 // Increase neighbouring tiles moles
-                                atmosObject.GetAtmosContainer().GetGasses()[i] += difference[i];
-                                if (Mathf.Abs(atmosObject.GetPressure() - GetPressure()) > 0.1f)
+                                atmosObject.GetAtmosContainer().AddGas(i, difference[i]);
+                                if (Mathf.Abs(atmosObject.GetPressure() - GetPressure()) > Gas.mixRate)
                                 {
                                     atmosObject.state = AtmosStates.Active;
                                 }
@@ -329,13 +304,10 @@ namespace SS3D.Engine.Atmospherics
                                 {
                                     atmosObject.state = AtmosStates.Semiactive;
                                 }
-                                
+
 
                                 // Decrease our own moles
-                                gasses[i] -= difference[i];
-                                if (gasses[i] <= 0f && difference[i] > 0.01f)
-                                    Debug.LogError("Zero gas plasma set");
-
+                                atmosContainer.RemoveGas(i, difference[i]);
                                 mixed = true;
                             }
                         }
@@ -343,38 +315,9 @@ namespace SS3D.Engine.Atmospherics
                 }
             }
 
-            float plasmaOut = gasses[3];
-            foreach (PipeObject pipe in atmosNeighbours)
-            {
-                if (pipe)
-                    plasmaOut += pipe.GetAtmosContainer().GetGasses()[3];
-            }
-
-            if (Mathf.Abs(plasmaIn - plasmaOut) > 0.01f)
-                Debug.Log("Plasma leak! Going in: " + plasmaIn + " Going out: " + plasmaOut);
-
-            //if (plasmaIn > 0.1)
-            //    Debug.Log("Plasma out: " + plasmaOut);
-
             if (!mixed && state == AtmosStates.Semiactive)
             {
                 state = AtmosStates.Inactive;
-            }
-        }
-
-        public void ArrayDiff(float[] difference, float[] arr1, float[] arr2, float mixRate)
-        {
-            for (int i = 0; i < Gas.numOfGases; ++i)
-            {
-                difference[i] = (arr1[i] - arr2[i]) * mixRate;
-            }
-        }
-
-        public void ArraySum(float[] arr1, float[] arr2)
-        {
-            for (int i = 0; i < Gas.numOfGases; ++i)
-            {
-                arr1[i] = arr1[i] + arr2[i];
             }
         }
     }

@@ -89,6 +89,24 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
+        public void AddGas(int index, float amount)
+        {
+            if (state != AtmosStates.Blocked)
+            {
+                atmosContainer.AddGas(index, amount);
+                state = AtmosStates.Active;
+            }
+        }
+
+        public void RemoveGas(int index, float amount)
+        {
+            if (state != AtmosStates.Blocked)
+            {
+                atmosContainer.RemoveGas(index, amount);
+                state = AtmosStates.Active;
+            }
+        }
+
         public void SetGasses(float[] amounts)
         {
             atmosContainer.SetGasses(amounts);
@@ -241,13 +259,17 @@ namespace SS3D.Engine.Atmospherics
                 }
             }
 
+            if (state == AtmosStates.Semiactive || state == AtmosStates.Active)
+            {
+                SimulateMixing();
+            }
+
             s_CalculateFluxPerfMarker.End();
         }
 
         public void SimulateFlux()
         {
             s_SimulateFluxPerfMarker.Begin();
-            float[] gasses = atmosContainer.GetGasses();
 
             if (state == AtmosStates.Active)
             {
@@ -255,27 +277,24 @@ namespace SS3D.Engine.Atmospherics
 
                 for (int i = 0; i < Gas.numOfGases; i++)
                 {
-                    //if (gasses[i] < 1f)
-                    //    gasses[i] = 0f;
-
-                    if (gasses[i] > 0f)
+                    if (atmosContainer.GetGasses()[i] > 0f)
                     {
                         int k = 0;
                         foreach (AtmosObject tile in atmosNeighbours)
                         {
                             if (tileFlux[k] > 0f)
                             {
-                                float factor = gasses[i] * (tileFlux[k] / pressure);
+                                float factor = atmosContainer.GetGasses()[i] * (tileFlux[k] / pressure);
                                 if (tile.state != AtmosStates.Vacuum)
                                 {
-                                    tile.atmosContainer.GetGasses()[i] += factor;
+                                    tile.atmosContainer.AddGas(i, factor);
                                     tile.state = AtmosStates.Active;
                                 }
                                 else
                                 {
                                     activeDirection[k] = false;
                                 }
-                                gasses[i] -= factor;
+                                atmosContainer.RemoveGas(i, factor);
                             }
                             k++;
                         }
@@ -319,7 +338,6 @@ namespace SS3D.Engine.Atmospherics
                 float velVertical = tileFlux[0] - fluxFromTop - tileFlux[1] + fluxFromBottom;
 
                 velocity = new Vector2(velHorizontal, velVertical);
-                SimulateMixing();
             }
             else if (state == AtmosStates.Semiactive)
             {
@@ -331,9 +349,7 @@ namespace SS3D.Engine.Atmospherics
 
         public void SimulateMixing()
         {
-            float[] gasses = atmosContainer.GetGasses();
-
-            if (AtmosHelper.ArrayZero(gasses, Gas.mixRate))
+            if (AtmosHelper.ArrayZero(atmosContainer.GetGasses(), Gas.mixRate))
                 return;
 
             s_SimlateMixingPerfMarker.Begin();
@@ -344,7 +360,7 @@ namespace SS3D.Engine.Atmospherics
             for (int i = 0; i < Gas.numOfGases; i++)
             {
                 // There must be gas of course...
-                if (gasses[i] > 0f)
+                if (atmosContainer.GetGasses()[i] > 0f)
                 {
                     // Go through all neighbours
                     foreach (AtmosObject atmosObject in atmosNeighbours)
@@ -353,15 +369,24 @@ namespace SS3D.Engine.Atmospherics
                             continue;
                         if (atmosObject.state != AtmosStates.Blocked)
                         {
-                            difference[i] = (gasses[i] - atmosObject.GetAtmosContainer().GetGasses()[i]) * Gas.mixRate;
-                            if (difference[i] > 0.01f)
+                            difference[i] = (atmosContainer.GetGasses()[i] - atmosObject.GetAtmosContainer().GetGasses()[i]) * Gas.mixRate;
+                            if (difference[i] >= Gas.mixRate)
                             {
                                 // Increase neighbouring tiles moles
-                                atmosObject.GetAtmosContainer().GetGasses()[i] += difference[i];
-                                atmosObject.state = AtmosStates.Semiactive;
+                                atmosObject.GetAtmosContainer().RemoveGas(i, difference[i]);
+
+                                // Remain active if there is still a pressure difference
+                                if (Mathf.Abs(atmosObject.GetPressure() - GetPressure()) > 0.1f)
+                                {
+                                    atmosObject.state = AtmosStates.Active;
+                                }
+                                else
+                                {
+                                    atmosObject.state = AtmosStates.Semiactive;
+                                }
 
                                 // Decrease our own moles
-                                gasses[i] -= difference[i];
+                                atmosContainer.RemoveGas(i, difference[i]);
                                 mixed = true;
                             }
                         }
@@ -374,22 +399,6 @@ namespace SS3D.Engine.Atmospherics
                 state = AtmosStates.Inactive;
             }
             s_SimlateMixingPerfMarker.End();
-        }
-
-        public void ArrayDiff(float[] difference, float[] arr1, float[] arr2, float mixRate)
-        {
-            for (int i = 0; i < Gas.numOfGases; ++i)
-            {
-                difference[i] = (arr1[i] - arr2[i]) * mixRate;
-            }
-        }
-
-        public void ArraySum(float[] arr1, float[] arr2)
-        {
-            for (int i = 0; i < Gas.numOfGases; ++i)
-            {
-                arr1[i] = arr1[i] + arr2[i];
-            }
         }
     }
 }

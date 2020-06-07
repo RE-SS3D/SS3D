@@ -10,9 +10,11 @@ namespace SS3D.Engine.Atmospherics
     public class MixerObject : MonoBehaviour, IAtmosLoop, IInteractionTarget
     {
         public float InputOneAmount = 50f;
-        public float TargetPressure = 300f;
+        public float MaxPressure = 4500f;
+        public float TargetPressure = 101f;
         public bool mixerActive = false;
 
+        private float _targetPressure;
         private float ratioOnetoTwo;
         private const float stepsToEqualize = 10f;
 
@@ -37,6 +39,20 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
+        void Start()
+        {
+            ratioOnetoTwo = InputOneAmount / 100f;
+        }
+
+        public void Update()
+        {
+            if (_targetPressure != TargetPressure)
+            {
+                _targetPressure = Mathf.Clamp(TargetPressure, 0, MaxPressure);
+                TargetPressure = _targetPressure;
+            }
+        }
+
         public void SetTileNeighbour(TileObject tile, int index)
         {
             tileNeighbours[index] = tile;
@@ -51,7 +67,7 @@ namespace SS3D.Engine.Atmospherics
         {
             if (mixerActive)
             {
-                ratioOnetoTwo = InputOneAmount / 100;
+                ratioOnetoTwo = InputOneAmount / 100f;
 
                 PipeObject input1 = atmosNeighbours[0];
                 PipeObject input2 = atmosNeighbours[3];
@@ -64,46 +80,42 @@ namespace SS3D.Engine.Atmospherics
                 float[] inputGasses2 = input2.GetAtmosContainer().GetGasses();
                 float[] outputGasses = output.GetAtmosContainer().GetGasses();
 
-                if (input1.GetTotalMoles() == 0 || input2.GetTotalMoles() == 0)
+                if (input1.GetTotalMoles() <= 1f || input2.GetTotalMoles() <= 1f)
                     return;
 
-                if (output.GetPressure() <= TargetPressure - 0.1f)
+                if (output.GetPressure() <= _targetPressure)
                 {
                     float totalMoles = output.GetTotalMoles();
 
                     // Calculate necessary moles to transfer using PV=nRT
-                    float pressureDifference = TargetPressure - output.GetPressure();
+                    float pressureDifference = _targetPressure - output.GetPressure();
                     float transferMoles = pressureDifference * 1000 * output.volume / (output.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
 
                     // Reach our target pressure in N steps
                     transferMoles = transferMoles / stepsToEqualize;
 
-                    // transfer_moles1 = air1.temperature ? node1_concentration * general_transfer / air1.temperature : 0
-                    float transfer_moles1 = ratioOnetoTwo * transferMoles; // / input1.GetTemperature();
-                    float transfer_moles2 = (1 - ratioOnetoTwo) * transferMoles; // / input2.GetTemperature();
+                    float transfer_moles1 = ratioOnetoTwo * transferMoles;
+                    float transfer_moles2 = (1f - ratioOnetoTwo) * transferMoles;
 
 
                     // We can't transfer more moles than there are
-                    transfer_moles1 = Mathf.Min(transfer_moles1, input1.GetTotalMoles());
-                    transfer_moles2 = Mathf.Min(transfer_moles2, input2.GetTotalMoles());
                     float inputMoles1 = input1.GetTotalMoles();
                     float inputMoles2 = input2.GetTotalMoles();
 
-                    // If one of the inputs didn't contain enough gas. Scale the other down
-                    if (transfer_moles1 == input1.GetTotalMoles())
+                    // If one of the inputs didn't contain enough gas, scale the other down
+                    if (transfer_moles1 > input1.GetTotalMoles())
                     {
-                        //transfer_moles2 = transfer_moles1 * (1 / ratioOnetoTwo) * (1 - ratioOnetoTwo);
-                        //inputMoles2 = 
-                        return;
+                        transfer_moles2 = input1.GetTotalMoles() * (1 / ratioOnetoTwo) * (1 - ratioOnetoTwo);
+                        transfer_moles1 = input1.GetTotalMoles();
                     }
-                    if (transfer_moles2 == input2.GetTotalMoles())
+                    if (transfer_moles2 > input2.GetTotalMoles())
                     {
-                        //transfer_moles1 = transfer_moles2 * (1 / (1 - ratioOnetoTwo)) * ratioOnetoTwo;
-                        return;
+                        transfer_moles1 = input2.GetTotalMoles() * (1 / (1 - ratioOnetoTwo)) * ratioOnetoTwo;
+                        transfer_moles2 = input2.GetTotalMoles();
                     }
 
-                    bool set1 = false;
-                    bool set2 = false;
+                    if (transfer_moles1 > inputMoles1 || transfer_moles2 > inputMoles2)
+                        Debug.LogError("More gas to be transfered than possible");
 
                     for (int i = 0; i < Gas.numOfGases; i++)
                     {
@@ -112,45 +124,22 @@ namespace SS3D.Engine.Atmospherics
                         float molePerGas2 = (inputGasses2[i] / inputMoles2) * transfer_moles2;
                         if (inputGasses1[i] >= molePerGas1 && inputGasses1[i] > 0.1f)
                         {
-                            inputGasses1[i] -= molePerGas1;
-                            outputGasses[i] += molePerGas1;
-                            set1 = true;
+                            input1.GetAtmosContainer().RemoveGas(i, molePerGas1);
+                            output.GetAtmosContainer().AddGas(i, molePerGas1);
                         }
 
                         if (inputGasses2[i] >= molePerGas2 && inputGasses2[i] > 0.1f)
                         {
-                            inputGasses2[i] -= molePerGas2;
-                            outputGasses[i] += molePerGas2;
-                            set2 = true;
+                            input2.GetAtmosContainer().RemoveGas(i, molePerGas2);
+                            output.GetAtmosContainer().AddGas(i, molePerGas2);
                         }
                     }
-
-                    if (set1 != set2)
-                        Debug.LogError("Input 1/2 difference");
-
-                    float toRatioOne = outputGasses[1] * (1 / ratioOnetoTwo);
-                    float toRatioTwo = outputGasses[0] * (1 / (1 - ratioOnetoTwo));
-
-                    if (toRatioOne  != toRatioTwo)
-                        Debug.LogError("Content bug...");
 
                     input1.SetStateActive();
                     input2.SetStateActive();
                     output.SetStateActive();
                 }
             }
-        }
-
-        // Start is called before the first frame update
-        void Start()
-        {
-            ratioOnetoTwo = InputOneAmount / 100;
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
         }
 
         public IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
