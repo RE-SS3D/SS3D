@@ -1,5 +1,4 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
 Shader "Unlit/FogShader"
 {
 	Properties
@@ -8,7 +7,7 @@ Shader "Unlit/FogShader"
 		_Noise("Top Noise", 2D) = "white" {}
 		_Distortion("Distortion", 2D) = "white" {}
 
-		_Color ("Color", Color) = (0.3,0.3 ,0.3)
+		_Color ("Color", Color) = (0., 0. ,0., 1)
 		_NoiseStrength("Top Noise Strength", Range(0,.5)) = .05
 		_NumberOfStacks("Stacks", Int) = 16
 		_Height("Height", float) = 1
@@ -16,9 +15,15 @@ Shader "Unlit/FogShader"
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
+		Tags { "RenderType"="Transparent" "Queue" = "Transparent+100"}
+		Blend SrcAlpha OneMinusSrcAlpha
+		ZWrite Off
 		LOD 100
-
+		Pass
+		{
+			ZWrite On
+			ColorMask 0
+		}
 		Pass
 		{
 			CGPROGRAM
@@ -46,11 +51,11 @@ Shader "Unlit/FogShader"
 			{
 				float2 uv : TEXCOORD0;
 				float4 vertex : SV_POSITION;
-				float3 color : TEXCOORD1;
+				float4 color : TEXCOORD1;
 			
 			};
 
-			float3 _Color;
+			float4 _Color;
 			float _Speed;
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
@@ -70,24 +75,24 @@ Shader "Unlit/FogShader"
 				return o;
 			}
 
-			[maxvertexcount(111)]
+			[maxvertexcount(101)]
 			void geom(triangle v2g input[3], inout TriangleStream<g2f> tristream) {
 				// here goes the real logic.
 				g2f o;
 				
 				o.uv = input[0].uv;
 				o.vertex = UnityObjectToClipPos(input[0].vertex);
-				o.color = float3(1., 1., 1.);
+				o.color = float4(1., 1., 1., 1.);
 				tristream.Append(o);
 
 				o.uv = input[1].uv;
 				o.vertex = UnityObjectToClipPos(input[1].vertex);
-				o.color = float3(1., 1., 1.);
+				o.color = float4(1., 1., 1., 1.);
 				tristream.Append(o);
 
 				o.uv = input[2].uv;
 				o.vertex = UnityObjectToClipPos(input[2].vertex);
-				o.color = float3(1., 1., 1.);
+				o.color = float4(1., 1., 1., 1.);
 				tristream.Append(o);
 
 				tristream.RestartStrip();
@@ -96,19 +101,19 @@ Shader "Unlit/FogShader"
 
 				float offset = _Height / _NumberOfStacks;
 					for (float i = 1; i <= _NumberOfStacks; i++) {
-
+						float stack = (1.- i/_NumberOfStacks);
 						o.uv = input[0].uv;
 						o.vertex = UnityObjectToClipPos( input[0].vertex + normal * offset*i);
-						o.color = float(1.- i/_NumberOfStacks).xxx;
+						o.color = float4(stack, stack, stack, stack);
 						tristream.Append(o);
 
 						o.uv = input[1].uv;
-						o.color = float(1. - i / _NumberOfStacks).xxx;
+						o.color = float4(stack, stack, stack, stack);
 						o.vertex = UnityObjectToClipPos(input[1].vertex + normal * offset*i);
 						tristream.Append(o);
 
 						o.uv = input[2].uv;
-						o.color = float(1. - i / _NumberOfStacks).xxx;
+						o.color = float4(stack, stack, stack, stack);
 						o.vertex = UnityObjectToClipPos(input[2].vertex + normal * offset*i);
 						tristream.Append(o);
 
@@ -128,11 +133,14 @@ Shader "Unlit/FogShader"
 				
 				if (step(col.x+noise.x*_NoiseStrength, i.color.x) <= .0)discard;
 
-				col.xyz = (1.0 - i.color) * _Color.xyz;
+				col = _Color;
+				col.a = (_Color.a * _Color.a * _Color.a * _Color.a) * (1. - i.color.a) + _Color.a / 10;
+				if(col.a > 1) col.a = 1;
 
 				return col;
 			}
 			ENDCG
 		}
+		
 	}
 }
