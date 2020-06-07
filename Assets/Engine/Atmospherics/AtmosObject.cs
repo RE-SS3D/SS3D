@@ -373,7 +373,7 @@ namespace SS3D.Engine.Atmospherics
                             if (difference[i] >= Gas.mixRate)
                             {
                                 // Increase neighbouring tiles moles
-                                atmosObject.GetAtmosContainer().RemoveGas(i, difference[i]);
+                                atmosObject.GetAtmosContainer().AddGas(i, difference[i]);
 
                                 // Remain active if there is still a pressure difference
                                 if (Mathf.Abs(atmosObject.GetPressure() - GetPressure()) > 0.1f)
