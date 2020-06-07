@@ -9,14 +9,14 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 namespace SS3D.Content.Furniture.Machines.Atmospherics {
-    public class Canister : InteractionTargetBehaviour
+    public class Canister : InteractionTargetBehaviour, IAtmosLoop
     {
         AtmosObject currentAtmosObject;
         [SerializeField] AtmosGasses gas = AtmosGasses.Oxygen;
 
         [Range(0f, 20f)]
         [SerializeField] float valvePressure = 1;
-        [SerializeField] bool valveOpen = true;
+        [SerializeField] bool valveOpen = false;
 
         [SerializeField] float content;
         [SerializeField] float maxContent;
@@ -37,18 +37,6 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics {
             //canisterUI.gameObject.SetActive(false);
 
             //canisterUI.label.text = transform.name;
-        }
-
-        private void FixedUpdate()
-        {
-            if (currentAtmosObject != null && content - valvePressure > 0 && valvePressure > 0 && valveOpen)
-            {
-                currentAtmosObject.AddGas(gas, valvePressure);
-                //canisterUI.releasePressure.text = valvePressure.ToString();
-                //canisterUI.pressure.text = content.ToString();
-                
-                content -= valvePressure / 10;
-            }
         }
 
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
@@ -85,6 +73,33 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics {
             valveOpen = !valveOpen;
 
             //canisterUI.gameObject.SetActive(true);
+        }
+
+        public void Initialize()
+        {
+            return;
+        }
+
+        public void Step()
+        {
+            if (currentAtmosObject != null && content - valvePressure > 0 && valvePressure > 0 && valveOpen)
+            {
+                currentAtmosObject.AddGas(gas, valvePressure);
+                //canisterUI.releasePressure.text = valvePressure.ToString();
+                //canisterUI.pressure.text = content.ToString();
+
+                content -= valvePressure / 10;
+            }
+        }
+
+        public void SetTileNeighbour(TileObject tile, int index)
+        {
+            return;
+        }
+
+        public void SetAtmosNeighbours()
+        {
+            return;
         }
     }
 }

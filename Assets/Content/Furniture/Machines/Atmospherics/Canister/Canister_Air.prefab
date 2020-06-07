@@ -103,10 +103,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gas: 0
-  valvePressure: 0.7
+  valvePressure: 0.1
   valveOpen: 1
-  content: 0
-  maxContent: 0
+  content: 500
+  maxContent: 500
   menuUIPrefab: {fileID: 5132141291517980175, guid: 7c93c05ad2f5fa14489b94e1db0cc85c,
     type: 3}
   canisterUI: {fileID: 7436486508200489181, guid: 7c93c05ad2f5fa14489b94e1db0cc85c,
