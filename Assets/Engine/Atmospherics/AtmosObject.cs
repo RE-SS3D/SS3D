@@ -25,8 +25,8 @@ namespace SS3D.Engine.Atmospherics
                 false   // Right AtmosObject active
             };
 
-        private float[] gasDifference = new float[Gas.numOfGases];
         private float[] neighbourFlux = new float[4];
+        float[] difference = new float[Gas.numOfGases];
 
         // Performance makers
         static ProfilerMarker s_CalculateFluxPerfMarker = new ProfilerMarker("AtmosObject.CalculateFlux");
@@ -34,7 +34,7 @@ namespace SS3D.Engine.Atmospherics
         static ProfilerMarker s_SimulateFluxPerfMarker = new ProfilerMarker("AtmosObject.SimulateFlux");
         static ProfilerMarker s_SimlateMixingPerfMarker = new ProfilerMarker("AtmosObject.SimulateMixing");
 
-        float[] difference = new float[Gas.numOfGases];
+   
 
 
         public void setTileNeighbour(TileObject neighbour, int index)
@@ -255,8 +255,8 @@ namespace SS3D.Engine.Atmospherics
 
                 for (int i = 0; i < Gas.numOfGases; i++)
                 {
-                    if (gasses[i] < 1f)
-                        gasses[i] = 0f;
+                    //if (gasses[i] < 1f)
+                    //    gasses[i] = 0f;
 
                     if (gasses[i] > 0f)
                     {

@@ -10,7 +10,7 @@ namespace SS3D.Engine.Atmospherics
     {
         private const float maxPipePressure = 2000f;
 
-        public float volume = 1f;
+        public float volume = 2.5f;
 
         private AtmosContainer atmosContainer = new AtmosContainer();
         private float[] tileFlux = { 0f, 0f, 0f, 0f };
@@ -25,7 +25,7 @@ namespace SS3D.Engine.Atmospherics
                 false   // Right AtmosObject active
             };
 
-        private float[] gasDifference = new float[Gas.numOfGases];
+        private float[] difference = new float[Gas.numOfGases];
         private float[] neighbourFlux = new float[4];
 
         private void Start()
@@ -172,7 +172,7 @@ namespace SS3D.Engine.Atmospherics
             if (neighbourFlux[0] > Gas.fluxEpsilon || neighbourFlux[1] > Gas.fluxEpsilon || neighbourFlux[2] > Gas.fluxEpsilon ||
                 neighbourFlux[3] > Gas.fluxEpsilon)
             {
-                float scalingFactor = Mathf.Min(1,
+                float scalingFactor = Mathf.Min(1f,
                     pressure / (neighbourFlux[0] + neighbourFlux[1] + neighbourFlux[2] + neighbourFlux[3]) / Gas.dt);
 
                 for (int j = 0; j < 4; j++)
@@ -197,11 +197,24 @@ namespace SS3D.Engine.Atmospherics
                     tempSetting = false;
                 }
             }
+
+            if (state == AtmosStates.Semiactive || state == AtmosStates.Active)
+            {
+                SimulateMixing();
+            }
         }
 
         public void SimulateFlux()
         {
             float[] gasses = atmosContainer.GetGasses();
+
+            float plasmaIn = gasses[3];
+            foreach (PipeObject pipe in atmosNeighbours)
+            {
+                if (pipe)
+                    plasmaIn += pipe.GetAtmosContainer().GetGasses()[3];
+            }
+
 
             if (state == AtmosStates.Active)
             {
@@ -209,8 +222,8 @@ namespace SS3D.Engine.Atmospherics
 
                 for (int i = 0; i < Gas.numOfGases; i++)
                 {
-                    if (gasses[i] < 1f)
-                        gasses[i] = 0f;
+                    //if (gasses[i] < 1f)
+                    //    gasses[i] = 0f;
 
                     if (gasses[i] > 0f)
                     {
@@ -258,48 +271,90 @@ namespace SS3D.Engine.Atmospherics
             {
                 SimulateMixing();
             }
+
+            float plasmaOut = gasses[3];
+            foreach (PipeObject pipe in atmosNeighbours)
+            {
+                if (pipe)
+                    plasmaOut += pipe.GetAtmosContainer().GetGasses()[3];
+            }
+
+            if (Mathf.Abs(plasmaIn - plasmaOut) > 0.01f)
+                Debug.Log("Plasma leak in SimulateFlux()! Going in: " + plasmaIn + " Going out: " + plasmaOut);
         }
 
         public void SimulateMixing()
         {
             float[] gasses = atmosContainer.GetGasses();
 
+            float plasmaIn = gasses[3];
+            foreach (PipeObject pipe in atmosNeighbours)
+            {
+                if (pipe)
+                    plasmaIn += pipe.GetAtmosContainer().GetGasses()[3];
+            }
+            //if (plasmaIn > 0.1)
+            //    Debug.Log("Plasma in: " + plasmaIn);
+
+
             if (AtmosHelper.ArrayZero(gasses, Gas.mixRate))
                 return;
 
             bool mixed = false;
-            Array.Clear(gasDifference, 0, gasDifference.Length);
+            Array.Clear(difference, 0, difference.Length);
 
-            foreach (PipeObject pipe in atmosNeighbours)
+
+            for (int i = 0; i < Gas.numOfGases; i++)
             {
-                if (pipe == null)
-                    continue;
-                if (pipe.state != AtmosStates.Blocked)
+                // There must be gas of course...
+                if (gasses[i] > 0f)
                 {
-                    // Get difference in total moles and individual gasses
-                    float pressure = GetTotalMoles();
-                    float neighbourPressure = pipe.GetTotalMoles();
-                    ArrayDiff(gasDifference, gasses, pipe.atmosContainer.GetGasses(), Gas.mixRate);
-
-                    // If our moles / mixrate > 0.1f
-                    if (!AtmosHelper.ArrayZero(gasDifference, Gas.mixRate))
+                    // Go through all neighbours
+                    foreach (PipeObject atmosObject in atmosNeighbours)
                     {
-                        // Set neighbour gasses to the normalized 
-                        ArraySum(pipe.atmosContainer.GetGasses(), gasDifference);
-                        AtmosHelper.ArrayNorm(pipe.atmosContainer.GetGasses(), neighbourPressure);
-
-                        if (pipe.state == AtmosStates.Inactive)
+                        if (atmosObject == null)
+                            continue;
+                        if (atmosObject.state != AtmosStates.Blocked)
                         {
-                            pipe.state = AtmosStates.Semiactive;
-                        }
+                            difference[i] = (gasses[i] - atmosObject.GetAtmosContainer().GetGasses()[i]) * Gas.mixRate;
+                            if (difference[i] > 0.01f)
+                            {
+                                // Increase neighbouring tiles moles
+                                atmosObject.GetAtmosContainer().GetGasses()[i] += difference[i];
+                                if (Mathf.Abs(atmosObject.GetPressure() - GetPressure()) > 0.1f)
+                                {
+                                    atmosObject.state = AtmosStates.Active;
+                                }
+                                else
+                                {
+                                    atmosObject.state = AtmosStates.Semiactive;
+                                }
+                                
 
-                        // Set our own gasses to the normalized
-                        ArrayDiff(gasses, gasses, gasDifference, Gas.mixRate);
-                        AtmosHelper.ArrayNorm(gasses, pressure);
-                        mixed = true;
+                                // Decrease our own moles
+                                gasses[i] -= difference[i];
+                                if (gasses[i] <= 0f && difference[i] > 0.01f)
+                                    Debug.LogError("Zero gas plasma set");
+
+                                mixed = true;
+                            }
+                        }
                     }
                 }
             }
+
+            float plasmaOut = gasses[3];
+            foreach (PipeObject pipe in atmosNeighbours)
+            {
+                if (pipe)
+                    plasmaOut += pipe.GetAtmosContainer().GetGasses()[3];
+            }
+
+            if (Mathf.Abs(plasmaIn - plasmaOut) > 0.01f)
+                Debug.Log("Plasma leak! Going in: " + plasmaIn + " Going out: " + plasmaOut);
+
+            //if (plasmaIn > 0.1)
+            //    Debug.Log("Plasma out: " + plasmaOut);
 
             if (!mixed && state == AtmosStates.Semiactive)
             {
