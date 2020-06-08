@@ -4,6 +4,10 @@ using UnityEditor;
 
 using SS3D.Engine.Tiles.Connections;
 using SS3D.Engine.Tiles.State;
+using System;
+using System.Linq;
+using System.IO;
+using System.Collections.Generic;
 using SS3D.Engine.Atmospherics;
 
 namespace SS3D.Engine.Tiles
@@ -15,7 +19,8 @@ namespace SS3D.Engine.Tiles
     [SelectionBase]
     public class TileObject : MonoBehaviour
     {
-        public TileDefinition Tile {
+        public TileDefinition Tile
+        {
             get => tile;
             set => SetContents(value);
         }
@@ -23,21 +28,51 @@ namespace SS3D.Engine.Tiles
         /**
          * Passes through an adjacency update to all children
          */
+        public void UpdateSingleAdjacency(Direction direction, TileDefinition tile, FixtureLayers layer)
+        {
+            int index = (int)layer;
+            fixtureConnectors[index]?.UpdateSingle(direction, tile);
+        }
+
         public void UpdateSingleAdjacency(Direction direction, TileDefinition tile)
         {
             turfConnector?.UpdateSingle(direction, tile);
-            fixtureConnector?.UpdateSingle(direction, tile);
+
+            var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
+            foreach (FixtureLayers layer in layers)
+            {
+                UpdateSingleAdjacency(direction, tile, layer);
+            }
         }
+
         /**
          * Passes through an adjacency update to all children
          */
-        public void UpdateAllAdjacencies(TileDefinition[] tiles)
+        public void UpdateAllAdjacencies(TileDefinition[] tiles, FixtureLayers layer)
         {
-            turfConnector?.UpdateAll(tiles);
-            fixtureConnector?.UpdateAll(tiles);
+            int index = (int)layer;
+            AdjacencyConnector ac = fixtureConnectors[index];
+            if (ac != null)
+            {
+                ac.Layer = layer;
+                ac?.UpdateAll(tiles);
+            }
         }
 
-        #if UNITY_EDITOR
+        public void UpdateAllAdjacencies(TileDefinition[] tiles)
+        {
+            // Update turf first
+            turfConnector?.UpdateAll(tiles);
+
+            // Update every layer
+            var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
+            foreach (FixtureLayers layer in layers)
+            {
+                UpdateAllAdjacencies(tiles, layer);
+            }
+        }
+
+#if UNITY_EDITOR
         /**
          * Allows the editor to refresh the tile.subStates when it knows it has
          * modified the child of a tile.
@@ -46,7 +81,7 @@ namespace SS3D.Engine.Tiles
         {
             UpdateSubDataFromChildren();
         }
-        #endif
+#endif
 
         /**
          * Fill in our non-serialized variables
@@ -56,26 +91,28 @@ namespace SS3D.Engine.Tiles
             UpdateContents(true);
         }
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         /**
          * When the value is changed, refresh
          */
-        private void OnValidate() {
+        private void OnValidate()
+        {
             // If we haven't started yet, don't try to validate.
-            if(!this || tile.IsEmpty())
+            if (!this || tile.IsEmpty())
                 return;
 
             var tileManager = transform.root.GetComponent<TileManager>();
 
             // Can't do most things in OnValidate, so wait a sec.
             EditorApplication.delayCall += () => {
-                if(!this)
+                if (!this)
                     return;
 
                 // Update contents
                 UpdateContents(false);
                 // Inform the tilemanager that the tile has updated, so it can update surroundings
-                if (tileManager != null && tileManager.Count > 0 && !TileMapEditorHelpers.IsGhostTile(this)) {
+                if (tileManager != null && tileManager.Count > 0 && !TileMapEditorHelpers.IsGhostTile(this))
+                {
                     var pos = tileManager.GetIndexAt(transform.position);
                     tileManager.EditorUpdateTile(pos.x, pos.y, tile);
                 }
@@ -88,14 +125,14 @@ namespace SS3D.Engine.Tiles
         private void OnDestroy()
         {
             // If we are playing a game, a tile removal will be initiated by the tilemanager. 
-            if(EditorApplication.isPlaying)
+            if (EditorApplication.isPlaying)
                 return;
 
             var tileManager = transform.root.GetComponent<TileManager>();
-            if(tileManager != null && !TileMapEditorHelpers.IsGhostTile(this))
+            if (tileManager != null && !TileMapEditorHelpers.IsGhostTile(this))
                 tileManager.RemoveTile(this);
         }
-        #endif
+#endif
 
 
         /**
@@ -105,9 +142,9 @@ namespace SS3D.Engine.Tiles
         {
             if (newTile.turf != tile.turf)
                 CreateTurf(newTile.turf);
-            if (newTile.fixture != tile.fixture)
-                CreateFixture(newTile.fixture);
-        
+            if (newTile.fixtures != tile.fixtures)
+                CreateFixtures(newTile.fixtures);
+
             UpdateChildrenFromSubData(newTile);
 
             tile = newTile;
@@ -125,62 +162,95 @@ namespace SS3D.Engine.Tiles
         private void UpdateContents(bool shouldWarn)
         {
             // Fill in our references to objects using the saved information from our tile variable.
-            // Effectively, this code expects the tile's children to match up to the turf and fixture.
+            // Effectively, this code expects the tile's children to match up to the turf and fixtures.
             // If it finds any inconsistencies, it rectifies them.
 
-            if (tile.turf) {
+            if (tile.turf)
+            {
                 turf = transform.Find("turf_" + tile.turf.id)?.gameObject;
 
-                if (turf != null) {
+                if (turf != null)
+                {
                     turfConnector = turf.GetComponent<AdjacencyConnector>();
                 }
-                else {
+                else
+                {
                     // Update our tile object to make up for the fact that the object doesn't exist in the world.
                     // A user would have to fuck around in the editor to get to this point.
-                    if(shouldWarn)
+                    if (shouldWarn)
                         Debug.LogWarning("Tile's turf was not created? Creating now.");
 
                     // Create the object
                     CreateTurf(tile.turf);
                 }
             }
-            else {
+            else
+            {
                 turf = null;
                 turfConnector = null;
             }
 
-            if (tile.fixture) {
-                fixture = transform.Find("fixture_" + tile.fixture.id)?.gameObject;
+            int i = 0;
+            var layers = TileDefinition.GetFixtureLayerNames();
 
-                if (fixture != null) {
-                    fixtureConnector = fixture.GetComponent<AdjacencyConnector>();
-                }
-                else {
-                    // Update our tile object to make up for the fact that the object doesn't exist in the world.
-                    // A user would have to fuck around in the editor to get to this point.
-                    if(shouldWarn)
-                        Debug.LogWarning("Tile's turf was not created?");
-                    CreateFixture(tile.fixture);
+            if (tile.fixtures != null)
+            {
+                foreach (var tileFixture in tile.fixtures)
+                {
+                    if (tileFixture != null)
+                    {
+
+                        string layerName = layers[i].ToString();
+                        fixtures[i] = transform.Find("fixture_" + layerName.ToLower() + "_" + tileFixture.id)?.gameObject;
+
+                        if (fixtures[i] != null)
+                        {
+                            fixtureConnectors[i] = fixtures[i].GetComponent<AdjacencyConnector>();
+                        }
+                        else
+                        {
+                            // Update our tile object to make up for the fact that the object doesn't exist in the world.
+                            // A user would have to fuck around in the editor to get to this point.
+                            if (shouldWarn)
+                                Debug.LogWarning("Fixture in Tile but not in TileObject. Creating: " + tile.fixtures[i].name);
+                            CreateFixture(tile.fixtures[i], layers[i]);
+                        }
+                    }
+                    else
+                    {
+                        fixtures[i] = null;
+                        fixtureConnectors[i] = null;
+                    }
+                    i++;
                 }
             }
-            else {
-                fixture = null;
-                fixtureConnector = null;
+            else
+            {
+                fixtureConnectors = new AdjacencyConnector[TileDefinition.GetFixtureLayerSize()];
             }
 
             UpdateChildrenFromSubData(tile);
             UpdateSubDataFromChildren();
 
             // As extra fuckery ensure no NEW objects have been added either
-            for (int i = transform.childCount - 1; i >= 0; i--) {
-                var child = transform.GetChild(i).gameObject;
+            for (int j = transform.childCount - 1; j >= 0; j--)
+            {
+                var child = transform.GetChild(j).gameObject;
 
-                if (child != turf && child != fixture) {
-                    if(shouldWarn)
+                if (child != turf && !fixtures.Contains(child))
+                {
+                    if (shouldWarn)
+                    {
+                        MigrateTileDefinition();
                         Debug.LogWarning("Unknown object found in tile " + name + ": " + child.name + ", deleting.");
+                    }
                     EditorAndRuntime.Destroy(child);
                 }
             }
+
+            // Set fixture layer size if not set
+            if (tile.fixtures?.Length != TileDefinition.GetFixtureLayerSize())
+                tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
         }
 
         private void CreateTurf(Turf turfDefinition)
@@ -192,22 +262,39 @@ namespace SS3D.Engine.Tiles
             turf.name = "turf_" + turfDefinition.id;
             turfConnector = turf.GetComponent<AdjacencyConnector>();
         }
-        private void CreateFixture(Fixture fixtureDefinition)
+        private void CreateFixture(Fixture fixtureDefinition, FixtureLayers layer)
         {
-            if (fixture != null)
-                EditorAndRuntime.Destroy(fixture);
+            int index = (int)layer;
+            if (fixtures[index] != null)
+                EditorAndRuntime.Destroy(fixtures[index]);
 
-            if (fixtureDefinition != null) {
-                fixture = EditorAndRuntime.InstantiatePrefab(fixtureDefinition.prefab, transform);
-                fixtureConnector = fixture.GetComponent<AdjacencyConnector>();
+            if (fixtureDefinition != null)
+            {
+                if (fixtures[index] != null)
+                {
+                    Debug.LogWarning("Trying to overwrite fixture");
+                }
+                fixtures[index] = EditorAndRuntime.InstantiatePrefab(fixtureDefinition.prefab, transform);
+                fixtureConnectors[index] = fixtures[index].GetComponent<AdjacencyConnector>();
             }
-            else {
-                fixture = null;
-                fixtureConnector = null;
+            else
+            {
+                fixtures[index] = null;
+                fixtureConnectors[index] = null;
                 return;
             }
 
-            fixture.name = "fixture_" + fixtureDefinition.id;
+            string layerName = Enum.GetName(typeof(FixtureLayers), layer).ToLower();
+            fixtures[index].name = "fixture_" + layerName + "_" + fixtureDefinition.id;
+        }
+
+        private void CreateFixtures(Fixture[] fixturesDefinition)
+        {
+            var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
+            for (int i = 0; i < fixturesDefinition.Length; i++)
+            {
+                CreateFixture(fixturesDefinition[i], layers[i]);
+            }
         }
 
         private void UpdateChildrenFromSubData(TileDefinition newTile)
@@ -215,15 +302,75 @@ namespace SS3D.Engine.Tiles
             if (newTile.subStates != null && newTile.subStates.Length >= 1 && newTile.subStates[0] != null)
                 turf?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[0]);
 
-            if (newTile.subStates != null && newTile.subStates.Length >= 2 && newTile.subStates[1] != null)
-                fixture?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[1]);
+            int i = 0;
+            foreach (GameObject fixture in fixtures)
+            {
+                if (newTile.subStates != null && newTile.subStates.Length >= i + 2 && newTile.subStates[i + 1] != null)
+                {
+                    fixtures[i]?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[i + 1]);
+                }
+                i++;
+            }
         }
+
         private void UpdateSubDataFromChildren()
         {
-            tile.subStates = new object[] {
-                turf?.GetComponent<TileStateCommunicator>()?.GetTileState(),
-                fixture?.GetComponent<TileStateCommunicator>()?.GetTileState()
-            };
+            // Turf + all fixtures layers
+            tile.subStates = new object[1 + TileDefinition.GetFixtureLayerSize()];
+            tile.subStates[0] = turf?.GetComponent<TileStateCommunicator>()?.GetTileState();
+
+            int i = 1;
+            foreach (GameObject fixture in fixtures)
+            {
+                if (fixture)
+                    tile.subStates[i] = fixture?.GetComponent<TileStateCommunicator>()?.GetTileState();
+                i++;
+            }
+        }
+
+        /**
+         * Migrates existing fixtures that do not have a fixturelayer set.
+         */
+        private bool MigrateTileDefinition()
+        {
+            // set array to proper size
+            tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
+            Fixture oldFurniture = null;
+
+            // Determine all assets
+            List<Fixture> fixtureList = new List<Fixture>();
+            string[] aMaterialFiles = Directory.GetFiles(Application.dataPath, "*.asset", SearchOption.AllDirectories);
+            foreach (string matFile in aMaterialFiles)
+            {
+                string assetPath = "Assets" + matFile.Replace(Application.dataPath, "").Replace('\\', '/');
+                Fixture sourceFixture = (Fixture)AssetDatabase.LoadAssetAtPath(assetPath, typeof(Fixture));
+                if (sourceFixture != null)
+                    fixtureList.Add(sourceFixture);
+            }
+
+            // find old fixture
+            foreach (Transform child in transform)
+            {
+                if (child.gameObject.name.Contains("fixture"))
+                {
+                    fixtures[0] = child.gameObject;
+                    string assetName = fixtures[0].name.Replace("fixture_", "");
+                    foreach (Fixture fix in fixtureList)
+                    {
+                        if (fix.id.Equals(assetName))
+                            oldFurniture = fix;
+                    }
+                }
+            }
+
+            // update reference
+            if (oldFurniture != null)
+            {
+                tile.fixtures[0] = oldFurniture;
+                Debug.Log("Migrated fixture: " + oldFurniture.name);
+                return true;
+            }
+            return false;
         }
 
         [SerializeField]
@@ -231,12 +378,9 @@ namespace SS3D.Engine.Tiles
 
         private GameObject turf = null;
         private AdjacencyConnector turfConnector = null; // may be null
-
-        private GameObject fixture = null;
-        private AdjacencyConnector fixtureConnector = null; // may be null
-
-
-        // TODO, make private
         public AtmosObject atmos;
+
+        private GameObject[] fixtures = new GameObject[TileDefinition.GetFixtureLayerSize()];
+        private AdjacencyConnector[] fixtureConnectors = new AdjacencyConnector[TileDefinition.GetFixtureLayerSize()];
     }
 }

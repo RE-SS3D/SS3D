@@ -148,11 +148,15 @@ namespace SS3D.Engine.Atmospherics
                 // tile.atmos.ValidateVacuum();
 
                 // Set airlocks to blocked
-                if (tile.Tile.fixture != null)
+                if (tile.Tile.fixtures != null)
                 {
-                    if (tile.Tile.fixture.name.Contains("Airlock"))
+                    Fixture fixture = tile.Tile.GetFixtureAtLayer(FixtureLayers.Furniture);
+                    if (fixture)
                     {
-                        tile.atmos.SetBlocked(true);
+                        if (fixture.name.Contains("Airlock"))
+                        {
+                            tile.atmos.SetBlocked(true);
+                        }
                     }
                 }
             }

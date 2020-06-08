@@ -17,6 +17,7 @@ namespace SS3D.Engine.Tiles.Connections
         // Id that adjacent objects must be to count. If null, any id is accepted
         public string id;
         public string genericType;
+        public FixtureLayers Layer { get; set; }
 
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
@@ -44,7 +45,7 @@ namespace SS3D.Engine.Tiles.Connections
             if (UpdateSingleConnection(direction, tile))
             {
                 UpdateMeshAndDirection();
-            } 
+            }
         }
 
         /**
@@ -54,10 +55,11 @@ namespace SS3D.Engine.Tiles.Connections
         public void UpdateAll(TileDefinition[] tiles)
         {
             bool changed = false;
-            for (int i = 0; i < tiles.Length; i++) {
+            for (int i = 0; i < tiles.Length; i++)
+            {
                 changed |= UpdateSingleConnection((Direction)i, tiles[i]);
             }
-            if(changed)
+            if (changed)
                 UpdateMeshAndDirection();
         }
 
@@ -69,8 +71,15 @@ namespace SS3D.Engine.Tiles.Connections
          */
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
-            bool isGeneric = (tile.turf && (tile.turf.genericType == genericType || genericType == null)) || (tile.fixture && (tile.fixture.genericType == genericType || genericType == null));
-            bool isSpecific = (tile.turf && (tile.turf.id == id || id == null)) || (tile.fixture && (tile.fixture.id == id || id == null));
+            int index = (int)Layer;
+
+            bool isGeneric = (tile.turf && (tile.turf.genericType == genericType || genericType == null));
+            if (tile.fixtures != null)
+                isGeneric = isGeneric || (tile.fixtures[index] && (tile.fixtures[index].genericType == genericType || genericType == null));
+
+            bool isSpecific = (tile.turf && (tile.turf.id == id || id == null));
+            if (tile.fixtures != null)
+                isSpecific = isSpecific || (tile.fixtures[index] && (tile.fixtures[index].id == id || id == null));
 
             bool changed = generalAdjacents.UpdateDirection(direction, isGeneric, true);
             changed |= specificAdjacents.UpdateDirection(direction, isSpecific, true);
@@ -113,7 +122,8 @@ namespace SS3D.Engine.Tiles.Connections
                 mesh = l;
                 rotation = DirectionHelper.AngleBetween(Direction.SouthEast, generalCardinals.GetCornerDirection());
             }
-            else if (generalCardinals.IsT()) {
+            else if (generalCardinals.IsT())
+            {
                 mesh = t;
                 rotation = DirectionHelper.AngleBetween(Direction.West, generalCardinals.GetOnlyNegative());
             }

@@ -9,6 +9,8 @@ namespace SS3D.Engine.Tiles.Connections
      */
     public interface AdjacencyConnector
     {
+        FixtureLayers Layer { get; set; }
+
         /**
          * When a single adjacent turf is updated
          */

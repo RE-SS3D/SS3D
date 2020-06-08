@@ -18,8 +18,11 @@ namespace SS3D.Engine.Tiles.Connections
             Fixture,
         }
 
+        public FixtureLayers Layer { get; set; }
+
         // Id that adjacent objects must be to count. If null, any id is accepted
         public string type;
+
 
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
@@ -51,11 +54,12 @@ namespace SS3D.Engine.Tiles.Connections
         public void UpdateAll(TileDefinition[] tiles)
         {
             bool changed = false;
-            for (int i = 0; i < tiles.Length; i++) {
+            for (int i = 0; i < tiles.Length; i++)
+            {
                 changed |= UpdateSingleConnection((Direction)i, tiles[i]);
             }
 
-            if(changed)
+            if (changed)
                 UpdateMeshAndDirection();
         }
 
@@ -68,7 +72,11 @@ namespace SS3D.Engine.Tiles.Connections
          */
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
-            bool isConnected = (tile.turf && (tile.turf.genericType == type || type == null)) || (tile.fixture && (tile.fixture.genericType == type || type == null));
+            int index = (int)Layer;
+
+            bool isConnected = (tile.turf && (tile.turf.genericType == type || type == null));
+            if (tile.fixtures != null)
+                isConnected = isConnected || (tile.fixtures[index] && (tile.fixtures[index].genericType == type || type == null));
             return adjacents.UpdateDirection(direction, isConnected, true);
         }
 
@@ -83,19 +91,23 @@ namespace SS3D.Engine.Tiles.Connections
 
             if (cardinalInfo.IsO())
                 mesh = o;
-            else if (cardinalInfo.IsC()) {
+            else if (cardinalInfo.IsC())
+            {
                 mesh = c;
                 rotation = DirectionHelper.AngleBetween(Direction.East, cardinalInfo.GetOnlyPositive());
             }
-            else if (cardinalInfo.IsI()) {
+            else if (cardinalInfo.IsI())
+            {
                 mesh = i;
                 rotation = OrientationHelper.AngleBetween(Orientation.Horizontal, cardinalInfo.GetFirstOrientation());
             }
-            else if (cardinalInfo.IsL()) {
+            else if (cardinalInfo.IsL())
+            {
                 mesh = l;
                 rotation = DirectionHelper.AngleBetween(Direction.SouthEast, cardinalInfo.GetCornerDirection());
             }
-            else if (cardinalInfo.IsT()) {
+            else if (cardinalInfo.IsT())
+            {
                 mesh = t;
                 rotation = DirectionHelper.AngleBetween(Direction.West, cardinalInfo.GetOnlyNegative());
             }
