@@ -64,10 +64,22 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             {
 
                 // Clone the Fixture array to avoid having the same reference in the editor and tileobject
-                Fixture[] f = (Fixture[])Definitions[i].fixtures.Clone();
-                TileDefinition def = Definitions[i];
-                def.fixtures = f;
-                Definitions[i] = def;
+                Fixture[] f;
+                if (Definitions[i].fixtures == null)
+                {
+                    f = new Fixture[TileDefinition.GetFixtureLayerSize()];
+                    TileDefinition def = Definitions[i];
+                    def.fixtures = f;
+                    Definitions[i] = def;
+                }
+                else
+                {
+                    f = (Fixture[])Definitions[i].fixtures.Clone();
+                    TileDefinition def = Definitions[i];
+                    def.fixtures = f;
+                    Definitions[i] = def;
+                }
+
 
                 if (Objects[i] == null && !Definitions[i].IsEmpty())
                 {
