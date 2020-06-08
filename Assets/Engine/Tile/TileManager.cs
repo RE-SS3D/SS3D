@@ -468,14 +468,19 @@ namespace SS3D.Engine.Tiles {
 
         public static void WriteNetworkableTileDefinition(this NetworkWriter writer, TileDefinition definition)
         {
-            var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
-
             writer.WriteString(definition.turf?.name ?? "");
-            foreach (FixtureLayers layer in layers)
-            {
-                writer.WriteString(definition.fixtures[(int)layer]?.name ?? "");
-            }
 
+            foreach (Fixture fixture in definition.fixtures)
+            {
+                if (fixture)
+                {
+                    writer.WriteString(fixture.name ?? "");
+                }
+                else
+                {
+                    writer.WriteString("");
+                }
+            }
 
             // Use C# serializer to serialize the object array, cos the Mirror one isn't powerful enough.
 
@@ -495,10 +500,11 @@ namespace SS3D.Engine.Tiles {
         public static TileDefinition ReadNetworkableTileDefinition(this NetworkReader reader)
         {
             TileDefinition tileDefinition = new TileDefinition();
+            tileDefinition.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
+
             var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
 
             string turfName = reader.ReadString();
-            // string fixtureName = reader.ReadString(); // Will cause bugs I guess
 
             if (!string.IsNullOrEmpty(turfName))
             {

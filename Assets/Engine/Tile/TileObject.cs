@@ -241,7 +241,9 @@ namespace SS3D.Engine.Tiles
                 {
                     if (shouldWarn)
                     {
+#if UNITY_EDITOR
                         MigrateTileDefinition();
+#endif
                         Debug.LogWarning("Unknown object found in tile " + name + ": " + child.name + ", deleting.");
                     }
                     EditorAndRuntime.Destroy(child);
@@ -327,7 +329,7 @@ namespace SS3D.Engine.Tiles
                 i++;
             }
         }
-
+#if UNITY_EDITOR
         /**
          * Migrates existing fixtures that do not have a fixturelayer set.
          */
@@ -372,7 +374,7 @@ namespace SS3D.Engine.Tiles
             }
             return false;
         }
-
+#endif
         [SerializeField]
         private TileDefinition tile = new TileDefinition();
 
