@@ -36,7 +36,7 @@ namespace SS3D.Content.Systems.Interactions
                     return false;
                 }
 
-                if (targetTile.Tile.fixture != null)
+                if (targetTile.Tile.GetFixtureAtLayer(FixtureLayers.Furniture) != null)
                 {
                     return false;
                 }
@@ -64,7 +64,7 @@ namespace SS3D.Content.Systems.Interactions
             else // Construct
                 tile.turf = WallToConstruct;
 
-            tile.fixture = null;
+            tile.fixtures[(int)FixtureLayers.Furniture] = null;
             // TODO: Make an easier way of doing this.
             tile.subStates = new object[2];
 

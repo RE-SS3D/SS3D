@@ -59,6 +59,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             if(tileManager == null)
                 tileManager = FindObjectOfType<TileManager>();
 
+            if (tileManager == null)
+                return;
+
             tiles.Update(tileManager);
 
             enableVisualHelp = EditorGUILayout.Toggle("Enable visual help: ", enableVisualHelp);

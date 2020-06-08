@@ -12,7 +12,7 @@ namespace SS3D.Content.Systems.Interactions
         public override string GetName(InteractionEvent interactionEvent)
         {
             TileObject tileObject = (interactionEvent.Target as IGameObjectProvider)?.GameObject?.GetComponentInParent<TileObject>();
-            if (tileObject != null && tileObject.Tile.fixture == TableToConstruct)
+            if (tileObject != null && tileObject.Tile.GetFixtureAtLayer(FixtureLayers.Furniture) == TableToConstruct)
             {
                 return "Deconstruct";
             }
@@ -57,17 +57,18 @@ namespace SS3D.Content.Systems.Interactions
             TileManager tileManager = Object.FindObjectOfType<TileManager>();
             TileObject targetTile = targetBehaviour.GameObject.GetComponentInParent<TileObject>();
             var tile = targetTile.Tile;
+
             
-            if (tile.fixture != null) // If there is a fixture on the place
+            if (tile.GetFixtureAtLayer(FixtureLayers.Furniture) != null) // If there is a fixture on the place
             {
-                if (tile.fixture == TableToConstruct) // If the fixture is a table
+                if (tile.GetFixtureAtLayer(FixtureLayers.Furniture) == TableToConstruct) // If the fixture is a table
                 {
-                    tile.fixture = null; // Deconstruct
+                    tile.fixtures[(int)FixtureLayers.Furniture] = null; // Deconstruct
                 }
             }
             else // If there is no fixture on place
             {
-                tile.fixture = TableToConstruct; // Construct
+                tile.fixtures[(int)FixtureLayers.Furniture] = TableToConstruct; // Construct
             }
             
             // TODO: Make an easier way of doing this.
