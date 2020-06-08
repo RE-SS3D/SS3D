@@ -110,6 +110,8 @@ GameObject:
   - component: {fileID: 1327684682686270705}
   - component: {fileID: 800606227960712286}
   - component: {fileID: 4244561510455768052}
+  - component: {fileID: 6431728947182756207}
+  - component: {fileID: 6371223980325206078}
   m_Layer: 0
   m_Name: cryotube
   m_TagString: Untagged
@@ -182,6 +184,60 @@ MonoBehaviour:
   syncInterval: 0.1
   compressRotation: 1
   clientAuthority: 0
+--- !u!114 &6431728947182756207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5385663273565442968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd3c3145c2fb1ef458f6b2d77c499b44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  Container: {fileID: 6371223980325206078}
+  DisplayObject: {fileID: 6432704430344066030}
+  EmptyPosition: {x: 0, y: 0, z: 0}
+  FullPosition: {x: 0, y: 0, z: 0}
+  ScaleX:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  ScaleY:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  ScaleZ:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  MaxWobble: 2
+  WobbleSpeed: 1
+  Recovery: 2
+--- !u!114 &6371223980325206078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5385663273565442968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Volume: 1000
+  Temperature: 2
+  substances: []
 --- !u!1 &5625392702527621547
 GameObject:
   m_ObjectHideFlags: 0
@@ -285,7 +341,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6432704430344066030}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -310,7 +366,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4156b958be0668e49b2e9f5120660e50, type: 2}
+  - {fileID: 2100000, guid: 787ae9b505972c34e98b5dac87e1ca9d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -334,7 +390,7 @@ SkinnedMeshRenderer:
   serializedVersion: 2
   m_Quality: 0
   m_UpdateWhenOffscreen: 1
-  m_SkinnedMotionVectors: 1
+  m_SkinnedMotionVectors: 0
   m_Mesh: {fileID: 31224540767065549, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
   m_Bones: []
   m_BlendShapeWeights: []
