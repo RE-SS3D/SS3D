@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: TileMapSettings
   m_EditorClassIdentifier: 
   tiles:
-  - turf: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
+  - turf: {fileID: 11400000, guid: 395778dea5b87f343b04a4acf8d74818, type: 2}
+    fixture: {fileID: 0}
+    atmos: {fileID: 0}
+  - turf: {fileID: 11400000, guid: c385d8a9b5396ba4e9865c64402b1f05, type: 2}
     fixture: {fileID: 0}
     atmos: {fileID: 0}
   - turf: {fileID: 11400000, guid: 59e44bb6917ce814eb795fea1f1c347e, type: 2}
     fixture: {fileID: 0}
     atmos: {fileID: 0}
-  - turf: {fileID: 11400000, guid: c4f20fbebbaf46f4f85293a69e3c0d7d, type: 2}
-    fixture: {fileID: 0}
-    atmos: {fileID: 0}
-  - turf: {fileID: 11400000, guid: bb5b6d96476c1414f924e9805ca225a8, type: 2}
+  - turf: {fileID: 11400000, guid: cede127f2ecc46345ab2c1fad9cbd507, type: 2}
     fixture: {fileID: 0}
     atmos: {fileID: 0}
   - turf: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
