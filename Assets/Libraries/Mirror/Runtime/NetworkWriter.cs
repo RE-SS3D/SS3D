@@ -1,22 +1,95 @@
 using System;
-using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
 
 namespace Mirror
 {
-    // Binary stream Writer. Supports simple types, buffers, arrays, structs, and nested types
+    /// <summary>
+    /// Binary stream Writer. Supports simple types, buffers, arrays, structs, and nested types
+    /// <para>Use <see cref="NetworkWriterPool.GetWriter">NetworkWriter.GetWriter</see> to reduce memory allocation</para>
+    /// </summary>
     public class NetworkWriter
     {
         public const int MaxStringLength = 1024 * 32;
 
         // create writer immediately with it's own buffer so no one can mess with it and so that we can resize it.
         // note: BinaryWriter allocates too much, so we only use a MemoryStream
-        readonly MemoryStream stream = new MemoryStream();
+        // => 1500 bytes by default because on average, most packets will be <= MTU
+        byte[] buffer = new byte[1500];
 
         // 'int' is the best type for .Position. 'short' is too small if we send >32kb which would result in negative .Position
         // -> converting long to int is fine until 2GB of data (MAX_INT), so we don't have to worry about overflows here
-        public int Position { get { return (int)stream.Position; } set { stream.Position = value; } }
+        int position;
+        int length;
+
+        public int Length => length;
+
+        public int Position
+        {
+            get => position;
+            set
+            {
+                position = value;
+                EnsureLength(value);
+            }
+        }
+
+        /// <summary>
+        /// Reset both the position and length of the stream
+        /// </summary>
+        /// <remarks>
+        /// Leaves the capacity the same so that we can reuse this writer without extra allocations
+        /// </remarks>
+        public void Reset()
+        {
+            position = 0;
+            length = 0;
+        }
+
+        /// <summary>
+        /// Sets length, moves position if it is greater than new length
+        /// </summary>
+        /// <param name="newLength"></param>
+        /// <remarks>
+        /// Zeros out any extra length created by setlength
+        /// </remarks>
+        public void SetLength(int newLength)
+        {
+            int oldLength = length;
+
+            // ensure length & capacity
+            EnsureLength(newLength);
+
+            // zero out new length
+            if (oldLength < newLength)
+            {
+                Array.Clear(buffer, oldLength, newLength - oldLength);
+            }
+
+            length = newLength;
+            position = Mathf.Min(position, length);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        void EnsureLength(int value)
+        {
+            if (length < value)
+            {
+                length = value;
+                EnsureCapacity(value);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        void EnsureCapacity(int value)
+        {
+            if (buffer.Length < value)
+            {
+                int capacity = Math.Max(value, buffer.Length * 2);
+                Array.Resize(ref buffer, capacity);
+            }
+        }
 
         // MemoryStream has 3 values: Position, Length and Capacity.
         // Position is used to indicate where we are writing
@@ -25,8 +98,9 @@ namespace Mirror
         // ToArray returns all the data we have written,  regardless of the current position
         public byte[] ToArray()
         {
-            stream.Flush();
-            return stream.ToArray();
+            byte[] data = new byte[length];
+            Array.ConstrainedCopy(buffer, 0, data, 0, length);
+            return data;
         }
 
         // Gets the serialized data in an ArraySegment<byte>
@@ -36,151 +110,50 @@ namespace Mirror
         // while you are using the ArraySegment
         public ArraySegment<byte> ToArraySegment()
         {
-            stream.Flush();
-            if (stream.TryGetBuffer(out ArraySegment<byte> data))
-            {
-                return data;
-            }
-            throw new Exception("Cannot expose contents of memory stream. Make sure that MemoryStream buffer is publicly visible (see MemoryStream source code).");
+            return new ArraySegment<byte>(buffer, 0, length);
         }
 
-        // reset both the position and length of the stream,  but leaves the capacity the same
-        // so that we can reuse this writer without extra allocations
-        public void SetLength(long value)
+        public void WriteByte(byte value)
         {
-            stream.SetLength(value);
+            EnsureLength(position + 1);
+            buffer[position++] = value;
         }
 
-        public void WriteByte(byte value) => stream.WriteByte(value);
 
         // for byte arrays with consistent size, where the reader knows how many to read
         // (like a packet opcode that's always the same)
         public void WriteBytes(byte[] buffer, int offset, int count)
         {
-            // no null check because we would need to write size info for that too (hence WriteBytesAndSize)
-            stream.Write(buffer, offset, count);
+            EnsureLength(position + count);
+            Array.ConstrainedCopy(buffer, offset, this.buffer, position, count);
+            position += count;
         }
 
         public void WriteUInt32(uint value)
         {
-            WriteByte((byte)(value & 0xFF));
-            WriteByte((byte)((value >> 8) & 0xFF));
-            WriteByte((byte)((value >> 16) & 0xFF));
-            WriteByte((byte)((value >> 24) & 0xFF));
+            EnsureLength(position + 4);
+            buffer[position++] = (byte)value;
+            buffer[position++] = (byte)(value >> 8);
+            buffer[position++] = (byte)(value >> 16);
+            buffer[position++] = (byte)(value >> 24);
         }
 
         public void WriteInt32(int value) => WriteUInt32((uint)value);
 
         public void WriteUInt64(ulong value)
         {
-            WriteByte((byte)(value & 0xFF));
-            WriteByte((byte)((value >> 8) & 0xFF));
-            WriteByte((byte)((value >> 16) & 0xFF));
-            WriteByte((byte)((value >> 24) & 0xFF));
-            WriteByte((byte)((value >> 32) & 0xFF));
-            WriteByte((byte)((value >> 40) & 0xFF));
-            WriteByte((byte)((value >> 48) & 0xFF));
-            WriteByte((byte)((value >> 56) & 0xFF));
+            EnsureLength(position + 8);
+            buffer[position++] = (byte)value;
+            buffer[position++] = (byte)(value >> 8);
+            buffer[position++] = (byte)(value >> 16);
+            buffer[position++] = (byte)(value >> 24);
+            buffer[position++] = (byte)(value >> 32);
+            buffer[position++] = (byte)(value >> 40);
+            buffer[position++] = (byte)(value >> 48);
+            buffer[position++] = (byte)(value >> 56);
         }
 
         public void WriteInt64(long value) => WriteUInt64((ulong)value);
-
-        #region Obsoletes
-        [Obsolete("Use WriteUInt16 instead")]
-        public void Write(ushort value) => this.WriteUInt16(value);
-
-        [Obsolete("Use WriteUInt32 instead")]
-        public void Write(uint value) => WriteUInt32(value);
-
-        [Obsolete("Use WriteUInt64 instead")]
-        public void Write(ulong value) => WriteUInt64(value);
-
-        [Obsolete("Use WriteByte instead")]
-        public void Write(byte value) => stream.WriteByte(value);
-
-        [Obsolete("Use WriteSByte instead")]
-        public void Write(sbyte value) => WriteByte((byte)value);
-
-        // write char the same way that NetworkReader reads it (2 bytes)
-        [Obsolete("Use WriteChar instead")]
-        public void Write(char value) => this.WriteUInt16((ushort)value);
-
-        [Obsolete("Use WriteBoolean instead")]
-        public void Write(bool value) => WriteByte((byte)(value ? 1 : 0));
-
-        [Obsolete("Use WriteInt16 instead")]
-        public void Write(short value) => this.WriteUInt16((ushort)value);
-
-        [Obsolete("Use WriteInt32 instead")]
-        public void Write(int value) => WriteUInt32((uint)value);
-
-        [Obsolete("Use WriteInt64 instead")]
-        public void Write(long value) => WriteUInt64((ulong)value);
-
-        [Obsolete("Use WriteSingle instead")]
-        public void Write(float value) => this.WriteSingle(value);
-
-        [Obsolete("Use WriteDouble instead")]
-        public void Write(double value) => this.WriteDouble(value);
-
-        [Obsolete("Use WriteDecimal instead")]
-        public void Write(decimal value) => this.WriteDecimal(value);
-
-        [Obsolete("Use WriteString instead")]
-        public void Write(string value) => this.WriteString(value);
-
-        [Obsolete("Use WriteBytes instead")]
-        public void Write(byte[] buffer, int offset, int count) => WriteBytes(buffer, offset, count);
-
-        [Obsolete("Use WriteVector2 instead")]
-        public void Write(Vector2 value) => this.WriteVector2(value);
-
-        [Obsolete("Use WriteVector3 instead")]
-        public void Write(Vector3 value) => this.WriteVector3(value);
-
-        [Obsolete("Use WriteVector4 instead")]
-        public void Write(Vector4 value) => this.WriteVector4(value);
-
-        [Obsolete("Use WriteVector2Int instead")]
-        public void Write(Vector2Int value) => this.WriteVector2Int(value);
-
-        [Obsolete("Use WriteVector3Int instead")]
-        public void Write(Vector3Int value) => this.WriteVector3Int(value);
-
-        [Obsolete("Use WriteColor instead")]
-        public void Write(Color value) => this.WriteColor(value);
-
-        [Obsolete("Use WriteColor32 instead")]
-        public void Write(Color32 value) => this.WriteColor32(value);
-
-        [Obsolete("Use WriteQuaternion instead")]
-        public void Write(Quaternion value) => this.WriteQuaternion(value);
-
-        [Obsolete("Use WriteRect instead")]
-        public void Write(Rect value) => this.WriteRect(value);
-
-        [Obsolete("Use WritePlane instead")]
-        public void Write(Plane value) => this.WritePlane(value);
-
-        [Obsolete("Use WriteRay instead")]
-        public void Write(Ray value) => this.WriteRay(value);
-
-        [Obsolete("Use WriteMatrix4x4 instead")]
-        public void Write(Matrix4x4 value) => this.WriteMatrix4x4(value);
-
-        [Obsolete("Use WriteGuid instead")]
-        public void Write(Guid value) => this.WriteGuid(value);
-
-        [Obsolete("Use WriteNetworkIdentity instead")]
-        public void Write(NetworkIdentity value) => this.WriteNetworkIdentity(value);
-
-        [Obsolete("Use WriteTransform instead")]
-        public void Write(Transform value) => this.WriteTransform(value);
-
-        [Obsolete("Use WriteGameObject instead")]
-        public void Write(GameObject value) => this.WriteGameObject(value);
-
-        #endregion
     }
 
 
@@ -188,6 +161,8 @@ namespace Mirror
     // but they do all need to be extensions.
     public static class NetworkWriterExtensions
     {
+        static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkWriterExtensions));
+
         // cache encoding instead of creating it with BinaryWriter each time
         // 1000 readers before:  1MB GC, 30ms
         // 1000 readers after: 0.8MB GC, 18ms
@@ -198,13 +173,13 @@ namespace Mirror
 
         public static void WriteSByte(this NetworkWriter writer, sbyte value) => writer.WriteByte((byte)value);
 
-        public static void WriteChar(this NetworkWriter writer, char value) => writer.WriteUInt16((ushort)value);
+        public static void WriteChar(this NetworkWriter writer, char value) => writer.WriteUInt16(value);
 
         public static void WriteBoolean(this NetworkWriter writer, bool value) => writer.WriteByte((byte)(value ? 1 : 0));
 
         public static void WriteUInt16(this NetworkWriter writer, ushort value)
         {
-            writer.WriteByte((byte)(value & 0xFF));
+            writer.WriteByte((byte)value);
             writer.WriteByte((byte)(value >> 8));
         }
 
@@ -249,7 +224,7 @@ namespace Mirror
             //        on the client)
             if (value == null)
             {
-                writer.WriteUInt16((ushort)0);
+                writer.WriteUInt16(0);
                 return;
             }
 
@@ -329,78 +304,78 @@ namespace Mirror
             if (value <= 2287)
             {
                 writer.WriteByte((byte)(((value - 240) >> 8) + 241));
-                writer.WriteByte((byte)((value - 240) & 0xFF));
+                writer.WriteByte((byte)(value - 240));
                 return;
             }
             if (value <= 67823)
             {
-                writer.WriteByte((byte)249);
+                writer.WriteByte(249);
                 writer.WriteByte((byte)((value - 2288) >> 8));
-                writer.WriteByte((byte)((value - 2288) & 0xFF));
+                writer.WriteByte((byte)(value - 2288));
                 return;
             }
             if (value <= 16777215)
             {
-                writer.WriteByte((byte)250);
-                writer.WriteByte((byte)(value & 0xFF));
-                writer.WriteByte((byte)((value >> 8) & 0xFF));
-                writer.WriteByte((byte)((value >> 16) & 0xFF));
+                writer.WriteByte(250);
+                writer.WriteByte((byte)value);
+                writer.WriteByte((byte)(value >> 8));
+                writer.WriteByte((byte)(value >> 16));
                 return;
             }
             if (value <= 4294967295)
             {
-                writer.WriteByte((byte)251);
-                writer.WriteByte((byte)(value & 0xFF));
-                writer.WriteByte((byte)((value >> 8) & 0xFF));
-                writer.WriteByte((byte)((value >> 16) & 0xFF));
-                writer.WriteByte((byte)((value >> 24) & 0xFF));
+                writer.WriteByte(251);
+                writer.WriteByte((byte)value);
+                writer.WriteByte((byte)(value >> 8));
+                writer.WriteByte((byte)(value >> 16));
+                writer.WriteByte((byte)(value >> 24));
                 return;
             }
             if (value <= 1099511627775)
             {
-                writer.WriteByte((byte)252);
-                writer.WriteByte((byte)(value & 0xFF));
-                writer.WriteByte((byte)((value >> 8) & 0xFF));
-                writer.WriteByte((byte)((value >> 16) & 0xFF));
-                writer.WriteByte((byte)((value >> 24) & 0xFF));
-                writer.WriteByte((byte)((value >> 32) & 0xFF));
+                writer.WriteByte(252);
+                writer.WriteByte((byte)value);
+                writer.WriteByte((byte)(value >> 8));
+                writer.WriteByte((byte)(value >> 16));
+                writer.WriteByte((byte)(value >> 24));
+                writer.WriteByte((byte)(value >> 32));
                 return;
             }
             if (value <= 281474976710655)
             {
-                writer.WriteByte((byte)253);
-                writer.WriteByte((byte)(value & 0xFF));
-                writer.WriteByte((byte)((value >> 8) & 0xFF));
-                writer.WriteByte((byte)((value >> 16) & 0xFF));
-                writer.WriteByte((byte)((value >> 24) & 0xFF));
-                writer.WriteByte((byte)((value >> 32) & 0xFF));
-                writer.WriteByte((byte)((value >> 40) & 0xFF));
+                writer.WriteByte(253);
+                writer.WriteByte((byte)value);
+                writer.WriteByte((byte)(value >> 8));
+                writer.WriteByte((byte)(value >> 16));
+                writer.WriteByte((byte)(value >> 24));
+                writer.WriteByte((byte)(value >> 32));
+                writer.WriteByte((byte)(value >> 40));
                 return;
             }
             if (value <= 72057594037927935)
             {
-                writer.WriteByte((byte)254);
-                writer.WriteByte((byte)(value & 0xFF));
-                writer.WriteByte((byte)((value >> 8) & 0xFF));
-                writer.WriteByte((byte)((value >> 16) & 0xFF));
-                writer.WriteByte((byte)((value >> 24) & 0xFF));
-                writer.WriteByte((byte)((value >> 32) & 0xFF));
-                writer.WriteByte((byte)((value >> 40) & 0xFF));
-                writer.WriteByte((byte)((value >> 48) & 0xFF));
+                writer.WriteByte(254);
+                writer.WriteByte((byte)value);
+                writer.WriteByte((byte)(value >> 8));
+                writer.WriteByte((byte)(value >> 16));
+                writer.WriteByte((byte)(value >> 24));
+                writer.WriteByte((byte)(value >> 32));
+                writer.WriteByte((byte)(value >> 40));
+                writer.WriteByte((byte)(value >> 48));
                 return;
             }
 
             // all others
             {
-                writer.WriteByte((byte)255);
-                writer.WriteByte((byte)(value & 0xFF));
-                writer.WriteByte((byte)((value >> 8) & 0xFF));
-                writer.WriteByte((byte)((value >> 16) & 0xFF));
-                writer.WriteByte((byte)((value >> 24) & 0xFF));
-                writer.WriteByte((byte)((value >> 32) & 0xFF));
-                writer.WriteByte((byte)((value >> 40) & 0xFF));
-                writer.WriteByte((byte)((value >> 48) & 0xFF));
-                writer.WriteByte((byte)((value >> 56) & 0xFF));
+                writer.WriteByte(255);
+                writer.WriteByte((byte)value);
+                writer.WriteByte((byte)(value >> 8));
+                writer.WriteByte((byte)(value >> 16));
+                writer.WriteByte((byte)(value >> 24));
+                writer.WriteByte((byte)(value >> 32));
+                writer.WriteByte((byte)(value >> 40));
+                writer.WriteByte((byte)(value >> 48));
+                writer.WriteByte((byte)(value >> 56));
             }
         }
 
@@ -532,7 +507,7 @@ namespace Mirror
             }
             else
             {
-                Debug.LogWarning("NetworkWriter " + value + " has no NetworkIdentity");
+                logger.LogWarning("NetworkWriter " + value + " has no NetworkIdentity");
                 writer.WritePackedUInt32(0);
             }
         }
@@ -551,12 +526,17 @@ namespace Mirror
             }
             else
             {
-                Debug.LogWarning("NetworkWriter " + value + " has no NetworkIdentity");
+                logger.LogWarning("NetworkWriter " + value + " has no NetworkIdentity");
                 writer.WritePackedUInt32(0);
             }
         }
 
-        public static void Write<T>(this NetworkWriter writer, T msg) where T : IMessageBase
+        public static void WriteUri(this NetworkWriter writer, Uri uri)
+        {
+            writer.WriteString(uri.ToString());
+        }
+
+        public static void WriteMessage<T>(this NetworkWriter writer, T msg) where T : IMessageBase
         {
             msg.Serialize(writer);
         }

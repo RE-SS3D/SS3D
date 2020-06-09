@@ -18,6 +18,7 @@ namespace SS3D.Engine.Tiles.Connections
         // Id to match against
         public string id;
         public string genericType;
+        public FixtureLayers Layer { get; set; }
 
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
@@ -76,7 +77,8 @@ namespace SS3D.Engine.Tiles.Connections
         public void UpdateAll(TileDefinition[] tiles)
         {
             bool changed = false;
-            for (int i = 0; i < tiles.Length; i++) {
+            for (int i = 0; i < tiles.Length; i++)
+            {
                 changed |= UpdateSingleConnection((Direction)i, tiles[i]);
             }
 
@@ -93,8 +95,15 @@ namespace SS3D.Engine.Tiles.Connections
          */
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
-            bool isGeneric = (tile.turf && (tile.turf.genericType == genericType || genericType == null)) || (tile.fixture && (tile.fixture.genericType == genericType || genericType == null));
-            bool isSpecific = (tile.turf && (tile.turf.id == id || id == null)) || (tile.fixture && (tile.fixture.id == id || id == null));
+            int index = (int)Layer;
+
+            bool isGeneric = (tile.turf && (tile.turf.genericType == genericType || genericType == null));
+            if (tile.fixtures != null)
+                isGeneric = isGeneric || (tile.fixtures[index] && (tile.fixtures[index].genericType == genericType || genericType == null));
+
+            bool isSpecific = (tile.turf && (tile.turf.id == id || id == null));
+            if (tile.fixtures != null)
+                isSpecific = isSpecific || (tile.fixtures[index] && (tile.fixtures[index].id == id || id == null));
 
             bool changed = generalAdjacents.UpdateDirection(direction, isGeneric, true);
             changed |= specificAdjacents.UpdateDirection(direction, isSpecific, true);
@@ -116,16 +125,16 @@ namespace SS3D.Engine.Tiles.Connections
 
             float rotation = 0.0f;
             Mesh mesh;
-            if(generalCardinals.IsO())
+            if (generalCardinals.IsO())
             {
                 mesh = o;
             }
-            else if(generalCardinals.IsC())
+            else if (generalCardinals.IsC())
             {
                 mesh = c;
                 rotation = DirectionHelper.AngleBetween(Direction.East, generalCardinals.GetOnlyPositive());
             }
-            else if(generalCardinals.IsI())
+            else if (generalCardinals.IsI())
             {
                 var specificCardinals = specificAdjacents.GetCardinalInfo();
 
@@ -140,7 +149,7 @@ namespace SS3D.Engine.Tiles.Connections
                     rotation = OrientationHelper.AngleBetween(Orientation.Horizontal, generalCardinals.GetFirstOrientation());
                 }
             }
-            else if(generalCardinals.IsL())
+            else if (generalCardinals.IsL())
             {
                 // Determine lSolid or lCorner by finding whether the area between the two connections is filled
                 // We check for if any of the following bitfields matches the connection bitfield
@@ -149,7 +158,7 @@ namespace SS3D.Engine.Tiles.Connections
                 mesh = isFilled ? lSingle : lNone;
                 rotation = DirectionHelper.AngleBetween(Direction.SouthEast, generalCardinals.GetCornerDirection());
             }
-            else if(generalCardinals.IsT())
+            else if (generalCardinals.IsT())
             {
                 // We make another bitfield (noticing a pattern?). 0x0 means no fills, 0x1 means right corner filled, 0x2 means left corner filled,
                 // therefore both corners filled = 0x3.
@@ -170,7 +179,8 @@ namespace SS3D.Engine.Tiles.Connections
                 // NE -> N, SW -> S, etc.
                 var diagonals = new AdjacencyBitmap.CardinalInfo((byte)(generalAdjacents.Connections >> 1));
 
-                switch (diagonals.numConnections) {
+                switch (diagonals.numConnections)
+                {
                     case 0:
                         mesh = xNone;
                         break;
@@ -179,11 +189,13 @@ namespace SS3D.Engine.Tiles.Connections
                         rotation = DirectionHelper.AngleBetween(Direction.West, diagonals.GetOnlyPositive());
                         break;
                     case 2:
-                        if(diagonals.north == diagonals.south) {
+                        if (diagonals.north == diagonals.south)
+                        {
                             mesh = xOpposite;
                             rotation = OrientationHelper.AngleBetween(Orientation.Vertical, diagonals.GetFirstOrientation());
                         }
-                        else {
+                        else
+                        {
                             mesh = xSide;
                             rotation = DirectionHelper.AngleBetween(Direction.SouthWest, diagonals.GetCornerDirection());
                         }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,9 +21,7 @@ namespace Mirror
             OP_ADD,
             OP_CLEAR,
             OP_REMOVE,
-            OP_SET,
-            [Obsolete("SyncDictionaries now use OP_SET instead of OP_DIRTY")]
-            OP_DIRTY
+            OP_SET
         }
 
         struct Change
@@ -40,6 +37,14 @@ namespace Mirror
         // we might later receive changes that have already been applied
         // so we need to skip them
         int changesAhead;
+
+        public void Reset()
+        {
+            IsReadOnly = false;
+            changes.Clear();
+            changesAhead = 0;
+            objects.Clear();
+        }
 
         protected virtual void SerializeKey(NetworkWriter writer, TKey item) { }
         protected virtual void SerializeItem(NetworkWriter writer, TValue item) { }
@@ -229,13 +234,14 @@ namespace Mirror
             {
                 if (ContainsKey(i))
                 {
+                    objects[i] = value;
                     AddOperation(Operation.OP_SET, i, value);
                 }
                 else
                 {
+                    objects[i] = value;
                     AddOperation(Operation.OP_ADD, i, value);
                 }
-                objects[i] = value;
             }
         }
 

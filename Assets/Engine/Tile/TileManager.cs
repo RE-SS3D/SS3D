@@ -343,7 +343,7 @@ namespace SS3D.Engine.Tiles {
                 #endif
 
                 // If the tile doesn't actually have anything, destroy it
-                if (childTile.Tile.turf == null && childTile.Tile.fixture == null) {
+                if (childTile.Tile.turf == null && childTile.Tile.fixtures == null) {
                     queuedDestroy.Add(child.gameObject);
                     continue;
                 }
@@ -469,10 +469,21 @@ namespace SS3D.Engine.Tiles {
         public static void WriteNetworkableTileDefinition(this NetworkWriter writer, TileDefinition definition)
         {
             writer.WriteString(definition.turf?.name ?? "");
-            writer.WriteString(definition.fixture?.name ?? "");
+
+            foreach (Fixture fixture in definition.fixtures)
+            {
+                if (fixture)
+                {
+                    writer.WriteString(fixture.name ?? "");
+                }
+                else
+                {
+                    writer.WriteString("");
+                }
+            }
 
             // Use C# serializer to serialize the object array, cos the Mirror one isn't powerful enough.
-            
+
             // Can't serialize null values so put a boolean indicating array presence first
             if (definition.subStates == null || definition.subStates.All(obj => obj == null)) {
                 writer.WriteBoolean(false);
@@ -489,24 +500,32 @@ namespace SS3D.Engine.Tiles {
         public static TileDefinition ReadNetworkableTileDefinition(this NetworkReader reader)
         {
             TileDefinition tileDefinition = new TileDefinition();
+            tileDefinition.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
+
+            var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
 
             string turfName = reader.ReadString();
-            string fixtureName = reader.ReadString();
 
-            if (!string.IsNullOrEmpty(turfName)) {
+            if (!string.IsNullOrEmpty(turfName))
+            {
                 tileDefinition.turf = turfs.FirstOrDefault(turf => turf.name == turfName);
                 if (tileDefinition.turf == null)
                     Debug.LogError($"Network recieved turf with name {turfName} could not be found");
             }
 
-            if (!string.IsNullOrEmpty(fixtureName)) {
-                tileDefinition.fixture = fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
-                if (tileDefinition.fixture == null)
-                    Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
+            foreach (FixtureLayers layer in layers)
+            {
+                string fixtureName = reader.ReadString();
+                if (!string.IsNullOrEmpty(fixtureName))
+                {
+                    tileDefinition.fixtures[(int)layer] = fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
+                    if (tileDefinition.fixtures[(int)layer] == null)
+                        Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
+                }
             }
 
             // If the boolean is false, subStates should be null.
-            if(reader.ReadBoolean()) {
+            if (reader.ReadBoolean()) {
                 using(var stream = new MemoryStream(reader.ReadBytesAndSize())) {
                     tileDefinition.subStates = new BinaryFormatter().Deserialize(stream) as object[];
                 }

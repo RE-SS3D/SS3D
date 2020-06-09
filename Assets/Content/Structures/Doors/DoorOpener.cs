@@ -77,7 +77,7 @@ namespace SS3D.Content.Structures.Fixtures
             //     OnSetDoorState(openState);
 
             TileObject tile = this.GetComponentInParent<TileObject>();
-            tile.atmos.SetBlocked(true);
+            tile.atmos?.SetBlocked(true);
         }
     
         public void OnTriggerEnter(Collider other)
