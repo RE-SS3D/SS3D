@@ -76,6 +76,7 @@ namespace SS3D.Engine.Tiles {
 
     public enum TileLayer
     {
+        Plenum,
         Turf,
         Fixtures,
         AtmosObject,
@@ -87,6 +88,7 @@ namespace SS3D.Engine.Tiles {
     [Serializable]
     public struct TileDefinition
     {
+        public Plenum plenum;
         public Turf turf;
         public Fixture[] fixtures;
         public AtmosObject atmos;
@@ -97,7 +99,7 @@ namespace SS3D.Engine.Tiles {
         // The array may only be as long as it needs to be to store all non-null objects.
         public object[] subStates;
 
-        public static TileDefinition NullObject = new TileDefinition { turf = null, fixtures = null, subStates = null };
+        public static TileDefinition NullObject = new TileDefinition { plenum = null, turf = null, fixtures = null, subStates = null };
 
         public static int GetFixtureLayerSize()
         {
@@ -111,7 +113,7 @@ namespace SS3D.Engine.Tiles {
 
         public static bool operator ==(TileDefinition a, TileDefinition b)
         {
-            return a.turf == b.turf && a.fixtures.Equals(b.fixtures) && a.subStates.Equals(b.subStates);
+            return a.plenum == b.plenum && a.turf == b.turf && a.fixtures.Equals(b.fixtures) && a.subStates.Equals(b.subStates);
         }
         public static bool operator !=(TileDefinition a, TileDefinition b)
         {
@@ -120,6 +122,7 @@ namespace SS3D.Engine.Tiles {
         public override bool Equals(object obj)
         {
             return obj is TileDefinition definition &&
+                   EqualityComparer<Plenum>.Default.Equals(plenum, definition.plenum) &&
                    EqualityComparer<Turf>.Default.Equals(turf, definition.turf) &&
                    EqualityComparer<Fixture[]>.Default.Equals(fixtures, definition.fixtures) &&
                    EqualityComparer<object[]>.Default.Equals(subStates, definition.subStates);
@@ -127,6 +130,7 @@ namespace SS3D.Engine.Tiles {
         public override int GetHashCode()
         {
             var hashCode = 1153620473;
+            hashCode = hashCode * -1521134295 + EqualityComparer<Plenum>.Default.GetHashCode(plenum);
             hashCode = hashCode * -1521134295 + EqualityComparer<Turf>.Default.GetHashCode(turf);
             hashCode = hashCode * -1521134295 + EqualityComparer<Fixture[]>.Default.GetHashCode(fixtures);
             hashCode = hashCode * -1521134295 + EqualityComparer<object[]>.Default.GetHashCode(subStates);
