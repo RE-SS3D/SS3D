@@ -15,7 +15,7 @@ MonoBehaviour:
   tiles:
   - turf: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
     fixtures:
-    - {fileID: 11400000, guid: e361c0d934015604fa13db8b86d73f4b, type: 2}
+    - {fileID: 0}
     - {fileID: 0}
     - {fileID: 0}
     - {fileID: 0}
@@ -23,6 +23,15 @@ MonoBehaviour:
     - {fileID: 0}
     atmos: {fileID: 0}
   - turf: {fileID: 11400000, guid: cede127f2ecc46345ab2c1fad9cbd507, type: 2}
+    fixtures:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    atmos: {fileID: 0}
+  - turf: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
     fixtures:
     - {fileID: 0}
     - {fileID: 0}

@@ -24,7 +24,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _FillAmount: 0.3
+    - _FillAmount: 0
     - _Rim: 0
     - _RimPower: 0
     - _WobbleX: 0
@@ -33,4 +33,4 @@ Material:
     - _FoamColor: {r: 0.9433962, g: 0.9433962, b: 0.9433962, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _Tint: {r: 0.40392143, g: 0.55294114, b: 0.72156864, a: 1}
-    - _TopColor: {r: 0.3999998, g: 0.6666667, b: 0.72156864, a: 0.50980395}
+    - _TopColor: {r: 0.40392157, g: 0.5529412, b: 0.72156864, a: 1}
