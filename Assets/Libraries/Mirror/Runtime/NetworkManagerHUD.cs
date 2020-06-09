@@ -9,6 +9,7 @@ namespace Mirror
     /// An extension for the NetworkManager that displays a default HUD for controlling the network state of the game.
     /// <para>This component also shows useful internal state for the networking system in the inspector window of the editor. It allows users to view connections, networked objects, message handlers, and packet statistics. This information can be helpful when debugging networked games.</para>
     /// </summary>
+    [DisallowMultipleComponent]
     [AddComponentMenu("Network/NetworkManagerHUD")]
     [RequireComponent(typeof(NetworkManager))]
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -45,58 +46,11 @@ namespace Mirror
             GUILayout.BeginArea(new Rect(10 + offsetX, 40 + offsetY, 215, 9999));
             if (!NetworkClient.isConnected && !NetworkServer.active)
             {
-                if (!NetworkClient.active)
-                {
-                    // LAN Host
-                    if (Application.platform != RuntimePlatform.WebGLPlayer)
-                    {
-                        if (GUILayout.Button("LAN Host"))
-                        {
-                            manager.StartHost();
-                        }
-                    }
-
-                    // LAN Client + IP
-                    GUILayout.BeginHorizontal();
-                    if (GUILayout.Button("LAN Client"))
-                    {
-                        manager.StartClient();
-                    }
-                    manager.networkAddress = GUILayout.TextField(manager.networkAddress);
-                    GUILayout.EndHorizontal();
-
-                    // LAN Server Only
-                    if (Application.platform == RuntimePlatform.WebGLPlayer)
-                    {
-                        // cant be a server in webgl build
-                        GUILayout.Box("(  WebGL cannot be server  )");
-                    }
-                    else
-                    {
-                        if (GUILayout.Button("LAN Server Only")) manager.StartServer();
-                    }
-                }
-                else
-                {
-                    // Connecting
-                    GUILayout.Label("Connecting to " + manager.networkAddress + "..");
-                    if (GUILayout.Button("Cancel Connection Attempt"))
-                    {
-                        manager.StopClient();
-                    }
-                }
+                StartButtons();
             }
             else
             {
-                // server / client status message
-                if (NetworkServer.active)
-                {
-                    GUILayout.Label("Server: active. Transport: " + Transport.activeTransport);
-                }
-                if (NetworkClient.isConnected)
-                {
-                    GUILayout.Label("Client: address=" + manager.networkAddress);
-                }
+                StatusLabels();
             }
 
             // client ready
@@ -108,21 +62,99 @@ namespace Mirror
 
                     if (ClientScene.localPlayer == null)
                     {
-                        ClientScene.AddPlayer();
+                        ClientScene.AddPlayer(NetworkClient.connection);
                     }
                 }
             }
 
-            // stop
-            if (NetworkServer.active || NetworkClient.isConnected)
+            StopButtons();
+
+            GUILayout.EndArea();
+        }
+
+        void StartButtons()
+        {
+            if (!NetworkClient.active)
             {
-                if (GUILayout.Button("Stop"))
+                // Server + Client
+                if (Application.platform != RuntimePlatform.WebGLPlayer)
+                {
+                    if (GUILayout.Button("Host (Server + Client)"))
+                    {
+                        manager.StartHost();
+                    }
+                }
+
+                // Client + IP
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("Client"))
+                {
+                    manager.StartClient();
+                }
+                manager.networkAddress = GUILayout.TextField(manager.networkAddress);
+                GUILayout.EndHorizontal();
+
+                // Server Only
+                if (Application.platform == RuntimePlatform.WebGLPlayer)
+                {
+                    // cant be a server in webgl build
+                    GUILayout.Box("(  WebGL cannot be server  )");
+                }
+                else
+                {
+                    if (GUILayout.Button("Server Only")) manager.StartServer();
+                }
+            }
+            else
+            {
+                // Connecting
+                GUILayout.Label("Connecting to " + manager.networkAddress + "..");
+                if (GUILayout.Button("Cancel Connection Attempt"))
+                {
+                    manager.StopClient();
+                }
+            }
+        }
+
+        void StatusLabels()
+        {
+            // server / client status message
+            if (NetworkServer.active)
+            {
+                GUILayout.Label("Server: active. Transport: " + Transport.activeTransport);
+            }
+            if (NetworkClient.isConnected)
+            {
+                GUILayout.Label("Client: address=" + manager.networkAddress);
+            }
+        }
+
+        void StopButtons()
+        {
+            // stop host if host mode
+            if (NetworkServer.active && NetworkClient.isConnected)
+            {
+                if (GUILayout.Button("Stop Host"))
                 {
                     manager.StopHost();
                 }
             }
-
-            GUILayout.EndArea();
+            // stop client if client-only
+            else if (NetworkClient.isConnected)
+            {
+                if (GUILayout.Button("Stop Client"))
+                {
+                    manager.StopClient();
+                }
+            }
+            // stop server if server-only
+            else if (NetworkServer.active)
+            {
+                if (GUILayout.Button("Stop Server"))
+                {
+                    manager.StopServer();
+                }
+            }
         }
     }
 }

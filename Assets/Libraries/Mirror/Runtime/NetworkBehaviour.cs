@@ -21,8 +21,10 @@ namespace Mirror
     [AddComponentMenu("")]
     [RequireComponent(typeof(NetworkIdentity))]
     [HelpURL("https://mirror-networking.com/docs/Guides/NetworkBehaviour.html")]
-    public class NetworkBehaviour : MonoBehaviour
+    public abstract class NetworkBehaviour : MonoBehaviour
     {
+        static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkBehaviour));
+
         internal float lastSyncTime;
 
         // hidden because NetworkBehaviourInspector shows it only if has OnSerialize.
@@ -35,6 +37,9 @@ namespace Mirror
         /// <summary>
         /// sync interval for OnSerialize (in seconds)
         /// </summary>
+        [Tooltip("Time in seconds until next change is synchronized to the client. '0' means send immediately if changed. '0.5' means only send changes every 500ms.\n(This is for state synchronization like SyncVars, SyncLists, OnSerialize. Not for Cmds, Rpcs, etc.)")]
+        // [0,2] should be enough. anything >2s is too laggy anyway.
+        [Range(0, 2)]
         [HideInInspector] public float syncInterval = 0.1f;
 
         /// <summary>
@@ -77,7 +82,7 @@ namespace Mirror
         public uint netId => netIdentity.netId;
 
         /// <summary>
-        /// The <see cref="NetworkConnection">NetworkConnection</see> associated with this <see cref="NetworkIdentity">NetworkIdentity.</see> This is only valid for player objects on the server.
+        /// The <see cref="NetworkConnection">NetworkConnection</see> associated with this <see cref="NetworkIdentity">NetworkIdentity.</see> This is only valid for player objects on the client.
         /// </summary>
         public NetworkConnection connectionToServer => netIdentity.connectionToServer;
 
@@ -103,12 +108,6 @@ namespace Mirror
         }
 
         /// <summary>
-        /// Obsolete: Use <see cref="syncObjects"/> instead.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use syncObjects instead.")]
-        protected List<SyncObject> m_SyncObjects => syncObjects;
-
-        /// <summary>
         /// objects that can synchronize themselves, such as synclists
         /// </summary>
         protected readonly List<SyncObject> syncObjects = new List<SyncObject>();
@@ -131,7 +130,7 @@ namespace Mirror
                 }
                 if (netIdentityCache == null)
                 {
-                    Debug.LogError("There is no NetworkIdentity on " + name + ". Please add one.");
+                    logger.LogError("There is no NetworkIdentity on " + name + ". Please add one.");
                 }
                 return netIdentityCache;
             }
@@ -153,7 +152,7 @@ namespace Mirror
                 }
 
                 // this should never happen
-                Debug.LogError("Could not find component in GameObject. You should not add/remove components in networked objects dynamically", this);
+                logger.LogError("Could not find component in GameObject. You should not add/remove components in networked objects dynamically", this);
 
                 return -1;
             }
@@ -169,7 +168,7 @@ namespace Mirror
 
         #region Commands
 
-        static int GetMethodHash(Type invokeClass, string methodName)
+        internal static int GetMethodHash(Type invokeClass, string methodName)
         {
             // (invokeClass + ":" + cmdName).GetStableHashCode() would cause allocations.
             // so hash1 + hash2 is better.
@@ -181,26 +180,26 @@ namespace Mirror
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        protected void SendCommandInternal(Type invokeClass, string cmdName, NetworkWriter writer, int channelId)
+        protected void SendCommandInternal(Type invokeClass, string cmdName, NetworkWriter writer, int channelId, bool ignoreAuthority = false)
         {
             // this was in Weaver before
             // NOTE: we could remove this later to allow calling Cmds on Server
             //       to avoid Wrapper functions. a lot of people requested this.
             if (!NetworkClient.active)
             {
-                Debug.LogError("Command Function " + cmdName + " called on server without an active client.");
+                logger.LogError("Command Function " + cmdName + " called on server without an active client.");
                 return;
             }
             // local players can always send commands, regardless of authority, other objects must have authority.
-            if (!(isLocalPlayer || hasAuthority))
+            if (!(ignoreAuthority || isLocalPlayer || hasAuthority))
             {
-                Debug.LogWarning($"Trying to send command for object without authority. {invokeClass.ToString()}.{cmdName}");
+                logger.LogWarning($"Trying to send command for object without authority. {invokeClass.ToString()}.{cmdName}");
                 return;
             }
 
             if (ClientScene.readyConnection == null)
             {
-                Debug.LogError("Send command attempted with no client running [client=" + connectionToServer + "].");
+                logger.LogError("Send command attempted with no client running [client=" + connectionToServer + "].");
                 return;
             }
 
@@ -209,8 +208,10 @@ namespace Mirror
             {
                 netId = netId,
                 componentIndex = ComponentIndex,
-                functionHash = GetMethodHash(invokeClass, cmdName), // type+func so Inventory.RpcUse != Equipment.RpcUse
-                payload = writer.ToArraySegment() // segment to avoid reader allocations
+                // type+func so Inventory.RpcUse != Equipment.RpcUse
+                functionHash = GetMethodHash(invokeClass, cmdName),
+                // segment to avoid reader allocations
+                payload = writer.ToArraySegment()
             };
 
             ClientScene.readyConnection.Send(message, channelId);
@@ -231,18 +232,18 @@ namespace Mirror
 
         #region Client RPCs
         [EditorBrowsable(EditorBrowsableState.Never)]
-        protected void SendRPCInternal(Type invokeClass, string rpcName, NetworkWriter writer, int channelId)
+        protected void SendRPCInternal(Type invokeClass, string rpcName, NetworkWriter writer, int channelId, bool excludeOwner)
         {
             // this was in Weaver before
             if (!NetworkServer.active)
             {
-                Debug.LogError("RPC Function " + rpcName + " called on Client.");
+                logger.LogError("RPC Function " + rpcName + " called on Client.");
                 return;
             }
             // This cannot use NetworkServer.active, as that is not specific to this object.
             if (!isServer)
             {
-                Debug.LogWarning("ClientRpc " + rpcName + " called on un-spawned object: " + name);
+                logger.LogWarning("ClientRpc " + rpcName + " called on un-spawned object: " + name);
                 return;
             }
 
@@ -251,11 +252,16 @@ namespace Mirror
             {
                 netId = netId,
                 componentIndex = ComponentIndex,
-                functionHash = GetMethodHash(invokeClass, rpcName), // type+func so Inventory.RpcUse != Equipment.RpcUse
-                payload = writer.ToArraySegment() // segment to avoid reader allocations
+                // type+func so Inventory.RpcUse != Equipment.RpcUse
+                functionHash = GetMethodHash(invokeClass, rpcName),
+                // segment to avoid reader allocations
+                payload = writer.ToArraySegment()
             };
 
-            NetworkServer.SendToReady(netIdentity, message, channelId);
+            // The public facing parameter is excludeOwner in [ClientRpc]
+            // so we negate it here to logically align with SendToReady.
+            bool includeOwner = !excludeOwner;
+            NetworkServer.SendToReady(netIdentity, message, includeOwner, channelId);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -264,7 +270,7 @@ namespace Mirror
             // this was in Weaver before
             if (!NetworkServer.active)
             {
-                Debug.LogError("TargetRPC Function " + rpcName + " called on client.");
+                logger.LogError("TargetRPC Function " + rpcName + " called on client.");
                 return;
             }
             // connection parameter is optional. assign if null.
@@ -275,13 +281,13 @@ namespace Mirror
             // this was in Weaver before
             if (conn is NetworkConnectionToServer)
             {
-                Debug.LogError("TargetRPC Function " + rpcName + " called on connection to server");
+                logger.LogError("TargetRPC Function " + rpcName + " called on connection to server");
                 return;
             }
             // This cannot use NetworkServer.active, as that is not specific to this object.
             if (!isServer)
             {
-                Debug.LogWarning("TargetRpc " + rpcName + " called on un-spawned object: " + name);
+                logger.LogWarning("TargetRpc " + rpcName + " called on un-spawned object: " + name);
                 return;
             }
 
@@ -290,8 +296,10 @@ namespace Mirror
             {
                 netId = netId,
                 componentIndex = ComponentIndex,
-                functionHash = GetMethodHash(invokeClass, rpcName), // type+func so Inventory.RpcUse != Equipment.RpcUse
-                payload = writer.ToArraySegment() // segment to avoid reader allocations
+                // type+func so Inventory.RpcUse != Equipment.RpcUse
+                functionHash = GetMethodHash(invokeClass, rpcName),
+                // segment to avoid reader allocations
+                payload = writer.ToArraySegment()
             };
 
             conn.Send(message, channelId);
@@ -316,7 +324,7 @@ namespace Mirror
         {
             if (!NetworkServer.active)
             {
-                Debug.LogWarning("SendEvent no server?");
+                logger.LogWarning("SendEvent no server?");
                 return;
             }
 
@@ -325,8 +333,10 @@ namespace Mirror
             {
                 netId = netId,
                 componentIndex = ComponentIndex,
-                functionHash = GetMethodHash(invokeClass, eventName), // type+func so Inventory.RpcUse != Equipment.RpcUse
-                payload = writer.ToArraySegment() // segment to avoid reader allocations
+                // type+func so Inventory.RpcUse != Equipment.RpcUse
+                functionHash = GetMethodHash(invokeClass, eventName),
+                // segment to avoid reader allocations
+                payload = writer.ToArraySegment()
             };
 
             NetworkServer.SendToReady(netIdentity, message, channelId);
@@ -351,68 +361,123 @@ namespace Mirror
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="reader"></param>
-        public delegate void CmdDelegate(NetworkBehaviour obj, NetworkReader reader);
+        public delegate void CmdDelegate(NetworkBehaviour obj, NetworkReader reader, NetworkConnectionToClient senderConnection);
 
         protected class Invoker
         {
-            public MirrorInvokeType invokeType;
             public Type invokeClass;
+            public MirrorInvokeType invokeType;
             public CmdDelegate invokeFunction;
+            public bool cmdIgnoreAuthority;
+
+            public bool AreEqual(Type invokeClass, MirrorInvokeType invokeType, CmdDelegate function)
+            {
+                return (this.invokeClass == invokeClass &&
+                     this.invokeType == invokeType &&
+                     invokeFunction == function);
+            }
+        }
+
+        public struct CommandInfo
+        {
+            public bool ignoreAuthority;
         }
 
         static readonly Dictionary<int, Invoker> cmdHandlerDelegates = new Dictionary<int, Invoker>();
 
-        // helper function register a Command/Rpc/SyncEvent delegate
+        /// <summary>
+        /// helper function register a Command/Rpc/SyncEvent delegate
+        /// </summary>
+        /// <param name="invokeClass"></param>
+        /// <param name="cmdName"></param>
+        /// <param name="invokerType"></param>
+        /// <param name="func"></param>
+        /// <param name="cmdIgnoreAuthority"></param>
+        /// <returns>remote function hash</returns>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        protected static void RegisterDelegate(Type invokeClass, string cmdName, MirrorInvokeType invokerType, CmdDelegate func)
+        internal static int RegisterDelegate(Type invokeClass, string cmdName, MirrorInvokeType invokerType, CmdDelegate func, bool cmdIgnoreAuthority = false)
         {
-            int cmdHash = GetMethodHash(invokeClass, cmdName); // type+func so Inventory.RpcUse != Equipment.RpcUse
+            // type+func so Inventory.RpcUse != Equipment.RpcUse
+            int cmdHash = GetMethodHash(invokeClass, cmdName);
 
-            if (cmdHandlerDelegates.ContainsKey(cmdHash))
-            {
-                // something already registered this hash
-                Invoker oldInvoker = cmdHandlerDelegates[cmdHash];
-                if (oldInvoker.invokeClass == invokeClass && oldInvoker.invokeType == invokerType && oldInvoker.invokeFunction == func)
-                {
-                    // it's all right,  it was the same function
-                    return;
-                }
+            if (CheckIfDeligateExists(invokeClass, invokerType, func, cmdHash))
+                return cmdHash;
 
-                Debug.LogError($"Function {oldInvoker.invokeClass}.{oldInvoker.invokeFunction.GetMethodName()} and {invokeClass}.{oldInvoker.invokeFunction.GetMethodName()} have the same hash.  Please rename one of them");
-            }
             Invoker invoker = new Invoker
             {
                 invokeType = invokerType,
                 invokeClass = invokeClass,
-                invokeFunction = func
+                invokeFunction = func,
+                cmdIgnoreAuthority = cmdIgnoreAuthority,
             };
+
             cmdHandlerDelegates[cmdHash] = invoker;
-            if (LogFilter.Debug) Debug.Log("RegisterDelegate hash:" + cmdHash + " invokerType: " + invokerType + " method:" + func.GetMethodName());
+
+            if (logger.LogEnabled())
+            {
+                string ingoreAuthorityMessage = invokerType == MirrorInvokeType.Command ? $" IgnoreAuthority:{cmdIgnoreAuthority}" : "";
+                logger.Log($"RegisterDelegate hash: {cmdHash} invokerType: {invokerType} method: {func.GetMethodName()}{ingoreAuthorityMessage}");
+            }
+
+            return cmdHash;
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        protected static void RegisterCommandDelegate(Type invokeClass, string cmdName, CmdDelegate func)
+        static bool CheckIfDeligateExists(Type invokeClass, MirrorInvokeType invokerType, CmdDelegate func, int cmdHash)
         {
-            RegisterDelegate(invokeClass, cmdName, MirrorInvokeType.Command, func);
+            if (cmdHandlerDelegates.ContainsKey(cmdHash))
+            {
+                // something already registered this hash
+                Invoker oldInvoker = cmdHandlerDelegates[cmdHash];
+                if (oldInvoker.AreEqual(invokeClass, invokerType, func))
+                {
+                    // it's all right,  it was the same function
+                    return true;
+                }
+
+                logger.LogError($"Function {oldInvoker.invokeClass}.{oldInvoker.invokeFunction.GetMethodName()} and {invokeClass}.{func.GetMethodName()} have the same hash.  Please rename one of them");
+            }
+
+            return false;
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        protected static void RegisterRpcDelegate(Type invokeClass, string rpcName, CmdDelegate func)
+        public static void RegisterCommandDelegate(Type invokeClass, string cmdName, CmdDelegate func, bool ignoreAuthority)
+        {
+            RegisterDelegate(invokeClass, cmdName, MirrorInvokeType.Command, func, ignoreAuthority);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static void RegisterRpcDelegate(Type invokeClass, string rpcName, CmdDelegate func)
         {
             RegisterDelegate(invokeClass, rpcName, MirrorInvokeType.ClientRpc, func);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        protected static void RegisterEventDelegate(Type invokeClass, string eventName, CmdDelegate func)
+        public static void RegisterEventDelegate(Type invokeClass, string eventName, CmdDelegate func)
         {
             RegisterDelegate(invokeClass, eventName, MirrorInvokeType.SyncEvent, func);
         }
 
+        // we need a way to clean up delegates after tests
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [System.Obsolete("Removing all delegates will cause problems with other tests as their hashs can not be re-added without reloading scripts", true)]
+        internal static void ClearDelegates()
+        {
+            cmdHandlerDelegates.Clear();
+        }
+
+        /// <summary>
+        /// We need this in order to clean up tests
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        internal static void RemoveDelegates(int hash)
+        {
+            cmdHandlerDelegates.Remove(hash);
+        }
+
         static bool GetInvokerForHash(int cmdHash, MirrorInvokeType invokeType, out Invoker invoker)
         {
-            if (cmdHandlerDelegates.TryGetValue(cmdHash, out invoker) &&
-                invoker != null &&
-                invoker.invokeType == invokeType)
+            if (cmdHandlerDelegates.TryGetValue(cmdHash, out invoker) && invoker != null && invoker.invokeType == invokeType)
             {
                 return true;
             }
@@ -420,21 +485,37 @@ namespace Mirror
             // debug message if not found, or null, or mismatched type
             // (no need to throw an error, an attacker might just be trying to
             //  call an cmd with an rpc's hash)
-            if (LogFilter.Debug) Debug.Log("GetInvokerForHash hash:" + cmdHash + " not found");
+            if (logger.LogEnabled()) logger.Log("GetInvokerForHash hash:" + cmdHash + " not found");
+
             return false;
         }
 
         // InvokeCmd/Rpc/SyncEventDelegate can all use the same function here
-        internal bool InvokeHandlerDelegate(int cmdHash, MirrorInvokeType invokeType, NetworkReader reader)
+        internal bool InvokeHandlerDelegate(int cmdHash, MirrorInvokeType invokeType, NetworkReader reader, NetworkConnectionToClient senderConnection = null)
         {
-            if (GetInvokerForHash(cmdHash, invokeType, out Invoker invoker) &&
-                invoker.invokeClass.IsInstanceOfType(this))
+            if (GetInvokerForHash(cmdHash, invokeType, out Invoker invoker) && invoker.invokeClass.IsInstanceOfType(this))
             {
-                invoker.invokeFunction(this, reader);
+                invoker.invokeFunction(this, reader, senderConnection);
+
                 return true;
             }
             return false;
         }
+
+        internal CommandInfo GetCommandInfo(int cmdHash)
+        {
+            if (GetInvokerForHash(cmdHash, MirrorInvokeType.Command, out Invoker invoker) && invoker.invokeClass.IsInstanceOfType(this))
+            {
+                return new CommandInfo
+                {
+                    ignoreAuthority = invoker.cmdIgnoreAuthority
+                };
+            }
+            return default;
+        }
+
+        [Obsolete("Use NetworkBehaviour.GetDelegate instead.")]
+        public static CmdDelegate GetRpcHandler(int cmdHash) => GetDelegate(cmdHash);
 
         /// <summary>
         /// Gets the handler function for a given hash
@@ -442,7 +523,7 @@ namespace Mirror
         /// </summary>
         /// <param name="cmdHash">rpc function hash</param>
         /// <returns>The function delegate that will handle the command</returns>
-        public static CmdDelegate GetRpcHandler(int cmdHash)
+        public static CmdDelegate GetDelegate(int cmdHash)
         {
             if (cmdHandlerDelegates.TryGetValue(cmdHash, out Invoker invoker))
             {
@@ -456,6 +537,8 @@ namespace Mirror
         #region Helpers
 
         // helper function for [SyncVar] GameObjects.
+        // IMPORTANT: keep as 'protected', not 'internal', otherwise Weaver
+        //            can't resolve it
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected bool SyncVarGameObjectEqual(GameObject newGameObject, uint netIdField)
         {
@@ -468,7 +551,7 @@ namespace Mirror
                     newNetId = identity.netId;
                     if (newNetId == 0)
                     {
-                        Debug.LogWarning("SetSyncVarGameObject GameObject " + newGameObject + " has a zero netId. Maybe it is not spawned yet?");
+                        logger.LogWarning("SetSyncVarGameObject GameObject " + newGameObject + " has a zero netId. Maybe it is not spawned yet?");
                     }
                 }
             }
@@ -492,14 +575,15 @@ namespace Mirror
                     newNetId = identity.netId;
                     if (newNetId == 0)
                     {
-                        Debug.LogWarning("SetSyncVarGameObject GameObject " + newGameObject + " has a zero netId. Maybe it is not spawned yet?");
+                        logger.LogWarning("SetSyncVarGameObject GameObject " + newGameObject + " has a zero netId. Maybe it is not spawned yet?");
                     }
                 }
             }
 
-            if (LogFilter.Debug) Debug.Log("SetSyncVar GameObject " + GetType().Name + " bit [" + dirtyBit + "] netfieldId:" + netIdField + "->" + newNetId);
+            if (logger.LogEnabled()) logger.Log("SetSyncVar GameObject " + GetType().Name + " bit [" + dirtyBit + "] netfieldId:" + netIdField + "->" + newNetId);
             SetDirtyBit(dirtyBit);
-            gameObjectField = newGameObject; // assign new one on the server, and in case we ever need it on client too
+            // assign new one on the server, and in case we ever need it on client too
+            gameObjectField = newGameObject;
             netIdField = newNetId;
         }
 
@@ -522,6 +606,8 @@ namespace Mirror
         }
 
         // helper function for [SyncVar] NetworkIdentities.
+        // IMPORTANT: keep as 'protected', not 'internal', otherwise Weaver
+        //            can't resolve it
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected bool SyncVarNetworkIdentityEqual(NetworkIdentity newIdentity, uint netIdField)
         {
@@ -531,7 +617,7 @@ namespace Mirror
                 newNetId = newIdentity.netId;
                 if (newNetId == 0)
                 {
-                    Debug.LogWarning("SetSyncVarNetworkIdentity NetworkIdentity " + newIdentity + " has a zero netId. Maybe it is not spawned yet?");
+                    logger.LogWarning("SetSyncVarNetworkIdentity NetworkIdentity " + newIdentity + " has a zero netId. Maybe it is not spawned yet?");
                 }
             }
 
@@ -552,14 +638,15 @@ namespace Mirror
                 newNetId = newIdentity.netId;
                 if (newNetId == 0)
                 {
-                    Debug.LogWarning("SetSyncVarNetworkIdentity NetworkIdentity " + newIdentity + " has a zero netId. Maybe it is not spawned yet?");
+                    logger.LogWarning("SetSyncVarNetworkIdentity NetworkIdentity " + newIdentity + " has a zero netId. Maybe it is not spawned yet?");
                 }
             }
 
-            if (LogFilter.Debug) Debug.Log("SetSyncVarNetworkIdentity NetworkIdentity " + GetType().Name + " bit [" + dirtyBit + "] netIdField:" + netIdField + "->" + newNetId);
+            if (logger.LogEnabled()) logger.Log("SetSyncVarNetworkIdentity NetworkIdentity " + GetType().Name + " bit [" + dirtyBit + "] netIdField:" + netIdField + "->" + newNetId);
             SetDirtyBit(dirtyBit);
             netIdField = newNetId;
-            identityField = newIdentity; // assign new one on the server, and in case we ever need it on client too
+            // assign new one on the server, and in case we ever need it on client too
+            identityField = newIdentity;
         }
 
         // helper function for [SyncVar] NetworkIdentities.
@@ -589,7 +676,7 @@ namespace Mirror
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected void SetSyncVar<T>(T value, ref T fieldValue, ulong dirtyBit)
         {
-            if (LogFilter.Debug) Debug.Log("SetSyncVar " + GetType().Name + " bit [" + dirtyBit + "] " + fieldValue + "->" + value);
+            if (logger.LogEnabled()) logger.Log("SetSyncVar " + GetType().Name + " bit [" + dirtyBit + "] " + fieldValue + "->" + value);
             SetDirtyBit(dirtyBit);
             fieldValue = value;
         }
@@ -661,12 +748,23 @@ namespace Mirror
         /// <returns>True if data was written.</returns>
         public virtual bool OnSerialize(NetworkWriter writer, bool initialState)
         {
+            bool objectWritten = false;
+            // if initialState: write all SyncVars.
+            // otherwise write dirtyBits+dirty SyncVars
             if (initialState)
             {
-                return SerializeObjectsAll(writer);
+                objectWritten = SerializeObjectsAll(writer);
             }
-            return SerializeObjectsDelta(writer);
+            else
+            {
+                objectWritten = SerializeObjectsDelta(writer);
+            }
+
+            bool syncVarWritten = SerializeSyncVars(writer, initialState);
+
+            return objectWritten || syncVarWritten;
         }
+
 
         /// <summary>
         /// Virtual function to override to receive custom serialization data. The corresponding function to send serialization data is OnSerialize().
@@ -683,9 +781,37 @@ namespace Mirror
             {
                 DeSerializeObjectsDelta(reader);
             }
+
+            DeserializeSyncVars(reader, initialState);
         }
 
-        ulong DirtyObjectBits()
+        // Don't rename. Weaver uses this exact function name.
+        public virtual bool SerializeSyncVars(NetworkWriter writer, bool initialState)
+        {
+            return false;
+
+            // SyncVar are writen here in subclass
+
+            // if initialState
+            //   write all SyncVars
+            // else
+            //   write syncVarDirtyBits
+            //   write dirty SyncVars
+        }
+
+        // Don't rename. Weaver uses this exact function name.
+        public virtual void DeserializeSyncVars(NetworkReader reader, bool initialState)
+        {
+            // SyncVars are read here in subclass
+
+            // if initialState
+            //   read all SyncVars
+            // else
+            //   read syncVarDirtyBits
+            //   read dirty SyncVars
+        }
+
+        internal ulong DirtyObjectBits()
         {
             ulong dirtyObjects = 0;
             for (int i = 0; i < syncObjects.Count; i++)
@@ -729,7 +855,7 @@ namespace Mirror
             return dirty;
         }
 
-        void DeSerializeObjectsAll(NetworkReader reader)
+        internal void DeSerializeObjectsAll(NetworkReader reader)
         {
             for (int i = 0; i < syncObjects.Count; i++)
             {
@@ -738,7 +864,7 @@ namespace Mirror
             }
         }
 
-        void DeSerializeObjectsDelta(NetworkReader reader)
+        internal void DeSerializeObjectsDelta(NetworkReader reader)
         {
             ulong dirty = reader.ReadPackedUInt64();
             for (int i = 0; i < syncObjects.Count; i++)
@@ -751,12 +877,32 @@ namespace Mirror
             }
         }
 
+        internal void ResetSyncObjects()
+        {
+            foreach (SyncObject syncObject in syncObjects)
+            {
+                syncObject.Reset();
+            }
+        }
+
+        // Deprecated 04/20/2020
+        /// <summary>
+        /// Obsolete: Use <see cref="OnStopClient()">OnStopClient()</see> instead
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Override OnStopClient() instead")]
+        public virtual void OnNetworkDestroy() { }
+
         /// <summary>
         /// This is invoked on clients when the server has caused this object to be destroyed.
         /// <para>This can be used as a hook to invoke effects or do client specific cleanup.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public virtual void OnNetworkDestroy() { }
+        public virtual void OnStopClient()
+        {
+#pragma warning disable CS0618 // Type or member is obsolete
+            // backwards compatibility
+            OnNetworkDestroy();
+#pragma warning restore CS0618 // Type or member is obsolete
+        }
 
         /// <summary>
         /// This is invoked for NetworkBehaviour objects when they become active on the server.
@@ -764,6 +910,12 @@ namespace Mirror
         /// <para>This will be called for objects on a "host" as well as for object on a dedicated server.</para>
         /// </summary>
         public virtual void OnStartServer() { }
+
+        /// <summary>
+        /// Invoked on the server when the object is unspawned
+        /// <para>Useful for saving object data in persistant storage</para>
+        /// </summary>
+        public virtual void OnStopServer() { }
 
         /// <summary>
         /// Called on every NetworkBehaviour when it is activated on a client.
@@ -780,7 +932,7 @@ namespace Mirror
         /// <summary>
         /// This is invoked on behaviours that have authority, based on context and <see cref="NetworkIdentity.hasAuthority">NetworkIdentity.hasAuthority</see>.
         /// <para>This is called after <see cref="OnStartServer">OnStartServer</see> and before <see cref="OnStartClient">OnStartClient.</see></para>
-        /// <para>When <see cref="NetworkIdentity.AssignClientAuthority"/> is called on the server, this will be called on the client that owns the object. When an object is spawned with <see cref="NetworkServer.Spawn">NetworkServer.Spawn</see> with a NetworkConnection parameter included, this will be called on the client that owns the object.</para>
+        /// <para>When <see cref="NetworkIdentity.AssignClientAuthority">AssignClientAuthority</see> is called on the server, this will be called on the client that owns the object. When an object is spawned with <see cref="NetworkServer.Spawn">NetworkServer.Spawn</see> with a NetworkConnection parameter included, this will be called on the client that owns the object.</para>
         /// </summary>
         public virtual void OnStartAuthority() { }
 
@@ -789,38 +941,5 @@ namespace Mirror
         /// <para>When NetworkIdentity.RemoveClientAuthority is called on the server, this will be called on the client that owns the object.</para>
         /// </summary>
         public virtual void OnStopAuthority() { }
-
-        /// <summary>
-        /// Callback used by the visibility system to (re)construct the set of observers that can see this object.
-        /// <para>Implementations of this callback should add network connections of players that can see this object to the observers set.</para>
-        /// </summary>
-        /// <param name="observers">The new set of observers for this object.</param>
-        /// <param name="initialize">True if the set of observers is being built for the first time.</param>
-        /// <returns>true when overwriting so that Mirror knows that we wanted to rebuild observers ourselves. otherwise it uses built in rebuild.</returns>
-        public virtual bool OnRebuildObservers(HashSet<NetworkConnection> observers, bool initialize)
-        {
-            return false;
-        }
-
-        [Obsolete("Rename to OnSetHostVisibility instead.")]
-        public virtual void OnSetLocalVisibility(bool visible) { }
-
-        /// <summary>
-        /// Callback used by the visibility system for objects on a host.
-        /// <para>Objects on a host (with a local client) cannot be disabled or destroyed when they are not visibile to the local client. So this function is called to allow custom code to hide these objects. A typical implementation will disable renderer components on the object. This is only called on local clients on a host.</para>
-        /// </summary>
-        /// <param name="visible">New visibility state.</param>
-        public virtual void OnSetHostVisibility(bool visible) { }
-
-        /// <summary>
-        /// Callback used by the visibility system to determine if an observer (player) can see this object.
-        /// <para>If this function returns true, the network connection will be added as an observer.</para>
-        /// </summary>
-        /// <param name="conn">Network connection of a player.</param>
-        /// <returns>True if the player can see this object.</returns>
-        public virtual bool OnCheckObserver(NetworkConnection conn)
-        {
-            return true;
-        }
     }
 }
