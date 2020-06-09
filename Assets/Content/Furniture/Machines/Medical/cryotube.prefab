@@ -326,7 +326,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1344086091236819040}
-  - component: {fileID: 8211696424719628591}
+  - component: {fileID: 8594528080645165144}
+  - component: {fileID: 7990539578614238798}
   m_Layer: 0
   m_Name: Cryotube.Liquid
   m_TagString: Untagged
@@ -348,8 +349,8 @@ Transform:
   m_Father: {fileID: 2135670720530425799}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!137 &8211696424719628591
-SkinnedMeshRenderer:
+--- !u!23 &8594528080645165144
+MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -362,7 +363,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -387,18 +388,14 @@ SkinnedMeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  serializedVersion: 2
-  m_Quality: 0
-  m_UpdateWhenOffscreen: 1
-  m_SkinnedMotionVectors: 0
+--- !u!33 &7990539578614238798
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6432704430344066030}
   m_Mesh: {fileID: 31224540767065549, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
-  m_Bones: []
-  m_BlendShapeWeights: []
-  m_RootBone: {fileID: 0}
-  m_AABB:
-    m_Center: {x: 0.000000059604645, y: 1.5081775, z: -0.00000014901161}
-    m_Extent: {x: 0.5867799, y: 1.0370908, z: 0.58677995}
-  m_DirtyAABB: 0
 --- !u!1 &9199454391362990948
 GameObject:
   m_ObjectHideFlags: 0

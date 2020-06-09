@@ -85,7 +85,7 @@ namespace SS3D.Content.Systems.Substances
         [Server]
         private void UpdateDisplay()
         {
-            float relativeVolume = (Container.CurrentVolume / Container.Volume) * (meshRenderer.bounds.size.y / 2);
+            float relativeVolume = (Container.CurrentVolume / Container.Volume);
             Transform trans = DisplayObject.transform;
 
             Color newColor = CalculateColor();
@@ -93,7 +93,6 @@ namespace SS3D.Content.Systems.Substances
             meshRenderer.material.SetFloat("_FillAmount", relativeVolume);
             meshRenderer.material.SetColor("_Tint", newColor);
             meshRenderer.material.SetColor("_TopColor", newColor);
-
 
             //trans.localPosition = Vector3.Lerp(EmptyPosition, FullPosition, Mathf.Min(relativeVolume, 1));
             //trans.localScale = new Vector3(ScaleX.Evaluate(relativeVolume), ScaleY.Evaluate(relativeVolume), ScaleZ.Evaluate(relativeVolume));
