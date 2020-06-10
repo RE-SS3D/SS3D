@@ -343,7 +343,7 @@ namespace SS3D.Engine.Tiles {
                 #endif
 
                 // If the tile doesn't actually have anything, destroy it
-                if (childTile.Tile.turf == null && childTile.Tile.fixtures == null) {
+                if (childTile.Tile.plenum == null && childTile.Tile.turf == null && childTile.Tile.fixtures == null) {
                     queuedDestroy.Add(child.gameObject);
                     continue;
                 }
@@ -468,8 +468,13 @@ namespace SS3D.Engine.Tiles {
 
         public static void WriteNetworkableTileDefinition(this NetworkWriter writer, TileDefinition definition)
         {
+            // Write plenum
+            writer.WriteString(definition.plenum?.name ?? "");
+
+            // Write turf
             writer.WriteString(definition.turf?.name ?? "");
 
+            // Write all fixtures
             foreach (Fixture fixture in definition.fixtures)
             {
                 if (fixture)
@@ -504,8 +509,17 @@ namespace SS3D.Engine.Tiles {
 
             var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
 
-            string turfName = reader.ReadString();
+            // Read plenum
+            string plenumName = reader.ReadString();
+            if (!string.IsNullOrEmpty(plenumName))
+            {
+                tileDefinition.plenum = plenums.FirstOrDefault(plenum => plenum.name == plenumName);
+                if (tileDefinition.plenum == null)
+                    Debug.LogError($"Network recieved plenum with name {plenumName} could not be found");
+            }
 
+            // Read turf
+            string turfName = reader.ReadString();
             if (!string.IsNullOrEmpty(turfName))
             {
                 tileDefinition.turf = turfs.FirstOrDefault(turf => turf.name == turfName);
@@ -513,6 +527,7 @@ namespace SS3D.Engine.Tiles {
                     Debug.LogError($"Network recieved turf with name {turfName} could not be found");
             }
 
+            // Read fixtures
             foreach (FixtureLayers layer in layers)
             {
                 string fixtureName = reader.ReadString();
@@ -539,6 +554,7 @@ namespace SS3D.Engine.Tiles {
         // Store a list of all turfs and fixtures to be used in networking communications.
         // This might not be the final place of these resources (could be a public singleton), given that these could be
         // used for other purposes, e.g. in-game tile editing, recipes, etc.
+        private static Plenum[] plenums = Resources.FindObjectsOfTypeAll<Plenum>();
         private static Turf[] turfs = Resources.FindObjectsOfTypeAll<Turf>();
         private static Fixture[] fixtures = Resources.FindObjectsOfTypeAll<Fixture>();
     }
