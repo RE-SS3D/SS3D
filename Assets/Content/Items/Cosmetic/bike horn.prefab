@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 8926672140337418632}
   - component: {fileID: 8533398176528032965}
   - component: {fileID: 3564174384954124080}
+  - component: {fileID: 375594491149574265}
   m_Layer: 16
   m_Name: bike horn
   m_TagString: Untagged
@@ -294,3 +295,19 @@ MonoBehaviour:
   attachmentPoint: {fileID: 3201361005074650950}
   honkSound: {fileID: 8300000, guid: 8c8823796bbcb23438fcf68260070383, type: 3}
   useIcon: {fileID: 21300000, guid: facda86cccb56594eb7155ed03ebbb9e, type: 3}
+--- !u!114 &375594491149574265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7195977086062962004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0

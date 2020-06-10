@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4968868803568977639}
   - component: {fileID: 7821470909890964834}
   - component: {fileID: 8371882450930850212}
+  - component: {fileID: -3925197901788839770}
   m_Layer: 16
   m_Name: flashlight
   m_TagString: Untagged
@@ -102,6 +103,22 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.22681566, y: 0.2089166, z: 0.3477433}
   m_Center: {x: 0, y: -0.10596359, z: 0.11006506}
+--- !u!114 &-3925197901788839770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833752496874958856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0
 --- !u!1 &3531470905858699050
 GameObject:
   m_ObjectHideFlags: 0

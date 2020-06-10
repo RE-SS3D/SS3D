@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 8564003696829877426}
   - component: {fileID: 4542085002649173662}
   - component: {fileID: 7677727642122123857}
+  - component: {fileID: 6577026541988896372}
   m_Layer: 16
   m_Name: Light Bulb
   m_TagString: Untagged
@@ -178,3 +179,19 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 7487790533422832536}
   attachmentPoint: {fileID: 2907427631115954570}
+--- !u!114 &6577026541988896372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7487790533422832536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0

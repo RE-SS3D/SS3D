@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 2470914960307226952}
   - component: {fileID: 244458066234329819}
   - component: {fileID: 7910296348410097481}
+  - component: {fileID: -4686216604784746079}
   m_Layer: 0
   m_Name: CrayonGreen
   m_TagString: Untagged
@@ -195,3 +196,19 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   propertiesPrefab: {fileID: 11400000, guid: dc129b98a3e33424cb4a6e40568e45c1, type: 2}
+--- !u!114 &-4686216604784746079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8550770868129900901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0

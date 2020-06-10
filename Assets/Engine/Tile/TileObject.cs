@@ -140,6 +140,8 @@ namespace SS3D.Engine.Tiles
          */
         private void SetContents(TileDefinition newTile)
         {
+            if (newTile.plenum != tile.plenum)
+                CreatePlenum(newTile.plenum);
             if (newTile.turf != tile.turf)
                 CreateTurf(newTile.turf);
             if (newTile.fixtures != tile.fixtures)
@@ -164,6 +166,24 @@ namespace SS3D.Engine.Tiles
             // Fill in our references to objects using the saved information from our tile variable.
             // Effectively, this code expects the tile's children to match up to the turf and fixtures.
             // If it finds any inconsistencies, it rectifies them.
+            if (tile.plenum)
+            {
+                plenum = transform.Find("plenum_" + tile.plenum.id)?.gameObject;
+
+                if (plenum == null)
+                {
+                    if (shouldWarn)
+                        Debug.LogWarning("Tile's plenum was not created? Creating now.");
+
+                    // Create the object
+                    CreatePlenum(tile.plenum);
+                }
+            }
+            else
+            {
+                plenum = null;
+            }
+
 
             if (tile.turf)
             {
@@ -237,7 +257,7 @@ namespace SS3D.Engine.Tiles
             {
                 var child = transform.GetChild(j).gameObject;
 
-                if (child != turf && !fixtures.Contains(child))
+                if (child != plenum && child != turf && !fixtures.Contains(child))
                 {
                     if (shouldWarn)
                     {
@@ -253,6 +273,15 @@ namespace SS3D.Engine.Tiles
             // Set fixture layer size if not set
             if (tile.fixtures?.Length != TileDefinition.GetFixtureLayerSize())
                 tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
+        }
+
+        private void CreatePlenum(Plenum plenumDefinition)
+        {
+            if (plenum != null)
+                EditorAndRuntime.Destroy(plenum);
+            plenum = EditorAndRuntime.InstantiatePrefab(plenumDefinition.prefab, transform);
+
+            plenum.name = "plenum_" + plenumDefinition.id;
         }
 
         private void CreateTurf(Turf turfDefinition)
@@ -378,6 +407,7 @@ namespace SS3D.Engine.Tiles
         [SerializeField]
         private TileDefinition tile = new TileDefinition();
 
+        private GameObject plenum = null;
         private GameObject turf = null;
         private AdjacencyConnector turfConnector = null; // may be null
         public AtmosObject atmos;

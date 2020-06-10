@@ -177,6 +177,7 @@ GameObject:
   - component: {fileID: 5016894336416919686}
   - component: {fileID: 7017826239347601780}
   - component: {fileID: -1809232113325138168}
+  - component: {fileID: 4690348828412999625}
   m_Layer: 0
   m_Name: Table Booze Dispenser
   m_TagString: Untagged
@@ -224,7 +225,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9feeb703d0314349836b03dcc586d5b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InteractionName: Vodka
   Substance: vodka
   Moles: 0.43103448
 --- !u!114 &7955108645699875577
@@ -239,7 +239,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9feeb703d0314349836b03dcc586d5b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InteractionName: "Kahl\xFAa"
   Substance: kahlua
   Moles: 0.43103448
 --- !u!114 &9010655720752431288
@@ -254,7 +253,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9feeb703d0314349836b03dcc586d5b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InteractionName: Absinthe
   Substance: absinthe
   Moles: 0.43103448
 --- !u!114 &3545916405821262346
@@ -269,7 +267,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9feeb703d0314349836b03dcc586d5b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InteractionName: Cognac
   Substance: cognac
   Moles: 0.43103448
 --- !u!114 &5016894336416919686
@@ -284,7 +281,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9feeb703d0314349836b03dcc586d5b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InteractionName: Gin
   Substance: gin
   Moles: 0.43103448
 --- !u!114 &7017826239347601780
@@ -299,7 +295,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9feeb703d0314349836b03dcc586d5b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InteractionName: Rum
   Substance: rum
   Moles: 0.43103448
 --- !u!114 &-1809232113325138168
@@ -317,6 +312,22 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   m_SceneId: 0
+--- !u!114 &4690348828412999625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1998574153158042118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0
 --- !u!1 &8961199219136555141
 GameObject:
   m_ObjectHideFlags: 0
