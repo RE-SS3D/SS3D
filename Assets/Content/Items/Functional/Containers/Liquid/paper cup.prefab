@@ -181,7 +181,7 @@ MonoBehaviour:
   Container: {fileID: 2596605630319959798}
   DisplayObject: {fileID: 1561983073461142388}
   EmptyPosition: {x: 0, y: 0, z: 0}
-  FullPosition: {x: 0, y: 0.1187, z: 0}
+  FullPosition: {x: 0, y: 0, z: 0}
   ScaleX:
     serializedVersion: 2
     m_Curve:
@@ -254,6 +254,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  MaxWobble: 0.03
+  WobbleSpeed: 1
+  Recovery: 1
 --- !u!114 &2855631924689371505
 MonoBehaviour:
   m_ObjectHideFlags: 0

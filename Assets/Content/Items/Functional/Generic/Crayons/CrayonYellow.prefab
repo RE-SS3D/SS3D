@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 8781530059635929249}
   - component: {fileID: 1754692750722286229}
   - component: {fileID: 7468793210762665201}
+  - component: {fileID: -2773018317737842016}
   m_Layer: 0
   m_Name: CrayonYellow
   m_TagString: Untagged
@@ -195,3 +196,19 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   propertiesPrefab: {fileID: 11400000, guid: bc606902a1beef143ad3826b88e15ff8, type: 2}
+--- !u!114 &-2773018317737842016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3671789804437703988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0

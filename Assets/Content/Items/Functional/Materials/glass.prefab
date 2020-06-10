@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1566649654714823612}
   - component: {fileID: 6659718071749886352}
   - component: {fileID: 713940315606369631}
+  - component: {fileID: 1929390089627136114}
   m_Layer: 16
   m_Name: glass
   m_TagString: Untagged
@@ -148,6 +149,22 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 328008108143928470}
   attachmentPoint: {fileID: 7488110515306903881}
+--- !u!114 &1929390089627136114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 328008108143928470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0
 --- !u!1 &5673328567192312747
 GameObject:
   m_ObjectHideFlags: 0

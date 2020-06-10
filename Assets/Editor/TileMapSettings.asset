@@ -33,3 +33,12 @@ MonoBehaviour:
     - {fileID: 0}
     - {fileID: 0}
     atmos: {fileID: 0}
+  - turf: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
+    fixtures:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    atmos: {fileID: 0}
