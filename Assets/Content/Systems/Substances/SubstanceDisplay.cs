@@ -109,6 +109,7 @@ namespace SS3D.Content.Systems.Substances
                 color += entry.Substance.Color * relativeMoles;
             }
 
+            color.a = 0.5f;
             return color;
         }
 
