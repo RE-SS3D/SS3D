@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -8,20 +9,27 @@ namespace Mirror
     /// </summary>
     /// <remarks>
     /// <para>The animation of game objects can be networked by this component. There are two models of authority for networked movement:</para>
-    /// <para>If the object has authority on the client, then it should animated locally on the owning client. The animation state information will be sent from the owning client to the server, then broadcast to all of the other clients. This is common for player objects.</para>
+    /// <para>If the object has authority on the client, then it should be animated locally on the owning client. The animation state information will be sent from the owning client to the server, then broadcast to all of the other clients. This is common for player objects.</para>
     /// <para>If the object has authority on the server, then it should be animated on the server and state information will be sent to all clients. This is common for objects not related to a specific client, such as an enemy unit.</para>
-    /// <para>The NetworkAnimator synchronizes the animation parameters that are checked in the inspector view. It does not automatically sychronize triggers. The function SetTrigger can by used by an object with authority to fire an animation trigger on other clients.</para>
+    /// <para>The NetworkAnimator synchronizes all animation parameters of the selected Animator. It does not automatically sychronize triggers. The function SetTrigger can by used by an object with authority to fire an animation trigger on other clients.</para>
     /// </remarks>
-    [DisallowMultipleComponent]
     [AddComponentMenu("Network/NetworkAnimator")]
     [RequireComponent(typeof(NetworkIdentity))]
     [HelpURL("https://mirror-networking.com/docs/Components/NetworkAnimator.html")]
     public class NetworkAnimator : NetworkBehaviour
     {
+        static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkAnimator));
+
+        [Header("Authority")]
+        [Tooltip("Set to true if animations come from owner client,  set to false if animations always come from server")]
+        public bool clientAuthority;
+
         /// <summary>
         /// The animator component to synchronize.
         /// </summary>
         [FormerlySerializedAs("m_Animator")]
+        [Header("Animator")]
+        [Tooltip("Animator that will have parameters synchronized")]
         public Animator animator;
 
         // Note: not an object[] array because otherwise initialization is real annoying
@@ -30,14 +38,12 @@ namespace Mirror
         bool[] lastBoolParameters;
         AnimatorControllerParameter[] parameters;
 
-        int[] animationHash; // multiple layers
+        // multiple layers
+        int[] animationHash;
         int[] transitionHash;
         float sendTimer;
 
-        [Tooltip("Set to true if animations come from owner client,  set to false if animations always come from server")]
-        public bool clientAuthority;
-
-        bool sendMessagesAllowed
+        bool SendMessagesAllowed
         {
             get
             {
@@ -63,7 +69,9 @@ namespace Mirror
         {
             // store the animator parameters in a variable - the "Animator.parameters" getter allocates
             // a new parameter array every time it is accessed so we should avoid doing it in a loop
-            parameters = animator.parameters;
+            parameters = animator.parameters
+                .Where(par => !animator.IsParameterControlledByCurve(par.nameHash))
+                .ToArray();
             lastIntParameters = new int[parameters.Length];
             lastFloatParameters = new float[parameters.Length];
             lastBoolParameters = new bool[parameters.Length];
@@ -74,7 +82,7 @@ namespace Mirror
 
         void FixedUpdate()
         {
-            if (!sendMessagesAllowed)
+            if (!SendMessagesAllowed)
                 return;
 
             CheckSendRate();
@@ -88,10 +96,11 @@ namespace Mirror
                     continue;
                 }
 
-                NetworkWriter writer = new NetworkWriter();
-                WriteParameters(writer);
-
-                SendAnimationMessage(stateHash, normalizedTime, i, writer.ToArray());
+                using (PooledNetworkWriter writer = NetworkWriterPool.GetWriter())
+                {
+                    WriteParameters(writer);
+                    SendAnimationMessage(stateHash, normalizedTime, i, writer.ToArray());
+                }
             }
         }
 
@@ -132,14 +141,14 @@ namespace Mirror
 
         void CheckSendRate()
         {
-            if (sendMessagesAllowed && syncInterval > 0 && sendTimer < Time.time)
+            if (SendMessagesAllowed && syncInterval > 0 && sendTimer < Time.time)
             {
                 sendTimer = Time.time + syncInterval;
 
-                NetworkWriter writer = new NetworkWriter();
-                if (WriteParameters(writer))
+                using (PooledNetworkWriter writer = NetworkWriterPool.GetWriter())
                 {
-                    SendAnimationParametersMessage(writer.ToArray());
+                    if (WriteParameters(writer))
+                        SendAnimationParametersMessage(writer.ToArray());
                 }
             }
         }
@@ -197,6 +206,11 @@ namespace Mirror
             animator.SetTrigger(hash);
         }
 
+        void HandleAnimResetTriggerMsg(int hash)
+        {
+            animator.ResetTrigger(hash);
+        }
+
         ulong NextDirtyBits()
         {
             ulong dirtyBits = 0;
@@ -208,28 +222,19 @@ namespace Mirror
                 {
                     int newIntValue = animator.GetInteger(par.nameHash);
                     changed = newIntValue != lastIntParameters[i];
-                    if (changed)
-                    {
-                        lastIntParameters[i] = newIntValue;
-                    }
+                    lastIntParameters[i] = newIntValue;
                 }
                 else if (par.type == AnimatorControllerParameterType.Float)
                 {
                     float newFloatValue = animator.GetFloat(par.nameHash);
                     changed = Mathf.Abs(newFloatValue - lastFloatParameters[i]) > 0.001f;
-                    if (changed)
-                    {
-                        lastFloatParameters[i] = newFloatValue;
-                    }
+                    lastFloatParameters[i] = newFloatValue;
                 }
                 else if (par.type == AnimatorControllerParameterType.Bool)
                 {
                     bool newBoolValue = animator.GetBool(par.nameHash);
                     changed = newBoolValue != lastBoolParameters[i];
-                    if (changed)
-                    {
-                        lastBoolParameters[i] = newBoolValue;
-                    }
+                    lastBoolParameters[i] = newBoolValue;
                 }
                 if (changed)
                 {
@@ -362,68 +367,172 @@ namespace Mirror
         /// <param name="hash">Hash id of trigger (from the Animator).</param>
         public void SetTrigger(int hash)
         {
-            if (hasAuthority && clientAuthority)
+            if (clientAuthority)
             {
-                if (ClientScene.readyConnection != null)
+                if (!isClient)
                 {
-                    CmdOnAnimationTriggerServerMessage(hash);
+                    logger.LogWarning("Tried to set animation in the server for a client-controlled animator");
+                    return;
                 }
-                return;
-            }
 
-            if (isServer && !clientAuthority)
+                if (!hasAuthority)
+                {
+                    logger.LogWarning("Only the client with authority can set animations");
+                    return;
+                }
+
+                if (ClientScene.readyConnection != null)
+                    CmdOnAnimationTriggerServerMessage(hash);
+            }
+            else
             {
+                if (!isServer)
+                {
+                    logger.LogWarning("Tried to set animation in the client for a server-controlled animator");
+                    return;
+                }
+
                 RpcOnAnimationTriggerClientMessage(hash);
             }
         }
 
+        /// <summary>
+        /// Causes an animation trigger to be reset for a networked object.
+        /// <para>If local authority is set, and this is called from the client, then the trigger will be reset on the server and all clients. If not, then this is called on the server, and the trigger will be reset on all clients.</para>
+        /// </summary>
+        /// <param name="triggerName">Name of trigger.</param>
+        public void ResetTrigger(string triggerName)
+        {
+            ResetTrigger(Animator.StringToHash(triggerName));
+        }
+
+        /// <summary>
+        /// Causes an animation trigger to be reset for a networked object.
+        /// </summary>
+        /// <param name="hash">Hash id of trigger (from the Animator).</param>
+        public void ResetTrigger(int hash)
+        {
+            if (clientAuthority)
+            {
+                if (!isClient)
+                {
+                    logger.LogWarning("Tried to reset animation in the server for a client-controlled animator");
+                    return;
+                }
+
+                if (!hasAuthority)
+                {
+                    logger.LogWarning("Only the client with authority can reset animations");
+                    return;
+                }
+
+                if (ClientScene.readyConnection != null)
+                    CmdOnAnimationResetTriggerServerMessage(hash);
+            }
+            else
+            {
+                if (!isServer)
+                {
+                    logger.LogWarning("Tried to reset animation in the client for a server-controlled animator");
+                    return;
+                }
+
+                RpcOnAnimationResetTriggerClientMessage(hash);
+            }
+        }
+
         #region server message handlers
+
         [Command]
         void CmdOnAnimationServerMessage(int stateHash, float normalizedTime, int layerId, byte[] parameters)
         {
-            if (LogFilter.Debug) Debug.Log("OnAnimationMessage for netId=" + netId);
+            // Ignore messages from client if not in client authority mode
+            if (!clientAuthority)
+                return;
+
+            if (logger.LogEnabled()) logger.Log("OnAnimationMessage for netId=" + netId);
 
             // handle and broadcast
-            HandleAnimMsg(stateHash, normalizedTime, layerId, new NetworkReader(parameters));
-            RpcOnAnimationClientMessage(stateHash, normalizedTime, layerId, parameters);
+            using (PooledNetworkReader networkReader = NetworkReaderPool.GetReader(parameters))
+            {
+                HandleAnimMsg(stateHash, normalizedTime, layerId, networkReader);
+                RpcOnAnimationClientMessage(stateHash, normalizedTime, layerId, parameters);
+            }
         }
 
         [Command]
         void CmdOnAnimationParametersServerMessage(byte[] parameters)
         {
+            // Ignore messages from client if not in client authority mode
+            if (!clientAuthority)
+                return;
+
             // handle and broadcast
-            HandleAnimParamsMsg(new NetworkReader(parameters));
-            RpcOnAnimationParametersClientMessage(parameters);
+            using (PooledNetworkReader networkReader = NetworkReaderPool.GetReader(parameters))
+            {
+                HandleAnimParamsMsg(networkReader);
+                RpcOnAnimationParametersClientMessage(parameters);
+            }
         }
 
         [Command]
         void CmdOnAnimationTriggerServerMessage(int hash)
         {
+            // Ignore messages from client if not in client authority mode
+            if (!clientAuthority)
+                return;
+
             // handle and broadcast
             HandleAnimTriggerMsg(hash);
             RpcOnAnimationTriggerClientMessage(hash);
         }
+
+        [Command]
+        void CmdOnAnimationResetTriggerServerMessage(int hash)
+        {
+            // Ignore messages from client if not in client authority mode
+            if (!clientAuthority)
+                return;
+
+            // handle and broadcast
+            HandleAnimResetTriggerMsg(hash);
+            RpcOnAnimationResetTriggerClientMessage(hash);
+        }
+
         #endregion
 
         #region client message handlers
+
         [ClientRpc]
         void RpcOnAnimationClientMessage(int stateHash, float normalizedTime, int layerId, byte[] parameters)
         {
-            HandleAnimMsg(stateHash, normalizedTime, layerId, new NetworkReader(parameters));
+            using (PooledNetworkReader networkReader = NetworkReaderPool.GetReader(parameters))
+                HandleAnimMsg(stateHash, normalizedTime, layerId, networkReader);
         }
 
         [ClientRpc]
         void RpcOnAnimationParametersClientMessage(byte[] parameters)
         {
-            HandleAnimParamsMsg(new NetworkReader(parameters));
+            using (PooledNetworkReader networkReader = NetworkReaderPool.GetReader(parameters))
+                HandleAnimParamsMsg(networkReader);
         }
 
-        // server sends this to one client
         [ClientRpc]
         void RpcOnAnimationTriggerClientMessage(int hash)
         {
+            if (isServer) return;
+
             HandleAnimTriggerMsg(hash);
         }
+
+        [ClientRpc]
+        void RpcOnAnimationResetTriggerClientMessage(int hash)
+        {
+            if (isServer) return;
+
+            HandleAnimResetTriggerMsg(hash);
+        }
+
         #endregion
     }
 }

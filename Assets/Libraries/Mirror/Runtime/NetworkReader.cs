@@ -16,18 +16,21 @@ namespace Mirror
     // Note: This class is intended to be extremely pedantic, and
     // throw exceptions whenever stuff is going slightly wrong.
     // The exceptions will be handled in NetworkServer/NetworkClient.
+    /// <summary>
+    /// Binary stream Reader. Supports simple types, buffers, arrays, structs, and nested types
+    /// <para>Use <see cref="NetworkReaderPool.GetReader">NetworkReaderPool.GetReader</see> to reduce memory allocation</para>
+    /// </summary>
     public class NetworkReader
     {
         // internal buffer
         // byte[] pointer would work, but we use ArraySegment to also support
         // the ArraySegment constructor
-        ArraySegment<byte> buffer;
+        internal ArraySegment<byte> buffer;
 
         // 'int' is the best type for .Position. 'short' is too small if we send >32kb which would result in negative .Position
         // -> converting long to int is fine until 2GB of data (MAX_INT), so we don't have to worry about overflows here
         public int Position;
         public int Length => buffer.Count;
-
 
         public NetworkReader(byte[] bytes)
         {
@@ -111,6 +114,8 @@ namespace Mirror
     // but they do all need to be extensions.
     public static class NetworkReaderExtensions
     {
+        static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkReaderExtensions));
+
         // cache encoding instead of creating it each time
         // 1000 readers before:  1MB GC, 30ms
         // 1000 readers after: 0.8MB GC, 18ms
@@ -341,15 +346,26 @@ namespace Mirror
         public static NetworkIdentity ReadNetworkIdentity(this NetworkReader reader)
         {
             uint netId = reader.ReadPackedUInt32();
-            if (netId == 0) return null;
+            if (netId == 0)
+                return null;
 
             if (NetworkIdentity.spawned.TryGetValue(netId, out NetworkIdentity identity))
             {
                 return identity;
             }
 
-            if (LogFilter.Debug) Debug.Log("ReadNetworkIdentity netId:" + netId + " not found in spawned");
+            if (logger.WarnEnabled()) logger.LogFormat(LogType.Warning, "ReadNetworkIdentity netId:{0} not found in spawned", netId);
             return null;
+        }
+
+        public static Uri ReadUri(this NetworkReader reader)
+        {
+            return new Uri(reader.ReadString());
+        }
+
+        public static void ReadMessage<T>(this NetworkReader reader, T msg) where T : IMessageBase
+        {
+            msg.Deserialize(reader);
         }
     }
 }
