@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: injector
   genericType: pipe
+  layer: 0
   prefab: {fileID: 9154955770433736351, guid: 36f74b2aa9856f345853bcaa60926f19, type: 3}

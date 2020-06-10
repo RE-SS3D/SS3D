@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: valve
   genericType: pipe
+  layer: 0
   prefab: {fileID: 2802364579275783218, guid: c2b46dd4476000f489fc195500a9b13c, type: 3}
