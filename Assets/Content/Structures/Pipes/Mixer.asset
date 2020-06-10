@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Mixer
   m_EditorClassIdentifier: 
   id: mixer
-  genericType: pipe
+  genericType: pipe machine
   layer: 0
   prefab: {fileID: 9154955770433736351, guid: 86eb9c3b2f232bc4095d900f5a28421b, type: 3}

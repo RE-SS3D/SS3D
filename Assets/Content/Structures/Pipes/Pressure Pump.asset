@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Pressure Pump
   m_EditorClassIdentifier: 
   id: pressure_pump
-  genericType: pipe
+  genericType: pipe machine
   layer: 0
   prefab: {fileID: 9154955770433736351, guid: fc39937b22feb034d8580328485c9ef6, type: 3}

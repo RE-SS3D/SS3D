@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Volume Pump
   m_EditorClassIdentifier: 
   id: volume_pump
-  genericType: pipe
+  genericType: pipe machine
   layer: 0
   prefab: {fileID: 9154955770433736351, guid: 60b050be75d1f2045810e7362069d7c2, type: 3}
