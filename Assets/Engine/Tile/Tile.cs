@@ -138,7 +138,7 @@ namespace SS3D.Engine.Tiles {
         }
         public bool IsEmpty()
         {
-            return turf == null;
+            return plenum == null;
         }
 
         public Fixture GetFixtureAtLayer(FixtureLayers layer)
