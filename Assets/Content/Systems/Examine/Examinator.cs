@@ -1,4 +1,5 @@
-﻿using Mirror;
+﻿using System.Text;
+using Mirror;
 using SS3D.Engine.Examine;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -17,7 +18,7 @@ namespace SS3D.Content.Systems.Examine
         private Vector2 lastMousePosition;
         private Vector3 lastCameraPosition;
         private Quaternion lastCameraRotation;
-        private IExaminable currentExaminable;
+        private GameObject currentTarget;
         
         private void Start()
         {
@@ -73,20 +74,20 @@ namespace SS3D.Content.Systems.Examine
             if (Physics.Raycast(ray, out RaycastHit hit, 200f))
             {
                 GameObject hitObject = hit.transform.gameObject;
-                IExaminable examinable = hitObject.GetComponent<IExaminable>();
-                if (examinable != null)
+                IExaminable[] examinables = hitObject.GetComponents<IExaminable>();
+                if (examinables.Length > 0)
                 {
-                    if (currentExaminable == examinable)
+                    if (currentTarget == hitObject)
                     {
                         return;
                     }
 
-                    currentExaminable = examinable;
+                    currentTarget = hitObject;
                     
                     NetworkIdentity identity = hitObject.GetComponent<NetworkIdentity>();
                     if (identity == null)
                     {
-                        UpdateExamine(examinable);
+                        UpdateExamine(examinables);
                     }
                     else
                     {
@@ -102,13 +103,12 @@ namespace SS3D.Content.Systems.Examine
         [Command]
         private void CmdRequestExamine(NetworkIdentity target)
         {
-            IExaminable examinable = target.GetComponent<IExaminable>();
-            if (examinable == null || !examinable.CanExamine(gameObject))
+            IExaminable[] examinables = target.GetComponents<IExaminable>();
+            string hoverText = GetHoverText(examinables);
+            if (hoverText != null)
             {
-                return;
+                TargetExamine(hoverText);
             }
-            
-            TargetExamine(examinable.GetDescription(gameObject));
         }
 
         [TargetRpc]
@@ -118,11 +118,12 @@ namespace SS3D.Content.Systems.Examine
             uiInstance.SetActive(true);
         }
 
-        private void UpdateExamine(IExaminable examinable)
+        private void UpdateExamine(IExaminable[] examinables)
         {
-            if (examinable.CanExamine(gameObject))
+            string text = GetHoverText(examinables);
+            if (text != null)
             {
-                examineUi.SetText(examinable.GetDescription(gameObject));
+                examineUi.SetText(text);
                 uiInstance.SetActive(true);
             }
             else
@@ -131,10 +132,31 @@ namespace SS3D.Content.Systems.Examine
             }
         }
 
+        private string GetHoverText(IExaminable[] examinables)
+        {
+            StringBuilder builder = new StringBuilder();
+
+            GameObject go = gameObject;
+            foreach (var examinable in examinables)
+            {
+                if (examinable.CanExamine(go))
+                {
+                    builder.AppendLine(examinable.GetDescription(go));
+                }
+            }
+            
+            if (builder.Length < 1)
+            {
+                return null;
+            }
+
+            return builder.ToString();
+        }
+
         private void ClearExamine()
         {
             uiInstance.SetActive(false);
-            currentExaminable = null;
+            currentTarget = null;
         }
     }
 }
