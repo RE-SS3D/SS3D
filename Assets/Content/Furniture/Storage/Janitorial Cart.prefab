@@ -1967,6 +1967,7 @@ GameObject:
   - component: {fileID: 962406002131086000}
   - component: {fileID: 6802597367677834825}
   - component: {fileID: 8305683950039309293}
+  - component: {fileID: -5588627775791933915}
   m_Layer: 0
   m_Name: Janitorial Cart
   m_TagString: Untagged
@@ -2078,6 +2079,22 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 1789993221570467703, guid: 46862153b3b146c43b565ba6152e52d4, type: 3}
+--- !u!114 &-5588627775791933915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5069778086634185365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0
 --- !u!1 &5221473445564893971
 GameObject:
   m_ObjectHideFlags: 0

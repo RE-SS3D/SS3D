@@ -123,6 +123,7 @@ GameObject:
   - component: {fileID: 7884126840440366466}
   - component: {fileID: 1776132636926321674}
   - component: {fileID: 2928619056195421076}
+  - component: {fileID: 6947381346998146940}
   m_Layer: 0
   m_Name: Tank Storage Unit
   m_TagString: Untagged
@@ -238,3 +239,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -4831858851302706173, guid: ceb274e28e736954ca023669aead7b0b, type: 3}
+--- !u!114 &6947381346998146940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7348721911392627679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0

@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 1172037334395915260}
   - component: {fileID: 2748667980630041574}
   - component: {fileID: 7154395493564269582}
+  - component: {fileID: -6708761690309981559}
   m_Layer: 16
   m_Name: boombox
   m_TagString: Untagged
@@ -265,6 +266,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-6708761690309981559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8197868818743549203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0
 --- !u!1 &8730915866332464111
 GameObject:
   m_ObjectHideFlags: 0
