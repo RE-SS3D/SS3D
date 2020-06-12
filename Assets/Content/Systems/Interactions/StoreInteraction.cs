@@ -17,17 +17,17 @@ namespace SS3D.Content.Systems.Interactions
             return null;
         }
 
-        public virtual string GetName(InteractionEvent interactionEvent)
+        public string GetName(InteractionEvent interactionEvent)
         {
             return "Store";
         }
 
-        public virtual Sprite GetIcon(InteractionEvent interactionEvent)
+        public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return icon;
         }
 
-        public virtual bool CanInteract(InteractionEvent interactionEvent)
+        public bool CanInteract(InteractionEvent interactionEvent)
         {
             if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
@@ -49,7 +49,7 @@ namespace SS3D.Content.Systems.Interactions
             return true;
         }
 
-        public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Hands hands = (Hands) interactionEvent.Source.Parent;
             hands.GameObject.GetComponent<Inventory>()

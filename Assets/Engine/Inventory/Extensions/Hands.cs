@@ -42,11 +42,6 @@ namespace SS3D.Engine.Inventory.Extensions
             }
         }
 
-        public bool IsEmpty()
-        {
-            return Container.GetItem(HeldSlot) == null;
-        }
-
         /*
          * Command wrappers for inventory actions using the currently held item
          */
