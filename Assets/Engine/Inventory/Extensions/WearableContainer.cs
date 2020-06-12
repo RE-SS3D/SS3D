@@ -111,7 +111,8 @@ namespace SS3D.Engine.Inventory.Extensions
                 item.transform.parent = temporaryPoint.transform;
                 // Assign the relative position between the attachment point and the object
                 item.transform.localPosition = -attachmentPoint.localPosition;
-                item.transform.localRotation = Quaternion.identity;
+                item.transform.rotation = displays[index].transform.rotation;
+                //item.transform.localRotation = Quaternion.identity;
             }
             else
             {

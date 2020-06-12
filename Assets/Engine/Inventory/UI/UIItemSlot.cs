@@ -55,10 +55,18 @@ namespace SS3D.Engine.Interactions.UI
                 if (item != null) {
                     //Activate item supply bar display, if appropriate.
                     IItemWithSupply itemWithSupply = item.GetComponent<IItemWithSupply>();
-                    if (itemWithSupply == null) return;
+                    if (itemWithSupply != null)
+                    {
+                        itemSupplySlider.gameObject.SetActive(true);
+                        SetItemSupplyDisplay(itemWithSupply.GetRemainingSupplyPercentage());
+                        return;
+                    }
+
+                    IChargeable powerCell = item.GetComponent<IChargeable>();
+                    if (powerCell == null && itemWithSupply == null) return;
 
                     itemSupplySlider.gameObject.SetActive(true);
-                    SetItemSupplyDisplay(itemWithSupply.GetRemainingSupplyPercentage());
+                    SetItemSupplyDisplay(powerCell.GetPowerPercentage());
                 }
                 else {
                     itemSupplySlider.gameObject.SetActive(false);
