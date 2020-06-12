@@ -87,9 +87,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!137 &2310813764857169879
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -286,9 +287,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!33 &5703310945029480039
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -418,9 +420,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!33 &5509521048976302380
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -575,6 +578,7 @@ GameObject:
   - component: {fileID: 5168238037893938883}
   - component: {fileID: 368656229479867656}
   - component: {fileID: 2920029248284525710}
+  - component: {fileID: 2065765061887679786}
   m_Layer: 16
   m_Name: Space Cleaner
   m_TagString: Untagged
@@ -617,9 +621,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!23 &5168238037893938883
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -693,6 +698,22 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 1767105460036955147}
   attachmentPoint: {fileID: 1293185816858175919}
+--- !u!54 &2065765061887679786
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1767105460036955147}
+  serializedVersion: 2
+  m_Mass: 0.4
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1919083754403387182
 GameObject:
   m_ObjectHideFlags: 0
@@ -770,9 +791,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!33 &1209666087502512750
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -951,9 +973,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!137 &598855436732878303
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -1055,6 +1078,7 @@ GameObject:
   - component: {fileID: 3594298427817658536}
   - component: {fileID: 1947934534412296079}
   - component: {fileID: 2240058995338629586}
+  - component: {fileID: 6304221418328680100}
   m_Layer: 16
   m_Name: soap
   m_TagString: Untagged
@@ -1097,9 +1121,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!23 &8374221537947428290
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1186,6 +1211,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+--- !u!54 &6304221418328680100
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3100858152501622538}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &3278308036721701354
 GameObject:
   m_ObjectHideFlags: 0
@@ -1242,9 +1283,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!23 &8233041754944267042
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1404,9 +1446,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!23 &7803849726347498085
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1526,9 +1569,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!33 &9060366107225469839
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1773,9 +1817,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!23 &2167174924619939780
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1969,9 +2014,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!33 &962406002131086000
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -2257,9 +2303,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!137 &8594440854378382951
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -2524,9 +2571,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!137 &6236009413386529636
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
