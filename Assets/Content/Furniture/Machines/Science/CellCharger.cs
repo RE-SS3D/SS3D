@@ -20,20 +20,24 @@ public class CellCharger : NetworkBehaviour
     private void Start()
     {
         container = GetComponent<Container>();
-        StartCoroutine("StartCharge");
+        if (isServer)
+        {
+            StartCoroutine("StartCharge");
+        }
     }
 
     private void Update()
     {
-        powerCell = container.GetItem(0);
-        if (powerCell != null)
+        container.onChange += (op, index, oldItem, newItem) =>
         {
-            renderer.enabled = true;
-        }
-        else
-        {
-            renderer.enabled = false;
-        }
+            if (newItem == null) {
+                powerCell = null;
+                renderer.enabled = false;
+            } else {
+                powerCell = newItem.GetComponent<Item>();
+                renderer.enabled = true;
+            }
+        };
     }
 
     IEnumerator StartCharge()
