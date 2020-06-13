@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -2469115493504090853}
   - component: {fileID: 4659898452993661522}
   m_Layer: 0
-  m_Name: High-Capacity Power Cell
+  m_Name: Standart PowerCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,7 +46,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1072858492241738576}
-  m_Mesh: {fileID: 1472064025007825783, guid: 44486cbe083667a4bac2a0de812e0768, type: 3}
+  m_Mesh: {fileID: 6488674060193527578, guid: 44486cbe083667a4bac2a0de812e0768, type: 3}
 --- !u!23 &3030382488779331813
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -66,6 +66,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+  - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -152,7 +153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  propertiesPrefab: {fileID: 11400000, guid: 22e318e737e70a141aadd6e4686f1e1e, type: 2}
+  propertiesPrefab: {fileID: 11400000, guid: dabe4fe02da045f43bbdcdf615d89bdb, type: 2}
 --- !u!114 &-2469115493504090853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,10 +208,10 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7908146554783263548}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -0.03, y: 0.081, z: -0.04}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1733828740744437096}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}

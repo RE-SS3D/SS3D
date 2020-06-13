@@ -7,7 +7,7 @@ namespace SS3D.Engine.Inventory.Extensions
     /**
      * A container for the items that a creature can display on their body
      */
-    public class WearableContainer : Container
+    public class VisualContainer : Container
     {
         public GameObject[] displays;
         private Quaternion[] originalRotations;
@@ -88,10 +88,8 @@ namespace SS3D.Engine.Inventory.Extensions
                 item.transform.SetParent(this.transform);
             }
 
-            // Check if a custom attachment point should be used
             Item component = item.GetComponent<Item>();
-            Transform attachmentPoint = component.attachmentPoint;
-            if (component != null && attachmentPoint != null)
+            if (component != null)
             {
                 // Create new (temporary) point
                 // HACK: Required because rotation pivot can be different
@@ -105,14 +103,12 @@ namespace SS3D.Engine.Inventory.Extensions
                     temporaryPoint.transform.parent = this.transform;
                 }
                 temporaryPoint.transform.localPosition = Vector3.zero;
-                temporaryPoint.transform.rotation = attachmentPoint.root.rotation *  attachmentPoint.localRotation;
                 
                 // Assign parent
                 item.transform.parent = temporaryPoint.transform;
-                // Assign the relative position between the attachment point and the object
-                item.transform.localPosition = -attachmentPoint.localPosition;
-                //item.transform.rotation = displays[index].transform.rotation;
-                item.transform.localRotation = Quaternion.identity;
+
+                item.transform.position = displays[index].transform.position;
+                item.transform.rotation = displays[index].transform.rotation;
             }
             else
             {
