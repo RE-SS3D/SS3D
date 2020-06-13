@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 903cb7b2e43eaa14abbf1cb220fdd7c3, type: 3}
-  m_Name: Pipe L4
+  m_Name: Pipe L3
   m_EditorClassIdentifier: 
-  id: Pipe_L4_Upper
+  id: Pipe_L3_Lower
   genericType: pipe
   layer: 0
-  prefab: {fileID: 2802364579275783218, guid: 48efd00c91c310e4bb965d025c63b3ba, type: 3}
+  prefab: {fileID: 2802364579275783218, guid: 34bbc793ade346e45b1d2f357d86011f, type: 3}
