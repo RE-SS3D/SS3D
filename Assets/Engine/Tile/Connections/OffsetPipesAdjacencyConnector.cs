@@ -6,7 +6,7 @@ using System;
 namespace SS3D.Engine.Tiles.Connections
 {
     /**
-     * The offset pipes adjacency connector is...
+     * The offset pipes adjacency connector is for small pipes layers 1 and 3...
      */
     [RequireComponent(typeof(MeshFilter))]
     public class OffsetPipesAdjacencyConnector : MonoBehaviour, AdjacencyConnector
@@ -26,14 +26,28 @@ namespace SS3D.Engine.Tiles.Connections
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
-        [Tooltip("A mesh where the east edge is connected")]
-        public Mesh c;
+        [Tooltip("A mesh where the east edge is connected, can be rotated to the north")]
+        public Mesh cEast;
+        [Tooltip("A mesh where the west edge is connected, can be rotated to the south")]
+        public Mesh cWest;
         [Tooltip("A mesh where east and west edges are connected")]
         public Mesh i;
         [Tooltip("A mesh where the south and west edges are connected")]
-        public Mesh l;
+        public Mesh lSW;
+        [Tooltip("A mesh where the south and east edges are connected")]
+        public Mesh lSE;
+        [Tooltip("A mesh where the north and east edges are connected")]
+        public Mesh lNE;
+        [Tooltip("A mesh where the north and west edges are connected")]
+        public Mesh lNW;
         [Tooltip("A mesh where the north, south, and east edge is connected")]
-        public Mesh t;
+        public Mesh tNSE;
+        [Tooltip("A mesh where the north, west, and east edge is connected")]
+        public Mesh tNEW;
+        [Tooltip("A mesh where the north, south, and west edge is connected")]
+        public Mesh tNSW;
+        [Tooltip("A mesh where the South, west, and east edge is connected")]
+        public Mesh tSWE;
         [Tooltip("A mesh where all edges are connected")]
         public Mesh x;
 
@@ -92,8 +106,7 @@ namespace SS3D.Engine.Tiles.Connections
                 mesh = o;
             else if (cardinalInfo.IsC())
             {
-                mesh = c;
-                rotation = DirectionHelper.AngleBetween(Direction.East, cardinalInfo.GetOnlyPositive());
+                mesh = cEast;
             }
             else if (cardinalInfo.IsI())
             {
@@ -102,12 +115,12 @@ namespace SS3D.Engine.Tiles.Connections
             }
             else if (cardinalInfo.IsL())
             {
-                mesh = l;
+                mesh = lSW;
                 rotation = DirectionHelper.AngleBetween(Direction.SouthEast, cardinalInfo.GetCornerDirection());
             }
             else if (cardinalInfo.IsT())
             {
-                mesh = t;
+                mesh = tNSE;
                 rotation = DirectionHelper.AngleBetween(Direction.West, cardinalInfo.GetOnlyNegative());
             }
             else // Must be X

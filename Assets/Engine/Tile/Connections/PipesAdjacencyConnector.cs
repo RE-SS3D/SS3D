@@ -6,7 +6,7 @@ using System;
 namespace SS3D.Engine.Tiles.Connections
 {
     /**
-     * The pipes adjacency connector is...
+     * The pipes adjacency connector is for small pipes layers 2 and 4...
      */
     [RequireComponent(typeof(MeshFilter))]
     public class PipesAdjacencyConnector : MonoBehaviour, AdjacencyConnector
