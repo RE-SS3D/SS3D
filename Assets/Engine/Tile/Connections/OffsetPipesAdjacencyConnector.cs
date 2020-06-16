@@ -26,27 +26,27 @@ namespace SS3D.Engine.Tiles.Connections
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
-        [Tooltip("A mesh where the east edge is connected, can be rotated to the north")]
-        public Mesh cEast;
-        [Tooltip("A mesh where the west edge is connected, can be rotated to the south")]
-        public Mesh cWest;
-        [Tooltip("A mesh where east and west edges are connected")]
+        [Tooltip("A mesh where the north edge is connected, can be rotated to the east")]
+        public Mesh cNorth;
+        [Tooltip("A mesh where the south edge is connected, can be rotated to the west")]
+        public Mesh cSouth;
+        [Tooltip("A mesh where north & south edges are connected")]
         public Mesh i;
-        [Tooltip("A mesh where the south and west edges are connected")]
-        public Mesh lSW;
-        [Tooltip("A mesh where the south and east edges are connected")]
-        public Mesh lSE;
-        [Tooltip("A mesh where the north and east edges are connected")]
+        [Tooltip("A mesh where the north & east edges are connected")]
         public Mesh lNE;
-        [Tooltip("A mesh where the north and west edges are connected")]
+        [Tooltip("A mesh where the north & west edges are connected")]
         public Mesh lNW;
-        [Tooltip("A mesh where the north, south, and east edge is connected")]
-        public Mesh tNSE;
-        [Tooltip("A mesh where the north, west, and east edge is connected")]
+        [Tooltip("A mesh where the south & east edges are connected")]
+        public Mesh lSE;
+        [Tooltip("A mesh where the south & west edges are connected")]
+        public Mesh lSW;
+        [Tooltip("A mesh where the north, east, & west edges are connected")]
         public Mesh tNEW;
-        [Tooltip("A mesh where the north, south, and west edge is connected")]
+        [Tooltip("A mesh where the north, south, & west edges are connected")]
         public Mesh tNSW;
-        [Tooltip("A mesh where the South, west, and east edge is connected")]
+        [Tooltip("A mesh where the north, south, & east edges are connected")]
+        public Mesh tNSE;
+        [Tooltip("A mesh where the South, west, & east edges are connected")]
         public Mesh tSWE;
         [Tooltip("A mesh where all edges are connected")]
         public Mesh x;
@@ -106,22 +106,23 @@ namespace SS3D.Engine.Tiles.Connections
                 mesh = o;
             else if (cardinalInfo.IsC())
             {
-                mesh = cEast;
+                mesh = cNorth;
+                rotation = DirectionHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyPositive());
             }
             else if (cardinalInfo.IsI())
             {
                 mesh = i;
-                rotation = OrientationHelper.AngleBetween(Orientation.Horizontal, cardinalInfo.GetFirstOrientation());
+                rotation = OrientationHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
             }
             else if (cardinalInfo.IsL())
             {
-                mesh = lSW;
-                rotation = DirectionHelper.AngleBetween(Direction.SouthEast, cardinalInfo.GetCornerDirection());
+                mesh = lNE;
+                rotation = DirectionHelper.AngleBetween(Direction.SouthWest, cardinalInfo.GetCornerDirection());
             }
             else if (cardinalInfo.IsT())
             {
-                mesh = tNSE;
-                rotation = DirectionHelper.AngleBetween(Direction.West, cardinalInfo.GetOnlyNegative());
+                mesh = tNEW;
+                rotation = DirectionHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyNegative());
             }
             else // Must be X
                 mesh = x;
