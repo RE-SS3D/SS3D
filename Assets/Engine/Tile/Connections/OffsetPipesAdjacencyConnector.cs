@@ -106,7 +106,10 @@ namespace SS3D.Engine.Tiles.Connections
                 mesh = o;
             else if (cardinalInfo.IsC())
             {
-                mesh = cNorth;
+                if(cardinalInfo.north > 0||cardinalInfo.east > 0)
+                    mesh = cNorth;
+                else
+                    mesh = cSouth;
                 rotation = DirectionHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
             }
             else if (cardinalInfo.IsI())
@@ -116,16 +119,28 @@ namespace SS3D.Engine.Tiles.Connections
             }
             else if (cardinalInfo.IsL())
             {
-                mesh = lNE;
-                rotation = DirectionHelper.AngleBetween(Direction.NorthEast, cardinalInfo.GetCornerDirection());
+                //mesh = lNE;
+                int corners = (int)cardinalInfo.GetCornerDirection();
+                mesh = corners == 1 ? lNE
+                    : corners == 3 ? lSE
+                    : corners == 5 ? lSW
+                    : lNW;
+                rotation = 90;
             }
             else if (cardinalInfo.IsT())
             {
-                mesh = tNEW;
-                rotation = DirectionHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyNegative());
+                int corners = (int)cardinalInfo.GetOnlyNegative();
+                mesh = corners == 0 ? tSWE
+                    : corners == 2 ? tNSW
+                    : corners == 4 ? tNEW
+                    : tNSE;
+                rotation = 90;
             }
             else // Must be X
+            {
                 mesh = x;
+                rotation = 90;
+            }
 
             if (filter == null)
                 filter = GetComponent<MeshFilter>();
