@@ -119,7 +119,6 @@ namespace SS3D.Engine.Tiles.Connections
             }
             else if (cardinalInfo.IsL())
             {
-                //mesh = lNE;
                 int corners = (int)cardinalInfo.GetCornerDirection();
                 mesh = corners == 1 ? lNE
                     : corners == 3 ? lSE
