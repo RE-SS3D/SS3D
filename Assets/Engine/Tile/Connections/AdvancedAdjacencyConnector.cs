@@ -130,9 +130,9 @@ namespace SS3D.Engine.Tiles.Connections
                 if(opaque)
                 {
                     viewObstacles[0].SetActive(false);
-                    viewObstacles[1].SetActive(true);
+                    viewObstacles[1].SetActive(false);
                     viewObstacles[2].SetActive(false);
-                    viewObstacles[3].SetActive(false);
+                    viewObstacles[3].SetActive(true);
                 }
             }
             else if (cardinalInfo.IsI())
@@ -142,10 +142,10 @@ namespace SS3D.Engine.Tiles.Connections
 
                 if(opaque)
                 {
-                    viewObstacles[0].SetActive(true);
-                    viewObstacles[1].SetActive(true);
-                    viewObstacles[2].SetActive(false);
-                    viewObstacles[3].SetActive(false);
+                    viewObstacles[0].SetActive(false);
+                    viewObstacles[1].SetActive(false);
+                    viewObstacles[2].SetActive(true);
+                    viewObstacles[3].SetActive(true);
                 }
             }
             else if (cardinalInfo.IsL())
@@ -159,8 +159,8 @@ namespace SS3D.Engine.Tiles.Connections
 
                 if(opaque)
                 {
-                    viewObstacles[0].SetActive(false);
-                    viewObstacles[1].SetActive(true);
+                    viewObstacles[0].SetActive(true);
+                    viewObstacles[1].SetActive(false);
                     viewObstacles[2].SetActive(false);
                     viewObstacles[3].SetActive(true);
                 }
@@ -182,9 +182,9 @@ namespace SS3D.Engine.Tiles.Connections
 
                 if(opaque)
                 {
-                    viewObstacles[0].SetActive(corners>=3);
+                    viewObstacles[0].SetActive(true);
                     viewObstacles[1].SetActive(true);
-                    viewObstacles[2].SetActive(true);
+                    viewObstacles[2].SetActive(corners>=3);
                     viewObstacles[3].SetActive(true);
                 }
             }
@@ -222,6 +222,14 @@ namespace SS3D.Engine.Tiles.Connections
                     default:
                         mesh = xQuad;
                         break;
+                        
+                }
+                if(opaque)
+                {
+                    viewObstacles[0].SetActive(true);
+                    viewObstacles[1].SetActive(true);
+                    viewObstacles[2].SetActive(true);
+                    viewObstacles[3].SetActive(true);
                 }
             }
 
