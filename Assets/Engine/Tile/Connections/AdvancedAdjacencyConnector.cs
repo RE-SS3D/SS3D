@@ -131,8 +131,8 @@ namespace SS3D.Engine.Tiles.Connections
                 {
                     viewObstacles[0].SetActive(false);
                     viewObstacles[1].SetActive(false);
-                    viewObstacles[2].SetActive(false);
-                    viewObstacles[3].SetActive(true);
+                    viewObstacles[2].SetActive(true);
+                    viewObstacles[3].SetActive(false);
                 }
             }
             else if (cardinalInfo.IsI())
@@ -159,10 +159,10 @@ namespace SS3D.Engine.Tiles.Connections
 
                 if(opaque)
                 {
-                    viewObstacles[0].SetActive(true);
-                    viewObstacles[1].SetActive(false);
-                    viewObstacles[2].SetActive(false);
-                    viewObstacles[3].SetActive(true);
+                    viewObstacles[0].SetActive(false);
+                    viewObstacles[1].SetActive(true);
+                    viewObstacles[2].SetActive(true);
+                    viewObstacles[3].SetActive(false);
                 }
             }
             else if (cardinalInfo.IsT())
@@ -184,8 +184,8 @@ namespace SS3D.Engine.Tiles.Connections
                 {
                     viewObstacles[0].SetActive(true);
                     viewObstacles[1].SetActive(true);
-                    viewObstacles[2].SetActive(corners>=3);
-                    viewObstacles[3].SetActive(true);
+                    viewObstacles[2].SetActive(true);
+                    viewObstacles[3].SetActive(corners>=3);
                 }
             }
             else
