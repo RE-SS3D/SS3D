@@ -132,7 +132,7 @@ namespace SS3D.Engine.Tiles.Connections
             else if (generalCardinals.IsC())
             {
                 mesh = c;
-                rotation = DirectionHelper.AngleBetween(Direction.South, generalCardinals.GetOnlyPositive());
+                rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
             }
             else if (generalCardinals.IsI())
             {
@@ -141,7 +141,7 @@ namespace SS3D.Engine.Tiles.Connections
                 if (specificCardinals.numConnections == 1)
                 {
                     mesh = iBorder;
-                    rotation = DirectionHelper.AngleBetween(Direction.North, specificCardinals.GetOnlyPositive());
+                    rotation = DirectionHelper.AngleBetween(Direction.South, specificCardinals.GetOnlyPositive());
                 }
                 else
                 {
@@ -156,7 +156,7 @@ namespace SS3D.Engine.Tiles.Connections
                 // N+NE+E = 0/1/2, E+SE+S = 2/3/4, S+SW+W = 4/5/6, W+NW+N = 6/7/0
                 bool isFilled = (generalAdjacents.Connections & 0b00000111) == 0b00000111 || (generalAdjacents.Connections & 0b00011100) == 0b00011100 || (generalAdjacents.Connections & 0b01110000) == 0b01110000 || (generalAdjacents.Connections & 0b11000001) == 0b11000001;
                 mesh = isFilled ? lSingle : lNone;
-                rotation = DirectionHelper.AngleBetween(Direction.SouthWest, generalCardinals.GetCornerDirection());
+                rotation = DirectionHelper.AngleBetween(Direction.NorthEast, generalCardinals.GetCornerDirection());
             }
             else if (generalCardinals.IsT())
             {
@@ -171,7 +171,7 @@ namespace SS3D.Engine.Tiles.Connections
                     : corners == 2 ? tSingleRight
                     : tDouble;
 
-                rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyNegative());
+                rotation = DirectionHelper.AngleBetween(Direction.South, generalCardinals.GetOnlyNegative());
             }
             else
             {

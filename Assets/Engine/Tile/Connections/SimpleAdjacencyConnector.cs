@@ -94,7 +94,7 @@ namespace SS3D.Engine.Tiles.Connections
             else if (cardinalInfo.IsC())
             {
                 mesh = c;
-                rotation = DirectionHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyPositive());
+                rotation = DirectionHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
             }
             else if (cardinalInfo.IsI())
             {
@@ -104,12 +104,12 @@ namespace SS3D.Engine.Tiles.Connections
             else if (cardinalInfo.IsL())
             {
                 mesh = l;
-                rotation = DirectionHelper.AngleBetween(Direction.SouthWest, cardinalInfo.GetCornerDirection());
+                rotation = DirectionHelper.AngleBetween(Direction.NorthEast, cardinalInfo.GetCornerDirection());
             }
             else if (cardinalInfo.IsT())
             {
                 mesh = t;
-                rotation = DirectionHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyNegative());
+                rotation = DirectionHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyNegative());
             }
             else // Must be X
                 mesh = x;
