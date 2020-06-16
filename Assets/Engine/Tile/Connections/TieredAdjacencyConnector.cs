@@ -8,8 +8,7 @@ namespace SS3D.Engine.Tiles.Connections
      * These classes are getting very specific...
      * This one is the same as SimpleAdjacencyConnector, but it has specific unique I connections
      * to a more generic type.
-     * This is currently used for glass walls, where when connecting to any other wall we need to
-     * 'close' the glass window.
+     * This is not currently used on any connectibles.
      */
     [RequireComponent(typeof(MeshFilter))]
     public class TieredAdjacencyConnector : MonoBehaviour, AdjacencyConnector
@@ -22,17 +21,17 @@ namespace SS3D.Engine.Tiles.Connections
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
-        [Tooltip("A mesh where the east edge is connected")]
+        [Tooltip("A mesh where the north edge is connected")]
         public Mesh c;
-        [Tooltip("A mesh where east and west edges are connected")]
+        [Tooltip("A mesh where north & south edges are connected too the same type")]
         public Mesh i;
-        [Tooltip("A mesh where west connects to same type, and east connects to the generic type")]
+        [Tooltip("A mesh where north connects to same type (window), and south connects to the generic type (wall)")]
         public Mesh iBorder;
         [Tooltip("A mesh for a single I tile between two generic ones")]
         public Mesh iAlone;
-        [Tooltip("A mesh where the south and west edges are connected")]
+        [Tooltip("A mesh where the north & east edges are connected")]
         public Mesh l;
-        [Tooltip("A mesh where the north, south, and east edge is connected")]
+        [Tooltip("A mesh where the north, east, and west edges are connected")]
         public Mesh t;
         [Tooltip("A mesh where all edges are connected")]
         public Mesh x;
