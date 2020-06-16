@@ -27,13 +27,13 @@ namespace SS3D.Engine.Tiles.Connections
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
-        [Tooltip("A mesh where the east edge is connected")]
+        [Tooltip("A mesh where the north edge is connected")]
         public Mesh c;
-        [Tooltip("A mesh where east and west edges are connected")]
+        [Tooltip("A mesh where the north & south edges are connected")]
         public Mesh i;
-        [Tooltip("A mesh where the south and west edges are connected")]
+        [Tooltip("A mesh where the north & east edges are connected")]
         public Mesh l;
-        [Tooltip("A mesh where the north, south, and east edge is connected")]
+        [Tooltip("A mesh where the north, east, and west edges are connected")]
         public Mesh t;
         [Tooltip("A mesh where all edges are connected")]
         public Mesh x;
@@ -94,22 +94,22 @@ namespace SS3D.Engine.Tiles.Connections
             else if (cardinalInfo.IsC())
             {
                 mesh = c;
-                rotation = DirectionHelper.AngleBetween(Direction.East, cardinalInfo.GetOnlyPositive());
+                rotation = DirectionHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyPositive());
             }
             else if (cardinalInfo.IsI())
             {
                 mesh = i;
-                rotation = OrientationHelper.AngleBetween(Orientation.Horizontal, cardinalInfo.GetFirstOrientation());
+                rotation = OrientationHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
             }
             else if (cardinalInfo.IsL())
             {
                 mesh = l;
-                rotation = DirectionHelper.AngleBetween(Direction.SouthEast, cardinalInfo.GetCornerDirection());
+                rotation = DirectionHelper.AngleBetween(Direction.SouthWest, cardinalInfo.GetCornerDirection());
             }
             else if (cardinalInfo.IsT())
             {
                 mesh = t;
-                rotation = DirectionHelper.AngleBetween(Direction.West, cardinalInfo.GetOnlyNegative());
+                rotation = DirectionHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyNegative());
             }
             else // Must be X
                 mesh = x;
