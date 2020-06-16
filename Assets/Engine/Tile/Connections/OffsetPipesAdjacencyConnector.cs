@@ -119,19 +119,19 @@ namespace SS3D.Engine.Tiles.Connections
             }
             else if (cardinalInfo.IsL())
             {
-                int corners = (int)cardinalInfo.GetCornerDirection();
-                mesh = corners == 1 ? lNE
-                    : corners == 3 ? lSE
-                    : corners == 5 ? lSW
+                int sides = (int)cardinalInfo.GetCornerDirection();
+                mesh = sides == Direction.NorthEast ? lNE
+                    : corners == Direction.SouthEast ? lSE
+                    : corners == Direction.SouthWest ? lSW
                     : lNW;
                 rotation = 90;
             }
             else if (cardinalInfo.IsT())
             {
-                int corners = (int)cardinalInfo.GetOnlyNegative();
-                mesh = corners == 0 ? tSWE
-                    : corners == 2 ? tNSW
-                    : corners == 4 ? tNEW
+                int notside = (int)cardinalInfo.GetOnlyNegative();
+                mesh = notside == Direction.North ? tSWE
+                    : notside == Direction.East ? tNSW
+                    : notside == Direction.South ? tNEW
                     : tNSE;
                 rotation = 90;
             }
