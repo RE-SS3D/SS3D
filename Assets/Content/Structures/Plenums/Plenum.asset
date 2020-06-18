@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80f8bb38b94dd4744bf6ca44adbc7ac4, type: 3}
-  m_Name: Plenum Open
+  m_Name: Plenum
   m_EditorClassIdentifier: 
-  id: open_plenum
-  genericType: plenum
-  prefab: {fileID: 3932194339823798644, guid: b69fb889a719b99499d9230e025c8a3b, type: 3}
+  id: plenum
+  genericType: pipe
+  prefab: {fileID: 8028539322119499722, guid: 3b33b5cf16a677a4e85a110679cde32a, type: 3}
