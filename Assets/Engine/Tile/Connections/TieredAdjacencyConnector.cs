@@ -98,7 +98,7 @@ namespace SS3D.Engine.Tiles.Connections
             else if (generalCardinals.IsC())
             {
                 mesh = c;
-                rotation = DirectionHelper.AngleBetween(Direction.South, generalCardinals.GetOnlyPositive());
+                rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
             }
             else if (generalCardinals.IsI())
             {
@@ -108,7 +108,7 @@ namespace SS3D.Engine.Tiles.Connections
                 if (specificCardinals.numConnections == 1)
                 {
                     mesh = iBorder;
-                    rotation = DirectionHelper.AngleBetween(Direction.North, specificCardinals.GetOnlyPositive());
+                    rotation = DirectionHelper.AngleBetween(Direction.South, specificCardinals.GetOnlyPositive());
                 }
                 else
                 {
@@ -119,12 +119,12 @@ namespace SS3D.Engine.Tiles.Connections
             else if (generalCardinals.IsL())
             {
                 mesh = l;
-                rotation = DirectionHelper.AngleBetween(Direction.SouthWest, generalCardinals.GetCornerDirection());
+                rotation = DirectionHelper.AngleBetween(Direction.NorthEast, generalCardinals.GetCornerDirection());
             }
             else if (generalCardinals.IsT())
             {
                 mesh = t;
-                rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyNegative());
+                rotation = DirectionHelper.AngleBetween(Direction.South, generalCardinals.GetOnlyNegative());
             }
             else
                 mesh = x;

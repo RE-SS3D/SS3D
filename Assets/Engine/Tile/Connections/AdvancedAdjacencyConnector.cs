@@ -125,14 +125,14 @@ namespace SS3D.Engine.Tiles.Connections
             else if (cardinalInfo.IsC())
             {
                 mesh = c;
-                rotation = DirectionHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyPositive());
+                rotation = DirectionHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
 
                 if(opaque)
                 {
                     viewObstacles[0].SetActive(false);
                     viewObstacles[1].SetActive(false);
-                    viewObstacles[2].SetActive(false);
-                    viewObstacles[3].SetActive(true);
+                    viewObstacles[2].SetActive(true);
+                    viewObstacles[3].SetActive(false);
                 }
             }
             else if (cardinalInfo.IsI())
@@ -155,14 +155,14 @@ namespace SS3D.Engine.Tiles.Connections
                 // N+NE+E = 0/1/2, E+SE+S = 2/3/4, S+SW+W = 4/5/6, W+NW+N = 6/7/0
                 bool isFilled = (adjacents.Connections & 0b00000111) == 0b00000111 || (adjacents.Connections & 0b00011100) == 0b00011100 || (adjacents.Connections & 0b01110000) == 0b01110000 || (adjacents.Connections & 0b11000001) == 0b11000001;
                 mesh = isFilled ? lSingle : lNone;
-                rotation = DirectionHelper.AngleBetween(Direction.SouthWest, cardinalInfo.GetCornerDirection());
+                rotation = DirectionHelper.AngleBetween(Direction.NorthEast, cardinalInfo.GetCornerDirection());
 
                 if(opaque)
                 {
-                    viewObstacles[0].SetActive(true);
-                    viewObstacles[1].SetActive(false);
-                    viewObstacles[2].SetActive(false);
-                    viewObstacles[3].SetActive(true);
+                    viewObstacles[0].SetActive(false);
+                    viewObstacles[1].SetActive(true);
+                    viewObstacles[2].SetActive(true);
+                    viewObstacles[3].SetActive(false);
                 }
             }
             else if (cardinalInfo.IsT())
@@ -178,14 +178,14 @@ namespace SS3D.Engine.Tiles.Connections
                     : corners == 2 ? tSingleRight
                     : tDouble;
 
-                rotation = DirectionHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyNegative());
+                rotation = DirectionHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyNegative());
 
                 if(opaque)
                 {
                     viewObstacles[0].SetActive(true);
                     viewObstacles[1].SetActive(true);
-                    viewObstacles[2].SetActive(corners>=3);
-                    viewObstacles[3].SetActive(true);
+                    viewObstacles[2].SetActive(true);
+                    viewObstacles[3].SetActive(corners>=3);
                 }
             }
             else

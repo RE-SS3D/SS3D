@@ -6,11 +6,10 @@ using System;
 namespace SS3D.Engine.Tiles.Connections
 {
     /**
-     * A simple adjacency connector uses 6 meshes and checks for all possible scenarios
-     * which stem from only the 4 cardinal directions.
+     * The pipes adjacency connector is for small pipes layers 2 and 4...
      */
     [RequireComponent(typeof(MeshFilter))]
-    public class SimpleAdjacencyConnector : MonoBehaviour, AdjacencyConnector
+    public class PipesAdjacencyConnector : MonoBehaviour, AdjacencyConnector
     {
         public enum TileLayer
         {

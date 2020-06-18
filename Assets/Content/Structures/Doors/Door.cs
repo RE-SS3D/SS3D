@@ -155,7 +155,7 @@ namespace SS3D.Content.Structures.Fixtures
             var wallCap = EditorAndRuntime.InstantiatePrefab(wallCapPrefab, transform);
 
             var cardinal = DirectionHelper.ToCardinalVector(DirectionHelper.Apply(Direction.East, direction));
-            var rotation = DirectionHelper.AngleBetween(Direction.West, direction);
+            var rotation = DirectionHelper.AngleBetween(Direction.East, direction);
 
             wallCap.transform.localRotation = Quaternion.Euler(0, rotation, 0);
             wallCap.transform.localPosition = new Vector3(cardinal.Item1 * WALL_CAP_DISTANCE_FROM_CENTRE, 0, cardinal.Item2 * WALL_CAP_DISTANCE_FROM_CENTRE);

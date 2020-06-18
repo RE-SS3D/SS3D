@@ -6,11 +6,10 @@ using System;
 namespace SS3D.Engine.Tiles.Connections
 {
     /**
-     * A simple adjacency connector uses 6 meshes and checks for all possible scenarios
-     * which stem from only the 4 cardinal directions.
+     * The offset pipes adjacency connector is for small pipes layers 1 and 3...
      */
     [RequireComponent(typeof(MeshFilter))]
-    public class SimpleAdjacencyConnector : MonoBehaviour, AdjacencyConnector
+    public class OffsetPipesAdjacencyConnector : MonoBehaviour, AdjacencyConnector
     {
         public enum TileLayer
         {
@@ -27,14 +26,28 @@ namespace SS3D.Engine.Tiles.Connections
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
-        [Tooltip("A mesh where the north edge is connected")]
-        public Mesh c;
-        [Tooltip("A mesh where the north & south edges are connected")]
+        [Tooltip("A mesh where the north edge is connected, can be rotated to the east")]
+        public Mesh cNorth;
+        [Tooltip("A mesh where the south edge is connected, can be rotated to the west")]
+        public Mesh cSouth;
+        [Tooltip("A mesh where north & south edges are connected")]
         public Mesh i;
         [Tooltip("A mesh where the north & east edges are connected")]
-        public Mesh l;
-        [Tooltip("A mesh where the north, east, and west edges are connected")]
-        public Mesh t;
+        public Mesh lNE;
+        [Tooltip("A mesh where the north & west edges are connected")]
+        public Mesh lNW;
+        [Tooltip("A mesh where the south & east edges are connected")]
+        public Mesh lSE;
+        [Tooltip("A mesh where the south & west edges are connected")]
+        public Mesh lSW;
+        [Tooltip("A mesh where the north, east, & west edges are connected")]
+        public Mesh tNEW;
+        [Tooltip("A mesh where the north, south, & west edges are connected")]
+        public Mesh tNSW;
+        [Tooltip("A mesh where the north, south, & east edges are connected")]
+        public Mesh tNSE;
+        [Tooltip("A mesh where the South, west, & east edges are connected")]
+        public Mesh tSWE;
         [Tooltip("A mesh where all edges are connected")]
         public Mesh x;
 
@@ -93,7 +106,10 @@ namespace SS3D.Engine.Tiles.Connections
                 mesh = o;
             else if (cardinalInfo.IsC())
             {
-                mesh = c;
+                if(cardinalInfo.north > 0||cardinalInfo.east > 0)
+                    mesh = cNorth;
+                else
+                    mesh = cSouth;
                 rotation = DirectionHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
             }
             else if (cardinalInfo.IsI())
@@ -103,16 +119,27 @@ namespace SS3D.Engine.Tiles.Connections
             }
             else if (cardinalInfo.IsL())
             {
-                mesh = l;
-                rotation = DirectionHelper.AngleBetween(Direction.NorthEast, cardinalInfo.GetCornerDirection());
+                Direction sides = cardinalInfo.GetCornerDirection();
+                mesh = sides == Direction.NorthEast ? lNE
+                    : sides == Direction.SouthEast ? lSE
+                    : sides == Direction.SouthWest ? lSW
+                    : lNW;
+                rotation = 90;
             }
             else if (cardinalInfo.IsT())
             {
-                mesh = t;
-                rotation = DirectionHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyNegative());
+                Direction notside = cardinalInfo.GetOnlyNegative();
+                mesh = notside == Direction.North ? tSWE
+                    : notside == Direction.East ? tNSW
+                    : notside == Direction.South ? tNEW
+                    : tNSE;
+                rotation = 90;
             }
             else // Must be X
+            {
                 mesh = x;
+                rotation = 90;
+            }
 
             if (filter == null)
                 filter = GetComponent<MeshFilter>();
