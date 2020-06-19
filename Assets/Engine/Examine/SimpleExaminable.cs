@@ -25,7 +25,7 @@ namespace SS3D.Engine.Examine
             return true;
         }
 
-        public string GetDescription(GameObject examinator)
+        public virtual string GetDescription(GameObject examinator)
         {
             return Text;
         }

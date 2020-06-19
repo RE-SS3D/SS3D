@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 138009056528592495}
   - component: {fileID: 3646364236061738243}
   - component: {fileID: 8762140865007196563}
+  - component: {fileID: 1099298561151547284}
   - component: {fileID: 761874278517760475}
   m_Layer: 0
   m_Name: microwave
@@ -231,6 +232,24 @@ MonoBehaviour:
     type: 3}
   onSound: {fileID: 8300000, guid: 91dcb7669f644934b9c52d400421f1a7, type: 3}
   finishSound: {fileID: 8300000, guid: f22e34e83e0f9874e8ebc28d164810c2, type: 3}
+--- !u!114 &1099298561151547284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3444034143536514343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: '<b>Microwave</b>
+
+    Uses radiation to cook food.
+
+    MMMMMMMMMMM'
+  MaxDistance: 0
 --- !u!82 &761874278517760475
 AudioSource:
   m_ObjectHideFlags: 0

@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 8914252857924424772}
   - component: {fileID: -7777233483341371724}
   - component: {fileID: -6476219540935553843}
+  - component: {fileID: 5848840416633041717}
   m_Layer: 0
   m_Name: Small Beaker
   m_TagString: Untagged
@@ -304,12 +305,27 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: beaker_small
+  Name: Small Beaker
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 971113513204449908}
   attachmentPoint: {fileID: 5123673251067320675, guid: 74ead4cc2020eb640a1c074780eb5081,
     type: 3}
+--- !u!114 &5848840416633041717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 971113513204449908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!1 &1767974948169436971
 GameObject:
   m_ObjectHideFlags: 0

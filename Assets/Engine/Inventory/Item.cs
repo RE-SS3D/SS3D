@@ -32,6 +32,7 @@ namespace SS3D.Engine.Inventory
         }
 
         public string ItemId;
+        public string Name;
         public Container container;
         public ItemType itemType;
         public Sprite sprite;
