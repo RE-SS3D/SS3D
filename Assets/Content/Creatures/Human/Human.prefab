@@ -426,6 +426,10 @@ MonoBehaviour:
   syncInterval: 0.1
   UiPrefab: {fileID: 2314586001921844144, guid: 154a0c29195b80444b97161cca7b2308,
     type: 3}
+  ObstacleMask:
+    serializedVersion: 2
+    m_Bits: 256
+  ViewRange: 25
 --- !u!1 &290878266594310021
 GameObject:
   m_ObjectHideFlags: 0
