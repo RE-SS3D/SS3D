@@ -17,7 +17,7 @@ namespace SS3D.Content.Systems.Examine
         public float ViewRange = 25f;
 
         private GameObject uiInstance;
-        private ExamineUi examineUi;
+        private ExamineUI examineUi;
         private Vector2 lastMousePosition;
         private Vector3 lastCameraPosition;
         private Quaternion lastCameraRotation;
@@ -33,7 +33,7 @@ namespace SS3D.Content.Systems.Examine
 
             Assert.IsNotNull(UiPrefab);
             uiInstance = Instantiate(UiPrefab);
-            examineUi = uiInstance.GetComponent<ExamineUi>();
+            examineUi = uiInstance.GetComponent<ExamineUI>();
             Assert.IsNotNull(examineUi);
             uiInstance.SetActive(false);
         }

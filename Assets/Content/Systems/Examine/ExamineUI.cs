@@ -4,7 +4,7 @@ using UnityEngine.Assertions;
 
 namespace SS3D.Content.Systems.Examine
 {
-    public class ExamineUi : MonoBehaviour
+    public class ExamineUI : MonoBehaviour
     {
         public Transform Panel;
         public TMP_Text Text;
