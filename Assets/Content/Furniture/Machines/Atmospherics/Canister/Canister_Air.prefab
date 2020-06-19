@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3436621957576136614}
   - component: {fileID: 7182705585173552431}
   - component: {fileID: 7394184406077612064}
+  - component: {fileID: 8839139762038401630}
   m_Layer: 0
   m_Name: Canister_Air
   m_TagString: Untagged
@@ -159,3 +160,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -8744087458408792856, guid: bd512b41d297ad5428ac6db3a3712f9a, type: 3}
+--- !u!114 &8839139762038401630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466349050614861878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: '<b>Air Canister</b>
+
+    Make sure this doesn''t run out.'
+  MaxDistance: 0
