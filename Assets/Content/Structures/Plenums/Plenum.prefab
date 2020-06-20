@@ -268,7 +268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 961b31fd1d838b9418d00d2675f3a9ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: pipe
+  type: plenum
   o: {fileID: 6196525782856654298, guid: ef8223c105f87464c938b1d51958e5d9, type: 3}
   c: {fileID: -7162855876880371025, guid: ef8223c105f87464c938b1d51958e5d9, type: 3}
   i: {fileID: 2545002595840996665, guid: ef8223c105f87464c938b1d51958e5d9, type: 3}

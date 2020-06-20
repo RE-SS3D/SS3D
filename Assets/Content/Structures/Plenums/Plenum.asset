@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Plenum
   m_EditorClassIdentifier: 
   id: plenum
-  genericType: pipe
+  genericType: plenum
   prefab: {fileID: 8028539322119499722, guid: 3b33b5cf16a677a4e85a110679cde32a, type: 3}
