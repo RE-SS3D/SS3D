@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 6420300491935642880}
   - component: {fileID: 1466501899615533262}
   - component: {fileID: 3494353215513587477}
+  - component: {fileID: 2111343728438321531}
   m_Layer: 0
   m_Name: fridge
   m_TagString: Untagged
@@ -52,9 +53,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!114 &4559837401137349769
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69,8 +71,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  compressRotation: 1
   clientAuthority: 0
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01
 --- !u!33 &8346846025180399405
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -202,8 +206,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  OpenIcon: {fileID: 0}
   OnlyStoreWhenOpen: 1
   MaxDistance: 1.5
+  viewContainerIcon: {fileID: 0}
+--- !u!114 &2111343728438321531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4214221335928705926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: '<b>Fridge</b>
+
+    Stores food and bodyparts (optional)'
+  MaxDistance: 0
 --- !u!1 &5240830354732226920
 GameObject:
   m_ObjectHideFlags: 0
@@ -311,9 +333,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!114 &5443252286308906427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -328,5 +351,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  compressRotation: 1
   clientAuthority: 0
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01

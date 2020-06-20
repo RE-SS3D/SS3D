@@ -45,6 +45,8 @@ GameObject:
   - component: {fileID: 7987734698011333231}
   - component: {fileID: 4031761211328473001}
   - component: {fileID: 2097065778462584974}
+  - component: {fileID: 2976743997149797307}
+  - component: {fileID: -508348524578385819}
   m_Layer: 16
   m_Name: pen
   m_TagString: Untagged
@@ -87,9 +89,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!23 &8224984741052910275
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -173,8 +176,41 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: 
+  Name: Pen
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3249984959762667531}
   attachmentPoint: {fileID: 4502534057955156824}
+--- !u!114 &2976743997149797307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3249984959762667531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: Used to write.
+  MaxDistance: 0
+--- !u!114 &-508348524578385819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3249984959762667531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  clientAuthority: 0
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01

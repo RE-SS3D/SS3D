@@ -17,17 +17,17 @@ namespace SS3D.Content.Systems.Interactions
             return null;
         }
 
-        public string GetName(InteractionEvent interactionEvent)
+        public virtual string GetName(InteractionEvent interactionEvent)
         {
             return "Store";
         }
 
-        public Sprite GetIcon(InteractionEvent interactionEvent)
+        public virtual Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return icon;
         }
 
-        public bool CanInteract(InteractionEvent interactionEvent)
+        public virtual bool CanInteract(InteractionEvent interactionEvent)
         {
             if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
@@ -42,14 +42,14 @@ namespace SS3D.Content.Systems.Interactions
             return false;
         }
 
-        private bool CanStore(GameObject target)
+        public bool CanStore(GameObject target)
         {
             if(OnlyWhenOpen)
                 return target.GetComponent<NetworkedOpenable>()?.IsOpen() ?? false;
             return true;
         }
 
-        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Hands hands = (Hands) interactionEvent.Source.Parent;
             hands.GameObject.GetComponent<Inventory>()

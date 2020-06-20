@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 6925736849406537146}
   - component: {fileID: 3012029890608275350}
   - component: {fileID: 8955583334864001881}
+  - component: {fileID: 7389511661425851685}
   m_Layer: 16
   m_Name: cardboard box
   m_TagString: Untagged
@@ -178,3 +179,19 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8155353539727309456}
   attachmentPoint: {fileID: 0}
+--- !u!114 &7389511661425851685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8155353539727309456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0

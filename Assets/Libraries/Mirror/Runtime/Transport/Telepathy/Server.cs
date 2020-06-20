@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
@@ -180,7 +180,8 @@ namespace Telepathy
         public bool Start(int port)
         {
             // not if already started
-            if (Active) return false;
+            if (Active)
+                return false;
 
             // clear old messages in queue, just to be sure that the caller
             // doesn't receive data from last time and gets out of sync.
@@ -202,7 +203,8 @@ namespace Telepathy
         public void Stop()
         {
             // only if started
-            if (!Active) return;
+            if (!Active)
+                return;
 
             Logger.Log("Server: stopping...");
 
@@ -250,7 +252,8 @@ namespace Telepathy
                     // calling Send here would be blocking (sometimes for long times
                     // if other side lags or wire was disconnected)
                     token.sendQueue.Enqueue(data);
-                    token.sendPending.Set(); // interrupt SendThread WaitOne()
+                    // interrupt SendThread WaitOne()
+                    token.sendPending.Set();
                     return true;
                 }
                 // sending to an invalid connectionId is expected sometimes.

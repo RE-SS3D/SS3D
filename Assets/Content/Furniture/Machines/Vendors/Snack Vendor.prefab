@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2016343594005032877}
   - component: {fileID: 7941923666661961253}
   - component: {fileID: 6788611039767824827}
+  - component: {fileID: -7498003979857097353}
   m_Layer: 0
   m_Name: Snack Vendor
   m_TagString: Untagged
@@ -131,6 +132,22 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 1944606561970768386, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
+--- !u!114 &-7498003979857097353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1399091036532253168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0
 --- !u!1 &3135266143589959528
 GameObject:
   m_ObjectHideFlags: 0
