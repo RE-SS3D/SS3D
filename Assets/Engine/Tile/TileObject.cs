@@ -36,6 +36,7 @@ namespace SS3D.Engine.Tiles
 
         public void UpdateSingleAdjacency(Direction direction, TileDefinition tile)
         {
+            plenumConnector?.UpdateSingle(direction, tile);
             turfConnector?.UpdateSingle(direction, tile);
 
             var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
@@ -61,7 +62,8 @@ namespace SS3D.Engine.Tiles
 
         public void UpdateAllAdjacencies(TileDefinition[] tiles)
         {
-            // Update turf first
+            // Update plenum first
+            plenumConnector?.UpdateAll(tiles);
             turfConnector?.UpdateAll(tiles);
 
             // Update every layer
@@ -178,6 +180,10 @@ namespace SS3D.Engine.Tiles
                     // Create the object
                     CreatePlenum(tile.plenum);
                 }
+                else
+                {
+                    plenumConnector = plenum.GetComponent<AdjacencyConnector>();
+                }
             }
             else
             {
@@ -281,7 +287,16 @@ namespace SS3D.Engine.Tiles
                 EditorAndRuntime.Destroy(plenum);
             plenum = EditorAndRuntime.InstantiatePrefab(plenumDefinition.prefab, transform);
 
-            plenum.name = "plenum_" + plenumDefinition.id;
+            if (plenumDefinition != null)
+            {
+                plenum.name = "plenum_" + plenumDefinition.id;
+                plenumConnector = plenum.GetComponent<AdjacencyConnector>();
+            }
+            else
+            {
+                plenum = null;
+                plenumConnector = null;
+            }
         }
 
         private void CreateTurf(Turf turfDefinition)
@@ -339,14 +354,17 @@ namespace SS3D.Engine.Tiles
         private void UpdateChildrenFromSubData(TileDefinition newTile)
         {
             if (newTile.subStates != null && newTile.subStates.Length >= 1 && newTile.subStates[0] != null)
-                turf?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[0]);
+                plenum?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[0]);
+
+            if (newTile.subStates != null && newTile.subStates.Length >= 2 && newTile.subStates[1] != null)
+                turf?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[1]);
 
             int i = 0;
             foreach (GameObject fixture in fixtures)
             {
-                if (newTile.subStates != null && newTile.subStates.Length >= i + 2 && newTile.subStates[i + 1] != null)
+                if (newTile.subStates != null && newTile.subStates.Length >= i + 3 && newTile.subStates[i + 2] != null)
                 {
-                    fixtures[i]?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[i + 1]);
+                    fixtures[i]?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[i + 2]);
                 }
                 i++;
             }
@@ -354,11 +372,13 @@ namespace SS3D.Engine.Tiles
 
         private void UpdateSubDataFromChildren()
         {
-            // Turf + all fixtures layers
+            // Plenum + Turf + all fixtures layers
             tile.subStates = new object[1 + TileDefinition.GetFixtureLayerSize()];
-            tile.subStates[0] = turf != null ? turf?.GetComponent<TileStateCommunicator>()?.GetTileState() : null;
 
-            int i = 1;
+            tile.subStates[0] = plenum != null ? plenum?.GetComponent<TileStateCommunicator>()?.GetTileState() : null;
+            tile.subStates[1] = turf != null ? turf?.GetComponent<TileStateCommunicator>()?.GetTileState() : null;
+
+            int i = 2;
             foreach (GameObject fixture in fixtures)
             {
                 if (fixture)
@@ -416,6 +436,8 @@ namespace SS3D.Engine.Tiles
         private TileDefinition tile = new TileDefinition();
 
         private GameObject plenum = null;
+        private AdjacencyConnector plenumConnector = null;
+
         private GameObject turf = null;
         private AdjacencyConnector turfConnector = null; // may be null
         public AtmosObject atmos;
