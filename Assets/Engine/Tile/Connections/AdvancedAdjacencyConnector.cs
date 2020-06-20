@@ -14,6 +14,7 @@ namespace SS3D.Engine.Tiles.Connections
      *   is made.
      *   An O mesh, however, will not change corners regardless of connected or unconnected diagonals.
      * This increases the number of required meshes to 14.
+     * Only used by wall, reinforced walls, and tables currently.
      */
     [RequireComponent(typeof(MeshFilter))]
     public class AdvancedAdjacencyConnector : MonoBehaviour, AdjacencyConnector
@@ -26,37 +27,37 @@ namespace SS3D.Engine.Tiles.Connections
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
 
-        [Tooltip("A mesh where east connects to same type")]
+        [Tooltip("A mesh where north connects to same type")]
         public Mesh c;
 
-        [Tooltip("A mesh where east and west edges are connected")]
+        [Tooltip("A mesh where north and south edges are connected")]
         public Mesh i;
 
-        [Tooltip("A mesh where the south and west edges are connected, no corners")]
+        [Tooltip("A mesh where the north and east edges are connected, no corners")]
         public Mesh lNone;
-        [Tooltip("A mesh where the south and west edges are connected, and ne is a corner")]
+        [Tooltip("A mesh where the north and east edges are connected, and NE is a corner")]
         public Mesh lSingle;
 
-        [Tooltip("A mesh where the north, south, and east edge is connected, no corners")]
+        [Tooltip("A mesh where the north, east, and west edges are connected, no corners")]
         public Mesh tNone;
-        [Tooltip("A mesh where the north, south, and east edge is connected, southeast is a corner")]
+        [Tooltip("A mesh where the north, east, and west edges are connected, NW is a corner")]
         public Mesh tSingleRight;
-        [Tooltip("A mesh where the north, south, and east edge is connected, northeast is a corner")]
+        [Tooltip("A mesh where the north, east, and west edges are connected, NE is a corner")]
         public Mesh tSingleLeft;
-        [Tooltip("A mesh where north, south, and east is connected, northeast and southeast are corners")]
+        [Tooltip("A mesh where north, east, and west edges are connected, NW & NE are corners")]
         public Mesh tDouble;
 
         [Tooltip("A mesh where all edges are connected, no corners")]
         public Mesh xNone;
-        [Tooltip("A mesh where all edges are connected, southeast is a corner")]
+        [Tooltip("A mesh where all edges are connected, SW is a corner")]
         public Mesh xSingle;
-        [Tooltip("A mesh where all edges connected, southeast and northeast corners")]
+        [Tooltip("A mesh where all edges are connected, SW & SW are corners")]
         public Mesh xSide;
-        [Tooltip("A mesh where all edges connected, southeast and northwest corners")]
+        [Tooltip("A mesh where all edges are connected, NW & SE are corners")]
         public Mesh xOpposite;
-        [Tooltip("A mesh where all edges connected, all but northwest are corners")]
+        [Tooltip("A mesh where all edges are connected, all but NE are corners")]
         public Mesh xTriple;
-        [Tooltip("A mesh where all edges connected, all corners")]
+        [Tooltip("A mesh where all edges are connected, all corners")]
         public Mesh xQuad;
 
         public GameObject[] viewObstacles;
@@ -124,27 +125,27 @@ namespace SS3D.Engine.Tiles.Connections
             else if (cardinalInfo.IsC())
             {
                 mesh = c;
-                rotation = DirectionHelper.AngleBetween(Direction.East, cardinalInfo.GetOnlyPositive());
+                rotation = DirectionHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
 
                 if(opaque)
                 {
                     viewObstacles[0].SetActive(false);
-                    viewObstacles[1].SetActive(true);
-                    viewObstacles[2].SetActive(false);
+                    viewObstacles[1].SetActive(false);
+                    viewObstacles[2].SetActive(true);
                     viewObstacles[3].SetActive(false);
                 }
             }
             else if (cardinalInfo.IsI())
             {
                 mesh = i;
-                rotation = OrientationHelper.AngleBetween(Orientation.Horizontal, cardinalInfo.GetFirstOrientation());
+                rotation = OrientationHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
 
                 if(opaque)
                 {
-                    viewObstacles[0].SetActive(true);
-                    viewObstacles[1].SetActive(true);
-                    viewObstacles[2].SetActive(false);
-                    viewObstacles[3].SetActive(false);
+                    viewObstacles[0].SetActive(false);
+                    viewObstacles[1].SetActive(false);
+                    viewObstacles[2].SetActive(true);
+                    viewObstacles[3].SetActive(true);
                 }
             }
             else if (cardinalInfo.IsL())
@@ -154,14 +155,14 @@ namespace SS3D.Engine.Tiles.Connections
                 // N+NE+E = 0/1/2, E+SE+S = 2/3/4, S+SW+W = 4/5/6, W+NW+N = 6/7/0
                 bool isFilled = (adjacents.Connections & 0b00000111) == 0b00000111 || (adjacents.Connections & 0b00011100) == 0b00011100 || (adjacents.Connections & 0b01110000) == 0b01110000 || (adjacents.Connections & 0b11000001) == 0b11000001;
                 mesh = isFilled ? lSingle : lNone;
-                rotation = DirectionHelper.AngleBetween(Direction.SouthEast, cardinalInfo.GetCornerDirection());
+                rotation = DirectionHelper.AngleBetween(Direction.NorthEast, cardinalInfo.GetCornerDirection());
 
                 if(opaque)
                 {
                     viewObstacles[0].SetActive(false);
                     viewObstacles[1].SetActive(true);
-                    viewObstacles[2].SetActive(false);
-                    viewObstacles[3].SetActive(true);
+                    viewObstacles[2].SetActive(true);
+                    viewObstacles[3].SetActive(false);
                 }
             }
             else if (cardinalInfo.IsT())
@@ -177,14 +178,14 @@ namespace SS3D.Engine.Tiles.Connections
                     : corners == 2 ? tSingleRight
                     : tDouble;
 
-                rotation = DirectionHelper.AngleBetween(Direction.West, cardinalInfo.GetOnlyNegative());
+                rotation = DirectionHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyNegative());
 
                 if(opaque)
                 {
-                    viewObstacles[0].SetActive(corners>=3);
+                    viewObstacles[0].SetActive(true);
                     viewObstacles[1].SetActive(true);
                     viewObstacles[2].SetActive(true);
-                    viewObstacles[3].SetActive(true);
+                    viewObstacles[3].SetActive(corners>=3);
                 }
             }
             else
@@ -200,27 +201,35 @@ namespace SS3D.Engine.Tiles.Connections
                         break;
                     case 1:
                         mesh = xSingle;
-                        rotation = DirectionHelper.AngleBetween(Direction.West, diagonals.GetOnlyPositive());
+                        rotation = DirectionHelper.AngleBetween(Direction.North, diagonals.GetOnlyPositive());
                         break;
                     case 2:
                         if (diagonals.north == diagonals.south)
                         {
                             mesh = xOpposite;
-                            rotation = OrientationHelper.AngleBetween(Orientation.Vertical, diagonals.GetFirstOrientation());
+                            rotation = OrientationHelper.AngleBetween(Orientation.Horizontal, diagonals.GetFirstOrientation());
                         }
                         else
                         {
                             mesh = xSide;
-                            rotation = DirectionHelper.AngleBetween(Direction.SouthWest, diagonals.GetCornerDirection());
+                            rotation = DirectionHelper.AngleBetween(Direction.NorthWest, diagonals.GetCornerDirection());
                         }
                         break;
                     case 3:
                         mesh = xTriple;
-                        rotation = DirectionHelper.AngleBetween(Direction.East, diagonals.GetOnlyNegative());
+                        rotation = DirectionHelper.AngleBetween(Direction.South, diagonals.GetOnlyNegative());
                         break;
                     default:
                         mesh = xQuad;
                         break;
+                        
+                }
+                if(opaque)
+                {
+                    viewObstacles[0].SetActive(true);
+                    viewObstacles[1].SetActive(true);
+                    viewObstacles[2].SetActive(true);
+                    viewObstacles[3].SetActive(true);
                 }
             }
 

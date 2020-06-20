@@ -288,10 +288,18 @@ namespace SS3D.Engine.Tiles
         {
             if (turf != null)
                 EditorAndRuntime.Destroy(turf);
-            turf = EditorAndRuntime.InstantiatePrefab(turfDefinition.prefab, transform);
+            if(turfDefinition != null)
+            {
+                turf = EditorAndRuntime.InstantiatePrefab(turfDefinition.prefab, transform);
 
-            turf.name = "turf_" + turfDefinition.id;
-            turfConnector = turf.GetComponent<AdjacencyConnector>();
+                turf.name = "turf_" + turfDefinition.id;
+                turfConnector = turf.GetComponent<AdjacencyConnector>();
+            }
+            else
+            {
+                turf = null;
+                turfConnector = null;
+            }
         }
         private void CreateFixture(Fixture fixtureDefinition, FixtureLayers layer)
         {
@@ -348,7 +356,7 @@ namespace SS3D.Engine.Tiles
         {
             // Turf + all fixtures layers
             tile.subStates = new object[1 + TileDefinition.GetFixtureLayerSize()];
-            tile.subStates[0] = turf?.GetComponent<TileStateCommunicator>()?.GetTileState();
+            tile.subStates[0] = turf != null ? turf?.GetComponent<TileStateCommunicator>()?.GetTileState() : null;
 
             int i = 1;
             foreach (GameObject fixture in fixtures)

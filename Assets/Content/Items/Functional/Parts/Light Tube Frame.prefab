@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 3859248956662108644}
   - component: {fileID: 3214765322572920913}
   - component: {fileID: 3016137531586242311}
+  - component: {fileID: 452055550092037618}
   m_Layer: 16
   m_Name: Light Tube Frame
   m_TagString: Untagged
@@ -179,3 +180,19 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 2647628771732637390}
   attachmentPoint: {fileID: 7714384140708836572}
+--- !u!114 &452055550092037618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2647628771732637390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0

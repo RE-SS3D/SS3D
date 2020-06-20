@@ -186,7 +186,7 @@ InputManager:
     descriptiveName: Toggles between running and walking
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: left shift
+    positiveButton: y
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -507,6 +507,22 @@ InputManager:
     descriptiveNegativeName: 
     negativeButton: 
     positiveButton: left alt
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: 0.001
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 0
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Examine
+    descriptiveName: Displays descriptions of objects
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: left shift
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000

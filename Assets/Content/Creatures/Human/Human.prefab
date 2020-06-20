@@ -86,6 +86,7 @@ GameObject:
   - component: {fileID: 3809031586969339676}
   - component: {fileID: 6524441915444712897}
   - component: {fileID: 2059713297401845381}
+  - component: {fileID: 5302871755143894454}
   m_Layer: 15
   m_Name: Human
   m_TagString: Untagged
@@ -155,9 +156,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!114 &-5918456934534797284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,8 +174,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  animator: {fileID: 6688587067372006451}
   clientAuthority: 1
+  animator: {fileID: 6688587067372006451}
 --- !u!114 &2898001805863503684
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,8 +190,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  compressRotation: 1
   clientAuthority: 1
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01
 --- !u!143 &-5804938744367538470
 CharacterController:
   m_ObjectHideFlags: 0
@@ -406,6 +410,26 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 289348138277843802}
   m_Enabled: 1
+--- !u!114 &5302871755143894454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5c7da5d3ac848c58c8b44ad94865654, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  UiPrefab: {fileID: 2314586001921844144, guid: 154a0c29195b80444b97161cca7b2308,
+    type: 3}
+  ObstacleMask:
+    serializedVersion: 2
+    m_Bits: 256
+  ViewRange: 25
 --- !u!1 &290878266594310021
 GameObject:
   m_ObjectHideFlags: 0
