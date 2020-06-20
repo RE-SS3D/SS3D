@@ -78,7 +78,7 @@ namespace SS3D.Engine.Tiles {
     {
         Plenum,
         Turf,
-        Fixtures,
+        FixturesHolder,
         AtmosObject,
     }
 
@@ -90,7 +90,7 @@ namespace SS3D.Engine.Tiles {
     {
         public Plenum plenum;
         public Turf turf;
-        public Fixture[] fixtures;
+        public FixturesHolder fixtures;
         public AtmosObject atmos;
 
         // An array of serializable objects containing the state of each subtile object.

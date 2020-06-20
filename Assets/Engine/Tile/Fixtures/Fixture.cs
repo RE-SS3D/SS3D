@@ -12,21 +12,18 @@ namespace SS3D.Engine.Tiles {
         Furniture,
         Electrical,
         Disposal,
-        Pipes_1,
-        Pipes_2,
-        Pipes_3,
+        Pipes,
     }
 
     /**
      * Describes an object that is attached to a turf.
      */
-    [CreateAssetMenu]
     public class Fixture : ScriptableObject
     {
         public string id;
         public string genericType;
 
-        public FixtureLayers layer;
+        protected FixtureLayers layer;
         public GameObject prefab;
     }
 }
