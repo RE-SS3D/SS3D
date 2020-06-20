@@ -78,7 +78,7 @@ namespace SS3D.Engine.Tiles {
     {
         Plenum,
         Turf,
-        FixturesHolder,
+        FixturesContainer,
         AtmosObject,
     }
 
@@ -90,11 +90,11 @@ namespace SS3D.Engine.Tiles {
     {
         public Plenum plenum;
         public Turf turf;
-        public FixturesHolder fixtures;
+        public FixturesContainer fixtures;
         public AtmosObject atmos;
 
         // An array of serializable objects containing the state of each subtile object.
-        // If a subtile object has state, it will be stored at the corresponding index (turf=0, fixture=1).
+        // If a subtile object has state, it will be stored at the corresponding index (plenum=0, turf=1, fixtures=2..x).
         // If no subtile object has state, the array may be null or have no length.
         // The array may only be as long as it needs to be to store all non-null objects.
         public object[] subStates;
@@ -124,7 +124,7 @@ namespace SS3D.Engine.Tiles {
             return obj is TileDefinition definition &&
                    EqualityComparer<Plenum>.Default.Equals(plenum, definition.plenum) &&
                    EqualityComparer<Turf>.Default.Equals(turf, definition.turf) &&
-                   EqualityComparer<Fixture[]>.Default.Equals(fixtures, definition.fixtures) &&
+                   EqualityComparer<FixturesContainer>.Default.Equals(fixtures, definition.fixtures) &&
                    EqualityComparer<object[]>.Default.Equals(subStates, definition.subStates);
         }
         public override int GetHashCode()
@@ -132,7 +132,7 @@ namespace SS3D.Engine.Tiles {
             var hashCode = 1153620473;
             hashCode = hashCode * -1521134295 + EqualityComparer<Plenum>.Default.GetHashCode(plenum);
             hashCode = hashCode * -1521134295 + EqualityComparer<Turf>.Default.GetHashCode(turf);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Fixture[]>.Default.GetHashCode(fixtures);
+            hashCode = hashCode * -1521134295 + EqualityComparer<FixturesContainer>.Default.GetHashCode(fixtures);
             hashCode = hashCode * -1521134295 + EqualityComparer<object[]>.Default.GetHashCode(subStates);
             return hashCode;
         }
@@ -143,7 +143,7 @@ namespace SS3D.Engine.Tiles {
 
         public Fixture GetFixtureAtLayer(FixtureLayers layer)
         {
-            return fixtures[(int)layer];
+            return fixtures.GetFixtureAtLayer(layer);
         }
     }
 }

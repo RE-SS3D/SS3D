@@ -219,10 +219,14 @@ namespace SS3D.Engine.Tiles
             int i = 0;
             var layers = TileDefinition.GetFixtureLayerNames();
 
+            // FixturesContainer must exist
             if (tile.fixtures != null)
             {
-                foreach (var tileFixture in tile.fixtures)
+                // Loop through every layer
+                //foreach (var tileFixture in tile.fixtures)
+                foreach (FixtureLayers layer in TileDefinition.GetFixtureLayerNames())
                 {
+                    var tileFixture = tile.fixtures.GetFixtureAtLayer(layer);
                     if (tileFixture != null)
                     {
 
@@ -238,8 +242,8 @@ namespace SS3D.Engine.Tiles
                             // Update our tile object to make up for the fact that the object doesn't exist in the world.
                             // A user would have to fuck around in the editor to get to this point.
                             if (shouldWarn)
-                                Debug.LogWarning("Fixture in Tile but not in TileObject. Creating: " + tile.fixtures[i].name);
-                            CreateFixture(tile.fixtures[i], layers[i]);
+                                Debug.LogWarning("Fixture in Tile but not in TileObject. Creating: " + tileFixture.name);
+                            CreateFixture(tileFixture, layers[i]);
                         }
                     }
                     else
@@ -276,9 +280,9 @@ namespace SS3D.Engine.Tiles
                 }
             }
 
-            // Set fixture layer size if not set
-            if (tile.fixtures?.Length != TileDefinition.GetFixtureLayerSize())
-                tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
+            //// Set fixture layer size if not set
+            //if (tile.fixtures?.Length != TileDefinition.GetFixtureLayerSize())
+            //    tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
         }
 
         private void CreatePlenum(Plenum plenumDefinition)
@@ -342,13 +346,19 @@ namespace SS3D.Engine.Tiles
             fixtures[index].name = "fixture_" + layerName + "_" + fixtureDefinition.id;
         }
 
-        private void CreateFixtures(Fixture[] fixturesDefinition)
+        private void CreateFixtures(FixturesContainer fixturesDefinition)
         {
-            var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
-            for (int i = 0; i < fixturesDefinition.Length; i++)
+            //var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
+            //for (int i = 0; i < fixturesDefinition.Length; i++)
+            //{
+            //    CreateFixture(fixturesDefinition[i], layers[i]);
+            //}
+
+            foreach (FixtureLayers layer in TileDefinition.GetFixtureLayerNames())
             {
-                CreateFixture(fixturesDefinition[i], layers[i]);
+                CreateFixture(fixturesDefinition.GetFixtureAtLayer(layer), layer);
             }
+
         }
 
         private void UpdateChildrenFromSubData(TileDefinition newTile)
@@ -392,43 +402,43 @@ namespace SS3D.Engine.Tiles
          */
         private bool MigrateTileDefinition()
         {
-            // set array to proper size
-            tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
-            Fixture oldFurniture = null;
+            //// set array to proper size
+            //tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
+            //Fixture oldFurniture = null;
 
-            // Determine all assets
-            List<Fixture> fixtureList = new List<Fixture>();
-            string[] aMaterialFiles = Directory.GetFiles(Application.dataPath, "*.asset", SearchOption.AllDirectories);
-            foreach (string matFile in aMaterialFiles)
-            {
-                string assetPath = "Assets" + matFile.Replace(Application.dataPath, "").Replace('\\', '/');
-                Fixture sourceFixture = (Fixture)AssetDatabase.LoadAssetAtPath(assetPath, typeof(Fixture));
-                if (sourceFixture != null)
-                    fixtureList.Add(sourceFixture);
-            }
+            //// Determine all assets
+            //List<Fixture> fixtureList = new List<Fixture>();
+            //string[] aMaterialFiles = Directory.GetFiles(Application.dataPath, "*.asset", SearchOption.AllDirectories);
+            //foreach (string matFile in aMaterialFiles)
+            //{
+            //    string assetPath = "Assets" + matFile.Replace(Application.dataPath, "").Replace('\\', '/');
+            //    Fixture sourceFixture = (Fixture)AssetDatabase.LoadAssetAtPath(assetPath, typeof(Fixture));
+            //    if (sourceFixture != null)
+            //        fixtureList.Add(sourceFixture);
+            //}
 
-            // find old fixture
-            foreach (Transform child in transform)
-            {
-                if (child.gameObject.name.Contains("fixture"))
-                {
-                    fixtures[0] = child.gameObject;
-                    string assetName = fixtures[0].name.Replace("fixture_", "");
-                    foreach (Fixture fix in fixtureList)
-                    {
-                        if (fix.id.Equals(assetName))
-                            oldFurniture = fix;
-                    }
-                }
-            }
+            //// find old fixture
+            //foreach (Transform child in transform)
+            //{
+            //    if (child.gameObject.name.Contains("fixture"))
+            //    {
+            //        fixtures[0] = child.gameObject;
+            //        string assetName = fixtures[0].name.Replace("fixture_", "");
+            //        foreach (Fixture fix in fixtureList)
+            //        {
+            //            if (fix.id.Equals(assetName))
+            //                oldFurniture = fix;
+            //        }
+            //    }
+            //}
 
-            // update reference
-            if (oldFurniture != null)
-            {
-                tile.fixtures[0] = oldFurniture;
-                Debug.Log("Migrated fixture: " + oldFurniture.name);
-                return true;
-            }
+            //// update reference
+            //if (oldFurniture != null)
+            //{
+            //    tile.fixtures[0] = oldFurniture;
+            //    Debug.Log("Migrated fixture: " + oldFurniture.name);
+            //    return true;
+            //}
             return false;
         }
 #endif
