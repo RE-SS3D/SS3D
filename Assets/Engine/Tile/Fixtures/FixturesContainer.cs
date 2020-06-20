@@ -21,12 +21,39 @@ namespace SS3D.Engine.Tiles
             {
                 case FixtureLayers.Furniture:
                     return furniture;
-                case FixtureLayers.Pipes:
-                    // TODO add pipe layers
-                    break;
+                case FixtureLayers.Pipes1:
+                    return pipe1;
+                case FixtureLayers.Pipes2:
+                    return pipe2;
+                case FixtureLayers.Pipes3:
+                    return pipe3;
 
             }
             return null;
+        }
+
+        public void SetFixtureAtLayer(Fixture fixture, FixtureLayers layer)
+        {
+            switch (layer)
+            {
+                case FixtureLayers.Furniture:
+                    furniture = (FurnitureFixture)fixture;
+                    break;
+                case FixtureLayers.Pipes1:
+                    pipe1 = (PipesFixture)fixture;
+                    break;
+                case FixtureLayers.Pipes2:
+                    pipe2 = (PipesFixture)fixture;
+                    break;
+                case FixtureLayers.Pipes3:
+                    pipe3 = (PipesFixture)fixture;
+                    break;
+            }
+        }
+
+        public Fixture[] GetAllFixtures()
+        {
+            return new Fixture[] { furniture, pipe1, pipe2, pipe3 };
         }
     }
 

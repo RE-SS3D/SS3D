@@ -89,7 +89,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         {
             TileDefinition def = new TileDefinition
             {
-                fixtures = new Fixture[System.Enum.GetValues(typeof(FixtureLayers)).Length]
+                fixtures = new FixturesContainer()
             };
 
             savedSettings.tiles.Add(def);

@@ -63,12 +63,12 @@ namespace SS3D.Content.Systems.Interactions
             {
                 if (tile.GetFixtureAtLayer(FixtureLayers.Furniture) == TableToConstruct) // If the fixture is a table
                 {
-                    tile.fixtures[(int)FixtureLayers.Furniture] = null; // Deconstruct
+                    tile.fixtures.SetFixtureAtLayer(null, FixtureLayers.Furniture); // Deconstruct
                 }
             }
             else // If there is no fixture on place
             {
-                tile.fixtures[(int)FixtureLayers.Furniture] = TableToConstruct; // Construct
+                tile.fixtures.SetFixtureAtLayer(TableToConstruct, FixtureLayers.Furniture); // Deconstruct
             }
             
             // TODO: Make an easier way of doing this.

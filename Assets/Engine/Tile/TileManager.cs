@@ -475,7 +475,7 @@ namespace SS3D.Engine.Tiles {
             writer.WriteString(definition.turf?.name ?? "");
 
             // Write all fixtures
-            foreach (Fixture fixture in definition.fixtures)
+            foreach (Fixture fixture in definition.fixtures.GetAllFixtures())
             {
                 if (fixture)
                 {
@@ -505,7 +505,7 @@ namespace SS3D.Engine.Tiles {
         public static TileDefinition ReadNetworkableTileDefinition(this NetworkReader reader)
         {
             TileDefinition tileDefinition = new TileDefinition();
-            tileDefinition.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
+            // tileDefinition.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
 
             var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
 
@@ -533,9 +533,15 @@ namespace SS3D.Engine.Tiles {
                 string fixtureName = reader.ReadString();
                 if (!string.IsNullOrEmpty(fixtureName))
                 {
-                    tileDefinition.fixtures[(int)layer] = fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
-                    if (tileDefinition.fixtures[(int)layer] == null)
+                    //tileDefinition.fixtures[(int)layer] = fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
+                    //if (tileDefinition.fixtures[(int)layer] == null)
+                    //    Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
+
+                    tileDefinition.fixtures.SetFixtureAtLayer(fixtures.FirstOrDefault(fixture => fixture.name == fixtureName), layer);
+                    if (tileDefinition.fixtures.GetFixtureAtLayer(layer) == null)
+                    {
                         Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
+                    }
                 }
             }
 

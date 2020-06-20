@@ -7,18 +7,20 @@ namespace SS3D.Engine.Tiles
     [CreateAssetMenu(fileName = "Pipes", menuName = "Fixtures/Pipes", order = 0)]
     public class PipesFixture : Fixture
     {
-        public enum PipeLayers
-        {
-            Pipes_1,
-            Pipes_2,
-            Pipes_3,
-        }
+        // TODO
 
-        public PipeLayers pipeLayer;
+        //public enum PipeLayers
+        //{
+        //    Pipes_1,
+        //    Pipes_2,
+        //    Pipes_3,
+        //}
+
+        //public PipeLayers pipeLayer { get; set; }
 
         public PipesFixture()
         {
-            layer = FixtureLayers.Pipes;
+            layer = FixtureLayers.Pipes1;
         }
     }
 }

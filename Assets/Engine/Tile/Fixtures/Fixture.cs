@@ -12,7 +12,9 @@ namespace SS3D.Engine.Tiles {
         Furniture,
         Electrical,
         Disposal,
-        Pipes,
+        Pipes1,
+        Pipes2,
+        Pipes3
     }
 
     /**

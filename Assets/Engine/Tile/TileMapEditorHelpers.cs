@@ -45,18 +45,18 @@ namespace Tile
          */
         public static void SetTile(TileManager tileManager, TileDefinition tileDefinition, int x, int y)
         {
-            // Copy array to avoid dupplication between editor and tilemap
-            Fixture[] f = (Fixture[])tileDefinition.fixtures.Clone();
-            tileDefinition.fixtures = f;
+            //// Copy array to avoid dupplication between editor and tilemap
+            //Fixture[] f = (Fixture[])tileDefinition.fixtures.Clone();
+            //tileDefinition.fixtures = f;
 
-            if (tileManager.GetTile(x, y) == null) {
-
-               
+            if (tileManager.GetTile(x, y) == null)
+            {
 
                 tileManager.EditorCreateTile(x, y, tileDefinition);
                 Undo.RegisterCreatedObjectUndo(tileManager.GetTile(x, y).gameObject, "Created tile");
             }
-            else {
+            else
+            {
                 Undo.RecordObject(tileManager.GetTile(x, y).gameObject, "Updated tile");
                 tileManager.EditorUpdateTile(x, y, tileDefinition);
             }
