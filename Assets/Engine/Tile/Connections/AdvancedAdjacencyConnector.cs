@@ -98,7 +98,8 @@ namespace SS3D.Engine.Tiles.Connections
         {
             int index = (int)Layer;
 
-            bool isConnected = (tile.turf && (tile.turf.genericType == type || type == null));
+            bool isConnected = (tile.plenum && (tile.plenum.genericType == type || type == null));
+            isConnected |= (tile.turf && (tile.turf.genericType == type || type == null));
             if (tile.fixtures != null)
                 isConnected = isConnected || (tile.fixtures[index] && (tile.fixtures[index].genericType == type || type == null));
             return adjacents.UpdateDirection(direction, isConnected);
