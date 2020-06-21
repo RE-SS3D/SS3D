@@ -272,9 +272,15 @@ namespace SS3D.Engine.Tiles
                     if (shouldWarn)
                     {
 #if UNITY_EDITOR
-                        MigrateTileDefinition();
+                        if (MigrateTileDefinition())
+                        {
+                            Debug.Log("Succesfully migrated " + child.name);
+                        }
+                        else
+                        {
+                            Debug.LogWarning("Unknown object found in tile " + name + ": " + child.name + ", deleting.");
+                        }
 #endif
-                        Debug.LogWarning("Unknown object found in tile " + name + ": " + child.name + ", deleting.");
                     }
                     EditorAndRuntime.Destroy(child);
                 }
@@ -402,43 +408,54 @@ namespace SS3D.Engine.Tiles
          */
         private bool MigrateTileDefinition()
         {
-            //// set array to proper size
-            //tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
-            //Fixture oldFurniture = null;
+            // set array to proper size
+            // tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
+            Fixture oldFurniture = null;
+            FixtureLayers assetLayer = FixtureLayers.Furniture;
 
-            //// Determine all assets
-            //List<Fixture> fixtureList = new List<Fixture>();
-            //string[] aMaterialFiles = Directory.GetFiles(Application.dataPath, "*.asset", SearchOption.AllDirectories);
-            //foreach (string matFile in aMaterialFiles)
-            //{
-            //    string assetPath = "Assets" + matFile.Replace(Application.dataPath, "").Replace('\\', '/');
-            //    Fixture sourceFixture = (Fixture)AssetDatabase.LoadAssetAtPath(assetPath, typeof(Fixture));
-            //    if (sourceFixture != null)
-            //        fixtureList.Add(sourceFixture);
-            //}
+            // Determine all assets
+            List<Fixture> fixtureList = new List<Fixture>();
+            string[] aMaterialFiles = Directory.GetFiles(Application.dataPath, "*.asset", SearchOption.AllDirectories);
+            foreach (string matFile in aMaterialFiles)
+            {
+                string assetPath = "Assets" + matFile.Replace(Application.dataPath, "").Replace('\\', '/');
+                Fixture sourceFixture = (Fixture)AssetDatabase.LoadAssetAtPath(assetPath, typeof(Fixture));
+                if (sourceFixture != null)
+                    fixtureList.Add(sourceFixture);
+            }
 
-            //// find old fixture
-            //foreach (Transform child in transform)
-            //{
-            //    if (child.gameObject.name.Contains("fixture"))
-            //    {
-            //        fixtures[0] = child.gameObject;
-            //        string assetName = fixtures[0].name.Replace("fixture_", "");
-            //        foreach (Fixture fix in fixtureList)
-            //        {
-            //            if (fix.id.Equals(assetName))
-            //                oldFurniture = fix;
-            //        }
-            //    }
-            //}
+            // find old fixture
+            foreach (Transform child in transform)
+            {
+                if (child.gameObject.name.Contains("fixture"))
+                {
+                    fixtures[0] = child.gameObject;
+                    string assetNameWithLayer = fixtures[0].name.Replace("fixture_", "");
 
-            //// update reference
-            //if (oldFurniture != null)
-            //{
-            //    tile.fixtures[0] = oldFurniture;
-            //    Debug.Log("Migrated fixture: " + oldFurniture.name);
-            //    return true;
-            //}
+                    // We got the asset name, now get the layer name
+                    foreach (FixtureLayers layer in TileDefinition.GetFixtureLayerNames())
+                    {
+                        if (assetNameWithLayer.Contains(layer.ToString().ToLower()))
+                        {
+                            assetLayer = layer;
+                        }
+                    }
+                    string assetName = assetNameWithLayer.Replace(assetLayer.ToString().ToLower() + "_", "");
+                    foreach (Fixture fix in fixtureList)
+                    {
+
+                        if (fix.id.Equals(assetName))
+                            oldFurniture = fix;
+                    }
+                }
+            }
+
+            // update reference
+            if (oldFurniture != null)
+            {
+                tile.fixtures.SetFixtureAtLayer(oldFurniture, assetLayer);
+                return true;
+            }
             return false;
         }
 #endif

@@ -7,14 +7,21 @@ namespace SS3D.Engine.Tiles {
     /**
      * Describes the different layers on which fixtures can be placed.
      */
-    public enum FixtureLayers
+    //public enum FixtureLayers
+    //{
+    //    Furniture,
+    //    Electrical,
+    //    Disposal,
+    //    Pipes1,
+    //    Pipes2,
+    //    Pipes3
+    //}
+
+    public enum FixtureType
     {
-        Furniture,
-        Electrical,
-        Disposal,
-        Pipes1,
-        Pipes2,
-        Pipes3
+        TileFixture,
+        WallFixture,
+        FloorFixture
     }
 
     /**
@@ -25,7 +32,8 @@ namespace SS3D.Engine.Tiles {
         public string id;
         public string genericType;
 
-        protected FixtureLayers layer;
+        protected FixtureType fixtureType;
+        // protected FixtureLayers layer;
         public GameObject prefab;
     }
 }

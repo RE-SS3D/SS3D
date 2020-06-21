@@ -4,8 +4,9 @@ using UnityEngine;
 
 namespace SS3D.Engine.Tiles
 {
-    [CreateAssetMenu(fileName = "Pipes", menuName = "Fixtures/Pipes", order = 0)]
-    public class PipesFixture : Fixture
+    // Fixture holder for under floor pipes
+    [CreateAssetMenu(fileName = "PipeTileFixture", menuName = "Fixtures/Tile/Under Floor Pipe", order = 0)]
+    public class PipesFixture : TileFixture
     {
         // TODO
 
