@@ -95,11 +95,11 @@ namespace SS3D.Engine.Tiles.Connections
          */
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
-            // int index = (int)Layer;
+            int index = 18; // Hardcoded to the Fixture1 layer until I got a better solution for this. Is needed to make Airlocks connect
 
             bool isGeneric = (tile.turf && (tile.turf.genericType == genericType || genericType == null));
             if (tile.fixtures != null)
-                isGeneric = isGeneric || (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex) && (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex).genericType == genericType || genericType == null));
+                isGeneric = isGeneric || (tile.fixtures.GetFixtureAtLayerIndex(index) && (tile.fixtures.GetFixtureAtLayerIndex(index).genericType == genericType || genericType == null));
 
             bool isSpecific = (tile.turf && (tile.turf.id == id || id == null));
             if (tile.fixtures != null)
