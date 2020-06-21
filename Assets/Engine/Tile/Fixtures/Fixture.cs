@@ -5,18 +5,8 @@ using System;
 namespace SS3D.Engine.Tiles {
 
     /**
-     * Describes the different layers on which fixtures can be placed.
+     * Describes the different fixture types on which fixtures can be placed.
      */
-    //public enum FixtureLayers
-    //{
-    //    Furniture,
-    //    Electrical,
-    //    Disposal,
-    //    Pipes1,
-    //    Pipes2,
-    //    Pipes3
-    //}
-
     public enum FixtureType
     {
         TileFixture,

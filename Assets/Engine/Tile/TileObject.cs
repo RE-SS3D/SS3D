@@ -299,13 +299,11 @@ namespace SS3D.Engine.Tiles
         {
             if (fixtures.Length < TileDefinition.GetAllFixtureLayerSize())
             {
-                Debug.LogError("Fixtures lenght not correct");
+                Debug.LogError("Fixtures lenght not correct. First time run?");
                 fixtures = new GameObject[TileDefinition.GetAllFixtureLayerSize()];
             }
 
             int i = 0;
-
-            // var layers = TileDefinition.GetTileFixtureLayerNames();
 
             // FixturesContainer must exist
             if (tile.fixtures != null)
@@ -400,10 +398,6 @@ namespace SS3D.Engine.Tiles
                 }
             
 
-            }
-            else
-            {
-                //fixtureConnectors = new AdjacencyConnector[TileDefinition.GetFixtureLayerSize()];
             }
         }
 
@@ -571,17 +565,6 @@ namespace SS3D.Engine.Tiles
 
         private void CreateFixtures(FixturesContainer fixturesDefinition)
         {
-            //var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
-            //for (int i = 0; i < fixturesDefinition.Length; i++)
-            //{
-            //    CreateFixture(fixturesDefinition[i], layers[i]);
-            //}
-
-            //foreach (FixtureLayers layer in TileDefinition.GetFixtureLayerNames())
-            //{
-            //    CreateFixture(fixturesDefinition.GetFixtureAtLayer(layer), layer);
-            //}
-
             foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
             {
                 CreateTileFixture(fixturesDefinition.GetTileFixtureAtLayer(layer), layer);
