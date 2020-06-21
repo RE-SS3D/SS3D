@@ -26,33 +26,66 @@ namespace SS3D.Engine.Tiles
         }
 
         /**
-         * Passes through an adjacency update to all children
+         * Passes through an adjacency update to all children in the Tiles fixture layer
          */
-        public void UpdateSingleAdjacency(Direction direction, TileDefinition tile, FixtureLayers layer)
+        public void UpdateTileSingleAdjacency(Direction direction, TileDefinition tile, TileFixtureLayers layer)
         {
             int index = (int)layer;
-            fixtureConnectors[index]?.UpdateSingle(direction, tile);
+            tileFixtureConnectors[index]?.UpdateSingle(direction, tile);
         }
 
+
+        /**
+         * Passes through an adjacency update to all children in the Floors fixture layer
+         */
+        public void UpdateFloorSingleAdjacency(Direction direction, TileDefinition tile, FloorFixtureLayers layer)
+        {
+            int index = (int)layer;
+            floorFixtureConnectors[index]?.UpdateSingle(direction, tile);
+        }
+
+        /**
+         * Passes through an adjacency update to all children and all layers.
+         */
         public void UpdateSingleAdjacency(Direction direction, TileDefinition tile)
         {
+            // Handle plenum and turf
             plenumConnector?.UpdateSingle(direction, tile);
             turfConnector?.UpdateSingle(direction, tile);
 
-            var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
-            foreach (FixtureLayers layer in layers)
+            // Go through Tile fixtures first
+            var tileLayers = TileDefinition.GetTileFixtureLayerNames();
+            foreach (TileFixtureLayers layer in tileLayers)
             {
-                UpdateSingleAdjacency(direction, tile, layer);
+                UpdateTileSingleAdjacency(direction, tile, layer);
+            }
+
+            // Go through Floor fixtures second
+            var floorLayers = TileDefinition.GetTileFixtureLayerNames();
+            foreach (FloorFixtureLayers layer in floorLayers)
+            {
+                UpdateFloorSingleAdjacency(direction, tile, layer);
             }
         }
 
         /**
          * Passes through an adjacency update to all children
          */
-        public void UpdateAllAdjacencies(TileDefinition[] tiles, FixtureLayers layer)
+        public void UpdateAllTileAdjacencies(TileDefinition[] tiles, TileFixtureLayers layer)
         {
             int index = (int)layer;
-            AdjacencyConnector ac = fixtureConnectors[index];
+            AdjacencyConnector ac = tileFixtureConnectors[index];
+            if (ac != null)
+            {
+                ac.Layer = layer;
+                ac?.UpdateAll(tiles);
+            }
+        }
+
+        public void UpdateAllFloorAdjacencies(TileDefinition[] tiles, FloorFixtureLayers layer)
+        {
+            int index = (int)layer;
+            AdjacencyConnector ac = floorFixtureConnectors[index];
             if (ac != null)
             {
                 ac.Layer = layer;
@@ -66,11 +99,18 @@ namespace SS3D.Engine.Tiles
             plenumConnector?.UpdateAll(tiles);
             turfConnector?.UpdateAll(tiles);
 
-            // Update every layer
-            var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
-            foreach (FixtureLayers layer in layers)
+            // Update every tile layer
+            var tileLayers = TileDefinition.GetTileFixtureLayerNames();
+            foreach (TileFixtureLayers layer in tileLayers)
             {
-                UpdateAllAdjacencies(tiles, layer);
+                UpdateAllTileAdjacencies(tiles, layer);
+            }
+
+            // Update every floor layer
+            var floorLayers = TileDefinition.GetTileFixtureLayerNames();
+            foreach (FloorFixtureLayers layer in floorLayers)
+            {
+                UpdateAllFloorAdjacencies(tiles, layer);
             }
         }
 
@@ -216,48 +256,7 @@ namespace SS3D.Engine.Tiles
                 turfConnector = null;
             }
 
-            int i = 0;
-            var layers = TileDefinition.GetFixtureLayerNames();
-
-            // FixturesContainer must exist
-            if (tile.fixtures != null)
-            {
-                // Loop through every layer
-                //foreach (var tileFixture in tile.fixtures)
-                foreach (FixtureLayers layer in TileDefinition.GetFixtureLayerNames())
-                {
-                    var tileFixture = tile.fixtures.GetFixtureAtLayer(layer);
-                    if (tileFixture != null)
-                    {
-
-                        string layerName = layers[i].ToString();
-                        fixtures[i] = transform.Find("fixture_" + layerName.ToLower() + "_" + tileFixture.id)?.gameObject;
-
-                        if (fixtures[i] != null)
-                        {
-                            fixtureConnectors[i] = fixtures[i].GetComponent<AdjacencyConnector>();
-                        }
-                        else
-                        {
-                            // Update our tile object to make up for the fact that the object doesn't exist in the world.
-                            // A user would have to fuck around in the editor to get to this point.
-                            if (shouldWarn)
-                                Debug.LogWarning("Fixture in Tile but not in TileObject. Creating: " + tileFixture.name);
-                            CreateFixture(tileFixture, layers[i]);
-                        }
-                    }
-                    else
-                    {
-                        fixtures[i] = null;
-                        fixtureConnectors[i] = null;
-                    }
-                    i++;
-                }
-            }
-            else
-            {
-                fixtureConnectors = new AdjacencyConnector[TileDefinition.GetFixtureLayerSize()];
-            }
+            ValidateFixtures(shouldWarn);
 
             UpdateChildrenFromSubData(tile);
             UpdateSubDataFromChildren();
@@ -290,6 +289,112 @@ namespace SS3D.Engine.Tiles
             //if (tile.fixtures?.Length != TileDefinition.GetFixtureLayerSize())
             //    tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
         }
+
+        private void ValidateFixtures(bool shouldWarn)
+        {
+            int i = 0;
+
+            var layers = TileDefinition.GetTileFixtureLayerNames();
+
+            // FixturesContainer must exist
+            if (tile.fixtures != null)
+            {
+                // Loop through every tile layer
+                foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
+                {
+                    var tileFixture = tile.fixtures.GetTileFixtureAtLayer(layer);
+                    if (tileFixture != null)
+                    {
+
+                        string layerName = layers[i].ToString();
+                        fixtures[i] = transform.Find("fixture_" + layerName.ToLower() + "_" + tileFixture.id)?.gameObject;
+
+                        if (fixtures[i] != null)
+                        {
+                            tileFixtureConnectors[i] = fixtures[i].GetComponent<AdjacencyConnector>();
+                        }
+                        else
+                        {
+                            // Update our tile object to make up for the fact that the object doesn't exist in the world.
+                            // A user would have to fuck around in the editor to get to this point.
+                            if (shouldWarn)
+                                Debug.LogWarning("Tile Fixture in Tile but not in TileObject. Creating: " + tileFixture.name);
+                            CreateFixture(tileFixture, layer);
+                        }
+                    }
+                    else
+                    {
+                        fixtures[i] = null;
+                        tileFixtureConnectors[i] = null;
+                    }
+                    i++;
+                }
+
+                // Loop through every wall layer
+                foreach (WallFixtureLayers layer in TileDefinition.GetWallFixtureLayerNames())
+                {
+                    var wallFixture = tile.fixtures.GetWallFixtureAtLayer(layer);
+                    if (wallFixture != null)
+                    {
+
+                        string layerName = layers[i - TileDefinition.GetTileFixtureLayerSize()].ToString();
+                        fixtures[i] = transform.Find("fixture_" + layerName.ToLower() + "_" + wallFixture.id)?.gameObject;
+
+                        if (fixtures[i] == null)
+                        {
+                            // Update our tile object to make up for the fact that the object doesn't exist in the world.
+                            // A user would have to fuck around in the editor to get to this point.
+                            if (shouldWarn)
+                                Debug.LogWarning("Wall Fixture in Tile but not in TileObject. Creating: " + wallFixture.name);
+                            CreateFixture(wallFixture, layer);
+                        }
+                    }
+                    else
+                    {
+                        fixtures[i] = null;
+                    }
+                    i++;
+                }
+
+                // Loop through every floor layer
+                foreach (FloorFixtureLayers layer in TileDefinition.GetFloorFixtureLayerNames())
+                {
+                    var floorFixture = tile.fixtures.GetFloorFixtureAtLayer(layer);
+                    if (floorFixture != null)
+                    {
+
+                        string layerName = layers[i - TileDefinition.GetTileFixtureLayerSize() - TileDefinition.GetWallFixtureLayerSize()].ToString();
+                        fixtures[i] = transform.Find("fixture_" + layerName.ToLower() + "_" + floorFixture.id)?.gameObject;
+
+                        if (fixtures[i] != null)
+                        {
+                            floorFixtureConnectors[i - TileDefinition.GetTileFixtureLayerSize() - TileDefinition.GetWallFixtureLayerSize()] = fixtures[i].GetComponent<AdjacencyConnector>();
+                        }
+                        else
+                        {
+                            // Update our tile object to make up for the fact that the object doesn't exist in the world.
+                            // A user would have to fuck around in the editor to get to this point.
+                            if (shouldWarn)
+                                Debug.LogWarning("Tile Fixture in Tile but not in TileObject. Creating: " + floorFixture.name);
+                            CreateFixture(floorFixture, layer);
+                        }
+                    }
+                    else
+                    {
+                        fixtures[i] = null;
+                        floorFixtureConnectors[i - TileDefinition.GetTileFixtureLayerSize() - TileDefinition.GetWallFixtureLayerSize()] = null;
+                    }
+                    i++;
+                }
+            
+
+            }
+            else
+            {
+                //fixtureConnectors = new AdjacencyConnector[TileDefinition.GetFixtureLayerSize()];
+            }
+        }
+
 
         private void CreatePlenum(Plenum plenumDefinition)
         {
@@ -469,7 +574,9 @@ namespace SS3D.Engine.Tiles
         private AdjacencyConnector turfConnector = null; // may be null
         public AtmosObject atmos;
 
-        private GameObject[] fixtures = new GameObject[TileDefinition.GetFixtureLayerSize()];
-        private AdjacencyConnector[] fixtureConnectors = new AdjacencyConnector[TileDefinition.GetFixtureLayerSize()];
+        // Total fixtures = tile + wall + floor
+        private GameObject[] fixtures = new GameObject[TileDefinition.GetAllFixtureLayerSize()];
+        private AdjacencyConnector[] tileFixtureConnectors = new AdjacencyConnector[TileDefinition.GetTileFixtureLayerSize()];
+        private AdjacencyConnector[] floorFixtureConnectors = new AdjacencyConnector[TileDefinition.GetFloorFixtureLayerSize()];
     }
 }

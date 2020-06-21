@@ -101,14 +101,39 @@ namespace SS3D.Engine.Tiles {
 
         public static TileDefinition NullObject = new TileDefinition { plenum = null, turf = null, fixtures = null, subStates = null };
 
-        public static int GetFixtureLayerSize()
+        public static int GetTileFixtureLayerSize()
         {
-            return Enum.GetValues(typeof(FixtureLayers)).Length;
+            return Enum.GetValues(typeof(TileFixtureLayers)).Length;
         }
 
-        public static FixtureLayers[] GetFixtureLayerNames()
+        public static int GetWallFixtureLayerSize()
         {
-            return (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
+            return Enum.GetValues(typeof(WallFixtureLayers)).Length;
+        }
+
+        public static int GetFloorFixtureLayerSize()
+        {
+            return Enum.GetValues(typeof(FloorFixtureLayers)).Length;
+        }
+
+        public static int GetAllFixtureLayerSize()
+        {
+            return GetTileFixtureLayerSize() + GetWallFixtureLayerSize() + GetFloorFixtureLayerSize();
+        }
+
+        public static TileFixtureLayers[] GetTileFixtureLayerNames()
+        {
+            return (TileFixtureLayers[])Enum.GetValues(typeof(TileFixtureLayers));
+        }
+
+        public static WallFixtureLayers[] GetWallFixtureLayerNames()
+        {
+            return (WallFixtureLayers[])Enum.GetValues(typeof(WallFixtureLayers));
+        }
+
+        public static FloorFixtureLayers[] GetFloorFixtureLayerNames()
+        {
+            return (FloorFixtureLayers[])Enum.GetValues(typeof(FloorFixtureLayers));
         }
 
         public static bool operator ==(TileDefinition a, TileDefinition b)
@@ -139,11 +164,6 @@ namespace SS3D.Engine.Tiles {
         public bool IsEmpty()
         {
             return plenum == null;
-        }
-
-        public Fixture GetFixtureAtLayer(FixtureLayers layer)
-        {
-            return fixtures.GetFixtureAtLayer(layer);
         }
     }
 }
