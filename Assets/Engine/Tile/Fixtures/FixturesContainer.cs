@@ -16,9 +16,9 @@ namespace SS3D.Engine.Tiles
         //public PipesFixture pipe2;
         //public PipesFixture pipe3;
 
-        TileFixtureDefinition tileFixtureDefinition;
-        WallFixtureDefinition wallFixtureDefinition;
-        FloorFixtureDefinition floorFixtureDefinition;
+        public TileFixtureDefinition tileFixtureDefinition;
+        public WallFixtureDefinition wallFixtureDefinition;
+        public FloorFixtureDefinition floorFixtureDefinition;
 
         public TileFixture GetTileFixtureAtLayer(TileFixtureLayers layer)
         {
@@ -33,7 +33,7 @@ namespace SS3D.Engine.Tiles
                 case TileFixtureLayers.Pipe3:
                     return tileFixtureDefinition.pipe3;
                 case TileFixtureLayers.Plenum:
-                    return tileFixtureDefinition.plenum;
+                    return tileFixtureDefinition.plenumCap;
                 case TileFixtureLayers.Wire:
                     return tileFixtureDefinition.wire;
             }
@@ -111,7 +111,7 @@ namespace SS3D.Engine.Tiles
                     tileFixtureDefinition.pipe3 = (PipesFixture)fixture;
                     break;
                 case TileFixtureLayers.Plenum:
-                    tileFixtureDefinition.plenum = (PlenumFixture)fixture;
+                    tileFixtureDefinition.plenumCap = (PlenumFixture)fixture;
                     break;
                 case TileFixtureLayers.Wire:
                     tileFixtureDefinition.wire = (WireFixture)fixture;
@@ -186,6 +186,60 @@ namespace SS3D.Engine.Tiles
                     floorFixtureDefinition.pipeFloor = (PipeFloorFixture)fixture;
                     break;
             }
+        }
+
+        public Fixture[] GetAllFixtures()
+        {
+            List<Fixture> fixtures = new List<Fixture>();
+
+            foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
+            {
+                fixtures.Add(GetTileFixtureAtLayer(layer));
+            }
+
+            foreach (WallFixtureLayers layer in TileDefinition.GetWallFixtureLayerNames())
+            {
+                fixtures.Add(GetWallFixtureAtLayer(layer));
+            }
+
+            foreach (FloorFixtureLayers layer in TileDefinition.GetFloorFixtureLayerNames())
+            {
+                fixtures.Add(GetFloorFixtureAtLayer(layer));
+            }
+
+            return fixtures.ToArray();
+        }
+
+        public Fixture GetFixtureAtLayerIndex(int index)
+        {
+            int offsetFloor = TileDefinition.GetTileFixtureLayerSize();
+            int offsetWall = TileDefinition.GetWallFixtureLayerSize();
+            int offsetTotal = offsetFloor + offsetWall;
+
+            if (index < offsetFloor)
+            {
+                // We are a Tile fixture
+                return GetTileFixtureAtLayer((TileFixtureLayers)index);
+            }
+
+            else if (index >= offsetFloor && index < offsetWall)
+            {
+                // We are a Wall fixture
+                return GetWallFixtureAtLayer((WallFixtureLayers)(index - offsetFloor));
+            }
+
+            else if (index >= offsetWall && index < offsetWall)
+            {
+                // We are a Floor fixture
+                return GetFloorFixtureAtLayer((FloorFixtureLayers)(index - offsetWall));
+            }
+
+            else
+            {
+                Debug.LogError("Requesting out of index Fixture");
+            }
+
+            return null;
         }
 
         //public Fixture GetFixtureAtLayer(FixtureLayers layer)

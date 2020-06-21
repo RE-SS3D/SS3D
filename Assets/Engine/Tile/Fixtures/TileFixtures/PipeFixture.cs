@@ -21,7 +21,7 @@ namespace SS3D.Engine.Tiles
 
         public PipesFixture()
         {
-            layer = FixtureLayers.Pipes1;
+
         }
     }
 }

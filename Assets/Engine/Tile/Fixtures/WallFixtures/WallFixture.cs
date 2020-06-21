@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Engine.Tiles
 {
+    [Serializable]
     public struct WallFixtureDefinition
     {
         public HighWallFixture highWallNorth;

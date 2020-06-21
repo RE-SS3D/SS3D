@@ -10,7 +10,7 @@ namespace SS3D.Engine.Tiles
     {
         public FurnitureFloorFixture()
         {
-            layer = FixtureLayers.Furniture;
+
         }
     }
 }

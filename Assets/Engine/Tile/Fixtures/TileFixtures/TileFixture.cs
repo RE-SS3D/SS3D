@@ -1,12 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Engine.Tiles
 {
+    [Serializable]
     public struct TileFixtureDefinition
     {
-        public PlenumFixture plenum;
+        public PlenumFixture plenumCap;
         public WireFixture wire;
         public DisposalFixture disposal;
         public PipesFixture pipe1;

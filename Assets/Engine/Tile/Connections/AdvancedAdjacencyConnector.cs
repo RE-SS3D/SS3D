@@ -21,7 +21,7 @@ namespace SS3D.Engine.Tiles.Connections
     {
         // Id to match against
         public string type;
-        public FixtureLayers Layer { get; set; }
+        public int LayerIndex { get; set; }
 
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
@@ -96,12 +96,10 @@ namespace SS3D.Engine.Tiles.Connections
          */
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
-            int index = (int)Layer;
-
             bool isConnected = (tile.plenum && (tile.plenum.genericType == type || type == null));
             isConnected |= (tile.turf && (tile.turf.genericType == type || type == null));
             if (tile.fixtures != null)
-                isConnected = isConnected || (tile.fixtures.GetFixtureAtLayer(Layer) && (tile.fixtures.GetFixtureAtLayer(Layer).genericType == type || type == null));
+                isConnected = isConnected || (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex) && (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex).genericType == type || type == null));
             return adjacents.UpdateDirection(direction, isConnected);
         }
 

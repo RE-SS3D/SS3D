@@ -77,7 +77,7 @@ namespace SS3D.Engine.Tiles
             AdjacencyConnector ac = tileFixtureConnectors[index];
             if (ac != null)
             {
-                ac.Layer = layer;
+                ac.LayerIndex = index;
                 ac?.UpdateAll(tiles);
             }
         }
@@ -88,7 +88,7 @@ namespace SS3D.Engine.Tiles
             AdjacencyConnector ac = floorFixtureConnectors[index];
             if (ac != null)
             {
-                ac.Layer = layer;
+                ac.LayerIndex = index + TileDefinition.GetWallFixtureLayerSize() + TileDefinition.GetTileFixtureLayerSize();
                 ac?.UpdateAll(tiles);
             }
         }
@@ -292,6 +292,12 @@ namespace SS3D.Engine.Tiles
 
         private void ValidateFixtures(bool shouldWarn)
         {
+            if (fixtures.Length < TileDefinition.GetAllFixtureLayerSize())
+            {
+                Debug.LogError("Fixtures lenght not correct");
+                fixtures = new GameObject[TileDefinition.GetAllFixtureLayerSize()];
+            }
+
             int i = 0;
 
             var layers = TileDefinition.GetTileFixtureLayerNames();

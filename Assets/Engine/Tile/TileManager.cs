@@ -504,57 +504,62 @@ namespace SS3D.Engine.Tiles {
         }
         public static TileDefinition ReadNetworkableTileDefinition(this NetworkReader reader)
         {
+            // TODO
             TileDefinition tileDefinition = new TileDefinition();
-            // tileDefinition.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
-
-            var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
-
-            // Read plenum
-            string plenumName = reader.ReadString();
-            if (!string.IsNullOrEmpty(plenumName))
-            {
-                tileDefinition.plenum = plenums.FirstOrDefault(plenum => plenum.name == plenumName);
-                if (tileDefinition.plenum == null)
-                    Debug.LogError($"Network recieved plenum with name {plenumName} could not be found");
-            }
-
-            // Read turf
-            string turfName = reader.ReadString();
-            if (!string.IsNullOrEmpty(turfName))
-            {
-                tileDefinition.turf = turfs.FirstOrDefault(turf => turf.name == turfName);
-                if (tileDefinition.turf == null)
-                    Debug.LogError($"Network recieved turf with name {turfName} could not be found");
-            }
-
-            // Read fixtures
-            foreach (FixtureLayers layer in layers)
-            {
-                string fixtureName = reader.ReadString();
-                if (!string.IsNullOrEmpty(fixtureName))
-                {
-                    //tileDefinition.fixtures[(int)layer] = fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
-                    //if (tileDefinition.fixtures[(int)layer] == null)
-                    //    Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
-
-                    tileDefinition.fixtures.SetFixtureAtLayer(fixtures.FirstOrDefault(fixture => fixture.name == fixtureName), layer);
-                    if (tileDefinition.fixtures.GetFixtureAtLayer(layer) == null)
-                    {
-                        Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
-                    }
-                }
-            }
-
-            // If the boolean is false, subStates should be null.
-            if (reader.ReadBoolean()) {
-                using(var stream = new MemoryStream(reader.ReadBytesAndSize())) {
-                    tileDefinition.subStates = new BinaryFormatter().Deserialize(stream) as object[];
-                }
-            }
-
-            // TODO: Should substates be initialized to null array?
-
             return tileDefinition;
+
+
+
+            //// tileDefinition.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
+
+            //var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
+
+            //// Read plenum
+            //string plenumName = reader.ReadString();
+            //if (!string.IsNullOrEmpty(plenumName))
+            //{
+            //    tileDefinition.plenum = plenums.FirstOrDefault(plenum => plenum.name == plenumName);
+            //    if (tileDefinition.plenum == null)
+            //        Debug.LogError($"Network recieved plenum with name {plenumName} could not be found");
+            //}
+
+            //// Read turf
+            //string turfName = reader.ReadString();
+            //if (!string.IsNullOrEmpty(turfName))
+            //{
+            //    tileDefinition.turf = turfs.FirstOrDefault(turf => turf.name == turfName);
+            //    if (tileDefinition.turf == null)
+            //        Debug.LogError($"Network recieved turf with name {turfName} could not be found");
+            //}
+
+            //// Read fixtures
+            //foreach (FixtureLayers layer in layers)
+            //{
+            //    string fixtureName = reader.ReadString();
+            //    if (!string.IsNullOrEmpty(fixtureName))
+            //    {
+            //        //tileDefinition.fixtures[(int)layer] = fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
+            //        //if (tileDefinition.fixtures[(int)layer] == null)
+            //        //    Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
+
+            //        tileDefinition.fixtures.SetFixtureAtLayer(fixtures.FirstOrDefault(fixture => fixture.name == fixtureName), layer);
+            //        if (tileDefinition.fixtures.GetFixtureAtLayer(layer) == null)
+            //        {
+            //            Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
+            //        }
+            //    }
+            //}
+
+            //// If the boolean is false, subStates should be null.
+            //if (reader.ReadBoolean()) {
+            //    using(var stream = new MemoryStream(reader.ReadBytesAndSize())) {
+            //        tileDefinition.subStates = new BinaryFormatter().Deserialize(stream) as object[];
+            //    }
+            //}
+
+            //// TODO: Should substates be initialized to null array?
+
+            //return tileDefinition;
         }
 
         // Store a list of all turfs and fixtures to be used in networking communications.

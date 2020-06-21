@@ -1,21 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 namespace SS3D.Engine.Tiles
 {
-    public enum FloorFixtureLayers
-    {
-        PipeFixture,
-        OverlayFixture1,
-        OverlayFixture2,
-        OverlayFixture3,
-        FurnitureFixture1,
-        FurnitureFixture2,
-        FurnitureFixture3,
-        FurnitureFixture4,
-        FurnitureFixture5
-    }
-
+    [Serializable]
     public struct FloorFixtureDefinition
     {
         public PipeFloorFixture pipeFloor;
@@ -29,6 +18,19 @@ namespace SS3D.Engine.Tiles
         public FurnitureFloorFixture furniture5;
     }
 
+    public enum FloorFixtureLayers
+    {
+        PipeFixture,
+        OverlayFixture1,
+        OverlayFixture2,
+        OverlayFixture3,
+        FurnitureFixture1,
+        FurnitureFixture2,
+        FurnitureFixture3,
+        FurnitureFixture4,
+        FurnitureFixture5
+    }
+    
     abstract public class FloorFixture : Fixture
     {
 

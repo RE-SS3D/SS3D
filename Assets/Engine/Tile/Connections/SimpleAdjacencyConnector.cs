@@ -18,7 +18,9 @@ namespace SS3D.Engine.Tiles.Connections
             Fixture,
         }
 
-        public FixtureLayers Layer { get; set; }
+        public int LayerIndex { get; set; }
+
+        //public FixtureLayers Layer { get; set; }
 
         // Id that adjacent objects must be to count. If null, any id is accepted
         public string type;
@@ -72,12 +74,10 @@ namespace SS3D.Engine.Tiles.Connections
          */
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
-            int index = (int)Layer;
-
             bool isConnected = (tile.plenum && (tile.plenum.genericType == type || type == null));
             isConnected |= (tile.turf && (tile.turf.genericType == type || type == null));
             if (tile.fixtures != null)
-                isConnected |= (tile.fixtures.GetFixtureAtLayer(Layer) && (tile.fixtures.GetFixtureAtLayer(Layer).genericType == type || type == null));
+                isConnected |= (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex) && (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex).genericType == type || type == null));
             return adjacents.UpdateDirection(direction, isConnected, true);
         }
 

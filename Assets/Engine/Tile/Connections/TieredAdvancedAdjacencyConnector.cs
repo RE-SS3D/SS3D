@@ -18,7 +18,7 @@ namespace SS3D.Engine.Tiles.Connections
         // Id to match against
         public string id;
         public string genericType;
-        public FixtureLayers Layer { get; set; }
+        public int LayerIndex { get; set; }
 
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
@@ -99,11 +99,11 @@ namespace SS3D.Engine.Tiles.Connections
 
             bool isGeneric = (tile.turf && (tile.turf.genericType == genericType || genericType == null));
             if (tile.fixtures != null)
-                isGeneric = isGeneric || (tile.fixtures.GetFixtureAtLayer(Layer) && (tile.fixtures.GetFixtureAtLayer(Layer).genericType == genericType || genericType == null));
+                isGeneric = isGeneric || (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex) && (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex).genericType == genericType || genericType == null));
 
             bool isSpecific = (tile.turf && (tile.turf.id == id || id == null));
             if (tile.fixtures != null)
-                isSpecific = isSpecific || (tile.fixtures.GetFixtureAtLayer(Layer) && (tile.fixtures.GetFixtureAtLayer(Layer).id == id || id == null));
+                isSpecific = isSpecific || (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex) && (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex).id == id || id == null));
 
             bool changed = generalAdjacents.UpdateDirection(direction, isGeneric, true);
             changed |= specificAdjacents.UpdateDirection(direction, isSpecific, true);
