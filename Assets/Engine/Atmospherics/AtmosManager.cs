@@ -153,7 +153,7 @@ namespace SS3D.Engine.Atmospherics
                 // Set airlocks to blocked
                 if (tile.Tile.fixtures != null)
                 {
-                    Fixture fixture = tile.Tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixture1);
+                    Fixture fixture = tile.Tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixture);
                     if (fixture)
                     {
                         if (fixture.name.Contains("Airlock"))

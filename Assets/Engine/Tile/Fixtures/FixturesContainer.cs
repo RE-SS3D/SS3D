@@ -70,16 +70,16 @@ namespace SS3D.Engine.Tiles
         {
             switch (layer)
             {
-                case FloorFixtureLayers.FurnitureFixture1:
-                    return floorFixtureDefinition.furniture1;
-                case FloorFixtureLayers.FurnitureFixture2:
-                    return floorFixtureDefinition.furniture2;
-                case FloorFixtureLayers.FurnitureFixture3:
-                    return floorFixtureDefinition.furniture3;
-                case FloorFixtureLayers.FurnitureFixture4:
-                    return floorFixtureDefinition.furniture4;
-                case FloorFixtureLayers.FurnitureFixture5:
-                    return floorFixtureDefinition.furniture5;
+                case FloorFixtureLayers.TableMachineFixture1:
+                    return floorFixtureDefinition.tableMachine1;
+                case FloorFixtureLayers.TableMachineFixture2:
+                    return floorFixtureDefinition.tableMachine2;
+                case FloorFixtureLayers.TableMachineFixture3:
+                    return floorFixtureDefinition.tableMachine3;
+                case FloorFixtureLayers.TableMachineFixture4:
+                    return floorFixtureDefinition.tableMachine4;
+                case FloorFixtureLayers.TableMachineFixture5:
+                    return floorFixtureDefinition.tableMachine5;
 
                 case FloorFixtureLayers.OverlayFixture1:
                     return floorFixtureDefinition.overlay1;
@@ -88,8 +88,8 @@ namespace SS3D.Engine.Tiles
                 case FloorFixtureLayers.OverlayFixture3:
                     return floorFixtureDefinition.overlay3;
 
-                case FloorFixtureLayers.PipeFixture:
-                    return floorFixtureDefinition.pipeFloor;
+                case FloorFixtureLayers.FurnitureFixture:
+                    return floorFixtureDefinition.furniture;
             }
             return null;
         }
@@ -164,20 +164,20 @@ namespace SS3D.Engine.Tiles
         {
             switch (layer)
             {
-                case FloorFixtureLayers.FurnitureFixture1:
-                    floorFixtureDefinition.furniture1 = (FurnitureFloorFixture)fixture;
+                case FloorFixtureLayers.TableMachineFixture1:
+                    floorFixtureDefinition.tableMachine1 = (TableMachineFixture)fixture;
                     break;
-                case FloorFixtureLayers.FurnitureFixture2:
-                    floorFixtureDefinition.furniture2 = (FurnitureFloorFixture)fixture;
+                case FloorFixtureLayers.TableMachineFixture2:
+                    floorFixtureDefinition.tableMachine2 = (TableMachineFixture)fixture;
                     break;
-                case FloorFixtureLayers.FurnitureFixture3:
-                    floorFixtureDefinition.furniture3 = (FurnitureFloorFixture)fixture;
+                case FloorFixtureLayers.TableMachineFixture3:
+                    floorFixtureDefinition.tableMachine3 = (TableMachineFixture)fixture;
                     break;
-                case FloorFixtureLayers.FurnitureFixture4:
-                    floorFixtureDefinition.furniture4 = (FurnitureFloorFixture)fixture;
+                case FloorFixtureLayers.TableMachineFixture4:
+                    floorFixtureDefinition.tableMachine4 = (TableMachineFixture)fixture;
                     break;
-                case FloorFixtureLayers.FurnitureFixture5:
-                    floorFixtureDefinition.furniture5 = (FurnitureFloorFixture)fixture;
+                case FloorFixtureLayers.TableMachineFixture5:
+                    floorFixtureDefinition.tableMachine5 = (TableMachineFixture)fixture;
                     break;
 
                 case FloorFixtureLayers.OverlayFixture1:
@@ -190,8 +190,8 @@ namespace SS3D.Engine.Tiles
                     floorFixtureDefinition.overlay3 = (OverlayFloorFixture)fixture;
                     break;
 
-                case FloorFixtureLayers.PipeFixture:
-                    floorFixtureDefinition.pipeFloor = (PipeFloorFixture)fixture;
+                case FloorFixtureLayers.FurnitureFixture:
+                    floorFixtureDefinition.furniture = (FurnitureFloorFixture)fixture;
                     break;
             }
         }

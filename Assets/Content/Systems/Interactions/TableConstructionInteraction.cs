@@ -12,7 +12,7 @@ namespace SS3D.Content.Systems.Interactions
         public override string GetName(InteractionEvent interactionEvent)
         {
             TileObject tileObject = (interactionEvent.Target as IGameObjectProvider)?.GameObject?.GetComponentInParent<TileObject>();
-            if (tileObject != null && tileObject.Tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixture1) == TableToConstruct)
+            if (tileObject != null && tileObject.Tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixture) == TableToConstruct)
             {
                 return "Deconstruct";
             }
@@ -59,16 +59,16 @@ namespace SS3D.Content.Systems.Interactions
             var tile = targetTile.Tile;
 
             
-            if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixture1) != null) // If there is a fixture on the place
+            if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixture) != null) // If there is a fixture on the place
             {
-                if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixture1) == TableToConstruct) // If the fixture is a table
+                if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixture) == TableToConstruct) // If the fixture is a table
                 {
-                    tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.FurnitureFixture1); // Deconstruct
+                    tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.FurnitureFixture); // Deconstruct
                 }
             }
             else // If there is no fixture on place
             {
-                tile.fixtures.SetFloorFixtureAtLayer(TableToConstruct, FloorFixtureLayers.FurnitureFixture1); // Deconstruct
+                tile.fixtures.SetFloorFixtureAtLayer(TableToConstruct, FloorFixtureLayers.FurnitureFixture); // Deconstruct
             }
             
             // TODO: Make an easier way of doing this.

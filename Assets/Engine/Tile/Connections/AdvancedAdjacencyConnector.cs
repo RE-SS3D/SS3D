@@ -96,7 +96,9 @@ namespace SS3D.Engine.Tiles.Connections
          */
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
-            int index = 18; // Hardcoded to the Fixture1 layer until I got a better solution for this. Is needed to make Airlocks connect
+            int index = LayerIndex;
+            if (index == 0)
+                index = 14; // Hardcoded to the Fixture layer until I got a better solution for this. Is needed to make Airlocks connect to walls
 
             bool isConnected = (tile.plenum && (tile.plenum.genericType == type || type == null));
             isConnected |= (tile.turf && (tile.turf.genericType == type || type == null));

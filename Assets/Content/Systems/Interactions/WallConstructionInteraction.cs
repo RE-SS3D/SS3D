@@ -36,7 +36,7 @@ namespace SS3D.Content.Systems.Interactions
                     return false;
                 }
 
-                if (targetTile.Tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixture1) != null)
+                if (targetTile.Tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixture) != null)
                 {
                     return false;
                 }
@@ -64,7 +64,7 @@ namespace SS3D.Content.Systems.Interactions
             else // Construct
                 tile.turf = WallToConstruct;
 
-            tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.FurnitureFixture1);
+            tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.FurnitureFixture);
             // TODO: Make an easier way of doing this.
             tile.subStates = new object[2];
 

@@ -33,13 +33,13 @@ MonoBehaviour:
         lowWallSouth: {fileID: 0}
         lowWallWest: {fileID: 0}
       floorFixtureDefinition:
-        pipeFloor: {fileID: 0}
+        furniture: {fileID: 0}
         overlay1: {fileID: 0}
         overlay2: {fileID: 0}
         overlay3: {fileID: 0}
-        furniture1: {fileID: 0}
-        furniture2: {fileID: 0}
-        furniture3: {fileID: 0}
-        furniture4: {fileID: 0}
-        furniture5: {fileID: 0}
+        tableMachine1: {fileID: 0}
+        tableMachine2: {fileID: 0}
+        tableMachine3: {fileID: 0}
+        tableMachine4: {fileID: 0}
+        tableMachine5: {fileID: 0}
     atmos: {fileID: 0}

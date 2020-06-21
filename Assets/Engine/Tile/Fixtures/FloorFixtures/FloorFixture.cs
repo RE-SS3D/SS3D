@@ -7,34 +7,34 @@ namespace SS3D.Engine.Tiles
     [Serializable]
     public struct FloorFixtureDefinition
     {
-        public PipeFloorFixture pipeFloor;
+        public FurnitureFloorFixture furniture;
         public OverlayFloorFixture overlay1;
         public OverlayFloorFixture overlay2;
         public OverlayFloorFixture overlay3;
-        public FurnitureFloorFixture furniture1;
-        public FurnitureFloorFixture furniture2;
-        public FurnitureFloorFixture furniture3;
-        public FurnitureFloorFixture furniture4;
-        public FurnitureFloorFixture furniture5;
+        public TableMachineFixture tableMachine1;
+        public TableMachineFixture tableMachine2;
+        public TableMachineFixture tableMachine3;
+        public TableMachineFixture tableMachine4;
+        public TableMachineFixture tableMachine5;
 
         public bool IsEmpty()
         {
-            return pipeFloor != null || overlay1 != null || overlay2 != null || overlay3 != null
-                || furniture1 != null || furniture2 != null || furniture3 != null || furniture4 != null || furniture5 != null;
+            return furniture != null || overlay1 != null || overlay2 != null || overlay3 != null
+                || tableMachine1 != null || tableMachine2 != null || tableMachine3 != null || tableMachine4 != null || tableMachine5 != null;
         }
     }
 
     public enum FloorFixtureLayers
     {
-        PipeFixture,
+        FurnitureFixture,
         OverlayFixture1,
         OverlayFixture2,
         OverlayFixture3,
-        FurnitureFixture1,
-        FurnitureFixture2,
-        FurnitureFixture3,
-        FurnitureFixture4,
-        FurnitureFixture5
+        TableMachineFixture1,
+        TableMachineFixture2,
+        TableMachineFixture3,
+        TableMachineFixture4,
+        TableMachineFixture5
     }
     
     abstract public class FloorFixture : Fixture
