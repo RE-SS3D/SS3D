@@ -90,7 +90,7 @@ namespace SS3D.Content.Systems.Player
                 {
                    
                     // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
-                    characterController.Move(absoluteMovement * (Time.deltaTime / 3.5f));
+                    characterController.Move((absoluteMovement + Physics.gravity * Time.deltaTime) * (Time.deltaTime / 3.5f));
 
                     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 10);
                 }
