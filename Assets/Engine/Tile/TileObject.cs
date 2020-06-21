@@ -307,7 +307,7 @@ namespace SS3D.Engine.Tiles
                     {
 
                         string layerName = layers[i].ToString();
-                        fixtures[i] = transform.Find("fixture_" + layerName.ToLower() + "_" + tileFixture.id)?.gameObject;
+                        fixtures[i] = transform.Find("fixture_" + "tile_" + layerName.ToLower() + "_" + tileFixture.id)?.gameObject;
 
                         if (fixtures[i] != null)
                         {
@@ -319,7 +319,7 @@ namespace SS3D.Engine.Tiles
                             // A user would have to fuck around in the editor to get to this point.
                             if (shouldWarn)
                                 Debug.LogWarning("Tile Fixture in Tile but not in TileObject. Creating: " + tileFixture.name);
-                            CreateFixture(tileFixture, layer);
+                            CreateTileFixture(tileFixture, layer);
                         }
                     }
                     else
@@ -338,7 +338,7 @@ namespace SS3D.Engine.Tiles
                     {
 
                         string layerName = layers[i - TileDefinition.GetTileFixtureLayerSize()].ToString();
-                        fixtures[i] = transform.Find("fixture_" + layerName.ToLower() + "_" + wallFixture.id)?.gameObject;
+                        fixtures[i] = transform.Find("fixture_" + "wall_" + layerName.ToLower() + "_" + wallFixture.id)?.gameObject;
 
                         if (fixtures[i] == null)
                         {
@@ -346,7 +346,7 @@ namespace SS3D.Engine.Tiles
                             // A user would have to fuck around in the editor to get to this point.
                             if (shouldWarn)
                                 Debug.LogWarning("Wall Fixture in Tile but not in TileObject. Creating: " + wallFixture.name);
-                            CreateFixture(wallFixture, layer);
+                            CreateWallFixture(wallFixture, layer);
                         }
                     }
                     else
@@ -364,7 +364,7 @@ namespace SS3D.Engine.Tiles
                     {
 
                         string layerName = layers[i - TileDefinition.GetTileFixtureLayerSize() - TileDefinition.GetWallFixtureLayerSize()].ToString();
-                        fixtures[i] = transform.Find("fixture_" + layerName.ToLower() + "_" + floorFixture.id)?.gameObject;
+                        fixtures[i] = transform.Find("fixture_" + "floor_" + layerName.ToLower() + "_" + floorFixture.id)?.gameObject;
 
                         if (fixtures[i] != null)
                         {
@@ -376,7 +376,7 @@ namespace SS3D.Engine.Tiles
                             // A user would have to fuck around in the editor to get to this point.
                             if (shouldWarn)
                                 Debug.LogWarning("Tile Fixture in Tile but not in TileObject. Creating: " + floorFixture.name);
-                            CreateFixture(floorFixture, layer);
+                            CreateFloorFixture(floorFixture, layer);
                         }
                     }
                     else
@@ -431,7 +431,7 @@ namespace SS3D.Engine.Tiles
                 turfConnector = null;
             }
         }
-        private void CreateFixture(Fixture fixtureDefinition, FixtureLayers layer)
+        private void CreateTileFixture(Fixture fixtureDefinition, TileFixtureLayers layer)
         {
             int index = (int)layer;
             if (fixtures[index] != null)
@@ -444,17 +444,69 @@ namespace SS3D.Engine.Tiles
                     Debug.LogWarning("Trying to overwrite fixture");
                 }
                 fixtures[index] = EditorAndRuntime.InstantiatePrefab(fixtureDefinition.prefab, transform);
-                fixtureConnectors[index] = fixtures[index].GetComponent<AdjacencyConnector>();
+                tileFixtureConnectors[index] = fixtures[index].GetComponent<AdjacencyConnector>();
             }
             else
             {
                 fixtures[index] = null;
-                fixtureConnectors[index] = null;
+                tileFixtureConnectors[index] = null;
                 return;
             }
 
-            string layerName = Enum.GetName(typeof(FixtureLayers), layer).ToLower();
-            fixtures[index].name = "fixture_" + layerName + "_" + fixtureDefinition.id;
+            string layerName = Enum.GetName(typeof(TileFixtureLayers), layer).ToLower();
+            fixtures[index].name = "fixture_" + "tile_" + layerName + "_" + fixtureDefinition.id;
+        }
+
+        private void CreateWallFixture(Fixture fixtureDefinition, WallFixtureLayers layer)
+        {
+            int index = (int)layer;
+            int offset = TileDefinition.GetTileFixtureLayerSize();
+            if (fixtures[index + offset] != null)
+                EditorAndRuntime.Destroy(fixtures[index + offset]);
+
+            if (fixtureDefinition != null)
+            {
+                if (fixtures[index + offset] != null)
+                {
+                    Debug.LogWarning("Trying to overwrite fixture");
+                }
+                fixtures[index + offset] = EditorAndRuntime.InstantiatePrefab(fixtureDefinition.prefab, transform);
+            }
+            else
+            {
+                fixtures[index + offset] = null;
+                return;
+            }
+
+            string layerName = Enum.GetName(typeof(WallFixtureLayers), layer).ToLower();
+            fixtures[index + offset].name = "fixture_" + "wall_" + layerName + "_" + fixtureDefinition.id;
+        }
+
+        private void CreateFloorFixture(Fixture fixtureDefinition, FloorFixtureLayers layer)
+        {
+            int index = (int)layer;
+            int offset = TileDefinition.GetTileFixtureLayerSize() + TileDefinition.GetWallFixtureLayerSize();
+            if (fixtures[index + offset] != null)
+                EditorAndRuntime.Destroy(fixtures[index + offset]);
+
+            if (fixtureDefinition != null)
+            {
+                if (fixtures[index + offset] != null)
+                {
+                    Debug.LogWarning("Trying to overwrite fixture");
+                }
+                fixtures[index + offset] = EditorAndRuntime.InstantiatePrefab(fixtureDefinition.prefab, transform);
+                floorFixtureConnectors[index] = fixtures[index + offset].GetComponent<AdjacencyConnector>();
+            }
+            else
+            {
+                fixtures[index + offset] = null;
+                floorFixtureConnectors[index] = null;
+                return;
+            }
+
+            string layerName = Enum.GetName(typeof(TileFixtureLayers), layer).ToLower();
+            fixtures[index + offset].name = "fixture_" + "floor_" + layerName + "_" + fixtureDefinition.id;
         }
 
         private void CreateFixtures(FixturesContainer fixturesDefinition)
@@ -465,9 +517,24 @@ namespace SS3D.Engine.Tiles
             //    CreateFixture(fixturesDefinition[i], layers[i]);
             //}
 
-            foreach (FixtureLayers layer in TileDefinition.GetFixtureLayerNames())
+            //foreach (FixtureLayers layer in TileDefinition.GetFixtureLayerNames())
+            //{
+            //    CreateFixture(fixturesDefinition.GetFixtureAtLayer(layer), layer);
+            //}
+
+            foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
             {
-                CreateFixture(fixturesDefinition.GetFixtureAtLayer(layer), layer);
+                CreateTileFixture(fixturesDefinition.GetTileFixtureAtLayer(layer), layer);
+            }
+
+            foreach (WallFixtureLayers layer in TileDefinition.GetWallFixtureLayerNames())
+            {
+                CreateWallFixture(fixturesDefinition.GetWallFixtureAtLayer(layer), layer);
+            }
+
+            foreach (FloorFixtureLayers layer in TileDefinition.GetFloorFixtureLayerNames())
+            {
+                CreateFloorFixture(fixturesDefinition.GetFloorFixtureAtLayer(layer), layer);
             }
 
         }
@@ -494,7 +561,7 @@ namespace SS3D.Engine.Tiles
         private void UpdateSubDataFromChildren()
         {
             // Plenum + Turf + all fixtures layers
-            tile.subStates = new object[1 + TileDefinition.GetFixtureLayerSize()];
+            tile.subStates = new object[1 + TileDefinition.GetAllFixtureLayerSize()];
 
             tile.subStates[0] = plenum != null ? plenum?.GetComponent<TileStateCommunicator>()?.GetTileState() : null;
             tile.subStates[1] = turf != null ? turf?.GetComponent<TileStateCommunicator>()?.GetTileState() : null;
@@ -513,54 +580,54 @@ namespace SS3D.Engine.Tiles
          */
         private bool MigrateTileDefinition()
         {
-            // set array to proper size
-            // tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
-            Fixture oldFurniture = null;
-            FixtureLayers assetLayer = FixtureLayers.Furniture;
+            //// set array to proper size
+            //// tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
+            //Fixture oldFurniture = null;
+            //FixtureLayers assetLayer = FixtureLayers.Furniture;
 
-            // Determine all assets
-            List<Fixture> fixtureList = new List<Fixture>();
-            string[] aMaterialFiles = Directory.GetFiles(Application.dataPath, "*.asset", SearchOption.AllDirectories);
-            foreach (string matFile in aMaterialFiles)
-            {
-                string assetPath = "Assets" + matFile.Replace(Application.dataPath, "").Replace('\\', '/');
-                Fixture sourceFixture = (Fixture)AssetDatabase.LoadAssetAtPath(assetPath, typeof(Fixture));
-                if (sourceFixture != null)
-                    fixtureList.Add(sourceFixture);
-            }
+            //// Determine all assets
+            //List<Fixture> fixtureList = new List<Fixture>();
+            //string[] aMaterialFiles = Directory.GetFiles(Application.dataPath, "*.asset", SearchOption.AllDirectories);
+            //foreach (string matFile in aMaterialFiles)
+            //{
+            //    string assetPath = "Assets" + matFile.Replace(Application.dataPath, "").Replace('\\', '/');
+            //    Fixture sourceFixture = (Fixture)AssetDatabase.LoadAssetAtPath(assetPath, typeof(Fixture));
+            //    if (sourceFixture != null)
+            //        fixtureList.Add(sourceFixture);
+            //}
 
-            // find old fixture
-            foreach (Transform child in transform)
-            {
-                if (child.gameObject.name.Contains("fixture"))
-                {
-                    fixtures[0] = child.gameObject;
-                    string assetNameWithLayer = fixtures[0].name.Replace("fixture_", "");
+            //// find old fixture
+            //foreach (Transform child in transform)
+            //{
+            //    if (child.gameObject.name.Contains("fixture"))
+            //    {
+            //        fixtures[0] = child.gameObject;
+            //        string assetNameWithLayer = fixtures[0].name.Replace("fixture_", "");
 
-                    // We got the asset name, now get the layer name
-                    foreach (FixtureLayers layer in TileDefinition.GetFixtureLayerNames())
-                    {
-                        if (assetNameWithLayer.Contains(layer.ToString().ToLower()))
-                        {
-                            assetLayer = layer;
-                        }
-                    }
-                    string assetName = assetNameWithLayer.Replace(assetLayer.ToString().ToLower() + "_", "");
-                    foreach (Fixture fix in fixtureList)
-                    {
+            //        // We got the asset name, now get the layer name
+            //        foreach (FixtureLayers layer in TileDefinition.GetFixtureLayerNames())
+            //        {
+            //            if (assetNameWithLayer.Contains(layer.ToString().ToLower()))
+            //            {
+            //                assetLayer = layer;
+            //            }
+            //        }
+            //        string assetName = assetNameWithLayer.Replace(assetLayer.ToString().ToLower() + "_", "");
+            //        foreach (Fixture fix in fixtureList)
+            //        {
 
-                        if (fix.id.Equals(assetName))
-                            oldFurniture = fix;
-                    }
-                }
-            }
+            //            if (fix.id.Equals(assetName))
+            //                oldFurniture = fix;
+            //        }
+            //    }
+            //}
 
-            // update reference
-            if (oldFurniture != null)
-            {
-                tile.fixtures.SetFixtureAtLayer(oldFurniture, assetLayer);
-                return true;
-            }
+            //// update reference
+            //if (oldFurniture != null)
+            //{
+            //    tile.fixtures.SetFixtureAtLayer(oldFurniture, assetLayer);
+            //    return true;
+            //}
             return false;
         }
 #endif
