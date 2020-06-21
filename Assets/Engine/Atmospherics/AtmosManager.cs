@@ -72,9 +72,12 @@ namespace SS3D.Engine.Atmospherics
                 tile.atmos.RemoveFlux();
 
                 // Set walls blocked
-                if (tile.Tile.turf.isWall)
+                if (tile.Tile.turf)
                 {
-                    tile.atmos.SetBlocked(true);
+                    if (tile.Tile.turf.isWall)
+                    {
+                        tile.atmos.SetBlocked(true);
+                    }
                 }
 
                 // Set neighbouring tiles... kill me

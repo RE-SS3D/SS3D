@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 903cb7b2e43eaa14abbf1cb220fdd7c3, type: 3}
+  m_Script: {fileID: 11500000, guid: c084e433f48fe6342aa55cd12663d10f, type: 3}
   m_Name: LightTube
   m_EditorClassIdentifier: 
   id: light_tube
   genericType: wallmount
-  layer: 0
   prefab: {fileID: 5161561551087789900, guid: c55902540cde02c46bf6378d28265566, type: 3}
+  orientation: 0

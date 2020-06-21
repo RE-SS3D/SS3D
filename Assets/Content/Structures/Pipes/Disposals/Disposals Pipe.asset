@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 903cb7b2e43eaa14abbf1cb220fdd7c3, type: 3}
-  m_Name: GlassTableOld
+  m_Script: {fileID: 11500000, guid: 4c19744d19c6b14409c8e0a535f90136, type: 3}
+  m_Name: Disposals Pipe
   m_EditorClassIdentifier: 
-  id: glass_table
-  genericType: table
-  prefab: {fileID: 2839728781945606427, guid: 4d48472d06930bd42a15897e6a1794ac, type: 3}
+  id: Disposal
+  genericType: disposals
+  prefab: {fileID: 2802364579275783218, guid: 12a989ad41a83a3468d1ae9aff9628d3, type: 3}

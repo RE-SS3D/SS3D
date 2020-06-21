@@ -32,6 +32,24 @@ namespace SS3D.Engine.Tiles
 
     abstract public class WallFixture : Fixture
     {
-        
+        public enum Orientation
+        {
+            North,
+            East,
+            South,
+            West
+        }
+
+        private Orientation orientation;
+
+        public void SetOrientation(Orientation orientation)
+        {
+            this.orientation = orientation;
+        }
+
+        public Orientation GetOrientation()
+        {
+            return orientation;
+        }
     }
 }

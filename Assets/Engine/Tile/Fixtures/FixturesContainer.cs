@@ -125,28 +125,36 @@ namespace SS3D.Engine.Tiles
             {
                 case WallFixtureLayers.HighWallNorth:
                     wallFixtureDefinition.highWallNorth = (HighWallFixture)fixture;
+                    wallFixtureDefinition.highWallNorth.SetOrientation(WallFixture.Orientation.North);
                     break;
                 case WallFixtureLayers.HighWallEast:
                     wallFixtureDefinition.highWallEast = (HighWallFixture)fixture;
+                    wallFixtureDefinition.highWallEast.SetOrientation(WallFixture.Orientation.East);
                     break;
                 case WallFixtureLayers.HighWallSouth:
                     wallFixtureDefinition.highWallSouth = (HighWallFixture)fixture;
+                    wallFixtureDefinition.highWallSouth.SetOrientation(WallFixture.Orientation.South);
                     break;
                 case WallFixtureLayers.HighWallWest:
                     wallFixtureDefinition.highWallWest = (HighWallFixture)fixture;
+                    wallFixtureDefinition.highWallWest.SetOrientation(WallFixture.Orientation.West);
                     break;
 
                 case WallFixtureLayers.LowWallNorth:
                     wallFixtureDefinition.lowWallNorth = (LowWallFixture)fixture;
+                    wallFixtureDefinition.lowWallNorth.SetOrientation(WallFixture.Orientation.North);
                     break;
                 case WallFixtureLayers.LowWallEast:
                     wallFixtureDefinition.lowWallEast = (LowWallFixture)fixture;
+                    wallFixtureDefinition.lowWallEast.SetOrientation(WallFixture.Orientation.East);
                     break;
                 case WallFixtureLayers.LowWallSouth:
                     wallFixtureDefinition.lowWallSouth = (LowWallFixture)fixture;
+                    wallFixtureDefinition.lowWallSouth.SetOrientation(WallFixture.Orientation.South);
                     break;
                 case WallFixtureLayers.LowWallWest:
                     wallFixtureDefinition.lowWallWest = (LowWallFixture)fixture;
+                    wallFixtureDefinition.lowWallWest.SetOrientation(WallFixture.Orientation.West);
                     break;
 
             }

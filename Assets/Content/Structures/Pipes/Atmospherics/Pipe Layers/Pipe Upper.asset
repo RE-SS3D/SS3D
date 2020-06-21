@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 998755902565e694cb91e29093120280, type: 3}
   m_Name: Pipe Upper
   m_EditorClassIdentifier: 
-  id: Pipe_L4_Upper
+  id: Pipe_Upper
   genericType: pipe
   prefab: {fileID: 2802364579275783218, guid: 48efd00c91c310e4bb965d025c63b3ba, type: 3}

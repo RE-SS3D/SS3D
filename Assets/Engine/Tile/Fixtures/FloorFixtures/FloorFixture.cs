@@ -16,6 +16,12 @@ namespace SS3D.Engine.Tiles
         public FurnitureFloorFixture furniture3;
         public FurnitureFloorFixture furniture4;
         public FurnitureFloorFixture furniture5;
+
+        public bool IsEmpty()
+        {
+            return pipeFloor != null || overlay1 != null || overlay2 != null || overlay3 != null
+                || furniture1 != null || furniture2 != null || furniture3 != null || furniture4 != null || furniture5 != null;
+        }
     }
 
     public enum FloorFixtureLayers

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TileMapSettings
   m_EditorClassIdentifier: 
   tiles:
-  - plenum: {fileID: 11400000, guid: 312af35b13ff25d41a189943aea647dc, type: 2}
+  - plenum: {fileID: 11400000, guid: 6a26040e000c61b47bf6c8f8a0cc2751, type: 2}
     turf: {fileID: 0}
     fixtures:
       tileFixtureDefinition:

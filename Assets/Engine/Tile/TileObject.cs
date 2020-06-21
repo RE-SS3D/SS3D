@@ -187,7 +187,12 @@ namespace SS3D.Engine.Tiles
             if (newTile.turf != tile.turf)
                 CreateTurf(newTile.turf);
             if (newTile.fixtures != tile.fixtures)
+            {
+                if (newTile.turf == null && newTile.fixtures.floorFixtureDefinition.IsEmpty())
+                    Debug.LogWarning("Created a floor fixture with no turf present");
+        
                 CreateFixtures(newTile.fixtures);
+            }
 
             UpdateChildrenFromSubData(newTile);
 
@@ -464,20 +469,68 @@ namespace SS3D.Engine.Tiles
             fixtures[index].name = "fixture_" + "tile_" + layerName + "_" + fixtureDefinition.id;
         }
 
-        private void CreateWallFixture(Fixture fixtureDefinition, WallFixtureLayers layer)
+        private void CreateWallFixture(WallFixture wallFixtureDefinition, WallFixtureLayers layer)
         {
             int index = (int)layer;
             int offset = TileDefinition.GetTileFixtureLayerSize();
             if (fixtures[index + offset] != null)
                 EditorAndRuntime.Destroy(fixtures[index + offset]);
 
-            if (fixtureDefinition != null)
+            if (wallFixtureDefinition != null)
             {
+                // Set orientation... Ugly and should be moved
+                switch (layer)
+                {
+                    case WallFixtureLayers.HighWallNorth:
+                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.North);
+                        break;
+                    case WallFixtureLayers.HighWallEast:
+                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.East);
+                        break;
+                    case WallFixtureLayers.HighWallSouth:
+                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.South);
+                        break;
+                    case WallFixtureLayers.HighWallWest:
+                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.West);
+                        break;
+
+                    case WallFixtureLayers.LowWallNorth:
+                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.North);
+                        break;
+                    case WallFixtureLayers.LowWallEast:
+                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.East);
+                        break;
+                    case WallFixtureLayers.LowWallSouth:
+                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.South);
+                        break;
+                    case WallFixtureLayers.LowWallWest:
+                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.West);
+                        break;
+                }
+
                 if (fixtures[index + offset] != null)
                 {
                     Debug.LogWarning("Trying to overwrite fixture");
                 }
-                fixtures[index + offset] = EditorAndRuntime.InstantiatePrefab(fixtureDefinition.prefab, transform);
+                GameObject fixtureObject = EditorAndRuntime.InstantiatePrefab(wallFixtureDefinition.prefab, transform);
+
+                // Rotate the wall fixture
+                switch (wallFixtureDefinition.GetOrientation())
+                {
+                    case WallFixture.Orientation.North:
+                        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 0f, fixtureObject.transform.rotation.z);
+                        break;
+                    case WallFixture.Orientation.East:
+                        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 90f, fixtureObject.transform.rotation.z);
+                        break;
+                    case WallFixture.Orientation.South:
+                        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 180f, fixtureObject.transform.rotation.z);
+                        break;
+                    case WallFixture.Orientation.West:
+                        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 270f, fixtureObject.transform.rotation.z);
+                        break;
+                }
+                fixtures[index + offset] = fixtureObject;
             }
             else
             {
@@ -486,7 +539,7 @@ namespace SS3D.Engine.Tiles
             }
 
             string layerName = Enum.GetName(typeof(WallFixtureLayers), layer).ToLower();
-            fixtures[index + offset].name = "fixture_" + "wall_" + layerName + "_" + fixtureDefinition.id;
+            fixtures[index + offset].name = "fixture_" + "wall_" + layerName + "_" + wallFixtureDefinition.id;
         }
 
         private void CreateFloorFixture(Fixture fixtureDefinition, FloorFixtureLayers layer)

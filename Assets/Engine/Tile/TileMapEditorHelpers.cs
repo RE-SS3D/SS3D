@@ -54,13 +54,11 @@ namespace Tile
 
                 tileManager.EditorCreateTile(x, y, tileDefinition);
                 Undo.RegisterCreatedObjectUndo(tileManager.GetTile(x, y).gameObject, "Created tile");
-                Debug.Log("Created tile");
             }
             else
             {
                 Undo.RecordObject(tileManager.GetTile(x, y).gameObject, "Updated tile");
                 tileManager.EditorUpdateTile(x, y, tileDefinition);
-                Debug.Log("Updated tile");
             }
         }
 
