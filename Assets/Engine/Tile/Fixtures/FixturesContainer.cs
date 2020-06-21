@@ -8,7 +8,7 @@ namespace SS3D.Engine.Tiles
 {
     // Class that holds all fixtures that can be placed on a tile
     [Serializable]
-    public class FixturesContainer
+    public class FixturesContainer: ICloneable
     {
         //public FurnitureFloorFixture furniture;
 
@@ -102,13 +102,13 @@ namespace SS3D.Engine.Tiles
                     tileFixtureDefinition.disposal = (DisposalFixture)fixture;
                     break;
                 case TileFixtureLayers.Pipe1:
-                    tileFixtureDefinition.pipe1 = (PipesFixture)fixture;
+                    tileFixtureDefinition.pipe1 = (PipeFixture)fixture;
                     break;
                 case TileFixtureLayers.Pipe2:
-                    tileFixtureDefinition.pipe2 = (PipesFixture)fixture;
+                    tileFixtureDefinition.pipe2 = (PipeFixture)fixture;
                     break;
                 case TileFixtureLayers.Pipe3:
-                    tileFixtureDefinition.pipe3 = (PipesFixture)fixture;
+                    tileFixtureDefinition.pipe3 = (PipeFixture)fixture;
                     break;
                 case TileFixtureLayers.Plenum:
                     tileFixtureDefinition.plenumCap = (PlenumFixture)fixture;
@@ -214,7 +214,7 @@ namespace SS3D.Engine.Tiles
         {
             int offsetFloor = TileDefinition.GetTileFixtureLayerSize();
             int offsetWall = TileDefinition.GetWallFixtureLayerSize();
-            int offsetTotal = offsetFloor + offsetWall;
+            int offsetTotal = offsetFloor + offsetWall + TileDefinition.GetFloorFixtureLayerSize();
 
             if (index < offsetFloor)
             {
@@ -228,10 +228,10 @@ namespace SS3D.Engine.Tiles
                 return GetWallFixtureAtLayer((WallFixtureLayers)(index - offsetFloor));
             }
 
-            else if (index >= offsetWall && index < offsetWall)
+            else if (index >= offsetWall && index < offsetTotal)
             {
                 // We are a Floor fixture
-                return GetFloorFixtureAtLayer((FloorFixtureLayers)(index - offsetWall));
+                return GetFloorFixtureAtLayer((FloorFixtureLayers)(index - offsetFloor - offsetWall));
             }
 
             else
@@ -240,6 +240,11 @@ namespace SS3D.Engine.Tiles
             }
 
             return null;
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
 
         //public Fixture GetFixtureAtLayer(FixtureLayers layer)

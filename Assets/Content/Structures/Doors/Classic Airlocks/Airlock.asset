@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 903cb7b2e43eaa14abbf1cb220fdd7c3, type: 3}
-  m_Name: Pipe L3 Under
+  m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
+  m_Name: Airlock
   m_EditorClassIdentifier: 
-  id: Pipe_L3_Under
-  genericType: pipe
-  layer: 0
-  prefab: {fileID: 2802364579275783218, guid: 34bbc793ade346e45b1d2f357d86011f, type: 3}
+  id: airlock
+  genericType: wall
+  prefab: {fileID: 3290821787637386385, guid: 316566ec0b0bc504ba51bbfeb22aaac1, type: 3}

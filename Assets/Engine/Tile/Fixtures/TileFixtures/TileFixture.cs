@@ -11,9 +11,9 @@ namespace SS3D.Engine.Tiles
         public PlenumFixture plenumCap;
         public WireFixture wire;
         public DisposalFixture disposal;
-        public PipesFixture pipe1;
-        public PipesFixture pipe2;
-        public PipesFixture pipe3;
+        public PipeFixture pipe1;
+        public PipeFixture pipe2;
+        public PipeFixture pipe3;
     }
 
     public enum TileFixtureLayers

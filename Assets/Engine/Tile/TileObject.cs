@@ -300,7 +300,7 @@ namespace SS3D.Engine.Tiles
 
             int i = 0;
 
-            var layers = TileDefinition.GetTileFixtureLayerNames();
+            // var layers = TileDefinition.GetTileFixtureLayerNames();
 
             // FixturesContainer must exist
             if (tile.fixtures != null)
@@ -312,7 +312,7 @@ namespace SS3D.Engine.Tiles
                     if (tileFixture != null)
                     {
 
-                        string layerName = layers[i].ToString();
+                        string layerName = layer.ToString();
                         fixtures[i] = transform.Find("fixture_" + "tile_" + layerName.ToLower() + "_" + tileFixture.id)?.gameObject;
 
                         if (fixtures[i] != null)
@@ -339,11 +339,12 @@ namespace SS3D.Engine.Tiles
                 // Loop through every wall layer
                 foreach (WallFixtureLayers layer in TileDefinition.GetWallFixtureLayerNames())
                 {
+
                     var wallFixture = tile.fixtures.GetWallFixtureAtLayer(layer);
                     if (wallFixture != null)
                     {
 
-                        string layerName = layers[i - TileDefinition.GetTileFixtureLayerSize()].ToString();
+                        string layerName = layer.ToString();
                         fixtures[i] = transform.Find("fixture_" + "wall_" + layerName.ToLower() + "_" + wallFixture.id)?.gameObject;
 
                         if (fixtures[i] == null)
@@ -369,7 +370,7 @@ namespace SS3D.Engine.Tiles
                     if (floorFixture != null)
                     {
 
-                        string layerName = layers[i - TileDefinition.GetTileFixtureLayerSize() - TileDefinition.GetWallFixtureLayerSize()].ToString();
+                        string layerName = layer.ToString();
                         fixtures[i] = transform.Find("fixture_" + "floor_" + layerName.ToLower() + "_" + floorFixture.id)?.gameObject;
 
                         if (fixtures[i] != null)
@@ -511,7 +512,7 @@ namespace SS3D.Engine.Tiles
                 return;
             }
 
-            string layerName = Enum.GetName(typeof(TileFixtureLayers), layer).ToLower();
+            string layerName = Enum.GetName(typeof(FloorFixtureLayers), layer).ToLower();
             fixtures[index + offset].name = "fixture_" + "floor_" + layerName + "_" + fixtureDefinition.id;
         }
 

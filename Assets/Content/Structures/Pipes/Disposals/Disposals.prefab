@@ -123,7 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 961b31fd1d838b9418d00d2675f3a9ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: pipe
+  type: disposals
   o: {fileID: -2561920891920846264, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
   c: {fileID: -2561920891920846264, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
   i: {fileID: -2561920891920846264, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
