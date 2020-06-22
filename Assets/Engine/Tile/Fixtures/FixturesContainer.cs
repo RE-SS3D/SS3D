@@ -119,36 +119,36 @@ namespace SS3D.Engine.Tiles
             {
                 case WallFixtureLayers.HighWallNorth:
                     wallFixtureDefinition.highWallNorth = (HighWallFixture)fixture;
-                    wallFixtureDefinition.highWallNorth.SetOrientation(WallFixture.Orientation.North);
+                    wallFixtureDefinition.highWallNorth?.SetOrientation(WallFixture.Orientation.North);
                     break;
                 case WallFixtureLayers.HighWallEast:
                     wallFixtureDefinition.highWallEast = (HighWallFixture)fixture;
-                    wallFixtureDefinition.highWallEast.SetOrientation(WallFixture.Orientation.East);
+                    wallFixtureDefinition.highWallEast?.SetOrientation(WallFixture.Orientation.East);
                     break;
                 case WallFixtureLayers.HighWallSouth:
                     wallFixtureDefinition.highWallSouth = (HighWallFixture)fixture;
-                    wallFixtureDefinition.highWallSouth.SetOrientation(WallFixture.Orientation.South);
+                    wallFixtureDefinition.highWallSouth?.SetOrientation(WallFixture.Orientation.South);
                     break;
                 case WallFixtureLayers.HighWallWest:
                     wallFixtureDefinition.highWallWest = (HighWallFixture)fixture;
-                    wallFixtureDefinition.highWallWest.SetOrientation(WallFixture.Orientation.West);
+                    wallFixtureDefinition.highWallWest?.SetOrientation(WallFixture.Orientation.West);
                     break;
 
                 case WallFixtureLayers.LowWallNorth:
                     wallFixtureDefinition.lowWallNorth = (LowWallFixture)fixture;
-                    wallFixtureDefinition.lowWallNorth.SetOrientation(WallFixture.Orientation.North);
+                    wallFixtureDefinition.lowWallNorth?.SetOrientation(WallFixture.Orientation.North);
                     break;
                 case WallFixtureLayers.LowWallEast:
                     wallFixtureDefinition.lowWallEast = (LowWallFixture)fixture;
-                    wallFixtureDefinition.lowWallEast.SetOrientation(WallFixture.Orientation.East);
+                    wallFixtureDefinition.lowWallEast?.SetOrientation(WallFixture.Orientation.East);
                     break;
                 case WallFixtureLayers.LowWallSouth:
                     wallFixtureDefinition.lowWallSouth = (LowWallFixture)fixture;
-                    wallFixtureDefinition.lowWallSouth.SetOrientation(WallFixture.Orientation.South);
+                    wallFixtureDefinition.lowWallSouth?.SetOrientation(WallFixture.Orientation.South);
                     break;
                 case WallFixtureLayers.LowWallWest:
                     wallFixtureDefinition.lowWallWest = (LowWallFixture)fixture;
-                    wallFixtureDefinition.lowWallWest.SetOrientation(WallFixture.Orientation.West);
+                    wallFixtureDefinition.lowWallWest?.SetOrientation(WallFixture.Orientation.West);
                     break;
 
             }
@@ -247,6 +247,36 @@ namespace SS3D.Engine.Tiles
         public object Clone()
         {
             return this.MemberwiseClone();
+        }
+
+        // Remove the selection if the option is impossible
+        // For example: tables cannot be build in walls, or wall fixtures cannot be build on floors
+        public static TileDefinition ValidateFixtures(TileDefinition tileDefinition)
+        {
+            if ((tileDefinition.turf != null && tileDefinition.turf.isWall) || tileDefinition.turf == null)
+            {
+                // Remove floor fixtures
+                foreach (FloorFixtureLayers layer in TileDefinition.GetFloorFixtureLayerNames())
+                {
+                    if (tileDefinition.fixtures.GetFloorFixtureAtLayer(layer) != null)
+                        Debug.Log("Cannot set a floor fixture when there is no floor");
+
+                    tileDefinition.fixtures.SetFloorFixtureAtLayer(null, layer);
+                }
+            }
+
+            if ((tileDefinition.turf != null && !tileDefinition.turf.isWall) || tileDefinition.turf == null)
+            {
+                // Remove wall fixtures
+                foreach (WallFixtureLayers layer in TileDefinition.GetWallFixtureLayerNames())
+                {
+                    if (tileDefinition.fixtures.GetWallFixtureAtLayer(layer) != null)
+                        Debug.Log("Cannot set a wall fixture when there is no wall");
+
+                    tileDefinition.fixtures.SetWallFixtureAtLayer(null, layer);
+                }
+            }
+            return tileDefinition;
         }
     }
 }

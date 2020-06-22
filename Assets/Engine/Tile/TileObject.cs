@@ -289,10 +289,6 @@ namespace SS3D.Engine.Tiles
                     EditorAndRuntime.Destroy(child);
                 }
             }
-
-            //// Set fixture layer size if not set
-            //if (tile.fixtures?.Length != TileDefinition.GetFixtureLayerSize())
-            //    tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
         }
 
         private void ValidateFixtures(bool shouldWarn)

@@ -7,7 +7,7 @@ namespace SS3D.Content.Systems.Interactions
 {
     public class TableConstructionInteraction : DelayedInteraction
     {
-        public FurnitureFloorFixture TableToConstruct { get; set; }
+        public TableMachineFixture TableToConstruct { get; set; }
 
         public override string GetName(InteractionEvent interactionEvent)
         {
@@ -59,20 +59,24 @@ namespace SS3D.Content.Systems.Interactions
             var tile = targetTile.Tile;
 
             
-            if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixture) != null) // If there is a fixture on the place
+            if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.TableMachineFixture1) != null) // If there is a fixture on the place
             {
-                if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixture) == TableToConstruct) // If the fixture is a table
+                if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.TableMachineFixture1) == TableToConstruct) // If the fixture is a table
                 {
-                    tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.FurnitureFixture); // Deconstruct
+                    tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.TableMachineFixture1); // Deconstruct
                 }
             }
             else // If there is no fixture on place
             {
-                tile.fixtures.SetFloorFixtureAtLayer(TableToConstruct, FloorFixtureLayers.FurnitureFixture); // Deconstruct
+                tile.fixtures.SetFloorFixtureAtLayer(TableToConstruct, FloorFixtureLayers.TableMachineFixture1); // Construct
             }
             
             // TODO: Make an easier way of doing this.
             tile.subStates = new object[2];
+
+            // Validate if we can actually place the table
+            FixturesContainer.ValidateFixtures(tile);
+            tile.fixtures = (FixturesContainer)tile.fixtures.Clone();
 
             tileManager.UpdateTile(targetTile.transform.position, tile);
         }

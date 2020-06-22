@@ -13,7 +13,7 @@ namespace SS3D.Content.Systems.Interactions
         public override string GetName(InteractionEvent interactionEvent)
         {
             TileObject tileObject = (interactionEvent.Target as IGameObjectProvider)?.GameObject?.GetComponentInParent<TileObject>();
-            if (tileObject != null && tileObject.Tile.turf.isWall)
+            if (tileObject != null && tileObject.Tile.turf != null && tileObject.Tile.turf.isWall)
             {
                 return "Deconstruct";
             }
@@ -58,13 +58,18 @@ namespace SS3D.Content.Systems.Interactions
             TileManager tileManager = Object.FindObjectOfType<TileManager>();
             TileObject targetTile = targetBehaviour.GameObject.GetComponentInParent<TileObject>();
             var tile = targetTile.Tile;
-            
-            if (tile.turf?.isWall == true) // Deconstruct
-                tile.turf = FloorToConstruct;
+
+            // Deconstruct
+            if (tile.turf?.isWall == true)
+            {
+                tile.turf = null;
+            }
             else // Construct
                 tile.turf = WallToConstruct;
 
             tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.FurnitureFixture);
+            FixturesContainer.ValidateFixtures(tile);
+
             // TODO: Make an easier way of doing this.
             tile.subStates = new object[2];
 

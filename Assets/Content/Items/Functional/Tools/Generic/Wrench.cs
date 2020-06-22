@@ -11,7 +11,7 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
     public class Wrench : Item
     {
         public GameObject LoadingBarPrefab;
-        public FurnitureFloorFixture TableToConstruct;
+        public TableMachineFixture TableToConstruct;
         public float Delay;
 
         public Sprite constructIcon;

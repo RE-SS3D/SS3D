@@ -37,6 +37,9 @@ namespace Tile
             return tile;
         }
 
+       
+
+
         /**
          * Sets the tile at the given position
          * to the currently selected tile type.
@@ -45,6 +48,7 @@ namespace Tile
          */
         public static void SetTile(TileManager tileManager, TileDefinition tileDefinition, int x, int y)
         {
+
             // Copy object to avoid dupplication between editor and tilemap
             FixturesContainer f = (FixturesContainer)tileDefinition.fixtures.Clone();
             tileDefinition.fixtures = f;
