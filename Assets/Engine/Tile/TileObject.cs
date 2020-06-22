@@ -190,7 +190,8 @@ namespace SS3D.Engine.Tiles
             {
                 if (newTile.turf == null && newTile.fixtures.floorFixtureDefinition.IsEmpty())
                     Debug.LogWarning("Created a floor fixture with no turf present");
-        
+
+                FixturesContainer.ValidateFixtures(newTile);
                 CreateFixtures(newTile.fixtures);
             }
 
