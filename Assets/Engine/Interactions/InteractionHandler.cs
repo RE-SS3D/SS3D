@@ -289,7 +289,7 @@ namespace SS3D.Engine.Interactions
             List<IInteractionTarget> targets = new List<IInteractionTarget>();
             // Raycast to find target game object
             Vector3 point = Vector3.zero;
-            if (Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask))
+            if (Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask, QueryTriggerInteraction.Ignore))
             {
                 point = hit.point;
                 GameObject targetGo = hit.transform.gameObject;
