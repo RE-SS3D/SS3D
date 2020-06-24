@@ -76,20 +76,18 @@ namespace SS3D.Content.Systems.Player
             // Smoothly transition to next intended movement
             intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
             currentMovement = Vector2.MoveTowards(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 5f, 3) / 5));
-
-            absoluteMovement = new Vector3(absoluteMovement.x, 0, absoluteMovement.z);
             // Move the player
             if (currentMovement != Vector2.zero)
             {
                 // Determine the absolute movement by aligning input to the camera's looking direction
-                Vector3 absoluteMovement =
+                absoluteMovement =
                 currentMovement.y * Vector3.Cross(mainCamera.transform.right, Vector3.up).normalized +
                 currentMovement.x * Vector3.Cross(Vector3.up, mainCamera.transform.forward).normalized;
 
                 if (intendedMovement != Vector2.zero)
                 {
                    
-                    // Move (without gravity). Whenever we move we also readjust the player's direction to the direction they are running in.
+                    // Move. Whenever we move we also readjust the player's direction to the direction they are running in.
                     characterController.Move((absoluteMovement + Physics.gravity * Time.deltaTime) * (Time.deltaTime / 3.5f));
 
                     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 10);

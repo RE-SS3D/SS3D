@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 namespace SS3D.Content.Creatures.Human
 {
     [RequireComponent(typeof(Animator))]
-    public class HumanRigidBody : NetworkBehaviour
+    public class HumanRagdoll : NetworkBehaviour
     {
         public Transform ArmatureRoot;
         public bool BodyEnabled
@@ -16,11 +16,24 @@ namespace SS3D.Content.Creatures.Human
         }
 
         private bool bodyEnabled = false;
+        private Transform character;
+        private Transform center;
     
         void Start()
         {
             Assert.IsNotNull(ArmatureRoot);
             SetEnabled(BodyEnabled);
+            character = ArmatureRoot.parent;
+            center = ArmatureRoot.GetChild(0);
+        }
+
+        void Update()
+        {
+            if (bodyEnabled && character != null && center != null)
+            {
+                character.position = center.position;
+                center.localPosition = Vector3.zero;
+            }
         }
 
         public void SetEnabled(bool enabled)
@@ -37,7 +50,10 @@ namespace SS3D.Content.Creatures.Human
             foreach (Rigidbody body in ArmatureRoot.GetComponentsInChildren<Rigidbody>())
             {
                 body.isKinematic = !enabled;
-                body.AddForce(movement, ForceMode.VelocityChange);
+                if (enabled)
+                {
+                    body.AddForce(movement, ForceMode.VelocityChange);
+                }
             }
 
             GetComponent<Animator>().enabled = !enabled;
