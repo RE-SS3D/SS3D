@@ -7,7 +7,7 @@ namespace SS3D.Engine.Tiles.Connections
 {
     /**
      * The wires adjacency connector is built off the Simple adjaceny
-     * connection but has several corner connections.
+     * connection but with some uniqueness.
      */
     [RequireComponent(typeof(MeshFilter))]
     public class WiresAdjacencyConnector : MonoBehaviour, AdjacencyConnector
@@ -99,6 +99,7 @@ namespace SS3D.Engine.Tiles.Connections
             var cardinalInfo = adjacents.GetCardinalInfo();
 
             // Determine rotation and mesh specially for every single case.
+            // TODO: add meshes mentioned in header to script
             float rotation = 0.0f;
             Mesh mesh;
 
