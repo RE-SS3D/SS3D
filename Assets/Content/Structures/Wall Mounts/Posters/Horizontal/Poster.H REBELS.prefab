@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3122845527458025482}
   - component: {fileID: 8648403125281566512}
   m_Layer: 0
-  m_Name: Poster Horizontal
+  m_Name: Poster.H REBELS
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -108,5 +108,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.8039256, y: 0.5359504, z: 0.0000002682209}
-  m_Center: {x: 0.00000017881393, y: 1.4015656, z: -0.19918428}
+  m_Size: {x: 0.8441218, y: 0.56274796, z: 0.00000028312206}
+  m_Center: {x: 0.00000023841858, y: 1.2817416, z: -0.19918382}

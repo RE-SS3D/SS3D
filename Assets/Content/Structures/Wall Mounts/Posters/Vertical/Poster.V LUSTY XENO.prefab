@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3122845527458025482}
   - component: {fileID: 8648403125281566512}
   m_Layer: 0
-  m_Name: Poster Vertical
+  m_Name: Poster.V LUSTY XENO
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -108,5 +108,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.53595036, y: 0.80392545, z: 0.0000002682209}
-  m_Center: {x: 0.00000017881393, y: 1.4015656, z: -0.19918428}
+  m_Size: {x: 0.56274784, y: 0.8441216, z: 0.0000006556511}
+  m_Center: {x: 0.00000023841858, y: 1.2817419, z: -0.19918384}
