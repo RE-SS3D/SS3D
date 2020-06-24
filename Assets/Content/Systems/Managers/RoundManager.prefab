@@ -65,9 +65,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!114 &6526651280076576432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -403,7 +404,6 @@ GameObject:
   - component: {fileID: 1947134667036243774}
   - component: {fileID: 2807041525518893556}
   - component: {fileID: 1226159162495456922}
-  - component: {fileID: 3481300785855111467}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -522,21 +522,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &3481300785855111467
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6179334901293630356}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  serverOnly: 0
-  m_AssetId: 
-  m_SceneId: 0
 --- !u!1 &6639338827294278040
 GameObject:
   m_ObjectHideFlags: 0

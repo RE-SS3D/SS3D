@@ -5,8 +5,6 @@ using UnityEngine;
 
 namespace SS3D.Engine.Inventory.Extensions
 {
-    [Serializable]
-    [CreateAssetMenu(fileName = "Pickup Interaction")]
     public class PickupInteraction : IInteraction
     {
         public Sprite icon;
