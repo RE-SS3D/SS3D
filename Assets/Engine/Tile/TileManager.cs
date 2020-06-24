@@ -474,18 +474,59 @@ namespace SS3D.Engine.Tiles {
             // Write turf
             writer.WriteString(definition.turf?.name ?? "");
 
-            // Write all fixtures
-            foreach (Fixture fixture in definition.fixtures.GetAllFixtures())
+            // Write all tile fixtures
+            foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
             {
-                if (fixture)
+                Fixture f = definition.fixtures.GetTileFixtureAtLayer(layer);
+                if (f)
                 {
-                    writer.WriteString(fixture.name ?? "");
+                    writer.WriteString(f.name ?? "");
                 }
                 else
                 {
                     writer.WriteString("");
                 }
             }
+
+            // Write all wall fixtures
+            foreach (WallFixtureLayers layer in TileDefinition.GetWallFixtureLayerNames())
+            {
+                Fixture f = definition.fixtures.GetWallFixtureAtLayer(layer);
+                if (f)
+                {
+                    writer.WriteString(f.name ?? "");
+                }
+                else
+                {
+                    writer.WriteString("");
+                }
+            }
+
+            // Write all floor fixtures
+            foreach (FloorFixtureLayers layer in TileDefinition.GetFloorFixtureLayerNames())
+            {
+                Fixture f = definition.fixtures.GetFloorFixtureAtLayer(layer);
+                if (f)
+                {
+                    writer.WriteString(f.name ?? "");
+                }
+                else
+                {
+                    writer.WriteString("");
+                }
+            }
+
+            //foreach (Fixture fixture in definition.fixtures.GetAllFixtures())
+            //{
+            //    if (fixture)
+            //    {
+            //        writer.WriteString(fixture.name ?? "");
+            //    }
+            //    else
+            //    {
+            //        writer.WriteString("");
+            //    }
+            //}
 
             // Use C# serializer to serialize the object array, cos the Mirror one isn't powerful enough.
 
@@ -504,62 +545,87 @@ namespace SS3D.Engine.Tiles {
         }
         public static TileDefinition ReadNetworkableTileDefinition(this NetworkReader reader)
         {
-            // TODO
             TileDefinition tileDefinition = new TileDefinition();
+            tileDefinition.fixtures = new FixturesContainer();
+
+            // Read plenum
+            string plenumName = reader.ReadString();
+            if (!string.IsNullOrEmpty(plenumName))
+            {
+                tileDefinition.plenum = plenums.FirstOrDefault(plenum => plenum.name == plenumName);
+                if (tileDefinition.plenum == null)
+                    Debug.LogError($"Network recieved plenum with name {plenumName} could not be found");
+            }
+
+            // Read turf
+            string turfName = reader.ReadString();
+            if (!string.IsNullOrEmpty(turfName))
+            {
+                tileDefinition.turf = turfs.FirstOrDefault(turf => turf.name == turfName);
+                if (tileDefinition.turf == null)
+                    Debug.LogError($"Network recieved turf with name {turfName} could not be found");
+            }
+
+            // Read tile fixtures
+            foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
+            {
+                string fixtureName = reader.ReadString();
+                if (!string.IsNullOrEmpty(fixtureName))
+                {
+                    TileFixture tf = (TileFixture)fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
+
+                    tileDefinition.fixtures.SetTileFixtureAtLayer(tf, layer);
+                    if (tf == null)
+                    {
+                        Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
+                    }
+                }
+            }
+
+            // Read wall fixtures
+            foreach (WallFixtureLayers layer in TileDefinition.GetWallFixtureLayerNames())
+            {
+                string fixtureName = reader.ReadString();
+                if (!string.IsNullOrEmpty(fixtureName))
+                {
+                    WallFixture wf = (WallFixture)fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
+
+                    tileDefinition.fixtures.SetWallFixtureAtLayer(wf, layer);
+                    if (wf == null)
+                    {
+                        Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
+                    }
+                }
+            }
+
+            // Read floor fixtures
+            foreach (FloorFixtureLayers layer in TileDefinition.GetFloorFixtureLayerNames())
+            {
+                string fixtureName = reader.ReadString();
+                if (!string.IsNullOrEmpty(fixtureName))
+                {
+                    FloorFixture ff = (FloorFixture)fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
+
+                    tileDefinition.fixtures.SetFloorFixtureAtLayer(ff, layer);
+                    if (ff == null)
+                    {
+                        Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
+                    }
+                }
+            }
+
+            // If the boolean is false, subStates should be null.
+            if (reader.ReadBoolean())
+            {
+                using (var stream = new MemoryStream(reader.ReadBytesAndSize()))
+                {
+                    tileDefinition.subStates = new BinaryFormatter().Deserialize(stream) as object[];
+                }
+            }
+
+            // TODO: Should substates be initialized to null array?
+
             return tileDefinition;
-
-
-
-            //// tileDefinition.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
-
-            //var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
-
-            //// Read plenum
-            //string plenumName = reader.ReadString();
-            //if (!string.IsNullOrEmpty(plenumName))
-            //{
-            //    tileDefinition.plenum = plenums.FirstOrDefault(plenum => plenum.name == plenumName);
-            //    if (tileDefinition.plenum == null)
-            //        Debug.LogError($"Network recieved plenum with name {plenumName} could not be found");
-            //}
-
-            //// Read turf
-            //string turfName = reader.ReadString();
-            //if (!string.IsNullOrEmpty(turfName))
-            //{
-            //    tileDefinition.turf = turfs.FirstOrDefault(turf => turf.name == turfName);
-            //    if (tileDefinition.turf == null)
-            //        Debug.LogError($"Network recieved turf with name {turfName} could not be found");
-            //}
-
-            //// Read fixtures
-            //foreach (FixtureLayers layer in layers)
-            //{
-            //    string fixtureName = reader.ReadString();
-            //    if (!string.IsNullOrEmpty(fixtureName))
-            //    {
-            //        //tileDefinition.fixtures[(int)layer] = fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
-            //        //if (tileDefinition.fixtures[(int)layer] == null)
-            //        //    Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
-
-            //        tileDefinition.fixtures.SetFixtureAtLayer(fixtures.FirstOrDefault(fixture => fixture.name == fixtureName), layer);
-            //        if (tileDefinition.fixtures.GetFixtureAtLayer(layer) == null)
-            //        {
-            //            Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
-            //        }
-            //    }
-            //}
-
-            //// If the boolean is false, subStates should be null.
-            //if (reader.ReadBoolean()) {
-            //    using(var stream = new MemoryStream(reader.ReadBytesAndSize())) {
-            //        tileDefinition.subStates = new BinaryFormatter().Deserialize(stream) as object[];
-            //    }
-            //}
-
-            //// TODO: Should substates be initialized to null array?
-
-            //return tileDefinition;
         }
 
         // Store a list of all turfs and fixtures to be used in networking communications.
