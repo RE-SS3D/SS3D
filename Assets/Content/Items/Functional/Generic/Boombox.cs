@@ -9,7 +9,8 @@ using UnityEngine;
 
 namespace SS3D.Content.Items.Cosmetic
 {
-    public class Boombox : Item, IToggleable
+    [RequireComponent(typeof(AudioSource))]
+    public class Boombox : InteractionTargetNetworkBehaviour, IToggleable
     {
         [SerializeField]
         private AudioClip[] musics;
@@ -59,8 +60,6 @@ namespace SS3D.Content.Items.Cosmetic
             {
                 if (interactionEvent.Target is Boombox boom)
                     return boom.interactionIcon;
-                if (interactionEvent.Source is Boombox boom1)
-                    return boom1.interactionIcon;
                 return null;
             }
 
@@ -100,8 +99,6 @@ namespace SS3D.Content.Items.Cosmetic
 
         void Start()
         {
-            GenerateNewIcon();
-
             audioSource = GetComponent<AudioSource>();
             audioSource.clip = musics[0];
         }
@@ -165,37 +162,18 @@ namespace SS3D.Content.Items.Cosmetic
 
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
-            List<IInteraction> interactions = base.GenerateInteractions(interactionEvent).ToList();
-            interactions.Add(new ChangeMusic());
+            List<IInteraction> interactions = new List<IInteraction>(2)
+            {
+                new ChangeMusic()
+            };
             ToggleInteraction toggleInteraction = new ToggleInteraction
             {
-                OnName = "Turn off",
-                OffName = "Turn on",
-                iconOn = interactionIconOn,
-                iconOff = interactionIconOn,
+                IconOn = interactionIconOn,
+                IconOff = interactionIconOn,
             };
-
-            // haha programms go zzzzzzzzzzzzzzz
-            toggleInteraction.iconOn = interactionIconOn;
-            toggleInteraction.iconOff = interactionIconOn;
 
             interactions.Insert(GetState() ? interactions.Count: interactions.Count - 1, toggleInteraction);
             return interactions.ToArray();
-        }
-
-        public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
-        {
-            // Blame cosmic lol
-            base.CreateInteractions(targets, interactions);
-            interactions.Add(new InteractionEntry(this, new ChangeMusic()));
-            ToggleInteraction toggleInteraction = new ToggleInteraction 
-            {
-                OnName = "Turn off",
-                OffName = "Turn on", 
-                iconOn = interactionIconOn,
-                iconOff = interactionIconOn,
-            };
-            interactions.Insert(GetState() ? interactions.Count : interactions.Count - 1, new InteractionEntry(this, toggleInteraction));
         }
     }
 }
