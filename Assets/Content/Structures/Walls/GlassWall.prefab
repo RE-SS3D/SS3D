@@ -112,6 +112,8 @@ MonoBehaviour:
   genericType: wall
   o: {fileID: 6123461726647820147, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   c: {fileID: -9220262315872972937, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  cBorder: {fileID: -5216405655518602434, guid: a8afca278d289ca469539bd9a57ce244,
+    type: 3}
   i: {fileID: 4416350366963792688, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   iBorder: {fileID: 1431914659121955871, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   iAlone: {fileID: 4698904339953335386, guid: a8afca278d289ca469539bd9a57ce244, type: 3}

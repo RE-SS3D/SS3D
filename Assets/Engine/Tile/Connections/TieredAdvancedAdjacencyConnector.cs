@@ -24,8 +24,10 @@ namespace SS3D.Engine.Tiles.Connections
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
 
-        [Tooltip("A mesh where north connects to same type")]
+        [Tooltip("A mesh where north connects to the same type")]
         public Mesh c;
+        [Tooltip("A mesh where north connects to the generic type")]
+        public Mesh cBorder;
 
         [Tooltip("A mesh where north and south edges are connected to the same type")]
         public Mesh i;
@@ -133,8 +135,18 @@ namespace SS3D.Engine.Tiles.Connections
             }
             else if (generalCardinals.IsC())
             {
-                mesh = c;
-                rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
+                var specificCardinals = specificAdjacents.GetCardinalInfo();
+
+                if (specificCardinals.numConnections == 1)
+                {
+                    mesh = c;
+                    rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
+                }
+                else
+                {
+                    mesh = cBorder;
+                    rotation = OrientationHelper.AngleBetween(Direction.South, specificCardinals.GetOnlyPositive());
+                }
             }
             else if (generalCardinals.IsI())
             {
