@@ -78,7 +78,7 @@ namespace SS3D.Engine.Tiles {
     {
         Plenum,
         Turf,
-        Fixtures,
+        FixturesContainer,
         AtmosObject,
     }
 
@@ -90,25 +90,50 @@ namespace SS3D.Engine.Tiles {
     {
         public Plenum plenum;
         public Turf turf;
-        public Fixture[] fixtures;
+        public FixturesContainer fixtures;
         public AtmosObject atmos;
 
         // An array of serializable objects containing the state of each subtile object.
-        // If a subtile object has state, it will be stored at the corresponding index (turf=0, fixture=1).
+        // If a subtile object has state, it will be stored at the corresponding index (plenum=0, turf=1, fixtures=2..x).
         // If no subtile object has state, the array may be null or have no length.
         // The array may only be as long as it needs to be to store all non-null objects.
         public object[] subStates;
 
         public static TileDefinition NullObject = new TileDefinition { plenum = null, turf = null, fixtures = null, subStates = null };
 
-        public static int GetFixtureLayerSize()
+        public static int GetTileFixtureLayerSize()
         {
-            return Enum.GetValues(typeof(FixtureLayers)).Length;
+            return Enum.GetValues(typeof(TileFixtureLayers)).Length;
         }
 
-        public static FixtureLayers[] GetFixtureLayerNames()
+        public static int GetWallFixtureLayerSize()
         {
-            return (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
+            return Enum.GetValues(typeof(WallFixtureLayers)).Length;
+        }
+
+        public static int GetFloorFixtureLayerSize()
+        {
+            return Enum.GetValues(typeof(FloorFixtureLayers)).Length;
+        }
+
+        public static int GetAllFixtureLayerSize()
+        {
+            return GetTileFixtureLayerSize() + GetWallFixtureLayerSize() + GetFloorFixtureLayerSize();
+        }
+
+        public static TileFixtureLayers[] GetTileFixtureLayerNames()
+        {
+            return (TileFixtureLayers[])Enum.GetValues(typeof(TileFixtureLayers));
+        }
+
+        public static WallFixtureLayers[] GetWallFixtureLayerNames()
+        {
+            return (WallFixtureLayers[])Enum.GetValues(typeof(WallFixtureLayers));
+        }
+
+        public static FloorFixtureLayers[] GetFloorFixtureLayerNames()
+        {
+            return (FloorFixtureLayers[])Enum.GetValues(typeof(FloorFixtureLayers));
         }
 
         public static bool operator ==(TileDefinition a, TileDefinition b)
@@ -124,7 +149,7 @@ namespace SS3D.Engine.Tiles {
             return obj is TileDefinition definition &&
                    EqualityComparer<Plenum>.Default.Equals(plenum, definition.plenum) &&
                    EqualityComparer<Turf>.Default.Equals(turf, definition.turf) &&
-                   EqualityComparer<Fixture[]>.Default.Equals(fixtures, definition.fixtures) &&
+                   EqualityComparer<FixturesContainer>.Default.Equals(fixtures, definition.fixtures) &&
                    EqualityComparer<object[]>.Default.Equals(subStates, definition.subStates);
         }
         public override int GetHashCode()
@@ -132,18 +157,13 @@ namespace SS3D.Engine.Tiles {
             var hashCode = 1153620473;
             hashCode = hashCode * -1521134295 + EqualityComparer<Plenum>.Default.GetHashCode(plenum);
             hashCode = hashCode * -1521134295 + EqualityComparer<Turf>.Default.GetHashCode(turf);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Fixture[]>.Default.GetHashCode(fixtures);
+            hashCode = hashCode * -1521134295 + EqualityComparer<FixturesContainer>.Default.GetHashCode(fixtures);
             hashCode = hashCode * -1521134295 + EqualityComparer<object[]>.Default.GetHashCode(subStates);
             return hashCode;
         }
         public bool IsEmpty()
         {
             return plenum == null;
-        }
-
-        public Fixture GetFixtureAtLayer(FixtureLayers layer)
-        {
-            return fixtures[(int)layer];
         }
     }
 }
