@@ -33,7 +33,7 @@ namespace SS3D.Content.Systems.Interactions
                 return false;
             }
 
-            return TargetTile.Tile.GetFixtureAtLayer(FixtureLayers.Furniture) == null;
+            return !TargetTile.Tile.fixtures.floorFixtureDefinition.IsEmpty();
         }
 
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)

@@ -184,11 +184,8 @@ MonoBehaviour:
   attachmentPoint: {fileID: 8876393141157652533}
   LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
     type: 3}
-  TableToConstruct: {fileID: 11400000, guid: e361c0d934015604fa13db8b86d73f4b, type: 2}
+  TableToConstruct: {fileID: 11400000, guid: d18bc2f440bef034988c0016380c09bc, type: 2}
   Delay: 1
-  ObstacleMask:
-    serializedVersion: 2
-    m_Bits: 32768
   constructIcon: {fileID: 21300000, guid: e1b5b9fab3120ad4c91ea3deb5197a7b, type: 3}
 --- !u!114 &5794515216983496791
 MonoBehaviour:
