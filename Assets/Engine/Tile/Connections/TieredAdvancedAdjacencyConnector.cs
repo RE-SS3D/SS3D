@@ -145,7 +145,7 @@ namespace SS3D.Engine.Tiles.Connections
                 else
                 {
                     mesh = cBorder;
-                    rotation = OrientationHelper.AngleBetween(Direction.South, specificCardinals.GetOnlyPositive());
+                    rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
                 }
             }
             else if (generalCardinals.IsI())
