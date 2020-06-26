@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using UnityEngine;
 using Mirror;
+using UnityEditor;
 
 namespace SS3D.Engine.Tiles {
     /**
@@ -310,7 +311,13 @@ namespace SS3D.Engine.Tiles {
 
             var obj = tiles[key];
             tiles.Remove(key);
+#if UNITY_EDITOR
+            if (!EditorApplication.isPlaying)
+                DestroyImmediate(obj.gameObject);
+#else
             Destroy(obj);
+#endif
+
 
             GetAndUpdateAdjacentTiles(x, y, TileDefinition.NullObject);
 
@@ -516,18 +523,6 @@ namespace SS3D.Engine.Tiles {
                 }
             }
 
-            //foreach (Fixture fixture in definition.fixtures.GetAllFixtures())
-            //{
-            //    if (fixture)
-            //    {
-            //        writer.WriteString(fixture.name ?? "");
-            //    }
-            //    else
-            //    {
-            //        writer.WriteString("");
-            //    }
-            //}
-
             // Use C# serializer to serialize the object array, cos the Mirror one isn't powerful enough.
 
             // Can't serialize null values so put a boolean indicating array presence first
@@ -624,7 +619,6 @@ namespace SS3D.Engine.Tiles {
             }
 
             // TODO: Should substates be initialized to null array?
-
             return tileDefinition;
         }
 

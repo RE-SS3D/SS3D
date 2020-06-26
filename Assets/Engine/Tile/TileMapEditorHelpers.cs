@@ -37,7 +37,15 @@ namespace Tile
             return tile;
         }
 
-       
+       public static void DeleteTile(TileManager tileManager, int x, int y)
+        {
+            if (tileManager.GetTile(x, y) != null)
+            {
+                Undo.RegisterCreatedObjectUndo(tileManager.GetTile(x, y).gameObject, "Deleted tile");
+                tileManager.EditorDestroyTile(x, y);
+
+            }
+        }
 
 
         /**
@@ -48,7 +56,6 @@ namespace Tile
          */
         public static void SetTile(TileManager tileManager, TileDefinition tileDefinition, int x, int y)
         {
-
             // Copy object to avoid dupplication between editor and tilemap
             FixturesContainer f = (FixturesContainer)tileDefinition.fixtures.Clone();
             tileDefinition.fixtures = f;
