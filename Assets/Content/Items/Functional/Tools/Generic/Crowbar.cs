@@ -14,6 +14,7 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
         public Turf WallToConstruct;
         public Turf FloorToConstruct;
         public float Delay;
+        public LayerMask ObstacleMask;
 
         public Sprite constructIcon;
      
@@ -26,7 +27,8 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
                 FloorToConstruct = FloorToConstruct,
                 Delay = Delay,
                 LoadingBarPrefab = LoadingBarPrefab,
-                icon = constructIcon
+                icon = constructIcon,
+                ObstacleMask = ObstacleMask
             };
             interactions.Insert(0, new InteractionEntry(targets[0], wallConstructionInteraction));
         }

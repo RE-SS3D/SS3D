@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
 {
-    public class TableConstructionInteraction : DelayedInteraction
+    public class TableConstructionInteraction : ConstructionInteraction
     {
         public FurnitureFloorFixture TableToConstruct { get; set; }
 
@@ -22,28 +22,17 @@ namespace SS3D.Content.Systems.Interactions
 
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
-            if (interactionEvent.Target is IGameObjectProvider targetBehaviour)
+            if (!base.CanInteract(interactionEvent))
             {
-                TileObject targetTile = targetBehaviour.GameObject.GetComponentInParent<TileObject>();
-                if (targetTile == null)
-                {
-                    return false;
-                }
-
-                if (!InteractionExtensions.RangeCheck(interactionEvent))
-                {
-                    return false;
-                }
-
-                if (targetTile.Tile.turf?.isWall == true)
-                {
-                    return false;
-                }
-
-                return true;
+                return false;
             }
             
-            return false;
+            if (!InteractionExtensions.RangeCheck(interactionEvent))
+            {
+                return false;
+            }
+            
+            return TargetTile.Tile.turf?.isWall != true;
         }
 
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
