@@ -72,9 +72,12 @@ namespace SS3D.Engine.Atmospherics
                 tile.atmos.RemoveFlux();
 
                 // Set walls blocked
-                if (tile.Tile.turf.isWall)
+                if (tile.Tile.turf)
                 {
-                    tile.atmos.SetBlocked(true);
+                    if (tile.Tile.turf.isWall)
+                    {
+                        tile.atmos.SetBlocked(true);
+                    }
                 }
 
                 // Set neighbouring tiles... kill me
@@ -150,7 +153,7 @@ namespace SS3D.Engine.Atmospherics
                 // Set airlocks to blocked
                 if (tile.Tile.fixtures != null)
                 {
-                    Fixture fixture = tile.Tile.GetFixtureAtLayer(FixtureLayers.Furniture);
+                    Fixture fixture = tile.Tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixtureMain);
                     if (fixture)
                     {
                         if (fixture.name.Contains("Airlock"))

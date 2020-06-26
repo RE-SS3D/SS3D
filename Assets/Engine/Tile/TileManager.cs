@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using UnityEngine;
 using Mirror;
+using UnityEditor;
 
 namespace SS3D.Engine.Tiles {
     /**
@@ -310,7 +311,13 @@ namespace SS3D.Engine.Tiles {
 
             var obj = tiles[key];
             tiles.Remove(key);
+#if UNITY_EDITOR
+            if (!EditorApplication.isPlaying)
+                DestroyImmediate(obj.gameObject);
+#else
             Destroy(obj);
+#endif
+
 
             GetAndUpdateAdjacentTiles(x, y, TileDefinition.NullObject);
 
@@ -474,12 +481,41 @@ namespace SS3D.Engine.Tiles {
             // Write turf
             writer.WriteString(definition.turf?.name ?? "");
 
-            // Write all fixtures
-            foreach (Fixture fixture in definition.fixtures)
+            // Write all tile fixtures
+            foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
             {
-                if (fixture)
+                Fixture f = definition.fixtures.GetTileFixtureAtLayer(layer);
+                if (f)
                 {
-                    writer.WriteString(fixture.name ?? "");
+                    writer.WriteString(f.name ?? "");
+                }
+                else
+                {
+                    writer.WriteString("");
+                }
+            }
+
+            // Write all wall fixtures
+            foreach (WallFixtureLayers layer in TileDefinition.GetWallFixtureLayerNames())
+            {
+                Fixture f = definition.fixtures.GetWallFixtureAtLayer(layer);
+                if (f)
+                {
+                    writer.WriteString(f.name ?? "");
+                }
+                else
+                {
+                    writer.WriteString("");
+                }
+            }
+
+            // Write all floor fixtures
+            foreach (FloorFixtureLayers layer in TileDefinition.GetFloorFixtureLayerNames())
+            {
+                Fixture f = definition.fixtures.GetFloorFixtureAtLayer(layer);
+                if (f)
+                {
+                    writer.WriteString(f.name ?? "");
                 }
                 else
                 {
@@ -505,9 +541,7 @@ namespace SS3D.Engine.Tiles {
         public static TileDefinition ReadNetworkableTileDefinition(this NetworkReader reader)
         {
             TileDefinition tileDefinition = new TileDefinition();
-            tileDefinition.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
-
-            var layers = (FixtureLayers[])Enum.GetValues(typeof(FixtureLayers));
+            tileDefinition.fixtures = new FixturesContainer();
 
             // Read plenum
             string plenumName = reader.ReadString();
@@ -527,27 +561,64 @@ namespace SS3D.Engine.Tiles {
                     Debug.LogError($"Network recieved turf with name {turfName} could not be found");
             }
 
-            // Read fixtures
-            foreach (FixtureLayers layer in layers)
+            // Read tile fixtures
+            foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
             {
                 string fixtureName = reader.ReadString();
                 if (!string.IsNullOrEmpty(fixtureName))
                 {
-                    tileDefinition.fixtures[(int)layer] = fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
-                    if (tileDefinition.fixtures[(int)layer] == null)
+                    TileFixture tf = (TileFixture)fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
+
+                    tileDefinition.fixtures.SetTileFixtureAtLayer(tf, layer);
+                    if (tf == null)
+                    {
                         Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
+                    }
+                }
+            }
+
+            // Read wall fixtures
+            foreach (WallFixtureLayers layer in TileDefinition.GetWallFixtureLayerNames())
+            {
+                string fixtureName = reader.ReadString();
+                if (!string.IsNullOrEmpty(fixtureName))
+                {
+                    WallFixture wf = (WallFixture)fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
+
+                    tileDefinition.fixtures.SetWallFixtureAtLayer(wf, layer);
+                    if (wf == null)
+                    {
+                        Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
+                    }
+                }
+            }
+
+            // Read floor fixtures
+            foreach (FloorFixtureLayers layer in TileDefinition.GetFloorFixtureLayerNames())
+            {
+                string fixtureName = reader.ReadString();
+                if (!string.IsNullOrEmpty(fixtureName))
+                {
+                    FloorFixture ff = (FloorFixture)fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
+
+                    tileDefinition.fixtures.SetFloorFixtureAtLayer(ff, layer);
+                    if (ff == null)
+                    {
+                        Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
+                    }
                 }
             }
 
             // If the boolean is false, subStates should be null.
-            if (reader.ReadBoolean()) {
-                using(var stream = new MemoryStream(reader.ReadBytesAndSize())) {
+            if (reader.ReadBoolean())
+            {
+                using (var stream = new MemoryStream(reader.ReadBytesAndSize()))
+                {
                     tileDefinition.subStates = new BinaryFormatter().Deserialize(stream) as object[];
                 }
             }
 
             // TODO: Should substates be initialized to null array?
-
             return tileDefinition;
         }
 

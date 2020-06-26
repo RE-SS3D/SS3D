@@ -350,7 +350,7 @@ MonoBehaviour:
   syncInterval: 0.1
   selectionMask:
     serializedVersion: 2
-    m_Bits: 1148723
+    m_Bits: 1115955
   menuPrefab: {fileID: 6380575431912782132, guid: 69782ec738cf5ad40809cf5f548be89a,
     type: 3}
 --- !u!114 &666907628477534858

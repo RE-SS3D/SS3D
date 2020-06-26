@@ -30,6 +30,8 @@ namespace SS3D.Content.Structures.Fixtures
             Double
         };
 
+        public int LayerIndex { get; set; }
+
         /** <summary>Based on peculiarities of the model, the appropriate position of the wall cap</summary> */
         private const float WALL_CAP_DISTANCE_FROM_CENTRE = 1.0f;
 
@@ -98,6 +100,7 @@ namespace SS3D.Content.Structures.Fixtures
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
             bool isConnected = tile.turf && tile.turf.genericType == "wall";
+
             return adjacents.UpdateDirection(direction, isConnected, true);
         }
 
@@ -163,14 +166,8 @@ namespace SS3D.Content.Structures.Fixtures
             return wallCap;
         }
 
-        public void SetLayer(FixtureLayers layer)
-        {
-            return;
-        }
-
         // WallCap gameobjects, North, East, South, West. Null if not present.
         private GameObject[] wallCaps = new GameObject[4];
         private AdjacencyBitmap adjacents = new AdjacencyBitmap();
-        public FixtureLayers Layer { get; set; }
     }
 }

@@ -9,20 +9,28 @@ namespace SS3D.Content.Systems.Interactions
     /// </summary>
     public class ToggleInteraction : IInteraction
     {
-        public Sprite iconOn;
-        public Sprite iconOff;
+        /// <summary>
+        /// The icon when state is true
+        /// </summary>
+        public Sprite IconOn;
+        /// <summary>
+        /// The icon when state is false
+        /// </summary>
+        public Sprite IconOff;
         /// <summary>
         /// Checks if the interaction should be possible
         /// </summary>
         public Predicate<InteractionEvent> CanInteractCallback { get; set; } = _ => true;
+
         /// <summary>
         /// The name for the interaction when state is true
         /// </summary>
-        public string OnName { get; set; }
+        public string OnName { get; set; } = "Turn off";
+
         /// <summary>
         /// The name for the interaction when state is false
         /// </summary>
-        public string OffName { get; set; }
+        public string OffName { get; set; } = "Turn on";
         
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
@@ -31,27 +39,19 @@ namespace SS3D.Content.Systems.Interactions
 
         public string GetName(InteractionEvent interactionEvent)
         {
-            if (interactionEvent.Target is IToggleable toggle1)
-            {
-                return toggle1.GetState() ? OnName : OffName;
-            }
-            if (interactionEvent.Source is IToggleable toggle)
+            if (interactionEvent.Target is IToggleable toggle)
             {
                 return toggle.GetState() ? OnName : OffName;
-            } 
+            }
 
             return null;
         }
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            if (interactionEvent.Target is IToggleable toggle1)
+            if (interactionEvent.Target is IToggleable toggle)
             {
-                return toggle1.GetState() ? iconOn : iconOff;
-            }
-            if (interactionEvent.Source is IToggleable toggle)
-            {
-                return toggle.GetState() ? iconOn : iconOff;
+                return toggle.GetState() ? IconOn : IconOff;
             }
 
             return null;

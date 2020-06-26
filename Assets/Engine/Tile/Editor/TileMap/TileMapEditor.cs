@@ -79,6 +79,16 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                     else
                         Debug.LogWarning("Can't add tiles - tile definition is empty");
                 }
+                if (GUILayout.Button("Delete Tiles"))
+                {
+                    if (tiles.Objects[i] != null)
+                    {
+                        deleteTiles = true;
+                        SelectTile(i);
+                    }
+                    else
+                        Debug.LogWarning("Can't delete tiles - tile definition is empty");
+                }
                 if (GUILayout.Button("Remove Tile Definition")) {
                     tiles.RemoveAt(i);
                 }
@@ -138,7 +148,10 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             else if ((Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag) && Event.current.button == 0) {
                 if(lastPlacement != tilePosition) {
                     lastPlacement = tilePosition;
-                    SetTile(tileManager, tiles.Definitions[selectedTileIndex], tilePosition.x, tilePosition.y);
+                    if (deleteTiles)
+                        DeleteTile(tileManager, tilePosition.x, tilePosition.y);
+                    else
+                        SetTile(tileManager, tiles.Definitions[selectedTileIndex], tilePosition.x, tilePosition.y);
                 }
             }
             // If the user presses escape, stop the control
@@ -147,7 +160,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                     dragHandler.CancelDrag();
                     dragHandler = null;
                 }
-
+                deleteTiles = false;
                 SelectTile(-1);
             }
         }
@@ -161,7 +174,10 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             Vector3 cube_4 = cell + new Vector3(-.5f, 0f, .5f);
 
             // Rendering
-            Handles.color = Color.green;
+            if (deleteTiles)
+                Handles.color = Color.red;
+            else
+                Handles.color = Color.green;
             Vector3[] lines = { cube_1, cube_2, cube_2, cube_3, cube_3, cube_4, cube_4, cube_1 };
             Handles.DrawLines(lines);
         }
@@ -185,6 +201,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         // Stuff for editing scene
         private int selectedTileIndex = -1;
+        private bool deleteTiles = false;
         private Vector2Int lastPlacement;
 
         private TileDragHandler dragHandler;
