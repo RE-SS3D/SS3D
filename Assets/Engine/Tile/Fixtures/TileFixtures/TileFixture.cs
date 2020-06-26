@@ -8,7 +8,6 @@ namespace SS3D.Engine.Tiles
     [Serializable]
     public struct TileFixtureDefinition
     {
-        public PlenumFixture plenumCap;
         public WireFixture wire;
         public DisposalFixture disposal;
         public PipeFixture pipe1;
@@ -18,7 +17,6 @@ namespace SS3D.Engine.Tiles
 
     public enum TileFixtureLayers
     {
-        Plenum,
         Wire,
         Disposal,
         Pipe1,

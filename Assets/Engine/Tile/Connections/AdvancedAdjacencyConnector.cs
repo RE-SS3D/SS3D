@@ -98,7 +98,7 @@ namespace SS3D.Engine.Tiles.Connections
         {
             int index = LayerIndex;
             if (index == 0)
-                index = 14; // Hardcoded to the Fixture layer until I got a better solution for this. Is needed to make Airlocks connect to walls
+                index = 17; // Hardcoded to the FixtureMain layer until I got a better solution for this. Is needed to make Airlocks connect to walls
 
             bool isConnected = (tile.plenum && (tile.plenum.genericType == type || type == null));
             isConnected |= (tile.turf && (tile.turf.genericType == type || type == null));

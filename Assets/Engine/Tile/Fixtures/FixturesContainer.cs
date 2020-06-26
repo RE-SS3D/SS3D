@@ -26,8 +26,6 @@ namespace SS3D.Engine.Tiles
                     return tileFixtureDefinition.pipe2;
                 case TileFixtureLayers.Pipe3:
                     return tileFixtureDefinition.pipe3;
-                case TileFixtureLayers.Plenum:
-                    return tileFixtureDefinition.plenumCap;
                 case TileFixtureLayers.Wire:
                     return tileFixtureDefinition.wire;
             }
@@ -64,16 +62,16 @@ namespace SS3D.Engine.Tiles
         {
             switch (layer)
             {
-                case FloorFixtureLayers.TableMachineFixture1:
-                    return floorFixtureDefinition.tableMachine1;
-                case FloorFixtureLayers.TableMachineFixture2:
-                    return floorFixtureDefinition.tableMachine2;
-                case FloorFixtureLayers.TableMachineFixture3:
-                    return floorFixtureDefinition.tableMachine3;
-                case FloorFixtureLayers.TableMachineFixture4:
-                    return floorFixtureDefinition.tableMachine4;
-                case FloorFixtureLayers.TableMachineFixture5:
-                    return floorFixtureDefinition.tableMachine5;
+                case FloorFixtureLayers.FurnitureFixtureMain:
+                    return floorFixtureDefinition.furnitureMain;
+                case FloorFixtureLayers.FurnitureFixture2:
+                    return floorFixtureDefinition.furniture2;
+                case FloorFixtureLayers.FurnitureFixture3:
+                    return floorFixtureDefinition.furniture3;
+                case FloorFixtureLayers.FurnitureFixture4:
+                    return floorFixtureDefinition.furniture4;
+                case FloorFixtureLayers.FurnitureFixture5:
+                    return floorFixtureDefinition.furniture5;
 
                 case FloorFixtureLayers.OverlayFixture1:
                     return floorFixtureDefinition.overlay1;
@@ -82,8 +80,8 @@ namespace SS3D.Engine.Tiles
                 case FloorFixtureLayers.OverlayFixture3:
                     return floorFixtureDefinition.overlay3;
 
-                case FloorFixtureLayers.FurnitureFixture:
-                    return floorFixtureDefinition.furniture;
+                case FloorFixtureLayers.PipeUpperFixture:
+                    return floorFixtureDefinition.pipeUpper;
             }
             return null;
         }
@@ -103,9 +101,6 @@ namespace SS3D.Engine.Tiles
                     break;
                 case TileFixtureLayers.Pipe3:
                     tileFixtureDefinition.pipe3 = (PipeFixture)fixture;
-                    break;
-                case TileFixtureLayers.Plenum:
-                    tileFixtureDefinition.plenumCap = (PlenumFixture)fixture;
                     break;
                 case TileFixtureLayers.Wire:
                     tileFixtureDefinition.wire = (WireFixture)fixture;
@@ -158,20 +153,20 @@ namespace SS3D.Engine.Tiles
         {
             switch (layer)
             {
-                case FloorFixtureLayers.TableMachineFixture1:
-                    floorFixtureDefinition.tableMachine1 = (TableMachineFixture)fixture;
+                case FloorFixtureLayers.FurnitureFixtureMain:
+                    floorFixtureDefinition.furnitureMain = (FurnitureFloorFixture)fixture;
                     break;
-                case FloorFixtureLayers.TableMachineFixture2:
-                    floorFixtureDefinition.tableMachine2 = (TableMachineFixture)fixture;
+                case FloorFixtureLayers.FurnitureFixture2:
+                    floorFixtureDefinition.furniture2 = (FurnitureFloorFixture)fixture;
                     break;
-                case FloorFixtureLayers.TableMachineFixture3:
-                    floorFixtureDefinition.tableMachine3 = (TableMachineFixture)fixture;
+                case FloorFixtureLayers.FurnitureFixture3:
+                    floorFixtureDefinition.furniture3 = (FurnitureFloorFixture)fixture;
                     break;
-                case FloorFixtureLayers.TableMachineFixture4:
-                    floorFixtureDefinition.tableMachine4 = (TableMachineFixture)fixture;
+                case FloorFixtureLayers.FurnitureFixture4:
+                    floorFixtureDefinition.furniture4 = (FurnitureFloorFixture)fixture;
                     break;
-                case FloorFixtureLayers.TableMachineFixture5:
-                    floorFixtureDefinition.tableMachine5 = (TableMachineFixture)fixture;
+                case FloorFixtureLayers.FurnitureFixture5:
+                    floorFixtureDefinition.furniture5 = (FurnitureFloorFixture)fixture;
                     break;
 
                 case FloorFixtureLayers.OverlayFixture1:
@@ -184,8 +179,8 @@ namespace SS3D.Engine.Tiles
                     floorFixtureDefinition.overlay3 = (OverlayFloorFixture)fixture;
                     break;
 
-                case FloorFixtureLayers.FurnitureFixture:
-                    floorFixtureDefinition.furniture = (FurnitureFloorFixture)fixture;
+                case FloorFixtureLayers.PipeUpperFixture:
+                    floorFixtureDefinition.pipeUpper = (PipeFloorFixture)fixture;
                     break;
             }
         }

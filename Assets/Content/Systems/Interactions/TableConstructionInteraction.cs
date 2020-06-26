@@ -7,12 +7,12 @@ namespace SS3D.Content.Systems.Interactions
 {
     public class TableConstructionInteraction : DelayedInteraction
     {
-        public TableMachineFixture TableToConstruct { get; set; }
+        public FurnitureFloorFixture TableToConstruct { get; set; }
 
         public override string GetName(InteractionEvent interactionEvent)
         {
             TileObject tileObject = (interactionEvent.Target as IGameObjectProvider)?.GameObject?.GetComponentInParent<TileObject>();
-            if (tileObject != null && tileObject.Tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixture) == TableToConstruct)
+            if (tileObject != null && tileObject.Tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixtureMain) == TableToConstruct)
             {
                 return "Deconstruct";
             }
@@ -59,16 +59,16 @@ namespace SS3D.Content.Systems.Interactions
             var tile = targetTile.Tile;
 
             
-            if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.TableMachineFixture1) != null) // If there is a fixture on the place
+            if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixtureMain) != null) // If there is a fixture on the place
             {
-                if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.TableMachineFixture1) == TableToConstruct) // If the fixture is a table
+                if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixtureMain) == TableToConstruct) // If the fixture is a table
                 {
-                    tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.TableMachineFixture1); // Deconstruct
+                    tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.FurnitureFixtureMain); // Deconstruct
                 }
             }
             else // If there is no fixture on place
             {
-                tile.fixtures.SetFloorFixtureAtLayer(TableToConstruct, FloorFixtureLayers.TableMachineFixture1); // Construct
+                tile.fixtures.SetFloorFixtureAtLayer(TableToConstruct, FloorFixtureLayers.FurnitureFixtureMain); // Construct
             }
             
             // TODO: Make an easier way of doing this.
