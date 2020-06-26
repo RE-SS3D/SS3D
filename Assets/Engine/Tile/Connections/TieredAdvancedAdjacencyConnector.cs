@@ -126,6 +126,7 @@ namespace SS3D.Engine.Tiles.Connections
         {
             // Count number of connections along cardinal, to determine which 'outer' mesh we use of O, C, I/L, T, X
             var generalCardinals = generalAdjacents.GetCardinalInfo();
+            var specificCardinals = specificAdjacents.GetCardinalInfo();
 
             float rotation = 0.0f;
             Mesh mesh;
@@ -135,8 +136,6 @@ namespace SS3D.Engine.Tiles.Connections
             }
             else if (generalCardinals.IsC())
             {
-                var specificCardinals = specificAdjacents.GetCardinalInfo();
-
                 if (specificCardinals.numConnections == 1)
                 {
                     mesh = c;
@@ -150,8 +149,6 @@ namespace SS3D.Engine.Tiles.Connections
             }
             else if (generalCardinals.IsI())
             {
-                var specificCardinals = specificAdjacents.GetCardinalInfo();
-
                 if (specificCardinals.numConnections == 1)
                 {
                     mesh = iBorder;
