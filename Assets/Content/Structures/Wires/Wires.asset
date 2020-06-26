@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 903cb7b2e43eaa14abbf1cb220fdd7c3, type: 3}
+  m_Script: {fileID: 11500000, guid: bf642078cb62a58439a0a77557d0d098, type: 3}
   m_Name: Wires
   m_EditorClassIdentifier: 
-  id: Wires
+  id: wires
   genericType: wire
-  layer: 1
   prefab: {fileID: 2802364579275783218, guid: d211f90919bc28a4e8def76cb07197ba, type: 3}
