@@ -57,8 +57,8 @@ public class EnergySword : Item, IToggleable
         {
             OnName = "Turn off",
             OffName = "Turn on",
-            iconOn = turnOnIcon,
-            iconOff = turnOnIcon
+            IconOn = turnOnIcon,
+            IconOff = turnOnIcon
         }); ;
         return list.ToArray();
     }
