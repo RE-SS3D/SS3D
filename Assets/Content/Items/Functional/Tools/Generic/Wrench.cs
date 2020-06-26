@@ -13,6 +13,7 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
         public GameObject LoadingBarPrefab;
         public Fixture TableToConstruct;
         public float Delay;
+        public LayerMask ObstacleMask;
 
         public Sprite constructIcon;
 
@@ -23,7 +24,8 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
             {       TableToConstruct = TableToConstruct, 
                 Delay = Delay, 
                 LoadingBarPrefab = LoadingBarPrefab,
-                icon = constructIcon
+                icon = constructIcon,
+                ObstacleMask = ObstacleMask
             }));
         }
     }
