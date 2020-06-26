@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
-  m_Name: BarStool
+  m_Name: Office Chair
   m_EditorClassIdentifier: 
-  id: bar_stool
+  id: office_chair
   genericType: seat
-  prefab: {fileID: 8848695623778231642, guid: 711bd7e744bd12c4ab650d498726e8b4, type: 3}
+  prefab: {fileID: 8099526704187622814, guid: d4fbc40fa2baa954790867dc3a386f68, type: 3}
