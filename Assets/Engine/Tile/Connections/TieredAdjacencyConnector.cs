@@ -16,7 +16,7 @@ namespace SS3D.Engine.Tiles.Connections
         // Id that adjacent objects must be to count. If null, any id is accepted
         public string id;
         public string genericType;
-        public FixtureLayers Layer { get; set; }
+        public int LayerIndex { get; set; }
 
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
@@ -70,15 +70,13 @@ namespace SS3D.Engine.Tiles.Connections
          */
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
-            int index = (int)Layer;
-
             bool isGeneric = (tile.turf && (tile.turf.genericType == genericType || genericType == null));
             if (tile.fixtures != null)
-                isGeneric = isGeneric || (tile.fixtures[index] && (tile.fixtures[index].genericType == genericType || genericType == null));
+                isGeneric = isGeneric || (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex) && (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex).genericType == genericType || genericType == null));
 
             bool isSpecific = (tile.turf && (tile.turf.id == id || id == null));
             if (tile.fixtures != null)
-                isSpecific = isSpecific || (tile.fixtures[index] && (tile.fixtures[index].id == id || id == null));
+                isSpecific = isSpecific || (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex) && (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex).id == id || id == null));
 
             bool changed = generalAdjacents.UpdateDirection(direction, isGeneric, true);
             changed |= specificAdjacents.UpdateDirection(direction, isSpecific, true);
