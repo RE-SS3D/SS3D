@@ -172,7 +172,6 @@ GameObject:
   - component: {fileID: 2081909342595332650}
   - component: {fileID: 1358342656361913515}
   - component: {fileID: 2884915648782529247}
-  - component: {fileID: 8782626623238452740}
   - component: {fileID: -396234361631906964}
   m_Layer: 16
   m_Name: toolbox
@@ -209,9 +208,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!54 &2081909342595332650
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -255,20 +255,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
+  ItemId: toolbox
+  Name: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5533951594911835035}
   attachmentPoint: {fileID: 6311512130502363032}
---- !u!33 &8782626623238452740
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533951594911835035}
-  m_Mesh: {fileID: -8230176479116319638, guid: 58b7f3e337f2e6f44be25698b715ffe4, type: 3}
 --- !u!114 &-396234361631906964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -283,8 +276,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  compressRotation: 1
   clientAuthority: 0
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01
 --- !u!1 &8066562249021099569
 GameObject:
   m_ObjectHideFlags: 0
