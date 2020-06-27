@@ -24,8 +24,10 @@ namespace SS3D.Engine.Tiles.Connections
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
 
-        [Tooltip("A mesh where north connects to same type")]
+        [Tooltip("A mesh where north connects to the same type")]
         public Mesh c;
+        [Tooltip("A mesh where north connects to the generic type")]
+        public Mesh cBorder;
 
         [Tooltip("A mesh where north and south edges are connected to the same type")]
         public Mesh i;
@@ -124,6 +126,7 @@ namespace SS3D.Engine.Tiles.Connections
         {
             // Count number of connections along cardinal, to determine which 'outer' mesh we use of O, C, I/L, T, X
             var generalCardinals = generalAdjacents.GetCardinalInfo();
+            var specificCardinals = specificAdjacents.GetCardinalInfo();
 
             float rotation = 0.0f;
             Mesh mesh;
@@ -133,13 +136,19 @@ namespace SS3D.Engine.Tiles.Connections
             }
             else if (generalCardinals.IsC())
             {
-                mesh = c;
-                rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
+                if (specificCardinals.numConnections == 1)
+                {
+                    mesh = c;
+                    rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
+                }
+                else
+                {
+                    mesh = cBorder;
+                    rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
+                }
             }
             else if (generalCardinals.IsI())
             {
-                var specificCardinals = specificAdjacents.GetCardinalInfo();
-
                 if (specificCardinals.numConnections == 1)
                 {
                     mesh = iBorder;
