@@ -179,14 +179,22 @@ namespace SS3D.Engine.Inventory
             return -1;
         }
 
+         /// <summary>
+        /// Destroys all items inside this container
+        /// </summary>
         public void Purge()
         {
-           foreach(var item in items)
+            for (var i = 0; i < items.Count; i++)
             {
-                Destroy(item);
+                var item = items[i].GetComponent<Item>();
+                if (item != null)
+                {
+                    item.container = null;
+                }
+                ItemHelpers.DestroyItem(item);
+                items[i] = null;
             }
         }
-
         public override void OnStartServer()
         {
             for (int i = 0; i < slots.Length; ++i)
