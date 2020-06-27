@@ -203,7 +203,7 @@ namespace SS3D.Engine.Tiles.Connections
                         if (diagonals.north == diagonals.south)
                         {
                             mesh = xOpposite;
-                            rotation = OrientationHelper.AngleBetween(Orientation.Vertical, diagonals.GetFirstOrientation());
+                            rotation = OrientationHelper.AngleBetween(Orientation.Horizontal, diagonals.GetFirstOrientation());
                         }
                         else
                         {
