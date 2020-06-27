@@ -64,6 +64,7 @@ namespace SS3D.Content.Systems.Interactions
                 if (container != null)
                 {
                     container.AddSubstance(Substance.Substance, Substance.Moles);
+                    container.MarkDirty();
                 }
             }
 

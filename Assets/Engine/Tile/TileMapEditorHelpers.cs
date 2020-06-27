@@ -37,6 +37,17 @@ namespace Tile
             return tile;
         }
 
+       public static void DeleteTile(TileManager tileManager, int x, int y)
+        {
+            if (tileManager.GetTile(x, y) != null)
+            {
+                Undo.RegisterCreatedObjectUndo(tileManager.GetTile(x, y).gameObject, "Deleted tile");
+                tileManager.EditorDestroyTile(x, y);
+
+            }
+        }
+
+
         /**
          * Sets the tile at the given position
          * to the currently selected tile type.
@@ -45,11 +56,18 @@ namespace Tile
          */
         public static void SetTile(TileManager tileManager, TileDefinition tileDefinition, int x, int y)
         {
-            if (tileManager.GetTile(x, y) == null) {
+            // Copy object to avoid dupplication between editor and tilemap
+            FixturesContainer f = (FixturesContainer)tileDefinition.fixtures.Clone();
+            tileDefinition.fixtures = f;
+
+            if (tileManager.GetTile(x, y) == null)
+            {
+
                 tileManager.EditorCreateTile(x, y, tileDefinition);
                 Undo.RegisterCreatedObjectUndo(tileManager.GetTile(x, y).gameObject, "Created tile");
             }
-            else {
+            else
+            {
                 Undo.RecordObject(tileManager.GetTile(x, y).gameObject, "Updated tile");
                 tileManager.EditorUpdateTile(x, y, tileDefinition);
             }

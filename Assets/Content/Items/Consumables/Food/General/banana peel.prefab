@@ -14,8 +14,10 @@ GameObject:
   - component: {fileID: 6650144901923549122}
   - component: {fileID: 3233781620974244719}
   - component: {fileID: 7689635437763503072}
+  - component: {fileID: 448349732004621884}
   - component: {fileID: 1240913746253889284}
   - component: {fileID: 2949647390327175656}
+  - component: {fileID: 146116797563218815}
   m_Layer: 16
   m_Name: banana peel
   m_TagString: Untagged
@@ -50,9 +52,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!33 &6303733993938204412
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -108,7 +111,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5367923578081395378}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 0.025
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -128,11 +131,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  ItemId: 
+  Name: Banana Peel
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5367923578081395378}
   attachmentPoint: {fileID: 7337104100445899176}
+--- !u!114 &448349732004621884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5367923578081395378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 'Remains of a banana.
+
+    Take care not to slip.'
+  MaxDistance: 0
 --- !u!64 &1240913746253889284
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -159,6 +182,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6170fe18468d2174abd598dcff20d692, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+--- !u!114 &146116797563218815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5367923578081395378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  clientAuthority: 0
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01
 --- !u!1 &8560019361223259992
 GameObject:
   m_ObjectHideFlags: 0

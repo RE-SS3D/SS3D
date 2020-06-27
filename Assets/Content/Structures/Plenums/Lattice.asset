@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80f8bb38b94dd4744bf6ca44adbc7ac4, type: 3}
+  m_Name: Lattice
+  m_EditorClassIdentifier: 
+  id: lattice
+  genericType: lattice
+  prefab: {fileID: 7825286949101219487, guid: 854451834f026fb4f860bf0e977a104c, type: 3}

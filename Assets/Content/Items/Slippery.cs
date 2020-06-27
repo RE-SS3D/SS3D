@@ -9,11 +9,11 @@ namespace SS3D.Content.Items
 {
     public class Slippery : NetworkBehaviour
     {
-        private Dictionary<HumanRigidBody, float> slippedBodies;
+        private Dictionary<HumanRagdoll, float> slippedBodies;
 
         private void Start()
         {
-            slippedBodies = new Dictionary<HumanRigidBody, float>();
+            slippedBodies = new Dictionary<HumanRagdoll, float>();
         }
 
         private void OnCollisionEnter(Collision other)
@@ -23,15 +23,15 @@ namespace SS3D.Content.Items
                 return;
             }
             
-            HumanRigidBody humanRigidBody = other.transform.root.gameObject.GetComponent<HumanRigidBody>();
-            if (humanRigidBody != null && !humanRigidBody.BodyEnabled)
+            HumanRagdoll humanRagdoll = other.transform.root.gameObject.GetComponent<HumanRagdoll>();
+            if (humanRagdoll != null && !humanRagdoll.BodyEnabled)
             {
                 CleanBodyDictionary();
-                if (!slippedBodies.ContainsKey(humanRigidBody))
+                if (!slippedBodies.ContainsKey(humanRagdoll))
                 {
-                    humanRigidBody.BodyEnabled = true;
-                    slippedBodies.Add(humanRigidBody, Time.time);
-                    StartCoroutine(DisableBodyCoroutine(humanRigidBody));
+                    humanRagdoll.BodyEnabled = true;
+                    slippedBodies.Add(humanRagdoll, Time.time);
+                    StartCoroutine(DisableBodyCoroutine(humanRagdoll));
                 }
             }
             
@@ -46,7 +46,7 @@ namespace SS3D.Content.Items
             }
         }
 
-        private IEnumerator DisableBodyCoroutine(HumanRigidBody body)
+        private IEnumerator DisableBodyCoroutine(HumanRagdoll body)
         {
             yield return new WaitForSeconds(3);
             body.BodyEnabled = false;

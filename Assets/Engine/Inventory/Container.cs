@@ -90,12 +90,19 @@ namespace SS3D.Engine.Inventory
         [Server]
         public virtual void AddItem(int slot, GameObject item)
         {
+            var itemComponent = item.GetComponent<Item>();
+            
+            if (itemComponent == null || item.GetComponent<Rigidbody>() == null ||
+                item.GetComponent<Collider>() == null)
+            {
+                return;
+            }
+            
             if (items[slot] != null)
                 throw new Exception("Item already exists in slot"); // TODO: Specific exception
 
             items[slot] = item;
-            var itemComponent = item.GetComponent<Item>();
-            if (itemComponent != null) itemComponent.container = this;
+            itemComponent.container = this;
         }
         /**
          * Add an item to the first available slot.

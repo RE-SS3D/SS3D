@@ -1,4 +1,5 @@
 ﻿using SS3D.Content.Systems.Interactions;
+using SS3D.Engine.Examine;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Inventory;
@@ -6,7 +7,7 @@ using UnityEngine;
 
 namespace SS3D.Content.Furniture.Generic
 {
-    public class WaterCooler : InteractionTargetBehaviour
+    public class WaterCooler : InteractionTargetBehaviour, IExaminable
     {
         public GameObject CupPrefab;
         public int NumberOfCups;
@@ -32,6 +33,16 @@ namespace SS3D.Content.Furniture.Generic
             Item cup = ItemHelpers.CreateItem(CupPrefab);
             interactionEvent.Source.GetHands().Pickup(cup.gameObject);
             NumberOfCups--;
+        }
+
+        public bool CanExamine(GameObject examinator)
+        {
+            return true;
+        }
+
+        public string GetDescription(GameObject examinator)
+        {
+            return $"{NumberOfCups} cups remaining.";
         }
     }
 }

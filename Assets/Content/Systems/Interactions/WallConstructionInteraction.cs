@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
 {
-    public class WallConstructionInteraction : DelayedInteraction
+    public class WallConstructionInteraction : ConstructionInteraction
     {
         public Turf WallToConstruct { get; set; }
         public Turf FloorToConstruct { get; set; }
@@ -13,7 +13,7 @@ namespace SS3D.Content.Systems.Interactions
         public override string GetName(InteractionEvent interactionEvent)
         {
             TileObject tileObject = (interactionEvent.Target as IGameObjectProvider)?.GameObject?.GetComponentInParent<TileObject>();
-            if (tileObject != null && tileObject.Tile.turf.isWall)
+            if (tileObject != null && tileObject.Tile.turf != null && tileObject.Tile.turf.isWall)
             {
                 return "Deconstruct";
             }
@@ -23,28 +23,17 @@ namespace SS3D.Content.Systems.Interactions
 
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
-            if (!InteractionExtensions.RangeCheck(interactionEvent))
+            if (!base.CanInteract(interactionEvent))
             {
                 return false;
             }
             
-            if (interactionEvent.Target is IGameObjectProvider targetBehaviour)
+            if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
-                TileObject targetTile = targetBehaviour.GameObject.GetComponentInParent<TileObject>();
-                if (targetTile == null)
-                {
-                    return false;
-                }
-
-                if (targetTile.Tile.fixture != null)
-                {
-                    return false;
-                }
-
-                return true;
+                return false;
             }
-            
-            return false;
+
+            return !TargetTile.Tile.fixtures.floorFixtureDefinition.IsEmpty();
         }
 
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
@@ -58,13 +47,18 @@ namespace SS3D.Content.Systems.Interactions
             TileManager tileManager = Object.FindObjectOfType<TileManager>();
             TileObject targetTile = targetBehaviour.GameObject.GetComponentInParent<TileObject>();
             var tile = targetTile.Tile;
-            
-            if (tile.turf?.isWall == true) // Deconstruct
-                tile.turf = FloorToConstruct;
+
+            // Deconstruct
+            if (tile.turf?.isWall == true)
+            {
+                tile.turf = null;
+            }
             else // Construct
                 tile.turf = WallToConstruct;
 
-            tile.fixture = null;
+            tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.FurnitureFixtureMain);
+            FixturesContainer.ValidateFixtures(tile);
+
             // TODO: Make an easier way of doing this.
             tile.subStates = new object[2];
 

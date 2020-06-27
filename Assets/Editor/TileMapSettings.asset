@@ -13,11 +13,33 @@ MonoBehaviour:
   m_Name: TileMapSettings
   m_EditorClassIdentifier: 
   tiles:
-  - turf: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
-    fixture: {fileID: 0}
-  - turf: {fileID: 11400000, guid: 9dda7bed5d66999498b68b9b7517499d, type: 2}
-    fixture: {fileID: 0}
-  - turf: {fileID: 11400000, guid: c4f20fbebbaf46f4f85293a69e3c0d7d, type: 2}
-    fixture: {fileID: 0}
-  - turf: {fileID: 11400000, guid: bb5b6d96476c1414f924e9805ca225a8, type: 2}
-    fixture: {fileID: 0}
+  - plenum: {fileID: 11400000, guid: 6a26040e000c61b47bf6c8f8a0cc2751, type: 2}
+    turf: {fileID: 0}
+    fixtures:
+      tileFixtureDefinition:
+        plenumCap: {fileID: 0}
+        wire: {fileID: 0}
+        disposal: {fileID: 0}
+        pipe1: {fileID: 0}
+        pipe2: {fileID: 0}
+        pipe3: {fileID: 0}
+      wallFixtureDefinition:
+        highWallNorth: {fileID: 0}
+        highWallEast: {fileID: 0}
+        highWallSouth: {fileID: 0}
+        highWallWest: {fileID: 0}
+        lowWallNorth: {fileID: 0}
+        lowWallEast: {fileID: 0}
+        lowWallSouth: {fileID: 0}
+        lowWallWest: {fileID: 0}
+      floorFixtureDefinition:
+        furniture: {fileID: 0}
+        overlay1: {fileID: 0}
+        overlay2: {fileID: 0}
+        overlay3: {fileID: 0}
+        tableMachine1: {fileID: 0}
+        tableMachine2: {fileID: 0}
+        tableMachine3: {fileID: 0}
+        tableMachine4: {fileID: 0}
+        tableMachine5: {fileID: 0}
+    atmos: {fileID: 0}

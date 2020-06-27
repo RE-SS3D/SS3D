@@ -8,8 +8,7 @@ namespace SS3D.Engine.Tiles.Connections
      * These classes are getting very specific...
      * This one is the same as SimpleAdjacencyConnector, but it has specific unique I connections
      * to a more generic type.
-     * This is currently used for glass walls, where when connecting to any other wall we need to
-     * 'close' the glass window.
+     * This is not currently used on any connectibles.
      */
     [RequireComponent(typeof(MeshFilter))]
     public class TieredAdjacencyConnector : MonoBehaviour, AdjacencyConnector
@@ -17,21 +16,22 @@ namespace SS3D.Engine.Tiles.Connections
         // Id that adjacent objects must be to count. If null, any id is accepted
         public string id;
         public string genericType;
+        public int LayerIndex { get; set; }
 
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
-        [Tooltip("A mesh where the east edge is connected")]
+        [Tooltip("A mesh where the north edge is connected")]
         public Mesh c;
-        [Tooltip("A mesh where east and west edges are connected")]
+        [Tooltip("A mesh where north & south edges are connected too the same type")]
         public Mesh i;
-        [Tooltip("A mesh where west connects to same type, and east connects to the generic type")]
+        [Tooltip("A mesh where north connects to same type (window), and south connects to the generic type (wall)")]
         public Mesh iBorder;
         [Tooltip("A mesh for a single I tile between two generic ones")]
         public Mesh iAlone;
-        [Tooltip("A mesh where the south and west edges are connected")]
+        [Tooltip("A mesh where the north & east edges are connected")]
         public Mesh l;
-        [Tooltip("A mesh where the north, south, and east edge is connected")]
+        [Tooltip("A mesh where the north, east, and west edges are connected")]
         public Mesh t;
         [Tooltip("A mesh where all edges are connected")]
         public Mesh x;
@@ -44,7 +44,7 @@ namespace SS3D.Engine.Tiles.Connections
             if (UpdateSingleConnection(direction, tile))
             {
                 UpdateMeshAndDirection();
-            } 
+            }
         }
 
         /**
@@ -54,10 +54,11 @@ namespace SS3D.Engine.Tiles.Connections
         public void UpdateAll(TileDefinition[] tiles)
         {
             bool changed = false;
-            for (int i = 0; i < tiles.Length; i++) {
+            for (int i = 0; i < tiles.Length; i++)
+            {
                 changed |= UpdateSingleConnection((Direction)i, tiles[i]);
             }
-            if(changed)
+            if (changed)
                 UpdateMeshAndDirection();
         }
 
@@ -69,8 +70,13 @@ namespace SS3D.Engine.Tiles.Connections
          */
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
-            bool isGeneric = (tile.turf && (tile.turf.genericType == genericType || genericType == null)) || (tile.fixture && (tile.fixture.genericType == genericType || genericType == null));
-            bool isSpecific = (tile.turf && (tile.turf.id == id || id == null)) || (tile.fixture && (tile.fixture.id == id || id == null));
+            bool isGeneric = (tile.turf && (tile.turf.genericType == genericType || genericType == null));
+            if (tile.fixtures != null)
+                isGeneric = isGeneric || (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex) && (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex).genericType == genericType || genericType == null));
+
+            bool isSpecific = (tile.turf && (tile.turf.id == id || id == null));
+            if (tile.fixtures != null)
+                isSpecific = isSpecific || (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex) && (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex).id == id || id == null));
 
             bool changed = generalAdjacents.UpdateDirection(direction, isGeneric, true);
             changed |= specificAdjacents.UpdateDirection(direction, isSpecific, true);
@@ -90,7 +96,7 @@ namespace SS3D.Engine.Tiles.Connections
             else if (generalCardinals.IsC())
             {
                 mesh = c;
-                rotation = DirectionHelper.AngleBetween(Direction.East, generalCardinals.GetOnlyPositive());
+                rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
             }
             else if (generalCardinals.IsI())
             {
@@ -100,22 +106,23 @@ namespace SS3D.Engine.Tiles.Connections
                 if (specificCardinals.numConnections == 1)
                 {
                     mesh = iBorder;
-                    rotation = DirectionHelper.AngleBetween(Direction.West, specificCardinals.GetOnlyPositive());
+                    rotation = DirectionHelper.AngleBetween(Direction.South, specificCardinals.GetOnlyPositive());
                 }
                 else
                 {
                     mesh = specificCardinals.numConnections == 2 ? i : iAlone;
-                    rotation = OrientationHelper.AngleBetween(Orientation.Horizontal, generalCardinals.GetFirstOrientation());
+                    rotation = OrientationHelper.AngleBetween(Orientation.Vertical, generalCardinals.GetFirstOrientation());
                 }
             }
             else if (generalCardinals.IsL())
             {
                 mesh = l;
-                rotation = DirectionHelper.AngleBetween(Direction.SouthEast, generalCardinals.GetCornerDirection());
+                rotation = DirectionHelper.AngleBetween(Direction.NorthEast, generalCardinals.GetCornerDirection());
             }
-            else if (generalCardinals.IsT()) {
+            else if (generalCardinals.IsT())
+            {
                 mesh = t;
-                rotation = DirectionHelper.AngleBetween(Direction.West, generalCardinals.GetOnlyNegative());
+                rotation = DirectionHelper.AngleBetween(Direction.South, generalCardinals.GetOnlyNegative());
             }
             else
                 mesh = x;

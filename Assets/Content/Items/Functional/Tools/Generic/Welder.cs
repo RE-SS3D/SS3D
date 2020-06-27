@@ -104,8 +104,8 @@ namespace SS3D.Content.Items.Functional.Tools
             {
                 OnName = "Turn off",
                 OffName = "Turn on",
-                iconOn = turnOnIcon,
-                iconOff = turnOnIcon 
+                IconOn = turnOnIcon,
+                IconOff = turnOnIcon 
             };
             list.Add(toggleInteraction);
             return list.ToArray();

@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 380944425635963224}
   - component: {fileID: 5645026291506796971}
   - component: {fileID: 6909165344461321721}
+  - component: {fileID: -2469115493504090853}
   m_Layer: 0
   m_Name: CrayonBlue
   m_TagString: Untagged
@@ -107,7 +108,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1072858492241738576}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 0.005
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -142,6 +143,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  ItemId: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -162,6 +166,22 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   propertiesPrefab: {fileID: 11400000, guid: 20b6c0435cf5346488202b165aaeeab0, type: 2}
+--- !u!114 &-2469115493504090853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072858492241738576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  compressRotation: 1
+  clientAuthority: 0
 --- !u!1 &7908146554783263548
 GameObject:
   m_ObjectHideFlags: 0
