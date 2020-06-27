@@ -208,7 +208,7 @@ namespace SS3D.Engine.Tiles.Connections
                         else
                         {
                             mesh = xSide;
-                            rotation = DirectionHelper.AngleBetween(Direction.NorthWest, diagonals.GetCornerDirection());
+                            rotation = DirectionHelper.AngleBetween(Direction.SouthEast, diagonals.GetCornerDirection());
                         }
                         break;
                     case 3:
