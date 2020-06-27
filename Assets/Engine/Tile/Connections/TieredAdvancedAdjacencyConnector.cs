@@ -197,13 +197,13 @@ namespace SS3D.Engine.Tiles.Connections
                         break;
                     case 1:
                         mesh = xSingle;
-                        rotation = DirectionHelper.AngleBetween(Direction.North, diagonals.GetOnlyPositive());
+                        rotation = DirectionHelper.AngleBetween(Direction.South, diagonals.GetOnlyPositive());
                         break;
                     case 2:
                         if (diagonals.north == diagonals.south)
                         {
                             mesh = xOpposite;
-                            rotation = OrientationHelper.AngleBetween(Orientation.Horizontal, diagonals.GetFirstOrientation());
+                            rotation = OrientationHelper.AngleBetween(Orientation.Vertical, diagonals.GetFirstOrientation());
                         }
                         else
                         {
@@ -213,7 +213,7 @@ namespace SS3D.Engine.Tiles.Connections
                         break;
                     case 3:
                         mesh = xTriple;
-                        rotation = DirectionHelper.AngleBetween(Direction.South, diagonals.GetOnlyNegative());
+                        rotation = DirectionHelper.AngleBetween(Direction.North, diagonals.GetOnlyNegative());
                         break;
                     default:
                         mesh = xQuad;
