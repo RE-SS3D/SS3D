@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf642078cb62a58439a0a77557d0d098, type: 3}
+  m_Name: Wires - Red
+  m_EditorClassIdentifier: 
+  id: wires_red
+  genericType: wire
+  prefab: {fileID: 2802364579275783218, guid: 14ef62e89f3613c4b9964b369e01c5f9, type: 3}
