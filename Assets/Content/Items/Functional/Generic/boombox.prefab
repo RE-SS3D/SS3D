@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 3236041210663208848}
   - component: {fileID: 1172037334395915260}
   - component: {fileID: 2748667980630041574}
+  - component: {fileID: 948036720204326260}
   - component: {fileID: 8931162742749529964}
   - component: {fileID: 7154395493564269582}
   - component: {fileID: -6708761690309981559}
@@ -148,13 +149,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: Boombox
-  container: {fileID: 0}
-  itemType: 0
-  sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
-  prefab: {fileID: 8197868818743549203}
-  attachmentPoint: {fileID: 2804866248626254785}
   musics:
   - {fileID: 8300000, guid: f480632a83403024eab6321e689c5b75, type: 3}
   - {fileID: 8300000, guid: c7fb44f977cb4d943bef452174937c65, type: 3}
@@ -163,6 +157,27 @@ MonoBehaviour:
   currentMusic: 0
   interactionIcon: {fileID: 21300000, guid: facda86cccb56594eb7155ed03ebbb9e, type: 3}
   interactionIconOn: {fileID: 21300000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
+--- !u!114 &948036720204326260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8197868818743549203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  ItemId: 
+  Name: Boombox
+  container: {fileID: 0}
+  itemType: 0
+  sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
+  prefab: {fileID: 8197868818743549203}
+  attachmentPoint: {fileID: 2804866248626254785}
 --- !u!114 &8931162742749529964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -324,10 +339,10 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8730915866332464111}
-  m_LocalRotation: {x: -0.08661901, y: 0.70178145, z: -0.08661915, w: -0.7017814}
-  m_LocalPosition: {x: 0.053, y: 0.328, z: -0}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
+  m_LocalPosition: {x: 0.064, y: 0.318, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5161115935698005760}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 14.073001, y: 270, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}

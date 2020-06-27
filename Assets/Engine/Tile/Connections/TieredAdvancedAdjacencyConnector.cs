@@ -18,14 +18,16 @@ namespace SS3D.Engine.Tiles.Connections
         // Id to match against
         public string id;
         public string genericType;
-        public FixtureLayers Layer { get; set; }
+        public int LayerIndex { get; set; }
 
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
 
-        [Tooltip("A mesh where north connects to same type")]
+        [Tooltip("A mesh where north connects to the same type")]
         public Mesh c;
+        [Tooltip("A mesh where north connects to the generic type")]
+        public Mesh cBorder;
 
         [Tooltip("A mesh where north and south edges are connected to the same type")]
         public Mesh i;
@@ -95,15 +97,17 @@ namespace SS3D.Engine.Tiles.Connections
          */
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
-            int index = (int)Layer;
+            int index = LayerIndex;
+            if (index == 0)
+                index = 17; // Hardcoded to the Fixture layer until I got a better solution for this. Is needed to make Airlocks connect to walls
 
             bool isGeneric = (tile.turf && (tile.turf.genericType == genericType || genericType == null));
             if (tile.fixtures != null)
-                isGeneric = isGeneric || (tile.fixtures[index] && (tile.fixtures[index].genericType == genericType || genericType == null));
+                isGeneric = isGeneric || (tile.fixtures.GetFixtureAtLayerIndex(index) && (tile.fixtures.GetFixtureAtLayerIndex(index).genericType == genericType || genericType == null));
 
             bool isSpecific = (tile.turf && (tile.turf.id == id || id == null));
             if (tile.fixtures != null)
-                isSpecific = isSpecific || (tile.fixtures[index] && (tile.fixtures[index].id == id || id == null));
+                isSpecific = isSpecific || (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex) && (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex).id == id || id == null));
 
             bool changed = generalAdjacents.UpdateDirection(direction, isGeneric, true);
             changed |= specificAdjacents.UpdateDirection(direction, isSpecific, true);
@@ -122,6 +126,7 @@ namespace SS3D.Engine.Tiles.Connections
         {
             // Count number of connections along cardinal, to determine which 'outer' mesh we use of O, C, I/L, T, X
             var generalCardinals = generalAdjacents.GetCardinalInfo();
+            var specificCardinals = specificAdjacents.GetCardinalInfo();
 
             float rotation = 0.0f;
             Mesh mesh;
@@ -131,13 +136,19 @@ namespace SS3D.Engine.Tiles.Connections
             }
             else if (generalCardinals.IsC())
             {
-                mesh = c;
-                rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
+                if (specificCardinals.numConnections == 1)
+                {
+                    mesh = c;
+                    rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
+                }
+                else
+                {
+                    mesh = cBorder;
+                    rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
+                }
             }
             else if (generalCardinals.IsI())
             {
-                var specificCardinals = specificAdjacents.GetCardinalInfo();
-
                 if (specificCardinals.numConnections == 1)
                 {
                     mesh = iBorder;
@@ -186,7 +197,7 @@ namespace SS3D.Engine.Tiles.Connections
                         break;
                     case 1:
                         mesh = xSingle;
-                        rotation = DirectionHelper.AngleBetween(Direction.North, diagonals.GetOnlyPositive());
+                        rotation = DirectionHelper.AngleBetween(Direction.South, diagonals.GetOnlyPositive());
                         break;
                     case 2:
                         if (diagonals.north == diagonals.south)
@@ -197,12 +208,12 @@ namespace SS3D.Engine.Tiles.Connections
                         else
                         {
                             mesh = xSide;
-                            rotation = DirectionHelper.AngleBetween(Direction.NorthWest, diagonals.GetCornerDirection());
+                            rotation = DirectionHelper.AngleBetween(Direction.SouthEast, diagonals.GetCornerDirection());
                         }
                         break;
                     case 3:
                         mesh = xTriple;
-                        rotation = DirectionHelper.AngleBetween(Direction.South, diagonals.GetOnlyNegative());
+                        rotation = DirectionHelper.AngleBetween(Direction.North, diagonals.GetOnlyNegative());
                         break;
                     default:
                         mesh = xQuad;

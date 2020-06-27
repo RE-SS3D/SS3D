@@ -21,7 +21,7 @@ namespace SS3D.Engine.Tiles.Connections
     {
         // Id to match against
         public string type;
-        public FixtureLayers Layer { get; set; }
+        public int LayerIndex { get; set; }
 
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
@@ -96,12 +96,14 @@ namespace SS3D.Engine.Tiles.Connections
          */
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
-            int index = (int)Layer;
+            int index = LayerIndex;
+            if (index == 0)
+                index = 17; // Hardcoded to the FixtureMain layer until I got a better solution for this. Is needed to make Airlocks connect to walls
 
             bool isConnected = (tile.plenum && (tile.plenum.genericType == type || type == null));
             isConnected |= (tile.turf && (tile.turf.genericType == type || type == null));
             if (tile.fixtures != null)
-                isConnected = isConnected || (tile.fixtures[index] && (tile.fixtures[index].genericType == type || type == null));
+                isConnected = isConnected || (tile.fixtures.GetFixtureAtLayerIndex(index) && (tile.fixtures.GetFixtureAtLayerIndex(index).genericType == type || type == null));
             return adjacents.UpdateDirection(direction, isConnected);
         }
 
@@ -202,7 +204,7 @@ namespace SS3D.Engine.Tiles.Connections
                         break;
                     case 1:
                         mesh = xSingle;
-                        rotation = DirectionHelper.AngleBetween(Direction.North, diagonals.GetOnlyPositive());
+                        rotation = DirectionHelper.AngleBetween(Direction.South, diagonals.GetOnlyPositive());
                         break;
                     case 2:
                         if (diagonals.north == diagonals.south)
@@ -213,12 +215,12 @@ namespace SS3D.Engine.Tiles.Connections
                         else
                         {
                             mesh = xSide;
-                            rotation = DirectionHelper.AngleBetween(Direction.NorthWest, diagonals.GetCornerDirection());
+                            rotation = DirectionHelper.AngleBetween(Direction.SouthEast, diagonals.GetCornerDirection());
                         }
                         break;
                     case 3:
                         mesh = xTriple;
-                        rotation = DirectionHelper.AngleBetween(Direction.South, diagonals.GetOnlyNegative());
+                        rotation = DirectionHelper.AngleBetween(Direction.North, diagonals.GetOnlyNegative());
                         break;
                     default:
                         mesh = xQuad;

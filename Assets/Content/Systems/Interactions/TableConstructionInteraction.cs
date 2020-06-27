@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
 {
-    public class TableConstructionInteraction : DelayedInteraction
+    public class TableConstructionInteraction : ConstructionInteraction
     {
-        public Fixture TableToConstruct { get; set; }
+        public FurnitureFloorFixture TableToConstruct { get; set; }
 
         public override string GetName(InteractionEvent interactionEvent)
         {
             TileObject tileObject = (interactionEvent.Target as IGameObjectProvider)?.GameObject?.GetComponentInParent<TileObject>();
-            if (tileObject != null && tileObject.Tile.GetFixtureAtLayer(FixtureLayers.Furniture) == TableToConstruct)
+            if (tileObject != null && tileObject.Tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixtureMain) == TableToConstruct)
             {
                 return "Deconstruct";
             }
@@ -22,28 +22,17 @@ namespace SS3D.Content.Systems.Interactions
 
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
-            if (interactionEvent.Target is IGameObjectProvider targetBehaviour)
+            if (!base.CanInteract(interactionEvent))
             {
-                TileObject targetTile = targetBehaviour.GameObject.GetComponentInParent<TileObject>();
-                if (targetTile == null)
-                {
-                    return false;
-                }
-
-                if (!InteractionExtensions.RangeCheck(interactionEvent))
-                {
-                    return false;
-                }
-
-                if (targetTile.Tile.turf?.isWall == true)
-                {
-                    return false;
-                }
-
-                return true;
+                return false;
             }
             
-            return false;
+            if (!InteractionExtensions.RangeCheck(interactionEvent))
+            {
+                return false;
+            }
+            
+            return TargetTile.Tile.turf?.isWall != true;
         }
 
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
@@ -59,20 +48,24 @@ namespace SS3D.Content.Systems.Interactions
             var tile = targetTile.Tile;
 
             
-            if (tile.GetFixtureAtLayer(FixtureLayers.Furniture) != null) // If there is a fixture on the place
+            if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixtureMain) != null) // If there is a fixture on the place
             {
-                if (tile.GetFixtureAtLayer(FixtureLayers.Furniture) == TableToConstruct) // If the fixture is a table
+                if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixtureMain) == TableToConstruct) // If the fixture is a table
                 {
-                    tile.fixtures[(int)FixtureLayers.Furniture] = null; // Deconstruct
+                    tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.FurnitureFixtureMain); // Deconstruct
                 }
             }
             else // If there is no fixture on place
             {
-                tile.fixtures[(int)FixtureLayers.Furniture] = TableToConstruct; // Construct
+                tile.fixtures.SetFloorFixtureAtLayer(TableToConstruct, FloorFixtureLayers.FurnitureFixtureMain); // Construct
             }
             
             // TODO: Make an easier way of doing this.
             tile.subStates = new object[2];
+
+            // Validate if we can actually place the table
+            FixturesContainer.ValidateFixtures(tile);
+            tile.fixtures = (FixturesContainer)tile.fixtures.Clone();
 
             tileManager.UpdateTile(targetTile.transform.position, tile);
         }

@@ -4,16 +4,16 @@ using UnityEngine;
 namespace SS3D.Content.Creatures.Human
 {
     #if UNITY_EDITOR
-    [CustomEditor(typeof(HumanRigidBody))]
+    [CustomEditor(typeof(HumanRagdoll))]
     public class RigidBodyInspector : Editor
     {
         public override void OnInspectorGUI()
         {
-            HumanRigidBody rigidBody = (HumanRigidBody) target;
+            HumanRagdoll ragdoll = (HumanRagdoll) target;
             DrawDefaultInspector();
-            if (GUILayout.Button(rigidBody.BodyEnabled ? "Disable body" : "Enable body"))
+            if (GUILayout.Button(ragdoll.BodyEnabled ? "Disable body" : "Enable body"))
             {
-                rigidBody.BodyEnabled = !rigidBody.BodyEnabled;
+                ragdoll.BodyEnabled = !ragdoll.BodyEnabled;
             }
         }
     }
