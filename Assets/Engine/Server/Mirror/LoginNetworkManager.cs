@@ -35,7 +35,10 @@ namespace Mirror
     public class LoginNetworkManager : NetworkManager
     {
         // This is a server-only field. On the client it will mean nothing.
-        [SerializeField] bool useLoginSystemOnLocalHost;
+        //[SerializeField] bool useLoginSystemOnLocalHost;
+
+        // Does the server require ingame login?
+        [SerializeField] bool useLoginSystem;
 
         // Warmup time until round starts
         [Range(3, 3600)]
@@ -74,11 +77,14 @@ namespace Mirror
             // TODO: Should this be called everywhere?
 
             // Set the defaults for the login manager
-            var loginManagerGameObject = Instantiate(loginManagerPrefab);
-            loginManager = loginManagerGameObject.GetComponent<LoginManager>();
-            loginManager.UpdateApiAddress(loginServerAddress,
-                character => SpawnPlayerWithLoginServer(NetworkServer.localConnection, character));
-            loginManager.ApiHeartbeat(ConfirmLoginServer);
+            if (useLoginSystem)
+            {
+                var loginManagerGameObject = Instantiate(loginManagerPrefab);
+                loginManager = loginManagerGameObject.GetComponent<LoginManager>();
+                loginManager.UpdateApiAddress(loginServerAddress,
+                    character => SpawnPlayerWithLoginServer(NetworkServer.localConnection, character));
+                loginManager.ApiHeartbeat(ConfirmLoginServer);
+            }
         }
 
         /// <summary>
@@ -168,7 +174,7 @@ namespace Mirror
         {
             base.OnServerConnect(conn);
 
-            bool userMustLogin = useLoginSystemOnLocalHost && hasLoginServer;
+            bool userMustLogin = useLoginSystem && hasLoginServer;
 
             // Must always send a message, so the client knows if they should spawn through the login server or not
             conn.Send(new LoginServerMessage() {serverAddress = userMustLogin ? loginServerAddress : null});
