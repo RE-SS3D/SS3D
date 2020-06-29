@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using SS3D.Content.Systems.Interactions;
 using UnityEngine;
 
 namespace SS3D.Engine.Inventory
@@ -112,6 +113,7 @@ namespace SS3D.Engine.Inventory
         [Server]
         public int AddItem(GameObject item)
         {
+            item.SetActive(false);
             var itemComponent = item.GetComponent<Item>();
             for (int i = 0; i < items.Count; ++i) {
                 if (items[i] == null && AreCompatible(slots[i], itemComponent.itemType)) {
