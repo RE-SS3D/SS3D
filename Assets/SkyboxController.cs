@@ -10,12 +10,18 @@ public class SkyboxController : MonoBehaviour
     [Range(0.005f, 0.02f)]
     public float rotationRate = 0.02f;
 
+<<<<<<< HEAD
     private void Awake()
     {
         current = GetComponent<Skybox>();
 
         Material clone = new Material(current.material);
         current.material = clone;
+=======
+    private void Start()
+    {
+        current = GetComponent<Skybox>();
+>>>>>>> upstream/master
     }
 
     void FixedUpdate()
