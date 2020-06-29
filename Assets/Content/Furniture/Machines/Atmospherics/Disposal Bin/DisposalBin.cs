@@ -79,16 +79,10 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
             {
                 animator.SetTrigger("Dispose");
                 audioSource.Play();
-                busy = true;
-
-                foreach (Item item in container.GetItems())
-                {
-                    //container.RemoveItem(0);
-                }
+                
+                //busy = true;
+                // TODO: busy = false and Purge() are called on the animation clip event
             }
-            else
-                busy = false;
-            
         }
 
         [ClientRpc]
@@ -100,13 +94,17 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = new List<IInteraction>();
+            
             StoreInteraction storeInteraction = new StoreInteraction { OnlyWhenOpen = false };
             ViewContainerInteraction view = new ViewContainerInteraction { MaxDistance = range };
             DisposeInteraction disposeInteraction = new DisposeInteraction();
 
-            interactions.Insert(0, storeInteraction);
-            interactions.Insert(1, view);
-            interactions.Insert(2, disposeInteraction);
+            if (!busy)
+            {
+                interactions.Insert(0, storeInteraction);
+                interactions.Insert(1, view);
+                interactions.Insert(2, disposeInteraction);
+            }
 
             return interactions.ToArray();
         }
