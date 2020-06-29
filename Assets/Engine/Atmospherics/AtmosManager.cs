@@ -370,12 +370,6 @@ namespace SS3D.Engine.Atmospherics
 
                 foreach (Collider collider in colliders)
                 {
-                    var ragdoll = collider.transform.root.GetComponent<AtmosRagdoll>();
-                    if (ragdoll != null)
-                    {
-                        ragdoll.ApplyVelocity(velocity);
-                    }
-
                     Rigidbody rigidbody = collider.attachedRigidbody;
                     if (rigidbody != null)
                     {
