@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 903cb7b2e43eaa14abbf1cb220fdd7c3, type: 3}
+  m_Script: {fileID: 11500000, guid: cdc9e1c806bbcd2479ae0cacad3047f3, type: 3}
   m_Name: Poster.V PostersRock
   m_EditorClassIdentifier: 
-  id: poster_v_postersrock
+  id: poster_v_posters_rock
   genericType: poster
   prefab: {fileID: 5161561551087789900, guid: 49b84d3f918271e4a8e10077449e13a0, type: 3}
