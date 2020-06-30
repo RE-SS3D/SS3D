@@ -167,7 +167,7 @@ MonoBehaviour:
   container: {fileID: 4777442227839160600}
   busy: 0
   audioSource: {fileID: 7091454980463605699}
-  range: 5
+  range: 1.5
 --- !u!82 &7091454980463605699
 AudioSource:
   m_ObjectHideFlags: 0
@@ -181,7 +181,7 @@ AudioSource:
     type: 2}
   m_audioClip: {fileID: 8300000, guid: a08d26dd950708048a98dc0bc545f9f2, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.8
   m_Pitch: 1
   Loop: 0
   Mute: 0
