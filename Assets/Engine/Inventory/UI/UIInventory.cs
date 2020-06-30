@@ -91,8 +91,9 @@ namespace SS3D.Engine.Inventory.UI
             var found = Physics.Raycast(Camera.main.ScreenPointToRay(screenPosition), out hit);
             if(!found)
                 return;
-        
-            inventory.CmdPlaceItem(from.gameObject, fromSlot, hit.point + hit.normal * 0.2f);
+
+            GameObject item = from.gameObject;
+            inventory.CmdPlaceItem(item, fromSlot, hit.point + hit.normal * 0.2f, item.transform.rotation);
         }
 
         private void OnInventoryChange()

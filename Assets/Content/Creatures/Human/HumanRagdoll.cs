@@ -9,6 +9,10 @@ namespace SS3D.Content.Creatures.Human
     public class HumanRagdoll : NetworkBehaviour
     {
         public Transform ArmatureRoot;
+        
+        /// <summary>
+        /// Is the ragdoll enabled
+        /// </summary>
         public bool BodyEnabled
         {
             get => bodyEnabled;

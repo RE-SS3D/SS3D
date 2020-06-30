@@ -370,9 +370,10 @@ namespace SS3D.Engine.Atmospherics
 
                 foreach (Collider collider in colliders)
                 {
-                    if (collider != null)
+                    Rigidbody rigidbody = collider.attachedRigidbody;
+                    if (rigidbody != null)
                     {
-                        collider.attachedRigidbody?.AddForce(new Vector3(velocity.x, 0, velocity.y));
+                        rigidbody.AddForce(new Vector3(velocity.x, 0, velocity.y));
                     }
                 }
             }
