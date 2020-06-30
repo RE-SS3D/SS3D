@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1c063f2c2edcc4841a6acfc53d44fa07, type: 3}
-  m_Name: Standart Power Cell
+  m_Name: Standard Power Cell
   m_EditorClassIdentifier: 
   powerSupply:
     charge: 0

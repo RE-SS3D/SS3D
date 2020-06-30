@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7352953387002501142}
   - component: {fileID: 1905454501847610042}
   - component: {fileID: 8073165062296637939}
+  - component: {fileID: 5471106731314674915}
   m_Layer: 0
   m_Name: Volume Pump
   m_TagString: Untagged
@@ -141,3 +142,17 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 3009118704118052570, guid: 2a30be4c78c286b4e89636ae631df4d0, type: 3}
+--- !u!114 &5471106731314674915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Atmospheric Volume Pump</b>
+  MaxDistance: 0

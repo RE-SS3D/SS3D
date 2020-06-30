@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1261886050967656104}
   - component: {fileID: 846110182393561129}
   - component: {fileID: 7080638247379301449}
+  - component: {fileID: -5592192018938336367}
   - component: {fileID: 551910288528299170}
   m_Layer: 16
   m_Name: Poster SMOKE
@@ -145,13 +146,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: poster_lusty_xeno
-  Name: Pen
+  ItemId: poster_smoke
+  Name: Poster
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5927714388255546572}
   attachmentPoint: {fileID: 4694169253332805535}
+--- !u!114 &-5592192018938336367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5927714388255546572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: A rolled up poster titled "SMOKE".
+  MaxDistance: 0
 --- !u!114 &551910288528299170
 MonoBehaviour:
   m_ObjectHideFlags: 0

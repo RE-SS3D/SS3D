@@ -11,7 +11,9 @@ GameObject:
   - component: {fileID: 6745463052541861222}
   - component: {fileID: 5713005920233418166}
   - component: {fileID: 2523290996575343201}
-  - component: {fileID: 6822959996267310543}
+  - component: {fileID: -3010461045882360665}
+  - component: {fileID: 4975595342411600695}
+  - component: {fileID: -1645010173133357927}
   m_Layer: 0
   m_Name: KitchenFloor
   m_TagString: Untagged
@@ -80,8 +82,24 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &6822959996267310543
-BoxCollider:
+--- !u!114 &-3010461045882360665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
+--- !u!64 &4975595342411600695
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -90,6 +108,21 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: -0.5, z: 0}
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8811591074890437857, guid: 4d4a7dd632bf0014dbd625055104fca3, type: 3}
+--- !u!114 &-1645010173133357927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Kitchen Floor Tile</b>
+  MaxDistance: 0
