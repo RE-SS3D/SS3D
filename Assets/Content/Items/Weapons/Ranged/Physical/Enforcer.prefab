@@ -142,6 +142,7 @@ GameObject:
   - component: {fileID: 3836513548047224677}
   - component: {fileID: 7474019003171120832}
   - component: {fileID: 8445977285084722547}
+  - component: {fileID: -921700840571372975}
   m_Layer: 16
   m_Name: Enforcer
   m_TagString: Untagged
@@ -229,9 +230,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!54 &3836513548047224677
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -276,9 +278,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
+  ItemId: enforcer
+  Name: Enforcer
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 6623170874926679310}
   attachmentPoint: {fileID: 6720109069971253264}
+--- !u!114 &-921700840571372975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6623170874926679310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0

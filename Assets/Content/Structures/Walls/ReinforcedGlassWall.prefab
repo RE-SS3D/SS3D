@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6696866361892651655}
   - component: {fileID: -3559051840117011521}
   - component: {fileID: 6677920282289998278}
+  - component: {fileID: 3375731922908872465}
   m_Layer: 0
   m_Name: ReinforcedGlassWall
   m_TagString: Untagged
@@ -133,3 +134,17 @@ MonoBehaviour:
   xTriple: {fileID: -5665693945052590325, guid: a8afca278d289ca469539bd9a57ce244,
     type: 3}
   xQuad: {fileID: 96585587639068693, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+--- !u!114 &3375731922908872465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Reinforced Window</b>
+  MaxDistance: 0

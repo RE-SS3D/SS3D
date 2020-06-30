@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2885897057548802505}
   - component: {fileID: 8860121059280945640}
   - component: {fileID: 6898774970817240223}
+  - component: {fileID: -9066456429091602957}
   m_Layer: 0
   m_Name: GlassTable
   m_TagString: Untagged
@@ -129,3 +130,19 @@ MonoBehaviour:
     type: 3}
   xTriple: {fileID: 1894581812774664740, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   xQuad: {fileID: 2324832138844279276, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  viewObstacles: []
+  opaque: 0
+--- !u!114 &-9066456429091602957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2839728781945606427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Glass Table</b>
+  MaxDistance: 0

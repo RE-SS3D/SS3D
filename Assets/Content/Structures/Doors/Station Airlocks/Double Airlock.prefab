@@ -268,6 +268,7 @@ GameObject:
   - component: {fileID: 7670072257695149824}
   - component: {fileID: 2021576283312761790}
   - component: {fileID: 4510847360138614360}
+  - component: {fileID: 8346248944536319079}
   m_Layer: 0
   m_Name: Double Airlock
   m_TagString: Untagged
@@ -303,9 +304,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!65 &5949837818249741894
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -348,6 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3568e60178b285a40ba678b791a6b8e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  openInteractionIcon: {fileID: 0}
   openSound: {fileID: 8300000, guid: 34297ba204a9f3944872f100baaa2369, type: 3}
   closeSound: {fileID: 8300000, guid: fc2485e75c5d3ab4e86e814043c9e9cb, type: 3}
   doorTriggerLayers:
@@ -469,6 +472,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8346248944536319079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3610695960477650958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Airlock</b>
+  MaxDistance: 0
 --- !u!1 &5755565538449260213
 GameObject:
   m_ObjectHideFlags: 0

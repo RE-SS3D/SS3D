@@ -42,9 +42,10 @@ GameObject:
   - component: {fileID: 1342683164971862529}
   - component: {fileID: 5006439395517324146}
   - component: {fileID: 3878134920346166387}
-  - component: {fileID: 8704318443750846385}
   - component: {fileID: 3711854204811431706}
   - component: {fileID: 1779689432512401566}
+  - component: {fileID: 8704318443750846385}
+  - component: {fileID: 8718585656470283297}
   - component: {fileID: 3480391303794857083}
   m_Layer: 16
   m_Name: Cable Coil 4
@@ -131,27 +132,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &8704318443750846385
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8479942524297268856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  ItemId: 
-  Name: 
-  container: {fileID: 0}
-  itemType: 0
-  sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
-  prefab: {fileID: 8479942524297268856}
-  attachmentPoint: {fileID: 4187913466076920938}
 --- !u!54 &3711854204811431706
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -182,6 +162,41 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 9119374051468311645, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+--- !u!114 &8704318443750846385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8479942524297268856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  ItemId: coil_cable_4
+  Name: High-Voltage Cable
+  container: {fileID: 0}
+  itemType: 0
+  sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
+  prefab: {fileID: 8479942524297268856}
+  attachmentPoint: {fileID: 4187913466076920938}
+--- !u!114 &8718585656470283297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8479942524297268856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!114 &3480391303794857083
 MonoBehaviour:
   m_ObjectHideFlags: 0

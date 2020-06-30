@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5090598363769821286}
   - component: {fileID: 3409554715360446247}
   - component: {fileID: 9018827270936400976}
+  - component: {fileID: 9164798415427084553}
   m_Layer: 0
   m_Name: Port
   m_TagString: Untagged
@@ -111,3 +112,17 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -5125063765004875305, guid: 2a30be4c78c286b4e89636ae631df4d0, type: 3}
+--- !u!114 &9164798415427084553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Atmospheric Canister Port</b>
+  MaxDistance: 0

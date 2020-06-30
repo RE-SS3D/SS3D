@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -4998431523760016775}
   - component: {fileID: 4911816295908272955}
   - component: {fileID: 2183948917681095833}
+  - component: {fileID: 8044363620118605159}
   m_Layer: 0
   m_Name: Pipe L3 Under
   m_TagString: Untagged
@@ -137,3 +138,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volume: 1
+--- !u!114 &8044363620118605159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Atmospheric Pipe</b>
+  MaxDistance: 0

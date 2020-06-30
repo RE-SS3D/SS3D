@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7899482391921334278}
   - component: {fileID: 1098683707909351673}
   - component: {fileID: 2031266144126083078}
+  - component: {fileID: -5228364362054827694}
   m_Layer: 0
   m_Name: Catwalk
   m_TagString: Untagged
@@ -93,3 +94,17 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.0000001, y: 0.64792186, z: 1.0000002}
   m_Center: {x: 0, y: -0.33461764, z: 0.000000059604645}
+--- !u!114 &-5228364362054827694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8178185248287418974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Catwalk</b>
+  MaxDistance: 0

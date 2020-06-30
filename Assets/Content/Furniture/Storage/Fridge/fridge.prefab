@@ -224,7 +224,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Text: '<b>Fridge</b>
 
-    Stores food and bodyparts (optional)'
+    Stores food and bodyparts (optional).'
   MaxDistance: 0
 --- !u!1 &5240830354732226920
 GameObject:

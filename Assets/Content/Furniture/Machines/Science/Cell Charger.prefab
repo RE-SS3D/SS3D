@@ -179,6 +179,7 @@ GameObject:
   - component: {fileID: -5812287283981547438}
   - component: {fileID: -7336993563048116294}
   - component: {fileID: 7577420378853663522}
+  - component: {fileID: 1326119814106932438}
   m_Layer: 16
   m_Name: Cell Charger
   m_TagString: Untagged
@@ -381,3 +382,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+--- !u!114 &1326119814106932438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8232994725938073509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Cell Charger</b>
+  MaxDistance: 0
