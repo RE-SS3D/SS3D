@@ -28,7 +28,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2974597853875049491}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.521, z: -0.376}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -107,10 +107,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  hasSpawned: 0
+  m_SceneId: 0
 --- !u!114 &3059807343735535808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -125,10 +124,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  compressRotation: 1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
 --- !u!1 &6595280268747972349
 GameObject:
   m_ObjectHideFlags: 0
@@ -147,7 +144,6 @@ GameObject:
   - component: {fileID: 4099879624315271291}
   - component: {fileID: 8477674700107838901}
   - component: {fileID: 6792938277122204052}
-  - component: {fileID: -6407207044983889328}
   m_Layer: 0
   m_Name: crate
   m_TagString: Untagged
@@ -182,10 +178,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  hasSpawned: 0
+  m_SceneId: 0
 --- !u!114 &6826054578894506482
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -200,10 +195,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  compressRotation: 1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
 --- !u!33 &1308642796746885718
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -339,17 +332,3 @@ MonoBehaviour:
   OnlyStoreWhenOpen: 1
   MaxDistance: 1.5
   viewContainerIcon: {fileID: 0}
---- !u!114 &-6407207044983889328
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6595280268747972349}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Text: <b>Crate</b>
-  MaxDistance: 0
