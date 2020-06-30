@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 2310813764857169879}
   - component: {fileID: 2072973421799688319}
   - component: {fileID: 3557583784881924601}
+  - component: {fileID: 1083607476504503504}
   m_Layer: 16
   m_Name: Wet Floor Sign
   m_TagString: Untagged
@@ -172,11 +173,28 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: 
+  Name: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 98817192546812284}
   attachmentPoint: {fileID: 588640168151614680}
+--- !u!54 &1083607476504503504
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 98817192546812284}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &101004625630877965
 GameObject:
   m_ObjectHideFlags: 0
@@ -253,6 +271,7 @@ GameObject:
   - component: {fileID: 2025127232512434846}
   - component: {fileID: 1711658056000169298}
   - component: {fileID: 667475285970270091}
+  - component: {fileID: 136366877182507820}
   m_Layer: 16
   m_Name: mop
   m_TagString: Untagged
@@ -367,11 +386,28 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: 
+  Name: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 299036864769005122}
   attachmentPoint: {fileID: 3332213703804836053}
+--- !u!54 &136366877182507820
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 299036864769005122}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &537510913525999881
 GameObject:
   m_ObjectHideFlags: 0
@@ -386,6 +422,7 @@ GameObject:
   - component: {fileID: 2254413761954635221}
   - component: {fileID: 6887372431043316751}
   - component: {fileID: 725257790549739712}
+  - component: {fileID: 325119174336063320}
   m_Layer: 16
   m_Name: cardboard box
   m_TagString: Untagged
@@ -499,11 +536,28 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: 
+  Name: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 537510913525999881}
   attachmentPoint: {fileID: 0}
+--- !u!54 &325119174336063320
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 537510913525999881}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &960447298320843840
 GameObject:
   m_ObjectHideFlags: 0
@@ -693,6 +747,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: 
+  Name: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -931,6 +986,7 @@ GameObject:
   - component: {fileID: 598855436732878303}
   - component: {fileID: 3790493085638656631}
   - component: {fileID: 1801779198641103857}
+  - component: {fileID: 2586193647671002034}
   m_Layer: 16
   m_Name: Wet Floor Sign
   m_TagString: Untagged
@@ -1058,11 +1114,28 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: 
+  Name: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 2954702816147868532}
   attachmentPoint: {fileID: 2338883495983009488}
+--- !u!54 &2586193647671002034
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2954702816147868532}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &3100858152501622538
 GameObject:
   m_ObjectHideFlags: 0
@@ -1192,6 +1265,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: 
+  Name: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -1241,6 +1315,7 @@ GameObject:
   - component: {fileID: 8233041754944267042}
   - component: {fileID: 4005695294203252296}
   - component: {fileID: 2125384455328438639}
+  - component: {fileID: 5745052125497751448}
   m_Layer: 16
   m_Name: rag
   m_TagString: Untagged
@@ -1335,7 +1410,7 @@ BoxCollider:
   m_GameObject: {fileID: 3278308036721701354}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.2139968, y: 0.0839962, z: 0.46726426}
   m_Center: {x: 0.005745601, y: 0.04054929, z: 0}
@@ -1354,11 +1429,28 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: 
+  Name: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3278308036721701354}
   attachmentPoint: {fileID: 8885211440114728023}
+--- !u!54 &5745052125497751448
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3278308036721701354}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &3602251173231871731
 GameObject:
   m_ObjectHideFlags: 0
@@ -1404,6 +1496,7 @@ GameObject:
   - component: {fileID: 7803849726347498085}
   - component: {fileID: 2997816822828498703}
   - component: {fileID: 248707088344983592}
+  - component: {fileID: 6334490238877212173}
   m_Layer: 16
   m_Name: rag
   m_TagString: Untagged
@@ -1498,7 +1591,7 @@ BoxCollider:
   m_GameObject: {fileID: 3707473956010934445}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.2139968, y: 0.0839962, z: 0.46726426}
   m_Center: {x: 0.005745601, y: 0.04054929, z: 0}
@@ -1517,11 +1610,28 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: 
+  Name: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3707473956010934445}
   attachmentPoint: {fileID: 7296931575052619024}
+--- !u!54 &6334490238877212173
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3707473956010934445}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &3944235866505903018
 GameObject:
   m_ObjectHideFlags: 0
@@ -1535,6 +1645,8 @@ GameObject:
   - component: {fileID: 9060366107225469839}
   - component: {fileID: 3350796402688151414}
   - component: {fileID: 4312619758733351523}
+  - component: {fileID: 5140523793104339387}
+  - component: {fileID: 7706987367719884881}
   m_Layer: 16
   m_Name: cardboard box
   m_TagString: Untagged
@@ -1635,11 +1747,41 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: 
+  Name: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3944235866505903018}
   attachmentPoint: {fileID: 0}
+--- !u!54 &5140523793104339387
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3944235866505903018}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!65 &7706987367719884881
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3944235866505903018}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.31411287, y: 0.25090817, z: 0.23848599}
+  m_Center: {x: -0.0011442604, y: 0.12340169, z: -0.008490605}
 --- !u!1 &4361667536462377517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1775,6 +1917,7 @@ GameObject:
   - component: {fileID: 2167174924619939780}
   - component: {fileID: 6612954832938717870}
   - component: {fileID: 8154919555988096393}
+  - component: {fileID: 5801429455750956107}
   m_Layer: 16
   m_Name: rag
   m_TagString: Untagged
@@ -1869,7 +2012,7 @@ BoxCollider:
   m_GameObject: {fileID: 4696157158292155660}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.2139968, y: 0.0839962, z: 0.46726426}
   m_Center: {x: 0.005745601, y: 0.04054929, z: 0}
@@ -1888,11 +2031,28 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: 
+  Name: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 4696157158292155660}
   attachmentPoint: {fileID: 1665317550003970225}
+--- !u!54 &5801429455750956107
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4696157158292155660}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &4752608493099026378
 GameObject:
   m_ObjectHideFlags: 0
@@ -2093,8 +2253,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  compressRotation: 1
   clientAuthority: 0
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01
 --- !u!1 &5221473445564893971
 GameObject:
   m_ObjectHideFlags: 0
@@ -2261,6 +2423,7 @@ GameObject:
   - component: {fileID: 8594440854378382951}
   - component: {fileID: 5445011189010745807}
   - component: {fileID: 7353020370747828297}
+  - component: {fileID: 8808370119886968644}
   m_Layer: 16
   m_Name: Wet Floor Sign
   m_TagString: Untagged
@@ -2388,11 +2551,28 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: 
+  Name: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 6200101252375068876}
   attachmentPoint: {fileID: 6881354644099237224}
+--- !u!54 &8808370119886968644
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6200101252375068876}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &7019549818437387526
 GameObject:
   m_ObjectHideFlags: 0
@@ -2529,6 +2709,7 @@ GameObject:
   - component: {fileID: 6236009413386529636}
   - component: {fileID: 7665064158361167052}
   - component: {fileID: 5171393511187268938}
+  - component: {fileID: 1299280962751579616}
   m_Layer: 16
   m_Name: Wet Floor Sign
   m_TagString: Untagged
@@ -2656,11 +2837,28 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: 
+  Name: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8630155634588003791}
   attachmentPoint: {fileID: 9128845340931549291}
+--- !u!54 &1299280962751579616
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8630155634588003791}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &9082271874773923316
 GameObject:
   m_ObjectHideFlags: 0
