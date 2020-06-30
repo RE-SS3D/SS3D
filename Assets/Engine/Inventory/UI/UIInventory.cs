@@ -79,7 +79,7 @@ namespace SS3D.Engine.Inventory.UI
             try {
                 if (inventory.holdingSlot.container.GetItem(inventory.holdingSlot.slotIndex) != null && container.GetItem(slot) == null)
                     inventory.CmdMoveItem(inventory.holdingSlot.container.gameObject, inventory.holdingSlot.slotIndex, container.gameObject, slot);
-                else if (inventory.holdingSlot.container.GetItem(inventory.holdingSlot.slotIndex) == null && container.GetItem(slot) != null)
+                else if (inventory.holdingSlot.container?.GetItem(inventory.holdingSlot.slotIndex) == null && container.GetItem(slot) != null)
                     inventory.CmdMoveItem(container.gameObject, slot, inventory.holdingSlot.container.gameObject, inventory.holdingSlot.slotIndex);
             }
             catch(Inventory.InventoryOperationException) { }
