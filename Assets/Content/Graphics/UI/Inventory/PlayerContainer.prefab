@@ -261,8 +261,6 @@ MonoBehaviour:
   - type: 8
     slot: {fileID: 8442208502763223391}
   - type: 9
-    slot: {fileID: 8442208502763223391}
-  - type: 9
     slot: {fileID: 1340291287510368696}
   - type: 10
     slot: {fileID: 8342462538887531746}
@@ -630,9 +628,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!1 &5119197773057382835
 GameObject:
   m_ObjectHideFlags: 0
@@ -1139,9 +1138,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!1 &7642057873219989993
 GameObject:
   m_ObjectHideFlags: 0
@@ -1320,9 +1320,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!1 &8026395939774842817
 GameObject:
   m_ObjectHideFlags: 0

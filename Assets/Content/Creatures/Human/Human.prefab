@@ -257,6 +257,7 @@ MonoBehaviour:
   syncInterval: 0.1
   containerName: Human Equippable
   containerType: 1
+  containerFilter: {fileID: 11400000, guid: 40e3b946dc1dc314592ef8d6afcd9162, type: 2}
   slots: 010000000200000003000000040000000500000007000000080000000c0000000d000000
   displays:
   - {fileID: 1497768525724101046}
@@ -445,6 +446,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minVelocity: 5
   knockdownTime: 3
+  checkInterval: 0.2
 --- !u!1 &290878266594310021
 GameObject:
   m_ObjectHideFlags: 0

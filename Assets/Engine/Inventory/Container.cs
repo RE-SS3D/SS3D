@@ -57,12 +57,20 @@ namespace SS3D.Engine.Inventory
             return slot == SlotType.General || (int)slot == (int)item || (int)slot > 9;
         }
 
+        public static bool CanStore(Container container, Item item)
+        {
+            if (container.containerFilter == null)
+                return true;
+            return container.containerFilter.CanStore(item);
+        }
+
         public class ItemList : SyncList<GameObject> { }
         #endregion
 
         // Editor properties
         public string containerName;
         public Type containerType;
+        public Filter containerFilter;
         [SerializeField]
         protected SlotType[] slots;
 
@@ -101,6 +109,9 @@ namespace SS3D.Engine.Inventory
             if (items[slot] != null)
                 throw new Exception("Item already exists in slot"); // TODO: Specific exception
 
+            if (!CanStore(this, itemComponent))
+                throw new Exception("Item cannot be stored");
+
             items[slot] = item;
             itemComponent.container = this;
         }
@@ -114,7 +125,7 @@ namespace SS3D.Engine.Inventory
         {
             var itemComponent = item.GetComponent<Item>();
             for (int i = 0; i < items.Count; ++i) {
-                if (items[i] == null && AreCompatible(slots[i], itemComponent.itemType)) {
+                if (items[i] == null && CanStore(this, itemComponent)) {
                     AddItem(i, item);
                     return i;
                 }
@@ -160,6 +171,7 @@ namespace SS3D.Engine.Inventory
          * Get the slot type of a given slot
          */
         public SlotType GetSlot(int slot) => slots[slot];
+        public Filter GetFilter(int slot) => containerFilter;
         public int Length() => slots.Length;
         /// <summary>
         /// Returns the slot an item is in

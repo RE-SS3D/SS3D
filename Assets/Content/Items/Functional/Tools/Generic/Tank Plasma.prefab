@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  compressRotation: 1
   clientAuthority: 0
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01
 --- !u!1001 &7097769406389408775
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -104,6 +106,22 @@ PrefabInstance:
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5961632564149227706, guid: bb47e4c617abae44fa1f33321f9616ad,
+        type: 3}
+      propertyPath: traits.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5961632564149227706, guid: bb47e4c617abae44fa1f33321f9616ad,
+        type: 3}
+      propertyPath: bulkSize
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5961632564149227706, guid: bb47e4c617abae44fa1f33321f9616ad,
+        type: 3}
+      propertyPath: traits.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: ad7da03675a5fab4f81816710ec0a388,
+        type: 2}
     - target: {fileID: 6908174893348925811, guid: bb47e4c617abae44fa1f33321f9616ad,
         type: 3}
       propertyPath: m_Name

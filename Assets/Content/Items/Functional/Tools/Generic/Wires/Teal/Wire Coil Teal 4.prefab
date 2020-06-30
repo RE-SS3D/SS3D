@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 1779689432512401566}
   - component: {fileID: 3480391303794857083}
   m_Layer: 16
-  m_Name: Wire Coil White 4
+  m_Name: Wire Coil Teal 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -152,6 +152,8 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8479942524297268856}
   attachmentPoint: {fileID: 4187913466076920938}
+  bulkSize: 1
+  traits: []
 --- !u!54 &3711854204811431706
 Rigidbody:
   m_ObjectHideFlags: 0

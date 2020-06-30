@@ -232,6 +232,9 @@ MonoBehaviour:
   sprite: {fileID: 0}
   prefab: {fileID: 1532632409719204394}
   attachmentPoint: {fileID: 5747042748778270123}
+  bulkSize: 2
+  traits:
+  - {fileID: 11400000, guid: a86f8b10eacec4540a203b13004c2389, type: 2}
 --- !u!114 &4696884002918885688
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -38,6 +38,8 @@ namespace SS3D.Engine.Inventory
         public Sprite sprite;
         public GameObject prefab;
         public Transform attachmentPoint;
+        public BulkSize bulkSize = BulkSize.Medium;
+        public List<Trait> traits;
 
         [ContextMenu("Create Icon")]
         public void Start()
@@ -107,6 +109,21 @@ namespace SS3D.Engine.Inventory
         public bool InContainer()
         {
             return container != null;
+        }
+
+        public bool HasTrait(Trait trait)
+        {
+            return traits.Contains(trait);
+        }
+
+        public bool HasTrait(string name)
+        {
+            foreach (Trait trait in traits)
+            {
+                if (trait.name == name)
+                    return true;
+            }
+            return false;
         }
     }
 }

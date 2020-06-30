@@ -101,7 +101,10 @@ namespace SS3D.Engine.Inventory.Extensions
                 if (handContainer.GetSlot(i) == Container.SlotType.LeftHand)
                     handSlots[0] = i;
                 else if (handContainer.GetSlot(i) == Container.SlotType.RightHand)
+                {
                     handSlots[1] = i;
+                    Debug.Log(handContainer.GetFilter(i).name + "/" + handContainer.GetFilter(i).Hash);
+                }
             }
             if (handSlots[0] == -1 || handSlots[1] == -1)
                 Debug.LogWarning("Player container does not contain slots for hands upon initialization. Maybe they were severed though?");

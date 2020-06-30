@@ -297,6 +297,8 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 7195977086062962004}
   attachmentPoint: {fileID: 3201361005074650950}
+  bulkSize: 1
+  traits: []
   honkSound: {fileID: 8300000, guid: 8c8823796bbcb23438fcf68260070383, type: 3}
   useIcon: {fileID: 21300000, guid: facda86cccb56594eb7155ed03ebbb9e, type: 3}
 --- !u!114 &8862739616138227531

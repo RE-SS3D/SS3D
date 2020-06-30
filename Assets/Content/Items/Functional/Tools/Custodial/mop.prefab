@@ -80,9 +80,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!33 &8793605045555827654
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -175,11 +176,15 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: 
+  Name: 
   container: {fileID: 0}
   itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3533485490934766563}
   attachmentPoint: {fileID: 1950468283834406260}
+  bulkSize: 4
+  traits:
+  - {fileID: 11400000, guid: 7f22e87f08452654f8f20ace0b1e0fa3, type: 2}
 --- !u!114 &-1950864518426958933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,5 +199,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  compressRotation: 1
   clientAuthority: 0
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01
