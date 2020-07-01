@@ -248,11 +248,40 @@ namespace SS3D.Engine.Tiles
         // For example: tables cannot be build in walls, or wall fixtures cannot be build on floors
         public static TileDefinition ValidateFixtures(TileDefinition tileDefinition)
         {
-            if ((tileDefinition.turf != null && tileDefinition.turf.isWall) || tileDefinition.turf == null)
+            // If lattice, remove turf and tile fixtures
+            if (tileDefinition.plenum.name.Contains("Lattice"))
+            {
+                tileDefinition.turf = null;
+                foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
+                {
+                    tileDefinition.fixtures.SetTileFixtureAtLayer(null, layer);
+                }
+            }
+
+            // If catwalk
+            if (tileDefinition.plenum.name.Contains("Catwalk"))
+            {
+                // Only allow floor plating
+                if (tileDefinition.turf != null && !tileDefinition.turf.name.Contains("FloorPlating"))
+                    tileDefinition.turf = null;
+
+                // Allow wire layer
+                foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
+                {
+                    if (layer != TileFixtureLayers.Wire)
+                        tileDefinition.fixtures.SetTileFixtureAtLayer(null, layer);
+                }
+            }
+
+            if ((tileDefinition.turf != null && tileDefinition.turf.isWall) || tileDefinition.turf == null || tileDefinition.plenum.name.Contains("Lattice"))
             {
                 // Remove floor fixtures
                 foreach (FloorFixtureLayers layer in TileDefinition.GetFloorFixtureLayerNames())
                 {
+                    // Allow upper pipe layer with a catwalk plenum
+                    if (tileDefinition.plenum.name.Contains("Catwalk") && layer == FloorFixtureLayers.PipeUpperFixture)
+                        continue;
+
                     if (tileDefinition.fixtures.GetFloorFixtureAtLayer(layer) != null)
                         Debug.Log("Cannot set a floor fixture when there is no floor");
 
@@ -260,7 +289,7 @@ namespace SS3D.Engine.Tiles
                 }
             }
 
-            if ((tileDefinition.turf != null && !tileDefinition.turf.isWall) || tileDefinition.turf == null)
+            if ((tileDefinition.turf != null && !tileDefinition.turf.isWall) || tileDefinition.turf == null || tileDefinition.plenum.name.Contains("Lattice"))
             {
                 // Remove wall fixtures
                 foreach (WallFixtureLayers layer in TileDefinition.GetWallFixtureLayerNames())
@@ -271,6 +300,19 @@ namespace SS3D.Engine.Tiles
                     tileDefinition.fixtures.SetWallFixtureAtLayer(null, layer);
                 }
             }
+
+            // Prevent low wall mounts on glass walls and reinforced glass walls
+            if (tileDefinition.turf != null && tileDefinition.turf.isWall && tileDefinition.turf.name.Contains("GlassWall"))
+            {
+                foreach (WallFixtureLayers layer in TileDefinition.GetWallFixtureLayerNames())
+                {
+                    if (layer == WallFixtureLayers.LowWallNorth || layer == WallFixtureLayers.LowWallEast || layer == WallFixtureLayers.LowWallSouth || layer == WallFixtureLayers.LowWallWest)
+                    {
+                        tileDefinition.fixtures.SetWallFixtureAtLayer(null, layer);
+                    }
+                }
+            }
+
             return tileDefinition;
         }
     }
