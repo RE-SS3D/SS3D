@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6635707136096172199}
   - component: {fileID: 3122845527458025482}
   - component: {fileID: 8648403125281566512}
+  - component: {fileID: 9219977781982139568}
   m_Layer: 0
   m_Name: Poster.V SMOKE
   m_TagString: Untagged
@@ -108,5 +109,19 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.56274784, y: 0.8441216, z: 0.0000006556511}
-  m_Center: {x: 0.00000023841858, y: 1.2817419, z: -0.19918384}
+  m_Size: {x: 0.56274784, y: 0.8441215, z: 0.0000008940697}
+  m_Center: {x: -0.0000002682209, y: 1.2817419, z: 0.22745025}
+--- !u!114 &9219977781982139568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5161561551087789900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Poster - SMOKE</b>
+  MaxDistance: 0

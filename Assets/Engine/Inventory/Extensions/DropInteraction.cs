@@ -40,7 +40,7 @@ namespace SS3D.Engine.Inventory.Extensions
         {
             if (interactionEvent.Source.Parent is Hands hands)
             {
-                hands.PlaceHeldItem(interactionEvent.Point);
+                hands.PlaceHeldItem(interactionEvent.Point, hands.GetItemInHand().transform.rotation);
             }
             
             return false;

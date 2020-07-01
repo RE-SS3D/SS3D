@@ -930,7 +930,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
+  ItemId: fries_space
   Name: Space Fries
   container: {fileID: 0}
   itemType: 0
@@ -949,7 +949,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: Fried potatoes.
+  Text: Fried potato slices.
   MaxDistance: 0
 --- !u!114 &-342697699264856680
 MonoBehaviour:

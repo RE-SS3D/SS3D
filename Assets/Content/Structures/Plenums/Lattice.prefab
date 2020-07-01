@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7872794488466447910}
   - component: {fileID: 7454658488454625577}
   - component: {fileID: 7787289660783280196}
+  - component: {fileID: 5257087915870013797}
   m_Layer: 0
   m_Name: Lattice
   m_TagString: Untagged
@@ -93,3 +94,17 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.0000001, y: 0.64792186, z: 1.0000002}
   m_Center: {x: 0, y: -0.33461764, z: 0.000000059604645}
+--- !u!114 &5257087915870013797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7825286949101219487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Lattice</b>
+  MaxDistance: 0

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2757662656892023481}
   - component: {fileID: 8464980559484112448}
   - component: {fileID: 4470183532732757044}
+  - component: {fileID: 7837696780741857206}
   m_Layer: 0
   m_Name: plant 0
   m_TagString: Untagged
@@ -46,9 +47,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!33 &2757662656892023481
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -110,3 +112,17 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 7304296198544092425, guid: 33b306a4cf359e84fb0337905df9b677, type: 3}
+--- !u!114 &7837696780741857206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7873823719405222556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Potted Plant</b>
+  MaxDistance: 0

@@ -61,7 +61,8 @@ namespace SS3D.Engine.Interactions.UI
                         SetItemSupplyDisplay(itemWithSupply.GetRemainingSupplyPercentage());
                         return;
                     }
-
+                    
+                    // we need to remove this from here like wtf this is a base code not a specific part
                     IChargeable powerCell = item.GetComponent<IChargeable>();
                     if (powerCell == null && itemWithSupply == null) return;
 

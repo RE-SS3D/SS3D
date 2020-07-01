@@ -8,6 +8,7 @@ using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Inventory;
 using UnityEngine;
 using Mirror;
+using UnityEngine.Assertions;
 
 [RequireComponent(typeof(Container))]
 public class CellCharger : NetworkBehaviour
@@ -20,14 +21,8 @@ public class CellCharger : NetworkBehaviour
     private void Start()
     {
         container = GetComponent<Container>();
-        if (isServer)
-        {
-            StartCoroutine("StartCharge");
-        }
-    }
-
-    private void Update()
-    {
+        Assert.IsNotNull(container);
+        
         container.onChange += (op, index, oldItem, newItem) =>
         {
             if (newItem == null) {
@@ -38,6 +33,11 @@ public class CellCharger : NetworkBehaviour
                 renderer.enabled = true;
             }
         };
+        
+        if (isServer)
+        {
+            StartCoroutine("StartCharge");
+        }
     }
 
     IEnumerator StartCharge()

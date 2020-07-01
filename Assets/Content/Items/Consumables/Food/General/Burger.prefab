@@ -104,7 +104,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
+  ItemId: burger
   Name: Burger
   container: {fileID: 0}
   itemType: 0

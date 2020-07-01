@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 5713005920233418166}
   - component: {fileID: 2523290996575343201}
   - component: {fileID: 1359774338452010626}
-  - component: {fileID: 7855618301869856495}
+  - component: {fileID: -1901413032432937503}
+  - component: {fileID: -5715087418548358362}
   m_Layer: 0
   m_Name: FloorPlating
   m_TagString: Untagged
@@ -97,8 +98,8 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
---- !u!65 &7855618301869856495
-BoxCollider:
+--- !u!64 &-1901413032432937503
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -107,6 +108,21 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: -0.5, z: 0}
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8811591074890437857, guid: 4d4a7dd632bf0014dbd625055104fca3, type: 3}
+--- !u!114 &-5715087418548358362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6767447678079105841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Plating</b>
+  MaxDistance: 0
