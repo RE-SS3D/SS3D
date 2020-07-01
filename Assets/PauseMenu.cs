@@ -4,16 +4,24 @@ using UnityEngine;
 
 public class PauseMenu : MonoBehaviour
 {
-    Animator animator;
+    [SerializeField] Animator animator;
     
-    void Start() {    
+    void Start() 
+    {
+        if (animator == null)
         animator = GetComponent<Animator>();
     }
     
-    void Update() {
+    void Update() 
+    {
         if (Input.GetKeyDown(KeyCode.Escape)) 
         {
-            animator.SetBool("Toggle", !animator.GetBool("Toggle"));
+            Toggle();
         }
+    }
+
+    public void Toggle()
+    {
+        animator.SetBool("Toggle", !animator.GetBool("Toggle"));
     }
 }
