@@ -1,4 +1,5 @@
 ﻿using SS3D.Engine.Inventory.Extensions;
+using UnityEngine;
 
 namespace SS3D.Engine.Interactions.Extensions
 {
@@ -17,20 +18,27 @@ namespace SS3D.Engine.Interactions.Extensions
         
         public static T GetComponentInTree<T>(this IInteractionSource source) where T: class
         {
+            return GetComponentInTree<T>(source, out IGameObjectProvider _);
+        }
+        
+        public static T GetComponentInTree<T>(this IInteractionSource source, out IGameObjectProvider provider) where T: class
+        {
             IInteractionSource current = source;
             while (current != null)
             {
-                if (current is IGameObjectProvider provider)
+                if (current is IGameObjectProvider gameObjectProvider)
                 {
-                    T component = provider.GameObject.GetComponent<T>();
+                    T component = gameObjectProvider.GameObject.GetComponent<T>();
                     if (component != null)
                     {
+                        provider = gameObjectProvider;
                         return component;
                     }
                 }
                 current = current.Parent;
             }
 
+            provider = null;
             return null;
         }
 

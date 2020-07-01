@@ -14,22 +14,23 @@ namespace SS3D.Engine.Interactions.Extensions
                 return true;
             }
 
+            var interactionRangeLimit = interactionEvent.Source.GetComponentInTree<IInteractionRangeLimit>(out IGameObjectProvider provider);
+            if (interactionRangeLimit == null)
+            {
+                // No range limit
+                return true;
+            }
+            
             Vector3 sourcePosition;
-
-            if (interactionEvent.Source is IInteractionOriginProvider origin)
+            if (provider is IInteractionOriginProvider origin)
             {
                 // Object has a custom interaction origin
                 sourcePosition = origin.InteractionOrigin;
             }
-            else if (interactionEvent.Source is IGameObjectProvider provider)
+            else
             {
                 // Use default game object origin
                 sourcePosition = provider.GameObject.transform.position;
-            }
-            else
-            {
-                // No origin
-                return true;
             }
 
 
