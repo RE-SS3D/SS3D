@@ -34,10 +34,10 @@ namespace SS3D.Engine.Interactions.Extensions
             return null;
         }
 
-        public static float GetRange(this IInteractionSource source)
+        public static RangeLimit GetRange(this IInteractionSource source)
         {
             IInteractionRangeLimit limit = source.GetComponentInTree<IInteractionRangeLimit>();
-            return limit?.GetInteractionRange() ?? float.MaxValue;
+            return limit?.GetInteractionRange() ?? RangeLimit.Max;
         }
 
         public static Hands GetHands(this IInteractionSource source)

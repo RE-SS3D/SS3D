@@ -2,6 +2,6 @@
 {
     public interface IInteractionRangeLimit
     {
-        float GetInteractionRange();
+        RangeLimit GetInteractionRange();
     }
 }

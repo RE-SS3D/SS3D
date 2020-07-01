@@ -7,23 +7,38 @@ namespace SS3D.Engine.Interactions.Extensions
         public static bool RangeCheck(InteractionEvent interactionEvent)
         {
             Vector3 point = interactionEvent.Point;
-            
+
             // Ignore range when there is no point
             if (point.sqrMagnitude < 0.001)
             {
                 return true;
             }
-            
-            if (interactionEvent.Source is IGameObjectProvider provider)
+
+            Vector3 sourcePosition;
+
+            if (interactionEvent.Source is IInteractionOriginProvider origin)
             {
-                float range = interactionEvent.Source.GetRange();
-                Vector3 sourcePosition = provider.GameObject.transform.position;
-                // Check range, ignoring height
-                return (new Vector2(point.x, point.z) - new Vector2(sourcePosition.x, sourcePosition.z)).sqrMagnitude <
-                       range * range;
+                // Object has a custom interaction origin
+                sourcePosition = origin.InteractionOrigin;
+            }
+            else if (interactionEvent.Source is IGameObjectProvider provider)
+            {
+                // Use default game object origin
+                sourcePosition = provider.GameObject.transform.position;
+            }
+            else
+            {
+                // No origin
+                return true;
             }
 
-            return true;
+
+            RangeLimit range = interactionEvent.Source.GetRange();
+            float horizontal = range.horizontal;
+            // Check horizontal and vertical range
+            return Mathf.Abs(point.y - sourcePosition.y) < range.vertical &&
+                   (new Vector2(point.x, point.z) - new Vector2(sourcePosition.x, sourcePosition.z)).sqrMagnitude <
+                   horizontal * horizontal;
         }
     }
 }

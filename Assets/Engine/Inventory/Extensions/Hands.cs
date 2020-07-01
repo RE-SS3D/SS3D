@@ -4,18 +4,20 @@ using System.Linq;
 using Mirror;
 using UnityEngine;
 using SS3D.Engine.Interactions;
+using UnityEngine.Serialization;
 
 namespace SS3D.Engine.Inventory.Extensions
 {
     [RequireComponent(typeof(Inventory))]
-    public class Hands : InteractionSourceNetworkBehaviour, IToolHolder, IInteractionRangeLimit
+    public class Hands : InteractionSourceNetworkBehaviour, IToolHolder, IInteractionRangeLimit, IInteractionOriginProvider
     {
         [SerializeField] private Container handContainer = null;
         [SerializeField] private float handRange = 0f;
 
         public event Action<int> onHandChange;
         public int SelectedHand { get; private set; } = 0;
-        public float Range = 1.5f;
+        public RangeLimit range = new RangeLimit(1.5f, 1);
+        public Transform interactionOrigin;
 
         public Sprite pickupIcon;
 
@@ -178,9 +180,11 @@ namespace SS3D.Engine.Inventory.Extensions
             }
             return interactionSource;
         }
-        public float GetInteractionRange()
+        public RangeLimit GetInteractionRange()
         {
-            return Range;
+            return range;
         }
+
+        public Vector3 InteractionOrigin => interactionOrigin.position;
     }
 }

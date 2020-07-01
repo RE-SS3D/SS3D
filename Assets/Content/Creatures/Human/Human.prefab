@@ -285,7 +285,10 @@ MonoBehaviour:
   syncInterval: 0.1
   handContainer: {fileID: 593928988720118032}
   handRange: 5
-  Range: 1.5
+  range:
+    horizontal: 1.5
+    vertical: 1
+  interactionOrigin: {fileID: 2233422433550402390}
   pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
 --- !u!114 &-4112737952016829400
 MonoBehaviour:
