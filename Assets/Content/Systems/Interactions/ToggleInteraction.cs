@@ -1,5 +1,6 @@
 ﻿using System;
 using SS3D.Engine.Interactions;
+using SS3D.Engine.Interactions.Extensions;
 using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
@@ -31,6 +32,11 @@ namespace SS3D.Content.Systems.Interactions
         /// The name for the interaction when state is false
         /// </summary>
         public string OffName { get; set; } = "Turn on";
+
+        /// <summary>
+        /// If the interaction should be range limited
+        /// </summary>
+        public bool RangeCheck { get; set; } = true;
         
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
@@ -59,6 +65,10 @@ namespace SS3D.Content.Systems.Interactions
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
+            if (RangeCheck && !InteractionExtensions.RangeCheck(interactionEvent))
+            {
+                return false;
+            }
             return CanInteractCallback.Invoke(interactionEvent);
         }
 
