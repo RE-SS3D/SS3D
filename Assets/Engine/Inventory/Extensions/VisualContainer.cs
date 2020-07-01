@@ -105,7 +105,7 @@ namespace SS3D.Engine.Inventory.Extensions
                     temporaryPoint.transform.parent = this.transform;
                 }
                 temporaryPoint.transform.localPosition = Vector3.zero;
-                temporaryPoint.transform.rotation = attachmentPoint.root.rotation *  attachmentPoint.localRotation;
+                temporaryPoint.transform.localRotation = attachmentPoint.localRotation;
                 
                 // Assign parent
                 item.transform.parent = temporaryPoint.transform;
