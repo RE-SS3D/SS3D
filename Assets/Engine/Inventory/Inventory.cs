@@ -221,7 +221,6 @@ namespace SS3D.Engine.Inventory
             float itemSize = 0;
             
             for(int i = 0; i < 3; i++) {
-                Debug.Log(itemDimensions[i]);
                 if (itemDimensions[i] > itemSize)
                     itemSize = itemDimensions[i];                 
             }
