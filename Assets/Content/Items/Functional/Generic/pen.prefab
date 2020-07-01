@@ -175,7 +175,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
+  ItemId: pen
   Name: Pen
   container: {fileID: 0}
   itemType: 0

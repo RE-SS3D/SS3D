@@ -59,6 +59,7 @@ GameObject:
   - component: {fileID: 8485078801564578719}
   - component: {fileID: 269803425871263521}
   - component: {fileID: -6833891496423765305}
+  - component: {fileID: -8389530401997181573}
   m_Layer: 0
   m_Name: Airlock Classic
   m_TagString: Untagged
@@ -94,9 +95,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!65 &5558160860406176473
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -261,6 +263,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-8389530401997181573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3290821787637386385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Airlock</b>
+  MaxDistance: 0
 --- !u!1 &3667226139312871055
 GameObject:
   m_ObjectHideFlags: 0

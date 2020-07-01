@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3128734841785302988}
   - component: {fileID: 303698793745990453}
   - component: {fileID: 670817264003822935}
+  - component: {fileID: -3295813283748360902}
   m_Layer: 0
   m_Name: Fire Alarm
   m_TagString: Untagged
@@ -95,3 +96,17 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -1486200388509209920, guid: 5990cbad3b5c9dc4fa627857c4cb8718, type: 3}
+--- !u!114 &-3295813283748360902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5161561551087789900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Fire Alarm</b>
+  MaxDistance: 0

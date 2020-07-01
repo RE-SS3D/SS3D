@@ -174,5 +174,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Text: '<b>Oxygen Canister</b>
 
-    Make sure this doesn''t run out.'
+    Contains Oxygen, so make sure this doesn''t
+    run out.'
   MaxDistance: 0

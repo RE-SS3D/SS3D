@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 6524441915444712897}
   - component: {fileID: 2059713297401845381}
   - component: {fileID: 5302871755143894454}
+  - component: {fileID: 1045010266948518310}
   - component: {fileID: 340761490495231774}
   m_Layer: 15
   m_Name: Human
@@ -431,6 +432,20 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   ViewRange: 25
+--- !u!114 &1045010266948518310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>[insert player name]</b>
+  MaxDistance: 0
 --- !u!114 &340761490495231774
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -445,6 +460,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minVelocity: 5
   knockdownTime: 3
+  checkInterval: 0.2
 --- !u!1 &290878266594310021
 GameObject:
   m_ObjectHideFlags: 0
