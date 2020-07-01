@@ -13,7 +13,7 @@ namespace SS3D.Content.Creatures.Human
             DrawDefaultInspector();
             if (GUILayout.Button(ragdoll.BodyEnabled ? "Disable body" : "Enable body"))
             {
-                ragdoll.BodyEnabled = !ragdoll.BodyEnabled;
+                ragdoll.SetEnabled(!ragdoll.BodyEnabled);
             }
         }
     }
