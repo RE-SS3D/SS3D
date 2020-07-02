@@ -146,6 +146,7 @@ GameObject:
   - component: {fileID: -81471081026951556}
   - component: {fileID: 2400185146884332982}
   - component: {fileID: 6526651280076576432}
+  - component: {fileID: 5485658273315421231}
   m_Layer: 0
   m_Name: PauseMenu
   m_TagString: Untagged
@@ -184,9 +185,9 @@ MonoBehaviour:
   syncInterval: 0.1
   warmupTimeSeconds: 5
   roundTimeSeconds: 600
-  timerText: {fileID: 0}
-  timerUi: {fileID: 0}
-  controlUi: {fileID: 0}
+  timerText: {fileID: 6991537844058698062}
+  timerUi: {fileID: 1710756159920525587}
+  controlUi: {fileID: 1710756159920525587}
 --- !u!114 &2400185146884332982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -217,7 +218,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  TargetObject: {fileID: 0}
+  TargetObject: {fileID: 2866677745315402944}
+--- !u!114 &5485658273315421231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 197787038674958444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b4ae077dd6c6824cb7543c8a2df1979, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 719821119340649544}
 --- !u!1 &435088719435060922
 GameObject:
   m_ObjectHideFlags: 0
@@ -1149,7 +1163,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5229250326363828733}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5485658273315421231}
+        m_MethodName: Toggle
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3326681412024178380
 GameObject:
   m_ObjectHideFlags: 0
@@ -1398,10 +1423,6 @@ GameObject:
   - component: {fileID: 8042374543823793348}
   - component: {fileID: 5279740483434439477}
   - component: {fileID: 719821119340649544}
-  - component: {fileID: 3563146791091575379}
-  - component: {fileID: 9100395202397388626}
-  - component: {fileID: 8318456493930076774}
-  - component: {fileID: 6687745768299475462}
   m_Layer: 5
   m_Name: Pause Menu
   m_TagString: Untagged
@@ -1486,68 +1507,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &3563146791091575379
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4812811656781724240}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
---- !u!114 &9100395202397388626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4812811656781724240}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d001f4d08574ed043be20bb696222a8a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  warmupTimeSeconds: 3
-  roundTimeSeconds: 600
-  timerText: {fileID: 6991537844058698062}
-  timerUi: {fileID: 1710756159920525587}
-  controlUi: {fileID: 1710756159920525587}
---- !u!114 &8318456493930076774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4812811656781724240}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57b8f827872416e40b1c2277f894bcd6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  TargetObject: {fileID: 2866677745315402944}
---- !u!114 &6687745768299475462
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4812811656781724240}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b4ae077dd6c6824cb7543c8a2df1979, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &5158527987146607842
 GameObject:
   m_ObjectHideFlags: 0
