@@ -76,7 +76,7 @@ GameObject:
   - component: {fileID: -5804938744367538470}
   - component: {fileID: 6196629324959543869}
   - component: {fileID: -587293498524188288}
-  - component: {fileID: 593928988720118032}
+  - component: {fileID: 3320484711719711554}
   - component: {fileID: 5407744306360123216}
   - component: {fileID: -4112737952016829400}
   - component: {fileID: -3295296730462155149}
@@ -241,7 +241,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
---- !u!114 &593928988720118032
+--- !u!114 &3320484711719711554
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -250,7 +250,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 289348138277843802}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69f0cfe7ad268bc44b2e36b581d0086c, type: 3}
+  m_Script: {fileID: 11500000, guid: 7cfa2de44e571574dafad711206c92bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
@@ -283,7 +283,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  handContainer: {fileID: 593928988720118032}
+  handContainer: {fileID: 3320484711719711554}
   handRange: 5
   Range: 1.5
   pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
@@ -2836,8 +2836,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4937814844790957053}
   m_LocalRotation: {x: 0.16981892, y: -0.06877417, z: 0.06667948, w: 0.9808086}
-  m_LocalPosition: {x: -0.000000029802322, y: 0.0345814, z: -0.000000044703484}
-  m_LocalScale: {x: 1, y: 1.0000001, z: 1}
+  m_LocalPosition: {x: 0, y: 0.0345814, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5853254971049113966}
   m_RootOrder: 0

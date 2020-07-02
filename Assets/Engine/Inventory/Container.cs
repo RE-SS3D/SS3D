@@ -59,6 +59,7 @@ namespace SS3D.Engine.Inventory
 
         public static bool CanStore(Container container, Item item)
         {
+            Debug.Log("Storing: " + item.Name + " in " + container.containerFilter.name + " filter");
             if (container.containerFilter == null)
                 return true;
             return container.containerFilter.CanStore(item);
@@ -173,6 +174,13 @@ namespace SS3D.Engine.Inventory
         public SlotType GetSlot(int slot) => slots[slot];
         public Filter GetFilter(int slot) => containerFilter;
         public int Length() => slots.Length;
+
+        public bool IsFilter(string name)
+        {
+            var hash = Animator.StringToHash(name);
+            return containerFilter.Hash == hash;
+        }
+
         /// <summary>
         /// Returns the slot an item is in
         /// </summary>

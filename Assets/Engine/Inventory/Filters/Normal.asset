@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48bc3e6256e003f49b038fe30c1d9be6, type: 3}
   m_Name: Normal
   m_EditorClassIdentifier: 
-  bulkSize: 2
+  bulkSize: 4
   mustHaveAll: 0
   acceptedTraits: []
   deniedTraits: []

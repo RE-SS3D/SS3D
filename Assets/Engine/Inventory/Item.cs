@@ -5,6 +5,7 @@ using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
 using UnityEditor;
 using SS3D.Engine.Utilities;
+using System;
 #if UNITY_EDITOR
 using UnityEditor.Experimental.SceneManagement;
 #endif
@@ -118,9 +119,10 @@ namespace SS3D.Engine.Inventory
 
         public bool HasTrait(string name)
         {
+            var hash = Animator.StringToHash(name);
             foreach (Trait trait in traits)
             {
-                if (trait.name == name)
+                if (trait.Hash == hash)
                     return true;
             }
             return false;
