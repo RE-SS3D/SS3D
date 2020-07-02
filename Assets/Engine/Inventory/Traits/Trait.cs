@@ -10,6 +10,6 @@ public class Trait : ScriptableObject
     [ExecuteInEditMode]
     private void OnValidate()
     {
-        hash = Animator.StringToHash(name);
+        hash = Animator.StringToHash(name.ToUpper());
     }
 }

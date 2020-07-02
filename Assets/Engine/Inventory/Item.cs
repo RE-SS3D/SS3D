@@ -119,7 +119,7 @@ namespace SS3D.Engine.Inventory
 
         public bool HasTrait(string name)
         {
-            var hash = Animator.StringToHash(name);
+            var hash = Animator.StringToHash(name.ToUpper());
             foreach (Trait trait in traits)
             {
                 if (trait.Hash == hash)

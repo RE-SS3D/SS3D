@@ -177,7 +177,7 @@ namespace SS3D.Engine.Inventory
 
         public bool IsFilter(string name)
         {
-            var hash = Animator.StringToHash(name);
+            var hash = Animator.StringToHash(name.ToUpper());
             return containerFilter.Hash == hash;
         }
 
