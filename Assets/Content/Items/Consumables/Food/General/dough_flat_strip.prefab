@@ -178,8 +178,8 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: dough_flat_strip
   Name: Dough Strip
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8025821132411324115}
   attachmentPoint: {fileID: 2364893500280042689}

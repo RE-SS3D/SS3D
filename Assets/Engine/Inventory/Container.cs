@@ -21,36 +21,7 @@ namespace SS3D.Engine.Inventory
         // This is the types of container that are currently defined and needed for distinguishing in the UI.
         // TODO: It's currently kinda silly. The ideal solution would be distinguishing by type (which directly relates to restrictions) + Origin.
         // Making OverTorsoStorage and TorsoPockets no longer necessary.
-        public enum Type
-        {
-            General,    // Any general container
-            Body,       // A container for a body, for placing stuff on a body. This includes stuff put into clothes (e.g. on suit storage)
-            Pockets,    // Pockets are different from the above purely because they are displayed in the hotbar
-            Interactors // Interacting tools (e.g. hands) which can also hold items
-        }
-
-        // TODO: SlotType doesn't need to be like this
-        public enum SlotType
-        {
-            General,
-            // Body-type stuff
-            Head,
-            Eyes,
-            Mouth,
-            Ear,
-            Torso,
-            OverTorso,
-            Hands,
-            Feet,
-            // Other kinda on-body stuff
-            OverTorsoStorage,
-            // Pockets
-            LeftPocket,
-            RightPocket,
-            // Interactor stuff
-            LeftHand,
-            RightHand
-        }
+        
         public static bool AreCompatible(Filter slot, Item item)
         {
             if (slot == null || item == null)
@@ -60,6 +31,8 @@ namespace SS3D.Engine.Inventory
 
         public static bool CanStore(Container container, Item item)
         {
+            if ((container.volume + item.Volume <= container.maxVolume) == false && container.volumeLimited)
+                return false;
             if (container.containerFilter == null)
                 return true;
             return container.containerFilter.CanStore(item);
@@ -70,10 +43,11 @@ namespace SS3D.Engine.Inventory
 
         // Editor properties
         public string containerName;
-        public Type containerType;
         public Filter containerFilter;
-        [SerializeField]
-        protected SlotType[] slots;
+        public bool volumeLimited = true;
+        public float maxVolume = 50f;
+        public int slots;
+        protected float volume;
 
         public Container()
         {
@@ -115,6 +89,7 @@ namespace SS3D.Engine.Inventory
 
             items[slot] = item;
             itemComponent.container = this;
+            RecalculateVolume(this);
         }
         /**
          * Add an item to the first available slot.
@@ -131,8 +106,21 @@ namespace SS3D.Engine.Inventory
                     return i;
                 }
             }
+            RecalculateVolume(this);
 
             return -1;
+        }
+
+        [Server]
+        public void RecalculateVolume(Container container)
+        {
+            container.volume = 0f;
+            for (int i = 0; i < items.Count; ++i)
+            {
+                var item = container.GetItem(i);
+                if (item != null)
+                    container.volume += item.Volume;
+            }
         }
         /**
          * Remove the item from the container, returning the Item.
@@ -147,6 +135,7 @@ namespace SS3D.Engine.Inventory
             item.GetComponent<Item>().container = null;
             items[slot] = null;
 
+            RecalculateVolume(this);
             return item;
         }
 
@@ -158,6 +147,7 @@ namespace SS3D.Engine.Inventory
             for (var i = 0; i < items.Count; i++)
                 if (items[i] == item)
                     RemoveItem(i);
+            RecalculateVolume(this);
         }
 
         /**
@@ -171,9 +161,8 @@ namespace SS3D.Engine.Inventory
         /**
          * Get the slot type of a given slot
          */
-        public SlotType GetSlot(int slot) => slots[slot];
         public virtual Filter GetFilter(int slot) => containerFilter;
-        public int Length() => slots.Length;
+        public int Length() => slots;
 
         public bool IsFilter(string name)
         {
@@ -201,7 +190,7 @@ namespace SS3D.Engine.Inventory
 
         public override void OnStartServer()
         {
-            for (int i = 0; i < slots.Length; ++i)
+            for (int i = 0; i < slots; ++i)
                 items.Add(null);
         }
 

@@ -176,8 +176,8 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: rolling_pin
   Name: Rolling Pin
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 7333537291608176250}
   attachmentPoint: {fileID: 3059437936987833448}

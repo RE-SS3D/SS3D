@@ -227,8 +227,8 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: beaker
   Name: 
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 0}
   prefab: {fileID: 1532632409719204394}
   attachmentPoint: {fileID: 5747042748778270123}

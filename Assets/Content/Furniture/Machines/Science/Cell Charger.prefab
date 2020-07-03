@@ -329,9 +329,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   containerName: cell changer
-  containerType: 0
   containerFilter: {fileID: 11400000, guid: 47ba41d97fc87d9469fa5be5b67bcbc2, type: 2}
-  slots: 00000000
+  volumeLimited: 0
+  maxVolume: 0
+  slots: 1
   displays:
   - {fileID: 414045328494130654}
 --- !u!95 &-5812287283981547438

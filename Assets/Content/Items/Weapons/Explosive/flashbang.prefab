@@ -177,8 +177,8 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: 
+  Volume: 5
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8071868517170156620}
   attachmentPoint: {fileID: 4590771596200191582}

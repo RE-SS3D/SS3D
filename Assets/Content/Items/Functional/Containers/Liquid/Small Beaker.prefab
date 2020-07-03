@@ -306,8 +306,8 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: beaker_small
   Name: Small Beaker
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 971113513204449908}
   attachmentPoint: {fileID: 5123673251067320675, guid: 74ead4cc2020eb640a1c074780eb5081,

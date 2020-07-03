@@ -257,8 +257,8 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: toolbox
   Name: 
+  Volume: 30
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5533951594911835035}
   attachmentPoint: {fileID: 6311512130502363032}

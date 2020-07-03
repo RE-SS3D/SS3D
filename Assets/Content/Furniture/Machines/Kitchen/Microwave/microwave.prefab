@@ -188,8 +188,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   containerName: microwave
-  containerType: 0
-  slots: 00000000000000000000000000000000
+  containerFilter: {fileID: 0}
+  volumeLimited: 0
+  maxVolume: 50
+  slots: 4
   displays:
   - {fileID: 0}
   - {fileID: 0}

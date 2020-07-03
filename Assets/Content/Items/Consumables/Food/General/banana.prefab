@@ -164,8 +164,8 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: Banana
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8722317747974713380}
   attachmentPoint: {fileID: 6244230459157494590}

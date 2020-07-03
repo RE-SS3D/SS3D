@@ -256,9 +256,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   containerName: Human Equippable
-  containerType: 1
   containerFilter: {fileID: 11400000, guid: 40e3b946dc1dc314592ef8d6afcd9162, type: 2}
-  slots: 010000000200000003000000040000000500000007000000080000000c0000000d000000
+  volumeLimited: 0
+  maxVolume: 0
+  slots: 9
   filters:
   - {fileID: 11400000, guid: 2c9b78d1ecaf0c44889c1f7eb98de085, type: 2}
   - {fileID: 11400000, guid: 27ae84b7a7b5da2429350c1d20339898, type: 2}

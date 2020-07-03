@@ -90,6 +90,11 @@ PrefabInstance:
       propertyPath: bulkSize
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3968262082255377668, guid: 02a9665aa50bb124087860c2640538bf,
+        type: 3}
+      propertyPath: Volume
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 4212875675006825677, guid: 02a9665aa50bb124087860c2640538bf,
         type: 3}
       propertyPath: m_Name

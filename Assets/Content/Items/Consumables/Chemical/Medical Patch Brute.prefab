@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 609240299860339659}
   - component: {fileID: -9111724957953257727}
   m_Layer: 16
-  m_Name: Medical Patch
+  m_Name: Medical Patch Brute
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -176,11 +176,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: 
+  Volume: 5
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 4068007204767187790}
   attachmentPoint: {fileID: 3486532436751009279}
+  bulkSize: 2
+  traits: []
 --- !u!114 &-9111724957953257727
 MonoBehaviour:
   m_ObjectHideFlags: 0

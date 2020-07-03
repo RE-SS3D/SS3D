@@ -443,10 +443,15 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   containerName: locker
-  containerType: 0
   containerFilter: {fileID: 11400000, guid: 40e3b946dc1dc314592ef8d6afcd9162, type: 2}
-  slots: 00000000000000000000000000000000
+  volumeLimited: 1
+  maxVolume: 100
+  slots: 8
   displays:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

@@ -43,8 +43,8 @@ namespace SS3D.Engine.Inventory.Extensions
 
         public void OnValidate()
         {
-            Array.Resize(ref displays, slots.Length);
-            Array.Resize(ref filters, slots.Length);
+            Array.Resize(ref displays, slots);
+            Array.Resize(ref filters, slots);
         }
         public override void OnStartClient()
         {

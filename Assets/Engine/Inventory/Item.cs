@@ -18,24 +18,10 @@ namespace SS3D.Engine.Inventory
     [DisallowMultipleComponent]
     public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget
     {
-        // Distinguishes what can go in what slot
-        public enum ItemType
-        {
-            Other,
-            Hat,
-            Glasses,
-            Mask,
-            Earpiece,
-            Shirt,
-            OverShirt,
-            Gloves,
-            Shoes
-        }
-
         public string ItemId;
         public string Name;
-        public Container container;
-        public ItemType itemType;
+        public float Volume = 10f;
+        [HideInInspector]public Container container;
         public Sprite sprite;
         public GameObject prefab;
         public Transform attachmentPoint;

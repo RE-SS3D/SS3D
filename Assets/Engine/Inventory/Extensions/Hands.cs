@@ -98,9 +98,9 @@ namespace SS3D.Engine.Inventory.Extensions
             // Because we just make calls to GetSlot, which is set pre-Awake, this is safe.
             handSlots = new int[2] { -1, -1 };
             for (int i = 0; i < handContainer.Length(); ++i) {
-                if (handContainer.GetSlot(i) == Container.SlotType.LeftHand)
+                if (handContainer.GetFilter(i).Hash == Animator.StringToHash("LeftHand".ToUpper()))
                     handSlots[0] = i;
-                else if (handContainer.GetSlot(i) == Container.SlotType.RightHand)
+                else if (handContainer.GetFilter(i).Hash == Animator.StringToHash("RightHand".ToUpper()))
                 {
                     handSlots[1] = i;
                     Debug.Log(handContainer.GetFilter(i).name + "/" + handContainer.GetFilter(i).Hash);

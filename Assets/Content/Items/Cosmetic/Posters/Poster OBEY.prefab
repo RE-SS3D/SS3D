@@ -147,8 +147,8 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: poster_lusty_xeno
   Name: Pen
+  Volume: 4
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5927714388255546572}
   attachmentPoint: {fileID: 4694169253332805535}
