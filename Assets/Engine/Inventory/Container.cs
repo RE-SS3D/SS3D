@@ -25,7 +25,7 @@ namespace SS3D.Engine.Inventory
         public static bool AreCompatible(Filter slot, Item item)
         {
             if (slot == null || item == null)
-                throw new Exception("Trying to check null compatibility");
+                Debug.LogWarning("Trying to use an container without a filter");
             return slot.CanStore(item);
         }
 

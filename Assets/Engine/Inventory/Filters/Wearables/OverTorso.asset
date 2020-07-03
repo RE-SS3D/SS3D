@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48bc3e6256e003f49b038fe30c1d9be6, type: 3}
-  m_Name: Suit
+  m_Name: OverTorso
   m_EditorClassIdentifier: 
   bulkSize: 2
   mustHaveAll: 0
-  acceptedTraits: []
+  acceptedTraits:
+  - {fileID: 11400000, guid: 248fd41a74c74694e813004ef9cda89e, type: 2}
   deniedTraits: []

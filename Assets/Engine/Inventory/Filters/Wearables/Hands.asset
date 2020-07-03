@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulkSize: 2
   mustHaveAll: 0
-  acceptedTraits: []
+  acceptedTraits:
+  - {fileID: 11400000, guid: d7ac65ee1a9ce074997971c94529ad85, type: 2}
   deniedTraits: []

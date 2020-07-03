@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48bc3e6256e003f49b038fe30c1d9be6, type: 3}
   m_Name: Eyes
   m_EditorClassIdentifier: 
-  bulkSize: 2
+  bulkSize: 1
   mustHaveAll: 0
-  acceptedTraits: []
+  acceptedTraits:
+  - {fileID: 11400000, guid: 5f296a7616a3546448953e7215243c34, type: 2}
   deniedTraits: []

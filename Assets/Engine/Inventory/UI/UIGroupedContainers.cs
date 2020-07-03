@@ -94,7 +94,7 @@ namespace SS3D.Engine.Inventory.UI
             InteractionHandler handler = playerObject.GetComponent<InteractionHandler>();
             Hands hands = playerObject.GetComponent<Hands>();
 
-            if (handler != null && hands != null && hands.GetActiveTool() != null && item != null && (slotFilter.Hash == Animator.StringToHash("RightHand".ToUpper()) || slotFilter.Hash == Animator.StringToHash("LeftHand".ToUpper())))
+            if (handler != null && hands != null && hands.GetActiveTool() != null && item != null && (slotFilter.Hash == Filters.RightHand || slotFilter.Hash == Filters.LeftHand))
             {
                 handler.InteractInHand(item, playerObject, button == PointerEventData.InputButton.Right);
                 return;

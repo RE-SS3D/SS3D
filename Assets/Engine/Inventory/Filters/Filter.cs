@@ -46,6 +46,18 @@ public class Filter : ScriptableObject
     [ExecuteInEditMode]
     private void OnValidate()
     {
-        hash = Animator.StringToHash(name.ToUpper());
+        hash = GetHash(name);
     }
+
+    public static int GetHash(string str)
+    {
+        return Animator.StringToHash(str.ToUpper());
+    }
+}
+
+public class Filters
+{
+    public static readonly int LeftHand = Filter.GetHash("LeftHand");
+    public static readonly int RightHand = Filter.GetHash("RightHand");
+    public static readonly int General = Filter.GetHash("General");
 }
