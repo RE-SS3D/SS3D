@@ -361,7 +361,7 @@ namespace SS3D.Engine.Tiles
 
             if (altered)
             {
-                EditorUtility.DisplayDialog("Fixture combination", "You chose an invalid combination of fixtures. Definition has been reset", "ok");
+                EditorUtility.DisplayDialog("Fixture combination", "You chose an invalid combination of fixtures. Definition has been reset.", "ok");
             }
 
             return tileDefinition;
