@@ -61,7 +61,7 @@ namespace SS3D.Engine.Tiles
             }
 
             // Go through Floor fixtures second
-            var floorLayers = TileDefinition.GetTileFixtureLayerNames();
+            var floorLayers = TileDefinition.GetFloorFixtureLayerNames();
             foreach (FloorFixtureLayers layer in floorLayers)
             {
                 UpdateFloorSingleAdjacency(direction, tile, layer);
@@ -107,7 +107,7 @@ namespace SS3D.Engine.Tiles
             }
 
             // Update every floor layer
-            var floorLayers = TileDefinition.GetTileFixtureLayerNames();
+            var floorLayers = TileDefinition.GetFloorFixtureLayerNames();
             foreach (FloorFixtureLayers layer in floorLayers)
             {
                 UpdateAllFloorAdjacencies(tiles, layer);
@@ -548,6 +548,7 @@ namespace SS3D.Engine.Tiles
                 }
                 fixtures[index + offset] = EditorAndRuntime.InstantiatePrefab(fixtureDefinition.prefab, transform);
                 floorFixtureConnectors[index] = fixtures[index + offset].GetComponent<AdjacencyConnector>();
+                floorFixtureConnectors[index].LayerIndex = index + offset;
             }
             else
             {
@@ -601,7 +602,7 @@ namespace SS3D.Engine.Tiles
         private void UpdateSubDataFromChildren()
         {
             // Plenum + Turf + all fixtures layers
-            tile.subStates = new object[1 + TileDefinition.GetAllFixtureLayerSize()];
+            tile.subStates = new object[2 + TileDefinition.GetAllFixtureLayerSize()];
 
             tile.subStates[0] = plenum != null ? plenum?.GetComponent<TileStateCommunicator>()?.GetTileState() : null;
             tile.subStates[1] = turf != null ? turf?.GetComponent<TileStateCommunicator>()?.GetTileState() : null;
