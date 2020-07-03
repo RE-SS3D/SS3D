@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 
@@ -248,13 +249,19 @@ namespace SS3D.Engine.Tiles
         // For example: tables cannot be build in walls, or wall fixtures cannot be build on floors
         public static TileDefinition ValidateFixtures(TileDefinition tileDefinition)
         {
+            bool altered = false;
+
             // If lattice, remove turf and tile fixtures
             if (tileDefinition.plenum.name.Contains("Lattice"))
             {
-                tileDefinition.turf = null;
+                // tileDefinition.turf = null;
                 foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
                 {
-                    tileDefinition.fixtures.SetTileFixtureAtLayer(null, layer);
+                    if (tileDefinition.fixtures.GetTileFixtureAtLayer(layer) != null)
+                    {
+                        altered = true;
+                        tileDefinition.fixtures.SetTileFixtureAtLayer(null, layer);
+                    }
                 }
             }
 
@@ -262,14 +269,20 @@ namespace SS3D.Engine.Tiles
             if (tileDefinition.plenum.name.Contains("Catwalk"))
             {
                 // Only allow floor plating
-                if (tileDefinition.turf != null && !tileDefinition.turf.name.Contains("FloorPlating"))
-                    tileDefinition.turf = null;
+                // if (tileDefinition.turf != null && !tileDefinition.turf.name.Contains("FloorPlating"))
+                    // tileDefinition.turf = null;
 
                 // Allow wire layer
                 foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
                 {
                     if (layer != TileFixtureLayers.Wire)
-                        tileDefinition.fixtures.SetTileFixtureAtLayer(null, layer);
+                    {
+                        if (tileDefinition.fixtures.GetTileFixtureAtLayer(layer) != null)
+                        {
+                            altered = true;
+                            tileDefinition.fixtures.SetTileFixtureAtLayer(null, layer);
+                        }
+                    }
                 }
             }
 
@@ -283,7 +296,10 @@ namespace SS3D.Engine.Tiles
                         continue;
 
                     if (tileDefinition.fixtures.GetFloorFixtureAtLayer(layer) != null)
+                    {
+                        altered = true;
                         Debug.Log("Cannot set a floor fixture when there is no floor");
+                    }
 
                     tileDefinition.fixtures.SetFloorFixtureAtLayer(null, layer);
                 }
@@ -295,7 +311,10 @@ namespace SS3D.Engine.Tiles
                 foreach (WallFixtureLayers layer in TileDefinition.GetWallFixtureLayerNames())
                 {
                     if (tileDefinition.fixtures.GetWallFixtureAtLayer(layer) != null)
+                    {
+                        altered = true;
                         Debug.Log("Cannot set a wall fixture when there is no wall");
+                    }
 
                     tileDefinition.fixtures.SetWallFixtureAtLayer(null, layer);
                 }
@@ -308,9 +327,41 @@ namespace SS3D.Engine.Tiles
                 {
                     if (layer == WallFixtureLayers.LowWallNorth || layer == WallFixtureLayers.LowWallEast || layer == WallFixtureLayers.LowWallSouth || layer == WallFixtureLayers.LowWallWest)
                     {
-                        tileDefinition.fixtures.SetWallFixtureAtLayer(null, layer);
+                        if (tileDefinition.fixtures.GetWallFixtureAtLayer(layer) != null)
+                        {
+                            altered = true;
+                            tileDefinition.fixtures.SetWallFixtureAtLayer(null, layer);
+                        }
                     }
                 }
+            }
+
+            // Restrict pipes to their own layer
+            TileFixture pipe = tileDefinition.fixtures.GetTileFixtureAtLayer(TileFixtureLayers.Pipe1);
+            if (pipe != null && !pipe.name.Contains("1"))
+            {
+                altered = true;
+                tileDefinition.fixtures.SetTileFixtureAtLayer(null, TileFixtureLayers.Pipe1);
+            }
+
+            pipe = tileDefinition.fixtures.GetTileFixtureAtLayer(TileFixtureLayers.Pipe2);
+            if (pipe != null && !pipe.name.Contains("2"))
+            {
+                altered = true;
+                tileDefinition.fixtures.SetTileFixtureAtLayer(null, TileFixtureLayers.Pipe2);
+            }
+
+            pipe = tileDefinition.fixtures.GetTileFixtureAtLayer(TileFixtureLayers.Pipe3);
+            if (pipe != null && !pipe.name.Contains("3"))
+            {
+                altered = true;
+                tileDefinition.fixtures.SetTileFixtureAtLayer(null, TileFixtureLayers.Pipe3);
+            }
+
+
+            if (altered)
+            {
+                EditorUtility.DisplayDialog("Fixture combination", "You chose an invalid combination of fixtures. Definition has been reset", "ok");
             }
 
             return tileDefinition;
