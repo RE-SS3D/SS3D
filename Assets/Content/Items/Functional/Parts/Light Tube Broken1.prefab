@@ -41,11 +41,11 @@ GameObject:
   - component: {fileID: 2220971614553997509}
   - component: {fileID: 5730203563420628655}
   - component: {fileID: 7172403887221553907}
-  - component: {fileID: 3509982234372425226}
-  - component: {fileID: 4159542784996369916}
   - component: {fileID: 8099833733376006096}
+  - component: {fileID: -5150977273294515359}
+  - component: {fileID: 4159542784996369916}
   - component: {fileID: 2732591507989123871}
-  - component: {fileID: 9168550024213268199}
+  - component: {fileID: 7700992127107502213}
   - component: {fileID: 804842174551088673}
   m_Layer: 16
   m_Name: Light Tube Broken1
@@ -93,7 +93,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2920901234093290198}
   m_Mesh: {fileID: -3419284916066000852, guid: c50b827f8ce281c428d83e4d145f3bbd, type: 3}
---- !u!23 &3509982234372425226
+--- !u!65 &8099833733376006096
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2920901234093290198}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.15600249, y: 0.08550763, z: 0.08532053}
+  m_Center: {x: 0.004031919, y: -0.00009381771, z: -0.000000067055225}
+--- !u!23 &-5150977273294515359
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -148,19 +161,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &8099833733376006096
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2920901234093290198}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.15600249, y: 0.08550763, z: 0.08532053}
-  m_Center: {x: 0.004031919, y: -0.00009381771, z: -0.000000067055225}
 --- !u!114 &2732591507989123871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,148 +175,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
---- !u!1001 &1368535912678098459
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 877214307731670750, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 877214307731670750, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 877214307731670750, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 877214307731670750, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 877214307731670750, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 877214307731670750, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 877214307731670750, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 877214307731670750, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 877214307731670750, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 877214307731670750, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 877214307731670750, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3118652816180405223, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_Mass
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3968262082255377668, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: bulkSize
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3968262082255377668, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: Volume
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 4212875675006825677, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_Name
-      value: Light Tube Broken1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6736190898190037172, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_AssetId
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7103979763249795531, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_Size.x
-      value: 0.15600249
-      objectReference: {fileID: 0}
-    - target: {fileID: 7103979763249795531, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_Size.z
-      value: 0.08532053
-      objectReference: {fileID: 0}
-    - target: {fileID: 7103979763249795531, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_Center.x
-      value: 0.004031919
-      objectReference: {fileID: 0}
-    - target: {fileID: 7103979763249795531, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_Center.z
-      value: -0.000000067055225
-      objectReference: {fileID: 0}
-    - target: {fileID: 7103979763249795531, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_Size.y
-      value: 0.08550763
-      objectReference: {fileID: 0}
-    - target: {fileID: 7103979763249795531, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_Center.y
-      value: -0.00009381771
-      objectReference: {fileID: 0}
-    - target: {fileID: 8176139425096645864, guid: 02a9665aa50bb124087860c2640538bf,
-        type: 3}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: -3419284916066000852, guid: c50b827f8ce281c428d83e4d145f3bbd,
-        type: 3}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 02a9665aa50bb124087860c2640538bf, type: 3}
---- !u!1 &2920901234093290198 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4212875675006825677, guid: 02a9665aa50bb124087860c2640538bf,
-    type: 3}
-  m_PrefabInstance: {fileID: 1368535912678098459}
-  ItemId: light_tube_broken_1
+  ItemId: light_tube_broken_2
   Name: Broken Light Tube
+  Volume: 6
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 2920901234093290198}
   attachmentPoint: {fileID: 7438147670276849860}
---- !u!114 &9168550024213268199
+  bulkSize: 1
+  traits: []
+--- !u!114 &7700992127107502213
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

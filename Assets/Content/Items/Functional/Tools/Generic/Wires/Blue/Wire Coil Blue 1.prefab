@@ -132,29 +132,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &8704318443750846385
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8479942524297268856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  ItemId: 
-  Name: 
-  Volume: 2
-  container: {fileID: 0}
-  sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
-  prefab: {fileID: 8479942524297268856}
-  attachmentPoint: {fileID: 4187913466076920938}
-  bulkSize: 1
-  traits: []
 --- !u!54 &3711854204811431706
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -201,11 +178,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: coil_wire_blue_1
   Name: Wire
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8479942524297268856}
   attachmentPoint: {fileID: 4187913466076920938}
+  bulkSize: 2
+  traits: []
 --- !u!114 &2015475180501731035
 MonoBehaviour:
   m_ObjectHideFlags: 0
