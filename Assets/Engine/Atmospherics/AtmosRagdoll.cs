@@ -13,7 +13,6 @@ namespace SS3D.Engine.Atmospherics
         public float knockdownTime = 3;
         public float checkInterval = 0.2f;
         
-        private float knockdownStart = -1;
         private HumanRagdoll ragdoll;
         private int lastX;
         private int lastY;
@@ -42,7 +41,7 @@ namespace SS3D.Engine.Atmospherics
                 Vector3 position = transform.position;
                 int x = Mathf.FloorToInt(position.x);
                 int y = Mathf.FloorToInt(position.z);
-                
+
                 // Update atmos object if tile changed
                 if (x != lastX || y != lastY)
                 {
@@ -62,31 +61,13 @@ namespace SS3D.Engine.Atmospherics
                 }
             }
         }
-        
+
         private void ApplyVelocity(Vector2 velocity)
         {
             if (velocity.sqrMagnitude > minVelocity * minVelocity)
             {
-                bool alreadyKnocked = knockdownStart >= 0;
-                knockdownStart = Time.time;
-                
-                if (!alreadyKnocked)
-                {
-                    ragdoll.BodyEnabled = true;
-                    StartCoroutine(GetUp());
-                }
+                ragdoll.KnockDown(knockdownTime);
             }
-        }
-
-        private IEnumerator GetUp()
-        {
-            while (knockdownStart + knockdownTime > Time.time)
-            {
-                yield return new WaitForSeconds(knockdownStart + knockdownTime - Time.time);
-            }
-
-            ragdoll.BodyEnabled = false;
-            knockdownStart = -1;
         }
     }
 }
