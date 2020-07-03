@@ -9,6 +9,7 @@ namespace SS3D.Engine.Inventory.Extensions
      */
     public class HumanoidContainer : Container
     {
+        public Filter[] filters;
         public GameObject[] displays;
         private Quaternion[] originalRotations;
 
@@ -43,6 +44,7 @@ namespace SS3D.Engine.Inventory.Extensions
         public void OnValidate()
         {
             Array.Resize(ref displays, slots.Length);
+            Array.Resize(ref filters, slots.Length);
         }
         public override void OnStartClient()
         {
@@ -175,6 +177,6 @@ namespace SS3D.Engine.Inventory.Extensions
             if (!isServer)
                 UnplaceItem(index, item);
         }
-
+        public override Filter GetFilter(int slot) => filters[slot];
     }
 }

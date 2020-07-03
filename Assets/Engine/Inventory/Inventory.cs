@@ -118,7 +118,7 @@ namespace SS3D.Engine.Inventory
             var from = fromContainer.GetComponent<Container>();
             var to = toContainer.GetComponent<Container>();
 
-            if (!Container.AreCompatible(to.GetSlot(toIndex), from.GetItem(fromIndex).itemType))
+            if (!Container.AreCompatible(to.GetFilter(toIndex), from.GetItem(fromIndex)))
                 throw new InventoryOperationException("Item not compatible with slot");
 
             GameObject item = from.RemoveItem(fromIndex);

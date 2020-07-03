@@ -259,6 +259,16 @@ MonoBehaviour:
   containerType: 1
   containerFilter: {fileID: 11400000, guid: 40e3b946dc1dc314592ef8d6afcd9162, type: 2}
   slots: 010000000200000003000000040000000500000007000000080000000c0000000d000000
+  filters:
+  - {fileID: 11400000, guid: 2c9b78d1ecaf0c44889c1f7eb98de085, type: 2}
+  - {fileID: 11400000, guid: 27ae84b7a7b5da2429350c1d20339898, type: 2}
+  - {fileID: 11400000, guid: 2d0701c3dee46b54dbbb2f0246081ba0, type: 2}
+  - {fileID: 11400000, guid: abb8943a366bbfe4d9d25a6f6714e219, type: 2}
+  - {fileID: 11400000, guid: c293aab5cc715fb4182e95a0c0e6baae, type: 2}
+  - {fileID: 11400000, guid: d00f22c8e6044cd4a8ac831591d4365e, type: 2}
+  - {fileID: 11400000, guid: e6272cbef2d9ed9489358893eed0ed44, type: 2}
+  - {fileID: 11400000, guid: edc61d09fc1a5a84e98f63e51d1a0f1b, type: 2}
+  - {fileID: 11400000, guid: 965f83328d6f0ef4db3ca6b713932c19, type: 2}
   displays:
   - {fileID: 1497768525724101046}
   - {fileID: 1497768525724101046}

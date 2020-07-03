@@ -51,15 +51,15 @@ namespace SS3D.Engine.Inventory
             LeftHand,
             RightHand
         }
-        public static bool AreCompatible(SlotType slot, Item.ItemType item)
+        public static bool AreCompatible(Filter slot, Item item)
         {
-            // This is somewhat hacky, but slots are potentially subject to change anyway.
-            return slot == SlotType.General || (int)slot == (int)item || (int)slot > 9;
+            if (slot == null || item == null)
+                throw new Exception("Trying to check null compatibility");
+            return slot.CanStore(item);
         }
 
         public static bool CanStore(Container container, Item item)
         {
-            Debug.Log("Storing: " + item.Name + " in " + container.containerFilter.name + " filter");
             if (container.containerFilter == null)
                 return true;
             return container.containerFilter.CanStore(item);
@@ -172,7 +172,7 @@ namespace SS3D.Engine.Inventory
          * Get the slot type of a given slot
          */
         public SlotType GetSlot(int slot) => slots[slot];
-        public Filter GetFilter(int slot) => containerFilter;
+        public virtual Filter GetFilter(int slot) => containerFilter;
         public int Length() => slots.Length;
 
         public bool IsFilter(string name)
