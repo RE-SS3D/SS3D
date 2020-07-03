@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 4452173967738094107}
   - component: {fileID: 8306720623195580296}
   - component: {fileID: 4968868803568977639}
-  - component: {fileID: 7821470909890964834}
   - component: {fileID: 8371882450930850212}
+  - component: {fileID: 7821470909890964834}
+  - component: {fileID: -5120229352581138748}
   - component: {fileID: -3925197901788839770}
   m_Layer: 16
   m_Name: flashlight
@@ -69,6 +70,19 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
+--- !u!65 &8371882450930850212
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833752496874958856}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.22681566, y: 0.2089166, z: 0.3477433}
+  m_Center: {x: 0, y: -0.10596359, z: 0.11006506}
 --- !u!114 &7821470909890964834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83,8 +97,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: flashlight_blue
+  Name: Flashlight
   Volume: 10
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -95,19 +109,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7f22e87f08452654f8f20ace0b1e0fa3, type: 2}
   light: {fileID: 5674409998555339756}
   turnOnIcon: {fileID: 21300000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
---- !u!65 &8371882450930850212
-BoxCollider:
+--- !u!114 &-5120229352581138748
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 833752496874958856}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.22681566, y: 0.2089166, z: 0.3477433}
-  m_Center: {x: 0, y: -0.10596359, z: 0.11006506}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: Helps you seen in dark areas.
+  MaxDistance: 0
 --- !u!114 &-3925197901788839770
 MonoBehaviour:
   m_ObjectHideFlags: 0

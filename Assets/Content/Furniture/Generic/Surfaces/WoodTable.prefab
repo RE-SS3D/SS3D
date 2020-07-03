@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4229887190052127918}
   - component: {fileID: 7514870336629038223}
   - component: {fileID: 5549007176416625144}
+  - component: {fileID: -6754659111865001399}
   m_Layer: 0
   m_Name: WoodTable
   m_TagString: Untagged
@@ -127,6 +128,22 @@ MonoBehaviour:
     type: 3}
   xTriple: {fileID: 2366772936640235762, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   xQuad: {fileID: 2132198340200658450, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  viewObstacles: []
+  opaque: 0
+--- !u!114 &-6754659111865001399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3879826479501069436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Wood Table</b>
+  MaxDistance: 0
 --- !u!1001 &6293662703714347641
 PrefabInstance:
   m_ObjectHideFlags: 0

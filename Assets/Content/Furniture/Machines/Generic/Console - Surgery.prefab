@@ -470,6 +470,7 @@ GameObject:
   - component: {fileID: 8052346660274439130}
   - component: {fileID: 4991558935512110270}
   - component: {fileID: 6355683579538927932}
+  - component: {fileID: -1818736779901110930}
   m_Layer: 0
   m_Name: Console - Surgery
   m_TagString: Untagged
@@ -526,6 +527,20 @@ MonoBehaviour:
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
+--- !u!114 &-1818736779901110930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6477574049359786441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Surgery Console</b>
+  MaxDistance: 0
 --- !u!1 &6505763806015701181
 GameObject:
   m_ObjectHideFlags: 0

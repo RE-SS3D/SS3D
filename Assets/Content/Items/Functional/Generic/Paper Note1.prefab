@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6344412732489801613}
   - component: {fileID: 81753993472944715}
   - component: {fileID: 3155762825819979116}
+  - component: {fileID: -7063391162370056596}
   - component: {fileID: 6729487762566565212}
   m_Layer: 16
   m_Name: Paper Note1
@@ -144,8 +145,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: paper_note_1
+  Name: Paper
   Volume: 3
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -153,6 +154,20 @@ MonoBehaviour:
   attachmentPoint: {fileID: 5619358522930796628}
   bulkSize: 1
   traits: []
+--- !u!114 &-7063391162370056596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2002843705174005225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!114 &6729487762566565212
 MonoBehaviour:
   m_ObjectHideFlags: 0

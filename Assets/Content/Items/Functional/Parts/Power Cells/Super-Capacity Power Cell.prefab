@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 380944425635963224}
   - component: {fileID: 5645026291506796971}
   - component: {fileID: 2273168541974255534}
+  - component: {fileID: 4884682140181566839}
   - component: {fileID: -2469115493504090853}
   - component: {fileID: 4659898452993661522}
   m_Layer: 0
@@ -133,8 +134,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: cell_power_super
+  Name: Super-Capacity Power Cell
   Volume: 10
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -158,6 +159,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   propertiesPrefab: {fileID: 11400000, guid: 32b9eb297ddd9a349bd7c37051d1f017, type: 2}
+--- !u!114 &4884682140181566839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072858492241738576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: Maximum charge of 20,000W.
+  MaxDistance: 0
 --- !u!114 &-2469115493504090853
 MonoBehaviour:
   m_ObjectHideFlags: 0

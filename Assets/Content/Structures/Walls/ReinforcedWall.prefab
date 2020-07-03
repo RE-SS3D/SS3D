@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 6696866361892651655}
   - component: {fileID: -3559051840117011521}
   - component: {fileID: -1603528896830197534}
+  - component: {fileID: 181711760065846440}
   m_Layer: 0
   m_Name: ReinforcedWall
   m_TagString: Untagged
@@ -225,6 +226,20 @@ MonoBehaviour:
   - {fileID: 6170480918572581761}
   - {fileID: 2695440453904607509}
   opaque: 1
+--- !u!114 &181711760065846440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Reinforced Wall</b>
+  MaxDistance: 0
 --- !u!1 &5351388144419023931
 GameObject:
   m_ObjectHideFlags: 0

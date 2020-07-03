@@ -334,6 +334,7 @@ GameObject:
   - component: {fileID: 7805926091253285690}
   - component: {fileID: 6734436492751497381}
   - component: {fileID: 8589072317211894302}
+  - component: {fileID: 2441490045753728382}
   m_Layer: 16
   m_Name: Egg Carton
   m_TagString: Untagged
@@ -403,8 +404,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: egg_carton
+  Name: Egg Carton
   Volume: 15
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -412,6 +413,20 @@ MonoBehaviour:
   attachmentPoint: {fileID: 8603022403202917302}
   bulkSize: 3
   traits: []
+--- !u!114 &2441490045753728382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5699756661827582718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!1 &5725990302085194185
 GameObject:
   m_ObjectHideFlags: 0

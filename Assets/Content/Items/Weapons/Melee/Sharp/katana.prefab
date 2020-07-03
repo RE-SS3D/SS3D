@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5944141881834570513}
   - component: {fileID: 473111862903808283}
   - component: {fileID: 5631860100232263154}
+  - component: {fileID: -8080460482961284108}
   m_Layer: 16
   m_Name: katana
   m_TagString: Untagged
@@ -144,8 +145,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: katana
+  Name: Katana
   Volume: 18
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -155,6 +156,20 @@ MonoBehaviour:
   traits:
   - {fileID: 11400000, guid: 08c4bae5b95cea146826e467131ec146, type: 2}
   - {fileID: 11400000, guid: 815dcab6a0a677a418fa679d054ab3f2, type: 2}
+--- !u!114 &-8080460482961284108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4849637522547643451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!1 &9054708316780237412
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2183948917681095833}
   - component: {fileID: 7664829981479568445}
   - component: {fileID: 3209975703642301990}
+  - component: {fileID: 7653551226633473980}
   m_Layer: 0
   m_Name: Valve
   m_TagString: Untagged
@@ -141,3 +142,17 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -2963837208830022773, guid: 2a30be4c78c286b4e89636ae631df4d0, type: 3}
+--- !u!114 &7653551226633473980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Atmospheric Digital Valve</b>
+  MaxDistance: 0

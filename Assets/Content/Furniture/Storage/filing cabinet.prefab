@@ -46,9 +46,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!33 &6789387956591333597
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -123,6 +124,7 @@ GameObject:
   - component: {fileID: 5237792278121232478}
   - component: {fileID: 4430553557512075734}
   - component: {fileID: 2540904150862860421}
+  - component: {fileID: -3299119872358452623}
   m_Layer: 0
   m_Name: filing cabinet
   m_TagString: Untagged
@@ -157,9 +159,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!33 &688931615906964136
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -236,3 +239,17 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.75339997, y: 0.82712626, z: 0.64146507}
   m_Center: {x: 0, y: 0.39436263, z: -0.17926759}
+--- !u!114 &-3299119872358452623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4621129041730008579}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Filing Cabinet</b>
+  MaxDistance: 0

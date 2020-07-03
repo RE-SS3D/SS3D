@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 8346027253206736873}
   - component: {fileID: 4180117066415140293}
   - component: {fileID: 8036318328820754698}
+  - component: {fileID: -7903885912747747283}
   - component: {fileID: -1352320728125532648}
   m_Layer: 16
   m_Name: metal
@@ -144,8 +145,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: sheet_metal
+  Name: Metal Sheet
   Volume: 15
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -153,6 +154,20 @@ MonoBehaviour:
   attachmentPoint: {fileID: 8309000899177645629}
   bulkSize: 3
   traits: []
+--- !u!114 &-7903885912747747283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: A sheet of metal used to craft.
+  MaxDistance: 0
 --- !u!114 &-1352320728125532648
 MonoBehaviour:
   m_ObjectHideFlags: 0

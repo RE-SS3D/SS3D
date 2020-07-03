@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -1074477776341974781}
   - component: {fileID: -4998431523760016775}
   - component: {fileID: -2157675422188738014}
+  - component: {fileID: -4586323539454048132}
   m_Layer: 0
   m_Name: Wires - Red
   m_TagString: Untagged
@@ -128,3 +129,17 @@ MonoBehaviour:
   xAll: {fileID: -7817982645307611128, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
   xOpposite: {fileID: 4589832180642396251, guid: 653d23c68a57e03498cd8519026c3404,
     type: 3}
+--- !u!114 &-4586323539454048132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Wire</b>
+  MaxDistance: 0

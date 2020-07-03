@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 5580621834686146881}
   - component: {fileID: 334269399968291693}
   - component: {fileID: 5847905001523781538}
+  - component: {fileID: 6672297322195662602}
   - component: {fileID: -6874481066319101183}
   m_Layer: 16
   m_Name: metal rod
@@ -174,8 +175,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: rod
+  Name: Metal Rod
   Volume: 15
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -183,6 +184,20 @@ MonoBehaviour:
   attachmentPoint: {fileID: 4296875420921923027}
   bulkSize: 3
   traits: []
+--- !u!114 &6672297322195662602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6648108891598995051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!114 &-6874481066319101183
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -14,8 +14,9 @@ GameObject:
   - component: {fileID: -4998431523760016775}
   - component: {fileID: 2183948917681095833}
   - component: {fileID: 346119420360410449}
+  - component: {fileID: 6870894424856861174}
   m_Layer: 0
-  m_Name: Disposals
+  m_Name: Disposals Pipe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -130,3 +131,17 @@ MonoBehaviour:
   l: {fileID: -548691322741330555, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
   t: {fileID: 73842842073706688, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
   x: {fileID: -6317827165641120141, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
+--- !u!114 &6870894424856861174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Disposal Pipe</b>
+  MaxDistance: 0

@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 3387660341056776027}
   - component: {fileID: 7409172233181664631}
   - component: {fileID: 3699377523764859320}
+  - component: {fileID: -1834535683918461050}
   - component: {fileID: 6999115407934731445}
   m_Layer: 16
   m_Name: Light Tube Broken2
@@ -174,8 +175,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: light_tube_broken_2
+  Name: Broken Light Tube
   Volume: 6
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -183,6 +184,20 @@ MonoBehaviour:
   attachmentPoint: {fileID: 8179472452915626595}
   bulkSize: 1
   traits: []
+--- !u!114 &-1834535683918461050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4482182292948660337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!114 &6999115407934731445
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8936394620877737717}
   - component: {fileID: 6406515006924486677}
   - component: {fileID: 7650047217586248362}
+  - component: {fileID: 8054511455686520210}
   m_Layer: 0
   m_Name: 3 Layer Manifold
   m_TagString: Untagged
@@ -126,3 +127,17 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -84770516165790116, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+--- !u!114 &8054511455686520210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6937106039017095358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Atmospheric Pipe Layer Manifold</b>
+  MaxDistance: 0

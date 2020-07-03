@@ -90,8 +90,9 @@ GameObject:
   - component: {fileID: 893561488260791220}
   - component: {fileID: 3383353685888793158}
   - component: {fileID: 2951298438764097659}
-  - component: {fileID: 6857499590730081236}
   - component: {fileID: 5583586157620204599}
+  - component: {fileID: 6857499590730081236}
+  - component: {fileID: -5385041509498663856}
   m_Layer: 16
   m_Name: Egg Splatter 1
   m_TagString: Untagged
@@ -146,6 +147,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!65 &5583586157620204599
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4196731054265338279}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.383415, y: 0.11904168, z: 0.30232507}
+  m_Center: {x: 0.0016872138, y: 0.052765727, z: -0.04813709}
 --- !u!114 &6857499590730081236
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,8 +174,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: egg_splatter
+  Name: Egg Splatter
   Volume: 4
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -171,18 +185,19 @@ MonoBehaviour:
   traits:
   - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
 --- !u!65 &5583586157620204599
-BoxCollider:
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4196731054265338279}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.383415, y: 0.11904168, z: 0.30232507}
-  m_Center: {x: 0.0016872138, y: 0.052765727, z: -0.04813709}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!1 &6270124958724687780
 GameObject:
   m_ObjectHideFlags: 0

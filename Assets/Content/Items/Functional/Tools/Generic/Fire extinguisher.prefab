@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 497373299252588145}
   - component: {fileID: 5707977877406080093}
   - component: {fileID: 1923794609448245394}
+  - component: {fileID: -605181505711505002}
   - component: {fileID: -5943420256508800679}
   m_Layer: 16
   m_Name: Fire extinguisher
@@ -144,8 +145,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: fire_extinguisher
+  Name: Fire Extinguisher
   Volume: 17
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -154,6 +155,20 @@ MonoBehaviour:
   bulkSize: 3
   traits:
   - {fileID: 11400000, guid: 7f22e87f08452654f8f20ace0b1e0fa3, type: 2}
+--- !u!114 &-605181505711505002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1717996044855867739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!114 &-5943420256508800679
 MonoBehaviour:
   m_ObjectHideFlags: 0

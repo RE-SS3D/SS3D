@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 2596605630319959798}
   - component: {fileID: 1757047475811065871}
   - component: {fileID: 2855631924689371505}
+  - component: {fileID: -3472396096689102796}
   m_Layer: 16
   m_Name: paper cup
   m_TagString: Untagged
@@ -275,7 +276,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: cup_paper
-  Name: 
+  Name: Paper Cup
   Volume: 10
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -284,6 +285,20 @@ MonoBehaviour:
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: a86f8b10eacec4540a203b13004c2389, type: 2}
+--- !u!114 &-3472396096689102796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 298201769935591731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!1 &1561983073461142388
 GameObject:
   m_ObjectHideFlags: 0

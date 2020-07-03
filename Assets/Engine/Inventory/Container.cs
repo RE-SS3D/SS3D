@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using SS3D.Content.Systems.Interactions;
 using UnityEngine;
 
 namespace SS3D.Engine.Inventory
@@ -99,6 +100,7 @@ namespace SS3D.Engine.Inventory
         [Server]
         public int AddItem(GameObject item)
         {
+            item.SetActive(false);
             var itemComponent = item.GetComponent<Item>();
             for (int i = 0; i < items.Count; ++i) {
                 if (items[i] == null && CanStore(this, itemComponent)) {
@@ -188,6 +190,22 @@ namespace SS3D.Engine.Inventory
             return -1;
         }
 
+         /// <summary>
+        /// Destroys all items inside this container
+        /// </summary>
+        public void Purge()
+        {
+            for (var i = 0; i < items.Count; i++)
+            {
+                var item = items[i].GetComponent<Item>();
+                if (item != null)
+                {
+                    item.container = null;
+                }
+                ItemHelpers.DestroyItem(item);
+                items[i] = null;
+            }
+        }
         public override void OnStartServer()
         {
             for (int i = 0; i < slots; ++i)

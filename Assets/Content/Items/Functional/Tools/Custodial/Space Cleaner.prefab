@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5004082379764397309}
   - component: {fileID: 1957319808741603226}
   - component: {fileID: 3941342626258687516}
+  - component: {fileID: 3986811746243995332}
   - component: {fileID: -3256944718675993303}
   m_Layer: 16
   m_Name: Space Cleaner
@@ -145,8 +146,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: space_cleaner
+  Name: Space Cleaner
   Volume: 10
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -154,6 +155,20 @@ MonoBehaviour:
   attachmentPoint: {fileID: 1136631946976607037}
   bulkSize: 2
   traits: []
+--- !u!114 &3986811746243995332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 482575724292013721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: Squirts away the dirt!
+  MaxDistance: 0
 --- !u!114 &-3256944718675993303
 MonoBehaviour:
   m_ObjectHideFlags: 0

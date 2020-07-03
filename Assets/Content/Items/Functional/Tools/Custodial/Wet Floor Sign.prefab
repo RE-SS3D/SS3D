@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: -1108366548022131603}
   - component: {fileID: 5497572188110212037}
   - component: {fileID: 7048398422637914691}
+  - component: {fileID: -3587796238376375265}
   - component: {fileID: 1890660286906580188}
   m_Layer: 16
   m_Name: Wet Floor Sign
@@ -188,8 +189,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: wet_floor_sign
+  Name: Wet Floor Sign
   Volume: 10
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -197,6 +198,20 @@ MonoBehaviour:
   attachmentPoint: {fileID: 6387414349369444194}
   bulkSize: 4
   traits: []
+--- !u!114 &-3587796238376375265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5895479272048837318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!114 &1890660286906580188
 MonoBehaviour:
   m_ObjectHideFlags: 0

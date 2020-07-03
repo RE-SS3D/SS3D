@@ -174,5 +174,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Text: '<b>Plasma Canister</b>
 
-    Cautionn Dangerous!'
+    CAUTION, contains Plasma!'
   MaxDistance: 0

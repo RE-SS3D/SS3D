@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 8857300185401674424}
   - component: {fileID: 7952536363759554373}
   - component: {fileID: 5289911865508279092}
+  - component: {fileID: 4650353189851888909}
   - component: {fileID: 5605873533124637808}
   m_Layer: 0
   m_Name: CrayonWhite
@@ -176,8 +177,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: crayon_white
+  Name: White Crayon
   Volume: 3
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -200,6 +201,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   propertiesPrefab: {fileID: 11400000, guid: c6e64f8504616f745a32254e98352b46, type: 2}
+--- !u!114 &4650353189851888909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7215848607974574521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!114 &5605873533124637808
 MonoBehaviour:
   m_ObjectHideFlags: 0

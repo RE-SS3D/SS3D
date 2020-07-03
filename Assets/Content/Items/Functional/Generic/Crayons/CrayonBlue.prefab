@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 380944425635963224}
   - component: {fileID: 5645026291506796971}
   - component: {fileID: 6909165344461321721}
+  - component: {fileID: 618684551706682383}
   - component: {fileID: -2469115493504090853}
   m_Layer: 0
   m_Name: CrayonBlue
@@ -146,8 +147,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: crayon_blue
+  Name: Blue Crayon
   Volume: 3
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -170,6 +171,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   propertiesPrefab: {fileID: 11400000, guid: 20b6c0435cf5346488202b165aaeeab0, type: 2}
+--- !u!114 &618684551706682383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072858492241738576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!114 &-2469115493504090853
 MonoBehaviour:
   m_ObjectHideFlags: 0

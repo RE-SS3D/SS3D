@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 7250308185853647186}
   - component: {fileID: 3264983439950801790}
   - component: {fileID: 8704318443750846385}
+  - component: {fileID: 1432820004509804393}
   - component: {fileID: 3480391303794857083}
   m_Layer: 16
   m_Name: ID
@@ -174,8 +175,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: id_standard
+  Name: Identification Card
   Volume: 2
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -184,6 +185,20 @@ MonoBehaviour:
   bulkSize: 0
   traits:
   - {fileID: 11400000, guid: b32782ff01546ec4eb853a3bdb04bf39, type: 2}
+--- !u!114 &1432820004509804393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8479942524297268856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!114 &3480391303794857083
 MonoBehaviour:
   m_ObjectHideFlags: 0

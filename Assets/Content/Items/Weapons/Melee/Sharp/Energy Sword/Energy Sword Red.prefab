@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1621254900413859771}
   - component: {fileID: 4990654379235175600}
   - component: {fileID: 6685713788759461778}
+  - component: {fileID: -2447690748091761972}
   - component: {fileID: 351750458048978072}
   - component: {fileID: 6200212019699599832}
   m_Layer: 16
@@ -96,8 +97,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
-  Name: 
+  ItemId: energy_sword_red
+  Name: Energy Sword
   Volume: 7
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -111,6 +112,20 @@ MonoBehaviour:
   soundOn: {fileID: 8300000, guid: 81842472797700d479c0ea5aef90fe57, type: 3}
   soundOff: {fileID: 8300000, guid: ae6a0d3a332b67f4d968b477273cea56, type: 3}
   turnOnIcon: {fileID: 21300000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
+--- !u!114 &-2447690748091761972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 526728262711873681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!95 &351750458048978072
 Animator:
   serializedVersion: 3
