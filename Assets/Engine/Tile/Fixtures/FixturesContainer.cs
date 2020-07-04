@@ -250,11 +250,11 @@ namespace SS3D.Engine.Tiles
         public static TileDefinition ValidateFixtures(TileDefinition tileDefinition)
         {
             bool altered = false;
+            string reason = "";
 
-            // If lattice, remove turf and tile fixtures
+            // If lattice, remove tile fixtures
             if (tileDefinition.plenum.name.Contains("Lattice"))
             {
-                // tileDefinition.turf = null;
                 foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
                 {
                     if (tileDefinition.fixtures.GetTileFixtureAtLayer(layer) != null)
@@ -263,16 +263,14 @@ namespace SS3D.Engine.Tiles
                         tileDefinition.fixtures.SetTileFixtureAtLayer(null, layer);
                     }
                 }
+                if (altered)
+                    reason += "Lattices do not support any wall/floor fixture.\n";
             }
 
             // If catwalk
             if (tileDefinition.plenum.name.Contains("Catwalk"))
             {
-                // Only allow floor plating
-                // if (tileDefinition.turf != null && !tileDefinition.turf.name.Contains("FloorPlating"))
-                    // tileDefinition.turf = null;
-
-                // Allow wire layer
+                // Allow only the wire layer in tile fixtures
                 foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
                 {
                     if (layer != TileFixtureLayers.Wire)
@@ -280,6 +278,7 @@ namespace SS3D.Engine.Tiles
                         if (tileDefinition.fixtures.GetTileFixtureAtLayer(layer) != null)
                         {
                             altered = true;
+                            reason += "Catwalk only supports a wire and upper pipe layer.\n";
                             tileDefinition.fixtures.SetTileFixtureAtLayer(null, layer);
                         }
                     }
@@ -298,6 +297,7 @@ namespace SS3D.Engine.Tiles
                     if (tileDefinition.fixtures.GetFloorFixtureAtLayer(layer) != null)
                     {
                         altered = true;
+                        reason += "Cannot set a floor fixture when there is no floor.\n";
                         Debug.Log("Cannot set a floor fixture when there is no floor");
                     }
 
@@ -313,6 +313,7 @@ namespace SS3D.Engine.Tiles
                     if (tileDefinition.fixtures.GetWallFixtureAtLayer(layer) != null)
                     {
                         altered = true;
+                        reason += "Cannot set a wall fixture when there is no wall.\n";
                         Debug.Log("Cannot set a wall fixture when there is no wall");
                     }
 
@@ -330,6 +331,7 @@ namespace SS3D.Engine.Tiles
                         if (tileDefinition.fixtures.GetWallFixtureAtLayer(layer) != null)
                         {
                             altered = true;
+                            reason += "Glass walls do not allow low wall fixtures.\n";
                             tileDefinition.fixtures.SetWallFixtureAtLayer(null, layer);
                         }
                     }
@@ -361,7 +363,10 @@ namespace SS3D.Engine.Tiles
 #if UNITY_EDITOR
             if (altered)
             {
-                EditorUtility.DisplayDialog("Fixture combination", "You chose an invalid combination of fixtures. Definition has been reset.", "ok");
+                EditorUtility.DisplayDialog("Fixture combination", "Invalid because of the following: \n\n" +
+                    reason +
+                    "\n" +
+                    "Definition has been reset.", "ok");
             }
 #endif
 
