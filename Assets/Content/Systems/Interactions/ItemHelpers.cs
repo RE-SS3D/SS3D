@@ -1,25 +1,13 @@
-﻿using Mirror;
+﻿using System;
+using Mirror;
 using SS3D.Engine.Inventory;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace SS3D.Content.Systems.Interactions
 {
     public static class ItemHelpers
     {
-        /// <summary>
-        /// Destroys an item
-        /// </summary>
-        /// <param name="item">The item to destroy</param>
-        public static void DestroyItem(Item item)
-        {
-            if (item.container != null)
-            {
-                item.container.RemoveItem(item.GameObject);
-            }
-            
-            NetworkServer.Destroy(item.GameObject);
-        }
-
         /// <summary>
         /// Replaces an item with a different item
         /// </summary>
@@ -43,7 +31,7 @@ namespace SS3D.Content.Systems.Interactions
 
             if (destroyOriginal)
             {
-                DestroyItem(original);
+                original.Destroy();
             }
         }
 
