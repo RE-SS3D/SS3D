@@ -1,9 +1,10 @@
-﻿using Mirror;
+using Mirror;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using SS3D.Content.Systems.Interactions;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace SS3D.Engine.Inventory
 {
@@ -17,25 +18,30 @@ namespace SS3D.Engine.Inventory
     public class Container : NetworkBehaviour
     {
         #region Classes and Types
-        // TODO: We should investigate whether we should use something other than enums, e.g. just strings.
 
-        // This is the types of container that are currently defined and needed for distinguishing in the UI.
-        // TODO: It's currently kinda silly. The ideal solution would be distinguishing by type (which directly relates to restrictions) + Origin.
-        // Making OverTorsoStorage and TorsoPockets no longer necessary.
-        
         public static bool AreCompatible(Filter slot, Item item)
         {
-            if (slot == null || item == null)
-                Debug.LogWarning("Trying to use an container without a filter");
+            if (slot == null)
+            {
+                Debug.LogWarning("Trying to use a container without a filter");
+                return true;
+            }
+            
+            Assert.IsNotNull(item);
+
             return slot.CanStore(item);
         }
 
         public static bool CanStore(Container container, Item item)
         {
-            if ((container.volume + item.Volume <= container.maxVolume) == false && container.volumeLimited)
+            if (container.volumeLimited && !(container.volume + item.Volume <= container.maxVolume))
                 return false;
             if (container.containerFilter == null)
+            {
+                Debug.LogWarning("Trying to use a container without a filter", container);
                 return true;
+            }
+
             return container.containerFilter.CanStore(item);
         }
 
