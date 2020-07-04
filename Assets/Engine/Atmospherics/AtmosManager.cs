@@ -1,4 +1,5 @@
 ﻿using SS3D.Engine.Tiles;
+using SS3D.Engine.Tiles.Connections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,6 +25,7 @@ namespace SS3D.Engine.Atmospherics
         public bool isAddingGas = false;
         public bool showPipes = false;
         private AtmosGasses gasToAdd = AtmosGasses.Oxygen;
+        public PipeObject.PipeLayer selectedPipeLayer = PipeObject.PipeLayer.Upper;
 
         private TileManager tileManager;
         private List<TileObject> tileObjects;
@@ -109,18 +111,21 @@ namespace SS3D.Engine.Atmospherics
 
 
                 // Pipe init
-                PipeObject pipe = tile.GetComponentInChildren<PipeObject>();
-                if (pipe != null)
+                PipeObject[] pipes = tile.GetComponentsInChildren<PipeObject>();
+                foreach (PipeObject pipe in pipes)
                 {
-                    pipe.SetTileNeighbour(tileNeighbour, 0);
-                    pipe.SetTileNeighbour(tileNeighbour2, 1);
-                    pipe.SetTileNeighbour(tileNeighbour3, 2);
-                    pipe.SetTileNeighbour(tileNeighbour4, 3);
-                    pipeTiles.Add(pipe);
-                    pipesInstantiated++;
+                    if (pipe != null)
+                    {
+                        pipe.SetTileNeighbour(tileNeighbour, 0);
+                        pipe.SetTileNeighbour(tileNeighbour2, 1);
+                        pipe.SetTileNeighbour(tileNeighbour3, 2);
+                        pipe.SetTileNeighbour(tileNeighbour4, 3);
+                        pipeTiles.Add(pipe);
+                        pipesInstantiated++;
+                    }
                 }
 
-                //// Do pumps
+                // Do pumps
                 IAtmosLoop device = tile.GetComponentInChildren<IAtmosLoop>();
                 if (device != null)
                 {
@@ -140,9 +145,12 @@ namespace SS3D.Engine.Atmospherics
             {
                 // Atmos tiles and pipes
                 tile.atmos.setAtmosNeighbours();
-                PipeObject pipe = tile.GetComponentInChildren<PipeObject>();
-                if (pipe)
-                    pipe.SetAtmosNeighbours();
+                PipeObject[] pipes = tile.GetComponentsInChildren<PipeObject>();
+                foreach (PipeObject pipe in pipes)
+                {
+                    if (pipe)
+                        pipe.SetAtmosNeighbours();
+                }
 
                 IAtmosLoop device = tile.GetComponentInChildren<IAtmosLoop>();
                 if (device != null)
@@ -220,26 +228,32 @@ namespace SS3D.Engine.Atmospherics
                             }
                             else if (showPipes)
                             {
-                                PipeObject pipe = tile.GetComponentInChildren<PipeObject>();
-                                if (pipe)
+                                PipeObject[] pipes = tile.GetComponentsInChildren<PipeObject>();
+                                bool pipeLayerFound = false;
+                                foreach (PipeObject pipe in pipes)
                                 {
-                                    if (isAddingGas)
+                                    if (pipe && pipe.layer == selectedPipeLayer)
                                     {
-                                        pipe.AddGas(gasToAdd, 30f);
-                                    }
-                                    else
-                                    {
-                                        Debug.Log("Pipe, Pressure (kPa): " + pipe.GetPressure() + " Temperature (K): " + pipe.GetAtmosContainer().GetTemperature() + " State: " + pipe.GetState().ToString() + "\t" +
-                                            " Oxygen content: " + pipe.GetAtmosContainer().GetGasses()[0] +
-                                            " Nitrogen content: " + pipe.GetAtmosContainer().GetGasses()[1] +
-                                            " Carbon Dioxide content: " + pipe.GetAtmosContainer().GetGasses()[2] +
-                                            " Plasma content: " + pipe.GetAtmosContainer().GetGasses()[3]);
-                                        lastClick = Time.fixedTime;
+                                        pipeLayerFound = true;
+                                        if (isAddingGas)
+                                        {
+                                            pipe.AddGas(gasToAdd, 30f);
+                                        }
+                                        else
+                                        {
+                                            Debug.Log("Pipe, Pressure (kPa): " + pipe.GetPressure() + " Temperature (K): " + pipe.GetAtmosContainer().GetTemperature() + " State: " + pipe.GetState().ToString() + "\t" +
+                                                " Oxygen content: " + pipe.GetAtmosContainer().GetGasses()[0] +
+                                                " Nitrogen content: " + pipe.GetAtmosContainer().GetGasses()[1] +
+                                                " Carbon Dioxide content: " + pipe.GetAtmosContainer().GetGasses()[2] +
+                                                " Plasma content: " + pipe.GetAtmosContainer().GetGasses()[3]);
+                                            lastClick = Time.fixedTime;
+                                        }
                                     }
                                 }
-                                else
+
+                                if (!pipeLayerFound)
                                 {
-                                    Debug.Log("No pipe found on the clicked tile");
+                                    Debug.Log("No pipe found on the clicked tile for layer " + selectedPipeLayer.ToString());
                                     lastClick = Time.fixedTime;
                                 }
                             }
@@ -510,70 +524,125 @@ namespace SS3D.Engine.Atmospherics
                         }
                     }
 
+                    drawSize = 1f;
+
                     // Draw pipe contents
                     if (showPipes)
                     {
-                        PipeObject pipe = tile.GetComponentInChildren<PipeObject>();
-                        if (pipe)
+                        PipeObject[] pipes = tile.GetComponentsInChildren<PipeObject>();
+                        foreach (PipeObject pipe in pipes)
                         {
-                            switch (pipe.GetState())
+                            if (pipe)
                             {
-                                case AtmosStates.Active: state = new Color(0, 0, 0, 0); break;
-                                case AtmosStates.Semiactive: state = new Color(0, 0, 0, 0.8f); break;
-                                case AtmosStates.Inactive: state = new Color(0, 0, 0, 0.8f); break;
-                                default: state = new Color(0, 0, 0, 1); break;
-                            }
+                                float pipeOffset = 0f;
+                                OffsetPipesAdjacencyConnector offsetConnector = pipe.GetComponent<OffsetPipesAdjacencyConnector>();
+                                OffsetPipesAdjacencyConnector.PipeOrientation pipeOrientation = OffsetPipesAdjacencyConnector.PipeOrientation.o;
+                                if (offsetConnector)
+                                    pipeOrientation = offsetConnector.GetPipeOrientation();
 
-                            switch (drawView)
-                            {
-                                case ViewType.Content:
-                                    float[] gases = new float[5];
+                                //switch (pipe.layer)
+                                //{
+                                //    case PipeObject.PipeLayer.L1:
+                                //        pipeOffset = -0.25f;
+                                //        break;
+                                //    case PipeObject.PipeLayer.L2:
+                                //        pipeOffset = 0f;
+                                //        break;
+                                //    case PipeObject.PipeLayer.L3:
+                                //        pipeOffset = 0.25f;
+                                //        break;
+                                //    case PipeObject.PipeLayer.Upper:
+                                //        pipeOffset = 0f;
+                                //        break;
+                                //}
 
-                                    Color[] colors = new Color[] { Color.yellow, Color.white, Color.gray, Color.magenta };
-                                    float offset = 0f;
+                                switch (pipe.GetState())
+                                {
+                                    case AtmosStates.Active: state = new Color(0, 0, 0, 0); break;
+                                    case AtmosStates.Semiactive: state = new Color(0, 0, 0, 0.8f); break;
+                                    case AtmosStates.Inactive: state = new Color(0, 0, 0, 0.8f); break;
+                                    default: state = new Color(0, 0, 0, 1); break;
+                                }
 
-                                    for (int k = 0; k < 4; ++k)
-                                    {
-                                        float moles = pipe.GetAtmosContainer().GetGasses()[k] / 30f;
+                                switch (drawView)
+                                {
+                                    case ViewType.Content:
+                                        float[] gases = new float[5];
 
-                                        if (moles != 0f)
+                                        Color[] colors = new Color[] { Color.yellow, Color.white, Color.gray, Color.magenta };
+                                        float offset = 0f;
+
+                                        for (int k = 0; k < 4; ++k)
                                         {
-                                            Gizmos.color = colors[k] - state;
-                                            if (drawAll || k == 3) // Only draw plasma
+                                            float moles = pipe.GetAtmosContainer().GetGasses()[k] / 30f;
+
+                                            if (moles != 0f)
                                             {
-                                                Gizmos.DrawCube(new Vector3(x, moles / 2f + offset, y), new Vector3(0.5f * drawSize, moles, 0.5f * drawSize));
-                                                offset += moles;
+                                                Gizmos.color = colors[k] - state;
+                                                if (drawAll || k == 3) // Only draw plasma
+                                                {
+                                                    Gizmos.DrawCube(new Vector3(x, moles / 2f + offset, y), new Vector3(0.5f * drawSize, moles, 0.5f * drawSize));
+                                                    offset += moles;
+                                                }
                                             }
                                         }
-                                    }
-                                    break;
-                                case ViewType.Pressure:
-                                    pressure = pipe.GetPressure() / 160f;
+                                        break;
+                                    case ViewType.Pressure:
+                                        pressure = pipe.GetPressure() / 160f;
 
-                                    if (drawAll || pipe.GetState() == AtmosStates.Active)
-                                    {
-                                        Gizmos.color = Color.white - state;
+                                        if (drawAll || pipe.GetState() == AtmosStates.Active)
+                                        {
+                                            Gizmos.color = Color.white - state;
+                                            // Gizmos.DrawCube(new Vector3(x + pipeOffset, pressure / 2f, y + pipeOffset), new Vector3(0.5f * drawSize, pressure, 0.5f * drawSize));
+                                            DrawPipeCube(x, y, pipe.layer, pressure, pipeOrientation, drawSize);
+                                        }
+                                        break;
+                                    case ViewType.Temperature:
+                                        float temperatue = pipe.GetAtmosContainer().GetTemperature() / 100f;
+
+                                        Gizmos.color = Color.red - state;
+                                        Gizmos.DrawCube(new Vector3(x, temperatue / 2f, y), new Vector3(0.5f * drawSize, temperatue, 0.5f * drawSize));
+                                        break;
+                                    case ViewType.Combined:
+                                        pressure = pipe.GetPressure() / 30f;
+
+                                        Gizmos.color = new Color(pipe.GetAtmosContainer().GetTemperature() / 500f, 0, 0, 1) - state;
                                         Gizmos.DrawCube(new Vector3(x, pressure / 2f, y), new Vector3(0.5f * drawSize, pressure, 0.5f * drawSize));
-                                    }
-                                    break;
-                                case ViewType.Temperature:
-                                    float temperatue = pipe.GetAtmosContainer().GetTemperature() / 100f;
-
-                                    Gizmos.color = Color.red - state;
-                                    Gizmos.DrawCube(new Vector3(x, temperatue / 2f, y), new Vector3(0.5f * drawSize, temperatue, 0.5f * drawSize));
-                                    break;
-                                case ViewType.Combined:
-                                    pressure = pipe.GetPressure() / 30f;
-
-                                    Gizmos.color = new Color(pipe.GetAtmosContainer().GetTemperature() / 500f, 0, 0, 1) - state;
-                                    Gizmos.DrawCube(new Vector3(x, pressure / 2f, y), new Vector3(0.5f * drawSize, pressure, 0.5f * drawSize));
-                                    break;
+                                        break;
+                                }
                             }
                         }
                     }
                 }
                 
             }
+        }
+
+        private void DrawPipeCube(float x, float y, PipeObject.PipeLayer layer, float value, OffsetPipesAdjacencyConnector.PipeOrientation orientation, float drawSize)
+        {
+            float offsetX = 0f;
+            float offsetY = 0f;
+
+            switch (layer)
+            {
+                case PipeObject.PipeLayer.L1:
+                    offsetX = 0.25f;
+                    offsetY = -0.25f;
+                    break;
+            }
+
+
+            switch (orientation)
+            {
+                case OffsetPipesAdjacencyConnector.PipeOrientation.o:
+                    Gizmos.DrawCube(new Vector3(x, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    break;
+                case OffsetPipesAdjacencyConnector.PipeOrientation.x:
+                    Gizmos.DrawCube(new Vector3(x, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    Gizmos.DrawCube(new Vector3(x, value / 2f, y), new Vector3(drawSize, value, 0.2f * drawSize));
+                    break;
+            }
+
         }
     }
 }

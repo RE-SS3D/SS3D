@@ -8,8 +8,19 @@ namespace SS3D.Engine.Atmospherics
 {
     public class PipeObject : MonoBehaviour
     {
+        public enum PipeLayer
+        {
+            L1,
+            L2,
+            L3,
+            Upper
+        }
+
+
+
         private const float maxPipePressure = 2000f;
 
+        public PipeLayer layer;
         public float volume = 1f;
 
         private AtmosContainer atmosContainer = new AtmosContainer();
@@ -49,7 +60,14 @@ namespace SS3D.Engine.Atmospherics
             foreach (TileObject tile in tileNeighbours)
             {
                 if (tile != null)
-                    atmosNeighbours[i] = tile.transform.GetComponentInChildren<PipeObject>();
+                {
+                    PipeObject[] pipes = tile.transform.GetComponentsInChildren<PipeObject>();
+                    foreach (PipeObject pipe in pipes)
+                    {
+                        if (pipe.layer == this.layer)
+                            atmosNeighbours[i] = pipe;
+                    }
+                }
                 i++;
             }
         }
