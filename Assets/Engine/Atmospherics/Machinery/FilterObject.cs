@@ -61,13 +61,13 @@ namespace SS3D.Engine.Atmospherics
                 if (input.GetTotalMoles() <= 1f)
                     return;
 
-                if (outputFiltered.GetPressure() <= _targetPressure && outputOther.GetPressure() <= _targetPressure)
-                {
-                    float totalMoles = Mathf.Max(outputFiltered.GetTotalMoles(), outputOther.GetTotalMoles());
-                    // Calculate necessary moles to transfer using PV=nRT
-                    float pressureDifference = _targetPressure - outputPressure;
-                    float transferMoles = pressureDifference * 1000 * output.volume / (output.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
-                }
+                //if (outputFiltered.GetPressure() <= _targetPressure && outputOther.GetPressure() <= _targetPressure)
+                //{
+                //    float totalMoles = Mathf.Max(outputFiltered.GetTotalMoles(), outputOther.GetTotalMoles());
+                //    // Calculate necessary moles to transfer using PV=nRT
+                //    float pressureDifference = _targetPressure - outputPressure;
+                //    float transferMoles = pressureDifference * 1000 * output.volume / (output.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
+                //}
             }
         }
 

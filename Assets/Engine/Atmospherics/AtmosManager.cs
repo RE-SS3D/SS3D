@@ -654,13 +654,30 @@ namespace SS3D.Engine.Atmospherics
                     break;
 
                 case OffsetPipesAdjacencyConnector.PipeOrientation.cNorth:
-                    Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + 0.25f), new Vector3(0.2f * drawSize, value, 0.5f * drawSize));
+                    if (rotation > 0)
+                        Gizmos.DrawCube(new Vector3(x + 0.25f, value / 2f, y + offsetY), new Vector3(0.5f * drawSize, value, 0.2f * drawSize));
+                    else
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + 0.25f), new Vector3(0.2f * drawSize, value, 0.5f * drawSize));
+
                     break;
                 case OffsetPipesAdjacencyConnector.PipeOrientation.cSouth:
                     if (rotation > 0)
                         Gizmos.DrawCube(new Vector3(x - 0.25f, value / 2f, y + offsetY), new Vector3(0.5f * drawSize, value, 0.2f * drawSize));
                     else
                         Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y - 0.25f), new Vector3(0.2f * drawSize, value, 0.5f * drawSize));
+                    break;
+
+                case OffsetPipesAdjacencyConnector.PipeOrientation.tNEW:
+                    if (layer == PipeLayer.L3)
+                    {
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    }
+                    else if (layer == PipeLayer.L1)
+                    {
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + 0.3f), new Vector3(0.2f * drawSize, value, 0.3f * drawSize));
+                    }
                     break;
 
                 case OffsetPipesAdjacencyConnector.PipeOrientation.x:
