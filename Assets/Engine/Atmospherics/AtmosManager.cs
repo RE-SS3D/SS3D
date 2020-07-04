@@ -676,7 +676,33 @@ namespace SS3D.Engine.Atmospherics
                     else if (layer == PipeLayer.L1)
                     {
                         Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
-                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + 0.3f), new Vector3(0.2f * drawSize, value, 0.3f * drawSize));
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + 0.33f), new Vector3(0.2f * drawSize, value, 0.35f * drawSize));
+                    }
+                    break;
+
+                case OffsetPipesAdjacencyConnector.PipeOrientation.tNSE:
+                    if (layer == PipeLayer.L3)
+                    {
+                        Gizmos.DrawCube(new Vector3(x + 0.33f, value / 2f, y + offsetY), new Vector3(0.35f * drawSize, value, 0.2f * drawSize));
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    }
+                    else if (layer == PipeLayer.L1)
+                    {
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    }
+                    break;
+
+                case OffsetPipesAdjacencyConnector.PipeOrientation.tNSW:
+                    if (layer == PipeLayer.L3)
+                    {
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    }
+                    else if (layer == PipeLayer.L1)
+                    {
+                        Gizmos.DrawCube(new Vector3(x - 0.33f, value / 2f, y + offsetY), new Vector3(0.35f * drawSize, value, 0.2f * drawSize));
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y ), new Vector3(0.2f * drawSize, value,drawSize));
                     }
                     break;
 
