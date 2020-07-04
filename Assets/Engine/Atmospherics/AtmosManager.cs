@@ -26,7 +26,7 @@ namespace SS3D.Engine.Atmospherics
         public bool showPipes = false;
         public bool showOnlySelectedPipes = false;
         private AtmosGasses gasToAdd = AtmosGasses.Oxygen;
-        public PipeObject.PipeLayer selectedPipeLayer = PipeObject.PipeLayer.Upper;
+        public PipeLayer selectedPipeLayer = PipeLayer.Upper;
 
         private TileManager tileManager;
         private List<TileObject> tileObjects;
@@ -622,18 +622,18 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
-        private void DrawPipeCube(float x, float y, PipeObject.PipeLayer layer, float value, OffsetPipesAdjacencyConnector.PipeOrientation orientation, float drawSize, float rotation)
+        private void DrawPipeCube(float x, float y, PipeLayer layer, float value, OffsetPipesAdjacencyConnector.PipeOrientation orientation, float drawSize, float rotation)
         {
             float offsetX = 0f;
             float offsetY = 0f;
 
             switch (layer)
             {
-                case PipeObject.PipeLayer.L1:
+                case PipeLayer.L1:
                     offsetX = -0.25f;
                     offsetY = 0.25f;
                     break;
-                case PipeObject.PipeLayer.L3:
+                case PipeLayer.L3:
                     offsetX = 0.25f;
                     offsetY = -0.25f;
                     break;

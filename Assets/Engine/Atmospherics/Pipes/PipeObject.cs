@@ -6,28 +6,14 @@ using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
-    public class PipeObject : MonoBehaviour
+    public class PipeObject : PipeGeneric
     {
-        public enum PipeLayer
-        {
-            L1,
-            L2,
-            L3,
-            Upper
-        }
-
-
-
         private const float maxPipePressure = 2000f;
-
-        public PipeLayer layer;
         public float volume = 1f;
 
         private AtmosContainer atmosContainer = new AtmosContainer();
         private float[] tileFlux = { 0f, 0f, 0f, 0f };
         private AtmosStates state = AtmosStates.Active;
-        private TileObject[] tileNeighbours = { null, null, null, null };
-        private PipeObject[] atmosNeighbours = { null, null, null, null };
         private bool tempSetting = false;
         private bool[] activeDirection = {
                 false,  // Top AtmosObject active
@@ -47,29 +33,6 @@ namespace SS3D.Engine.Atmospherics
         public AtmosContainer GetAtmosContainer()
         {
             return atmosContainer;
-        }
-
-        public void SetTileNeighbour(TileObject neighbour, int index)
-        {
-            tileNeighbours[index] = neighbour;
-        }
-
-        public void SetAtmosNeighbours()
-        {
-            int i = 0;
-            foreach (TileObject tile in tileNeighbours)
-            {
-                if (tile != null)
-                {
-                    PipeObject[] pipes = tile.transform.GetComponentsInChildren<PipeObject>();
-                    foreach (PipeObject pipe in pipes)
-                    {
-                        if (pipe.layer == this.layer)
-                            atmosNeighbours[i] = pipe;
-                    }
-                }
-                i++;
-            }
         }
 
         public AtmosStates GetState()

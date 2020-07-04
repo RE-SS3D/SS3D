@@ -7,16 +7,13 @@ using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
-    public class PumpObject : MonoBehaviour, IAtmosLoop, IInteractionTarget
+    public class PumpObject : PipeGeneric, IAtmosLoop, IInteractionTarget
     {
         public enum PumpType
         {
             Pressure,
             Volume
         }
-
-        private TileObject[] tileNeighbours = { null, null };
-        private PipeObject[] atmosNeighbours = { null, null };
 
         private const float maxPressureSetting = 4500f;
         private const float maxVolumeSetting = 200f;
@@ -100,23 +97,6 @@ namespace SS3D.Engine.Atmospherics
                         }
                     }
                 }
-            }
-        }
-
-        public void SetTileNeighbour(TileObject neighbour, int index)
-        {
-            if (index == 0 || index == 1)
-                tileNeighbours[index] = neighbour;
-        }
-
-        public void SetAtmosNeighbours()
-        {
-            int i = 0;
-            foreach (TileObject tile in tileNeighbours)
-            {
-                if (tile != null)
-                    atmosNeighbours[i] = tile.transform.GetComponentInChildren<PipeObject>();
-                i++;
             }
         }
 
