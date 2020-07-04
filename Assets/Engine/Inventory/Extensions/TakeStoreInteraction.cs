@@ -8,34 +8,13 @@ using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
 {
-    public class Store : StoreInteraction
-    {
-        public override bool CanInteract(InteractionEvent interactionEvent)
-        {
-            if (!InteractionExtensions.RangeCheck(interactionEvent))
-            {
-                return false;
-            }
-
-            if (interactionEvent.Source.Parent is Hands hands && interactionEvent.Target is IGameObjectProvider target)
-            {
-                Item handItem = hands.GetItemInHand();
-                if (handItem != null && CanStore(target.GameObject))
-                {
-                    return handItem.GetComponent<IChargeable>() != null;
-                }
-            }
-
-            return false;
-        }
-    }
-
     public class TakeStoreInteraction : InteractionTargetNetworkBehaviour
     {
+        public bool OnlyWhenOpen;
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = new List<IInteraction>();
-            Store storeInteraction = new Store { OnlyWhenOpen = false };
+            StoreInteraction storeInteraction = new StoreInteraction { OnlyWhenOpen = OnlyWhenOpen };
             var takeInteraction = new SimpleInteraction
             {
                 Name = "Take",

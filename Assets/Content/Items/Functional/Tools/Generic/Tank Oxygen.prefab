@@ -177,11 +177,14 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: tank_oxygen
   Name: Oxygen Tank
+  Volume: 15
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 6908174893348925811}
   attachmentPoint: {fileID: 5404574842588475159}
+  bulkSize: 2
+  traits:
+  - {fileID: 11400000, guid: ad7da03675a5fab4f81816710ec0a388, type: 2}
 --- !u!114 &-4797944144515749807
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -147,11 +147,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: paper_bin
   Name: Paper Bin
+  Volume: 3
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 2889814160293510354}
   attachmentPoint: {fileID: 5630237932176977254}
+  bulkSize: 2
+  traits: []
 --- !u!65 &2434564844979155009
 BoxCollider:
   m_ObjectHideFlags: 0

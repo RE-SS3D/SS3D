@@ -149,11 +149,14 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: radio
   Name: Station Bounced Radio
+  Volume: 3
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3463075919274966065}
   attachmentPoint: {fileID: 2653039553689805397}
+  bulkSize: 1
+  traits:
+  - {fileID: 11400000, guid: 7f22e87f08452654f8f20ace0b1e0fa3, type: 2}
 --- !u!114 &8219551198752222676
 MonoBehaviour:
   m_ObjectHideFlags: 0

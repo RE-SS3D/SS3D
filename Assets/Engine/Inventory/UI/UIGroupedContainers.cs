@@ -20,7 +20,7 @@ namespace SS3D.Engine.Inventory.UI
         public struct ItemSlot
         {
             // Type of slot this UI view connects to
-            public Container.SlotType type;
+            public Filter filter;
             // The UI view to display in
             public UIItemSlot slot;
         }
@@ -47,12 +47,12 @@ namespace SS3D.Engine.Inventory.UI
             {
                 for (int i = 0; i < container.Length(); ++i)
                 {
-                    var slotType = container.GetSlot(i);
+                    var slotFilter = container.GetFilter(i);
 
                     // Get the first available slot to place the item info in
-                    int slotIndex = Array.FindIndex(uiSlots, slot => slot.type == slotType);
+                    int slotIndex = Array.FindIndex(uiSlots, slot => slot.filter == slotFilter);
                     while (slotIndex != -1 && isSet[slotIndex])
-                        slotIndex = Array.FindIndex(uiSlots, slotIndex + 1, slot => slot.type == slotType);
+                        slotIndex = Array.FindIndex(uiSlots, slotIndex + 1, slot => slot.filter == slotFilter);
 
                     if (slotIndex == -1)
                     {
@@ -87,14 +87,14 @@ namespace SS3D.Engine.Inventory.UI
             }
             
             SlotInfo info = GetSlotLink(slot);
-            Container.SlotType slotType = info.container.GetSlot(info.index);
+            Filter slotFilter = info.container.GetFilter(info.index);
             // TODO: Hack, this should be decoupled in some way
             GameObject playerObject = info.container.gameObject;
             GameObject item = info.container.GetItem(info.index)?.gameObject;
             InteractionHandler handler = playerObject.GetComponent<InteractionHandler>();
             Hands hands = playerObject.GetComponent<Hands>();
 
-            if (handler != null && hands != null && hands.GetActiveTool() != null && item != null && (slotType == Container.SlotType.LeftHand || slotType == Container.SlotType.RightHand))
+            if (handler != null && hands != null && hands.GetActiveTool() != null && item != null && (slotFilter.Hash == Filters.RightHand || slotFilter.Hash == Filters.LeftHand))
             {
                 handler.InteractInHand(item, playerObject, button == PointerEventData.InputButton.Right);
                 return;
