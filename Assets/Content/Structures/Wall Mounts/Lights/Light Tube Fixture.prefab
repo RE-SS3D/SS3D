@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8213111319263450463}
   - component: {fileID: 8648403125281566512}
+  - component: {fileID: -5688893441080166448}
   m_Layer: 0
   m_Name: Light Tube Fixture
   m_TagString: Untagged
@@ -45,6 +46,20 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.62718326, y: 0.11600351, z: 0.25}
   m_Center: {x: -0.0007546842, y: 1.7835262, z: 0.29}
+--- !u!114 &-5688893441080166448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5161561551087789900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Light Tube Fixture</b>
+  MaxDistance: 0
 --- !u!1 &5181080420812569886
 GameObject:
   m_ObjectHideFlags: 0
