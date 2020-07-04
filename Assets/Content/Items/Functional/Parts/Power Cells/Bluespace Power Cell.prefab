@@ -136,11 +136,14 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: cell_power_bluespace
   Name: Bluespace Power Celll
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 1072858492241738576}
   attachmentPoint: {fileID: 5789302776318849093}
+  bulkSize: 2
+  traits:
+  - {fileID: 11400000, guid: 7310cfb121a80ba4d9e7286a458186d2, type: 2}
 --- !u!114 &2273168541974255534
 MonoBehaviour:
   m_ObjectHideFlags: 0

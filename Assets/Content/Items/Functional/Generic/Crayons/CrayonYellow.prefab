@@ -179,11 +179,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: crayon_yellow
   Name: Yellow Crayon
+  Volume: 3
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3671789804437703988}
   attachmentPoint: {fileID: 8938250184657511514}
+  bulkSize: 0
+  traits: []
 --- !u!114 &7468793210762665201
 MonoBehaviour:
   m_ObjectHideFlags: 0

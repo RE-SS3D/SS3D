@@ -149,11 +149,14 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: multitool
   Name: Multitool
+  Volume: 5
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 6814766556652304684}
   attachmentPoint: {fileID: 1234639152114944830}
+  bulkSize: 1
+  traits:
+  - {fileID: 11400000, guid: 7f22e87f08452654f8f20ace0b1e0fa3, type: 2}
 --- !u!114 &9026811154753602442
 MonoBehaviour:
   m_ObjectHideFlags: 0

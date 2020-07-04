@@ -1,9 +1,10 @@
-﻿using Mirror;
+using Mirror;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using SS3D.Content.Systems.Interactions;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace SS3D.Engine.Inventory
 {
@@ -17,45 +18,31 @@ namespace SS3D.Engine.Inventory
     public class Container : NetworkBehaviour
     {
         #region Classes and Types
-        // TODO: We should investigate whether we should use something other than enums, e.g. just strings.
 
-        // This is the types of container that are currently defined and needed for distinguishing in the UI.
-        // TODO: It's currently kinda silly. The ideal solution would be distinguishing by type (which directly relates to restrictions) + Origin.
-        // Making OverTorsoStorage and TorsoPockets no longer necessary.
-        public enum Type
+        public static bool AreCompatible(Filter slot, Item item)
         {
-            General,    // Any general container
-            Body,       // A container for a body, for placing stuff on a body. This includes stuff put into clothes (e.g. on suit storage)
-            Pockets,    // Pockets are different from the above purely because they are displayed in the hotbar
-            Interactors // Interacting tools (e.g. hands) which can also hold items
+            if (slot == null)
+            {
+                Debug.LogWarning("Trying to use a container without a filter");
+                return true;
+            }
+            
+            Assert.IsNotNull(item);
+
+            return slot.CanStore(item);
         }
 
-        // TODO: SlotType doesn't need to be like this
-        public enum SlotType
+        public static bool CanStore(Container container, Item item)
         {
-            General,
-            // Body-type stuff
-            Head,
-            Eyes,
-            Mouth,
-            Ear,
-            Torso,
-            OverTorso,
-            Hands,
-            Feet,
-            // Other kinda on-body stuff
-            OverTorsoStorage,
-            // Pockets
-            LeftPocket,
-            RightPocket,
-            // Interactor stuff
-            LeftHand,
-            RightHand
-        }
-        public static bool AreCompatible(SlotType slot, Item.ItemType item)
-        {
-            // This is somewhat hacky, but slots are potentially subject to change anyway.
-            return slot == SlotType.General || (int)slot == (int)item || (int)slot > 9;
+            if (container.volumeLimited && !(container.volume + item.Volume <= container.maxVolume))
+                return false;
+            if (container.containerFilter == null)
+            {
+                Debug.LogWarning("Trying to use a container without a filter", container);
+                return true;
+            }
+
+            return container.containerFilter.CanStore(item);
         }
 
         public class ItemList : SyncList<GameObject> { }
@@ -63,9 +50,11 @@ namespace SS3D.Engine.Inventory
 
         // Editor properties
         public string containerName;
-        public Type containerType;
-        [SerializeField]
-        protected SlotType[] slots;
+        public Filter containerFilter;
+        public bool volumeLimited = true;
+        public float maxVolume = 50f;
+        public int slots;
+        protected float volume;
 
         public Container()
         {
@@ -102,8 +91,12 @@ namespace SS3D.Engine.Inventory
             if (items[slot] != null)
                 throw new Exception("Item already exists in slot"); // TODO: Specific exception
 
+            if (!CanStore(this, itemComponent))
+                throw new Exception("Item cannot be stored");
+
             items[slot] = item;
             itemComponent.container = this;
+            RecalculateVolume(this);
         }
         /**
          * Add an item to the first available slot.
@@ -116,13 +109,26 @@ namespace SS3D.Engine.Inventory
             item.SetActive(false);
             var itemComponent = item.GetComponent<Item>();
             for (int i = 0; i < items.Count; ++i) {
-                if (items[i] == null && AreCompatible(slots[i], itemComponent.itemType)) {
+                if (items[i] == null && CanStore(this, itemComponent)) {
                     AddItem(i, item);
                     return i;
                 }
             }
+            RecalculateVolume(this);
 
             return -1;
+        }
+
+        [Server]
+        public void RecalculateVolume(Container container)
+        {
+            container.volume = 0f;
+            for (int i = 0; i < items.Count; ++i)
+            {
+                var item = container.GetItem(i);
+                if (item != null)
+                    container.volume += item.Volume;
+            }
         }
         /**
          * Remove the item from the container, returning the Item.
@@ -137,6 +143,7 @@ namespace SS3D.Engine.Inventory
             item.GetComponent<Item>().container = null;
             items[slot] = null;
 
+            RecalculateVolume(this);
             return item;
         }
 
@@ -148,6 +155,7 @@ namespace SS3D.Engine.Inventory
             for (var i = 0; i < items.Count; i++)
                 if (items[i] == item)
                     RemoveItem(i);
+            RecalculateVolume(this);
         }
 
         /**
@@ -161,8 +169,15 @@ namespace SS3D.Engine.Inventory
         /**
          * Get the slot type of a given slot
          */
-        public SlotType GetSlot(int slot) => slots[slot];
-        public int Length() => slots.Length;
+        public virtual Filter GetFilter(int slot) => containerFilter;
+        public int Length() => slots;
+
+        public bool IsFilter(string name)
+        {
+            var hash = Animator.StringToHash(name.ToUpper());
+            return containerFilter.Hash == hash;
+        }
+
         /// <summary>
         /// Returns the slot an item is in
         /// </summary>
@@ -199,7 +214,7 @@ namespace SS3D.Engine.Inventory
         }
         public override void OnStartServer()
         {
-            for (int i = 0; i < slots.Length; ++i)
+            for (int i = 0; i < slots; ++i)
                 items.Add(null);
         }
 

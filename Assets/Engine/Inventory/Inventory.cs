@@ -77,14 +77,24 @@ namespace SS3D.Engine.Inventory
         [Server]
         public void AddItem(GameObject item, GameObject toContainer, int toIndex)
         {
-            Despawn(item);
-            toContainer.GetComponent<Container>().AddItem(toIndex, item);
+            Container container = toContainer.GetComponent<Container>();
+            Item itemComponent = item.GetComponent<Item>();
+            if (container.containerFilter.CanStore(itemComponent))
+            {
+                Despawn(item);
+                container.AddItem(toIndex, item);
+            }
         }
         [Server]
         public void AddItem(GameObject item, GameObject toContainer)
         {
-            Despawn(item);
-            toContainer.GetComponent<Container>().AddItem(item);
+            Container container = toContainer.GetComponent<Container>();
+            Item itemComponent = item.GetComponent<Item>();
+            if (container.containerFilter.CanStore(itemComponent))
+            {
+                Despawn(item);
+                container.AddItem(item);
+            }
         }
 
         /**
@@ -118,7 +128,7 @@ namespace SS3D.Engine.Inventory
             var from = fromContainer.GetComponent<Container>();
             var to = toContainer.GetComponent<Container>();
 
-            if (!Container.AreCompatible(to.GetSlot(toIndex), from.GetItem(fromIndex).itemType))
+            if (!Container.AreCompatible(to.GetFilter(toIndex), from.GetItem(fromIndex)))
                 throw new InventoryOperationException("Item not compatible with slot");
 
             GameObject item = from.RemoveItem(fromIndex);

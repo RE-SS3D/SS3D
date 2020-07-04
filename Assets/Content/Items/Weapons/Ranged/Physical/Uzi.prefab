@@ -153,11 +153,14 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: uzi
   Name: Uzi
+  Volume: 15
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 22686691254829471}
   attachmentPoint: {fileID: 502217488405900417}
+  bulkSize: 2
+  traits:
+  - {fileID: 11400000, guid: 2e79f6d135cc0004993a2261ace3d0d4, type: 2}
 --- !u!114 &8622417768100004644
 MonoBehaviour:
   m_ObjectHideFlags: 0
