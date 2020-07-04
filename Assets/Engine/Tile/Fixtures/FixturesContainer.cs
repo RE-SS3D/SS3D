@@ -358,11 +358,12 @@ namespace SS3D.Engine.Tiles
                 tileDefinition.fixtures.SetTileFixtureAtLayer(null, TileFixtureLayers.Pipe3);
             }
 
-
+#if UNITY_EDITOR
             if (altered)
             {
                 EditorUtility.DisplayDialog("Fixture combination", "You chose an invalid combination of fixtures. Definition has been reset.", "ok");
             }
+#endif
 
             return tileDefinition;
         }
