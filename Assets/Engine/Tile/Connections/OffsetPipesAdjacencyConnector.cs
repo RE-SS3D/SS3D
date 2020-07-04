@@ -73,6 +73,12 @@ namespace SS3D.Engine.Tiles.Connections
             return orientation;
         }
 
+        public float GetRotation()
+        {
+            var cardinalInfo = adjacents.GetCardinalInfo();
+            return OrientationHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
+        }
+
 
         /**
          * When a single adjacent turf is updated

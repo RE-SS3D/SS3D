@@ -24,6 +24,7 @@ namespace SS3D.Engine.Atmospherics
         public bool showMessages = false;
         public bool isAddingGas = false;
         public bool showPipes = false;
+        public bool showOnlySelectedPipes = false;
         private AtmosGasses gasToAdd = AtmosGasses.Oxygen;
         public PipeObject.PipeLayer selectedPipeLayer = PipeObject.PipeLayer.Upper;
 
@@ -532,13 +533,16 @@ namespace SS3D.Engine.Atmospherics
                         PipeObject[] pipes = tile.GetComponentsInChildren<PipeObject>();
                         foreach (PipeObject pipe in pipes)
                         {
-                            if (pipe)
+                            if (!showOnlySelectedPipes || (showOnlySelectedPipes && pipe.layer == selectedPipeLayer))
                             {
-                                float pipeOffset = 0f;
+                                float rotation = 0f;
                                 OffsetPipesAdjacencyConnector offsetConnector = pipe.GetComponent<OffsetPipesAdjacencyConnector>();
                                 OffsetPipesAdjacencyConnector.PipeOrientation pipeOrientation = OffsetPipesAdjacencyConnector.PipeOrientation.o;
                                 if (offsetConnector)
+                                {
                                     pipeOrientation = offsetConnector.GetPipeOrientation();
+                                    rotation = offsetConnector.GetRotation();
+                                }
 
                                 //switch (pipe.layer)
                                 //{
@@ -594,7 +598,7 @@ namespace SS3D.Engine.Atmospherics
                                         {
                                             Gizmos.color = Color.white - state;
                                             // Gizmos.DrawCube(new Vector3(x + pipeOffset, pressure / 2f, y + pipeOffset), new Vector3(0.5f * drawSize, pressure, 0.5f * drawSize));
-                                            DrawPipeCube(x, y, pipe.layer, pressure, pipeOrientation, drawSize);
+                                            DrawPipeCube(x, y, pipe.layer, pressure, pipeOrientation, drawSize, rotation);
                                         }
                                         break;
                                     case ViewType.Temperature:
@@ -618,7 +622,7 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
-        private void DrawPipeCube(float x, float y, PipeObject.PipeLayer layer, float value, OffsetPipesAdjacencyConnector.PipeOrientation orientation, float drawSize)
+        private void DrawPipeCube(float x, float y, PipeObject.PipeLayer layer, float value, OffsetPipesAdjacencyConnector.PipeOrientation orientation, float drawSize, float rotation)
         {
             float offsetX = 0f;
             float offsetY = 0f;
@@ -626,6 +630,10 @@ namespace SS3D.Engine.Atmospherics
             switch (layer)
             {
                 case PipeObject.PipeLayer.L1:
+                    offsetX = -0.25f;
+                    offsetY = 0.25f;
+                    break;
+                case PipeObject.PipeLayer.L3:
                     offsetX = 0.25f;
                     offsetY = -0.25f;
                     break;
@@ -635,11 +643,29 @@ namespace SS3D.Engine.Atmospherics
             switch (orientation)
             {
                 case OffsetPipesAdjacencyConnector.PipeOrientation.o:
-                    Gizmos.DrawCube(new Vector3(x, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y - offsetY), new Vector3(0.2f * drawSize, value, 0.2f * drawSize));
                     break;
+
+                case OffsetPipesAdjacencyConnector.PipeOrientation.i:
+                    if (rotation > 0)
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                    else
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    break;
+
+                case OffsetPipesAdjacencyConnector.PipeOrientation.cNorth:
+                    Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + 0.25f), new Vector3(0.2f * drawSize, value, 0.5f * drawSize));
+                    break;
+                case OffsetPipesAdjacencyConnector.PipeOrientation.cSouth:
+                    if (rotation > 0)
+                        Gizmos.DrawCube(new Vector3(x - 0.25f, value / 2f, y + offsetY), new Vector3(0.5f * drawSize, value, 0.2f * drawSize));
+                    else
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y - 0.25f), new Vector3(0.2f * drawSize, value, 0.5f * drawSize));
+                    break;
+
                 case OffsetPipesAdjacencyConnector.PipeOrientation.x:
-                    Gizmos.DrawCube(new Vector3(x, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
-                    Gizmos.DrawCube(new Vector3(x, value / 2f, y), new Vector3(drawSize, value, 0.2f * drawSize));
+                    Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
                     break;
             }
 
