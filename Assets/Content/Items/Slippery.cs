@@ -9,6 +9,16 @@ namespace SS3D.Content.Items
 {
     public class Slippery : NetworkBehaviour
     {
+        /// <summary>
+        /// How long a character is knocked down
+        /// </summary>
+        public float knockdownDuration = 3;
+        /// <summary>
+        /// How long before a character can get slipped again
+        /// </summary>
+        public float knockdownPause = 1;
+        
+        // Keeps track of who was recently slipped
         private Dictionary<HumanRagdoll, float> slippedBodies;
 
         private void Start()
@@ -29,9 +39,8 @@ namespace SS3D.Content.Items
                 CleanBodyDictionary();
                 if (!slippedBodies.ContainsKey(humanRagdoll))
                 {
-                    humanRagdoll.BodyEnabled = true;
+                    humanRagdoll.KnockDown(knockdownDuration);
                     slippedBodies.Add(humanRagdoll, Time.time);
-                    StartCoroutine(DisableBodyCoroutine(humanRagdoll));
                 }
             }
             
@@ -44,12 +53,6 @@ namespace SS3D.Content.Items
             {
                 slippedBodies.Remove(pair.Key);
             }
-        }
-
-        private IEnumerator DisableBodyCoroutine(HumanRagdoll body)
-        {
-            yield return new WaitForSeconds(3);
-            body.BodyEnabled = false;
         }
     }
 }

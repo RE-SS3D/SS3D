@@ -18,13 +18,13 @@ jobs:
         run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -manualLicenseFile .github/Unity_v2019.x.ulf || exit 0
 
       - name: Build Windows Player
-        run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -accept-apiupdate -logFile -projectPath . -buildTarget StandaloneWindows64 -customBuildTarget StandaloneWindows64 -customBuildPath ./dist/win64/ -customBuildName RESS3D.exe
+        run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -accept-apiupdate -logFile -projectPath . -buildWindows64Player ./dist/win64/RESS3D.exe
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: RESS3D_WIN
-          path: ./dist/win64
+          path: ./dist/win64/
 
   publish:
     runs-on: ubuntu-latest
