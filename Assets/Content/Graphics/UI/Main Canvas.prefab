@@ -354,22 +354,22 @@ PrefabInstance:
     - target: {fileID: 1026371326710643393, guid: e3a66a891c041174fada0bd5f6f7e87b,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: StartHost
+      value: StartClient
       objectReference: {fileID: 0}
     - target: {fileID: 1026371326710643393, guid: e3a66a891c041174fada0bd5f6f7e87b,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1026371326710643393, guid: e3a66a891c041174fada0bd5f6f7e87b,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 7497403621244279419}
     - target: {fileID: 1026371326710643393, guid: e3a66a891c041174fada0bd5f6f7e87b,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
+      value: TMPro.TMP_InputField, Unity.TextMeshPro
       objectReference: {fileID: 0}
     - target: {fileID: 1026371326710643393, guid: e3a66a891c041174fada0bd5f6f7e87b,
         type: 3}
@@ -475,6 +475,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 3923219552356926416}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7497403621244279419 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6808936566223018411, guid: e3a66a891c041174fada0bd5f6f7e87b,
+    type: 3}
+  m_PrefabInstance: {fileID: 3923219552356926416}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7217518014184307573
 PrefabInstance:
   m_ObjectHideFlags: 0
