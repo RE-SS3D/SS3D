@@ -43,6 +43,20 @@ namespace SS3D.Engine.Atmospherics
 
         void Start()
         {
+            // Atmos manager only runs on server
+            if (!Mirror.NetworkServer.active)
+            {
+#if UNITY_EDITOR
+                if (EditorApplication.isPlaying)
+                {
+#endif
+                    Destroy(this);
+                    return;
+#if UNITY_EDITOR
+                }
+#endif
+            }
+            
             tileManager = FindObjectOfType<TileManager>();
             atmosTiles = new List<AtmosObject>();
             pipeTiles = new List<PipeObject>();
