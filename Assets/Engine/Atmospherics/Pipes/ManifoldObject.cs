@@ -40,31 +40,9 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
+        // Override as we don't behave like a normal pipe
         public override void SetAtmosNeighbours()
         {
-            
-
-            //int i = 0;
-            //// We only accept a North connection
-            //for (int j = 0; j < 2; j += 2)
-            //{
-            //    if (atmosNeighbours[j] != null)
-            //    {
-            //        PipeObject[] pipes = atmosNeighbours[j].transform.GetComponentsInChildren<PipeObject>();
-            //        foreach (PipeObject pipe in pipes)
-            //        {
-            //            if (i < atmosNeighbours.Length)
-            //            {
-            //                atmosNeighbours[i] = pipe;
-            //                pipe.ForceNeighbour(this);
-            //            }
-            //            else
-            //                Debug.LogError("Atmos neighbour out of range");
-            //            i++;
-            //        }
-            //    }
-
-            //}
 
         }
 
