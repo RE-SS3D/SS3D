@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections;
 using UnityEngine;
 using SS3D.Engine.Server.Login.Data;
@@ -66,7 +66,7 @@ namespace Mirror
         [SerializeField] private GameObject roundManagerPrefab = null;
 
         private LoginManager loginManager;
-        private RoundManager roundManager;
+        public RoundManager roundManager;
 
         private bool hasLoginServer; // whether the login server is found and alive
 
@@ -136,9 +136,13 @@ namespace Mirror
 
         private void SetupServerManagers()
         {
-            GameObject roundManagerGameObject = Instantiate(roundManagerPrefab);
-            NetworkServer.Spawn(roundManagerGameObject);
-            roundManager = roundManagerGameObject.GetComponent<RoundManager>();
+            if (roundManager == null)
+            {
+                roundManager = Instantiate(roundManagerPrefab).GetComponent<RoundManager>();
+            }
+
+            NetworkServer.Spawn(roundManager.gameObject);
+            roundManager = roundManager.GetComponent<RoundManager>();
             roundManager.SetWarmupTime(warmupTime);
             roundManager.StartWarmup();
         }
