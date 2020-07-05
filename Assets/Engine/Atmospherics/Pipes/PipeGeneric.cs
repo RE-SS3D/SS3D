@@ -36,7 +36,7 @@ namespace SS3D.Engine.Atmospherics
             tileNeighbours[index] = neighbour;
         }
 
-        public void SetAtmosNeighbours()
+        public virtual void SetAtmosNeighbours()
         {
             int i = 0;
             foreach (TileObject tile in tileNeighbours)

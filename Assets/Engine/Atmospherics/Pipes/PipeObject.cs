@@ -57,6 +57,22 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
+        public void ForceNeighbour(PipeObject neighbour)
+        {
+            bool success = false;
+            for (int i = 0; i < atmosNeighbours.Length; i++)
+            {
+                if (atmosNeighbours[i] == null || atmosNeighbours[i] == neighbour)
+                {
+                    atmosNeighbours[i] = neighbour;
+                    success = true;
+                }
+            }
+
+            if (!success)
+                Debug.LogError("Forcing neighbour, but no empty found");
+        }
+
         public void RemoveFlux()
         {
             tileFlux = new float[] { 0f, 0f, 0f, 0f };
