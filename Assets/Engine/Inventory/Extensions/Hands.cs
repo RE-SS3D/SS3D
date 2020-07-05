@@ -100,10 +100,12 @@ namespace SS3D.Engine.Inventory.Extensions
             // Because we just make calls to GetSlot, which is set pre-Awake, this is safe.
             handSlots = new int[2] { -1, -1 };
             for (int i = 0; i < handContainer.Length(); ++i) {
-                if (handContainer.GetSlot(i) == Container.SlotType.LeftHand)
+                if (handContainer.GetFilter(i).Hash == Filters.LeftHand)
                     handSlots[0] = i;
-                else if (handContainer.GetSlot(i) == Container.SlotType.RightHand)
+                else if (handContainer.GetFilter(i).Hash == Filters.RightHand)
+                {
                     handSlots[1] = i;
+                }
             }
             if (handSlots[0] == -1 || handSlots[1] == -1)
                 Debug.LogWarning("Player container does not contain slots for hands upon initialization. Maybe they were severed though?");

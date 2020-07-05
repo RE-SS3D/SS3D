@@ -41,9 +41,9 @@ GameObject:
   - component: {fileID: 605928577989788258}
   - component: {fileID: 6430873059443110920}
   - component: {fileID: 8445294300225992788}
+  - component: {fileID: 7409172233181664631}
   - component: {fileID: 2742479969611547821}
   - component: {fileID: 3387660341056776027}
-  - component: {fileID: 7409172233181664631}
   - component: {fileID: 3699377523764859320}
   - component: {fileID: -1834535683918461050}
   - component: {fileID: 6999115407934731445}
@@ -93,6 +93,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4482182292948660337}
   m_Mesh: {fileID: 4456588685064569811, guid: c50b827f8ce281c428d83e4d145f3bbd, type: 3}
+--- !u!65 &7409172233181664631
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4482182292948660337}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.15490639, y: 0.085319996, z: 0.08532043}
+  m_Center: {x: -0.012879837, y: 0, z: -0.00000009872019}
 --- !u!23 &2742479969611547821
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -148,19 +161,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &7409172233181664631
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4482182292948660337}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.15490639, y: 0.085319996, z: 0.08532043}
-  m_Center: {x: -0.012879837, y: 0, z: -0.00000009872019}
 --- !u!114 &3699377523764859320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,11 +177,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: light_tube_broken_2
   Name: Broken Light Tube
+  Volume: 6
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 4482182292948660337}
   attachmentPoint: {fileID: 8179472452915626595}
+  bulkSize: 1
+  traits: []
 --- !u!114 &-1834535683918461050
 MonoBehaviour:
   m_ObjectHideFlags: 0

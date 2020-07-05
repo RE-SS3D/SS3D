@@ -147,11 +147,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: wood_plank
   Name: Wood Plank
+  Volume: 15
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 4157460056844347020}
   attachmentPoint: {fileID: 4043160333980428944}
+  bulkSize: 3
+  traits: []
 --- !u!114 &6811098404249235335
 MonoBehaviour:
   m_ObjectHideFlags: 0

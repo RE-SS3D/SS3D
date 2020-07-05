@@ -245,11 +245,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: bell_service
   Name: Service Bell
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 1520063555836420535}
   attachmentPoint: {fileID: 6532719851440739237}
+  bulkSize: 1
+  traits: []
   interactionIcon: {fileID: 0}
   bellSound: {fileID: 8300000, guid: f22e34e83e0f9874e8ebc28d164810c2, type: 3}
 --- !u!114 &2843123667856744360

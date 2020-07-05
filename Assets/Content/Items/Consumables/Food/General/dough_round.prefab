@@ -135,11 +135,14 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: dough
   Name: Dough
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 1411035571888707585}
   attachmentPoint: {fileID: 6639918523457792531}
+  bulkSize: 2
+  traits:
+  - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
 --- !u!114 &3539367462563155156
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -314,9 +314,15 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   containerName: crate
-  containerType: 0
-  slots: 00000000000000000000000000000000
+  containerFilter: {fileID: 11400000, guid: 40e3b946dc1dc314592ef8d6afcd9162, type: 2}
+  volumeLimited: 1
+  maxVolume: 150
+  slots: 8
   displays:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -338,20 +344,4 @@ MonoBehaviour:
   OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
   OnlyStoreWhenOpen: 1
   MaxDistance: 1.5
-  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
---- !u!114 &-9037451466057786753
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6595280268747972349}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Text: '<b>Crate</b>
-
-    Stores stuff.'
-  MaxDistance: 0
+  viewContainerIcon: {fileID: 0}

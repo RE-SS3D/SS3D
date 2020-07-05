@@ -5,6 +5,7 @@ using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
 using UnityEditor;
 using SS3D.Engine.Utilities;
+using System;
 #if UNITY_EDITOR
 using UnityEditor.Experimental.SceneManagement;
 #endif
@@ -17,27 +18,15 @@ namespace SS3D.Engine.Inventory
     [DisallowMultipleComponent]
     public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget
     {
-        // Distinguishes what can go in what slot
-        public enum ItemType
-        {
-            Other,
-            Hat,
-            Glasses,
-            Mask,
-            Earpiece,
-            Shirt,
-            OverShirt,
-            Gloves,
-            Shoes
-        }
-
         public string ItemId;
         public string Name;
-        public Container container;
-        public ItemType itemType;
+        public float Volume = 10f;
+        [HideInInspector]public Container container;
         public Sprite sprite;
         public GameObject prefab;
         public Transform attachmentPoint;
+        public BulkSize bulkSize = BulkSize.Medium;
+        public List<Trait> traits;
 
         [ContextMenu("Create Icon")]
         public void Start()
@@ -107,6 +96,22 @@ namespace SS3D.Engine.Inventory
         public bool InContainer()
         {
             return container != null;
+        }
+
+        public bool HasTrait(Trait trait)
+        {
+            return traits.Contains(trait);
+        }
+
+        public bool HasTrait(string name)
+        {
+            var hash = Animator.StringToHash(name.ToUpper());
+            foreach (Trait trait in traits)
+            {
+                if (trait.Hash == hash)
+                    return true;
+            }
+            return false;
         }
     }
 }

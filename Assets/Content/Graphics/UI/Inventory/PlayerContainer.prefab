@@ -246,32 +246,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiSlots:
-  - type: 1
+  - filter: {fileID: 11400000, guid: 2c9b78d1ecaf0c44889c1f7eb98de085, type: 2}
     slot: {fileID: 4117624817637033035}
-  - type: 2
+  - filter: {fileID: 11400000, guid: 27ae84b7a7b5da2429350c1d20339898, type: 2}
     slot: {fileID: 2735254591554096178}
-  - type: 3
+  - filter: {fileID: 11400000, guid: 2d0701c3dee46b54dbbb2f0246081ba0, type: 2}
     slot: {fileID: 8323973285466903037}
-  - type: 4
+  - filter: {fileID: 11400000, guid: abb8943a366bbfe4d9d25a6f6714e219, type: 2}
     slot: {fileID: 3314052989012154800}
-  - type: 5
+  - filter: {fileID: 11400000, guid: c293aab5cc715fb4182e95a0c0e6baae, type: 2}
     slot: {fileID: 183173999160341811}
-  - type: 7
+  - filter: {fileID: 11400000, guid: d00f22c8e6044cd4a8ac831591d4365e, type: 2}
     slot: {fileID: 174897456342714937}
-  - type: 8
+  - filter: {fileID: 11400000, guid: e6272cbef2d9ed9489358893eed0ed44, type: 2}
     slot: {fileID: 8442208502763223391}
-  - type: 9
-    slot: {fileID: 8442208502763223391}
-  - type: 9
-    slot: {fileID: 1340291287510368696}
-  - type: 10
+  - filter: {fileID: 11400000, guid: cacef9e34560cb341bf02fcd164549c7, type: 2}
+    slot: {fileID: 183173999160341811}
+  - filter: {fileID: 11400000, guid: 0551a8beaa8d6e44bba3379593b76850, type: 2}
     slot: {fileID: 8342462538887531746}
-  - type: 11
+  - filter: {fileID: 11400000, guid: ac959e51d9133dc49a51b572ef30133a, type: 2}
     slot: {fileID: 2786281962931018075}
-  - type: 12
+  - filter: {fileID: 11400000, guid: edc61d09fc1a5a84e98f63e51d1a0f1b, type: 2}
     slot: {fileID: 8938731865884723251}
-  - type: 13
+  - filter: {fileID: 11400000, guid: 965f83328d6f0ef4db3ca6b713932c19, type: 2}
     slot: {fileID: 8975258239154504252}
+  - filter: {fileID: 11400000, guid: cacef9e34560cb341bf02fcd164549c7, type: 2}
+    slot: {fileID: 1340291287510368696}
 --- !u!114 &5488272581577146330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -630,9 +630,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!1 &5119197773057382835
 GameObject:
   m_ObjectHideFlags: 0
@@ -1139,9 +1140,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!1 &7642057873219989993
 GameObject:
   m_ObjectHideFlags: 0
@@ -1320,9 +1322,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!1 &8026395939774842817
 GameObject:
   m_ObjectHideFlags: 0

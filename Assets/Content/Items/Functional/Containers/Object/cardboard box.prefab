@@ -177,11 +177,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: box_cardboard
   Name: Cardboard Box
+  Volume: 30
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8155353539727309456}
   attachmentPoint: {fileID: 0}
+  bulkSize: 3
+  traits: []
 --- !u!114 &8026662465185345548
 MonoBehaviour:
   m_ObjectHideFlags: 0

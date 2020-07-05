@@ -173,11 +173,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: boombox
   Name: Boombox
+  Volume: 20
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8197868818743549203}
   attachmentPoint: {fileID: 2804866248626254785}
+  bulkSize: 3
+  traits: []
 --- !u!114 &8931162742749529964
 MonoBehaviour:
   m_ObjectHideFlags: 0
