@@ -143,7 +143,10 @@ namespace SS3D.Engine.Interactions
 
         public virtual void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            
+            foreach (var extension in GetComponents<IInteractionSourceExtension>())
+            {
+                extension.CreateInteractions(targets, interactions);
+            }
         }
 
         public virtual bool CanInteractWithTarget(IInteractionTarget target)
