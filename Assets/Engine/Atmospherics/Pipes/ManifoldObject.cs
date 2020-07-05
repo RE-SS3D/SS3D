@@ -15,7 +15,7 @@ namespace SS3D.Engine.Atmospherics
 
         public ManifoldType manifoldType;
 
-
+        // We initialize via atmosloop as a device, so that we are sure that all pipes are set up
         public void Initialize()
         {
             // We only check the pipes that are on our own tile

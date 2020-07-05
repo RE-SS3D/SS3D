@@ -36,8 +36,7 @@ namespace SS3D.Engine.Atmospherics
                 if (input.GetTotalMoles() == 0)
                     return;
 
-                float[] inputGasses = input.GetAtmosContainer().GetGasses();
-                float[] outputGasses = output.GetAtmosContainer().GetGasses();
+                AtmosContainer inputContainer = input.GetAtmosContainer();
 
                 // And the output pressure is acceptable
                 if (pumpType == PumpType.Pressure)
@@ -60,15 +59,13 @@ namespace SS3D.Engine.Atmospherics
                         for (int i = 0; i < Gas.numOfGases; i++)
                         {
                             // Divide the moles according to their percentage
-                            float molePerGas = (inputGasses[i] / totalMoles) * transferMoles;
-                            if (inputGasses[i] > 0f)
+                            float molePerGas = (inputContainer.GetGas(i) / totalMoles) * transferMoles;
+                            if (inputContainer.GetGas(i) > 0f)
                             {
-                                inputGasses[i] -= molePerGas;
-                                outputGasses[i] += molePerGas;
+                                input.RemoveGas(i, molePerGas);
+                                output.AddGas(i, molePerGas);
                             }
                         }
-                        input.SetStateActive();
-                        output.SetStateActive();
                     }
                 }
                 // TODO: different pump speeds between volume/pressure pumps
@@ -86,14 +83,12 @@ namespace SS3D.Engine.Atmospherics
                             transferMoles = totalMoles;
 
                         // Divide the moles according to their percentage
-                        float molePerGas = (inputGasses[i] / totalMoles) * transferMoles;
+                        float molePerGas = (inputContainer.GetGas(i) / totalMoles) * transferMoles;
 
-                        if (inputGasses[i] >= molePerGas)
+                        if (inputContainer.GetGas(i) >= molePerGas)
                         {
-                            inputGasses[i] -= molePerGas;
-                            outputGasses[i] += molePerGas;
-                            input.SetStateActive();
-                            output.SetStateActive();
+                            input.RemoveGas(i, molePerGas);
+                            output.AddGas(i, molePerGas);
                         }
                     }
                 }
