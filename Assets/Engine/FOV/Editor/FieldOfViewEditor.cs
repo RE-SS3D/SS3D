@@ -51,7 +51,7 @@ namespace SS3D.Engine.FOV.Editor
             style.normal.textColor = Color.red;
            
             Handles.Label(viewPoints[0], "0", style);
-            for (int i = 1; i < viewPoints.Count; i++)
+            for (int i = 1; i < fov.viewPointsIndex; i++)
             {
                 Handles.Label(viewPoints[i], i.ToString(), style);
                 Handles.DrawLine(viewPoints[i], center);
