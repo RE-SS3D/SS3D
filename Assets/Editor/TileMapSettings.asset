@@ -17,7 +17,6 @@ MonoBehaviour:
     turf: {fileID: 0}
     fixtures:
       tileFixtureDefinition:
-        plenumCap: {fileID: 0}
         wire: {fileID: 0}
         disposal: {fileID: 0}
         pipe1: {fileID: 0}
@@ -33,13 +32,13 @@ MonoBehaviour:
         lowWallSouth: {fileID: 0}
         lowWallWest: {fileID: 0}
       floorFixtureDefinition:
-        furniture: {fileID: 0}
+        pipeUpper: {fileID: 0}
         overlay1: {fileID: 0}
         overlay2: {fileID: 0}
         overlay3: {fileID: 0}
-        tableMachine1: {fileID: 0}
-        tableMachine2: {fileID: 0}
-        tableMachine3: {fileID: 0}
-        tableMachine4: {fileID: 0}
-        tableMachine5: {fileID: 0}
+        furnitureMain: {fileID: 0}
+        furniture2: {fileID: 0}
+        furniture3: {fileID: 0}
+        furniture4: {fileID: 0}
+        furniture5: {fileID: 0}
     atmos: {fileID: 0}

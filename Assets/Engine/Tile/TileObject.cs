@@ -61,7 +61,7 @@ namespace SS3D.Engine.Tiles
             }
 
             // Go through Floor fixtures second
-            var floorLayers = TileDefinition.GetTileFixtureLayerNames();
+            var floorLayers = TileDefinition.GetFloorFixtureLayerNames();
             foreach (FloorFixtureLayers layer in floorLayers)
             {
                 UpdateFloorSingleAdjacency(direction, tile, layer);
@@ -107,7 +107,7 @@ namespace SS3D.Engine.Tiles
             }
 
             // Update every floor layer
-            var floorLayers = TileDefinition.GetTileFixtureLayerNames();
+            var floorLayers = TileDefinition.GetFloorFixtureLayerNames();
             foreach (FloorFixtureLayers layer in floorLayers)
             {
                 UpdateAllFloorAdjacencies(tiles, layer);
@@ -182,16 +182,19 @@ namespace SS3D.Engine.Tiles
          */
         private void SetContents(TileDefinition newTile)
         {
+            newTile = ValidateTurf(newTile);
             if (newTile.plenum != tile.plenum)
                 CreatePlenum(newTile.plenum);
             if (newTile.turf != tile.turf)
+            {
                 CreateTurf(newTile.turf);
+            }
             if (newTile.fixtures != tile.fixtures)
             {
                 if (newTile.turf == null && newTile.fixtures.floorFixtureDefinition.IsEmpty())
                     Debug.LogWarning("Created a floor fixture with no turf present");
 
-                FixturesContainer.ValidateFixtures(newTile);
+                // FixturesContainer.ValidateFixtures(newTile);
                 CreateFixtures(newTile.fixtures);
             }
 
@@ -203,6 +206,40 @@ namespace SS3D.Engine.Tiles
             // If we're in the editor we'll try to correct any errors with tilestate.
             UpdateSubDataFromChildren();
 #endif
+        }
+
+        private TileDefinition ValidateTurf(TileDefinition tileDefinition)
+        {
+            bool altered = false;
+            string reason = "";
+
+            // Turfs cannot be build on lattices
+            if (tileDefinition.plenum.name.Contains("Lattice") && tileDefinition.turf != null)
+            {
+                altered = true;
+                tileDefinition.turf = null;
+                reason += "No wall or floor can be build on lattices.\n";
+            }
+
+            // Only allow floor plating
+            if (tileDefinition.plenum.name.Contains("Catwalk") && tileDefinition.turf != null && !tileDefinition.turf.name.Contains("FloorPlating"))
+            {
+                tileDefinition.turf = null;
+                altered = true;
+                reason += "Catwalk only allows floor plating.\n";
+            }
+
+#if UNITY_EDITOR
+            if (altered)
+            {
+                EditorUtility.DisplayDialog("Plenum combination", "Invalid because of the following: \n\n" +
+                    reason +
+                    "\n" +
+                    "Definition has been reset.", "ok");
+            }
+#endif
+
+            return tileDefinition;
         }
 
         /**
@@ -548,6 +585,7 @@ namespace SS3D.Engine.Tiles
                 }
                 fixtures[index + offset] = EditorAndRuntime.InstantiatePrefab(fixtureDefinition.prefab, transform);
                 floorFixtureConnectors[index] = fixtures[index + offset].GetComponent<AdjacencyConnector>();
+                floorFixtureConnectors[index].LayerIndex = index + offset;
             }
             else
             {
@@ -601,7 +639,7 @@ namespace SS3D.Engine.Tiles
         private void UpdateSubDataFromChildren()
         {
             // Plenum + Turf + all fixtures layers
-            tile.subStates = new object[1 + TileDefinition.GetAllFixtureLayerSize()];
+            tile.subStates = new object[2 + TileDefinition.GetAllFixtureLayerSize()];
 
             tile.subStates[0] = plenum != null ? plenum?.GetComponent<TileStateCommunicator>()?.GetTileState() : null;
             tile.subStates[1] = turf != null ? turf?.GetComponent<TileStateCommunicator>()?.GetTileState() : null;

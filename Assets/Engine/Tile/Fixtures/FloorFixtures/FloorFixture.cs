@@ -19,7 +19,8 @@ namespace SS3D.Engine.Tiles
 
         public bool IsEmpty()
         {
-            return pipeUpper != null || overlay1 != null || overlay2 != null || overlay3 != null
+            // Important: pipe upper is not checked as it can exist without a floor turf in place
+            return overlay1 != null || overlay2 != null || overlay3 != null
                 || furnitureMain != null || furniture2 != null || furniture3 != null || furniture4 != null || furniture5 != null;
         }
     }
