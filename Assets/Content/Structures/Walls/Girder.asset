@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp:TileMap:Turf
   id: girder
   genericType: wall
-  isWall: 1
+  isWall: 0
   prefab: {fileID: 5989834269598487349, guid: 60695978170ac0c48af8fd7ac2c0a43c, type: 3}
