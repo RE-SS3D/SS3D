@@ -81,12 +81,12 @@ namespace SS3D.Engine.Atmospherics
             else if (mode == OperatingMode.Internal)
             {
                 // If the output pressure is acceptable
-                if (output.GetPressure() <= TargetPressure - 0.1f)
+                if (input.GetPressure() <= TargetPressure - 0.1f)
                 {
                     float totalMoles = input.GetTotalMoles();
 
                     // Calculate necessary moles to transfer using PV=nRT
-                    float pressureDifference = TargetPressure - output.GetPressure();
+                    float pressureDifference = TargetPressure - input.GetPressure();
                     float transferMoles = pressureDifference * 1000 * output.GetAtmosContainer().Volume / (output.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
 
                     // Reach our target pressure in N steps

@@ -168,6 +168,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4804375860637230145}
   - component: {fileID: 5928704826653443397}
+  - component: {fileID: 4662281444441877316}
   m_Layer: 0
   m_Name: Vent
   m_TagString: Untagged
@@ -210,3 +211,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &4662281444441877316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8428429231987922514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34c38d00d3fea3845878d76ab7eeeb81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mode: 2
+  TargetPressure: 101.3
+  pipeLayer: 0
