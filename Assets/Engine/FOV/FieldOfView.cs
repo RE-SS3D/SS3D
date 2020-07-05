@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Mirror;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Profiling;
@@ -85,6 +86,13 @@ namespace SS3D.Engine.FOV
 
         private void Start()
         {
+            // Only run when graphics are present
+            // TODO: Only run on client
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
+            {
+                Destroy(gameObject);
+            }
+            
             viewMeshFilter = GetComponent<MeshFilter>();
 
             viewMesh = new Mesh();
