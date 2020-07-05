@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
-    [ExecuteAlways]
+    // [ExecuteAlways]
     public class AtmosManager : MonoBehaviour
     {
         // Test
