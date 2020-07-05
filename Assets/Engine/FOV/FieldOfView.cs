@@ -101,7 +101,7 @@ namespace SS3D.Engine.FOV
                 triangles[i * 3 + 2] = unchecked((ushort) (i + 2u));
             }
             
-            viewCastResults = new ViewCastInfo[Mathf.RoundToInt(viewConeWidth * meshResolution)];
+            viewCastResults = new ViewCastInfo[Mathf.RoundToInt(viewConeWidth * meshResolution) + 1];
             angleBuffer = new float[viewCastResults.Length];
         }
 
@@ -158,12 +158,12 @@ namespace SS3D.Engine.FOV
             // Resize when changed in editor
             if (viewCastResults.Length < stepCount)
             {
-                Array.Resize(ref viewCastResults, stepCount);
-                Array.Resize(ref angleBuffer, stepCount);
+                Array.Resize(ref viewCastResults, stepCount + 1);
+                Array.Resize(ref angleBuffer, stepCount + 1);
             }
 
             // Set required angles
-            for (var i = 0; i < stepCount; i++)
+            for (var i = 0; i <= stepCount; i++)
             {
                 angleBuffer[i] = halfCone + stepAngleSize * i;
             }
@@ -173,7 +173,7 @@ namespace SS3D.Engine.FOV
             
             viewPointsIndex = 1;
             ViewCastInfo oldViewCast = new ViewCastInfo();
-            for (int i = 0; i < stepCount; i++)
+            for (int i = 0; i <= stepCount; i++)
             {
                 ViewCastInfo newViewCast = viewCastResults[i];
 
