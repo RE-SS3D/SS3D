@@ -7,6 +7,15 @@ namespace SS3D.Engine.Atmospherics
 {
     public class ManifoldObject : PipeObject, IAtmosLoop
     {
+        public enum ManifoldType
+        {
+            FourLayer,
+            ThreeLayer
+        }
+
+        public ManifoldType manifoldType;
+
+
         public void Initialize()
         {
             // We only check the pipes that are on our own tile
@@ -18,6 +27,10 @@ namespace SS3D.Engine.Atmospherics
             {
                 // Skip ourselves
                 if (pipe.name == this.name)
+                    continue;
+
+                // For the three layer manifold, we skip the upper pipe layer
+                if (manifoldType == ManifoldType.ThreeLayer && pipe.layer == PipeLayer.Upper)
                     continue;
 
                 atmosNeighbours[i] = pipe;
