@@ -7,8 +7,6 @@ using UnityEngine;
 
 public class ConstructionEntry : MonoBehaviour
 {
-    public ConstructionMaterial.Construction Construction { get; private set;  }
-
     public string Title
     {
         get => title.text;
@@ -33,10 +31,9 @@ public class ConstructionEntry : MonoBehaviour
         Click?.Invoke(this, EventArgs.Empty);
     }
 
-    public void SetConstruction(ConstructionMaterial.Construction construction, string materialName)
+    public void SetConstruction(ConstructionMaterial.ConstructionUiData data)
     {
-        Title = construction.name;
-        Materials = $"{construction.amount} {materialName}";
-        Construction = construction;
+        Title = data.name;
+        Materials = data.description;
     }
 }

@@ -19,7 +19,15 @@ namespace SS3D.Content.Graphics.UI
 
         public void RemoveElement(GameObject element)
         {
-            element.transform.parent = null;
+            Destroy(element);
+        }
+
+        public void Clear()
+        {
+            foreach (Transform o in list)
+            {
+                Destroy(o.gameObject);
+            }
         }
     }
 }

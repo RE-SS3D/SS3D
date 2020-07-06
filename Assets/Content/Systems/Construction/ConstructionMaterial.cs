@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mirror;
 using SS3D.Content.Graphics.UI;
 using SS3D.Content.Systems.Interactions;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Inventory;
+using SS3D.Engine.Inventory.Extensions;
 using SS3D.Engine.Tiles;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -13,7 +15,7 @@ using UnityEngine.Serialization;
 namespace SS3D.Content.Systems.Construction
 {
     [RequireComponent(typeof(Item))]
-    public class ConstructionMaterial : MonoBehaviour, IInteractionSourceExtension
+    public class ConstructionMaterial : NetworkBehaviour, IInteractionSourceExtension
     {
         public GameObject listMenuPrefab;
         public GameObject entryPrefab;
@@ -40,43 +42,84 @@ namespace SS3D.Content.Systems.Construction
             }));
         }
 
-        private void OpenConstruction(InteractionEvent arg1, InteractionReference arg2)
+        private void OpenConstruction(InteractionEvent interactionEvent, InteractionReference arg2)
         {
             // Set selected tile to build on
-            selectedTile = arg1.Target.GetComponent<Transform>().parent.GetComponent<TileObject>();
-            // Create menu
-            GameObject ui = Instantiate(listMenuPrefab);
-            // Close old menu if it exists
-            if (constructionMenu != null)
+            var tile = interactionEvent.Target.GetComponent<Transform>().parent.GetComponent<TileObject>();
+            if (tile == selectedTile)
             {
-                constructionMenu.Close();
+                return;
             }
+            selectedTile = tile;
 
-            constructionMenu = ui.GetComponent<ListMenu>();
-            constructionMenu.Title = "Construct";
+            string material = GetComponent<Item>().Name;
+            ConstructionUiData[] uiData = constructions.Select(x => x.ToUi(material)).ToArray();
 
-            // Create elements to construct
-            foreach (Construction construction in constructions)
+            NetworkConnection owner = interactionEvent.Source.GetInstanceFromReference(arg2).Owner;
+            if (owner == null)
+            {
+                // Fuck you mirror, just act like you love me (or as if you had a connection)
+                UpdateUi(uiData);
+            }
+            else
+            {
+                TargetUpdateUi(owner, uiData);
+            }
+        }
+
+        [TargetRpc]
+        public void TargetUpdateUi(NetworkConnection target, ConstructionUiData[] data)
+        {
+            UpdateUi(data);
+        }
+
+        [Client]
+        private void UpdateUi(ConstructionUiData[] data)
+        {
+            // Construct menu if it doesn't exist
+            if (constructionMenu == null)
+            {
+                // Create menu
+                GameObject ui = Instantiate(listMenuPrefab);
+                constructionMenu = ui.GetComponent<ListMenu>();
+                constructionMenu.Title = "Construct";
+            }
+            
+            constructionMenu.Clear();
+            
+            foreach (var uiData in data)
             {
                 GameObject uiEntry = Instantiate(entryPrefab);
 
                 var entry = uiEntry.GetComponent<ConstructionEntry>();
-                entry.SetConstruction(construction, item.Name);
-                entry.Click += Construct;
-
+                entry.SetConstruction(uiData);
+                entry.Click += ClientConstruct;
+                
                 constructionMenu.AddElement(uiEntry);
             }
         }
 
-        private void Construct(object sender, EventArgs e)
+        private void ClientConstruct(object sender, EventArgs e)
         {
-            var entry = (ConstructionEntry) sender;
-            Construction construction = entry.Construction;
+            var entry = (ConstructionEntry)sender;
+            CmdConstruct(entry.transform.GetSiblingIndex());
+        }
+
+        [Command(ignoreAuthority = true)]
+        public void CmdConstruct(int index, NetworkConnectionToClient client = null)
+        {
+            // Check if sending player is holding 
+            if (client != null && client.identity.GetComponent<Hands>().GetItemInHand().gameObject != gameObject)
+            {
+                return;
+            }
+            
+            Construction construction = constructions[index];
             TileDefinition tile = selectedTile.Tile;
             Debug.Log(construction.name);
 
             IInteraction interaction;
-            
+
             if (construction.turf)
             {
                 interaction = new TurfConstructionInteraction
@@ -120,9 +163,6 @@ namespace SS3D.Content.Systems.Construction
             // Start interaction
             source.Interact(@event,
                 interaction);
-
-            constructionMenu.Close();
-            constructionMenu = null;
         }
 
         private bool CanOpenConstruction(InteractionEvent interactionEvent)
@@ -135,6 +175,19 @@ namespace SS3D.Content.Systems.Construction
             return false;
         }
 
+        [Serializable]
+        public struct ConstructionUiData
+        {
+            public string name;
+            public string description;
+
+            public ConstructionUiData(string name, string description)
+            {
+                this.name = name;
+                this.description = description;
+            }
+        }
+        
         [Serializable]
         public struct Construction
         {
@@ -152,6 +205,11 @@ namespace SS3D.Content.Systems.Construction
             public TileFixtureLayers tileLayer;
             public WallFixtureLayers wallLayer;
             public FloorFixtureLayers floorLayer;
+
+            public ConstructionUiData ToUi(string materialName)
+            {
+                return new ConstructionUiData(name, $"{amount} {materialName}");
+            }
         }
     }
 }
