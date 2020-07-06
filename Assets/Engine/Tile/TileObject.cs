@@ -584,8 +584,13 @@ namespace SS3D.Engine.Tiles
                     Debug.LogWarning("Trying to overwrite fixture");
                 }
                 fixtures[index + offset] = EditorAndRuntime.InstantiatePrefab(fixtureDefinition.prefab, transform);
-                floorFixtureConnectors[index] = fixtures[index + offset].GetComponent<AdjacencyConnector>();
-                floorFixtureConnectors[index].LayerIndex = index + offset;
+                var connector = fixtures[index + offset].GetComponent<AdjacencyConnector>();
+                if (connector != null)
+                {
+                    floorFixtureConnectors[index] = connector;
+                    connector.LayerIndex = index + offset;
+                }
+                
             }
             else
             {
