@@ -70,7 +70,10 @@ namespace SS3D.Engine.Substances
 
         private void Awake()
         {
-            Substances = new List<SubstanceEntry>();
+            if (Substances.Count < 1)
+            {
+                Substances = new List<SubstanceEntry>();
+            }
         }
 
         public bool IsEmpty()
