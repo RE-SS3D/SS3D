@@ -116,7 +116,6 @@ namespace SS3D.Content.Systems.Construction
             
             Construction construction = constructions[index];
             TileDefinition tile = selectedTile.Tile;
-            Debug.Log(construction.name);
 
             IInteraction interaction;
 
