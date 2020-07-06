@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 8036318328820754698}
   - component: {fileID: -7903885912747747283}
   - component: {fileID: 771746120960806568}
+  - component: {fileID: 1935660105904761792}
   m_Layer: 16
   m_Name: metal
   m_TagString: Untagged
@@ -201,6 +202,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxStack: 30
   amountInStack: 30
+--- !u!114 &1935660105904761792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 068b6be72ad988a429803104e0b42dd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  listMenuPrefab: {fileID: 4398954682588637757, guid: ff908e0038e152a4282d6f24d3a7a081,
+    type: 3}
+  entryPrefab: {fileID: 325512293360168131, guid: 573c97db13238434c9a530a4257f200c,
+    type: 3}
+  loadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
+    type: 3}
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 32768
+  constructions:
+  - name: Metal Table
+    amount: 1
+    buildTime: 0
+    turf: {fileID: 0}
+    constructOverTurf: 0
+  - name: Wall Girder
+    amount: 2
+    buildTime: 2
+    turf: {fileID: 11400000, guid: 018a3ae07e0731044a7b4df2a554fa75, type: 2}
+    constructOverTurf: 1
 --- !u!1 &8648817992091836969
 GameObject:
   m_ObjectHideFlags: 0
