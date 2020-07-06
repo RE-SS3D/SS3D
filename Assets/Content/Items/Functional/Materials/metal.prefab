@@ -226,14 +226,24 @@ MonoBehaviour:
   constructions:
   - name: Metal Table
     amount: 1
-    buildTime: 0
+    buildTime: 1
     turf: {fileID: 0}
     constructOverTurf: 0
+    fixture: {fileID: 11400000, guid: d18bc2f440bef034988c0016380c09bc, type: 2}
+    type: 2
+    tileLayer: 0
+    wallLayer: 0
+    floorLayer: 4
   - name: Wall Girder
     amount: 2
     buildTime: 2
     turf: {fileID: 11400000, guid: 018a3ae07e0731044a7b4df2a554fa75, type: 2}
     constructOverTurf: 1
+    fixture: {fileID: 0}
+    type: 0
+    tileLayer: 0
+    wallLayer: 0
+    floorLayer: 0
 --- !u!1 &8648817992091836969
 GameObject:
   m_ObjectHideFlags: 0

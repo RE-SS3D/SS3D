@@ -75,13 +75,11 @@ namespace SS3D.Content.Systems.Construction
             TileDefinition tile = selectedTile.Tile;
             Debug.Log(construction.name);
 
+            IInteraction interaction;
+            
             if (construction.turf)
             {
-                var source = GetComponent<IInteractionSource>();
-                // Create interaction data
-                var @event = new InteractionEvent(source, new InteractionTargetGameObject(selectedTile.gameObject), 
-                    selectedTile.transform.position);
-                var interaction = new TurfConstructionInteraction
+                interaction = new TurfConstructionInteraction
                 {
                     Turf = construction.turf,
                     ConstructIfTurf = construction.constructOverTurf,
@@ -89,15 +87,39 @@ namespace SS3D.Content.Systems.Construction
                     Delay = construction.buildTime,
                     ObstacleMask = obstacleMask
                 };
-                // Check if interaction is possible
-                if (!interaction.CanInteract(@event))
-                {
-                    return;
-                }
-                // Start interaction
-                source.Interact(@event,
-                    interaction);
             }
+            else if (construction.fixture)
+            {
+                interaction = new FixtureConstructionInteraction
+                {
+                    Fixture = construction.fixture,
+                    TileLayer = construction.tileLayer,
+                    WallLayer = construction.wallLayer,
+                    FloorLayer = construction.floorLayer,
+                    FixtureType = construction.type,
+                    LoadingBarPrefab = loadingBarPrefab,
+                    Delay = construction.buildTime,
+                    ObstacleMask = obstacleMask
+                };
+            }
+            else
+            {
+                Debug.LogError("Construction does not have a turf or fixture to construct");
+                return;
+            }
+            
+            var source = GetComponent<IInteractionSource>();
+            // Create interaction data
+            var @event = new InteractionEvent(source, new InteractionTargetGameObject(selectedTile.gameObject), 
+                selectedTile.transform.position);
+            // Check if interaction is possible
+            if (!interaction.CanInteract(@event))
+            {
+                return;
+            }
+            // Start interaction
+            source.Interact(@event,
+                interaction);
 
             constructionMenu.Close();
             constructionMenu = null;
@@ -119,8 +141,17 @@ namespace SS3D.Content.Systems.Construction
             public string name;
             public int amount;
             public float buildTime;
+            
+            // Turf data
             public Turf turf;
             public bool constructOverTurf;
+            
+            // Fixture data
+            public Fixture fixture;
+            public FixtureType type;
+            public TileFixtureLayers tileLayer;
+            public WallFixtureLayers wallLayer;
+            public FloorFixtureLayers floorLayer;
         }
     }
 }
