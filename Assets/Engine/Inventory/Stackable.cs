@@ -1,10 +1,11 @@
 ﻿using System;
+using SS3D.Engine.Examine;
 using UnityEngine;
 
 namespace SS3D.Engine.Inventory
 {
     [RequireComponent(typeof(Item))]
-    public class Stackable : MonoBehaviour
+    public class Stackable : MonoBehaviour, IExaminable
     {
         public int maxStack;
         public int amountInStack;
@@ -25,6 +26,13 @@ namespace SS3D.Engine.Inventory
                 amountInStack = maxStack;
             }
             
+        }
+
+        public bool CanExamine(GameObject _) => true;
+
+        public string GetDescription(GameObject _)
+        {
+            return $"{amountInStack} in stack";
         }
     }
 }
