@@ -226,9 +226,16 @@ namespace SS3D.Engine.Tiles {
         private void TargetReceiveChunkFromServer(NetworkConnection connection, NetworkableTileObject[] tileList)
         {
             foreach (var item in tileList) {
-                ulong key = GetKey(item.position.x, item.position.y);
-                tiles[key] = SpawnTileObject(item.position.x, item.position.y);
-                tiles[key].Tile = item.definition;
+                try
+                {
+                    ulong key = GetKey(item.position.x, item.position.y);
+                    tiles[key] = SpawnTileObject(item.position.x, item.position.y);
+                    tiles[key].Tile = item.definition;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
             }
         }
 

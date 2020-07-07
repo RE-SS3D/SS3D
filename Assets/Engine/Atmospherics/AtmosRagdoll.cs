@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Mirror;
 using SS3D.Content.Creatures.Human;
 using SS3D.Engine.Tiles;
 using UnityEngine;
@@ -23,6 +24,11 @@ namespace SS3D.Engine.Atmospherics
 
         void Start()
         {
+            if (!NetworkServer.active)
+            {
+                Destroy(this);
+            }
+            
             ragdoll = GetComponent<HumanRagdoll>();
             tileManager = FindObjectOfType<TileManager>();
             Assert.IsNotNull(tileManager);
@@ -48,10 +54,6 @@ namespace SS3D.Engine.Atmospherics
                     lastX = x;
                     lastY = y;
                     atmosObject = tileManager.GetTile((int) (x - origin.x), (int) (y - origin.z))?.atmos;
-                    if (atmosObject == null)
-                    {
-                        Debug.Log($"{x}, {y}");
-                    }
                 }
 
                 // Check velocity
