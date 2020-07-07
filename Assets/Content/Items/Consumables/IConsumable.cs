@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IConsumable
 {
-        void ConsumeAction(GameObject target);
+        void ConsumeAction(GameObject origin, GameObject target = null);
 }

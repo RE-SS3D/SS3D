@@ -14,11 +14,11 @@ GameObject:
   - component: {fileID: 4674547325470248768}
   - component: {fileID: 5319604551343680694}
   - component: {fileID: 3471797896437349555}
-  - component: {fileID: 9193916177469158865}
   - component: {fileID: 8117693927796619096}
   - component: {fileID: 1883610608384673158}
-  - component: {fileID: 5889410501263145287}
   - component: {fileID: -980747644787845634}
+  - component: {fileID: 8368035118958109042}
+  - component: {fileID: 468259088459523041}
   m_Layer: 16
   m_Name: Diet Beep's Soda
   m_TagString: Untagged
@@ -134,35 +134,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 2608438801982286396, guid: c1169b60804c0aa41bb17b72ba87985b, type: 3}
---- !u!114 &9193916177469158865
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6405106075082308508}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c35459a5c7a45a94d97f003932132765, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  ItemId: sodacan
-  Name: Diet Soda
-  Volume: 10
-  container: {fileID: 0}
-  sprite: {fileID: 0}
-  prefab: {fileID: 6405106075082308508}
-  attachmentPoint: {fileID: 1680750711217523086}
-  bulkSize: 2
-  traits:
-  - {fileID: 11400000, guid: a86f8b10eacec4540a203b13004c2389, type: 2}
-  contentPerSip: 2
-  content: {fileID: 1883610608384673158}
-  audio: {fileID: 0}
-  sounds:
-  - {fileID: 8300000, guid: d218c16bb0edfd44293704a97a562e9e, type: 3}
 --- !u!114 &8117693927796619096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,22 +167,8 @@ MonoBehaviour:
   Volume: 10
   Temperature: 0
   substances:
-  - Substance: {fileID: 11400000, guid: 4d7f77f3af8ddb64a943ac9d824f7718, type: 2}
-    Moles: 0
---- !u!114 &5889410501263145287
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6405106075082308508}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Text: 
-  MaxDistance: 0
+  - Substance: {fileID: 11400000, guid: e1163ff5257b4c04aa9df8bb85fa6188, type: 2}
+    Moles: 10
 --- !u!82 &-980747644787845634
 AudioSource:
   m_ObjectHideFlags: 0
@@ -308,6 +265,51 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8368035118958109042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6405106075082308508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d41435391f55af44bf8a254724a129a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  ItemId: sodacan
+  Name: Space Cola
+  Volume: 10
+  container: {fileID: 0}
+  sprite: {fileID: 0}
+  prefab: {fileID: 6405106075082308508}
+  attachmentPoint: {fileID: 1680750711217523086}
+  bulkSize: 2
+  traits:
+  - {fileID: 11400000, guid: a86f8b10eacec4540a203b13004c2389, type: 2}
+  content: {fileID: 1883610608384673158}
+  contentPerUse: 2
+  trashPrefab: {fileID: 0}
+  destroyObject: 0
+  audio: {fileID: -980747644787845634}
+  sounds:
+  - {fileID: 8300000, guid: d218c16bb0edfd44293704a97a562e9e, type: 3}
+--- !u!114 &468259088459523041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6405106075082308508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!1 &7351586078410128835
 GameObject:
   m_ObjectHideFlags: 0

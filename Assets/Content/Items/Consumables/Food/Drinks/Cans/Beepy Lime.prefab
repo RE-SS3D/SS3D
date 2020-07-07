@@ -15,10 +15,11 @@ GameObject:
   - component: {fileID: 759945563533709650}
   - component: {fileID: 8320008454898123095}
   - component: {fileID: 3746715404349868732}
-  - component: {fileID: 4581002027906185268}
   - component: {fileID: 2266682026811167512}
   - component: {fileID: 6661093949436954322}
   - component: {fileID: 8562971194603966681}
+  - component: {fileID: 2324293574339799559}
+  - component: {fileID: -6274715014675923002}
   m_Layer: 16
   m_Name: Beepy Lime
   m_TagString: Untagged
@@ -152,35 +153,6 @@ MonoBehaviour:
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
---- !u!114 &4581002027906185268
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1998283610537428600}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c35459a5c7a45a94d97f003932132765, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  ItemId: sodacan
-  Name: Beepy Lime
-  Volume: 10
-  container: {fileID: 0}
-  sprite: {fileID: 0}
-  prefab: {fileID: 1998283610537428600}
-  attachmentPoint: {fileID: 6056197512622027882}
-  bulkSize: 2
-  traits:
-  - {fileID: 11400000, guid: a86f8b10eacec4540a203b13004c2389, type: 2}
-  contentPerSip: 2
-  content: {fileID: 2266682026811167512}
-  audio: {fileID: 0}
-  sounds:
-  - {fileID: 8300000, guid: d218c16bb0edfd44293704a97a562e9e, type: 3}
 --- !u!114 &2266682026811167512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,7 +168,7 @@ MonoBehaviour:
   Volume: 10
   Temperature: 0
   substances:
-  - Substance: {fileID: 11400000, guid: 4d7f77f3af8ddb64a943ac9d824f7718, type: 2}
+  - Substance: {fileID: 11400000, guid: e1163ff5257b4c04aa9df8bb85fa6188, type: 2}
     Moles: 10
 --- !u!114 &6661093949436954322
 MonoBehaviour:
@@ -308,6 +280,51 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &2324293574339799559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1998283610537428600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d41435391f55af44bf8a254724a129a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  ItemId: sodacan
+  Name: Beepy Lime
+  Volume: 10
+  container: {fileID: 0}
+  sprite: {fileID: 0}
+  prefab: {fileID: 1998283610537428600}
+  attachmentPoint: {fileID: 6056197512622027882}
+  bulkSize: 2
+  traits:
+  - {fileID: 11400000, guid: a86f8b10eacec4540a203b13004c2389, type: 2}
+  content: {fileID: 2266682026811167512}
+  contentPerUse: 2
+  trashPrefab: {fileID: 0}
+  destroyObject: 0
+  audio: {fileID: 8562971194603966681}
+  sounds:
+  - {fileID: 8300000, guid: d218c16bb0edfd44293704a97a562e9e, type: 3}
+--- !u!114 &-6274715014675923002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1998283610537428600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!1 &2692803789789593639
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5551754387232527603}
   - component: {fileID: 1784884762806689535}
   - component: {fileID: 7961324091246994682}
+  - component: {fileID: 451889541494494911}
   m_Layer: 16
   m_Name: Burger
   m_TagString: Untagged
@@ -132,9 +133,10 @@ MonoBehaviour:
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
-  portions: 3
-  nutrimentPerPortion: 2
+  content: {fileID: 451889541494494911}
+  contentPerUse: 3
   trashPrefab: {fileID: 0}
+  destroyObject: 1
   audio: {fileID: 7961324091246994682}
   sounds:
   - {fileID: 8300000, guid: dcb671bcc99906d49a3bbc0abbac071f, type: 3}
@@ -148,7 +150,8 @@ AudioSource:
   m_GameObject: {fileID: 479858891666054169}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: deedf379b82c89646b8bb39e6a3870aa,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -235,6 +238,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &451889541494494911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 479858891666054169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Volume: 9
+  Temperature: 0
+  substances:
+  - Substance: {fileID: 11400000, guid: 9a75665b85be2274882d93f14202cf57, type: 2}
+    Moles: 9
 --- !u!1 &1727028019353448778
 GameObject:
   m_ObjectHideFlags: 0
