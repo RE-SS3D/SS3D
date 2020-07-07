@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 3807651273336194885}
   - component: {fileID: 6811098404249235335}
   - component: {fileID: 4131194204592248743}
+  - component: {fileID: 2526091444427634931}
+  - component: {fileID: 2724605981445550444}
   m_Layer: 16
   m_Name: wood plank
   m_TagString: Untagged
@@ -186,6 +188,54 @@ MonoBehaviour:
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
+--- !u!114 &2526091444427634931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4157460056844347020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef42ef955e1886545b613d9a520b1691, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxStack: 30
+  amountInStack: 30
+--- !u!114 &2724605981445550444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4157460056844347020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 068b6be72ad988a429803104e0b42dd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  listMenuPrefab: {fileID: 4398954682588637757, guid: ff908e0038e152a4282d6f24d3a7a081,
+    type: 3}
+  entryPrefab: {fileID: 325512293360168131, guid: 573c97db13238434c9a530a4257f200c,
+    type: 3}
+  loadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
+    type: 3}
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
+  constructions:
+  - name: Wooden Table
+    amount: 1
+    buildTime: 2
+    turf: {fileID: 0}
+    constructOverTurf: 0
+    fixture: {fileID: 11400000, guid: 1c44adde610e2a64f9dabe2adfb1603b, type: 2}
+    type: 2
+    tileLayer: 0
+    wallLayer: 0
+    floorLayer: 4
 --- !u!1 &8686802111500605705
 GameObject:
   m_ObjectHideFlags: 0
