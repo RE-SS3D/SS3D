@@ -50,6 +50,6 @@ public class TurfConstructionInteraction : ConstructionInteraction
         var tileObject = interactionEvent.Target.GetComponent<TileObject>();
         TileDefinition tile = tileObject.Tile;
         tile.turf = Turf;
-        tileObject.Tile = tile;
+        Object.FindObjectOfType<TileManager>().UpdateTile(tileObject.transform.position, tile);
     }
 }

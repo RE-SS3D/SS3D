@@ -94,7 +94,7 @@ namespace Mirror
         /// <summary>
         /// The sender of the current network function
         /// </summary>
-        public NetworkConnection currentSender = null;
+        public static NetworkConnection currentSender = null;
 
         protected ulong syncVarDirtyBits { get; private set; }
         ulong syncVarHookGuard;
