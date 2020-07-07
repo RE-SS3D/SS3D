@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
@@ -150,6 +150,9 @@ namespace SS3D.Content.Systems.Construction
                 return;
             }
             
+            // Add material requirement
+            interaction = new ItemRequirement(interaction, item.ItemId, construction.amount);
+            
             var source = GetComponent<IInteractionSource>();
             // Create interaction data
             var @event = new InteractionEvent(source, new InteractionTargetGameObject(selectedTile.gameObject), 
@@ -168,7 +171,7 @@ namespace SS3D.Content.Systems.Construction
         {
             if (interactionEvent.Target is IGameObjectProvider provider)
             {
-                return provider.GameObject.transform.parent.GetComponent<TileObject>();
+                return provider.GameObject.GetComponentInParent<TileObject>();
             }
 
             return false;
