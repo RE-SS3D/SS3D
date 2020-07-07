@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 
@@ -248,29 +249,127 @@ namespace SS3D.Engine.Tiles
         // For example: tables cannot be build in walls, or wall fixtures cannot be build on floors
         public static TileDefinition ValidateFixtures(TileDefinition tileDefinition)
         {
-            if ((tileDefinition.turf != null && tileDefinition.turf.isWall) || tileDefinition.turf == null)
+            bool altered = false;
+            string reason = "";
+
+            // If lattice, remove tile fixtures
+            if (tileDefinition.plenum.name.Contains("Lattice"))
+            {
+                foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
+                {
+                    if (tileDefinition.fixtures.GetTileFixtureAtLayer(layer) != null)
+                    {
+                        altered = true;
+                        tileDefinition.fixtures.SetTileFixtureAtLayer(null, layer);
+                    }
+                }
+                if (altered)
+                    reason += "Lattices do not support any wall/floor fixture.\n";
+            }
+
+            // If catwalk
+            if (tileDefinition.plenum.name.Contains("Catwalk"))
+            {
+                // Allow only the wire layer in tile fixtures
+                foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
+                {
+                    if (layer != TileFixtureLayers.Wire)
+                    {
+                        if (tileDefinition.fixtures.GetTileFixtureAtLayer(layer) != null)
+                        {
+                            altered = true;
+                            reason += "Catwalk only supports a wire and upper pipe layer.\n";
+                            tileDefinition.fixtures.SetTileFixtureAtLayer(null, layer);
+                        }
+                    }
+                }
+            }
+
+            if ((tileDefinition.turf != null && tileDefinition.turf.isWall) || tileDefinition.turf == null || tileDefinition.plenum.name.Contains("Lattice"))
             {
                 // Remove floor fixtures
                 foreach (FloorFixtureLayers layer in TileDefinition.GetFloorFixtureLayerNames())
                 {
+                    // Allow upper pipe layer with a catwalk plenum
+                    if (tileDefinition.plenum.name.Contains("Catwalk") && layer == FloorFixtureLayers.PipeUpperFixture)
+                        continue;
+
                     if (tileDefinition.fixtures.GetFloorFixtureAtLayer(layer) != null)
+                    {
+                        altered = true;
+                        reason += "Cannot set a floor fixture when there is no floor.\n";
                         Debug.Log("Cannot set a floor fixture when there is no floor");
+                    }
 
                     tileDefinition.fixtures.SetFloorFixtureAtLayer(null, layer);
                 }
             }
 
-            if ((tileDefinition.turf != null && !tileDefinition.turf.isWall) || tileDefinition.turf == null)
+            if ((tileDefinition.turf != null && !tileDefinition.turf.isWall) || tileDefinition.turf == null || tileDefinition.plenum.name.Contains("Lattice"))
             {
                 // Remove wall fixtures
                 foreach (WallFixtureLayers layer in TileDefinition.GetWallFixtureLayerNames())
                 {
                     if (tileDefinition.fixtures.GetWallFixtureAtLayer(layer) != null)
+                    {
+                        altered = true;
+                        reason += "Cannot set a wall fixture when there is no wall.\n";
                         Debug.Log("Cannot set a wall fixture when there is no wall");
+                    }
 
                     tileDefinition.fixtures.SetWallFixtureAtLayer(null, layer);
                 }
             }
+
+            // Prevent low wall mounts on glass walls and reinforced glass walls
+            if (tileDefinition.turf != null && tileDefinition.turf.isWall && tileDefinition.turf.name.Contains("GlassWall"))
+            {
+                foreach (WallFixtureLayers layer in TileDefinition.GetWallFixtureLayerNames())
+                {
+                    if (layer == WallFixtureLayers.LowWallNorth || layer == WallFixtureLayers.LowWallEast || layer == WallFixtureLayers.LowWallSouth || layer == WallFixtureLayers.LowWallWest)
+                    {
+                        if (tileDefinition.fixtures.GetWallFixtureAtLayer(layer) != null)
+                        {
+                            altered = true;
+                            reason += "Glass walls do not allow low wall fixtures.\n";
+                            tileDefinition.fixtures.SetWallFixtureAtLayer(null, layer);
+                        }
+                    }
+                }
+            }
+
+            // Restrict pipes to their own layer
+            TileFixture pipe = tileDefinition.fixtures.GetTileFixtureAtLayer(TileFixtureLayers.Pipe1);
+            if (pipe != null && !pipe.name.Contains("1"))
+            {
+                altered = true;
+                tileDefinition.fixtures.SetTileFixtureAtLayer(null, TileFixtureLayers.Pipe1);
+            }
+
+            pipe = tileDefinition.fixtures.GetTileFixtureAtLayer(TileFixtureLayers.Pipe2);
+            if (pipe != null && !pipe.name.Contains("2"))
+            {
+                altered = true;
+                tileDefinition.fixtures.SetTileFixtureAtLayer(null, TileFixtureLayers.Pipe2);
+            }
+
+            pipe = tileDefinition.fixtures.GetTileFixtureAtLayer(TileFixtureLayers.Pipe3);
+            if (pipe != null && !pipe.name.Contains("3"))
+            {
+                altered = true;
+                tileDefinition.fixtures.SetTileFixtureAtLayer(null, TileFixtureLayers.Pipe3);
+            }
+
+#if UNITY_EDITOR
+            if (altered)
+            {
+                EditorUtility.DisplayDialog("Fixture combination", "Invalid because of the following: \n\n" +
+                    reason +
+                    "\n" +
+                    "Definition has been reset.", "ok");
+            }
+#endif
+
             return tileDefinition;
         }
     }

@@ -457,10 +457,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  OpenIcon: {fileID: 0}
+  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
   OnlyStoreWhenOpen: 1
   MaxDistance: 1.5
-  viewContainerIcon: {fileID: 0}
+  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
 --- !u!114 &4853803082413448812
 MonoBehaviour:
   m_ObjectHideFlags: 0

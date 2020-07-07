@@ -39,6 +39,7 @@ public class Filter : ScriptableObject
         }
     }
 
+    [SerializeField]
     //Hash for identification
     protected int hash;
     [HideInInspector] public int Hash => hash;
