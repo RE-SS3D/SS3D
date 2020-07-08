@@ -32,7 +32,6 @@ Transform:
   m_Children:
   - {fileID: 2302781954775137840}
   - {fileID: 6445216069889638281}
-  - {fileID: 8782266575696302771}
   m_Father: {fileID: 3226333527286595097}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -43,7 +42,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 419580937072023060}
-  m_Mesh: {fileID: 4390949875767816454, guid: cc7adc6aabe40434f9d18822f5cab14d, type: 3}
+  m_Mesh: {fileID: -2880662361867406393, guid: cc7adc6aabe40434f9d18822f5cab14d, type: 3}
 --- !u!23 &7543338950959778775
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -175,50 +174,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!1 &1387100641633622124
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8782266575696302771}
-  - component: {fileID: 2666373647541395245}
-  m_Layer: 8
-  m_Name: ViewObstacle
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8782266575696302771
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1387100641633622124}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 1, y: 1.9, z: 0.06}
-  m_Children: []
-  m_Father: {fileID: 7526266121122873849}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &2666373647541395245
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1387100641633622124}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1917799960222321674
 GameObject:
   m_ObjectHideFlags: 0
@@ -235,7 +190,7 @@ GameObject:
   - component: {fileID: 1594027951419558492}
   - component: {fileID: 5702311699610938402}
   m_Layer: 0
-  m_Name: Airlock
+  m_Name: Airlock Civilian Glass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
