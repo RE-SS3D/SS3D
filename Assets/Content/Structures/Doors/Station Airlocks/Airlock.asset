@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: airlock
   genericType: wall
-  prefab: {fileID: 3290821787637386385, guid: 316566ec0b0bc504ba51bbfeb22aaac1, type: 3}
+  prefab: {fileID: 1917799960222321674, guid: 8a78eb8d1c4b8874bada82a70bb176b0, type: 3}
