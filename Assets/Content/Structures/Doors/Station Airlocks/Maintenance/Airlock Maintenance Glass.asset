@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
   m_Name: Airlock Maintenance Glass
   m_EditorClassIdentifier: 
-  id: airlock
+  id: airlock_maintenace_glass
   genericType: wall
   prefab: {fileID: 1917799960222321674, guid: 435449d4ca1f3a44196fa8a29e3c2659, type: 3}
