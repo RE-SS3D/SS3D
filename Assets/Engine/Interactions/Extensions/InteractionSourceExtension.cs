@@ -15,6 +15,12 @@ namespace SS3D.Engine.Interactions.Extensions
 
             return current;
         }
+
+        public static T GetComponent<T>(this IInteractionSource source) where T : class
+        {
+            GameObject gameObject = (source as IGameObjectProvider)?.GameObject;
+            return gameObject != null ? gameObject.GetComponent<T>() : null;
+        }
         
         public static T GetComponentInTree<T>(this IInteractionSource source) where T: class
         {

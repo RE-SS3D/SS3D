@@ -45,5 +45,7 @@ namespace SS3D.Engine.Interactions
         /// </summary>
         /// <param name="reference">The reference to the interaction</param>
         void CancelInteraction(InteractionReference reference);
+
+        InteractionInstance GetInstanceFromReference(InteractionReference reference);
     }
 }

@@ -26,6 +26,12 @@ namespace SS3D.Engine.Interactions
         
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
+            // Don't create client interaction if delay too small
+            if (Math.Abs(Delay) < 0.1f)
+            {
+                return null;
+            }
+            
             return new ClientDelayedInteraction
             {
                 Delay = Delay, LoadingBarPrefab = LoadingBarPrefab

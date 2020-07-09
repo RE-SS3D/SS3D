@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
@@ -107,12 +108,7 @@ namespace SS3D.Engine.Atmospherics
 
         public float GetPressure()
         {
-            float pressure = 0f;
-            for (int i = 0; i < Gas.numOfGases; ++i)
-            {
-                pressure += (gasses[i] * Gas.gasConstant * temperature) / Volume;
-            }
-            return pressure / 1000f;    // Convert to KiloPascals
+            return gasses.Sum() * Gas.gasConstant * temperature / Volume / 1000f;
         }
 
         public float GetPartialPressure(int index)

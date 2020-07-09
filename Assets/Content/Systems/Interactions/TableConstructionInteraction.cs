@@ -26,12 +26,7 @@ namespace SS3D.Content.Systems.Interactions
             {
                 return false;
             }
-            
-            if (!InteractionExtensions.RangeCheck(interactionEvent))
-            {
-                return false;
-            }
-            
+
             return TargetTile.Tile.turf?.isWall != true;
         }
 
