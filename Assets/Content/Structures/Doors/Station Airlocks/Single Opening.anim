@@ -50,6 +50,13 @@ AnimationClip:
     path: Airlock/Airlock Light
     classID: 23
     script: {fileID: 0}
+  - curve:
+    - time: 0
+      value: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+    attribute: m_Materials.Array.data[0]
+    path: Airlock/Airlock Panel/Airlock Panel Light Green
+    classID: 23
+    script: {fileID: 0}
   m_SampleRate: 60
   m_WrapMode: 0
   m_Bounds:
@@ -71,8 +78,16 @@ AnimationClip:
       typeID: 23
       customType: 21
       isPPtrCurve: 1
+    - serializedVersion: 2
+      path: 82771643
+      attribute: 0
+      script: {fileID: 0}
+      typeID: 23
+      customType: 21
+      isPPtrCurve: 1
     pptrCurveMapping:
     - {fileID: 2100000, guid: 720795a6c519e7a44bf0ac6135fd3c94, type: 2}
+    - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
