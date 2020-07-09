@@ -204,11 +204,7 @@ namespace SS3D.Engine.Inventory
             for (var i = 0; i < items.Count; i++)
             {
                 var item = items[i].GetComponent<Item>();
-                if (item != null)
-                {
-                    item.container = null;
-                }
-                ItemHelpers.DestroyItem(item);
+                item.Destroy();
                 items[i] = null;
             }
         }

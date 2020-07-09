@@ -70,7 +70,7 @@ public class SimpleCraftingInteraction : IInteraction
         Item targetItem = interactionEvent.Target.GetComponent<Item>();
         if (Consume)
         {
-            ItemHelpers.DestroyItem(item);
+            item.Destroy();
         }
 
         GameObject targetGameObject = targetItem.gameObject;
@@ -92,7 +92,7 @@ public class SimpleCraftingInteraction : IInteraction
 
         if (ResultingObjects.Length > 1)
         {
-            ItemHelpers.DestroyItem(targetItem);
+            targetItem.Destroy();
         }
 
 
