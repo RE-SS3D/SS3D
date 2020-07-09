@@ -178,11 +178,14 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: flashbang
   Name: Flashbang
+  Volume: 5
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8071868517170156620}
   attachmentPoint: {fileID: 4590771596200191582}
+  bulkSize: 2
+  traits:
+  - {fileID: 11400000, guid: 2118f1e8684a63e41a4aa80bba79ff44, type: 2}
 --- !u!114 &-5622362491041830292
 MonoBehaviour:
   m_ObjectHideFlags: 0

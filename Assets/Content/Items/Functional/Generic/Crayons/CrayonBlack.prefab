@@ -149,11 +149,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: crayon_black
   Name: Black Crayon
+  Volume: 3
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 2398713255094013024}
   attachmentPoint: {fileID: 2027565760390116225}
+  bulkSize: 0
+  traits: []
 --- !u!114 &6447688627046315522
 MonoBehaviour:
   m_ObjectHideFlags: 0

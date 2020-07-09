@@ -134,11 +134,14 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: egg
   Name: Egg
+  Volume: 4
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 779687924883353726}
   attachmentPoint: {fileID: 4999762902382821996}
+  bulkSize: 1
+  traits:
+  - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
 --- !u!114 &8446169822554776093
 MonoBehaviour:
   m_ObjectHideFlags: 0

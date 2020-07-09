@@ -178,11 +178,14 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: mop
   Name: Mop
+  Volume: 15
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3533485490934766563}
   attachmentPoint: {fileID: 1950468283834406260}
+  bulkSize: 4
+  traits:
+  - {fileID: 11400000, guid: 7f22e87f08452654f8f20ace0b1e0fa3, type: 2}
 --- !u!114 &8305323804518448030
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -4,18 +4,20 @@ using System.Linq;
 using Mirror;
 using UnityEngine;
 using SS3D.Engine.Interactions;
+using UnityEngine.Serialization;
 
 namespace SS3D.Engine.Inventory.Extensions
 {
     [RequireComponent(typeof(Inventory))]
-    public class Hands : InteractionSourceNetworkBehaviour, IToolHolder, IInteractionRangeLimit
+    public class Hands : InteractionSourceNetworkBehaviour, IToolHolder, IInteractionRangeLimit, IInteractionOriginProvider
     {
         [SerializeField] private Container handContainer = null;
         [SerializeField] private float handRange = 0f;
 
         public event Action<int> onHandChange;
         public int SelectedHand { get; private set; } = 0;
-        public float Range = 1.5f;
+        public RangeLimit range = new RangeLimit(1.5f, 1);
+        public Transform interactionOrigin;
 
         public Sprite pickupIcon;
 
@@ -98,10 +100,12 @@ namespace SS3D.Engine.Inventory.Extensions
             // Because we just make calls to GetSlot, which is set pre-Awake, this is safe.
             handSlots = new int[2] { -1, -1 };
             for (int i = 0; i < handContainer.Length(); ++i) {
-                if (handContainer.GetSlot(i) == Container.SlotType.LeftHand)
+                if (handContainer.GetFilter(i).Hash == Filters.LeftHand)
                     handSlots[0] = i;
-                else if (handContainer.GetSlot(i) == Container.SlotType.RightHand)
+                else if (handContainer.GetFilter(i).Hash == Filters.RightHand)
+                {
                     handSlots[1] = i;
+                }
             }
             if (handSlots[0] == -1 || handSlots[1] == -1)
                 Debug.LogWarning("Player container does not contain slots for hands upon initialization. Maybe they were severed though?");
@@ -178,9 +182,11 @@ namespace SS3D.Engine.Inventory.Extensions
             }
             return interactionSource;
         }
-        public float GetInteractionRange()
+        public RangeLimit GetInteractionRange()
         {
-            return Range;
+            return range;
         }
+
+        public Vector3 InteractionOrigin => interactionOrigin.position;
     }
 }

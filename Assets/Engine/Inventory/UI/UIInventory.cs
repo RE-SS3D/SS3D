@@ -48,7 +48,7 @@ namespace SS3D.Engine.Inventory.UI
         }
         public bool CanMoveItem(Container from, int fromSlot, Container to, int toSlot)
         {
-            return Container.AreCompatible(to.GetSlot(toSlot), from.GetItem(fromSlot).itemType) && to.GetItem(toSlot) == null;
+            return Container.AreCompatible(to.GetFilter(toSlot), from.GetItem(fromSlot)) && to.GetItem(toSlot) == null;
         }
         public bool CanMoveItem(Container from, int fromSlot, UIAbstractContainer to)
         {

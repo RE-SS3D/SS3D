@@ -147,11 +147,14 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: bat_baseball_nailed
   Name: Nailed Baseball Bat
+  Volume: 12
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5499389425532640764}
   attachmentPoint: {fileID: 279639189266935790}
+  bulkSize: 2
+  traits:
+  - {fileID: 11400000, guid: 08c4bae5b95cea146826e467131ec146, type: 2}
 --- !u!114 &6891116257197748772
 MonoBehaviour:
   m_ObjectHideFlags: 0

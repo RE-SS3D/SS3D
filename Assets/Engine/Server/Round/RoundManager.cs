@@ -29,6 +29,7 @@ namespace SS3D.Engine.Server.Round
         public void StartWarmup()
         {
             timerSeconds = warmupTimeSeconds;
+            gameObject.SetActive(true);
             StartCoroutine(TickWarmup());
         }
 
@@ -36,6 +37,7 @@ namespace SS3D.Engine.Server.Round
         {
             started = true;
             controlUi.gameObject.SetActive(true);
+            gameObject.SetActive(true);
             tickCoroutine = StartCoroutine(Tick());
         }
         
