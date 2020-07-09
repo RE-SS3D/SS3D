@@ -42,8 +42,11 @@ namespace SS3D.Content.Systems.Player
         public void SetTarget(GameObject target)
         {
             this.target = target;
-            fieldOfView.target = target.transform;
-            fieldOfView.enabled = true;
+            if (fieldOfView != null)
+            {
+                fieldOfView.target = target.transform;
+                fieldOfView.enabled = true;
+            }
 
             // Set the player height based on the character controller, if one is found
             var character = target.GetComponent<CharacterController>();
