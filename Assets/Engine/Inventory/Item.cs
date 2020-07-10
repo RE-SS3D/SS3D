@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
 using UnityEditor;
 using SS3D.Engine.Utilities;
 using System;
+using Mirror;
+using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using UnityEditor.Experimental.SceneManagement;
 #endif
@@ -28,6 +29,12 @@ namespace SS3D.Engine.Inventory
         public BulkSize bulkSize = BulkSize.Medium;
         public List<Trait> traits;
 
+        /// <summary>
+        /// The stack of this item, can be null
+        /// </summary>
+        public Stackable Stack => stack ? stack : stack = GetComponent<Stackable>();
+        private Stackable stack;
+
         [ContextMenu("Create Icon")]
         public void Start()
         {
@@ -49,6 +56,82 @@ namespace SS3D.Engine.Inventory
             base.CreateInteractions(targets, interactions);
             DropInteraction dropInteraction = new DropInteraction();
             interactions.Add(new InteractionEntry(null, dropInteraction));
+        }
+
+        /// <summary>
+        /// Check if an item has at least a certain quantity
+        /// </summary>
+        /// <param name="amount">The amount to check</param>
+        /// <returns>If the item has the required quantity</returns>
+        /// <exception cref="ArgumentException">Thrown if the amount is less than one</exception>
+        public bool HasQuantity(int amount)
+        {
+            if (amount < 1)
+            {
+                throw new ArgumentException("Amount must be at least 1", nameof(amount));
+            }
+            
+            if (amount == 1)
+            {
+                return true;
+            }
+
+            Stackable stackable = Stack;
+            if (stackable == null)
+            {
+                return false;
+            }
+
+            return stackable.amountInStack >= amount;
+        }
+
+        /// <summary>
+        /// Consumes a certain amount of this item
+        /// </summary>
+        /// <param name="amount">The amount to consume</param>
+        public void ConsumeQuantity(int amount)
+        {
+            if (!HasQuantity(amount))
+            {
+                return;
+            }
+
+            Stackable stackable = Stack;
+            if (stackable != null)
+            {
+                stackable.amountInStack -= amount;
+                if (stackable.amountInStack <= 0)
+                {
+                    Destroy();
+                }
+            }
+            else
+            {
+                Destroy();
+            }
+        }
+
+        /// <summary>
+        /// Destroys this item
+        /// </summary>
+        public void Destroy()
+        {
+            if (isServer)
+            {
+                NetworkServer.Destroy(gameObject);
+            }
+            else
+            {
+                Object.Destroy(gameObject);
+            }
+        }
+
+        void OnDestroy()
+        {
+            if (container != null)
+            {
+                container.RemoveItem(gameObject);
+            }
         }
 
 #if UNITY_EDITOR

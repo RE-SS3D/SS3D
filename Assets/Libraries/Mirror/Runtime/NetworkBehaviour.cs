@@ -91,6 +91,11 @@ namespace Mirror
         /// </summary>
         public NetworkConnection connectionToClient => netIdentity.connectionToClient;
 
+        /// <summary>
+        /// The sender of the current network function
+        /// </summary>
+        public static NetworkConnection currentSender = null;
+
         protected ulong syncVarDirtyBits { get; private set; }
         ulong syncVarHookGuard;
 
@@ -495,8 +500,9 @@ namespace Mirror
         {
             if (GetInvokerForHash(cmdHash, invokeType, out Invoker invoker) && invoker.invokeClass.IsInstanceOfType(this))
             {
+                currentSender = senderConnection;
                 invoker.invokeFunction(this, reader, senderConnection);
-
+                currentSender = null;
                 return true;
             }
             return false;
