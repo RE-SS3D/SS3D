@@ -183,7 +183,8 @@ MonoBehaviour:
   prefab: {fileID: 3792017003477948967}
   attachmentPoint: {fileID: 8876393141157652533}
   bulkSize: 2
-  traits: []
+  traits:
+  - {fileID: 11400000, guid: 7f22e87f08452654f8f20ace0b1e0fa3, type: 2}
   LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
     type: 3}
   TableToConstruct: {fileID: 11400000, guid: d18bc2f440bef034988c0016380c09bc, type: 2}
