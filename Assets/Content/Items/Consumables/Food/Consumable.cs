@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
@@ -9,13 +10,16 @@ using SS3D.Engine.Inventory;
 using SS3D.Engine.Inventory.Extensions;
 using SS3D.Engine.Substances;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 
 /// <summary>
 /// This class handles items that can be consumed
 /// they have an substance container which has have it's contents processed when ingested
 /// </summary>
-public class Consumable : Item, IConsumable
+[RequireComponent(typeof(SubstanceContainer))]
+[RequireComponent(typeof(Item))]
+public class Consumable : InteractionSourceNetworkBehaviour, IInteractionTarget, IConsumable
 {
     // What's this made of? How much of that will get in the organism per use?
     public SubstanceContainer content;
@@ -31,17 +35,29 @@ public class Consumable : Item, IConsumable
 
     // Verb used to display the interaction
     public string consumeVerb = "eat";
-    
+
+    // Time necessary to make other creatures consume
+    public float feedTime = 1f;
+    public GameObject LoadingBarPrefab;
+    // Item
+    public Item item;
+
+    private void Start()
+    {
+        item = GetComponent<Item>();
+    }
+
     // Eat action, the target is there for when you make someone eat that food
     // For now there's no nutriment or digestion
     // TODO: Digestion
     public void ConsumeAction(GameObject origin, GameObject target = null)
     {
+        // To avoid more ifs and elses
+        if (target == null) target = origin;
+        audio = target.transform.GetComponent<AudioSource>();
+
         if (!audio.isPlaying && content.CurrentVolume > 0)
         {
-            // To avoid more ifs and elses
-            if (target == null) target = origin;
-            
             // Gets player's audio source
             audio = target.GetComponentInChildren<AudioSource>();
             
@@ -61,7 +77,7 @@ public class Consumable : Item, IConsumable
 
                 if (itemInHand == null)
                 {
-                    ItemHelpers.DestroyItem(this);
+                    item.Destroy();
                 }
                 else
                 {
@@ -71,7 +87,7 @@ public class Consumable : Item, IConsumable
             // Last one? Should it destroy the object?
             if (content.CurrentVolume - contentPerUse <= 0 && destroyObject)
             {
-                ItemHelpers.DestroyItem(this);
+                item.Destroy();
             }
             // Not last one?
             else
@@ -82,74 +98,58 @@ public class Consumable : Item, IConsumable
         }
     }
     
-    public bool CanConsume()
+    public IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
     {
-        if (audio == null)
-        {
-            audio = GetComponent<AudioSource>();
-        }
-        if (!audio.isPlaying && content.CurrentVolume > 0)
-        {
-            return true;
-        }
+        List<IInteraction> list = item.GenerateInteractions(interactionEvent).ToList();
 
-        return false;
-    }
-    
-    public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
-    {
-        List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
-     
-        // Adds the interaction if it's not playing
-        if (CanConsume())
-        {
-            list.Add(new ConsumeInteraction {icon = sprite, verb = consumeVerb});
-        }
+        list.Add(new ConsumeInteraction {icon = item.sprite, Verb = consumeVerb, LoadingBarPrefab = LoadingBarPrefab});
 
         return list.ToArray();
     }
 
     public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
     {
-        base.CreateInteractions(targets, interactions);
-        
-        // Adds the interaction if it's not playing
-        if (CanConsume())
-        {
-            interactions.Add(new InteractionEntry(targets[0],new ConsumeInteraction {icon = sprite, verb = consumeVerb}));
-        }
+        item.CreateInteractions(targets, interactions);
+        interactions.Add(new InteractionEntry(targets[0], new ConsumeInteraction {icon = item.sprite, Verb = consumeVerb, LoadingBarPrefab = LoadingBarPrefab }));
     }
 
-    private class ConsumeInteraction : IInteraction
+    private class ConsumeInteraction : DelayedInteraction
     {
         public Sprite icon;
-        public string verb;
-
-        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
+        public string Verb;
+        
+        public override string GetName(InteractionEvent interactionEvent)
         {
-            return null;
+            return Verb;
         }
 
-        public string GetName(InteractionEvent interactionEvent)
-        {
-            return verb;
-        }
-
-        public Sprite GetIcon(InteractionEvent interactionEvent)
-        {
-            return icon;
-        }
-
-        public bool CanInteract(InteractionEvent interactionEvent)
+        public override bool CanInteract(InteractionEvent interactionEvent)
         {
             // easy access to shit
             GameObject source = interactionEvent.Source?.GetComponentInTree<Creature>().gameObject;
-            GameObject target = interactionEvent.Target.GetComponent<Transform>().gameObject; 
+            GameObject target = interactionEvent.Target.GetComponent<Transform>().gameObject;
+
+            Consumable consumable = target.GetComponent<Consumable>();
+            Consumable itemInHand = source?.GetComponentInChildren<Hands>().GetItemInHand()?.GetComponent<Consumable>();
+            Creature creature = source.GetComponent<Creature>();
+
+            //Debug.Log("source:  " + source.name + " target: " + target?.name + " item: " + itemInHand?.gameObject.name);
             
             // you can only interact with consumables or creatures
-            if (target.GetComponent(typeof(Consumable)) || source.GetComponent(typeof(Creature)))
+            if (consumable || creature)
             {
-                if (!InteractionExtensions.RangeCheck(interactionEvent))
+                // if there's an consumable in your hand or the target is yourself
+                if (consumable || target == source)
+                {
+                    Delay = 0f;
+                }
+                // if there's another creature as target and it's not the player
+                if (target.GetComponent<Creature>() && target != source)
+                {
+                    Verb = "Feed";
+                    Delay = itemInHand.feedTime;
+                }
+                if (!InteractionExtensions.RangeCheck(interactionEvent) && !consumable.audio.isPlaying && consumable.content.CurrentVolume > 0)
                 {
                     return false;
                 }
@@ -160,13 +160,17 @@ public class Consumable : Item, IConsumable
             return false;
         }
 
-        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            
+        }
+        protected override void StartDelayed(InteractionEvent interactionEvent)
         {
             GameObject source = interactionEvent.Source?.GetComponentInTree<Creature>().gameObject;
             GameObject target = interactionEvent.Target.GetComponent<Transform>().gameObject;            
             Consumable itemInHand = source?.GetComponentInChildren<Hands>().GetItemInHand()?.GetComponent<Consumable>();
-	        
-			//Debug.Log("source:  " + source.name + " target: " + target?.name + " item: " + itemInHand?.gameObject.name);
+            
+            //Debug.Log("source:  " + source.name + " target: " + target?.name + " item: " + itemInHand?.gameObject.name);
 			
             // Item in hand and interacting with origin
             if (target == null) 
@@ -174,27 +178,16 @@ public class Consumable : Item, IConsumable
                 itemInHand.ConsumeAction(source);
             }
             // Item not in hand
-            if (target.GetComponent(typeof(Consumable)))
+            Consumable targetedItem = target.GetComponent<Consumable>();
+            if (targetedItem)
             {
-                target.GetComponent<IConsumable>().ConsumeAction(source);
+                targetedItem.ConsumeAction(source);
             }
             // Item in hand and interacting with other player
-            if (target.GetComponent(typeof(Creature)))
+            if (target.GetComponent<Creature>())
             {
-                itemInHand.GetComponent<IConsumable>().ConsumeAction(source, target);
+                itemInHand.ConsumeAction(source, target);
             }
-            
-            return false;
-        }
-
-        public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }
