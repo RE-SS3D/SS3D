@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7025247159963221394}
   - component: {fileID: 2103335400371539285}
   m_Layer: 16
-  m_Name: Medkit Back
+  m_Name: Toolbox Lid Red
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,10 +26,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2221121822154186424}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.1467, z: 0.1153}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 7385895525476329529}
+  m_Children:
+  - {fileID: 7385895525476329529}
+  m_Father: {fileID: 8833760637642068360}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7025247159963221394
@@ -39,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2221121822154186424}
-  m_Mesh: {fileID: 8590920847809384813, guid: 07e12283d6d3aa149b2e8f7e046a7ee9, type: 3}
+  m_Mesh: {fileID: 8286922845453970043, guid: 58b7f3e337f2e6f44be25698b715ffe4, type: 3}
 --- !u!23 &2103335400371539285
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -91,7 +92,7 @@ GameObject:
   - component: {fileID: 1462698143497783154}
   - component: {fileID: 7791039897351842816}
   m_Layer: 16
-  m_Name: Medkit Front
+  m_Name: Toolbox Bottom Red
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -104,12 +105,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2570544868114083117}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 7197267929087900581}
-  m_Father: {fileID: 8833760637642068360}
+  m_Children: []
+  m_Father: {fileID: 7197267929087900581}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1462698143497783154
@@ -119,7 +119,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2570544868114083117}
-  m_Mesh: {fileID: -50406276987591651, guid: 07e12283d6d3aa149b2e8f7e046a7ee9, type: 3}
+  m_Mesh: {fileID: -8230176479116319638, guid: 58b7f3e337f2e6f44be25698b715ffe4, type: 3}
 --- !u!23 &7791039897351842816
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -172,10 +172,13 @@ GameObject:
   - component: {fileID: 2081909342595332650}
   - component: {fileID: 1358342656361913515}
   - component: {fileID: 2884915648782529247}
-  - component: {fileID: -4852994001289131144}
+  - component: {fileID: 8597578929647225273}
+  - component: {fileID: -5974139538508048618}
+  - component: {fileID: -8822467730395627730}
+  - component: {fileID: 5206759755089209485}
   - component: {fileID: -396234361631906964}
   m_Layer: 16
-  m_Name: medkit
+  m_Name: Toolbox Red
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -192,7 +195,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 7385895525476329529}
+  - {fileID: 7197267929087900581}
   - {fileID: 6311512130502363032}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -240,8 +243,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.46467456, y: 0.3965913, z: 0.21859482}
-  m_Center: {x: 0.000000014901161, y: 0.20483476, z: -0.000000014901161}
+  m_Size: {x: 0.41124874, y: 0.2645886, z: 0.24300182}
+  m_Center: {x: -0.000000029802322, y: 0.1288563, z: 0.00096306205}
 --- !u!114 &2884915648782529247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -256,16 +259,53 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: medkit
-  Name: Medkit
-  Volume: 30
+  ItemId: toolbox
+  Name: Toolbox
+  Volume: 70
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5533951594911835035}
   attachmentPoint: {fileID: 6311512130502363032}
   bulkSize: 3
   traits: []
---- !u!114 &-4852994001289131144
+--- !u!114 &8597578929647225273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c66d43c6dbcfac444b581f95607728c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  containerName: toolbox
+  containerFilter: {fileID: 11400000, guid: 89eaffbef3faadd4ca026f279e092c8b, type: 2}
+  volumeLimited: 1
+  maxVolume: 65
+  slots: 8
+--- !u!114 &-5974139538508048618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
+  OnlyStoreWhenOpen: 1
+  MaxDistance: 1.5
+  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
+--- !u!114 &-8822467730395627730
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -277,8 +317,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: 
+  Text: Can store several tools.
   MaxDistance: 0
+--- !u!95 &5206759755089209485
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: af92fc78ffbb02344ba45fdddbf402df, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &-396234361631906964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -320,8 +379,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8066562249021099569}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.402, z: 0}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0.258, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8833760637642068360}
