@@ -51,7 +51,7 @@ namespace SS3D.Engine.Interactions
         }
 
         public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
-        {    
+        {
             if (lastCheck + CheckInterval < Time.time)
             {
                 if (!CanInteract(interactionEvent))

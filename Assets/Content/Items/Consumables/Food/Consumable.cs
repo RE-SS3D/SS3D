@@ -19,7 +19,7 @@ using Random = UnityEngine.Random;
 /// </summary>
 [RequireComponent(typeof(SubstanceContainer))]
 [RequireComponent(typeof(Item))]
-public class Consumable : InteractionSourceNetworkBehaviour, IInteractionTarget, IConsumable
+public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceExtension, IConsumable
 {
     // What's this made of? How much of that will get in the organism per use?
     public SubstanceContainer content;
@@ -98,18 +98,16 @@ public class Consumable : InteractionSourceNetworkBehaviour, IInteractionTarget,
         }
     }
     
-    public IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+    public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
     {
-        List<IInteraction> list = item.GenerateInteractions(interactionEvent).ToList();
-
+        List<IInteraction> list = new List<IInteraction>();    
         list.Add(new ConsumeInteraction {icon = item.sprite, Verb = consumeVerb, LoadingBarPrefab = LoadingBarPrefab});
 
         return list.ToArray();
     }
 
-    public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+    public void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
     {
-        item.CreateInteractions(targets, interactions);
         interactions.Add(new InteractionEntry(targets[0], new ConsumeInteraction {icon = item.sprite, Verb = consumeVerb, LoadingBarPrefab = LoadingBarPrefab }));
     }
 
