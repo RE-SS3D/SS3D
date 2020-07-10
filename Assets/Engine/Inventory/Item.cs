@@ -38,6 +38,11 @@ namespace SS3D.Engine.Inventory
         [ContextMenu("Create Icon")]
         public void Start()
         {
+            foreach (var animator in GetComponents<Animator>())
+            {
+                animator.keepAnimatorControllerStateOnDisable = true;
+            }
+
             GenerateNewIcon();
         }
 
