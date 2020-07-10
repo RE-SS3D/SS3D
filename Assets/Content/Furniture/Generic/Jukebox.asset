@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
-  m_Name: Disposal Bin
+  m_Name: Jukebox
   m_EditorClassIdentifier: 
-  id: disposal_bin
-  genericType: disposal
-  prefab: {fileID: 6905024007199924851, guid: c2e97cce5ba37634595cae7496d36d43, type: 3}
+  id: jukebox
+  genericType: furniture
+  prefab: {fileID: 4170175011264555292, guid: 37005ddb87a74c64583b1a3eedefc159, type: 3}
