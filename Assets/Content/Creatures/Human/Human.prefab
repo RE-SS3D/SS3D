@@ -85,7 +85,6 @@ GameObject:
   - component: {fileID: 666907628477534858}
   - component: {fileID: 3809031586969339676}
   - component: {fileID: 6524441915444712897}
-  - component: {fileID: 2059713297401845381}
   - component: {fileID: 5302871755143894454}
   - component: {fileID: 1045010266948518310}
   - component: {fileID: 340761490495231774}
@@ -124,6 +123,7 @@ Transform:
   - {fileID: 1078238172721072839}
   - {fileID: 3333020641093754006}
   - {fileID: 5203197187838829959}
+  - {fileID: 9070161006711594207}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -419,14 +419,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ArmatureRoot: {fileID: 1078238172721072839}
---- !u!81 &2059713297401845381
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 289348138277843802}
-  m_Enabled: 1
 --- !u!114 &5302871755143894454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1923,6 +1915,58 @@ Transform:
   m_Father: {fileID: 9114095814780560127}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2056696660992630959
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9070161006711594207}
+  - component: {fileID: 8516841936662959919}
+  - component: {fileID: 204373611862974998}
+  m_Layer: 15
+  m_Name: Listener
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9070161006711594207
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056696660992630959}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3627826803242844489}
+  m_RootOrder: 17
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &8516841936662959919
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056696660992630959}
+  m_Enabled: 1
+--- !u!114 &204373611862974998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056696660992630959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 173648d0ee0ccd240af52a475462692e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2448277291314358949
 GameObject:
   m_ObjectHideFlags: 0
