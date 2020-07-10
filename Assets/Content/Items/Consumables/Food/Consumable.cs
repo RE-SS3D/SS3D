@@ -55,8 +55,9 @@ public class Consumable : Item, IConsumable
             if (content.CurrentVolume == 1 && trashPrefab != null )
             {
                 Item trash = Instantiate(trashPrefab, transform.position, transform.rotation).GetComponent<Item>();
-                trash.GenerateNewIcon();
+                
                 NetworkServer.Spawn(trash.gameObject);
+                trash.GenerateNewIcon();
 
                 if (itemInHand == null)
                 {
@@ -141,32 +142,48 @@ public class Consumable : Item, IConsumable
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
-            if (interactionEvent.Target is Consumable consumable)
+            // easy access to shit
+            GameObject source = interactionEvent.Source?.GetComponentInTree<Creature>().gameObject;
+            GameObject target = interactionEvent.Target.GetComponent<Transform>().gameObject; 
+            
+            // you can only interact with consumables or creatures
+            if (target.GetComponent(typeof(Consumable)) || source.GetComponent(typeof(Creature)))
             {
                 if (!InteractionExtensions.RangeCheck(interactionEvent))
                 {
                     return false;
                 }
+
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             GameObject source = interactionEvent.Source?.GetComponentInTree<Creature>().gameObject;
-            GameObject target = interactionEvent.Target.GetComponent<Transform>().gameObject;
+            GameObject target = interactionEvent.Target.GetComponent<Transform>().gameObject;            
+            Consumable itemInHand = source?.GetComponentInChildren<Hands>().GetItemInHand()?.GetComponent<Consumable>();
+	        
+			//Debug.Log("source:  " + source.name + " target: " + target?.name + " item: " + itemInHand?.gameObject.name);
+			
+            // Item in hand and interacting with origin
+            if (target == null) 
+            {
+                itemInHand.ConsumeAction(source);
+            }
+            // Item not in hand
+            if (target.GetComponent(typeof(Consumable)))
+            {
+                target.GetComponent<IConsumable>().ConsumeAction(source);
+            }
+            // Item in hand and interacting with other player
+            if (target.GetComponent(typeof(Creature)))
+            {
+                itemInHand.GetComponent<IConsumable>().ConsumeAction(source, target);
+            }
             
-            if (interactionEvent.Target is Consumable consumable)
-            {
-                // Gets the player lol crappy code I kno
-                consumable.ConsumeAction(source);
-            }
-
-            if (interactionEvent.Target is Creature creature || source.GetComponent<Consumable>())
-            {
-                source.GetComponent<Consumable>().ConsumeAction(source, target);
-            }
             return false;
         }
 

@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 340761490495231774}
   - component: {fileID: 4063789926441153806}
   - component: {fileID: -8569418428762442770}
-  m_Layer: 15
+  m_Layer: 0
   m_Name: Human
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -210,7 +210,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 2
   m_Height: 1.61
-  m_Radius: 0.25
+  m_Radius: 0.31
   m_SlopeLimit: 0
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -2321,7 +2321,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5203197187838829959}
-  m_Layer: 15
+  m_Layer: 0
   m_Name: IK
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3113,7 +3113,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4674694871559829712}
-  m_Layer: 15
+  m_Layer: 0
   m_Name: HeadIK
   m_TagString: Untagged
   m_Icon: {fileID: 0}
