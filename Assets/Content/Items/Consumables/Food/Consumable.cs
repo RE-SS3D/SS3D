@@ -63,7 +63,10 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
             
             // Randomly select the audio clip and the pitch
             audio.pitch = Random.Range(0.7f,1.5f);
-            audio.PlayOneShot(sounds[Random.Range(0, sounds.Length)]);
+            AudioClip sound = sounds[Random.Range(0, sounds.Length)];
+
+            audio.PlayOneShot(sound, audio.pitch);
+            RpcPlayEatingSound(audio.pitch);
             
             Item itemInHand = origin.GetComponentInChildren<Hands>().GetItemInHand();
             
@@ -97,6 +100,14 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
             }
         }
     }
+
+    [ClientRpc]
+    void RpcPlayEatingSound(float pitch)
+    {
+        audio.pitch = pitch;
+        audio.PlayOneShot(sounds[Random.Range(0, sounds.Length)]);
+    }
+    
     
     public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
     {
