@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d72368ce8da05a44864afc6112ce014, type: 3}
-  m_Name: Pipe - Under L4
+  m_Script: {fileID: 11500000, guid: d4189c2f99ffbe54ea0b197ec26dbb16, type: 3}
+  m_Name: Pipe L2
   m_EditorClassIdentifier: 
-  id: pipe_upper_4
+  id: pipe_under_2
   genericType: pipe
-  prefab: {fileID: 2802364579275783218, guid: 48efd00c91c310e4bb965d025c63b3ba, type: 3}
+  prefab: {fileID: 2802364579275783218, guid: 17867ab9dc6f0b146bb14b19595a13c6, type: 3}
