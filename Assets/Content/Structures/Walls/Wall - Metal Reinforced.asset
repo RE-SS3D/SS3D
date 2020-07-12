@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f55f41c36d703aa4b9b6025fa003c12a, type: 3}
-  m_Name: Wall - Reinforced
+  m_Name: Wall - Metal Reinforced
   m_EditorClassIdentifier: 
   id: wall_reinforced
   genericType: wall

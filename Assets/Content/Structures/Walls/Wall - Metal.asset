@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f55f41c36d703aa4b9b6025fa003c12a, type: 3}
-  m_Name: Window - Reinforced
-  m_EditorClassIdentifier: 
-  id: window_reinforced
+  m_Name: Wall - Metal
+  m_EditorClassIdentifier: Assembly-CSharp:TileMap:Turf
+  id: wall
   genericType: wall
   isWall: 1
-  prefab: {fileID: 3591147544166670882, guid: 6e6257fcfea4f46418ac01d93fd37115, type: 3}
+  prefab: {fileID: 3591147544166670882, guid: 45d13347efae0f54882e0e56dd770bb1, type: 3}
