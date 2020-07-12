@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f55f41c36d703aa4b9b6025fa003c12a, type: 3}
-  m_Name: ReinforcedGlassWall
+  m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
+  m_Name: Canister - Air
   m_EditorClassIdentifier: 
-  id: reinforced_glass_wall
-  genericType: wall
-  isWall: 1
-  prefab: {fileID: 3591147544166670882, guid: 6e6257fcfea4f46418ac01d93fd37115, type: 3}
+  id: canister_air
+  genericType: canister
+  prefab: {fileID: 1466349050614861878, guid: 89cee67f3f33d1748a676440ec181de0, type: 3}

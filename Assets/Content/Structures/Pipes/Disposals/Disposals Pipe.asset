@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c19744d19c6b14409c8e0a535f90136, type: 3}
   m_Name: Disposals Pipe
   m_EditorClassIdentifier: 
-  id: Disposal
+  id: pipe_disposal
   genericType: disposals
   prefab: {fileID: 2802364579275783218, guid: 12a989ad41a83a3468d1ae9aff9628d3, type: 3}

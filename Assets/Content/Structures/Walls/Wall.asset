@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f55f41c36d703aa4b9b6025fa003c12a, type: 3}
-  m_Name: GlassWall
-  m_EditorClassIdentifier: 
-  id: glass_wall
+  m_Name: Wall
+  m_EditorClassIdentifier: Assembly-CSharp:TileMap:Turf
+  id: wall
   genericType: wall
   isWall: 1
-  prefab: {fileID: 3591147544166670882, guid: d5d073d01dd3c1f4cbe43fb3128c89e4, type: 3}
+  prefab: {fileID: 3591147544166670882, guid: 45d13347efae0f54882e0e56dd770bb1, type: 3}
