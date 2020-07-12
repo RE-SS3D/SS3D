@@ -172,6 +172,7 @@ GameObject:
   - component: {fileID: 6258711892491357218}
   - component: {fileID: 2884915648782529247}
   - component: {fileID: -4694851487162049909}
+  - component: {fileID: -2101227061012043363}
   - component: {fileID: -396234361631906964}
   - component: {fileID: -873706720358734130}
   m_Layer: 16
@@ -241,8 +242,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.12180731, y: 0.19854188, z: 0.062927924}
-  m_Center: {x: 0.000000014901161, y: 0.037904143, z: 0.0003988184}
+  m_Size: {x: 0.12428376, y: 0.18336451, z: 0.05567938}
+  m_Center: {x: -0.000000014901161, y: 0.004832089, z: -0.0011380017}
 --- !u!114 &2884915648782529247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -284,6 +285,20 @@ MonoBehaviour:
   OnlyStoreWhenOpen: 1
   MaxDistance: 1.5
   viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
+--- !u!114 &-2101227061012043363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!114 &-396234361631906964
 MonoBehaviour:
   m_ObjectHideFlags: 0
