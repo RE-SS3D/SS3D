@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48bc3e6256e003f49b038fe30c1d9be6, type: 3}
   m_Name: Cigarette Pack
   m_EditorClassIdentifier: 
-  bulkSize: 2
+  bulkSize: 1
   mustHaveAll: 0
   acceptedTraits:
-  - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
+  - {fileID: 11400000, guid: bd29c6eb593f72b429b4547781d59420, type: 2}
   deniedTraits: []
   hash: -1274064885
