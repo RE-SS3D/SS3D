@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f55f41c36d703aa4b9b6025fa003c12a, type: 3}
   m_Name: WhiteFloor
   m_EditorClassIdentifier: Assembly-CSharp:TileMap:Turf
-  id: grey_floor
+  id: floor_white
   genericType: floor
   isWall: 0
   prefab: {fileID: 6767447678079105841, guid: 61201f10ccc2856459a9de99d9cdc52e, type: 3}
