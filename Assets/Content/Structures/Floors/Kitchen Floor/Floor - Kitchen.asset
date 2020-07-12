@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f55f41c36d703aa4b9b6025fa003c12a, type: 3}
-  m_Name: KitchenFloor
+  m_Name: Floor - Kitchen
   m_EditorClassIdentifier: Assembly-CSharp:TileMap:Turf
   id: floor_kitchen
   genericType: floor
