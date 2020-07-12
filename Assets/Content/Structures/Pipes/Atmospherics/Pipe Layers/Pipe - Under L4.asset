@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d72368ce8da05a44864afc6112ce014, type: 3}
+  m_Name: Pipe - Under L4
+  m_EditorClassIdentifier: 
+  id: pipe_upper_4
+  genericType: pipe
+  prefab: {fileID: 2802364579275783218, guid: 48efd00c91c310e4bb965d025c63b3ba, type: 3}

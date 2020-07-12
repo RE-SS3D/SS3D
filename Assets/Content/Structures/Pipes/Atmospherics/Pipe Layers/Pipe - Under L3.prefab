@@ -1,0 +1,154 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2802364579275783218
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4823056202419996052}
+  - component: {fileID: -7727686409064562107}
+  - component: {fileID: -1074477776341974781}
+  - component: {fileID: -4998431523760016775}
+  - component: {fileID: 4911816295908272955}
+  - component: {fileID: 2183948917681095833}
+  - component: {fileID: 8044363620118605159}
+  m_Layer: 0
+  m_Name: Pipe L3 Under
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4823056202419996052
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-7727686409064562107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
+--- !u!33 &-1074477776341974781
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Mesh: {fileID: -1270442899695108173, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+--- !u!23 &-4998431523760016775
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!114 &4911816295908272955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb6b0f3a8d8ab5546a86ca29fd261934, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: pipe
+  o: {fileID: -1270442899695108173, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  cNorth: {fileID: -8972846756385387022, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  cSouth: {fileID: 5077126174283268024, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  i: {fileID: -566958556529048464, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  lNE: {fileID: 3396235766429983367, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  lNW: {fileID: -8050794985530161450, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  lSE: {fileID: -4959516695836454270, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  lSW: {fileID: -1242410407387950332, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  tNEW: {fileID: 3615688420471568901, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  tNSW: {fileID: 4969673752431747454, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  tNSE: {fileID: -8481026291894936516, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  tSWE: {fileID: -1285037104894735210, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  x: {fileID: 6081592904369253866, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+--- !u!114 &2183948917681095833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fb7ede8181b28b4082944d5e44dd86e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volume: 1
+--- !u!114 &8044363620118605159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Atmospheric Pipe</b>
+  MaxDistance: 0
