@@ -123,6 +123,7 @@ namespace SS3D.Engine.FOV
         private void Update()
         {
             if(!target) return;
+            transform.position = target.transform.position;
             DrawFieldOfView();
         }
 
@@ -146,9 +147,11 @@ namespace SS3D.Engine.FOV
             meshPerformanceMarker.Begin();
 
             int triangleCount = (viewPointsIndex - 2) * 3;
-            viewPoints[0] = target.transform.position;
+            viewPoints[0] = transform.InverseTransformPoint(target.transform.position);
+            Vector3[] vertices = new Vector3[viewPointsIndex];
+            for(int i = 1; i < viewPointsIndex; i++) vertices[i] = transform.InverseTransformPoint(viewPoints[i]);
             viewMesh.SetVertexBufferParams(viewPointsIndex, new VertexAttributeDescriptor(VertexAttribute.Position));
-            viewMesh.SetVertexBufferData(viewPoints, 0, 0, viewPointsIndex);
+            viewMesh.SetVertexBufferData(vertices, 0, 0, viewPointsIndex);
             viewMesh.SetIndexBufferParams(triangleCount, IndexFormat.UInt16);
             viewMesh.SetIndexBufferData(triangles, 0, 0, triangleCount);
             viewMesh.subMeshCount = 1;
