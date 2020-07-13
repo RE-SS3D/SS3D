@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c084e433f48fe6342aa55cd12663d10f, type: 3}
   m_Name: Light Bulb Fixture
   m_EditorClassIdentifier: 
-  id: light_bulb
+  id: light_bulb_mount
   genericType: wallmount
   prefab: {fileID: 8824907131049981641, guid: 381aedea77473f647947008e96e00f35, type: 3}

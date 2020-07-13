@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c084e433f48fe6342aa55cd12663d10f, type: 3}
   m_Name: Light Tube Fixture
   m_EditorClassIdentifier: 
-  id: light_tube
+  id: light_tube_mount
   genericType: wallmount
   prefab: {fileID: 5161561551087789900, guid: c55902540cde02c46bf6378d28265566, type: 3}
