@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f55f41c36d703aa4b9b6025fa003c12a, type: 3}
   m_Name: Window - Metal Reinforced
   m_EditorClassIdentifier: 
-  id: window_reinforced
+  id: window_metal_reinforced
   genericType: wall
   isWall: 1
   prefab: {fileID: 3591147544166670882, guid: 6e6257fcfea4f46418ac01d93fd37115, type: 3}
