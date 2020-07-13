@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7986618133810745213}
   - component: {fileID: 5226195998945532795}
+  - component: {fileID: 6741126584871303748}
   m_Layer: 0
   m_Name: Registry
   m_TagString: Untagged
@@ -56,3 +57,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d3dcce9a1c63a3c46ad24cb7278deb31, type: 2}
   recipes:
   - {fileID: 11400000, guid: 65ff5f8d9cb1cb341bf58c4abd173ed8, type: 2}
+--- !u!114 &6741126584871303748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7688354943259046949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc9dc8ca0b585e9438a70d9c8d4e2a1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

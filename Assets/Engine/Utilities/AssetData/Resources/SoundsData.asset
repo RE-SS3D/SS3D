@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35275a8e4e934cc47b5b27fcda7ab86b, type: 3}
+  m_Name: SoundsData
+  m_EditorClassIdentifier: 
+  Drink: {fileID: 8300000, guid: d218c16bb0edfd44293704a97a562e9e, type: 3}
+  EatFood: {fileID: 8300000, guid: 560ee14cc17d54c4e893ea6fbb1f2ad6, type: 3}
+  DisposalFlush: {fileID: 8300000, guid: a08d26dd950708048a98dc0bc545f9f2, type: 3}
+  MicrowaveEnd: {fileID: 8300000, guid: f22e34e83e0f9874e8ebc28d164810c2, type: 3}
+  MicrowaveMid1: {fileID: 8300000, guid: 91dcb7669f644934b9c52d400421f1a7, type: 3}
+  MicroWaveMid2: {fileID: 8300000, guid: 4b7f6117196ba914e9a1c966f290da9b, type: 3}
+  MicrowaveStart: {fileID: 8300000, guid: 18088b9f0e2635142acd8908effffd7c, type: 3}
+  VendingMachine: {fileID: 8300000, guid: eb843a8e8fc1da54986c95ce909fd0d7, type: 3}
+  Bikehorn: {fileID: 8300000, guid: 8c8823796bbcb23438fcf68260070383, type: 3}
+  EnergySwordOff: {fileID: 8300000, guid: ae6a0d3a332b67f4d968b477273cea56, type: 3}
+  EnergySwordOn: {fileID: 8300000, guid: 81842472797700d479c0ea5aef90fe57, type: 3}
+  AirlockClose: {fileID: 8300000, guid: fc2485e75c5d3ab4e86e814043c9e9cb, type: 3}
+  AirlockOpen: {fileID: 8300000, guid: 34297ba204a9f3944872f100baaa2369, type: 3}
+  Title1: {fileID: 8300000, guid: f480632a83403024eab6321e689c5b75, type: 3}
+  Title2: {fileID: 8300000, guid: c7fb44f977cb4d943bef452174937c65, type: 3}
+  Title3: {fileID: 8300000, guid: 679e79545485afe4f8c68617c36b2f1d, type: 3}
