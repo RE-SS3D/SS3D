@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d72368ce8da05a44864afc6112ce014, type: 3}
+  m_Name: Solar Panel
+  m_EditorClassIdentifier: 
+  id: solar_panel
+  genericType: machine
+  prefab: {fileID: 7500770911366929803, guid: 41c9423640c7a3b4fb2a5fde435d185b, type: 3}
