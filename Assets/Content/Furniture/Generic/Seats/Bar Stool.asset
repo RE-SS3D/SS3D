@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
   m_Name: Bar Stool
   m_EditorClassIdentifier: 
-  id: bar_stool
+  id: stool_bar
   genericType: seat
   prefab: {fileID: 8848695623778231642, guid: 711bd7e744bd12c4ab650d498726e8b4, type: 3}
