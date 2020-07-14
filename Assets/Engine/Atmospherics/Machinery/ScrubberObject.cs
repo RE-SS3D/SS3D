@@ -14,6 +14,12 @@ namespace SS3D.Engine.Atmospherics
             Siphoning
         }
 
+        public enum Range
+        {
+            Normal,
+            Extended
+        }
+
         public float MaxPressure = 4500f;
         public float TargetPressure = 101f;
 
