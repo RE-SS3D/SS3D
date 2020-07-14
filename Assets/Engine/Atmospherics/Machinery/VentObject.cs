@@ -14,7 +14,7 @@ namespace SS3D.Engine.Atmospherics
             External
         }
 
-        private const float stepsToEqualize = 10f;
+        
 
         public OperatingMode mode;
         public float TargetPressure = 101.3f;
@@ -58,8 +58,8 @@ namespace SS3D.Engine.Atmospherics
                     float pressureDifference = TargetPressure - output.GetPressure();
                     float transferMoles = pressureDifference * 1000 * output.GetAtmosContainer().Volume / (output.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
 
-                    // Reach our target pressure in N steps
-                    transferMoles = transferMoles / stepsToEqualize;
+                    // We can not transfer more moles than the machinery allows
+                    transferMoles = Mathf.Min(Gas.maxMoleTransfer, transferMoles);
 
                     // We can't transfer more moles than there are
                     if (transferMoles > totalMoles)
@@ -89,10 +89,10 @@ namespace SS3D.Engine.Atmospherics
                     float pressureDifference = input.GetPressure() - TargetPressure;
                     float transferMoles = pressureDifference * 1000 * input.GetAtmosContainer().Volume / (input.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
 
-                    // Reach our target pressure in N steps
-                    transferMoles = transferMoles / stepsToEqualize;
+                    // We can not transfer more moles than the machinery allows
+                    transferMoles = Mathf.Min(Gas.maxMoleTransfer, transferMoles);
 
-                    // We can't transfer more moles than there are
+                    // We can't transfer more moles than there are in the input
                     if (transferMoles > totalMoles)
                         transferMoles = totalMoles;
 

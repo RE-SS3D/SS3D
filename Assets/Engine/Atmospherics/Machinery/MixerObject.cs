@@ -16,7 +16,6 @@ namespace SS3D.Engine.Atmospherics
 
         private float _targetPressure;
         private float ratioOnetoTwo;
-        private const float stepsToEqualize = 10f;
         
 
         public void Initialize()
@@ -71,8 +70,8 @@ namespace SS3D.Engine.Atmospherics
                     float pressureDifference = _targetPressure - output.GetPressure();
                     float transferMoles = pressureDifference * 1000 * output.volume / (output.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
 
-                    // Reach our target pressure in N steps
-                    transferMoles = transferMoles / stepsToEqualize;
+                    // We can not transfer more moles than the machinery allows
+                    transferMoles = Mathf.Min(Gas.maxMoleTransfer, transferMoles);
 
                     float transfer_moles1 = ratioOnetoTwo * transferMoles;
                     float transfer_moles2 = (1f - ratioOnetoTwo) * transferMoles;

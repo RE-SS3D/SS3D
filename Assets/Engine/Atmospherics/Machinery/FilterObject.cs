@@ -12,6 +12,7 @@ namespace SS3D.Engine.Atmospherics
     {
         public float MaxPressure = 4500f;
         public float TargetPressure = 101f;
+
         public bool filterOxygen = false;
         public bool filterNitrogen = false;
         public bool filterCarbonDioxide = false;
@@ -20,8 +21,6 @@ namespace SS3D.Engine.Atmospherics
         public bool filterActive = false;
 
         private float _targetPressure;
-
-
 
 
         // Start is called before the first frame update
@@ -49,6 +48,21 @@ namespace SS3D.Engine.Atmospherics
             SetAtmosNeighbours();
         }
 
+        bool IsFiltered(AtmosGasses gas)
+        {
+            switch (gas)
+            {
+                case AtmosGasses.Oxygen:
+                    return filterOxygen;
+                case AtmosGasses.Nitrogen:
+                    return filterNitrogen;
+                case AtmosGasses.CarbonDioxide:
+                    return filterCarbonDioxide;
+                case AtmosGasses.Plasma:
+                    return filterPlasma;
+            }
+        }
+
         public void Step()
         {
             if (filterActive)
@@ -58,16 +72,45 @@ namespace SS3D.Engine.Atmospherics
                 PipeObject outputOther = atmosNeighbours[1];
 
                 // Return when there is no gas
-                if (input.GetTotalMoles() <= 1f)
+                if (input == null || input.GetTotalMoles() <= 1f || outputFiltered == null || outputOther == null)
                     return;
 
-                //if (outputFiltered.GetPressure() <= _targetPressure && outputOther.GetPressure() <= _targetPressure)
-                //{
-                //    float totalMoles = Mathf.Max(outputFiltered.GetTotalMoles(), outputOther.GetTotalMoles());
-                //    // Calculate necessary moles to transfer using PV=nRT
-                //    float pressureDifference = _targetPressure - outputPressure;
-                //    float transferMoles = pressureDifference * 1000 * output.volume / (output.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
-                //}
+                AtmosContainer inputContainer = input.GetAtmosContainer();
+
+                // Both outputs must not be blocked
+                if (outputFiltered.GetPressure() <= _targetPressure && outputOther.GetPressure() <= _targetPressure)
+                {
+                    // Use the pipe with the highest pressure as reference
+                    PipeObject nearestOutput = (outputFiltered.GetPressure() > outputOther.GetPressure()) ? outputFiltered : outputOther;
+                    
+                    // Calculate necessary moles to transfer using PV=nRT
+                    float pressureDifference = _targetPressure - nearestOutput.GetPressure();
+                    float transferMoles = pressureDifference * 1000 * nearestOutput.volume / (nearestOutput.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
+
+                    // We can not transfer more moles than the machinery allows
+                    transferMoles = Mathf.Min(Gas.maxMoleTransfer, transferMoles);
+
+                    // We can't transfer more moles than there are in the input
+                    if (transferMoles > input.GetTotalMoles())
+                        transferMoles = input.GetTotalMoles();
+
+                    // for (int i = 0; i < Gas.numOfGases; i++)
+                    foreach (AtmosGasses gas in Enum.GetValues(typeof(AtmosGasses)))
+                    {
+                        // Divide the moles according to their percentage
+                        float molePerGas = (inputContainer.GetGas(gas) / input.GetTotalMoles()) * transferMoles;
+                        if (inputContainer.GetGas(gas) > 0f)
+                        {
+                            input.RemoveGas(gas, molePerGas);
+
+                            // Determine output based on filtering setting
+                            if (IsFiltered(gas))
+                                outputFiltered.AddGas(gas, molePerGas);
+                            else
+                                outputOther.AddGas(gas, molePerGas);
+                        }
+                    }
+                }
             }
         }
 
