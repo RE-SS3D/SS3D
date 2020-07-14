@@ -22,13 +22,6 @@ namespace SS3D.Engine.Atmospherics
 
         private float _targetPressure;
 
-
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
-
         // Update is called once per frame
         void Update()
         {
@@ -61,6 +54,7 @@ namespace SS3D.Engine.Atmospherics
                 case AtmosGasses.Plasma:
                     return filterPlasma;
             }
+            return false;
         }
 
         public void Step()

@@ -14,8 +14,6 @@ namespace SS3D.Engine.Atmospherics
             External
         }
 
-        
-
         public OperatingMode mode;
         public float TargetPressure = 101.3f;
         public PipeLayer pipeLayer;
