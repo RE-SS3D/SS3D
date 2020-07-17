@@ -185,7 +185,6 @@ MonoBehaviour:
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 7f22e87f08452654f8f20ace0b1e0fa3, type: 2}
-  - {fileID: 11400000, guid: 815dcab6a0a677a418fa679d054ab3f2, type: 2}
 --- !u!114 &2923116068905593083
 MonoBehaviour:
   m_ObjectHideFlags: 0
