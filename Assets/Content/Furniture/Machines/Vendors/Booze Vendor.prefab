@@ -336,7 +336,6 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
-  - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
   - {fileID: 2100000, guid: 007ddb364a635b248bf59eae2f77e1ae, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -499,11 +498,47 @@ MonoBehaviour:
   EjectionPoint: {fileID: 3262340787433004493}
   EjectionVelocity: {x: 0, y: 0, z: 0.7}
   stock:
+  - Prefab: {fileID: 6405106075082308508, guid: e2df779efe48f1e4c95de517a83e1c0f,
+      type: 3}
+    Stock: 5
+    Price: 0
+  - Prefab: {fileID: 6405106075082308508, guid: 8d887c7087aa2e0449182e8591232571,
+      type: 3}
+    Stock: 5
+    Price: 0
+  - Prefab: {fileID: 6405106075082308508, guid: 0782d83144d9abf4b851059f28615b6d,
+      type: 3}
+    Stock: 5
+    Price: 0
+  - Prefab: {fileID: 6405106075082308508, guid: 7ba3ddd7b58734b42a4f3ae8e82e39ca,
+      type: 3}
+    Stock: 5
+    Price: 0
+  - Prefab: {fileID: 6405106075082308508, guid: 6f8d1b5a8155bd54d803a11fe3693384,
+      type: 3}
+    Stock: 5
+    Price: 0
+  - Prefab: {fileID: 6405106075082308508, guid: d1799dfa998540d46a2f6d3a5946c1b5,
+      type: 3}
+    Stock: 5
+    Price: 0
   - Prefab: {fileID: 6405106075082308508, guid: 3f3012dc64cf47d479ad729e725d8e57,
       type: 3}
     Stock: 5
     Price: 0
-  - Prefab: {fileID: 5533951594911835035, guid: ca1dc9505ebfe1b49959d3cfa6aa4b01,
+  - Prefab: {fileID: 6405106075082308508, guid: 0f588a422ef821a4b9b641ee24664a0c,
+      type: 3}
+    Stock: 5
+    Price: 0
+  - Prefab: {fileID: 6405106075082308508, guid: ade4248666e3d3e498287805001dc9c3,
+      type: 3}
+    Stock: 5
+    Price: 0
+  - Prefab: {fileID: 6405106075082308508, guid: 7a186f8b0e7e72a4bbe557d8eafc68c3,
+      type: 3}
+    Stock: 5
+    Price: 0
+  - Prefab: {fileID: 6405106075082308508, guid: 4e1f0718bcbab644ca12fcce7d185bcf,
       type: 3}
     Stock: 5
     Price: 0
