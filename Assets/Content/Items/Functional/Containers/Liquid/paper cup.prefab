@@ -165,7 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Volume: 250
+  Volume: 300
   Temperature: 0
   substances: []
 --- !u!114 &1757047475811065871

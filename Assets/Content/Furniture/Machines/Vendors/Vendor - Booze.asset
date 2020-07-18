@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
-  m_Name: Ale
+  m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
+  m_Name: Vendor - Booze
   m_EditorClassIdentifier: 
-  Id: ale
-  Color: {r: 0.6132076, g: 0.3959623, b: 0, a: 0}
-  MillilitersPerMole: 58
+  id: vendor_booze
+  genericType: vendor
+  prefab: {fileID: 7319846706112917200, guid: 00bd7aee420901e40a7b9fc7bef48618, type: 3}

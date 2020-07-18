@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
-  m_Name: "Kahl\xFAa"
+  m_Name: Whisky
   m_EditorClassIdentifier: 
-  Id: kahlua
-  Color: {r: 0.16037738, g: 0.10344581, b: 0.0022694871, a: 0}
+  Id: rum
+  Color: {r: 0.7830189, g: 0.70378536, b: 0.46168566, a: 0.3529412}
   MillilitersPerMole: 58
