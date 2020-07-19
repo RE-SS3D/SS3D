@@ -21,9 +21,13 @@ namespace SS3D.Engine.Atmospherics
         public PipeLayer pipeLayer;
 
         private PipeObject connectedPipe;
+        private Animator anim;
 
         public void Initialize()
         {
+            // Get the animator for our spin animation
+            anim = GetComponent<Animator>();
+
             // We only check the pipes that are on our own tile
             TileObject tileObject = GetComponentInParent<TileObject>();
             PipeObject[] pipes = tileObject.GetComponentsInChildren<PipeObject>();
@@ -43,6 +47,7 @@ namespace SS3D.Engine.Atmospherics
             PipeObject input = connectedPipe;
             AtmosObject output = GetComponentInParent<TileObject>().atmos;
             AtmosContainer inputContainer = input.GetAtmosContainer();
+            bool ventActive = false;
 
             if (input == null || input.GetTotalMoles() == 0)
                 return;
@@ -50,8 +55,9 @@ namespace SS3D.Engine.Atmospherics
             if (mode == OperatingMode.External)
             {
                 // If the output pressure is acceptable
-                if (output.GetPressure() <= TargetPressure)
+                if (output.GetPressure() <= TargetPressure - 1f)
                 {
+                    ventActive = true;
                     float totalMoles = input.GetTotalMoles();
 
                     // Calculate necessary moles to transfer using PV=nRT
@@ -81,8 +87,9 @@ namespace SS3D.Engine.Atmospherics
             else if (mode == OperatingMode.Internal)
             {
                 // If the output pressure is acceptable
-                if (input.GetPressure() >= TargetPressure)
+                if (input.GetPressure() >= TargetPressure + 1f)
                 {
+                    ventActive = true;
                     float totalMoles = input.GetTotalMoles();
 
                     // Calculate necessary moles to transfer using PV=nRT
@@ -108,6 +115,9 @@ namespace SS3D.Engine.Atmospherics
                     }
                 }
             }
+
+            // Update the animator
+            anim.SetBool("ventActive", ventActive);
         }
 
         public void SetTileNeighbour(TileObject tile, int index)
