@@ -103,6 +103,15 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
+        public void RemoveGas(AtmosGasses gas, float amount)
+        {
+            if (state != AtmosStates.Blocked)
+            {
+                atmosContainer.RemoveGas(gas, amount);
+                state = AtmosStates.Active;
+            }
+        }
+
         public void SetGasses(float[] amounts)
         {
             atmosContainer.SetGasses(amounts);
