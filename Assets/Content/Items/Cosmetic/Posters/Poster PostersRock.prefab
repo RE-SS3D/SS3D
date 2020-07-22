@@ -148,11 +148,14 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: poster_posters_rock
   Name: Poster - POSTERS ROCK
+  Volume: 4
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5927714388255546572}
   attachmentPoint: {fileID: 4694169253332805535}
+  bulkSize: 2
+  traits:
+  - {fileID: 11400000, guid: 156d3426c47f0d94aa09843a55aebc4b, type: 2}
 --- !u!114 &-6415568905085963662
 MonoBehaviour:
   m_ObjectHideFlags: 0

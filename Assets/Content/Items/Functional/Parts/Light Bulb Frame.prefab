@@ -147,11 +147,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: light_frame_bulb
   Name: Light Bulb Frame
+  Volume: 6
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5781149837152051336}
   attachmentPoint: {fileID: 2272768541673411226}
+  bulkSize: 1
+  traits: []
 --- !u!114 &-8569520201367197021
 MonoBehaviour:
   m_ObjectHideFlags: 0

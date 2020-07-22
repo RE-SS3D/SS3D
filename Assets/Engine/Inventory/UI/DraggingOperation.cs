@@ -129,7 +129,7 @@ namespace SS3D.Engine.Interactions.UI
 
                 if (hover.slot) {
                     var hoverSlot = hover.container.GetSlotLink(hover.slot);
-                    if (hoverSlot.container && holding.container.GetItem(holding.index) != null && uiInventory.CanMoveItem(holding.container, holding.index, hoverSlot.container, hoverSlot.index)) {
+                    if (hoverSlot.container != null && holding.container.GetItem(holding.index) != null && uiInventory.CanMoveItem(holding.container, holding.index, hoverSlot.container, hoverSlot.index)) {
                         prevHoverSlot = hoverSlot;
                         hover.slot.Highlighted = true;
                     }

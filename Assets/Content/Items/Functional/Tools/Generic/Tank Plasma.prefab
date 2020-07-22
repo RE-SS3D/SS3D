@@ -17,7 +17,6 @@ GameObject:
   - component: {fileID: 3475563472136029373}
   - component: {fileID: 6911354805868887126}
   - component: {fileID: 3233389379969371138}
-  - component: {fileID: -3843962634244789787}
   m_Layer: 16
   m_Name: Tank Plasma
   m_TagString: Untagged
@@ -148,11 +147,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: tank_plasma
   Name: Plasma Tank
+  Volume: 15
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 4422134463688631668}
   attachmentPoint: {fileID: 2990600726818224912}
+  bulkSize: 2
+  traits: []
 --- !u!114 &6911354805868887126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,24 +169,6 @@ MonoBehaviour:
   Text: 
   MaxDistance: 0
 --- !u!114 &3233389379969371138
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4422134463688631668}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
---- !u!114 &-3843962634244789787
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: scrubber
   genericType: pipe
-  prefab: {fileID: 1782602885633584681, guid: eb046eb67ff71d34bb0220674dbc1f6e, type: 3}
+  prefab: {fileID: 9154955770433736351, guid: be5174cd6c3daf64a9739aff0f747a91, type: 3}

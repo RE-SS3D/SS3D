@@ -45,8 +45,11 @@ GameObject:
   - component: {fileID: 6925736849406537146}
   - component: {fileID: 3012029890608275350}
   - component: {fileID: 8955583334864001881}
+  - component: {fileID: 8259097352887984799}
+  - component: {fileID: 3937623309233931808}
   - component: {fileID: 8026662465185345548}
   - component: {fileID: 7389511661425851685}
+  - component: {fileID: 5631262523184873709}
   m_Layer: 16
   m_Name: cardboard box
   m_TagString: Untagged
@@ -177,11 +180,50 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: box_cardboard
   Name: Cardboard Box
+  Volume: 55
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8155353539727309456}
-  attachmentPoint: {fileID: 0}
+  attachmentPoint: {fileID: 3203922127485635406}
+  bulkSize: 3
+  traits: []
+--- !u!114 &8259097352887984799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8155353539727309456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c66d43c6dbcfac444b581f95607728c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  containerName: box
+  containerFilter: {fileID: 0}
+  volumeLimited: 1
+  maxVolume: 50
+  slots: 8
+--- !u!114 &3937623309233931808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8155353539727309456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
+  OnlyStoreWhenOpen: 0
+  MaxDistance: 1.5
+  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
 --- !u!114 &8026662465185345548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,7 +236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: 
+  Text: Can store several small items.
   MaxDistance: 0
 --- !u!114 &7389511661425851685
 MonoBehaviour:
@@ -214,3 +256,22 @@ MonoBehaviour:
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
+--- !u!95 &5631262523184873709
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8155353539727309456}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

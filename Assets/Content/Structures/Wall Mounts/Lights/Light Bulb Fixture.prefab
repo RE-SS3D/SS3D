@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 313226461210813974}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.001, y: 1.774, z: 0.359}
+  m_LocalPosition: {x: 0, y: 1.7816, z: 0.3559}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3270345619053008943}
@@ -44,7 +44,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
-  m_Range: 8
+  m_Range: 6
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -342,7 +342,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5486237152387613914}
   - component: {fileID: 5034072719782870709}
-  - component: {fileID: 2102403983998733366}
+  - component: {fileID: -1648229310630695525}
   m_Layer: 0
   m_Name: Light Bulb Fixture
   m_TagString: Untagged
@@ -376,9 +376,9 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.13128461, y: 0.13114548, z: 0.2246452}
-  m_Center: {x: -0.00012373179, y: 1.7822642, z: 0.31}
---- !u!114 &2102403983998733366
+  m_Size: {x: 0.12975642, y: 0.12961721, z: 0.21343845}
+  m_Center: {x: 0.0001309663, y: 1.7815001, z: 0.30694363}
+--- !u!114 &-1648229310630695525
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -387,10 +387,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 8824907131049981641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
+  Text: <b>Light Bulb Fixture</b>
+  MaxDistance: 0

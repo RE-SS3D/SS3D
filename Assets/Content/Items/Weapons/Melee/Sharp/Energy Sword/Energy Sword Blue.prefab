@@ -99,11 +99,14 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: energy_sword_blue
   Name: Energy Sword
+  Volume: 7
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 526728262711873681}
   attachmentPoint: {fileID: 8741594312887385892}
+  bulkSize: 2
+  traits:
+  - {fileID: 11400000, guid: 08c4bae5b95cea146826e467131ec146, type: 2}
   animator: {fileID: 351750458048978072}
   audio: {fileID: 111644857273378981}
   soundOn: {fileID: 8300000, guid: 81842472797700d479c0ea5aef90fe57, type: 3}

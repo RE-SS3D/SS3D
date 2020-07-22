@@ -147,11 +147,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: wood_log
   Name: Wood Log
+  Volume: 15
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 2845941013848160597}
   attachmentPoint: {fileID: 8030723869266182320}
+  bulkSize: 3
+  traits: []
 --- !u!114 &1821932604526625336
 MonoBehaviour:
   m_ObjectHideFlags: 0

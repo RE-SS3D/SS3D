@@ -14,39 +14,6 @@ namespace SS3D.Engine.Interactions
     {
         protected bool SupportsMultipleInteractions { get; set; } = false;
         public IInteractionSource Parent { get; set; }
-        
-        private class InteractionInstance
-        {
-            public InteractionInstance(IInteraction interaction, InteractionEvent interactionEvent, InteractionReference reference)
-            {
-                Interaction = interaction;
-                Event = interactionEvent;
-                Reference = reference;
-            }
-
-            public IInteraction Interaction { get; }
-            public InteractionEvent Event { get; }
-            public InteractionReference Reference { get; }
-            public bool FirstTick { get; set; } = true;
-
-            protected bool Equals(InteractionInstance other)
-            {
-                return Equals(Reference, other.Reference);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != this.GetType()) return false;
-                return Equals((InteractionInstance) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                return (Reference != null ? Reference.GetHashCode() : 0);
-            }
-        }
 
         private class ClientInteractionInstance
         {
@@ -143,7 +110,10 @@ namespace SS3D.Engine.Interactions
 
         public virtual void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            
+            foreach (var extension in GetComponents<IInteractionSourceExtension>())
+            {
+                extension.CreateInteractions(targets, interactions);
+            }
         }
 
         public virtual bool CanInteractWithTarget(IInteractionTarget target)
@@ -169,9 +139,14 @@ namespace SS3D.Engine.Interactions
                     CancelInteraction(instance.Reference);
                 }
             }
-            interactions.Add(new InteractionInstance(interaction, interactionEvent, reference));
+            interactions.Add(new InteractionInstance(interaction, interactionEvent, reference, currentSender));
 
             return reference;
+        }
+
+        public InteractionInstance GetInstanceFromReference(InteractionReference reference)
+        {
+            return interactions.FirstOrDefault(x => x.Reference.Equals(reference));
         }
 
         public void ClientInteract(InteractionEvent interactionEvent, IInteraction interaction,
