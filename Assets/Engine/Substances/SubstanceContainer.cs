@@ -63,6 +63,11 @@ namespace SS3D.Engine.Substances
         /// </summary>
         public float Temperature;
 
+        /// <summary>
+        /// Is the container locked?
+        /// </summary>
+        public bool Locked;
+        
         public delegate void OnContentChanged(SubstanceContainer container);
 
         public event OnContentChanged ContentsChanged;
@@ -82,6 +87,11 @@ namespace SS3D.Engine.Substances
             return Substances.Count < 1;
         }
 
+        public bool CanTranfer()
+        {
+            return Locked;
+        }
+
         /// <summary>
         /// Can this container hold an additional amount of milliliters
         /// </summary>
@@ -99,6 +109,9 @@ namespace SS3D.Engine.Substances
         /// <param name="moles">How many moles should be added</param>
         public void AddSubstance(Substance substance, float moles)
         {
+            if (!CanTranfer())
+                return;
+            
             var remainingCapacity = RemainingVolume;
             var additionalVolume = moles * substance.MillilitersPerMole;
             if (additionalVolume > remainingCapacity)
@@ -136,6 +149,9 @@ namespace SS3D.Engine.Substances
         /// <param name="moles">The amount of substance</param>
         public void RemoveSubstance(Substance substance, float moles = float.MaxValue)
         {
+            if (!CanTranfer()) 
+                return;
+            
             int index = IndexOfSubstance(substance);
             if (index < 0)
             {

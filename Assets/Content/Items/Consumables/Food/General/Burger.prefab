@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 1784884762806689535}
   - component: {fileID: 7961324091246994682}
   - component: {fileID: 451889541494494911}
+  - component: {fileID: 6364082273488367464}
   m_Layer: 16
   m_Name: Burger
   m_TagString: Untagged
@@ -123,16 +124,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: burguer
-  Name: Burguer
-  Volume: 10
-  container: {fileID: 0}
-  sprite: {fileID: 0}
-  prefab: {fileID: 479858891666054169}
-  attachmentPoint: {fileID: 5843254468764651190}
-  bulkSize: 2
-  traits:
-  - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
   content: {fileID: 451889541494494911}
   contentPerUse: 3
   trashPrefab: {fileID: 0}
@@ -141,6 +132,11 @@ MonoBehaviour:
   sounds:
   - {fileID: 8300000, guid: dcb671bcc99906d49a3bbc0abbac071f, type: 3}
   - {fileID: 8300000, guid: a24c00d8a1105b749a5bd770d80a3fc7, type: 3}
+  consumeVerb: eat
+  feedTime: 1
+  LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
+    type: 3}
+  item: {fileID: 6364082273488367464}
 --- !u!82 &7961324091246994682
 AudioSource:
   m_ObjectHideFlags: 0
@@ -252,9 +248,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Volume: 9
   Temperature: 0
+  Locked: 0
   substances:
   - Substance: {fileID: 11400000, guid: 9a75665b85be2274882d93f14202cf57, type: 2}
     Moles: 9
+--- !u!114 &6364082273488367464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 479858891666054169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  ItemId: burguer
+  Name: Burger
+  Volume: 10
+  container: {fileID: 0}
+  sprite: {fileID: 0}
+  prefab: {fileID: 479858891666054169}
+  attachmentPoint: {fileID: 5843254468764651190}
+  bulkSize: 2
+  traits:
+  - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
 --- !u!1 &1727028019353448778
 GameObject:
   m_ObjectHideFlags: 0

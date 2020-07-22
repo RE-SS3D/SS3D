@@ -202,7 +202,7 @@ MonoBehaviour:
   trashPrefab: {fileID: 5367923578081395378, guid: 425c09b347f9d3949b40163fd9aa6c30,
     type: 3}
   destroyObject: 0
-  audio: {fileID: 0}
+  audio: {fileID: 8805611969679259197}
   sounds:
   - {fileID: 8300000, guid: dcb671bcc99906d49a3bbc0abbac071f, type: 3}
   - {fileID: 8300000, guid: a24c00d8a1105b749a5bd770d80a3fc7, type: 3}
@@ -225,6 +225,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Volume: 5
   Temperature: 0
+  Locked: 0
   substances:
   - Substance: {fileID: 11400000, guid: b8980899917cbe5448c75ab705a4751e, type: 2}
     Moles: 5

@@ -45,6 +45,7 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
     private void Start()
     {
         item = GetComponent<Item>();
+        content.Locked = true;
     }
 
     // Eat action, the target is there for when you make someone eat that food
@@ -63,10 +64,12 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
             
             // Randomly select the audio clip and the pitch
             audio.pitch = Random.Range(0.7f,1.5f);
-            AudioClip sound = sounds[Random.Range(0, sounds.Length)];
-
+            int audioClip = Random.Range(0, sounds.Length);
+            AudioClip sound = sounds[audioClip];
+            
+            // Plays the clip in the client and server
             audio.PlayOneShot(sound, audio.pitch);
-            RpcPlayEatingSound(audio.pitch);
+            RpcPlayEatingSound(audio.pitch, audioClip);
             
             Item itemInHand = origin.GetComponentInChildren<Hands>().GetItemInHand();
             
@@ -75,15 +78,18 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
             {
                 Item trash = Instantiate(trashPrefab, transform.position, transform.rotation).GetComponent<Item>();
                 
+                // Spawn the trash in the server
                 NetworkServer.Spawn(trash.gameObject);
                 trash.GenerateNewIcon();
 
                 if (itemInHand == null)
                 {
+                    // Destroys the item in the hand,  it's all networked
                     item.Destroy();
                 }
                 else
                 {
+                    // Replaces the item in the hand for the trash instance, it's all networked
                     ItemHelpers.ReplaceItem(itemInHand, trash);
                 }
             }
@@ -102,18 +108,18 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
     }
 
     [ClientRpc]
-    void RpcPlayEatingSound(float pitch)
+    void RpcPlayEatingSound(float pitch, int audioClip)
     {
         audio.pitch = pitch;
-        audio.PlayOneShot(sounds[Random.Range(0, sounds.Length)]);
+        audio.PlayOneShot(sounds[audioClip]);
     }
     
     
     public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
     {
         List<IInteraction> list = new List<IInteraction>();    
-        list.Add(new ConsumeInteraction {icon = item.sprite, Verb = consumeVerb, LoadingBarPrefab = LoadingBarPrefab});
-
+            list.Add(new ConsumeInteraction {icon = item.sprite, Verb = consumeVerb, LoadingBarPrefab = LoadingBarPrefab});
+    
         return list.ToArray();
     }
 
@@ -135,39 +141,50 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
             // easy access to shit
-            GameObject source = interactionEvent.Source?.GetComponentInTree<Creature>().gameObject;
-            GameObject target = interactionEvent.Target.GetComponent<Transform>().gameObject;
+            GameObject source = interactionEvent.Source.GetComponentInTree<Creature>().gameObject;
+            GameObject target = interactionEvent.Target?.GetComponent<Transform>().gameObject;
 
-            Consumable consumable = target.GetComponent<Consumable>();
-            Consumable itemInHand = source?.GetComponentInChildren<Hands>().GetItemInHand()?.GetComponent<Consumable>();
+            // I absolutely despise how this is done, please if you have the knowledge to clean this mess do it
+            Consumable itemInHand = source.GetComponentInChildren<Hands>().GetItemInHand()?.GetComponent<Consumable>();
             Creature creature = source.GetComponent<Creature>();
+            Creature targetCreature = target?.GetComponent<Creature>();
 
-            //Debug.Log("source:  " + source.name + " target: " + target?.name + " item: " + itemInHand?.gameObject.name);
-            
-            // you can only interact with consumables or creatures
-            if (consumable || creature)
+            Debug.Log("source:  " + source.name + " target: " + target?.name + " item: " + itemInHand?.gameObject.name);
+
+            // if there's no targeted creature and no item in hand
+            if (targetCreature == null && itemInHand == null)
             {
-                // if there's an consumable in your hand or the target is yourself
-                if (consumable || target == source)
-                {
-                    Delay = 0f;
-                }
-                // if there's another creature as target and it's not the player
-                if (target.GetComponent<Creature>() && target != source)
-                {
-                    Verb = "Feed";
-                    Delay = itemInHand.feedTime;
-                }
-                if (!InteractionExtensions.RangeCheck(interactionEvent) && !consumable.audio.isPlaying && consumable.content.CurrentVolume > 0)
-                {
-                    return false;
-                }
-
-                return true;
+                return false;
+            }
+            // if there's no targeted creature and the item in hand is not the target (interactions with itself require this check)
+            if (targetCreature == null && itemInHand.gameObject != target)
+            {
+                return false;
+            }
+            
+            // if the target is yourself
+            if (target == itemInHand)
+            {
+                Delay = 0f;
             }
 
-            return false;
-        }
+            // if there's another creature as target and it's not the player
+            if (targetCreature && target != source)
+            {
+                Verb = "Feed";
+                Delay = itemInHand.feedTime;
+            }
+
+            // Range check
+            if (!InteractionExtensions.RangeCheck(interactionEvent))
+            {
+                // Consumable checks (is playing audio, is empty)
+                if (!itemInHand.audio.isPlaying && itemInHand.content.CurrentVolume > 0)
+                    return false;
+            }
+
+            return true;
+        }       
 
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
