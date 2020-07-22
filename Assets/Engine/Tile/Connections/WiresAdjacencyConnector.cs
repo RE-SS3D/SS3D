@@ -30,9 +30,13 @@ namespace SS3D.Engine.Tiles.Connections
         [Tooltip("A mesh where only 1 edge is connected, north by default")]
         public Mesh c;
         [Tooltip("A mesh where only 1 corner is connected, NE by default")]
-        public Mesh cCorner;
-        [Tooltip("A mesh where the north & south edges are connected")]
+        public Mesh cDiagonal;
+        [Tooltip("A mesh where 2 opposite edges are connected, north & south by default")]
         public Mesh i;
+        [Tooltip("A mesh where 2 opposite corners are connected, NE & SW by default")]
+        public Mesh iDiagonal;
+        [Tooltip("A mesh where 2 adjacent corners are connected, NE & NW by default")]
+        public Mesh u;
         [Tooltip("A mesh where the north & east edges are connected")]
         public Mesh l;
         [Tooltip("A mesh where the north edge & NE corner are connected")]
