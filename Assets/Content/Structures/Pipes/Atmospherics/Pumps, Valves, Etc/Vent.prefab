@@ -169,6 +169,8 @@ GameObject:
   - component: {fileID: 4804375860637230145}
   - component: {fileID: 5928704826653443397}
   - component: {fileID: 4662281444441877316}
+  - component: {fileID: 2990981788956061215}
+  - component: {fileID: 138258577312625428}
   m_Layer: 0
   m_Name: Vent
   m_TagString: Untagged
@@ -226,3 +228,30 @@ MonoBehaviour:
   mode: 2
   TargetPressure: 101.3
   pipeLayer: 0
+--- !u!114 &2990981788956061215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8428429231987922514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Atmospheric Ventilator</b>
+  MaxDistance: 0
+--- !u!65 &138258577312625428
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8428429231987922514}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.6194396, y: 0.060620088, z: 0.6194396}
+  m_Center: {x: 0, y: 0.024417287, z: 0}

@@ -168,6 +168,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3379470182590209082}
   - component: {fileID: 213301074855659367}
+  - component: {fileID: 3449743115325967557}
+  - component: {fileID: 8149875823010793354}
+  - component: {fileID: 3753571178607383650}
   m_Layer: 0
   m_Name: Scrubber
   m_TagString: Untagged
@@ -210,3 +213,51 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3449743115325967557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782602885633584681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cc8189ffaa055041a7bf1a81283cb61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxPressure: 4500
+  TargetPressure: 101
+  mode: 1
+  range: 0
+  filterOxygen: 0
+  filterNitrogen: 0
+  filterCarbonDioxide: 0
+  filterPlasma: 0
+  pipeLayer: 0
+--- !u!114 &8149875823010793354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782602885633584681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: <b>Atmospheric Scrubber</b>
+  MaxDistance: 0
+--- !u!65 &3753571178607383650
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782602885633584681}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.6613651, y: 0.07185757, z: 0.66136503}
+  m_Center: {x: 0.000000029802322, y: 0.029431082, z: -0.00000011920929}

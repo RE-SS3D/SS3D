@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using SS3D.Content.Systems.Interactions;
+using SS3D.Engine.Interactions;
 using SS3D.Engine.Tiles;
 using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
-    public class VentObject : MonoBehaviour, IAtmosLoop
+    public class VentObject : MonoBehaviour, IAtmosLoop, IInteractionTarget
     {
         public enum OperatingMode
         {
@@ -20,6 +22,8 @@ namespace SS3D.Engine.Atmospherics
 
         private PipeObject connectedPipe;
         private Animator anim;
+        private bool active = false;
+        private bool internalActive = false;
 
         public void Initialize()
         {
@@ -47,7 +51,7 @@ namespace SS3D.Engine.Atmospherics
             AtmosContainer inputContainer = input.GetAtmosContainer();
             bool ventActive = false;
 
-            if (input == null || input.GetTotalMoles() == 0)
+            if (input == null || input.GetTotalMoles() == 0 || !active)
                 return;
 
             if (mode == OperatingMode.External)
@@ -126,6 +130,40 @@ namespace SS3D.Engine.Atmospherics
         public void SetAtmosNeighbours()
         {
             return;
+        }
+
+        public IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        {
+            return new IInteraction[]
+            {
+                new SimpleInteraction
+                {
+                    Name = active ? "Stop vent" : "Start vent", Interact = ActiveInteract, RangeCheck = true
+                },
+                new SimpleInteraction
+                {
+                    Name = internalActive ? "External mode" : "Internal mode", Interact = ModeInteract, RangeCheck = true
+                }
+            };
+        }
+
+        private void ActiveInteract(InteractionEvent interactionEvent, InteractionReference arg2)
+        {
+            active = !active;
+        }
+
+        private void ModeInteract(InteractionEvent interactionEvent, InteractionReference arg2)
+        {
+            if (mode == OperatingMode.Internal)
+            {
+                mode = OperatingMode.External;
+                internalActive = false;
+            }
+            else if (mode == OperatingMode.External)
+            {
+                mode = OperatingMode.Internal;
+                internalActive = true;
+            }
         }
     }
 }
