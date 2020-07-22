@@ -45,11 +45,11 @@ GameObject:
   - component: {fileID: 2275976470507102713}
   - component: {fileID: -6751516305611895406}
   - component: {fileID: 4927198185291025271}
+  - component: {fileID: 6816536106933793647}
   - component: {fileID: 3512292834628846155}
   - component: {fileID: 5688882188462630418}
   - component: {fileID: 6143507213145409448}
   - component: {fileID: 8805611969679259197}
-  - component: {fileID: 6816536106933793647}
   m_Layer: 16
   m_Name: banana
   m_TagString: Untagged
@@ -183,6 +183,30 @@ MonoBehaviour:
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
+--- !u!114 &6816536106933793647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8722317747974713380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  ItemId: banana
+  Name: banana
+  Volume: 10
+  container: {fileID: 0}
+  sprite: {fileID: 0}
+  prefab: {fileID: 8722317747974713380}
+  attachmentPoint: {fileID: 6244230459157494590}
+  bulkSize: 2
+  traits:
+  - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
 --- !u!114 &3512292834628846155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -340,27 +364,3 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &6816536106933793647
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8722317747974713380}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  ItemId: banana
-  Name: banana
-  Volume: 10
-  container: {fileID: 0}
-  sprite: {fileID: 0}
-  prefab: {fileID: 8722317747974713380}
-  attachmentPoint: {fileID: 6244230459157494590}
-  bulkSize: 2
-  traits:
-  - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
