@@ -48,7 +48,6 @@ GameObject:
   - component: {fileID: -2821121547162032549}
   - component: {fileID: 6650360349505443719}
   - component: {fileID: 3120623589630681767}
-  - component: {fileID: -3548381742689400278}
   m_Layer: 16
   m_Name: Beep's Cola
   m_TagString: Untagged
@@ -182,6 +181,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Volume: 10
   Temperature: 0
+  Locked: 0
   substances:
   - Substance: {fileID: 11400000, guid: e1163ff5257b4c04aa9df8bb85fa6188, type: 2}
     Moles: 10
@@ -309,16 +309,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: sodacan
-  Name: Space Cola
-  Volume: 10
-  container: {fileID: 0}
-  sprite: {fileID: 0}
-  prefab: {fileID: 8953399703975470614}
-  attachmentPoint: {fileID: 3742603716422439940}
-  bulkSize: 2
-  traits:
-  - {fileID: 11400000, guid: a86f8b10eacec4540a203b13004c2389, type: 2}
   content: {fileID: 3438268381033812040}
   contentPerUse: 2
   trashPrefab: {fileID: 0}
@@ -326,17 +316,7 @@ MonoBehaviour:
   audio: {fileID: 6650360349505443719}
   sounds:
   - {fileID: 8300000, guid: d218c16bb0edfd44293704a97a562e9e, type: 3}
---- !u!114 &-3548381742689400278
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8953399703975470614}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Text: 
-  MaxDistance: 0
+  consumeVerb: eat
+  feedTime: 1
+  LoadingBarPrefab: {fileID: 0}
+  item: {fileID: 0}
