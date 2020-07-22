@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: Soda
   Color: {r: 0.35686275, g: 0.1254902, b: 0.1254902, a: 1}
-  MillilitersPerMole: 50
+  MillilitersPerMole: 33.5
