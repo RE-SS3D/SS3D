@@ -47,6 +47,11 @@ namespace SS3D.Content.Systems.Substances
                 return false;
             }
 
+            if (container.Locked)
+            {
+                return false;
+            }
+            
             if (container.IsEmpty())
             {
                 return false;

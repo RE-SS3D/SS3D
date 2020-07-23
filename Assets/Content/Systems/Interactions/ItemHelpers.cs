@@ -42,6 +42,4 @@ namespace SS3D.Content.Systems.Interactions
             return gameObject.GetComponent<Item>();
         }
     }
-    
-    
 }
