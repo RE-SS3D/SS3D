@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Black Russian
   m_EditorClassIdentifier: 
   Id: black_russian
-  Color: {r: 0.2830189, g: 0.0040049767, b: 0.009828188, a: 0}
-  MillilitersPerMole: 58
+  Color: {r: 0.5566038, g: 0.21791562, b: 0.21791562, a: 0.8627451}
+  MillilitersPerMole: 38

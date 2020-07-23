@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Gin
   m_EditorClassIdentifier: 
   Id: gin
-  Color: {r: 1, g: 1, b: 1, a: 0}
-  MillilitersPerMole: 58
+  Color: {r: 0.9339623, g: 0.9339623, b: 0.9339623, a: 0.003921569}
+  MillilitersPerMole: 38

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Absinthe
   m_EditorClassIdentifier: 
   Id: absinthe
-  Color: {r: 0.29894686, g: 1, b: 0, a: 0}
-  MillilitersPerMole: 58
+  Color: {r: 0.44672585, g: 0.9433962, b: 0.23584905, a: 0.6862745}
+  MillilitersPerMole: 38

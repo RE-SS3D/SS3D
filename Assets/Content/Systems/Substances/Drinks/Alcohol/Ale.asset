@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Ale
   m_EditorClassIdentifier: 
   Id: ale
-  Color: {r: 0.6132076, g: 0.3959623, b: 0, a: 0}
+  Color: {r: 0.6132076, g: 0.3959623, b: 0, a: 0.98039216}
   MillilitersPerMole: 50

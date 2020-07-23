@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Whisky
   m_EditorClassIdentifier: 
   Id: whisky
-  Color: {r: 0.7830189, g: 0.70378536, b: 0.46168566, a: 0.3529412}
-  MillilitersPerMole: 58
+  Color: {r: 0.764151, g: 0.67276406, b: 0.40730688, a: 0.6666667}
+  MillilitersPerMole: 38

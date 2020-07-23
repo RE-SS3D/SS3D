@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Rum
   m_EditorClassIdentifier: 
   Id: rum
-  Color: {r: 0.7264151, g: 0.6299975, b: 0.5036935, a: 0.3529412}
-  MillilitersPerMole: 58
+  Color: {r: 0.764151, g: 0.6108655, b: 0.4000979, a: 0.6666667}
+  MillilitersPerMole: 38
