@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: -980747644787845634}
   - component: {fileID: 8368035118958109042}
   - component: {fileID: 468259088459523041}
+  - component: {fileID: 1559324455486072875}
   m_Layer: 16
   m_Name: Diet Beep's Soda
   m_TagString: Untagged
@@ -164,11 +165,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Volume: 10
+  Volume: 400
   Temperature: 0
+  Locked: 0
   substances:
   - Substance: {fileID: 11400000, guid: e1163ff5257b4c04aa9df8bb85fa6188, type: 2}
-    Moles: 10
+    Moles: 330
 --- !u!82 &-980747644787845634
 AudioSource:
   m_ObjectHideFlags: 0
@@ -279,16 +281,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: sodacan
-  Name: Space Cola
-  Volume: 10
-  container: {fileID: 0}
-  sprite: {fileID: 0}
-  prefab: {fileID: 6405106075082308508}
-  attachmentPoint: {fileID: 1680750711217523086}
-  bulkSize: 2
-  traits:
-  - {fileID: 11400000, guid: a86f8b10eacec4540a203b13004c2389, type: 2}
   content: {fileID: 1883610608384673158}
   contentPerUse: 2
   trashPrefab: {fileID: 0}
@@ -296,6 +288,11 @@ MonoBehaviour:
   audio: {fileID: -980747644787845634}
   sounds:
   - {fileID: 8300000, guid: d218c16bb0edfd44293704a97a562e9e, type: 3}
+  consumeVerb: eat
+  feedTime: 1
+  LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
+    type: 3}
+  item: {fileID: 0}
 --- !u!114 &468259088459523041
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -310,6 +307,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Text: 
   MaxDistance: 0
+--- !u!114 &1559324455486072875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6405106075082308508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  ItemId: soda_diet
+  Name: Diet Soda
+  Volume: 10
+  container: {fileID: 0}
+  sprite: {fileID: 0}
+  prefab: {fileID: 6405106075082308508}
+  attachmentPoint: {fileID: 1680750711217523086}
+  bulkSize: 2
+  traits:
+  - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
 --- !u!1 &7351586078410128835
 GameObject:
   m_ObjectHideFlags: 0
