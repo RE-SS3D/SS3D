@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Lemon Juice
   m_EditorClassIdentifier: 
-  Id: water
-  Color: {r: 0.91482157, g: 0.9245283, b: 0.64106447, a: 0.8627451}
-  MillilitersPerMole: 18
+  Id: juice_lemon
+  Color: {r: 0.9024997, g: 0.9150943, b: 0.60862404, a: 0.7058824}
+  MillilitersPerMole: 22
