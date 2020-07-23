@@ -227,7 +227,8 @@ MonoBehaviour:
   trashPrefab: {fileID: 0}
   destroyObject: 0
   audio: {fileID: -6173571324145430837}
-  sounds: []
+  sounds:
+  - {fileID: 8300000, guid: d218c16bb0edfd44293704a97a562e9e, type: 3}
   consumeVerb: drink
   feedTime: 1
   LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
