@@ -22,7 +22,7 @@ namespace SS3D.Engine.Atmospherics
 
         private PipeObject connectedPipe;
         private Animator anim;
-        private bool active = false;
+        private bool active = true;
         private bool internalActive = false;
 
         public void Initialize()
@@ -48,11 +48,12 @@ namespace SS3D.Engine.Atmospherics
         {
             PipeObject input = connectedPipe;
             AtmosObject output = GetComponentInParent<TileObject>().atmos;
-            AtmosContainer inputContainer = input.GetAtmosContainer();
-            bool ventActive = false;
 
             if (input == null || input.GetTotalMoles() == 0 || !active)
                 return;
+
+            AtmosContainer inputContainer = input.GetAtmosContainer();
+            bool ventActive = false;
 
             if (mode == OperatingMode.External)
             {

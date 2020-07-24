@@ -110,6 +110,8 @@ GameObject:
   - component: {fileID: 3409554715360446247}
   - component: {fileID: 9018827270936400976}
   - component: {fileID: 9164798415427084553}
+  - component: {fileID: 8105352960179789592}
+  - component: {fileID: 7551927119831908791}
   m_Layer: 0
   m_Name: Vent
   m_TagString: Untagged
@@ -224,3 +226,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Text: <b>Vent</b>
   MaxDistance: 0
+--- !u!114 &8105352960179789592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34c38d00d3fea3845878d76ab7eeeb81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mode: 2
+  TargetPressure: 101.3
+  pipeLayer: 0
+--- !u!95 &7551927119831908791
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 184acb3f23e0eb346a7f87d8fa7f05d4, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

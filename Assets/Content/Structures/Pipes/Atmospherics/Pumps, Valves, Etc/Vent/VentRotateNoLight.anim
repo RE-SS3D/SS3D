@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: VentRotate
+  m_Name: VentRotateNoLight
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -38,7 +38,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Vent.Fan
+    path: Vent Fan
   m_PositionCurves: []
   m_ScaleCurves: []
   m_FloatCurves: []
@@ -51,7 +51,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 4083110281
+      path: 327165626
       attribute: 4
       script: {fileID: 0}
       typeID: 4
@@ -104,7 +104,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: Vent.Fan
+    path: Vent Fan
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -115,7 +115,7 @@ AnimationClip:
         value: 0
         inSlope: 0
         outSlope: 360
-        tangentMode: 69
+        tangentMode: 65
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
@@ -124,7 +124,7 @@ AnimationClip:
         value: 360
         inSlope: 360
         outSlope: 0
-        tangentMode: 69
+        tangentMode: 5
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
@@ -132,7 +132,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: Vent.Fan
+    path: Vent Fan
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -143,7 +143,7 @@ AnimationClip:
         value: 0
         inSlope: 0
         outSlope: 0
-        tangentMode: 136
+        tangentMode: 69
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
@@ -160,7 +160,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: Vent.Fan
+    path: Vent Fan
     classID: 4
     script: {fileID: 0}
   m_EulerEditorCurves:
@@ -171,7 +171,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Vent.Fan
+    path: Vent Fan
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -181,7 +181,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Vent.Fan
+    path: Vent Fan
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -191,7 +191,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Vent.Fan
+    path: Vent Fan
     classID: 4
     script: {fileID: 0}
   m_HasGenericRootTransform: 0

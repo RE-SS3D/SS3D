@@ -37,7 +37,7 @@ namespace SS3D.Engine.Atmospherics
         
         public PipeLayer pipeLayer;
 
-        private bool deviceActive = false;
+        private bool deviceActive = true;
         private bool siphonActive = false;
         private Animator anim;
         private float _targetPressure;
@@ -71,6 +71,8 @@ namespace SS3D.Engine.Atmospherics
                     connectedPipe = pipe;
                 }
             }
+
+            SetAtmosNeighbours();
         }
 
         public void Step()
@@ -111,7 +113,6 @@ namespace SS3D.Engine.Atmospherics
                 // If the output pressure is acceptable
                 if (output.GetPressure() <= TargetPressure - 1f)
                 {
-                    
                     float totalMoles = input.GetTotalMoles();
 
                     // Calculate necessary moles to transfer using PV=nRT
@@ -121,32 +122,39 @@ namespace SS3D.Engine.Atmospherics
                     // We can not transfer more moles than the machinery allows
                     transferMoles = Mathf.Min(Gas.maxMoleTransfer, transferMoles);
 
+                    // We don't transfer tiny amounts
+                    transferMoles = Mathf.Max(transferMoles, Gas.minMoleTransfer);
+
                     // We can't transfer more moles than there are in the input
                     if (transferMoles > totalMoles)
                         transferMoles = totalMoles;
 
                     foreach (AtmosGasses gas in Enum.GetValues(typeof(AtmosGasses)))
                     {
-                        // Divide the moles according to their percentage
-                        float molePerGas = (inputContainer.GetGas(gas) / input.GetTotalMoles()) * transferMoles;
-                        if (inputContainer.GetGas(gas) > 0f)
+                        if (mode == OperatingMode.Siphoning)
                         {
+                            scrubActive = true;
 
-                            // If scrubbing, remove filtered gas
-                            if (mode == OperatingMode.Scrubbing && IsFiltered(gas))
+                            // Divide the moles according to their percentage
+                            float molePerGas = (inputContainer.GetGas(gas) / input.GetTotalMoles()) * transferMoles;
+                            if (inputContainer.GetGas(gas) > 0f)
                             {
-                                scrubActive = true;
                                 input.RemoveGas(gas, molePerGas);
                                 output.AddGas(gas, molePerGas);
-                            }
 
-                            // If siphoning remove all gasses
-                            if (mode == OperatingMode.Siphoning)
-                            {
-                                scrubActive = true;
-                                input.RemoveGas(gas, molePerGas);
-                                output.AddGas(gas, molePerGas);
                             }
+                        }
+
+                        // If scrubbing, remove only filtered gas
+                        if (mode == OperatingMode.Scrubbing && IsFiltered(gas))
+                        {
+                            scrubActive = true;
+
+                            // To avoid leaving a small amount of a certain gas, we apply the min threshold again
+                            float molePerGas = Mathf.Min(transferMoles, inputContainer.GetGas(gas));
+
+                            input.RemoveGas(gas, molePerGas);
+                            output.AddGas(gas, molePerGas);
                         }
                     }
                 }
@@ -184,11 +192,8 @@ namespace SS3D.Engine.Atmospherics
             {
                 if (tile != null)
                 {
-                    AtmosObject[] atmosObjects = tile.transform.GetComponentsInChildren<AtmosObject>();
-                    foreach (AtmosObject atmosTile in atmosObjects)
-                    {
-                            atmosNeighbours[i] = atmosTile;
-                    }
+                    AtmosObject atmosObject = tile.atmos;
+                    atmosNeighbours[i] = atmosObject;
                 }
                 i++;
             }

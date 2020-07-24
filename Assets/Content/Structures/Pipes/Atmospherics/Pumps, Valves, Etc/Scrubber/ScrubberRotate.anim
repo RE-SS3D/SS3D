@@ -38,11 +38,20 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: AirScrubberFans
+    path: Scrubber Fan
   m_PositionCurves: []
   m_ScaleCurves: []
   m_FloatCurves: []
-  m_PPtrCurves: []
+  m_PPtrCurves:
+  - curve:
+    - time: 0
+      value: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+    - time: 0.51666665
+      value: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+    attribute: m_Materials.Array.data[1]
+    path: 
+    classID: 23
+    script: {fileID: 0}
   m_SampleRate: 60
   m_WrapMode: 0
   m_Bounds:
@@ -51,13 +60,22 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 109028923
+      path: 3867931180
       attribute: 4
       script: {fileID: 0}
       typeID: 4
       customType: 4
       isPPtrCurve: 0
-    pptrCurveMapping: []
+    - serializedVersion: 2
+      path: 0
+      attribute: 1
+      script: {fileID: 0}
+      typeID: 23
+      customType: 21
+      isPPtrCurve: 1
+    pptrCurveMapping:
+    - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+    - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
@@ -104,7 +122,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: AirScrubberFans
+    path: Scrubber Fan
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -132,7 +150,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: AirScrubberFans
+    path: Scrubber Fan
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -143,7 +161,7 @@ AnimationClip:
         value: 0
         inSlope: 0
         outSlope: 0
-        tangentMode: 136
+        tangentMode: 65
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
@@ -160,7 +178,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: AirScrubberFans
+    path: Scrubber Fan
     classID: 4
     script: {fileID: 0}
   m_EulerEditorCurves:
@@ -171,7 +189,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: AirScrubberFans
+    path: Scrubber Fan
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -181,7 +199,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: AirScrubberFans
+    path: Scrubber Fan
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -191,7 +209,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: AirScrubberFans
+    path: Scrubber Fan
     classID: 4
     script: {fileID: 0}
   m_HasGenericRootTransform: 0

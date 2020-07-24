@@ -113,6 +113,8 @@ GameObject:
   - component: {fileID: 3409554715360446247}
   - component: {fileID: 9018827270936400976}
   - component: {fileID: 9164798415427084553}
+  - component: {fileID: 1042403641076010174}
+  - component: {fileID: 4484013068238330198}
   m_Layer: 0
   m_Name: Scrubber
   m_TagString: Untagged
@@ -227,3 +229,43 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Text: <b>Scrubber</b>
   MaxDistance: 0
+--- !u!114 &1042403641076010174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cc8189ffaa055041a7bf1a81283cb61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxPressure: 4500
+  TargetPressure: 4500
+  mode: 1
+  range: 0
+  filterOxygen: 0
+  filterNitrogen: 0
+  filterCarbonDioxide: 1
+  filterPlasma: 0
+  pipeLayer: 2
+--- !u!95 &4484013068238330198
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0b60a6b65f27ff84d82e9ba0a4655f6b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
