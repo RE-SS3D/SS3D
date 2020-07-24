@@ -14,6 +14,14 @@ namespace SS3D.Content.Systems.Interactions
                 if (interactionEvent.Target is Flashlight flashlight)
                 {
                     flashlight.light.enabled = !flashlight.light.enabled;
+                    if (flashlight.light.enabled)
+                    {
+                        flashlight.bulb.GetComponent<MeshRenderer>().sharedMaterial = flashlight.onmat;
+                    }
+                    else
+                    {
+                        flashlight.bulb.GetComponent<MeshRenderer>().sharedMaterial = flashlight.offmat;
+                    }
                 }
 
                 return false;

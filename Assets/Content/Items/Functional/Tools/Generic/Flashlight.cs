@@ -12,6 +12,9 @@ namespace SS3D.Content.Items.Functional.Tools
     {
         [SerializeField]
         public new Light light = null;
+        public GameObject bulb;
+        public Material onmat;
+        public Material offmat;
         public Sprite turnOnIcon;
         
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)

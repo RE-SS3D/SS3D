@@ -108,6 +108,9 @@ MonoBehaviour:
   traits:
   - {fileID: 11400000, guid: 7f22e87f08452654f8f20ace0b1e0fa3, type: 2}
   light: {fileID: 5674409998555339756}
+  bulb: {fileID: 5294707152616912772}
+  onmat: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  offmat: {fileID: 2100000, guid: 2a4c017c631e8c742aae4bf745cea4fe, type: 2}
   turnOnIcon: {fileID: 21300000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
 --- !u!114 &-5120229352581138748
 MonoBehaviour:
@@ -292,7 +295,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  - {fileID: 2100000, guid: 2a4c017c631e8c742aae4bf745cea4fe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
