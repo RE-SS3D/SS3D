@@ -233,7 +233,7 @@ MonoBehaviour:
   feedTime: 1
   LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
     type: 3}
-  item: {fileID: 0}
+  item: {fileID: 5205612090937000140}
 --- !u!82 &8562971194603966681
 AudioSource:
   m_ObjectHideFlags: 0
