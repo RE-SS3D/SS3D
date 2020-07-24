@@ -113,6 +113,9 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   light: {fileID: 5674409998555339756}
+  bulb: {fileID: 5294707152616912772}
+  onmat: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  offmat: {fileID: 2100000, guid: 896519f415023354b8da73ef08124ecc, type: 2}
 --- !u!1 &3531470905858699050
 GameObject:
   m_ObjectHideFlags: 0
@@ -155,8 +158,8 @@ Light:
   serializedVersion: 10
   m_Type: 0
   m_Shape: 0
-  m_Color: {r: 0.9811321, g: 0.962701, b: 0.7358491, a: 1}
-  m_Intensity: 1.5
+  m_Color: {r: 0.91107494, g: 0.9150943, b: 0.7812834, a: 1}
+  m_Intensity: 2
   m_Range: 5
   m_SpotAngle: 90
   m_InnerSpotAngle: 1
@@ -264,7 +267,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  - {fileID: 2100000, guid: 896519f415023354b8da73ef08124ecc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
