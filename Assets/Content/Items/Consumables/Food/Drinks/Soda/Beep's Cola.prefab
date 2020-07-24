@@ -205,8 +205,7 @@ MonoBehaviour:
   prefab: {fileID: 8953399703975470614}
   attachmentPoint: {fileID: 3742603716422439940}
   bulkSize: 2
-  traits:
-  - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
+  traits: []
 --- !u!114 &-2821121547162032549
 MonoBehaviour:
   m_ObjectHideFlags: 0
