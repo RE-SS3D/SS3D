@@ -124,7 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: burguer
+  ItemId: burger
   Name: Burger
   Volume: 10
   container: {fileID: 0}
@@ -173,12 +173,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Volume: 9
+  Volume: 1000
   Temperature: 0
   Locked: 0
   substances:
-  - Substance: {fileID: 11400000, guid: 9a75665b85be2274882d93f14202cf57, type: 2}
-    Moles: 9
+  - Substance: {fileID: 11400000, guid: 80d989d222d73b54bb0fdded2783af74, type: 2}
+    Moles: 5
 --- !u!82 &7961324091246994682
 AudioSource:
   m_ObjectHideFlags: 0
