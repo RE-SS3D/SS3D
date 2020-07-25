@@ -54,7 +54,7 @@ namespace SS3D.Engine.Atmospherics
         public const float windFactor = 0.2f;       // How much force will any wind apply
         public const float minimumWind = 1f;        // Minimum wind required to move items
 
-        public const float maxMoleTransfer = 10f;    // The maximum amount of moles that machines can move per atmos step
+        public const float maxMoleTransfer = 2f;    // The maximum amount of moles that machines can move per atmos step
         public const float minMoleTransfer = 0.1f;  // The minimum amount of moles that are transfered for every step
 
         public static int numOfGases = Enum.GetNames(typeof(AtmosStates)).Length;
