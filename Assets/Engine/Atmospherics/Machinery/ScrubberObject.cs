@@ -148,13 +148,16 @@ namespace SS3D.Engine.Atmospherics
                         // If scrubbing, remove only filtered gas
                         if (mode == OperatingMode.Scrubbing && IsFiltered(gas))
                         {
-                            scrubActive = true;
+                            if (inputContainer.GetGas(gas) > 0f)
+                            {
+                                scrubActive = true;
 
-                            // To avoid leaving a small amount of a certain gas, we apply the min threshold again
-                            float molePerGas = Mathf.Min(transferMoles, inputContainer.GetGas(gas));
+                                // To avoid leaving a small amount of a certain gas, we apply the min threshold again
+                                float molePerGas = Mathf.Min(transferMoles, inputContainer.GetGas(gas));
 
-                            input.RemoveGas(gas, molePerGas);
-                            output.AddGas(gas, molePerGas);
+                                input.RemoveGas(gas, molePerGas);
+                                output.AddGas(gas, molePerGas);
+                            }
                         }
                     }
                 }
