@@ -22,7 +22,7 @@ namespace SS3D.Engine.Atmospherics
 
         private PipeObject connectedPipe;
         private Animator anim;
-        private bool active = true;
+        private bool deviceActive = true;
         private bool internalActive = false;
 
         public void Initialize()
@@ -46,74 +46,80 @@ namespace SS3D.Engine.Atmospherics
 
         public void Step()
         {
-            PipeObject input = connectedPipe;
-            AtmosObject output = GetComponentInParent<TileObject>().atmos;
-
-            if (input == null || input.GetTotalMoles() == 0 || !active)
-                return;
-
-            AtmosContainer inputContainer = input.GetAtmosContainer();
             bool ventActive = false;
 
-            if (mode == OperatingMode.External)
+            if (deviceActive)
             {
-                // If the output pressure is acceptable
-                if (output.GetPressure() <= TargetPressure - 1f)
+                PipeObject input = connectedPipe;
+                AtmosObject output = GetComponentInParent<TileObject>().atmos;
+
+                if (input != null || input.GetTotalMoles() > 0)
                 {
-                    ventActive = true;
-                    float totalMoles = input.GetTotalMoles();
 
-                    // Calculate necessary moles to transfer using PV=nRT
-                    float pressureDifference = TargetPressure - output.GetPressure();
-                    float transferMoles = pressureDifference * 1000 * output.GetAtmosContainer().Volume / (output.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
+                    AtmosContainer inputContainer = input.GetAtmosContainer();
 
-                    // We can not transfer more moles than the machinery allows
-                    transferMoles = Mathf.Min(Gas.maxMoleTransfer, transferMoles);
 
-                    // We can't transfer more moles than there are
-                    if (transferMoles > totalMoles)
-                        transferMoles = totalMoles;
-
-                    for (int i = 0; i < Gas.numOfGases; i++)
+                    if (mode == OperatingMode.External)
                     {
-                        // Divide the moles according to their percentage
-                        float molePerGas = (inputContainer.GetGas(i) / totalMoles) * transferMoles;
-                        if (inputContainer.GetGas(i) > 0f)
+                        // If the output pressure is acceptable
+                        if (output.GetPressure() <= TargetPressure - 1f)
                         {
-                            input.RemoveGas(i, molePerGas);
-                            output.AddGas(i, molePerGas);
+                            ventActive = true;
+                            float totalMoles = input.GetTotalMoles();
+
+                            // Calculate necessary moles to transfer using PV=nRT
+                            float pressureDifference = TargetPressure - output.GetPressure();
+                            float transferMoles = pressureDifference * 1000 * output.GetAtmosContainer().Volume / (output.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
+
+                            // We can not transfer more moles than the machinery allows
+                            transferMoles = Mathf.Min(Gas.maxMoleTransfer, transferMoles);
+
+                            // We can't transfer more moles than there are
+                            if (transferMoles > totalMoles)
+                                transferMoles = totalMoles;
+
+                            for (int i = 0; i < Gas.numOfGases; i++)
+                            {
+                                // Divide the moles according to their percentage
+                                float molePerGas = (inputContainer.GetGas(i) / totalMoles) * transferMoles;
+                                if (inputContainer.GetGas(i) > 0f)
+                                {
+                                    input.RemoveGas(i, molePerGas);
+                                    output.AddGas(i, molePerGas);
+                                }
+                            }
                         }
                     }
-                }
-            }
 
-            else if (mode == OperatingMode.Internal)
-            {
-                // If the output pressure is acceptable
-                if (input.GetPressure() >= TargetPressure + 1f)
-                {
-                    ventActive = true;
-                    float totalMoles = input.GetTotalMoles();
-
-                    // Calculate necessary moles to transfer using PV=nRT
-                    float pressureDifference = input.GetPressure() - TargetPressure;
-                    float transferMoles = pressureDifference * 1000 * input.GetAtmosContainer().Volume / (input.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
-
-                    // We can not transfer more moles than the machinery allows
-                    transferMoles = Mathf.Min(Gas.maxMoleTransfer, transferMoles);
-
-                    // We can't transfer more moles than there are in the input
-                    if (transferMoles > totalMoles)
-                        transferMoles = totalMoles;
-
-                    for (int i = 0; i < Gas.numOfGases; i++)
+                    else if (mode == OperatingMode.Internal)
                     {
-                        // Divide the moles according to their percentage
-                        float molePerGas = (inputContainer.GetGas(i) / totalMoles) * transferMoles;
-                        if (inputContainer.GetGas(i) > 0f)
+                        // If the output pressure is acceptable
+                        if (input.GetPressure() >= TargetPressure + 1f)
                         {
-                            input.RemoveGas(i, molePerGas);
-                            output.AddGas(i, molePerGas);
+                            ventActive = true;
+                            float totalMoles = input.GetTotalMoles();
+
+                            // Calculate necessary moles to transfer using PV=nRT
+                            float pressureDifference = input.GetPressure() - TargetPressure;
+                            float transferMoles = pressureDifference * 1000 * input.GetAtmosContainer().Volume / (input.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
+
+                            // We can not transfer more moles than the machinery allows
+                            transferMoles = Mathf.Min(Gas.maxMoleTransfer, transferMoles);
+
+                            // We can't transfer more moles than there are in the input
+                            if (transferMoles > totalMoles)
+                                transferMoles = totalMoles;
+
+                            for (int i = 0; i < Gas.numOfGases; i++)
+                            {
+                                // Divide the moles according to their percentage
+                                float molePerGas = (inputContainer.GetGas(i) / totalMoles) * transferMoles;
+                                if (inputContainer.GetGas(i) > 0f)
+                                {
+                                    input.RemoveGas(i, molePerGas);
+                                    output.AddGas(i, molePerGas);
+                                }
+                            }
                         }
                     }
                 }
@@ -121,6 +127,7 @@ namespace SS3D.Engine.Atmospherics
 
             // Update the animator
             anim.SetBool("ventActive", ventActive);
+            anim.SetBool("deviceActive", deviceActive);
         }
 
         public void SetTileNeighbour(TileObject tile, int index)
@@ -139,7 +146,7 @@ namespace SS3D.Engine.Atmospherics
             {
                 new SimpleInteraction
                 {
-                    Name = active ? "Stop vent" : "Start vent", Interact = ActiveInteract, RangeCheck = true
+                    Name = deviceActive ? "Stop vent" : "Start vent", Interact = ActiveInteract, RangeCheck = true
                 },
                 new SimpleInteraction
                 {
@@ -150,7 +157,7 @@ namespace SS3D.Engine.Atmospherics
 
         private void ActiveInteract(InteractionEvent interactionEvent, InteractionReference arg2)
         {
-            active = !active;
+            deviceActive = !deviceActive;
         }
 
         private void ModeInteract(InteractionEvent interactionEvent, InteractionReference arg2)

@@ -653,7 +653,6 @@ namespace SS3D.Engine.Atmospherics
                     break;
             }
 
-
             switch (orientation)
             {
                 case OffsetPipesAdjacencyConnector.PipeOrientation.o:
@@ -661,128 +660,128 @@ namespace SS3D.Engine.Atmospherics
                     Gizmos.DrawCube(new Vector3(x, value / 2f, y), new Vector3(0.2f * drawSize, value, 0.2f * drawSize));
                     break;
 
-                //case OffsetPipesAdjacencyConnector.PipeOrientation.i:
-                //    if (rotation > 0)
-                //        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
-                //    else
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
-                //    break;
+                case OffsetPipesAdjacencyConnector.PipeOrientation.i:
+                    if (rotation > 0)
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                    else
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    break;
 
-                //case OffsetPipesAdjacencyConnector.PipeOrientation.cNorth:
-                //    if (rotation > 0)
-                //        Gizmos.DrawCube(new Vector3(x + 0.25f, value / 2f, y + offsetY), new Vector3(0.5f * drawSize, value, 0.2f * drawSize));
-                //    else
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + 0.25f), new Vector3(0.2f * drawSize, value, 0.5f * drawSize));
+                case OffsetPipesAdjacencyConnector.PipeOrientation.cNorth:
+                    if (rotation > 0)
+                        Gizmos.DrawCube(new Vector3(x + 0.25f, value / 2f, y + offsetY), new Vector3(0.5f * drawSize, value, 0.2f * drawSize));
+                    else
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + 0.25f), new Vector3(0.2f * drawSize, value, 0.5f * drawSize));
 
-                //    break;
-                //case OffsetPipesAdjacencyConnector.PipeOrientation.cSouth:
-                //    if (rotation > 0)
-                //        Gizmos.DrawCube(new Vector3(x - 0.25f, value / 2f, y + offsetY), new Vector3(0.5f * drawSize, value, 0.2f * drawSize));
-                //    else
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y - 0.25f), new Vector3(0.2f * drawSize, value, 0.5f * drawSize));
-                //    break;
+                    break;
+                case OffsetPipesAdjacencyConnector.PipeOrientation.cSouth:
+                    if (rotation > 0)
+                        Gizmos.DrawCube(new Vector3(x - 0.25f, value / 2f, y + offsetY), new Vector3(0.5f * drawSize, value, 0.2f * drawSize));
+                    else
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y - 0.25f), new Vector3(0.2f * drawSize, value, 0.5f * drawSize));
+                    break;
 
-                //case OffsetPipesAdjacencyConnector.PipeOrientation.tNEW:
-                //    if (layer == PipeLayer.L3)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
-                //    }
-                //    else if (layer == PipeLayer.L1)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + 0.33f), new Vector3(0.2f * drawSize, value, 0.35f * drawSize));
-                //    }
-                //    break;
+                case OffsetPipesAdjacencyConnector.PipeOrientation.tNEW:
+                    if (layer == PipeLayer.L3)
+                    {
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    }
+                    else if (layer == PipeLayer.L1)
+                    {
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + 0.33f), new Vector3(0.2f * drawSize, value, 0.35f * drawSize));
+                    }
+                    break;
 
-                //case OffsetPipesAdjacencyConnector.PipeOrientation.tNSE:
-                //    if (layer == PipeLayer.L3)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x + 0.33f, value / 2f, y + offsetY), new Vector3(0.35f * drawSize, value, 0.2f * drawSize));
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
-                //    }
-                //    else if (layer == PipeLayer.L1)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
-                //    }
-                //    break;
+                case OffsetPipesAdjacencyConnector.PipeOrientation.tNSE:
+                    if (layer == PipeLayer.L3)
+                    {
+                        Gizmos.DrawCube(new Vector3(x + 0.33f, value / 2f, y + offsetY), new Vector3(0.35f * drawSize, value, 0.2f * drawSize));
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    }
+                    else if (layer == PipeLayer.L1)
+                    {
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    }
+                    break;
 
-                //case OffsetPipesAdjacencyConnector.PipeOrientation.tNSW:
-                //    if (layer == PipeLayer.L3)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
-                //    }
-                //    else if (layer == PipeLayer.L1)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x - 0.33f, value / 2f, y + offsetY), new Vector3(0.35f * drawSize, value, 0.2f * drawSize));
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
-                //    }
-                //    break;
+                case OffsetPipesAdjacencyConnector.PipeOrientation.tNSW:
+                    if (layer == PipeLayer.L3)
+                    {
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    }
+                    else if (layer == PipeLayer.L1)
+                    {
+                        Gizmos.DrawCube(new Vector3(x - 0.33f, value / 2f, y + offsetY), new Vector3(0.35f * drawSize, value, 0.2f * drawSize));
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    }
+                    break;
 
-                //case OffsetPipesAdjacencyConnector.PipeOrientation.tSWE:
-                //    if (layer == PipeLayer.L3)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
-                //    }
-                //    else if (layer == PipeLayer.L1)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
-                //        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
-                //    }
-                //    break;
+                case OffsetPipesAdjacencyConnector.PipeOrientation.tSWE:
+                    if (layer == PipeLayer.L3)
+                    {
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                    }
+                    else if (layer == PipeLayer.L1)
+                    {
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                    }
+                    break;
 
-                //case OffsetPipesAdjacencyConnector.PipeOrientation.lNE:
-                //    if (layer == PipeLayer.L1)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
-                //    }
-                //    else if (layer == PipeLayer.L3)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
-                //    }
-                //    break;
+                case OffsetPipesAdjacencyConnector.PipeOrientation.lNE:
+                    if (layer == PipeLayer.L1)
+                    {
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                    }
+                    else if (layer == PipeLayer.L3)
+                    {
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    }
+                    break;
 
-                //case OffsetPipesAdjacencyConnector.PipeOrientation.lNW:
-                //    if (layer == PipeLayer.L1)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + offsetY), new Vector3(0.35f * drawSize, value, 0.2f * drawSize));
-                //    }
-                //    else if (layer == PipeLayer.L3)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
-                //        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
-                //    }
-                //    break;
+                case OffsetPipesAdjacencyConnector.PipeOrientation.lNW:
+                    if (layer == PipeLayer.L1)
+                    {
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + offsetY), new Vector3(0.35f * drawSize, value, 0.2f * drawSize));
+                    }
+                    else if (layer == PipeLayer.L3)
+                    {
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                    }
+                    break;
 
-                //case OffsetPipesAdjacencyConnector.PipeOrientation.lSE:
-                //    if (layer == PipeLayer.L3)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + offsetY), new Vector3(0.35f * drawSize, value, 0.2f * drawSize));
-                //    }
-                //    else if (layer == PipeLayer.L1)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
-                //        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
-                //    }
-                //    break;
+                case OffsetPipesAdjacencyConnector.PipeOrientation.lSE:
+                    if (layer == PipeLayer.L3)
+                    {
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + offsetY), new Vector3(0.35f * drawSize, value, 0.2f * drawSize));
+                    }
+                    else if (layer == PipeLayer.L1)
+                    {
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                    }
+                    break;
 
-                //case OffsetPipesAdjacencyConnector.PipeOrientation.lSW:
-                //    if (layer == PipeLayer.L3)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
-                //    }
-                //    else if (layer == PipeLayer.L1)
-                //    {
-                //        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
-                //    }
-                //    break;
+                case OffsetPipesAdjacencyConnector.PipeOrientation.lSW:
+                    if (layer == PipeLayer.L3)
+                    {
+                        Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                    }
+                    else if (layer == PipeLayer.L1)
+                    {
+                        Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    }
+                    break;
 
-                //case OffsetPipesAdjacencyConnector.PipeOrientation.x:
-                //    Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
-                //    Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
-                //    break;
+                case OffsetPipesAdjacencyConnector.PipeOrientation.x:
+                    Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
+                    Gizmos.DrawCube(new Vector3(x, value / 2f, y + offsetY), new Vector3(drawSize, value, 0.2f * drawSize));
+                    break;
             }
 
         }

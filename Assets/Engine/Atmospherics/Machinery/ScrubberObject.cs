@@ -89,74 +89,76 @@ namespace SS3D.Engine.Atmospherics
                     numOfTiles = 5;
                     break;
             }
-
-            // We loop 1 or 5 times based on the range setting
-            for (int i = 0; i < numOfTiles; i++)
+            if (deviceActive)
             {
-
-                AtmosObject input = null;
-                if (i == 0)
-                    input = GetComponentInParent<TileObject>().atmos;
-                else
-                    input = atmosNeighbours[i - 1];
-
-                PipeObject output = connectedPipe;
-
-                if (input == null || input.GetTotalMoles() == 0 || output == null || mode == OperatingMode.Off)
-                    return;
-
-                AtmosContainer inputContainer = input.GetAtmosContainer();
-                AtmosContainer outputContainer = output.GetAtmosContainer();
-
-                
-
-                // If the output pressure is acceptable
-                if (output.GetPressure() <= TargetPressure - 1f)
+                // We loop 1 or 5 times based on the range setting
+                for (int i = 0; i < numOfTiles; i++)
                 {
-                    float totalMoles = input.GetTotalMoles();
 
-                    // Calculate necessary moles to transfer using PV=nRT
-                    float pressureDifference = _targetPressure - output.GetPressure();
-                    float transferMoles = pressureDifference * 1000 * output.volume / (output.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
+                    AtmosObject input = null;
+                    if (i == 0)
+                        input = GetComponentInParent<TileObject>().atmos;
+                    else
+                        input = atmosNeighbours[i - 1];
 
-                    // We can not transfer more moles than the machinery allows
-                    transferMoles = Mathf.Min(Gas.maxMoleTransfer, transferMoles);
+                    PipeObject output = connectedPipe;
 
-                    // We don't transfer tiny amounts
-                    transferMoles = Mathf.Max(transferMoles, Gas.minMoleTransfer);
+                    if (input == null || input.GetTotalMoles() == 0 || output == null || mode == OperatingMode.Off)
+                        return;
 
-                    // We can't transfer more moles than there are in the input
-                    if (transferMoles > totalMoles)
-                        transferMoles = totalMoles;
+                    AtmosContainer inputContainer = input.GetAtmosContainer();
+                    AtmosContainer outputContainer = output.GetAtmosContainer();
 
-                    foreach (AtmosGasses gas in Enum.GetValues(typeof(AtmosGasses)))
+
+
+                    // If the output pressure is acceptable
+                    if (output.GetPressure() <= TargetPressure - 1f)
                     {
-                        if (mode == OperatingMode.Siphoning)
+                        float totalMoles = input.GetTotalMoles();
+
+                        // Calculate necessary moles to transfer using PV=nRT
+                        float pressureDifference = _targetPressure - output.GetPressure();
+                        float transferMoles = pressureDifference * 1000 * output.volume / (output.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
+
+                        // We can not transfer more moles than the machinery allows
+                        transferMoles = Mathf.Min(Gas.maxMoleTransfer, transferMoles);
+
+                        // We don't transfer tiny amounts
+                        transferMoles = Mathf.Max(transferMoles, Gas.minMoleTransfer);
+
+                        // We can't transfer more moles than there are in the input
+                        if (transferMoles > totalMoles)
+                            transferMoles = totalMoles;
+
+                        foreach (AtmosGasses gas in Enum.GetValues(typeof(AtmosGasses)))
                         {
-                            scrubActive = true;
-
-                            // Divide the moles according to their percentage
-                            float molePerGas = (inputContainer.GetGas(gas) / input.GetTotalMoles()) * transferMoles;
-                            if (inputContainer.GetGas(gas) > 0f)
-                            {
-                                input.RemoveGas(gas, molePerGas);
-                                output.AddGas(gas, molePerGas);
-
-                            }
-                        }
-
-                        // If scrubbing, remove only filtered gas
-                        if (mode == OperatingMode.Scrubbing && IsFiltered(gas))
-                        {
-                            if (inputContainer.GetGas(gas) > 0f)
+                            if (mode == OperatingMode.Siphoning)
                             {
                                 scrubActive = true;
 
-                                // To avoid leaving a small amount of a certain gas, we apply the min threshold again
-                                float molePerGas = Mathf.Min(transferMoles, inputContainer.GetGas(gas));
+                                // Divide the moles according to their percentage
+                                float molePerGas = (inputContainer.GetGas(gas) / input.GetTotalMoles()) * transferMoles;
+                                if (inputContainer.GetGas(gas) > 0f)
+                                {
+                                    input.RemoveGas(gas, molePerGas);
+                                    output.AddGas(gas, molePerGas);
 
-                                input.RemoveGas(gas, molePerGas);
-                                output.AddGas(gas, molePerGas);
+                                }
+                            }
+
+                            // If scrubbing, remove only filtered gas
+                            if (mode == OperatingMode.Scrubbing && IsFiltered(gas))
+                            {
+                                if (inputContainer.GetGas(gas) > 0f)
+                                {
+                                    scrubActive = true;
+
+                                    // To avoid leaving a small amount of a certain gas, we apply the min threshold again
+                                    float molePerGas = Mathf.Min(transferMoles, inputContainer.GetGas(gas));
+
+                                    input.RemoveGas(gas, molePerGas);
+                                    output.AddGas(gas, molePerGas);
+                                }
                             }
                         }
                     }
@@ -165,6 +167,7 @@ namespace SS3D.Engine.Atmospherics
 
             // Update the animator
             anim.SetBool("scrubActive", scrubActive);
+            anim.SetBool("deviceActive", deviceActive);
         }
 
         bool IsFiltered(AtmosGasses gas)
