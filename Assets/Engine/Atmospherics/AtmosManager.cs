@@ -558,22 +558,6 @@ namespace SS3D.Engine.Atmospherics
                                     rotation = offsetConnector.GetRotation();
                                 }
 
-                                //switch (pipe.layer)
-                                //{
-                                //    case PipeObject.PipeLayer.L1:
-                                //        pipeOffset = -0.25f;
-                                //        break;
-                                //    case PipeObject.PipeLayer.L2:
-                                //        pipeOffset = 0f;
-                                //        break;
-                                //    case PipeObject.PipeLayer.L3:
-                                //        pipeOffset = 0.25f;
-                                //        break;
-                                //    case PipeObject.PipeLayer.Upper:
-                                //        pipeOffset = 0f;
-                                //        break;
-                                //}
-
                                 switch (pipe.GetState())
                                 {
                                     case AtmosStates.Active: state = new Color(0, 0, 0, 0); break;
@@ -599,7 +583,7 @@ namespace SS3D.Engine.Atmospherics
                                                 Gizmos.color = colors[k] - state;
                                                 if (drawAll || k == 3) // Only draw plasma
                                                 {
-                                                    Gizmos.DrawCube(new Vector3(x, moles / 2f + offset, y), new Vector3(0.5f * drawSize, moles, 0.5f * drawSize));
+                                                    DrawPipeCube(x, y, pipe.layer, moles / 2f + offset, pipeOrientation, drawSize, rotation);
                                                     offset += moles;
                                                 }
                                             }
@@ -611,7 +595,6 @@ namespace SS3D.Engine.Atmospherics
                                         if (drawAll || pipe.GetState() == AtmosStates.Active)
                                         {
                                             Gizmos.color = Color.white - state;
-                                            // Gizmos.DrawCube(new Vector3(x + pipeOffset, pressure / 2f, y + pipeOffset), new Vector3(0.5f * drawSize, pressure, 0.5f * drawSize));
                                             DrawPipeCube(x, y, pipe.layer, pressure, pipeOrientation, drawSize, rotation);
                                         }
                                         break;
@@ -619,13 +602,13 @@ namespace SS3D.Engine.Atmospherics
                                         float temperatue = pipe.GetAtmosContainer().GetTemperature() / 100f;
 
                                         Gizmos.color = Color.red - state;
-                                        Gizmos.DrawCube(new Vector3(x, temperatue / 2f, y), new Vector3(0.5f * drawSize, temperatue, 0.5f * drawSize));
+                                        DrawPipeCube(x, y, pipe.layer, temperatue / 2f, pipeOrientation, drawSize, rotation);
                                         break;
                                     case ViewType.Combined:
                                         pressure = pipe.GetPressure() / 30f;
 
                                         Gizmos.color = new Color(pipe.GetAtmosContainer().GetTemperature() / 500f, 0, 0, 1) - state;
-                                        Gizmos.DrawCube(new Vector3(x, pressure / 2f, y), new Vector3(0.5f * drawSize, pressure, 0.5f * drawSize));
+                                        DrawPipeCube(x, y, pipe.layer, pressure, pipeOrientation, drawSize, rotation);
                                         break;
                                 }
                             }
