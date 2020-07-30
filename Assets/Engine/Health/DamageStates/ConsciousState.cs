@@ -2,9 +2,9 @@
 {
     public enum ConsciousState
     {
-        CONSCIOUS = 0,          // alive and well
-        BARELY_CONSCIOUS = 3,   // in crit, can crawl
-        UNCONSCIOUS = 1,        // unconscious, can't crawl
-        DEAD = 2                // really dead
+        Conscious = 0,          // alive and well
+        BarelyConscious = 3,    // in crit, can crawl
+        Unconscious = 1,        // unconscious, can't crawl
+        Dead = 2                // really dead
     }
 }
