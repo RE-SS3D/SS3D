@@ -1,7 +1,5 @@
 ﻿using Mirror;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -45,7 +43,7 @@ namespace SS3D.Engine.Health
         [Tooltip("Below this temperature (in Kelvin) the object will be unaffected by fire exposure.")]
         public float HeatResistance = 100;
 
-        public float initialIntegrity = 100f;
+        public float InitialIntegrity = 100f;
 
         [SyncVar(hook = nameof(SyncOnFire))]
         private bool onFire = false;

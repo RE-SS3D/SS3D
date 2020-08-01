@@ -1,21 +1,27 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace SS3D.Engine.Health
+﻿namespace SS3D.Engine.Health
 {
-    public class BrainInfections : MonoBehaviour
+
+    /// <summary>
+    /// Infections or diseases that can affect the brain
+    /// </summary>
+    public enum BrainInfection
     {
-        // Start is called before the first frame update
-        void Start()
-        {
+        None, //perfectly normal state
+        Anxiety, // Disorders are fine to put here
+        AlienParasite,
+        ZombieInfection,
+        BrainRot,
+        JungleFever,
+        PierrotsThroat,
 
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
     }
+
+    /// <summary>
+    /// A helper class that returns brain infection symptoms for applying to a brain
+    /// </summary>
+    public static class BrainInfections
+    {
+        // TODO: Hardcoded infection data
+    }
+
 }

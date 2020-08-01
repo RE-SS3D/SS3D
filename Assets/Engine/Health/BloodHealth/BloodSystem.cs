@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SS3D.Engine.Health
 {
@@ -132,15 +130,15 @@ namespace SS3D.Engine.Health
         }
 
         /// <summary>
-        /// Stops bleeding on the selected bodypart. The bloodsystem continues bleeding if there's another bodypart bleeding. Server Only.
+        /// Stops bleeding on the selected body part. The blood system continues bleeding if there's another bodypart bleeding. Server Only.
         /// </summary>
         public void StopBleeding(BodyPartBehaviour bodyPart)
         {
             bodyPart.isBleeding = false;
             for (int i = 0; i < creatureHealth.BodyParts.Count; i++)
             {
-                BodyPartBehaviour BPB = creatureHealth.BodyParts[i];
-                if (BPB.isBleeding)
+                BodyPartBehaviour bpb = creatureHealth.BodyParts[i];
+                if (bpb.isBleeding)
                 {
                     return;
                 }
@@ -149,14 +147,14 @@ namespace SS3D.Engine.Health
         }
 
         /// <summary>
-        /// Stops bleeding on all bodyparts. Server Only.
+        /// Stops bleeding on all body parts. Server Only.
         /// </summary>
         public void StopBleedingAll()
         {
             for (int i = 0; i < creatureHealth.BodyParts.Count; i++)
             {
-                BodyPartBehaviour BPB = creatureHealth.BodyParts[i];
-                BPB.isBleeding = false;
+                BodyPartBehaviour bpb = creatureHealth.BodyParts[i];
+                bpb.isBleeding = false;
             }
             IsBleeding = false;
         }
