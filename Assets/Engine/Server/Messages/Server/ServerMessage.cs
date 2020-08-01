@@ -1,6 +1,5 @@
 ﻿using Mirror;
 using System.Collections.Generic;
-using UnityEditor.Networking.PlayerConnection;
 using UnityEngine;
 
 public abstract class ServerMessage : GameMessageBase
@@ -46,7 +45,7 @@ public abstract class ServerMessage : GameMessageBase
             return;
         }
 
-        //			only send to players that are currently controlled by a client
+        //	Only send to players that are currently controlled by a client
         if (PlayerList.Instance.ContainsConnection(connection))
         {
             connection.Send(this, 0);
@@ -78,7 +77,7 @@ public abstract class ServerMessage : GameMessageBase
     {
         var players = PlayerList.Instance.AllPlayers;
 
-        RaycastHit2D hit;
+        // RaycastHit2D hit;
         LayerMask layerMask = LayerMask.GetMask("Walls", "Door Closed");
         for (int i = players.Count - 1; i > 0; i--)
         {
