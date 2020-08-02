@@ -19,15 +19,15 @@ public class HealthConsciousMessage : ServerMessage
             return;
         }
 
-        var healthBehaviour = NetworkObject.GetComponent<CreatureHealth>();
+        var creatureHealth = NetworkObject.GetComponent<CreatureHealth>();
 
-        if (healthBehaviour != null)
+        if (creatureHealth != null)
         {
-            healthBehaviour.UpdateClientConsciousState(ConsciousState);
+            creatureHealth.UpdateClientConsciousState(ConsciousState);
         }
         else
         {
-            Logger.Log($"Creature Health not found for {NetworkObject.ExpensiveName()} skipping conscious state update", Category.Health);
+            Logger.Log($"Creature Health not found for {NetworkObject} skipping conscious state update", Category.Health);
         }
     }
 

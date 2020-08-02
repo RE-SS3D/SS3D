@@ -11,7 +11,8 @@ public class HealthPressureMessage : ServerMessage
 
     public override void Process()
     {
-        PlayerManager.LocalPlayerScript.playerHealth?.UpdateClientPressureStats(pressure);
+        // TODO: Handle pressure update when a player list is implemented
+        // PlayerManager.LocalPlayerScript.playerHealth?.UpdateClientPressureStats(pressure);
     }
 
     public static HealthPressureMessage Send(GameObject entityToUpdate, float pressureValue)

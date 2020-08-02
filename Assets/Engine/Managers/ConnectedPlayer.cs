@@ -16,40 +16,23 @@ public class ConnectedPlayer
         gameObject = null,
         Username = null,
         name = "kek",
-        job = JobType.NULL,
+        // job = JobType.NULL,
         ClientId = "",
         UserId = ""
     };
 
     public string Username { get; set; }
     private string name;
-    private JobType job;
+    // private JobType job;
     private GameObject gameObject;
-    public PlayerScript Script { get; private set; }
-    public JoinedViewer ViewerScript { get; private set; }
     public string ClientId { get; set; }
     public string UserId { get; set; }
     public NetworkConnection Connection { get; set; }
-    public CharacterSettings CharacterSettings { get; set; }
+    
+    // TODO: Add character settings
+    //public CharacterSettings CharacterSettings { get; set; }
 
-    public GameObject GameObject
-    {
-        get => gameObject;
-        set
-        {
-            gameObject = value;
-            if (gameObject != null)
-            {
-                Script = value.GetComponent<PlayerScript>();
-                ViewerScript = value.GetComponent<JoinedViewer>();
-            }
-            else
-            {
-                Script = null;
-                ViewerScript = null;
-            }
-        }
-    }
+    public GameObject GameObject;
 
     public string Name
     {
@@ -61,21 +44,19 @@ public class ConnectedPlayer
         }
     }
 
-    public JobType Job
-    {
-        get => job;
-        set
-        {
-            job = value;
-            TrySendUpdate();
-        }
-    }
+    // TODO: Add jobs system
+    //public JobType Job
+    //{
+    //    get => job;
+    //    set
+    //    {
+    //        job = value;
+    //        TrySendUpdate();
+    //    }
+    //}
 
     private void TryChangeName(string playerName)
     {
-        //When a ConnectedPlayer object is initialised it has a null value
-        //We want to make sure that it gets set to something if the client requested something bad
-        //Issue #1377
         if (string.IsNullOrWhiteSpace(playerName))
         {
             Logger.LogWarningFormat("Attempting to assign invalid name to ConnectedPlayer. Assigning default name ({0}) instead", Category.Server, DefaultName);
@@ -88,12 +69,12 @@ public class ConnectedPlayer
             return;
         }
 
-        var playerList = PlayerList.Instance;
-        if (playerList == null)
-        {
-            name = playerName;
-            return;
-        }
+        //var playerList = PlayerList.Instance;
+        //if (playerList == null)
+        //{
+        //    name = playerName;
+        //    return;
+        //}
 
         string uniqueName = GetUniqueName(playerName);
         name = uniqueName;
@@ -116,10 +97,10 @@ public class ConnectedPlayer
                 Logger.LogTrace($"TRYING: {proposedName}", Category.Connections);
             }
 
-            if (!PlayerList.Instance.ContainsName(proposedName))
-            {
-                return proposedName;
-            }
+            //if (!PlayerList.Instance.ContainsName(proposedName))
+            //{
+            //    return proposedName;
+            //}
 
             Logger.LogTrace($"NAME ALREADY EXISTS: {proposedName}", Category.Connections);
             sameNames++;
@@ -128,12 +109,12 @@ public class ConnectedPlayer
 
     private static void TrySendUpdate()
     {
-        if (CustomNetworkManager.Instance != null
-             && CustomNetworkManager.Instance._isServer
-             && PlayerList.Instance != null)
-        {
-            UpdateConnectedPlayersMessage.Send();
-        }
+        //if (CustomNetworkManager.Instance != null
+        //     && CustomNetworkManager.Instance._isServer
+        //     && PlayerList.Instance != null)
+        //{
+        //    UpdateConnectedPlayersMessage.Send();
+        //}
     }
 
     public override string ToString()
@@ -142,6 +123,6 @@ public class ConnectedPlayer
         {
             return "Invalid player";
         }
-        return $"ConnectedPlayer {nameof(Username)}: {Username}, {nameof(ClientId)}: {ClientId}, {nameof(UserId)}: {UserId}, {nameof(Connection)}: {Connection}, {nameof(Name)}: {Name}, {nameof(Job)}: {Job}";
+        return $"ConnectedPlayer {nameof(Username)}: {Username}, {nameof(ClientId)}: {ClientId}, {nameof(UserId)}: {UserId}, {nameof(Connection)}: {Connection}, {nameof(Name)}: {Name}";
     }
 }

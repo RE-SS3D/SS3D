@@ -46,27 +46,25 @@ public abstract class ServerMessage : GameMessageBase
         }
 
         //	Only send to players that are currently controlled by a client
-        if (PlayerList.Instance.ContainsConnection(connection))
-        {
-            connection.Send(this, 0);
-            Logger.LogTraceFormat("SentTo {0}: {1}", Category.NetMessage, recipient.name, this);
-        }
-        else
-        {
-            Logger.LogTraceFormat("Not sending message {0} to {1}", Category.NetMessage, this, recipient.name);
-        }
+        //if (PlayerList.Instance.ContainsConnection(connection))
+        //{
+        //    connection.Send(this, 0);
+        //    Logger.LogTraceFormat("SentTo {0}: {1}", Category.NetMessage, recipient.name, this);
+        //}
+        //else
+        //{
+        //    Logger.LogTraceFormat("Not sending message {0} to {1}", Category.NetMessage, this, recipient.name);
+        //}
 
-        //Obsolete version:
-        //NetworkServer.SendToClientOfPlayer(recipient, GetMessageType(), this);
     }
 
     public void SendTo(NetworkConnection recipient)
     {
 
-        if (PlayerList.Instance.ContainsConnection(recipient))
-        {
-            recipient.Send(this, 0);
-        }
+        //if (PlayerList.Instance.ContainsConnection(recipient))
+        //{
+        //    recipient.Send(this, 0);
+        //}
     }
 
     /// <summary>
@@ -75,40 +73,37 @@ public abstract class ServerMessage : GameMessageBase
     /// </summary>
     public void SendToVisiblePlayers(Vector2 worldPosition)
     {
-        var players = PlayerList.Instance.AllPlayers;
+        //var players = PlayerList.Instance.AllPlayers;
 
-        // RaycastHit2D hit;
-        LayerMask layerMask = LayerMask.GetMask("Walls", "Door Closed");
-        for (int i = players.Count - 1; i > 0; i--)
-        {
-            if (Vector2.Distance(worldPosition,
-                    players[i].GameObject.transform.position) > 14f)
-            {
-                //Player in the list is too far away for this message, remove them:
-                players.Remove(players[i]);
-            }
-            else
-            {
-                //within range, but check if they are in another room or hiding behind a wall
-                if (Physics2D.Linecast(worldPosition,
-                    players[i].GameObject.transform.position, layerMask))
-                {
-                    //if it hit a wall remove that player
-                    players.Remove(players[i]);
-                }
-            }
-        }
+        //LayerMask layerMask = LayerMask.GetMask("Walls", "Door Closed");
+        //for (int i = players.Count - 1; i > 0; i--)
+        //{
+        //    if (Vector2.Distance(worldPosition,
+        //            players[i].GameObject.transform.position) > 14f)
+        //    {
+        //        //Player in the list is too far away for this message, remove them:
+        //        players.Remove(players[i]);
+        //    }
+        //    else
+        //    {
+        //        //within range, but check if they are in another room or hiding behind a wall
+        //        if (Physics2D.Linecast(worldPosition,
+        //            players[i].GameObject.transform.position, layerMask))
+        //        {
+        //            //if it hit a wall remove that player
+        //            players.Remove(players[i]);
+        //        }
+        //    }
+        //}
 
-        //Sends the message only to visible players:
-        foreach (ConnectedPlayer player in players)
-        {
-            if (player == null || player.Script == null || player.Script.netIdentity == null) continue;
-
-            if (PlayerList.Instance.ContainsConnection(player.Connection))
-            {
-                player.Connection.Send(this, 0);
-            }
-        }
+        ////Sends the message only to visible players:
+        //foreach (ConnectedPlayer player in players)
+        //{
+        //    if (PlayerList.Instance.ContainsConnection(player.Connection))
+        //    {
+        //        player.Connection.Send(this, 0);
+        //    }
+        //}
     }
 
     /// <summary>
@@ -117,39 +112,24 @@ public abstract class ServerMessage : GameMessageBase
     /// </summary>
     public void SendToNearbyPlayers(Vector2 worldPosition)
     {
-        var players = PlayerList.Instance.AllPlayers;
+        //var players = PlayerList.Instance.AllPlayers;
 
-        for (int i = players.Count - 1; i > 0; i--)
-        {
-            if (Vector2.Distance(worldPosition,
-                    players[i].GameObject.transform.position) > 15f)
-            {
-                //Player in the list is too far away for this message, remove them:
-                players.Remove(players[i]);
-            }
-        }
+        //for (int i = players.Count - 1; i > 0; i--)
+        //{
+        //    if (Vector2.Distance(worldPosition,
+        //            players[i].GameObject.transform.position) > 15f)
+        //    {
+        //        //Player in the list is too far away for this message, remove them:
+        //        players.Remove(players[i]);
+        //    }
+        //}
 
-        foreach (ConnectedPlayer player in players)
-        {
-            if (player.Script == null) continue;
-
-            if (PlayerList.Instance.ContainsConnection(player.Connection))
-            {
-                player.Connection.Send(this, 0);
-            }
-        }
-    }
-
-    public void SendToAdmins()
-    {
-        var admins = PlayerList.Instance.GetAllAdmins();
-
-        foreach (var admin in admins)
-        {
-            if (PlayerList.Instance.ContainsConnection(admin.Connection))
-            {
-                admin.Connection.Send(this, 0);
-            }
-        }
+        //foreach (ConnectedPlayer player in players)
+        //{
+        //    if (PlayerList.Instance.ContainsConnection(player.Connection))
+        //    {
+        //        player.Connection.Send(this, 0);
+        //    }
+        //}
     }
 }

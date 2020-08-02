@@ -14,7 +14,7 @@ public static class WaitFor
 
     static WaitFor()
     {
-        EventManager.AddHandler(Event.RoundStarted, RoundStarted);
+        EventManager.AddHandler(GlobalEvent.RoundStarted, RoundStarted);
     }
 
     private static void RoundStarted()

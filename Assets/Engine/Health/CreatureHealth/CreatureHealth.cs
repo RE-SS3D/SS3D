@@ -17,7 +17,7 @@ namespace SS3D.Engine.Health
     }
 
     /// <summary>
-    /// Event which fires when conscious state changes, provides the old state and the new state
+    /// GlobalEvent which fires when conscious state changes, provides the old state and the new state
     /// </summary>
     public class ConsciousStateEvent : UnityEvent<ConsciousState, ConsciousState>
     {
@@ -560,6 +560,14 @@ namespace SS3D.Engine.Health
         }
 
         /// <summary>
+        /// Updates the conscious state from the server via NetMsg
+        /// </summary>
+        public void UpdateClientConsciousState(ConsciousState proposedState)
+        {
+            ConsciousState = proposedState;
+        }
+
+        /// <summary>
         /// Updates the respiratory health stats from the server via NetMsg
         /// </summary>
         public void UpdateClientRespiratoryStats(bool value)
@@ -575,6 +583,14 @@ namespace SS3D.Engine.Health
         public void UpdateClientPressureStats(float value)
         {
             respiratorySystem.InternalPressure = value;
+        }
+
+        /// <summary>
+        /// Updates the blood health stats from the server via NetMsg
+        /// </summary>
+        public void UpdateClientBloodStats(int heartRate, float bloodVolume, float oxygenDamage, float toxinLevel)
+        {
+            bloodSystem.UpdateClientBloodStats(heartRate, bloodVolume, oxygenDamage, toxinLevel);
         }
 
         // <summary>

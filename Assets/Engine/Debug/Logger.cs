@@ -52,7 +52,7 @@ public static class Logger
 
         SaveLogOverrides();
         RefreshPreferences();
-        EventManager.Broadcast(Event.LogLevelAdjusted);
+        EventManager.Broadcast(GlobalEvent.LogLevelAdjusted);
     }
 
     public static void SaveLogOverrides()

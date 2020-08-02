@@ -170,7 +170,7 @@ namespace SS3D.Engine.Health
     }
 
     /// <summary>
-    /// Event fired when an object is destroyed
+    /// GlobalEvent fired when an object is destroyed
     /// </summary>
     public class DestructionEvent : UnityEvent<DestructionInfo> { }
 }

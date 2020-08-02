@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //For simple broadcasts:
-public enum Event
+public enum GlobalEvent
 {
     UpdateFov,
     PowerNetSelfCheck,
@@ -29,8 +29,8 @@ public enum Event
 public class EventManager : MonoBehaviour
 {
     // Stores the delegates that get called when an event is fired (Simple Events)
-    private static readonly Dictionary<Event, Action> eventTable
-        = new Dictionary<Event, Action>();
+    private static readonly Dictionary<GlobalEvent, Action> eventTable
+        = new Dictionary<GlobalEvent, Action>();
 
     private static EventManager eventManager;
 
@@ -55,7 +55,7 @@ public class EventManager : MonoBehaviour
 		*/
 
     // Adds a delegate to get called for a specific event
-    public static void AddHandler(Event evnt, Action action)
+    public static void AddHandler(GlobalEvent evnt, Action action)
     {
         if (!eventTable.ContainsKey(evnt))
         {
@@ -67,7 +67,7 @@ public class EventManager : MonoBehaviour
         }
     }
 
-    public static void RemoveHandler(Event evnt, Action action)
+    public static void RemoveHandler(GlobalEvent evnt, Action action)
     {
         if (eventTable[evnt] != null)
         {
@@ -80,7 +80,7 @@ public class EventManager : MonoBehaviour
     }
 
     // Fires the event
-    public static void Broadcast(Event evnt)
+    public static void Broadcast(GlobalEvent evnt)
     {
         LogEventBroadcast(evnt);
         if (eventTable.ContainsKey(evnt) && eventTable[evnt] != null)
@@ -94,34 +94,34 @@ public class EventManager : MonoBehaviour
     /// Calls the appropriate logging category for the event
     /// </summary>
     /// <param name="evnt"></param>
-    private static void LogEventBroadcast(Event evnt)
+    private static void LogEventBroadcast(GlobalEvent evnt)
     {
         string msg = "Broadcasting a " + evnt + " event";
         Category category;
 
         switch (evnt)
         {
-            case Event.ChatFocused:
-            case Event.ChatUnfocused:
-            case Event.UpdateChatChannels:
-            case Event.UpdateFov:
+            case GlobalEvent.ChatFocused:
+            case GlobalEvent.ChatUnfocused:
+            case GlobalEvent.UpdateChatChannels:
+            case GlobalEvent.UpdateFov:
                 category = Category.UI;
                 break;
-            case Event.DisableInternals:
-            case Event.EnableInternals:
+            case GlobalEvent.DisableInternals:
+            case GlobalEvent.EnableInternals:
                 category = Category.Equipment;
                 break;
-            case Event.LoggedOut:
+            case GlobalEvent.LoggedOut:
                 category = Category.Connections;
                 break;
-            case Event.PlayerDied:
+            case GlobalEvent.PlayerDied:
                 category = Category.Health;
                 break;
-            case Event.PowerNetSelfCheck:
+            case GlobalEvent.PowerNetSelfCheck:
                 category = Category.Electrical;
                 break;
-            case Event.RoundStarted:
-            case Event.RoundEnded:
+            case GlobalEvent.RoundStarted:
+            case GlobalEvent.RoundEnded:
                 category = Category.Round;
                 break;
             default:
