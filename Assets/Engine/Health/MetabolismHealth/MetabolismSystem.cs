@@ -87,6 +87,7 @@ namespace SS3D.Engine.Health
         void Start()
         {
             bloodSystem = GetComponent<BloodSystem>();
+            effects = new List<MetabolismEffect>();
         }
 
 

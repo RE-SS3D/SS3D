@@ -49,6 +49,10 @@ namespace SS3D.Engine.Health
 
         private BloodSplatType bloodSplatColor;
 
+        void Start()
+        {
+            creatureHealth = GetComponent<CreatureHealth>();
+        }
 
         //Initial setting for blood type. Server only
         [Server]

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7306624553420093141}
   - component: {fileID: 2851334903905061372}
   - component: {fileID: 9037330170583129935}
+  - component: {fileID: -4530326210429120263}
   m_Layer: 16
   m_Name: 01 Body - Human Torso
   m_TagString: Untagged
@@ -129,11 +130,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  ItemId: 
+  Name: 
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3688303657299898446}
   attachmentPoint: {fileID: 0}
+  bulkSize: 2
+  traits: []
 --- !u!114 &2851334903905061372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,6 +165,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
+--- !u!114 &-4530326210429120263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3688303657299898446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2cc7768b1b77724ab97bcf7b126b93f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxDamage: 200
+  Type: 0
+  isBleeding: 0
+  creatureHealth: {fileID: 0}
+  Severity: 0
