@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using SS3D.Engine.Atmospherics;
+using SS3D.Engine.Tiles;
+using UnityEngine;
 
 namespace SS3D.Engine.Health
 {
@@ -6,7 +9,7 @@ namespace SS3D.Engine.Health
     /// Controls the Respiratory System for this living thing
     /// Mostly managed server side and states sent to the clients
     /// </summary>
-    public class RespiratorySystem : MonoBehaviour
+    public class RespiratorySystem : NetworkBehaviour
     {
         /// <summary>
         /// 2 minutes of suffocation = 100% damage
@@ -16,12 +19,9 @@ namespace SS3D.Engine.Health
         private float suffocationTime = 0f;
         private BloodSystem bloodSystem;
         private CreatureHealth creatureHealth;
-        private Equipment equipment;
-        private ObjectBehaviour objectBehaviour;
 
         private float tickRate = 1f;
         private float tick = 0f;
-        private PlayerScript playerScript;
         private float breatheCooldown = 0;
 
         public bool IsSuffocating;
@@ -30,19 +30,19 @@ namespace SS3D.Engine.Health
 
         public bool canBreathAnywhere { get; set; }
 
+        private TileManager tileManager;
+
         void Start()
         {
             bloodSystem = GetComponent<BloodSystem>();
             creatureHealth = GetComponent<CreatureHealth>();
-            playerScript = GetComponent<PlayerScript>();
-            equipment = GetComponent<Equipment>();
-            objectBehaviour = GetComponent<ObjectBehaviour>();
+            tileManager = FindObjectOfType<TileManager>();
         }
 
         void Update()
         {
             //Server Only:
-            if (CustomNetworkManager.IsServer && !canBreathAnywhere)
+            if (isServer && !canBreathAnywhere)
             {
                 tick += Time.deltaTime;
                 if (tick >= tickRate)
@@ -57,36 +57,37 @@ namespace SS3D.Engine.Health
         {
             if (!creatureHealth.IsDead)
             {
-                Vector3Int position = objectBehaviour.AssumedWorldPositionServer().RoundToInt();
-                MetaDataNode node = MatrixManager.GetMetaDataAt(position);
+                // TODO: Get current tile from player
 
-                if (!IsEVACompatible())
-                {
-                    temperature = node.GasMix.Temperature;
-                    pressure = node.GasMix.Pressure;
-                    CheckPressureDamage();
-                }
-                else
-                {
-                    InternalPressure = 101.325f;
-                    InternalTemperature = 293.15f;
-                }
+                //TileObject currentTile = tileManager.GetPositionClosestTo()
 
-                if (creatureHealth.OverallHealth >= HealthThreshold.SoftCrit)
-                {
-                    if (Breathe(node))
-                    {
-                        AtmosManager.Update(node);
-                    }
-                }
-                else
-                {
-                    bloodSystem.OxygenDamage += 1;
-                }
+                //if (!IsEVACompatible())
+                //{
+                //    temperature = atmos.GasMix.Temperature;
+                //    pressure = atmos.GasMix.Pressure;
+                //    CheckPressureDamage();
+                //}
+                //else
+                //{
+                //    InternalPressure = 101.325f;
+                //    InternalTemperature = 293.15f;
+                //}
+
+                //if (creatureHealth.OverallHealth >= HealthThreshold.SoftCrit)
+                //{
+                //    if (Breathe(atmos))
+                //    {
+                //        AtmosManager.Update(atmos);
+                //    }
+                //}
+                //else
+                //{
+                //    bloodSystem.OxygenDamage += 1;
+                //}
             }
         }
 
-        private bool Breathe(IGasMixContainer node)
+        private bool Breathe(AtmosObject atmos)
         {
             breatheCooldown--; //not timebased, but tickbased
             if (breatheCooldown > 0)
@@ -94,116 +95,77 @@ namespace SS3D.Engine.Health
                 return false;
             }
 
-            // if no internal breathing is possible, get the from the surroundings
-            IGasMixContainer container = GetInternalGasMix() ?? node;
+            // if no internal breathing is possible, get the air from the surroundings
+            AtmosContainer container = atmos.GetAtmosContainer();
 
-            GasMix gasMix = container.GasMix;
-            GasMix breathGasMix = gasMix.RemoveVolume(AtmosConstants.BREATH_VOLUME, true);
+            //    GasMix gasMix = container.GasMix;
+            //    GasMix breathGasMix = gasMix.RemoveVolume(AtmosConstants.BREATH_VOLUME, true);
 
-            float oxygenUsed = HandleBreathing(breathGasMix);
+            //    float oxygenUsed = HandleBreathing(breathGasMix);
 
-            if (oxygenUsed > 0)
-            {
-                breathGasMix.RemoveGas(Gas.Oxygen, oxygenUsed);
-                breathGasMix.AddGas(Gas.CarbonDioxide, oxygenUsed);
-            }
+            //    if (oxygenUsed > 0)
+            //    {
+            //        breathGasMix.RemoveGas(Gas.Oxygen, oxygenUsed);
+            //        breathGasMix.AddGas(Gas.CarbonDioxide, oxygenUsed);
+            //    }
 
-            gasMix += breathGasMix;
-            container.GasMix = gasMix;
+            //    gasMix += breathGasMix;
+            //    container.GasMix = gasMix;
 
-            return oxygenUsed > 0;
+            //    return oxygenUsed > 0;
+            return true;
         }
 
-        private GasContainer GetInternalGasMix()
+        private AtmosContainer GetInternalGasMix()
         {
-            if (playerScript != null)
-            {
-
-                // Check if internals exist
-                var maskItemAttrs = playerScript.ItemStorage.GetNamedItemSlot(NamedSlot.mask).ItemAttributes;
-                bool internalsEnabled = equipment.IsInternalsEnabled;
-                if (maskItemAttrs != null && maskItemAttrs.CanConnectToTank && internalsEnabled)
-                {
-                    foreach (var gasSlot in playerScript.ItemStorage.GetGasSlots())
-                    {
-                        if (gasSlot.Item == null) continue;
-                        var gasContainer = gasSlot.Item.GetComponent<GasContainer>();
-                        if (gasContainer)
-                        {
-                            return gasContainer;
-                        }
-                    }
-                }
-            }
-
+            // TODO: Check the player inventory for internals
             return null;
         }
 
-        private float HandleBreathing(GasMix breathGasMix)
+        private float HandleBreathing(AtmosContainer breathGasMix)
         {
-            float oxygenPressure = breathGasMix.GetPressure(Gas.Oxygen);
+            float oxygenPressure = breathGasMix.GetPartialPressure(AtmosGasses.Oxygen);
 
             float oxygenUsed = 0;
 
-            if (oxygenPressure < OXYGEN_SAFE_MIN)
-            {
-                if (Random.value < 0.1)
-                {
-                    // TODO: Play gasping sound effect
-                    //Chat.AddActionMsgToChat(gameObject, "You gasp for breath", $"{gameObject.name} gasps");
-                }
+            //if (oxygenPressure < OXYGEN_SAFE_MIN)
+            //{
+            //    if (Random.value < 0.1)
+            //    {
+            //        // TODO: Play gasping sound effect
+            //        //Chat.AddActionMsgToChat(gameObject, "You gasp for breath", $"{gameObject.name} gasps");
+            //    }
 
-                if (oxygenPressure > 0)
-                {
-                    float ratio = 1 - oxygenPressure / OXYGEN_SAFE_MIN;
-                    bloodSystem.OxygenDamage += 1 * ratio;
-                    oxygenUsed = breathGasMix.GetMoles(Gas.Oxygen) * ratio;
-                }
-                else
-                {
-                    bloodSystem.OxygenDamage += 1;
-                }
-                IsSuffocating = true;
-            }
-            else
-            {
-                oxygenUsed = breathGasMix.GetMoles(Gas.Oxygen);
-                IsSuffocating = false;
-                bloodSystem.OxygenDamage -= 2.5f;
-                breatheCooldown = 4;
-            }
+            //    if (oxygenPressure > 0)
+            //    {
+            //        float ratio = 1 - oxygenPressure / OXYGEN_SAFE_MIN;
+            //        bloodSystem.OxygenDamage += 1 * ratio;
+            //        oxygenUsed = breathGasMix.GetMoles(Gas.Oxygen) * ratio;
+            //    }
+            //    else
+            //    {
+            //        bloodSystem.OxygenDamage += 1;
+            //    }
+            //    IsSuffocating = true;
+            //}
+            //else
+            //{
+            //    oxygenUsed = breathGasMix.GetMoles(Gas.Oxygen);
+            //    IsSuffocating = false;
+            //    bloodSystem.OxygenDamage -= 2.5f;
+            //    breatheCooldown = 4;
+            //}
             return oxygenUsed;
         }
 
         private void CheckPressureDamage()
         {
-            if (pressure < AtmosConstants.MINIMUM_OXYGEN_PRESSURE)
-            {
-                ApplyDamage(AtmosConstants.LOW_PRESSURE_DAMAGE, DamageType.Brute);
-            }
-            else if (pressure > AtmosConstants.HAZARD_HIGH_PRESSURE)
-            {
-                float damage = Mathf.Min(((pressure / AtmosConstants.HAZARD_HIGH_PRESSURE) - 1) * AtmosConstants.PRESSURE_DAMAGE_COEFFICIENT,
-                    AtmosConstants.MAX_HIGH_PRESSURE_DAMAGE);
-
-                ApplyDamage(damage, DamageType.Brute);
-            }
+            // TODO: Give damage to the player if the pressure is too high
         }
 
         private bool IsEVACompatible()
         {
-            if (playerScript == null)
-            {
-                return false;
-            }
-
-            ItemAttributesV2 headItem = playerScript.ItemStorage.GetNamedItemSlot(NamedSlot.head).ItemAttributes;
-            ItemAttributesV2 suitItem = playerScript.ItemStorage.GetNamedItemSlot(NamedSlot.outerwear).ItemAttributes;
-
-            if (headItem != null && suitItem != null)
-            {
-                return headItem.IsEVACapable && suitItem.IsEVACapable;
-            }
+            // TODO: Check the head and outerwear of a player for valid EVA capable equipment
 
             return false;
         }

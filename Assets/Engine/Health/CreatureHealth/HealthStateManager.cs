@@ -90,7 +90,7 @@ namespace SS3D.Engine.Health
             CheckRespiratoryHealth();
             CheckTemperature();
             CheckPressure();
-            CheckCruicialBloodHealth();
+            CheckCrucialBloodHealth();
             CheckConsciousState();
         }
 
@@ -151,7 +151,7 @@ namespace SS3D.Engine.Health
             }
         }
 
-        void CheckCruicialBloodHealth()
+        void CheckCrucialBloodHealth()
         {
             if (toxinLevelCache != creatureHealth.bloodSystem.ToxinLevel ||
                 heartRateCache != creatureHealth.bloodSystem.HeartRate)
@@ -262,7 +262,7 @@ namespace SS3D.Engine.Health
         public void ProcessClientUpdateRequest(GameObject requester)
         {
             StartCoroutine(ControlledClientUpdate(requester));
-            //	Logger.Log("Server received a request for health update from: " + requester.name + " for: " + gameObject.name);
+            Logger.Log("Server received a request for health update from: " + requester.name + " for: " + gameObject.name);
         }
 
         /// <summary>

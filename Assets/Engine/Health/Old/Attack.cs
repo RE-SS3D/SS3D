@@ -16,7 +16,7 @@ namespace SS3D.Engine.Health
     public class Attack : NetworkBehaviour
     {
         [SerializeField] private GameObject attackParticleEffect = null;
-        [SerializeField] private AttackType attackType = AttackType.Blunt;
+        [SerializeField] private AttackType attackType = AttackType.Melee;
         [SerializeField][Range(1,10)] private float damageAmount = 1f;
 
         private void Update()

@@ -15,12 +15,12 @@ namespace SS3D.Engine.Health
     /// </summary>
     public class MetabolismSystem : NetworkBehaviour
     {
-        public static int NUTRITION_LEVEL_MAX = 500;
-        public static int NUTRITION_LEVEL_STUFFED = 450;
-        public static int NUTRITION_LEVEL_NORMAL = 300;
-        public static int NUTRITION_LEVEL_HUNGRY = 200;
-        public static int NUTRITION_LEVEL_MALNOURISHED = 100;
-        public static int NUTRITION_LEVEL_STARVING = 0;
+        public static int NutritionLevelMax = 500;
+        public static int NutritionLevelStuffed = 450;
+        public static int NutritionLevelNormal = 300;
+        public static int NutritionLevelHungry = 200;
+        public static int NutritionLevelMalnourished = 100;
+        public static int NutritionLevelStarving = 0;
 
         //TODO: Maybe make this dependent on the heart rate?
         [SerializeField]
@@ -46,23 +46,24 @@ namespace SS3D.Engine.Health
             }
             set
             {
-                if (!NetworkManager.isHeadless && PlayerManager.LocalPlayer == gameObject)
-                {
-                    if (value == HungerState.Full && this.HungerState != HungerState.Full)
-                        Chat.AddExamineMsgToClient("You're stuffed!");
+                // TODO: Handle hunger messages when chat is properly implemented
+                //if (!NetworkManager.isHeadless && PlayerManager.LocalPlayer == gameObject)
+                //{
+                //    if (value == HungerState.Full && this.HungerState != HungerState.Full)
+                //        Chat.AddExamineMsgToClient("You're stuffed!");
 
-                    if (value == HungerState.Normal && this.HungerState != HungerState.Normal)
-                        Chat.AddExamineMsgToClient("You're satiated.");
+                //    if (value == HungerState.Normal && this.HungerState != HungerState.Normal)
+                //        Chat.AddExamineMsgToClient("You're satiated.");
 
-                    if (value == HungerState.Hungry && this.HungerState != HungerState.Hungry)
-                        Chat.AddExamineMsgToClient("You feel hungry.");
+                //    if (value == HungerState.Hungry && this.HungerState != HungerState.Hungry)
+                //        Chat.AddExamineMsgToClient("You feel hungry.");
 
-                    if (value == HungerState.Malnourished && this.HungerState != HungerState.Malnourished)
-                        Chat.AddWarningMsgToClient("Your stomach rumbles violently.");
+                //    if (value == HungerState.Malnourished && this.HungerState != HungerState.Malnourished)
+                //        Chat.AddWarningMsgToClient("Your stomach rumbles violently.");
 
-                    if (value == HungerState.Starving && this.HungerState != HungerState.Starving)
-                        Chat.AddWarningMsgToClient("Your malnourished body aches!");
-                }
+                //    if (value == HungerState.Starving && this.HungerState != HungerState.Starving)
+                //        Chat.AddWarningMsgToClient("Your malnourished body aches!");
+                //}
 
                 hungerState = value;
             }
@@ -79,7 +80,6 @@ namespace SS3D.Engine.Health
         public int HungerRate { get; set; } = 1;
 
         private BloodSystem bloodSystem;
-        private PlayerMove playerMove;
         private List<MetabolismEffect> effects;
         private float tick = 0;
         private bool appliedStarvingDebuff;
@@ -87,7 +87,6 @@ namespace SS3D.Engine.Health
         void Start()
         {
             bloodSystem = GetComponent<BloodSystem>();
-            playerMove = GetComponent<PlayerMove>();
         }
 
 
@@ -120,17 +119,17 @@ namespace SS3D.Engine.Health
                         effects[i] = e;
                     }
 
-                    nutritionLevel = Mathf.Clamp(nutritionLevel, 0, NUTRITION_LEVEL_MAX);
+                    nutritionLevel = Mathf.Clamp(nutritionLevel, 0, NutritionLevelMax);
 
                     HungerState oldState = this.HungerState;
 
-                    if (nutritionLevel > NUTRITION_LEVEL_STUFFED) //TODO: Make character nauseous when he's too full
+                    if (nutritionLevel > NutritionLevelStuffed) //TODO: Make character nauseous when he's too full
                         HungerState = HungerState.Full;
-                    else if (nutritionLevel > NUTRITION_LEVEL_NORMAL)
+                    else if (nutritionLevel > NutritionLevelNormal)
                         HungerState = HungerState.Normal;
-                    else if (nutritionLevel > NUTRITION_LEVEL_HUNGRY)
+                    else if (nutritionLevel > NutritionLevelHungry)
                         HungerState = HungerState.Hungry;
-                    else if (nutritionLevel > NUTRITION_LEVEL_MALNOURISHED)
+                    else if (nutritionLevel > NutritionLevelMalnourished)
                         HungerState = HungerState.Malnourished;
                     else
                         HungerState = HungerState.Starving;
@@ -158,9 +157,9 @@ namespace SS3D.Engine.Health
         /// </summary>
         private void ApplySpeedDebuff()
         {
-            playerMove.ServerChangeSpeed(
-                run: playerMove.RunSpeed - starvingRunDebuff,
-                walk: playerMove.WalkSpeed - starvingWalkDebuff);
+            // TODO: Apply debuff to the actual player
+            //playerMove.ServerChangeSpeed( run: playerMove.RunSpeed - starvingRunDebuff,
+            //    walk: playerMove.WalkSpeed - starvingWalkDebuff);
             appliedStarvingDebuff = true;
         }
 
@@ -169,9 +168,9 @@ namespace SS3D.Engine.Health
         /// </summary>
         private void RemoveSpeedDebuff()
         {
-            playerMove.ServerChangeSpeed(
-                run: playerMove.RunSpeed + starvingRunDebuff,
-                walk: playerMove.WalkSpeed + starvingWalkDebuff);
+            // TODO: Remove debuff from the actual player
+            //playerMove.ServerChangeSpeed( run: playerMove.RunSpeed + starvingRunDebuff,
+            //    walk: playerMove.WalkSpeed + starvingWalkDebuff);
             appliedStarvingDebuff = false;
         }
 

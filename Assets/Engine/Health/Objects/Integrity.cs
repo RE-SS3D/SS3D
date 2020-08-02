@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace SS3D.Engine.Health
 {
-    public class Integrity : NetworkBehaviour, IHealth
+    public class Integrity : NetworkBehaviour
     {
         /// <summary>
         /// Server-side event invoked when object integrity reaches 0 by any means and object
@@ -44,31 +44,14 @@ namespace SS3D.Engine.Health
         public float HeatResistance = 100;
 
         public float InitialIntegrity = 100f;
-
-        [SyncVar(hook = nameof(SyncOnFire))]
-        private bool onFire = false;
-        private BurningOverlay burningObjectOverlay;
-
-        //TODO: Should probably replace the burning effect with a particle effect?
-        private static GameObject SMALL_BURNING_PREFAB;
-        private static GameObject LARGE_BURNING_PREFAB;
-
-        // Damage incurred each tick while an object is on fire
-        private static float BURNING_DAMAGE = 0.08f;
-
-        private static readonly float BURN_RATE = 1f;
-        private float timeSinceLastBurn;
-
         public float integrity { get; private set; } = 100f;
         private bool destroyed = false;
-        private DamageType lastDamageType;
-        private RegisterTile registerTile;
-        private IPushable pushable;
 
-        //whether this is a large object (meaning we would use the large ash pile and large burning sprite)
+        private DamageType lastDamageType;
+
+        //whether this is a large object (meaning we would use the large ash pile)
         private bool isLarge;
 
-        public float Resistance => pushable == null ? integrity : integrity * ((int)pushable.Size / 10f);
 
         private void Awake()
         {
@@ -77,9 +60,7 @@ namespace SS3D.Engine.Health
 
         private void EnsureInit()
         {
-            pushable = GetComponent<IPushable>();
-            //this is just a guess - large items can't be picked up
-            isLarge = GetComponent<Pickupable>() == null;
+            // TODO: Add logic 
         }
 
         public override void OnStartClient()
@@ -90,11 +71,9 @@ namespace SS3D.Engine.Health
         [Server]
         private void DefaultBurnUp(DestructionInfo info)
         {
-            //just a guess - objects which can be picked up should have a smaller amount of ash
-            EffectsFactory.Ash(registerTile.WorldPosition.To2Int(), isLarge);
-            Chat.AddLocalDestroyMsgToChat(gameObject.ExpensiveName(), " burnt to ash.", gameObject.TileWorldPosition());
-            Logger.LogTraceFormat("{0} burning up, onfire is {1} (burningObject enabled {2})", Category.Health, name, this.onFire, burningObjectOverlay?.enabled);
-            Despawn.ServerSingle(gameObject);
+            // TODO: Burn effect
+
+            // TODO: Register burn in the chat
         }
 
         [Server]
@@ -102,14 +81,16 @@ namespace SS3D.Engine.Health
         {
             if (info.DamageType == DamageType.Brute)
             {
-                Chat.AddLocalDestroyMsgToChat(gameObject.ExpensiveName(), " got smashed to pieces.", gameObject.TileWorldPosition());
-                Despawn.ServerSingle(gameObject);
+                // TODO: Register destroyed object in the chat
+                
+                // TODO: Despawn the destroyed object
             }
-            //TODO: Other damage types (acid)
+            // TODO: Other damage types (acid)
             else
             {
-                Chat.AddLocalDestroyMsgToChat(gameObject.ExpensiveName(), " got destroyed.", gameObject.TileWorldPosition());
-                Despawn.ServerSingle(gameObject);
+                // TODO: Register destroyed object in the chat for other damage types
+
+                // TODO: Despawn the destroyed object
             }
         }
 
@@ -130,10 +111,6 @@ namespace SS3D.Engine.Health
             damage = Armor.GetDamage(damage, attackType);
             if (damage > 0)
             {
-                if (attackType == AttackType.Fire && !onFire && !destroyed && Resistances.Flammable)
-                {
-                    // SyncOnFire(onFire, true);
-                }
                 integrity -= damage;
                 lastDamageType = damageType;
                 CheckDestruction();
@@ -148,12 +125,6 @@ namespace SS3D.Engine.Health
             {
                 var destructInfo = new DestructionInfo(lastDamageType, this);
                 OnWillDestroyServer.Invoke(destructInfo);
-
-                if (onFire)
-                {
-                    //ensure we stop burning
-                    SyncOnFire(onFire, false);
-                }
 
                 if (destructInfo.DamageType == DamageType.Burn)
                 {
