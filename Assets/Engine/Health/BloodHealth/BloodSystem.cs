@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 
 namespace SS3D.Engine.Health
 {
-    public class BloodSystem : MonoBehaviour
+    public class BloodSystem : NetworkBehaviour
     {
         /// <summary>
         /// How much toxin is found in the blood. 0% to 100%
@@ -50,6 +51,7 @@ namespace SS3D.Engine.Health
 
 
         //Initial setting for blood type. Server only
+        [Server]
         public void SetBloodType(DNABloodType dnaBloodType)
         {
             bloodType = dnaBloodType;
@@ -58,9 +60,6 @@ namespace SS3D.Engine.Health
 
         public void Update()
         {
-            // TODO: Placeholder, replace with server check
-            bool isServer = true;
-
             // server only
             if (isServer)
             {
@@ -110,6 +109,7 @@ namespace SS3D.Engine.Health
         /// <summary>
         /// Subtract an amount of blood from the player. Server Only
         /// </summary>
+        [Server]
         public void AddBloodLoss(int amount, BodyPartBehaviour bodyPart)
         {
             if (amount <= 0)
@@ -122,6 +122,7 @@ namespace SS3D.Engine.Health
         private void TryBleed(BodyPartBehaviour bodyPart)
         {
             bodyPart.isBleeding = true;
+
             //don't start another coroutine when already bleeding
             if (!IsBleeding)
             {
@@ -132,6 +133,7 @@ namespace SS3D.Engine.Health
         /// <summary>
         /// Stops bleeding on the selected body part. The blood system continues bleeding if there's another bodypart bleeding. Server Only.
         /// </summary>
+        [Server]
         public void StopBleeding(BodyPartBehaviour bodyPart)
         {
             bodyPart.isBleeding = false;
@@ -249,9 +251,6 @@ namespace SS3D.Engine.Health
         // --------------------
         public void UpdateClientBloodStats(int heartRate, float bloodVolume, float _oxygenDamage, float _toxinLevel)
         {
-            // TODO implement server check
-            bool isServer = true;
-
             if (isServer)
             {
                 return;
@@ -262,6 +261,5 @@ namespace SS3D.Engine.Health
             OxygenDamage = _oxygenDamage;
             toxinLevel = _toxinLevel;
         }
-
     }
 }

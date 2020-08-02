@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace SS3D.Engine.Health
 {
     /// <summary>

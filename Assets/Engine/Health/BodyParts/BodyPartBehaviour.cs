@@ -2,6 +2,7 @@
 
 namespace SS3D.Engine.Health
 {
+
     public class BodyPartBehaviour : MonoBehaviour
     {
         private float bruteDamage;
@@ -17,9 +18,39 @@ namespace SS3D.Engine.Health
         public DamageSeverity Severity;
         public float OverallDamage => BruteDamage + BurnDamage;
 
-        void Start()
+        /// Randomized hit zone. 0f for totally random, 0.99f for 99% chance of provided one
+        /// <param name="aim"></param>
+        /// <param name="hitProbability">0f to 1f: chance of hitting the requested body part</param>
+        public static BodyPartType Randomize(BodyPartType aim, float hitProbability = 0.8f)
         {
+            float normalizedRange = Mathf.Clamp(hitProbability, 0f, 1f);
+            if (Random.value < (normalizedRange / 100f))
+            {
+                return aim;
+            }
 
+            // TODO: Add all limbs and put some realistic chances in
+            int t = (int)Mathf.Floor(Random.value * 50);
+            //	3/50
+            if (t <= 3)
+                return BodyPartType.Head;
+            if (t <= 10)
+                //	7/50
+                return BodyPartType.BicepsLeft;
+            if (t <= 17)
+                //	7/50
+                return BodyPartType.BicepsRight;
+            if (t <= 24)
+                //	7/50
+                return BodyPartType.LegLeft;
+            if (t <= 31)
+                //	7/50
+                return BodyPartType.LegRight;
+            if (t <= 41)
+                //	7/50
+                return BodyPartType.Torso;
+            //	9/50
+            return BodyPartType.Torso;
         }
 
         //Apply damages from here.
@@ -115,11 +146,11 @@ namespace SS3D.Engine.Health
                 Severity = DamageSeverity.Max;
             }
 
-            UpdateIcons();
+            UpdateUi();
         }
 
         // TODO: updates the health UI 
-        private void UpdateIcons()
+        private void UpdateUi()
         {
 
         }

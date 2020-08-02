@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Random = System.Random;
 
 namespace SS3D.Engine.Health
 {
@@ -25,25 +26,13 @@ namespace SS3D.Engine.Health
     [RequireComponent(typeof(HealthStateManager))]
     public abstract class CreatureHealth : NetworkBehaviour, IHealth
     {
-        private static readonly float GIB_THRESHOLD = 200f;
-        
-        //damage incurred per tick per fire stack
-        private static readonly float DAMAGE_PER_FIRE_STACK = 0.08f;
-        
-        //volume and temp of hotspot exposed by this player when they are on fire
-        private static readonly float BURNING_HOTSPOT_VOLUME = .005f;
-        private static readonly float BURNING_HOTSPOT_TEMPERATURE = 700f;
+        private static readonly float GibThreshold = 200f;
 
         /// <summary>
         /// Invoked when conscious state changes. Provides old state and new state as 1st and 2nd args.
         /// </summary>
         [NonSerialized]
         public ConsciousStateEvent OnConsciousStateChangeServer = new ConsciousStateEvent();
-
-        /// <summary>
-        /// Server side, each mob has a different one and never it never changes
-        /// </summary>
-        public int mobID { get; private set; }
 
         public float maxHealth = 100;
         public float Resistance { get; } = 50;
@@ -52,10 +41,9 @@ namespace SS3D.Engine.Health
         public bool canBreathAnywhere = false;
 
         public float OverallHealth { get; private set; } = 100;
-        public float cloningDamage;
 
         /// <summary>
-        /// Serverside, used for gibbing bodies after certain amount of damage is received afer death
+        /// Serverside, used for gibbing bodies after certain amount of damage is received after death
         /// </summary>
         private float afterDeathDamage = 0f;
 
@@ -63,7 +51,6 @@ namespace SS3D.Engine.Health
         public BloodSystem bloodSystem;
         public BrainSystem brainSystem;
         public RespiratorySystem respiratorySystem;
-
         public BloodSplatType bloodColor;
 
         /// <summary>
@@ -74,7 +61,7 @@ namespace SS3D.Engine.Health
         public List<BodyPartBehaviour> BodyParts = new List<BodyPartBehaviour>();
 
         //For meat harvest (pete etc)
-        public bool allowKnifeHarvest;
+        public bool AllowKnifeHarvest;
 
         [Header("For harvestable animals")]
         public GameObject[] butcherResults;
@@ -100,7 +87,7 @@ namespace SS3D.Engine.Health
         }
 
         // JSON string for blood types and DNA.
-        [SyncVar(hook = nameof(DNASync))] //May remove this in the future and only provide DNA info on request
+        [SyncVar(hook = nameof(DNASync))]
         private string DNABloodTypeJSON;
 
         // BloodType and DNA Data.
@@ -113,6 +100,9 @@ namespace SS3D.Engine.Health
         public bool IsCrit => ConsciousState == ConsciousState.Unconscious;
         public bool IsSoftCrit => ConsciousState == ConsciousState.BarelyConscious;
         public bool IsDead => ConsciousState == ConsciousState.Dead;
+
+        public event Action<GameObject> ApplyDamageEvent;
+        public event Action OnDeathNotifyEvent;
 
         /// <summary>
         /// Has the heart stopped.
@@ -150,8 +140,8 @@ namespace SS3D.Engine.Health
         public override void OnStartServer()
         {
             EnsureInit();
-            mobID = PlayerManager.Instance.GetMobID();
             ResetBodyParts();
+
             if (maxHealth <= 0)
             {
                 Debug.LogWarning($"Max health ({maxHealth}) set to zero/below zero!");
@@ -205,7 +195,7 @@ namespace SS3D.Engine.Health
 
             if (BodyParts.Count == 0)
             {
-                Debug.LogError($"There are no body parts to apply a health change to for {gameObject.name}");
+                Logger.LogError($"There are no body parts to apply a health change to for {gameObject.name}", Category.Health);
                 return null;
             }
 
@@ -237,7 +227,7 @@ namespace SS3D.Engine.Health
                     else
                     {
                         //If there is no default torso body part then do nothing
-                        Debug.LogError($"No torso body part found for {gameObject.name}");
+                        Logger.LogError($"No chest body part found for {gameObject.name}", Category.Health);
                         return null;
                     }
                 }
@@ -253,13 +243,13 @@ namespace SS3D.Engine.Health
             {
                 return BodyParts[searchIndex];
             }
-            //If nothing is found then try to find a chest component:
+            //If nothing is found then try to find a torso component:
             searchIndex = BodyParts.FindIndex(x => x.Type == BodyPartType.Torso);
             if (searchIndex != -1)
             {
                 return BodyParts[searchIndex];
             }
-            // else nothing:
+            // else nothing
             return null;
         }
 
@@ -275,8 +265,6 @@ namespace SS3D.Engine.Health
                 bodyPart.creatureHealth = this;
             }
         }
-
-
 
         /// <summary>
         ///  Apply Damage to the whole body of this creature. Server only
@@ -306,7 +294,7 @@ namespace SS3D.Engine.Health
         public void ApplyDamageToBodypart(GameObject damagedBy, float damage,
             AttackType attackType, DamageType damageType)
         {
-            ApplyDamageToBodypart(damagedBy, damage, attackType, damageType, BodyPartType.Torso.Randomize(0));
+            ApplyDamageToBodypart(damagedBy, damage, attackType, damageType, BodyPartBehaviour.Randomize(0));
         }
 
         /// <summary>
@@ -324,7 +312,7 @@ namespace SS3D.Engine.Health
             if (IsDead)
             {
                 afterDeathDamage += damage;
-                if (afterDeathDamage >= GIB_THRESHOLD)
+                if (afterDeathDamage >= GibThreshold)
                 {
                     Harvest();
                 }
@@ -340,23 +328,19 @@ namespace SS3D.Engine.Health
 
             var prevHealth = OverallHealth;
 
-            applyDamageEvent?.Invoke(damagedBy);
+            ApplyDamageEvent?.Invoke(damagedBy);
 
             LastDamageType = damageType;
             LastDamagedBy = damagedBy;
             bodyPartBehaviour.ReceiveDamage(damageType, damage);
             HealthBodyPartMessage.Send(gameObject, gameObject, bodyPartAim, bodyPartBehaviour.BruteDamage, bodyPartBehaviour.BurnDamage);
 
-            if (attackType == AttackType.Fire)
-            {
-                // SyncFireStacks(fireStacks, fireStacks + 1);
-            }
 
             //For special effects spawning like blood:
             DetermineDamageEffects(damageType);
 
-            // Debug.LogWarning("{3} received {0} {4} damage from {6} aimed for {5}. Health: {1}->{2}", 
-            //     damage, prevHealth, OverallHealth, gameObject.name, damageType, bodyPartAim, damagedBy);
+            Logger.LogTraceFormat("{3} received {0} {4} damage from {6} aimed for {5}. Health: {1}->{2}", Category.Health,
+                damage, prevHealth, OverallHealth, gameObject.name, damageType, bodyPartAim, damagedBy);
         }
 
         /// <summary>
@@ -383,10 +367,6 @@ namespace SS3D.Engine.Health
                 healAmt, prevHealth, OverallHealth, gameObject.name, damageTypeToHeal, bodyPartAim, healingItem);
         }
 
-        public void OnExposed(FireExposure exposure)
-        {
-            ApplyDamage(null, 1, AttackType.Fire, DamageType.Burn);
-        }
 
         /// ---------------------------
         /// UPDATE LOOP
@@ -400,20 +380,6 @@ namespace SS3D.Engine.Health
                 if (tick > tickRate)
                 {
                     tick = 0f;
-                    //if (fireStacks > 0)
-                    //{
-                    //    //TODO: Burn clothes (see species.dm handle_fire)
-                    //    ApplyDamageToBodypart(null, fireStacks * DAMAGE_PER_FIRE_STACK, AttackType.Internal, DamageType.Burn);
-                    //    //gradually deplete fire stacks
-                    //    SyncFireStacks(fireStacks, fireStacks - 0.1f);
-                    //    //instantly stop burning if there's no oxygen at this location
-                    //    MetaDataNode node = registerTile.Matrix.MetaDataLayer.Get(registerTile.LocalPositionClient);
-                    //    if (node.GasMix.GetMoles(Gas.Oxygen) < 1)
-                    //    {
-                    //        SyncFireStacks(fireStacks, 0);
-                    //    }
-                    //    registerTile.Matrix.ReactionManager.ExposeHotspotWorldPosition(gameObject.TileWorldPosition(), BURNING_HOTSPOT_TEMPERATURE, BURNING_HOTSPOT_VOLUME);
-                    //}
 
                     CalculateOverallHealth();
                     CheckHealthAndUpdateConsciousState();
@@ -454,7 +420,6 @@ namespace SS3D.Engine.Health
             newHealth -= CalculateOverallBodyPartDamage();
             newHealth -= CalculateOverallBloodLossDamage();
             newHealth -= bloodSystem.OxygenDamage;
-            newHealth -= cloningDamage;
             OverallHealth = newHealth;
         }
 
@@ -494,9 +459,9 @@ namespace SS3D.Engine.Health
         {
             float maxBloodDmg = Mathf.Abs(HealthThreshold.Dead) + maxHealth;
             float bloodDmg = 0f;
-            if (bloodSystem.BloodLevel < (int)BloodVolume.SAFE)
+            if (bloodSystem.BloodLevel < (int)BloodVolume.Safe)
             {
-                bloodDmg = Mathf.Lerp(0f, maxBloodDmg, 1f - (bloodSystem.BloodLevel / (float)BloodVolume.NORMAL));
+                bloodDmg = Mathf.Lerp(0f, maxBloodDmg, 1f - (bloodSystem.BloodLevel / (float)BloodVolume.Normal));
             }
 
             if (bloodSystem.ToxinLevel > 1f)
@@ -523,9 +488,6 @@ namespace SS3D.Engine.Health
             ConsciousState = ConsciousState.Dead;
             OnDeathActions();
             bloodSystem.StopBleedingAll();
-            //stop burning
-            //TODO: When clothes/limb burning is implemented, probably should keep burning until clothes are burned up
-            //SyncFireStacks(fireStacks, 0);
         }
 
         private void Crit(bool allowCrawl = false)
@@ -558,7 +520,7 @@ namespace SS3D.Engine.Health
         {
             if (ConsciousState != ConsciousState.Conscious && bloodSystem.OxygenDamage < HealthThreshold.OxygenPassOut && OverallHealth > HealthThreshold.SoftCrit)
             {
-                //Logger.LogFormat("{0}, back on your feet!", Category.Health, gameObject.name);
+                Logger.LogFormat("{0}, back on your feet!", Category.Health, gameObject.name);
                 Uncrit();
                 return;
             }
@@ -607,12 +569,12 @@ namespace SS3D.Engine.Health
 
         public void UpdateClientTemperatureStats(float value)
         {
-            respiratorySystem.temperature = value;
+            respiratorySystem.InternalTemperature = value;
         }
 
         public void UpdateClientPressureStats(float value)
         {
-            respiratorySystem.pressure = value;
+            respiratorySystem.InternalPressure = value;
         }
 
         // <summary>
@@ -634,8 +596,7 @@ namespace SS3D.Engine.Health
             var bodyPart = FindBodyPart(bodyPartType);
             if (bodyPart != null)
             {
-                //	Logger.Log($"Update stats for {gameObject.name} body part {bodyPartType.ToString()} BruteDmg: {bruteDamage} BurnDamage: {burnDamage}", Category.Health);
-
+                Logger.Log($"Update stats for {gameObject.name} body part {bodyPartType.ToString()} BruteDmg: {bruteDamage} BurnDamage: {burnDamage}", Category.Health);
                 bodyPart.UpdateClientBodyPartStat(bruteDamage, burnDamage);
             }
         }
@@ -649,7 +610,7 @@ namespace SS3D.Engine.Health
         {
             foreach (GameObject harvestPrefab in butcherResults)
             {
-                Spawn.ServerPrefab(harvestPrefab, transform.position, parent: transform.parent);
+                // Spawn.ServerPrefab(harvestPrefab, transform.position, parent: transform.parent);
             }
 
             Gib();
@@ -658,11 +619,7 @@ namespace SS3D.Engine.Health
         [Server]
         protected virtual void Gib()
         {
-            EffectsFactory.BloodSplat(transform.position, BloodSplatSize.large, bloodColor);
-            //todo: actual gibs
-
-            //never destroy players!
-            Despawn.ServerSingle(gameObject);
+            // TODO: Implement gib
         }
 
 

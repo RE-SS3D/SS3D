@@ -1,20 +1,20 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 
 namespace SS3D.Engine.Health
 {
     /// <summary>
-    /// Handles the Brain System for this living entity
+    /// Handles the Brain System for this creature
     /// Updated Server Side and state is sent to clients
     /// Holds the brain for this entity
     /// </summary>
-    public class BrainSystem : MonoBehaviour
+    public class BrainSystem : NetworkBehaviour
     {
-        //The brain! Only used on the server
+        //The brain, Only used on the server
         private Brain brain;
         private BloodSystem bloodSystem;
         private RespiratorySystem respiratorySystem;
         private CreatureHealth creatureHealth;
-        private PlayerScript playerScript; //null if it is an animal
 
         /// <summary>
         /// Is this body just a husk (missing brain)
@@ -41,21 +41,16 @@ namespace SS3D.Engine.Health
 
         void InitSystem()
         {
-            playerScript = GetComponent<PlayerScript>();
             bloodSystem = GetComponent<BloodSystem>();
             respiratorySystem = GetComponent<RespiratorySystem>();
             creatureHealth = GetComponent<CreatureHealth>();
 
             //Server only
-            if (CustomNetworkManager.Instance._isServer)
+            if (isServer)
             {
                 //Spawn a brain and connect the brain to this living entity
                 brain = new Brain();
                 brain.ConnectBrainToBody(gameObject);
-                if (playerScript != null)
-                {
-                    //TODO: See https://github.com/unitystation/unitystation/issues/1429
-                }
                 init = true;
             }
         }
@@ -67,7 +62,7 @@ namespace SS3D.Engine.Health
                 return;
             }
             //Server Only:
-            if (CustomNetworkManager.Instance._isServer)
+            if (isServer)
             {
                 tick += Time.deltaTime;
                 if (tick >= tickRate)
@@ -75,7 +70,6 @@ namespace SS3D.Engine.Health
                     tick = 0f;
                     CheckOverallDamage();
                 }
-
             }
         }
 
@@ -100,7 +94,7 @@ namespace SS3D.Engine.Health
         /// </summary>
         public void UpdateClientBrainStats(bool isHusk, int brainDmgAmt)
         {
-            if (CustomNetworkManager.Instance._isServer)
+            if (isServer)
             {
                 return;
             }

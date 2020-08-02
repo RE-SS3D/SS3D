@@ -6,7 +6,7 @@ using UnityEngine;
 namespace SS3D.Engine.Health
 {
     /// <summary>
-    /// Represents brain data for a living entity
+    /// Represents brain data for a creature
     /// Use this only on the server, all brain fields on client 
     /// will be empty
     /// </summary>
@@ -37,7 +37,6 @@ namespace SS3D.Engine.Health
 
         /// <summary>
         /// Create a new brain and randomly set its GUID
-        /// Remember to call ConnectToBody when instantiated
         /// </summary>
         public Brain()
         {
@@ -46,7 +45,7 @@ namespace SS3D.Engine.Health
         }
 
         /// <summary>
-        /// Call this when you need to connect a brain to a bodies brain system
+        /// Call this when you need to connect a brain to a body
         /// </summary>
         /// <param name="entity"> The root game object of the player / animal / borg </param>
         public void ConnectBrainToBody(GameObject entity)

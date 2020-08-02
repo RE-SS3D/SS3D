@@ -2,7 +2,7 @@
 {
     public enum BloodVolume
     {
-        Maxium = 2000,
+        Maximum = 2000,
         SlimeSplit = 1120,
         Normal = 560,
         Safe = 475,
