@@ -105,6 +105,7 @@ namespace SS3D.Engine.Health
 
         // BloodType and DNA Data.
         private DNABloodType DNABloodType;
+
         private float tickRate = 1f;
         private float tick = 0;
         private ConsciousState consciousState;
@@ -235,7 +236,7 @@ namespace SS3D.Engine.Health
                     }
                     else
                     {
-                        //If there is no default chest body part then do nothing
+                        //If there is no default torso body part then do nothing
                         Debug.LogError($"No torso body part found for {gameObject.name}");
                         return null;
                     }
@@ -278,7 +279,7 @@ namespace SS3D.Engine.Health
 
 
         /// <summary>
-        ///  Apply Damage to the whole body of this Living thing. Server only
+        ///  Apply Damage to the whole body of this creature. Server only
         /// </summary>
         /// <param name="damagedBy">The player or object that caused the damage. Null if there is none</param>
         /// <param name="damage">Damage Amount. will be distributed evenly across all bodyparts</param>
@@ -295,7 +296,7 @@ namespace SS3D.Engine.Health
         }
 
         /// <summary>
-        ///  Apply Damage to random bodypart of the Living thing. Server only
+        ///  Apply Damage to random bodypart of the creature. Server only
         /// </summary>
         /// <param name="damagedBy">The player or object that caused the damage. Null if there is none</param>
         /// <param name="damage">Damage Amount</param>
@@ -305,11 +306,11 @@ namespace SS3D.Engine.Health
         public void ApplyDamageToBodypart(GameObject damagedBy, float damage,
             AttackType attackType, DamageType damageType)
         {
-            ApplyDamageToBodypart(damagedBy, damage, attackType, damageType, BodyPartType.Chest.Randomize(0));
+            ApplyDamageToBodypart(damagedBy, damage, attackType, damageType, BodyPartType.Torso.Randomize(0));
         }
 
         /// <summary>
-        ///  Apply Damage to the Living thing. Server only
+        ///  Apply Damage to the creature. Server only
         /// </summary>
         /// <param name="damagedBy">The player or object that caused the damage. Null if there is none</param>
         /// <param name="damage">Damage Amount</param>
@@ -325,7 +326,7 @@ namespace SS3D.Engine.Health
                 afterDeathDamage += damage;
                 if (afterDeathDamage >= GIB_THRESHOLD)
                 {
-                    Harvest(); //Gib() instead when fancy gibs are in
+                    Harvest();
                 }
             }
 
@@ -335,7 +336,7 @@ namespace SS3D.Engine.Health
                 return;
             }
 
-            //TODO: determine and apply armor protection
+            // TODO: determine and apply armor protection
 
             var prevHealth = OverallHealth;
 
@@ -425,7 +426,7 @@ namespace SS3D.Engine.Health
         /// ---------------------------
 
         /// <Summary>
-        /// Used to determine any special effects spawning cased by a damage type
+        /// Used to determine any special effects spawning caused by a damage type
         /// Server only
         /// </Summary>
         [Server]

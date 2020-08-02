@@ -41,7 +41,7 @@ namespace SS3D.Engine.Health
         private CreatureHealth creatureHealth;
         private DNABloodType bloodType;
         private readonly float bleedRate = 2f;
-        public float BloodLevel = (int)BloodVolume.NORMAL;
+        public float BloodLevel = (int)BloodVolume.Normal;
         public bool IsBleeding { get; private set; }
         private float tickRate = 1f;
         private float tick = 0f;
@@ -189,7 +189,7 @@ namespace SS3D.Engine.Health
         /// </summary>
         private void RestoreBlood()
         {
-            BloodLevel = (int)BloodVolume.NORMAL;
+            BloodLevel = (int)BloodVolume.Normal;
         }
 
         private static float BleedFactor(DamageType damageType)

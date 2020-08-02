@@ -2,7 +2,6 @@ namespace SS3D.Engine.Health
 {
     /// <summary>
     /// Used to reference the correct body part when severing them.
-    /// If values here are changed, GameObjects using the BodyPart and Body components may need to be updated.
     /// </summary>
     public enum BodyPartType
     {
