@@ -29,5 +29,12 @@ namespace SS3D.Engine.Examine
         {
             return Text;
         }
+		
+        public virtual string GetName(GameObject examinator)
+        {
+            return gameObject.name;
+        }		
+		
+		
     }
 }
