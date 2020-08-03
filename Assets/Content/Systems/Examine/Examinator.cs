@@ -193,7 +193,8 @@ namespace SS3D.Content.Systems.Examine
             {
                 if (examinable.CanExamine(go))
                 {
-                    builder.AppendLine(examinable.GetDescription(go));
+                    builder.AppendLine("<b>" + examinable.GetName(go) + "</b>");
+					builder.AppendLine(examinable.GetDescription(go));
                 }
             }
 
