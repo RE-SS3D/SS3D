@@ -12,7 +12,6 @@ namespace SS3D.Content.Furniture.Storage
     {
         public bool OnlyStoreWhenOpen = false;
         public float MaxDistance = 5f;
-        private Animator animator;
 
         [SerializeField] private Sprite viewContainerIcon;
 
