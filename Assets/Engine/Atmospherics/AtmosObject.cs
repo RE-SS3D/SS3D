@@ -107,6 +107,15 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
+        public void RemoveGas(AtmosGasses gas, float amount)
+        {
+            if (state != AtmosStates.Blocked)
+            {
+                atmosContainer.RemoveGas(gas, amount);
+                state = AtmosStates.Active;
+            }
+        }
+
         public void SetGasses(float[] amounts)
         {
             atmosContainer.SetGasses(amounts);
@@ -161,7 +170,7 @@ namespace SS3D.Engine.Atmospherics
 
         public bool IsBreathable()
         {
-            return (GetPartialPressure(AtmosGasses.Oxygen) >= 16f && GetPartialPressure(AtmosGasses.CarbonDioxide) < 8f);
+            return (GetPartialPressure(AtmosGasses.Oxygen) >= Gas.minOxygenPressureBreathing && GetPartialPressure(AtmosGasses.CarbonDioxide) < Gas.maxCarbonDioxideBreathing);
         }
 
         public AtmosContainer GetAtmosContainer()

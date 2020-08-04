@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using SS3D.Content.Creatures.Human;
 using UnityEngine;
 
 namespace SS3D.Engine.Health
@@ -53,7 +54,10 @@ namespace SS3D.Engine.Health
         /// </summary>
         protected override void OnDeathActions()
         {
+            HumanRagdoll ragdoll = GetComponent<HumanRagdoll>();
+            ragdoll.KnockDown(100); // We will just knockdown the player for 100 seconds now
 
+            Debug.Log("A player died");
         }
 
         [Server]

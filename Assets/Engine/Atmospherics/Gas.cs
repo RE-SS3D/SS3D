@@ -55,5 +55,17 @@ namespace SS3D.Engine.Atmospherics
         public const float minimumWind = 1f;        // Minimum wind required to move items
 
         public static int numOfGases = Enum.GetNames(typeof(AtmosStates)).Length;
+
+        public const float minOxygenPressureBreathing = 16f;
+        public const float maxCarbonDioxideBreathing = 8f;
+
+        public const float HazardHighPressure = 550;
+        public const float WarningHighPressure = 325;
+        public const float WarningLowPressure = 50;
+        public const float HazardLowPressure = 20;
+
+        public const float LowPressureDamage = 4;
+        public const float HighPressureDamage = 4;
+        public const float PressureDamageCoefficient = 4;
     }
 }

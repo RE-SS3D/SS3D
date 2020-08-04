@@ -57,33 +57,29 @@ namespace SS3D.Engine.Health
         {
             if (!creatureHealth.IsDead)
             {
-                // TODO: Get current tile from player
+                TileObject tile = tileManager.GetTile(tileManager.GetPositionClosestTo(this.transform.position));
+                AtmosObject atmos = tile.atmos;
 
-                //TileObject currentTile = tileManager.GetPositionClosestTo()
+                if (!IsEVACompatible())
+                {
+                    InternalTemperature = atmos.GetAtmosContainer().GetTemperature();
+                    InternalPressure = atmos.GetAtmosContainer().GetPressure();
+                    CheckPressureDamage();
+                }
+                else
+                {
+                    InternalPressure = 101.325f;
+                    InternalTemperature = 293.15f;
+                }
 
-                //if (!IsEVACompatible())
-                //{
-                //    temperature = atmos.GasMix.Temperature;
-                //    pressure = atmos.GasMix.Pressure;
-                //    CheckPressureDamage();
-                //}
-                //else
-                //{
-                //    InternalPressure = 101.325f;
-                //    InternalTemperature = 293.15f;
-                //}
-
-                //if (creatureHealth.OverallHealth >= HealthThreshold.SoftCrit)
-                //{
-                //    if (Breathe(atmos))
-                //    {
-                //        AtmosManager.Update(atmos);
-                //    }
-                //}
-                //else
-                //{
-                //    bloodSystem.OxygenDamage += 1;
-                //}
+                if (creatureHealth.OverallHealth >= HealthThreshold.SoftCrit)
+                {
+                    Breathe(atmos);
+                }
+                else
+                {
+                    bloodSystem.OxygenDamage += 1;
+                }
             }
         }
 
@@ -95,25 +91,16 @@ namespace SS3D.Engine.Health
                 return false;
             }
 
-            // if no internal breathing is possible, get the air from the surroundings
-            AtmosContainer container = atmos.GetAtmosContainer();
+            AtmosContainer breathGasMix = atmos.GetAtmosContainer();
+            float oxygenUsed = HandleBreathing(breathGasMix, atmos.IsBreathable());
 
-            //    GasMix gasMix = container.GasMix;
-            //    GasMix breathGasMix = gasMix.RemoveVolume(AtmosConstants.BREATH_VOLUME, true);
+            if (oxygenUsed > 0)
+            {
+                atmos.RemoveGas(AtmosGasses.Oxygen, oxygenUsed);
+                atmos.AddGas(AtmosGasses.CarbonDioxide, oxygenUsed);
+            }
 
-            //    float oxygenUsed = HandleBreathing(breathGasMix);
-
-            //    if (oxygenUsed > 0)
-            //    {
-            //        breathGasMix.RemoveGas(Gas.Oxygen, oxygenUsed);
-            //        breathGasMix.AddGas(Gas.CarbonDioxide, oxygenUsed);
-            //    }
-
-            //    gasMix += breathGasMix;
-            //    container.GasMix = gasMix;
-
-            //    return oxygenUsed > 0;
-            return true;
+            return oxygenUsed > 0;
         }
 
         private AtmosContainer GetInternalGasMix()
@@ -122,45 +109,56 @@ namespace SS3D.Engine.Health
             return null;
         }
 
-        private float HandleBreathing(AtmosContainer breathGasMix)
+        private float HandleBreathing(AtmosContainer breathGasMix, bool isBreathable)
         {
+            // Human air consumption is 0.016 moles of oxygen per minute at rest
             float oxygenPressure = breathGasMix.GetPartialPressure(AtmosGasses.Oxygen);
+            float consumption = 0.016f * (bloodSystem.HeartRate / 55f);
+            float oxygenUsed = consumption * (tickRate / 60f); // Consumption per tick
 
-            float oxygenUsed = 0;
+            if (!isBreathable)
+            {
+                if (Random.value < 0.1)
+                {
+                    // TODO: Play gasping sound effect
+                    //Chat.AddActionMsgToChat(gameObject, "You gasp for breath", $"{gameObject.name} gasps");
+                }
 
-            //if (oxygenPressure < OXYGEN_SAFE_MIN)
-            //{
-            //    if (Random.value < 0.1)
-            //    {
-            //        // TODO: Play gasping sound effect
-            //        //Chat.AddActionMsgToChat(gameObject, "You gasp for breath", $"{gameObject.name} gasps");
-            //    }
-
-            //    if (oxygenPressure > 0)
-            //    {
-            //        float ratio = 1 - oxygenPressure / OXYGEN_SAFE_MIN;
-            //        bloodSystem.OxygenDamage += 1 * ratio;
-            //        oxygenUsed = breathGasMix.GetMoles(Gas.Oxygen) * ratio;
-            //    }
-            //    else
-            //    {
-            //        bloodSystem.OxygenDamage += 1;
-            //    }
-            //    IsSuffocating = true;
-            //}
-            //else
-            //{
-            //    oxygenUsed = breathGasMix.GetMoles(Gas.Oxygen);
-            //    IsSuffocating = false;
-            //    bloodSystem.OxygenDamage -= 2.5f;
-            //    breatheCooldown = 4;
-            //}
+                if (oxygenPressure > 0 && oxygenPressure < Gas.minOxygenPressureBreathing)
+                {
+                    float ratio = 1 - oxygenPressure / Gas.minOxygenPressureBreathing;
+                    bloodSystem.OxygenDamage += 1 * ratio;
+                    oxygenUsed = breathGasMix.GetGas(AtmosGasses.Oxygen) * ratio;
+                }
+                else
+                {
+                    bloodSystem.OxygenDamage += 1;
+                }
+                IsSuffocating = true;
+            }
+            else
+            {
+                IsSuffocating = false;
+                bloodSystem.OxygenDamage -= 2.5f;
+                breatheCooldown = 4;
+            }
             return oxygenUsed;
         }
 
         private void CheckPressureDamage()
         {
-            // TODO: Give damage to the player if the pressure is too high
+            // Give damage to the creature if the pressure is too high or too low
+            if (InternalPressure < Gas.minOxygenPressureBreathing)
+            {
+                ApplyDamage(Gas.LowPressureDamage, DamageType.Brute);
+            }
+            else if (InternalPressure > Gas.HazardHighPressure)
+            {
+                float damage = Mathf.Min(((InternalPressure / Gas.HazardHighPressure) - 1) * Gas.PressureDamageCoefficient,
+                    Gas.HighPressureDamage);
+
+                ApplyDamage(damage, DamageType.Brute);
+            }
         }
 
         private bool IsEVACompatible()
