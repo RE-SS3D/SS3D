@@ -121,6 +121,12 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         public void Destroy()
         {
+            if (container != null)
+            {
+                container.RemoveItem(gameObject);
+                container = null;
+            }
+            
             if (isServer)
             {
                 NetworkServer.Destroy(gameObject);

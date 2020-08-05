@@ -191,11 +191,24 @@ namespace SS3D.Engine.Substances
                 moles = totalMoles;
             }
 
+            if (moles <= 0)
+            {
+                return;
+            }
+
             for (var i = 0; i < Substances.Count; i++)
             {
                 SubstanceEntry entry = Substances[i];
                 entry.Moles -= entry.Moles / totalMoles * moles;
-                Substances[i] = entry;
+                if (entry.Moles <= 0.0001)
+                {
+                    Substances.RemoveAt(i);
+                    i--;
+                }
+                else
+                {
+                    Substances[i] = entry;
+                }
             }
         }
 

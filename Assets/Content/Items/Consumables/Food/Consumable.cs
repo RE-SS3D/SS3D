@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,53 +57,43 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
         if (target == null) target = origin;
         audio = target.transform.GetComponent<AudioSource>();
 
-        if (!audio.isPlaying && content.CurrentVolume > 0)
+        if (!audio.isPlaying && content.TotalMoles > 0)
         {
             // Gets player's audio source
             audio = target.GetComponentInChildren<AudioSource>();
-            
+
             // Randomly select the audio clip and the pitch
-            audio.pitch = Random.Range(0.7f,1.5f);
+            audio.pitch = Random.Range(0.7f, 1.5f);
             int audioClip = Random.Range(0, sounds.Length);
             AudioClip sound = sounds[audioClip];
-            
+
             // Plays the clip in the client and server
             audio.PlayOneShot(sound, audio.pitch);
             RpcPlayEatingSound(audio.pitch, audioClip);
-            
-            Item itemInHand = origin.GetComponentInChildren<Hands>().GetItemInHand();
-            
-            // Does the portion is in the last one? Does it leaves trash? 
-            if (content.CurrentVolume == 1 && trashPrefab != null )
-            {
-                Item trash = Instantiate(trashPrefab, transform.position, transform.rotation).GetComponent<Item>();
-                
-                // Spawn the trash in the server
-                NetworkServer.Spawn(trash.gameObject);
-                trash.GenerateNewIcon();
 
-                if (itemInHand == null)
+
+            // Check if the item is fully consumed
+            if (content.TotalMoles - contentPerUse <= 0.001)
+            {
+                if (trashPrefab != null)
                 {
-                    // Destroys the item in the hand,  it's all networked
+                    Item trash = Instantiate(trashPrefab, transform.position, transform.rotation).GetComponent<Item>();
+
+                    // Spawn the trash in the server
+                    NetworkServer.Spawn(trash.gameObject);
+                    trash.GenerateNewIcon();
+
+                    // Replaces the item with trash
+                    ItemHelpers.ReplaceItem(item, trash);
+                }
+                else if (destroyObject)
+                {
                     item.Destroy();
                 }
-                else
-                {
-                    // Replaces the item in the hand for the trash instance, it's all networked
-                    ItemHelpers.ReplaceItem(itemInHand, trash);
-                }
             }
-            // Last one? Should it destroy the object?
-            if (content.CurrentVolume - contentPerUse <= 0 && destroyObject)
-            {
-                item.Destroy();
-            }
-            // Not last one?
-            else
-            {
-                content.RemoveMoles(contentPerUse);
-                Debug.Log(target.name + " consumed " + transform.name);
-            }
+            
+            // Remove contents
+            content.RemoveMoles(contentPerUse);
         }
     }
 
@@ -140,6 +130,12 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
 
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
+            // Range check
+            if (!InteractionExtensions.RangeCheck(interactionEvent))
+            {
+                return false;
+            }
+            
             // easy access to shit
             GameObject source = interactionEvent.Source.GetComponentInTree<Creature>().gameObject;
             GameObject target = interactionEvent.Target?.GetComponent<Transform>().gameObject;
@@ -148,8 +144,6 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
             Consumable itemInHand = source.GetComponentInChildren<Hands>().GetItemInHand()?.GetComponent<Consumable>();
             Creature creature = source.GetComponent<Creature>();
             Creature targetCreature = target?.GetComponent<Creature>();
-
-            Debug.Log("source:  " + source.name + " target: " + target?.name + " item: " + itemInHand?.gameObject.name);
 
             // if there's no targeted creature and no item in hand
             if (targetCreature == null && itemInHand == null)
@@ -174,14 +168,13 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
                 Verb = "Feed";
                 Delay = itemInHand.feedTime;
             }
-
-            // Range check
-            if (!InteractionExtensions.RangeCheck(interactionEvent))
+            
+            // Consumable checks (is playing audio, is empty)
+            if (itemInHand.audio.isPlaying || itemInHand.content.TotalMoles <= 0)
             {
-                // Consumable checks (is playing audio, is empty)
-                if (!itemInHand.audio.isPlaying && itemInHand.content.CurrentVolume > 0)
-                    return false;
+                return false;
             }
+                
 
             return true;
         }       
@@ -195,9 +188,7 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
             GameObject source = interactionEvent.Source?.GetComponentInTree<Creature>().gameObject;
             GameObject target = interactionEvent.Target.GetComponent<Transform>().gameObject;            
             Consumable itemInHand = source?.GetComponentInChildren<Hands>().GetItemInHand()?.GetComponent<Consumable>();
-            
-            //Debug.Log("source:  " + source.name + " target: " + target?.name + " item: " + itemInHand?.gameObject.name);
-			
+
             // Item in hand and interacting with origin
             if (target == null) 
             {

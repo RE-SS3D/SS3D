@@ -12,12 +12,12 @@ GameObject:
   - component: {fileID: 6102422768218808755}
   - component: {fileID: 6303733993938204412}
   - component: {fileID: 6650144901923549122}
+  - component: {fileID: 1155936791591065296}
   - component: {fileID: 3233781620974244719}
+  - component: {fileID: 146116797563218815}
   - component: {fileID: 7689635437763503072}
   - component: {fileID: 448349732004621884}
-  - component: {fileID: 1240913746253889284}
   - component: {fileID: 2949647390327175656}
-  - component: {fileID: 146116797563218815}
   m_Layer: 16
   m_Name: banana peel
   m_TagString: Untagged
@@ -103,6 +103,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &1155936791591065296
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5367923578081395378}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 3890010298973275403, guid: e40e3f4ef919bad45a7c34e8bf6473eb, type: 3}
 --- !u!54 &3233781620974244719
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -119,6 +133,24 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &146116797563218815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5367923578081395378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  clientAuthority: 0
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01
 --- !u!114 &7689635437763503072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,7 +167,7 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: banana_peel
   Name: Banana Peel
-  Volume: 10
+  Volume: 7
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5367923578081395378}
@@ -158,20 +190,6 @@ MonoBehaviour:
 
     Take care not to slip.'
   MaxDistance: 0
---- !u!64 &1240913746253889284
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5367923578081395378}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 3890010298973275403, guid: e40e3f4ef919bad45a7c34e8bf6473eb, type: 3}
 --- !u!114 &2949647390327175656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,24 +204,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
---- !u!114 &146116797563218815
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5367923578081395378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  knockdownDuration: 3
+  knockdownPause: 1
 --- !u!1 &8560019361223259992
 GameObject:
   m_ObjectHideFlags: 0
