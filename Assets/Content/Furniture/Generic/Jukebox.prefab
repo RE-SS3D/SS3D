@@ -146,9 +146,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: '<b>Jukebox</b>
-
-    Plays sick beats.'
+  DisplayName: Jukebox
+  Text: Plays sick beats.
   MaxDistance: 0
 --- !u!114 &2780048927197938333
 MonoBehaviour:

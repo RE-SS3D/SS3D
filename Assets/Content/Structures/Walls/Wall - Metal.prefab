@@ -236,7 +236,7 @@ GameObject:
   - component: {fileID: 8185897957132118111}
   - component: {fileID: -6476499872734153616}
   m_Layer: 0
-  m_Name: BasicWall
+  m_Name: Wall - Metal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -392,7 +392,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: <b>Wall</b>
+  DisplayName: Wall
+  Text: 
   MaxDistance: 0
 --- !u!1 &3720934538700132716
 GameObject:

@@ -453,9 +453,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: '<b>Goao</b>
-
-    The naked man.'
+  DisplayName: Goao
+  Text: The naked man.
   MaxDistance: 0
 --- !u!114 &340761490495231774
 MonoBehaviour:

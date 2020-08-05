@@ -258,6 +258,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Volume: 1000
   Temperature: 2
+  Locked: 0
   substances: []
 --- !u!114 &1176681601152780847
 MonoBehaviour:
@@ -271,7 +272,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: <b>Cryotube</b>
+  DisplayName: Cryotube
+  Text: 
   MaxDistance: 0
 --- !u!1 &5625392702527621547
 GameObject:

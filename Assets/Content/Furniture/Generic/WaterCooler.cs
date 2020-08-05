@@ -47,7 +47,7 @@ namespace SS3D.Content.Furniture.Generic
 		
         public virtual string GetName(GameObject examinator)
         {
-            return gameObject.name;
+            return "";
         }		
     }
 }

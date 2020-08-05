@@ -193,8 +193,19 @@ namespace SS3D.Content.Systems.Examine
             {
                 if (examinable.CanExamine(go))
                 {
-                    builder.AppendLine("<b>" + examinable.GetName(go) + "</b>");
-					builder.AppendLine(examinable.GetDescription(go));
+					
+					string displayName = examinable.GetName(go);
+					string displayDesc = examinable.GetDescription(go);
+					
+					// Prevent blank lines being appended (relevant where a GameObject has multiple components implementing iExaminable.
+					// (in this case, make displayName blank in all but one of them. For example, see Water Cooler prefab)
+					if (displayName != ""){
+						builder.AppendLine("<b>" + displayName + "</b>");
+					}
+                    if (displayDesc != ""){
+						builder.AppendLine(displayDesc);
+					}
+					
                 }
             }
 

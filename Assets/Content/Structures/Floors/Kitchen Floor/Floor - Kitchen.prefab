@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3989804833102372943}
   - component: {fileID: -1645010173133357927}
   m_Layer: 0
-  m_Name: KitchenFloor
+  m_Name: Floor - Kitchen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -106,5 +106,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: <b>Kitchen Floor</b>
+  DisplayName: Kitchen Floor
+  Text: 
   MaxDistance: 0

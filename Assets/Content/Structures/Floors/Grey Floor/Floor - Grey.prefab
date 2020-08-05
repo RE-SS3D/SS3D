@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1398198900295277428}
   - component: {fileID: -8794324230095091808}
   m_Layer: 0
-  m_Name: GreyFloor
+  m_Name: Floor - Grey
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -106,5 +106,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: <b>Grey Floor</b>
+  DisplayName: Grey Floor
+  Text: 
   MaxDistance: 0
