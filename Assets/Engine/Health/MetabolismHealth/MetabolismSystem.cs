@@ -138,6 +138,8 @@ namespace SS3D.Engine.Health
                     if (oldState != this.HungerState) //HungerState was altered, send new one to player
                         UpdateHungerStateMessage.Send(this.gameObject, HungerState);
 
+                    // TODO: Do damage when starving
+
                     tick = 0;
                 }
             }

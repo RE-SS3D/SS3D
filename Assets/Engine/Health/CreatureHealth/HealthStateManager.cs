@@ -28,11 +28,6 @@ namespace SS3D.Engine.Health
         float tick = 0f;
         bool init = false;
 
-        private void Start()
-        {
-            creatureHealth = GetComponent<CreatureHealth>();
-        }
-
         public override void OnStartServer()
         {
             InitServerCache();
@@ -41,13 +36,20 @@ namespace SS3D.Engine.Health
 
         private void InitServerCache()
         {
+            creatureHealth = GetComponent<CreatureHealth>();
             overallHealthCache = creatureHealth.OverallHealth;
             consciousStateCache = creatureHealth.ConsciousState;
-            isSuffocatingCache = creatureHealth.respiratorySystem.IsSuffocating;
-            temperatureCache = creatureHealth.respiratorySystem.InternalTemperature;
-            pressureCache = creatureHealth.respiratorySystem.InternalPressure;
+            if (creatureHealth.respiratorySystem != null)
+            {
+                isSuffocatingCache = creatureHealth.respiratorySystem.IsSuffocating;
+                temperatureCache = creatureHealth.respiratorySystem.InternalTemperature;
+                pressureCache = creatureHealth.respiratorySystem.InternalPressure;
+            }
 
-            UpdateBloodCaches();
+            if (creatureHealth.bloodSystem != null)
+            {
+                UpdateBloodCaches();
+            }
 
             if (creatureHealth.brainSystem != null)
             {

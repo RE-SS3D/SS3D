@@ -53,7 +53,7 @@ namespace SS3D.Engine.Health
             return BodyPartType.Torso;
         }
 
-        //Apply damages from here.
+        // Apply damages from here.
         public virtual void ReceiveDamage(DamageType damageType, float damage)
         {
             UpdateDamage(damage, damageType);
@@ -73,7 +73,7 @@ namespace SS3D.Engine.Health
             }
         }
 
-        //Restore damage from here
+        // Restore damage from here
         public virtual void HealDamage(int damage, DamageType type)
         {
             switch (type)
@@ -110,6 +110,7 @@ namespace SS3D.Engine.Health
         {
             // update UI limbs depending on their severity of damage
             float severity = (float)OverallDamage / MaxDamage;
+
             // If the limb is uninjured
             if (severity <= 0)
             {

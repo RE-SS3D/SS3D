@@ -556,7 +556,7 @@ namespace SS3D.Engine.Health
         public void UpdateClientHealthStats(float overallHealth)
         {
             OverallHealth = overallHealth;
-            // Logger.Log($"Update stats for {gameObject.name} OverallHealth: {overallHealth} ConsciousState: {consciousState.ToString()}", Category.Health);
+            Logger.Log($"Update stats for {gameObject.name} OverallHealth: {overallHealth} ConsciousState: {consciousState.ToString()}", Category.Health);
         }
 
         /// <summary>

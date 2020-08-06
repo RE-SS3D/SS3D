@@ -217,6 +217,7 @@ namespace SS3D.Engine.Health
         /// Determine if there is any blood damage (toxin, oxygen loss) or bleeding that needs to occur
         /// Server only!
         /// </summary>
+        [Server]
         public void AffectBloodState(BodyPartType bodyPartType, DamageType damageType, float amount, bool isHeal = false)
         {
             BodyPartBehaviour bodyPart = creatureHealth.FindBodyPart(bodyPartType);
