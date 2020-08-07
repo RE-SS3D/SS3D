@@ -444,9 +444,9 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.87058824}
-    m_HighlightedColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.87058824}
-    m_PressedColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.87058824}
+    m_NormalColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.21568628}
+    m_HighlightedColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.21568628}
+    m_PressedColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.21568628}
     m_SelectedColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
     m_DisabledColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -496,7 +496,7 @@ MonoBehaviour:
   itemSupplySlider: {fileID: 7260149451116668596}
   highlightedColor: {r: 1, g: 1, b: 1, a: 1}
   selectedColor: {r: 0.9433962, g: 0.9433962, b: 0.9433962, a: 1}
-  defaultColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.87058824}
+  defaultColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.21568628}
   disabledColor: {r: 0.33333334, g: 0.33333334, b: 0.33333334, a: 1}
   itemSupplyFullColor: {r: 0.10980393, g: 0.26666668, b: 0.16470589, a: 1}
   itemSupplyHalfColor: {r: 0.7058824, g: 0.6431373, b: 0.15294118, a: 1}
