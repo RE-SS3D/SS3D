@@ -168,7 +168,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: A dirt, ashy cigarette butt.
+  DisplayName: Cigarette butt
+  Text: Dirty, ashy and unhygienic.
   MaxDistance: 0
 --- !u!114 &-396234361631906964
 MonoBehaviour:

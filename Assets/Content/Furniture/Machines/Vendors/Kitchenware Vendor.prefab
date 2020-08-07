@@ -293,9 +293,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: '<b>Dinnerware</b>
-
-    Dispenses dinnerware and utencils.'
+  DisplayName: Dinnerware
+  Text: Dispenses dinnerware and utensils.
   MaxDistance: 0
 --- !u!1 &3135266143589959528
 GameObject:

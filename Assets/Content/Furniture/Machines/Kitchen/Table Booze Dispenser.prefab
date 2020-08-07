@@ -350,9 +350,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: '<b>Booze Dispenser</b>
-
-    Dispenses various types of booze.'
+  DisplayName: Booze Dispenser
+  Text: Dispenses various types of booze.
   MaxDistance: 0
 --- !u!1 &8961199219136555141
 GameObject:
