@@ -25,6 +25,8 @@ namespace SS3D.Engine.Interactions.UI
 
         public TextMeshProUGUI objectName;
         public TextMeshProUGUI interactionName;
+		public TextMeshProUGUI interactionNameAltPosition;
+		
 
         [HideInInspector]
         public float mouseAngle;
@@ -193,7 +195,14 @@ namespace SS3D.Engine.Interactions.UI
             {
                 petalsManager.SetFolder(spawnFolder, true);
             }
+			
+			// Set location of text display to above the RadialInteractionMenuIU if in bottom half of screen
+			if (screenPos.y * 2 < Screen.height){
+				interactionName = interactionNameAltPosition;
+			}
+			
             menuAnimator.SetBool("Visible", true);
+			
             return (true);
         }
 
