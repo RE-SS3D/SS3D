@@ -76,7 +76,7 @@ namespace SS3D.Content.Systems.Player.Body
                 return;
             }
             
-            if (status == BodyPartStatuses.Severed && bodyPartType == BodyPartType.Torso)
+            if (status == BodyPartStatuses.Severed && bodyPartType == BodyPartType.Chest)
             {
                 return;
             }
