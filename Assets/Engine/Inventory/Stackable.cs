@@ -34,5 +34,10 @@ namespace SS3D.Engine.Inventory
         {
             return $"{amountInStack} in stack";
         }
+		
+        public virtual string GetName(GameObject examinator)
+        {
+            return gameObject.name;
+        }		
     }
 }

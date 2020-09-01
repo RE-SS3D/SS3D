@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1767991713297487601}
   - component: {fileID: 7909755215942669040}
   m_Layer: 0
-  m_Name: WoodFloor
+  m_Name: Floor - Wood
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -106,5 +106,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: <b>Wood Floor</b>
+  DisplayName: Wood Floor
+  Text: 
   MaxDistance: 0

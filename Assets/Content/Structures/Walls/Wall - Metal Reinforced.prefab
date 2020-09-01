@@ -236,7 +236,7 @@ GameObject:
   - component: {fileID: -1603528896830197534}
   - component: {fileID: 181711760065846440}
   m_Layer: 0
-  m_Name: ReinforcedWall
+  m_Name: Wall - Metal Reinforced
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -391,7 +391,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: <b>Reinforced Wall</b>
+  DisplayName: Reinforced Wall
+  Text: 
   MaxDistance: 0
 --- !u!1 &5351388144419023931
 GameObject:

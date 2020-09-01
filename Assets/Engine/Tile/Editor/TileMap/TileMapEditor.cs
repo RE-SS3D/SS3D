@@ -65,8 +65,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             tiles.Update(tileManager);
 
             enableVisualHelp = EditorGUILayout.Toggle("Enable visual help: ", enableVisualHelp);
-            EditorGUILayout.Space();
-
+            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
             for (int i = 0; i < tiles.Definitions.Count; ++i) {
                 tiles.ShowInspectorFor(i);
 
@@ -94,8 +93,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 }
                 EditorGUILayout.EndHorizontal();
             }
-
-            GUILayout.Space(10);
+            EditorGUILayout.EndScrollView();
 
             if (GUILayout.Button("Add Tile Type")) {
                 tiles.Add();
@@ -205,5 +203,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         private Vector2Int lastPlacement;
 
         private TileDragHandler dragHandler;
+        private Vector2 scrollPosition;
     }
 }

@@ -174,11 +174,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: 
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 98817192546812284}
   attachmentPoint: {fileID: 588640168151614680}
+  bulkSize: 2
+  traits: []
 --- !u!54 &1083607476504503504
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -387,11 +389,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: 
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 299036864769005122}
   attachmentPoint: {fileID: 3332213703804836053}
+  bulkSize: 2
+  traits: []
 --- !u!54 &136366877182507820
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -537,11 +541,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: 
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 537510913525999881}
   attachmentPoint: {fileID: 0}
+  bulkSize: 2
+  traits: []
 --- !u!54 &325119174336063320
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -748,11 +754,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: 
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 1767105460036955147}
   attachmentPoint: {fileID: 1293185816858175919}
+  bulkSize: 2
+  traits: []
 --- !u!54 &2065765061887679786
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1115,11 +1123,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: 
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 2954702816147868532}
   attachmentPoint: {fileID: 2338883495983009488}
+  bulkSize: 2
+  traits: []
 --- !u!54 &2586193647671002034
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1266,11 +1276,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: 
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3100858152501622538}
   attachmentPoint: {fileID: 2484899183094133422}
+  bulkSize: 2
+  traits: []
 --- !u!114 &2240058995338629586
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1285,6 +1297,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  knockdownDuration: 3
+  knockdownPause: 1
 --- !u!54 &6304221418328680100
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1430,11 +1444,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: 
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3278308036721701354}
   attachmentPoint: {fileID: 8885211440114728023}
+  bulkSize: 2
+  traits: []
 --- !u!54 &5745052125497751448
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1611,11 +1627,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: 
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3707473956010934445}
   attachmentPoint: {fileID: 7296931575052619024}
+  bulkSize: 2
+  traits: []
 --- !u!54 &6334490238877212173
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1748,11 +1766,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: 
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3944235866505903018}
   attachmentPoint: {fileID: 0}
+  bulkSize: 2
+  traits: []
 --- !u!54 &5140523793104339387
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2032,11 +2052,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: 
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 4696157158292155660}
   attachmentPoint: {fileID: 1665317550003970225}
+  bulkSize: 2
+  traits: []
 --- !u!54 &5801429455750956107
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2270,9 +2292,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: '<b>Janitorial Cart</b>
-
-    Neatly holds all of the janitor''s equipment.'
+  DisplayName: Janitorial Cart
+  Text: Neatly holds all of the janitor's equipment.
   MaxDistance: 0
 --- !u!1 &5221473445564893971
 GameObject:
@@ -2569,11 +2590,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: 
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 6200101252375068876}
   attachmentPoint: {fileID: 6881354644099237224}
+  bulkSize: 2
+  traits: []
 --- !u!54 &8808370119886968644
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2855,11 +2878,13 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: 
   Name: 
+  Volume: 10
   container: {fileID: 0}
-  itemType: 0
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8630155634588003791}
   attachmentPoint: {fileID: 9128845340931549291}
+  bulkSize: 2
+  traits: []
 --- !u!54 &1299280962751579616
 Rigidbody:
   m_ObjectHideFlags: 0

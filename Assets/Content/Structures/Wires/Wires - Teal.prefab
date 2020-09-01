@@ -113,9 +113,12 @@ MonoBehaviour:
   type: wire
   o: {fileID: 981009240185927347, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
   c: {fileID: -1918864928579288036, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
-  cCorner: {fileID: -6311171486840820876, guid: 653d23c68a57e03498cd8519026c3404,
+  cDiagonal: {fileID: -6311171486840820876, guid: 653d23c68a57e03498cd8519026c3404,
     type: 3}
-  i: {fileID: 9194165350262086846, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
+  i: {fileID: -39023382276048513, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
+  iDiagonal: {fileID: -4396083321675765941, guid: 653d23c68a57e03498cd8519026c3404,
+    type: 3}
+  u: {fileID: -5153804823524495537, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
   l: {fileID: -39023382276048513, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
   lAcuteEast: {fileID: 3748334720040244727, guid: 653d23c68a57e03498cd8519026c3404,
     type: 3}
@@ -141,5 +144,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: <b>Wire</b>
+  DisplayName: Wire
+  Text: 
   MaxDistance: 0

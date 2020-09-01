@@ -142,9 +142,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: '<b>Water Cooler</b>
-
-    Dispenses cups and water.'
+  DisplayName: Water Cooler
+  Text: Dispenses cups and water.
   MaxDistance: 0
 --- !u!114 &4497921957389231919
 MonoBehaviour:

@@ -6,5 +6,6 @@ namespace SS3D.Engine.Examine
     {
         bool CanExamine(GameObject examinator);
         string GetDescription(GameObject examinator);
+		string GetName(GameObject examinator);
     }
 }

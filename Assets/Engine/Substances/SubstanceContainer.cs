@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mirror;
 using SS3D.Content.Systems.Substances;
 using SS3D.Engine.Interactions;
 using UnityEngine;
@@ -62,6 +63,11 @@ namespace SS3D.Engine.Substances
         /// </summary>
         public float Temperature;
 
+        /// <summary>
+        /// Is the container locked?
+        /// </summary>
+        public bool Locked;
+        
         public delegate void OnContentChanged(SubstanceContainer container);
 
         public event OnContentChanged ContentsChanged;
@@ -70,12 +76,20 @@ namespace SS3D.Engine.Substances
 
         private void Awake()
         {
-            Substances = new List<SubstanceEntry>();
+            if (Substances.Count < 1)
+            {
+                Substances = new List<SubstanceEntry>();
+            }
         }
 
         public bool IsEmpty()
         {
             return Substances.Count < 1;
+        }
+
+        public bool CanTranfer()
+        {
+            return Locked;
         }
 
         /// <summary>
@@ -95,6 +109,9 @@ namespace SS3D.Engine.Substances
         /// <param name="moles">How many moles should be added</param>
         public void AddSubstance(Substance substance, float moles)
         {
+            if (!CanTranfer())
+                return;
+            
             var remainingCapacity = RemainingVolume;
             var additionalVolume = moles * substance.MillilitersPerMole;
             if (additionalVolume > remainingCapacity)
@@ -132,6 +149,9 @@ namespace SS3D.Engine.Substances
         /// <param name="moles">The amount of substance</param>
         public void RemoveSubstance(Substance substance, float moles = float.MaxValue)
         {
+            if (!CanTranfer()) 
+                return;
+            
             int index = IndexOfSubstance(substance);
             if (index < 0)
             {
@@ -171,11 +191,24 @@ namespace SS3D.Engine.Substances
                 moles = totalMoles;
             }
 
+            if (moles <= 0)
+            {
+                return;
+            }
+
             for (var i = 0; i < Substances.Count; i++)
             {
                 SubstanceEntry entry = Substances[i];
                 entry.Moles -= entry.Moles / totalMoles * moles;
-                Substances[i] = entry;
+                if (entry.Moles <= 0.0001)
+                {
+                    Substances.RemoveAt(i);
+                    i--;
+                }
+                else
+                {
+                    Substances[i] = entry;
+                }
             }
         }
 

@@ -34,7 +34,6 @@ namespace SS3D.Content.Structures.Fixtures
         private int playersInTrigger; // Server Only
         private Coroutine closeTimer; // Server Only
 
-        private Animator animator;
         private AudioSource audioSource;
 
         // Interaction stuff
