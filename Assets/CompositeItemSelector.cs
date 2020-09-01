@@ -13,24 +13,21 @@ namespace SS3D.Content.Systems.Examine
     /// </summary>
 	public class CompositeItemSelector : MonoBehaviour
 	{
-		
-		public GameObject target;
-		public RawImage ri;
-		
+		public Camera cam;
+		public Material singleColourMaterial;
+				
 		private List<MeshColourAffiliation> meshes;
 		private List<ExaminableColourAffiliation> examinables;
+		private List<GameObject> tiles;
 		private Stack<Color> colours;
 		
 		
 		private Mesh mesh;
-		private Material singleColourMaterial;
-		private Shader singleColourShader;
-		public Camera cam;
-		public Text output;
 		private Texture2D tex;
 		private Rect imageArea;
 		private RenderTexture rt;
 		private Transform ancestorSearch;
+		private GameObject currentExaminable;
 		
 		private float rValue;
 		private float gValue;
@@ -39,103 +36,94 @@ namespace SS3D.Content.Systems.Examine
 		
 		private int recordedScreenWidth;
 		private int recordedScreenHeight;
-		
+				
 		public void Start(){
-			
-			// Initialise our collections
-			meshes = new List<MeshColourAffiliation>();
-			examinables = new List<ExaminableColourAffiliation>();
-			colours = new Stack<Color>();
-
-			singleColourShader = Shader.Find("Unlit/singleColourShader");
-			singleColourMaterial = new Material(singleColourShader);
-			GeneratePickingFramework();
-			//ri.texture = rt;
-			
-			target = GetAncestor(target);
-			GetListOfMeshes(target);
+			tex = new Texture2D(1, 1);  // This texture will only ever need to have 1 pixel.
 
 		}
 		
 		public void OnPostRender()
 		{
-			if (AllTexturesAreValid())
-			{		
-				// Render all of our meshes to the invisible RenderTexture
-				foreach (MeshColourAffiliation mesh in meshes)
-				{
-					singleColourMaterial.SetVector("colour", mesh.GetColour());
-					singleColourMaterial.SetPass(0);
-					UnityEngine.Graphics.DrawMeshNow(mesh.GetMesh(), mesh.GetTransform().position, mesh.GetTransform().rotation);
-				}
-				
-				// Actually test the colour
-				int currentX = (int) Input.mousePosition.x;
-				int currentY = (int) Input.mousePosition.y;
-					//output.text = Input.mousePosition.x + ": " + currentX;
-				
-				if (currentX >= 0 && currentY >= 0 && currentX < Screen.width && currentY < Screen.height)
-				{
-					imageArea = new Rect(currentX, currentY, 1, 1);
-					tex.ReadPixels(imageArea, 0, 0, false);
-					Color point = tex.GetPixel(currentX,currentY);
-					bool hit = false;
-					foreach (ExaminableColourAffiliation examinable in examinables)
-					{
-						if (point == examinable.GetColour())
-						{
-							output.text = examinable.GetName();
-							hit = true;
-						}
-						if (!hit) output.text = "";
-					}
-					
-				}
-				else
-				{
-					output.text = "";
-				}				
+			// If the window size has changed, amend the RenderTexture correspondingly.
+			ResizeTexturesIfRequired();
+			
+			// Render all of our meshes to the invisible RenderTexture
+			foreach (MeshColourAffiliation mesh in meshes)
+			{
+				singleColourMaterial.SetVector("colour", mesh.GetColour());
+				singleColourMaterial.SetPass(0);
+				UnityEngine.Graphics.DrawMeshNow(mesh.GetMesh(), mesh.GetTransform().position, mesh.GetTransform().rotation);
 			}
-		
+				
+				
+			// Test the colour of the pixel where our cursor is
+			int currentX = (int) Input.mousePosition.x;
+			int currentY = (int) Input.mousePosition.y;
+				
+			// If it's within the screen boundaries...
+			if (currentX >= 0 && currentY >= 0 && currentX < Screen.width && currentY < Screen.height)
+			{
+				// Copy the pixel to our Texture2D, so we can read its colour.
+				imageArea = new Rect(currentX, Screen.height - currentY - 1, 1, 1); // Note well: y increases downwards for Struct, but upwards for Screen coordinates. Thanks Unity.
+				tex.ReadPixels(imageArea, 0, 0, false);
+				Color point = tex.GetPixel(0, 0);
+				bool hit = false;
+				
+				// Check the unique colour of each Examinable, to see if it corresponds to the colour at the cursor. 
+				foreach (ExaminableColourAffiliation examinable in examinables)
+				{
+					if (point == examinable.GetColour())
+					{
+						currentExaminable = examinable.GetExaminable();
+						hit = true;
+					}
+				}					
+			}
+			else
+			{
+				currentExaminable = null;
+			}										
 		}
 		
-		private void GeneratePickingFramework(){
-			
-			rValue = 1.0f;
-			gValue = 1.0f;
-			bValue = 1.0f;
-			decrement = 0.6f;
-			
-			imageArea = new Rect(0, 0, Screen.width, Screen.height);
-			rt = new RenderTexture(Screen.width, Screen.height, 16);
-			tex = new Texture2D(1, 1);
-			recordedScreenWidth = Screen.width;
-			recordedScreenHeight = Screen.height;
-			cam.targetTexture = rt;
+		public GameObject GetCurrentExaminable(){
+			return currentExaminable;
 		}
 		
-		private bool AllTexturesAreValid(){
+		
+		/// Returns if the GameObject is a composite Examinable object. Currently
+		/// only tiles return true. This function will need to be amended if there
+		/// is a need for non-Tiles to become composite Examinable objects.
+		public bool IsCompositeExaminable(GameObject target)
+		{
+			target = GetAncestor(target);
+			if (target.transform.parent == null)
+			{
+				return false;
+			}
+			if (target.transform.parent.gameObject.name == "TileMap")
+			{
+				return true;
+			}
+			return false;
+		}
+		
+		private void ResizeTexturesIfRequired(){
 			
 			// If textures don't currently exist, create them at the correct size.
-			//if (readyToCreateAssets)
-				
-			return true; //---------------------------------------------------------------------------------------------------
 			if (recordedScreenWidth != Screen.width || recordedScreenHeight != Screen.height)	
 			{
-				imageArea = new Rect(0, 0, Screen.width, Screen.height);
 				cam.targetTexture = null;
 				rt.Release();
 				rt = new RenderTexture(Screen.width, Screen.height, 16);
 				cam.targetTexture = rt;
 
-				tex.Resize(Screen.width, Screen.height);
 				recordedScreenWidth = Screen.width;
 				recordedScreenHeight = Screen.height;
-				return false;
 			}
-			return true;
 		}
 		
+		
+		/// This method simply uses the next available unique colour by decrementing the RGB values.
 		private void ChangeToNextColour(){
 			if (rValue < 0.0f)
 			{
@@ -158,6 +146,7 @@ namespace SS3D.Content.Systems.Examine
 			}
 		}
 		
+		/// This method returns the root GameObject (or the Tile, if the TileMap is the root object)
 		private GameObject GetAncestor (GameObject descendant)
 		{
 			while (descendant.transform.parent != null && descendant.transform.parent.name != "TileMap")
@@ -167,29 +156,106 @@ namespace SS3D.Content.Systems.Examine
 			return descendant;
 		}
 		
+		/*
 		private void GetListOfMeshes(GameObject ancestor)
 		{			
 			colours.Push(new Color(rValue, gValue, bValue, 1.0f));
 			AddChildToLists(ancestor.transform);
+			
+			
+
+		}*/
+		
+		/// This method enables the camera and establishes our data structures.
+		private void EnableCamera(){
+			if (!cam.enabled)
+			{
+				// Enable the Camera component
+				cam.enabled = true;
+				
+				// Establish our collections
+				meshes = new List<MeshColourAffiliation>();
+				examinables = new List<ExaminableColourAffiliation>();
+				tiles = new List<GameObject>();
+				colours = new Stack<Color>();
+				
+				// Reset the colours
+				rValue = 1.0f;
+				gValue = 1.0f;
+				bValue = 1.0f;
+				decrement = 0.2f;
+				
+				// Record the screen resolution
+				recordedScreenWidth = Screen.width;
+				recordedScreenHeight = Screen.height;
+				
+				// Establish the renderTexture
+				rt = new RenderTexture(Screen.width, Screen.height, 16);
+				cam.targetTexture = rt;
+			}
+		}
+		
+		/// This method disables the camera and removes our expensive data structures
+		/// so that they can be reclaimed by garbage collection.
+		public void DisableCamera()
+		{
+			// Turn off the camera
+			cam.enabled = false;
+			
+			// Empty our collections
+			meshes = null;
+			examinables = null;
+			tiles = null;
+			colours = null;
+			
+			rt = null;
+			currentExaminable = null;
+		}
+		
+		/// This method adds all of the objects targeted by the RaycastAll (within the
+		/// Examinator script) to the mesh and colour lists.
+		public void AddMeshesToLists(GameObject[] allHitObjects)
+		{
+			GameObject ancestor;
+			bool alreadyInList;
+			EnableCamera();
+			foreach (GameObject obj in allHitObjects)
+			{
+				// Check to see if the GameObject is already recorded
+				alreadyInList = false;
+				ancestor = GetAncestor(obj);
+				foreach (GameObject tile in tiles)
+				{
+					if (ancestor == tile)
+					{
+						alreadyInList = true;
+					}
+				}
+				// If not already recorded, record it!
+				if (!alreadyInList)
+				{
+					colours.Push(new Color(rValue, gValue, bValue, 1.0f));
+					AddChildToLists(ancestor.transform);
+					tiles.Add(ancestor);
+				}
+				
+			}
+			
+			/*
 			string display = "Meshes within the meshes list:\n";
 			foreach (MeshColourAffiliation mesh in meshes)
 			{
 				display += "    " + mesh.GetTransform().gameObject.name + "\n";
 			}
-			Debug.Log(display);
+			Debug.Log(display);	
+			*/
 		}
 	
-		// This method calls recursively to find all descendants of a GameObject. If
-		// they have meshes to render, and/or are Examinable, they are recorded in our
-		// meshes and examinables lists.
+		/// This method calls recursively to find all descendants of a GameObject. If
+		/// they have meshes to render, and/or are Examinable, they are recorded in our
+		/// meshes and examinables lists.
 		private void AddChildToLists(Transform child)
-		{
-			
-			if (child.gameObject.activeSelf == false)
-			{
-				return;
-			}
-			
+		{		
 			// Determine whether the GameObject has a mesh or is Examinable
 			MeshFilter mf = child.gameObject.GetComponent<MeshFilter>();
 			IExaminable examinable = child.gameObject.GetComponent<IExaminable>();
@@ -200,7 +266,7 @@ namespace SS3D.Content.Systems.Examine
 			{
 				ChangeToNextColour();
 				colours.Push(new Color(rValue, gValue, bValue, 1.0f));
-				examinables.Add(new ExaminableColourAffiliation(examinable, colours.Peek(), child.gameObject.name));
+				examinables.Add(new ExaminableColourAffiliation(child.gameObject, colours.Peek(), child.gameObject.name));
 			}
 			
 			// If mesh exists, record the colour affiliation of it 
@@ -222,10 +288,10 @@ namespace SS3D.Content.Systems.Examine
 			}
 		}
 	
-		// This class is used to link particular meshes to the colour used to represent them
-		// with the CompositeItemSelector render texture. It is possible for multiple meshes
-		// to be affiliated with the same colour (for example, the meshes are all subordinate
-		// to an Examinable GameObject, without any of them being individually Examinable)
+		/// This class is used to link particular meshes to the colour used to represent them
+		/// with the CompositeItemSelector render texture. It is possible for multiple meshes
+		/// to be affiliated with the same colour (for example, the meshes are all subordinate
+		/// to an Examinable GameObject, without any of them being individually Examinable)
 		private class MeshColourAffiliation
 		{
 			private Mesh mesh;
@@ -262,23 +328,23 @@ namespace SS3D.Content.Systems.Examine
 			
 		}
 		
-		// This class is used to link Examinable GameObjects to the colour used to represent
-		// them. There should be a 1:1 correlation between colours and Examinable GameObjects.
-		// Each Examinable will have one or more associated meshes, all of which share its colour.
+		/// This class is used to link Examinable GameObjects to the colour used to represent
+		/// them. There should be a 1:1 correlation between colours and Examinable GameObjects.
+		/// Each Examinable will have one or more associated meshes, all of which share its colour.
 		private class ExaminableColourAffiliation
 		{
-			private IExaminable examinable;
+			private GameObject examinable;
 			private Color colour;
 			private string name;
 			
-			public ExaminableColourAffiliation(IExaminable examinable, Color colour, string name)
+			public ExaminableColourAffiliation(GameObject examinable, Color colour, string name)
 			{
 				this.examinable = examinable;
 				this.colour = colour;
 				this.name = name;
 			}
 			
-			public IExaminable GetExaminable()
+			public GameObject GetExaminable()
 			{
 				return examinable;
 			}
