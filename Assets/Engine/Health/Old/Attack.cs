@@ -36,10 +36,10 @@ namespace SS3D.Engine.Health
                 return;
             }
 
-            LayerMask layerMask = ~(1 << LayerMask.NameToLayer ("Player"));
+            // LayerMask layerMask = ~(1 << LayerMask.NameToLayer ("Player"));
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if(!Physics.Raycast(ray, out hit, 10f, layerMask))
+            if(!Physics.Raycast(ray, out hit, 10f))
             {
                 return;
             }
@@ -51,6 +51,8 @@ namespace SS3D.Engine.Health
             }
 
             CmdAttackBodyPart(target.Body.gameObject, target.BodyPartType, damageAmount, hit.point);
+
+            // target.ReceiveDamage(DamageType.Brute, 10);
         }
 
         //TODO: should depend on the circumstances of the attack

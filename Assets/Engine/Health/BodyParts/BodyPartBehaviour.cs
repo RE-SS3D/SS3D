@@ -145,7 +145,11 @@ namespace SS3D.Engine.Health
             else if (severity >= 1f)
             {
                 Severity = DamageSeverity.Max;
+
+                // TODO: Sever body part
             }
+
+            Debug.Log(("Checking damage: " + Severity.ToString()));
 
             UpdateUi();
         }

@@ -1380,9 +1380,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!114 &6850072202715529766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1397,8 +1398,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  animator: {fileID: 8421994563860563016}
   clientAuthority: 0
+  animator: {fileID: 8421994563860563016}
 --- !u!114 &6850072202715529767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1413,8 +1414,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  compressRotation: 1
   clientAuthority: 0
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01
 --- !u!143 &6850072202715529763
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1449,6 +1452,9 @@ MonoBehaviour:
   syncInterval: 0.1
   runSpeed: 5
   walkSpeed: 2
+  absoluteMovement: {x: 0, y: 0, z: 0}
+  heightOffGround: 0.1
+  LookAt: []
 --- !u!114 &5996438145529512993
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1492,8 +1498,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   containerName: Human Equppable
-  containerType: 1
-  slots: 010000000200000003000000040000000500000007000000080000000c0000000d000000
+  containerFilter: {fileID: 0}
+  volumeLimited: 1
+  maxVolume: 50
+  slots: 1454519296
   displays:
   - {fileID: 4394221751515431373}
   - {fileID: 4394221751515431373}
@@ -1520,6 +1528,11 @@ MonoBehaviour:
   syncInterval: 0.1
   handContainer: {fileID: 1028998233664674745}
   handRange: 5
+  range:
+    horizontal: 1.5
+    vertical: 1
+  interactionOrigin: {fileID: 0}
+  pickupIcon: {fileID: 0}
 --- !u!114 &-6017801602675652448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3474,7 +3487,7 @@ Transform:
   m_GameObject: {fileID: 8074031898056242471}
   m_LocalRotation: {x: -0.26793718, y: -0.035711274, z: 0.023863643, w: 0.9624785}
   m_LocalPosition: {x: 0.022915184, y: 0.123335436, z: 0.011329729}
-  m_LocalScale: {x: 0.99999994, y: 0.99999994, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4132497553086069912}
   m_Father: {fileID: 8519866485240224002}
