@@ -13,32 +13,40 @@ namespace SS3D.Content.Systems.Examine
     /// </summary>
 	public class CompositeItemSelector : MonoBehaviour
 	{
+		
 		public Camera cam;
 		public Material singleColourMaterial;
-				
+		
+		// Data structures to store our mesh and colour affiliations
 		private List<MeshColourAffiliation> meshes;
 		private List<ExaminableColourAffiliation> examinables;
 		private List<GameObject> tiles;
 		private Stack<Color> colours;
 		
-		
-		private Mesh mesh;
+		// Single pixel texture simply used to read the pixel colour under the mouse
 		private Texture2D tex;
+		
+		// Single pixel rectangle used to transfer the pixel from the RenderTexture to the Texture2D.
 		private Rect imageArea;
+		
+		// The hidden texture used to render our targeted meshes. Needs to have identical resolution to screen.
 		private RenderTexture rt;
-		private Transform ancestorSearch;
+		
+		// This is how the Examinator gets access to the actual Examinable
 		private GameObject currentExaminable;
 		
+		// Components of our unique colours
 		private float rValue;
 		private float gValue;
 		private float bValue;
 		private float decrement;
 		
+		// Screen resolution
 		private int recordedScreenWidth;
 		private int recordedScreenHeight;
 				
 		public void Start(){
-			tex = new Texture2D(1, 1);  // This texture will only ever need to have 1 pixel.
+			tex = new Texture2D(1, 1);
 
 		}
 		
@@ -50,16 +58,16 @@ namespace SS3D.Content.Systems.Examine
 			// Render all of our meshes to the invisible RenderTexture
 			foreach (MeshColourAffiliation mesh in meshes)
 			{
+				singleColourMaterial.mainTexture = mesh.GetTexture();
 				singleColourMaterial.SetVector("colour", mesh.GetColour());
 				singleColourMaterial.SetPass(0);
 				UnityEngine.Graphics.DrawMeshNow(mesh.GetMesh(), mesh.GetTransform().position, mesh.GetTransform().rotation);
 			}
 				
-				
 			// Test the colour of the pixel where our cursor is
 			int currentX = (int) Input.mousePosition.x;
 			int currentY = (int) Input.mousePosition.y;
-				
+
 			// If it's within the screen boundaries...
 			if (currentX >= 0 && currentY >= 0 && currentX < Screen.width && currentY < Screen.height)
 			{
@@ -140,6 +148,7 @@ namespace SS3D.Content.Systems.Examine
 					rValue -= decrement;
 					if (rValue < 0.0f){
 						Debug.Log("CompositeItemSelector: Too many colours cycled through.");
+						DisableCamera();
 					}
 				}
 				
@@ -240,15 +249,6 @@ namespace SS3D.Content.Systems.Examine
 				}
 				
 			}
-			
-			/*
-			string display = "Meshes within the meshes list:\n";
-			foreach (MeshColourAffiliation mesh in meshes)
-			{
-				display += "    " + mesh.GetTransform().gameObject.name + "\n";
-			}
-			Debug.Log(display);	
-			*/
 		}
 	
 		/// This method calls recursively to find all descendants of a GameObject. If
@@ -256,6 +256,12 @@ namespace SS3D.Content.Systems.Examine
 		/// meshes and examinables lists.
 		private void AddChildToLists(Transform child)
 		{		
+			// Don't record the mesh if the child is disabled!
+			if (child.gameObject.activeSelf == false)
+			{
+				return;
+			}
+			
 			// Determine whether the GameObject has a mesh or is Examinable
 			MeshFilter mf = child.gameObject.GetComponent<MeshFilter>();
 			IExaminable examinable = child.gameObject.GetComponent<IExaminable>();
@@ -272,7 +278,7 @@ namespace SS3D.Content.Systems.Examine
 			// If mesh exists, record the colour affiliation of it 
 			if (mf != null && child.gameObject.GetComponent<Renderer>().enabled)
 			{
-				meshes.Add(new MeshColourAffiliation(mf.mesh, colours.Peek(), child, null));
+				meshes.Add(new MeshColourAffiliation(mf.mesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
 			}
 			
 			// Recursively call this method on each child
@@ -297,14 +303,14 @@ namespace SS3D.Content.Systems.Examine
 			private Mesh mesh;
 			private Color colour;
 			private Transform transform;
-			private MeshRenderer renderer;
+			private Texture texture;
 			
-			public MeshColourAffiliation(Mesh mesh, Color colour, Transform transform, MeshRenderer renderer)
+			public MeshColourAffiliation(Mesh mesh, Color colour, Transform transform, Texture texture)
 			{
 				this.mesh = mesh;
 				this.colour = colour;
 				this.transform = transform;
-				this.renderer = renderer;
+				this.texture = texture;
 			}
 			
 			public Mesh GetMesh()
@@ -322,8 +328,8 @@ namespace SS3D.Content.Systems.Examine
 				return transform;
 			}			
 			
-			public MeshRenderer GetRenderer(){
-				return renderer;
+			public Texture GetTexture(){
+				return texture;
 			}
 			
 		}
