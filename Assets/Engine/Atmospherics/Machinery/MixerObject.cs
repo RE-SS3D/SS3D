@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
-    public class MixerObject : MonoBehaviour, IAtmosLoop, IInteractionTarget
+    public class MixerObject : PipeGeneric, IAtmosLoop, IInteractionTarget
     {
         public float InputOneAmount = 50f;
         public float MaxPressure = 4500f;
@@ -16,27 +16,11 @@ namespace SS3D.Engine.Atmospherics
 
         private float _targetPressure;
         private float ratioOnetoTwo;
-        private const float stepsToEqualize = 10f;
-
-        private TileObject[] tileNeighbours = { null, null, null, null };
-        private PipeObject[] atmosNeighbours = { null, null, null, null };
-
         
 
         public void Initialize()
         {
             SetAtmosNeighbours();
-        }
-
-        public void SetAtmosNeighbours()
-        {
-            int i = 0;
-            foreach (TileObject tile in tileNeighbours)
-            {
-                if (tile != null)
-                    atmosNeighbours[i] = tile.transform.GetComponentInChildren<PipeObject>();
-                i++;
-            }
         }
 
         void Start()
@@ -51,11 +35,6 @@ namespace SS3D.Engine.Atmospherics
                 _targetPressure = Mathf.Clamp(TargetPressure, 0, MaxPressure);
                 TargetPressure = _targetPressure;
             }
-        }
-
-        public void SetTileNeighbour(TileObject tile, int index)
-        {
-            tileNeighbours[index] = tile;
         }
 
         public void SetActive(bool mixerActive)
@@ -91,8 +70,8 @@ namespace SS3D.Engine.Atmospherics
                     float pressureDifference = _targetPressure - output.GetPressure();
                     float transferMoles = pressureDifference * 1000 * output.volume / (output.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
 
-                    // Reach our target pressure in N steps
-                    transferMoles = transferMoles / stepsToEqualize;
+                    // We can not transfer more moles than the machinery allows
+                    transferMoles = Mathf.Min(Gas.maxMoleTransfer, transferMoles);
 
                     float transfer_moles1 = ratioOnetoTwo * transferMoles;
                     float transfer_moles2 = (1f - ratioOnetoTwo) * transferMoles;

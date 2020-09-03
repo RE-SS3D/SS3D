@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
-    public class PumpObject : MonoBehaviour, IAtmosLoop, IInteractionTarget
+    public class PumpObject : PipeGeneric, IAtmosLoop, IInteractionTarget
     {
         public enum PumpType
         {
@@ -15,13 +15,9 @@ namespace SS3D.Engine.Atmospherics
             Volume
         }
 
-        private TileObject[] tileNeighbours = { null, null };
-        private PipeObject[] atmosNeighbours = { null, null };
-
         private const float maxPressureSetting = 4500f;
         private const float maxVolumeSetting = 200f;
         private const float molesPerStep = 5f;
-        private const float stepsToEqualize = 10f;
 
         public PumpType pumpType;
         public float TargetPressure = 300f;
@@ -39,8 +35,7 @@ namespace SS3D.Engine.Atmospherics
                 if (input.GetTotalMoles() == 0)
                     return;
 
-                float[] inputGasses = input.GetAtmosContainer().GetGasses();
-                float[] outputGasses = output.GetAtmosContainer().GetGasses();
+                AtmosContainer inputContainer = input.GetAtmosContainer();
 
                 // And the output pressure is acceptable
                 if (pumpType == PumpType.Pressure)
@@ -53,8 +48,8 @@ namespace SS3D.Engine.Atmospherics
                         float pressureDifference = TargetPressure - output.GetPressure();
                         float transferMoles = pressureDifference * 1000 * output.volume / (output.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
 
-                        // Reach our target pressure in N steps
-                        transferMoles = transferMoles / stepsToEqualize;
+                        // We can not transfer more moles than the machinery allows
+                        transferMoles = Mathf.Min(Gas.maxMoleTransfer, transferMoles);
 
                         // We can't transfer more moles than there are
                         if (transferMoles > totalMoles)
@@ -63,15 +58,13 @@ namespace SS3D.Engine.Atmospherics
                         for (int i = 0; i < Gas.numOfGases; i++)
                         {
                             // Divide the moles according to their percentage
-                            float molePerGas = (inputGasses[i] / totalMoles) * transferMoles;
-                            if (inputGasses[i] > 0f)
+                            float molePerGas = (inputContainer.GetGas(i) / totalMoles) * transferMoles;
+                            if (inputContainer.GetGas(i) > 0f)
                             {
-                                inputGasses[i] -= molePerGas;
-                                outputGasses[i] += molePerGas;
+                                input.RemoveGas(i, molePerGas);
+                                output.AddGas(i, molePerGas);
                             }
                         }
-                        input.SetStateActive();
-                        output.SetStateActive();
                     }
                 }
                 // TODO: different pump speeds between volume/pressure pumps
@@ -82,6 +75,9 @@ namespace SS3D.Engine.Atmospherics
                     float transferMoles = input.GetPressure() * 1000 * inputVolume / (input.GetAtmosContainer().GetTemperature() * Gas.gasConstant);
                     float totalMoles = input.GetTotalMoles();
 
+                    // We can not transfer more moles than the machinery allows
+                    transferMoles = Mathf.Min(molesPerStep, transferMoles);
+
                     for (int i = 0; i < Gas.numOfGases; i++)
                     {
                         // We can't transfer more moles than there are
@@ -89,34 +85,15 @@ namespace SS3D.Engine.Atmospherics
                             transferMoles = totalMoles;
 
                         // Divide the moles according to their percentage
-                        float molePerGas = (inputGasses[i] / totalMoles) * transferMoles;
+                        float molePerGas = (inputContainer.GetGas(i) / totalMoles) * transferMoles;
 
-                        if (inputGasses[i] >= molePerGas)
+                        if (inputContainer.GetGas(i) >= molePerGas)
                         {
-                            inputGasses[i] -= molePerGas;
-                            outputGasses[i] += molePerGas;
-                            input.SetStateActive();
-                            output.SetStateActive();
+                            input.RemoveGas(i, molePerGas);
+                            output.AddGas(i, molePerGas);
                         }
                     }
                 }
-            }
-        }
-
-        public void SetTileNeighbour(TileObject neighbour, int index)
-        {
-            if (index == 0 || index == 1)
-                tileNeighbours[index] = neighbour;
-        }
-
-        public void SetAtmosNeighbours()
-        {
-            int i = 0;
-            foreach (TileObject tile in tileNeighbours)
-            {
-                if (tile != null)
-                    atmosNeighbours[i] = tile.transform.GetComponentInChildren<PipeObject>();
-                i++;
             }
         }
 

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
-    public class InjectorObject : MonoBehaviour, IAtmosLoop
+    public class InjectorObject : PipeGeneric, IAtmosLoop
     {
         private TileObject tileNeighbour;
         private PipeObject atmosNeighbour;
@@ -17,20 +17,6 @@ namespace SS3D.Engine.Atmospherics
         {
             tile = GetComponentInParent<TileObject>();
             SetAtmosNeighbours();
-        }
-
-        public void SetTileNeighbour(TileObject tile, int index)
-        {
-            // We only connect the North side
-            if (index == 0)
-            {
-                tileNeighbour = tile;
-            }
-        }
-
-        public void SetAtmosNeighbours()
-        {
-            atmosNeighbour = tileNeighbour?.transform.GetComponentInChildren<PipeObject>();
         }
 
         public void Step()

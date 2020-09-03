@@ -6,17 +6,14 @@ using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
-    public class PipeObject : MonoBehaviour
+    public class PipeObject : PipeGeneric
     {
         private const float maxPipePressure = 2000f;
-
         public float volume = 1f;
 
         private AtmosContainer atmosContainer = new AtmosContainer();
         private float[] tileFlux = { 0f, 0f, 0f, 0f };
         private AtmosStates state = AtmosStates.Active;
-        private TileObject[] tileNeighbours = { null, null, null, null };
-        private PipeObject[] atmosNeighbours = { null, null, null, null };
         private bool tempSetting = false;
         private bool[] activeDirection = {
                 false,  // Top AtmosObject active
@@ -36,22 +33,6 @@ namespace SS3D.Engine.Atmospherics
         public AtmosContainer GetAtmosContainer()
         {
             return atmosContainer;
-        }
-
-        public void SetTileNeighbour(TileObject neighbour, int index)
-        {
-            tileNeighbours[index] = neighbour;
-        }
-
-        public void SetAtmosNeighbours()
-        {
-            int i = 0;
-            foreach (TileObject tile in tileNeighbours)
-            {
-                if (tile != null)
-                    atmosNeighbours[i] = tile.transform.GetComponentInChildren<PipeObject>();
-                i++;
-            }
         }
 
         public AtmosStates GetState()
@@ -76,6 +57,20 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
+        public void ForceNeighbour(PipeObject neighbour)
+        {
+            for (int i = 0; i < atmosNeighbours.Length; i++)
+            {
+                if (atmosNeighbours[i] == null || atmosNeighbours[i] == neighbour)
+                {
+                    atmosNeighbours[i] = neighbour;
+                    return;
+                }
+            }
+
+            Debug.LogError("Forcing pipe neighbour, but no empty found");
+        }
+
         public void RemoveFlux()
         {
             tileFlux = new float[] { 0f, 0f, 0f, 0f };
@@ -90,11 +85,29 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
+        public void AddGas(int index, float amount)
+        {
+            if (state != AtmosStates.Blocked)
+            {
+                atmosContainer.AddGas(index, amount);
+                state = AtmosStates.Active;
+            }
+        }
+
         public void RemoveGas(int index, float amount)
         {
             if (state != AtmosStates.Blocked)
             {
                 atmosContainer.RemoveGas(index, amount);
+                state = AtmosStates.Active;
+            }
+        }
+
+        public void RemoveGas(AtmosGasses gas, float amount)
+        {
+            if (state != AtmosStates.Blocked)
+            {
+                atmosContainer.RemoveGas(gas, amount);
                 state = AtmosStates.Active;
             }
         }

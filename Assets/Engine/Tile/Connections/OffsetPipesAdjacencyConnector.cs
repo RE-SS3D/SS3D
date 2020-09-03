@@ -17,11 +17,28 @@ namespace SS3D.Engine.Tiles.Connections
             Fixture,
         }
 
+        public enum PipeOrientation
+        {
+            o,
+            cNorth,
+            cSouth,
+            i,
+            lNE,
+            lNW,
+            lSE,
+            lSW,
+            tNEW,
+            tNSW,
+            tNSE,
+            tSWE,
+            x
+        }
+
         public int LayerIndex { get; set; }
 
         // Id that adjacent objects must be to count. If null, any id is accepted
         public string type;
-
+        private PipeOrientation orientation;
 
         [Header("Meshes")]
         [Tooltip("A mesh where no edges are connected")]
@@ -50,6 +67,18 @@ namespace SS3D.Engine.Tiles.Connections
         public Mesh tSWE;
         [Tooltip("A mesh where all edges are connected")]
         public Mesh x;
+
+        public PipeOrientation GetPipeOrientation()
+        {
+            return orientation;
+        }
+
+        public float GetRotation()
+        {
+            var cardinalInfo = adjacents.GetCardinalInfo();
+            return OrientationHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
+        }
+
 
         /**
          * When a single adjacent turf is updated
@@ -101,18 +130,28 @@ namespace SS3D.Engine.Tiles.Connections
             Mesh mesh;
 
             if (cardinalInfo.IsO())
+            {
                 mesh = o;
+                orientation = PipeOrientation.o;
+            }
             else if (cardinalInfo.IsC())
             {
-                if(cardinalInfo.north > 0||cardinalInfo.east > 0)
+                if (cardinalInfo.north > 0 || cardinalInfo.east > 0)
+                {
                     mesh = cNorth;
+                    orientation = PipeOrientation.cNorth;
+                }
                 else
+                {
                     mesh = cSouth;
+                    orientation = PipeOrientation.cSouth;
+                }
                 rotation = DirectionHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
             }
             else if (cardinalInfo.IsI())
             {
                 mesh = i;
+                orientation = PipeOrientation.i;
                 rotation = OrientationHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
             }
             else if (cardinalInfo.IsL())
@@ -122,6 +161,12 @@ namespace SS3D.Engine.Tiles.Connections
                     : sides == Direction.SouthEast ? lSE
                     : sides == Direction.SouthWest ? lSW
                     : lNW;
+
+                orientation = sides == Direction.NorthEast ? PipeOrientation.lNE
+                    : sides == Direction.SouthEast ? PipeOrientation.lSE
+                    : sides == Direction.SouthWest ? PipeOrientation.lSW
+                    : PipeOrientation.lNW;
+
                 rotation = 90;
             }
             else if (cardinalInfo.IsT())
@@ -131,11 +176,19 @@ namespace SS3D.Engine.Tiles.Connections
                     : notside == Direction.East ? tNSW
                     : notside == Direction.South ? tNEW
                     : tNSE;
+
+                orientation = notside == Direction.North ? PipeOrientation.tSWE
+                    : notside == Direction.East ? PipeOrientation.tNSW
+                    : notside == Direction.South ? PipeOrientation.tNEW
+                    : PipeOrientation.tNSE;
+
                 rotation = 90;
             }
             else // Must be X
             {
                 mesh = x;
+                orientation = PipeOrientation.x;
+
                 rotation = 90;
             }
 

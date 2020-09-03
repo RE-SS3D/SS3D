@@ -107,6 +107,15 @@ namespace SS3D.Engine.Atmospherics
             }
         }
 
+        public void RemoveGas(AtmosGasses gas, float amount)
+        {
+            if (state != AtmosStates.Blocked)
+            {
+                atmosContainer.RemoveGas(gas, amount);
+                state = AtmosStates.Active;
+            }
+        }
+
         public void SetGasses(float[] amounts)
         {
             atmosContainer.SetGasses(amounts);
@@ -370,8 +379,12 @@ namespace SS3D.Engine.Atmospherics
                         if (atmosObject.state != AtmosStates.Blocked)
                         {
                             difference[i] = (atmosContainer.GetGasses()[i] - atmosObject.GetAtmosContainer().GetGasses()[i]) * Gas.mixRate;
-                            if (difference[i] >= Gas.mixRate)
+                            if (difference[i] >= 0.05f || (atmosContainer.GetGasses()[i] - atmosObject.GetAtmosContainer().GetGasses()[i]) >= 0.01f)
                             {
+                                // For small difference, we just split the diff
+                                if (difference[i] < 0.05f)
+                                    difference[i] = (atmosContainer.GetGasses()[i] - atmosObject.GetAtmosContainer().GetGasses()[i]) / 2f;
+
                                 // Increase neighbouring tiles moles
                                 atmosObject.GetAtmosContainer().AddGas(i, difference[i]);
 
@@ -396,7 +409,13 @@ namespace SS3D.Engine.Atmospherics
 
             if (!mixed && state == AtmosStates.Semiactive)
             {
-                state = AtmosStates.Inactive;
+                // Delete tiny amount of gasses before going to inactive
+                for (int i = 0; i < Gas.numOfGases; i++)
+                {
+                    if (atmosContainer.GetGasses()[i] <= 0.1 && atmosContainer.GetGasses()[i] > 0)
+                        atmosContainer.RemoveGas(i, 1); // Resets it to zero
+                }
+                    state = AtmosStates.Inactive;
             }
             s_SimlateMixingPerfMarker.End();
         }

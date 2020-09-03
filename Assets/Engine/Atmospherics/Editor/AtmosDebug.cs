@@ -78,6 +78,11 @@ namespace SS3D.Engine.Atmospherics
             EditorGUILayout.Space();
             EditorGUILayout.PrefixLabel("Insert gas:");
             gassSelection = (AtmosGasses)EditorGUILayout.EnumPopup(gassSelection);
+
+            EditorGUILayout.Space();
+            showOnlySelectedPipeLayer = EditorGUILayout.Toggle("Show only selected layer: ", showOnlySelectedPipeLayer);
+            EditorGUILayout.PrefixLabel("Selected pipe layer:");
+            selectedPipeLayer = (PipeLayer)EditorGUILayout.EnumPopup(selectedPipeLayer);
             if (GUILayout.Button("Add gas"))
             {
                 Debug.Log("Click to add gas. Press escape to stop");
@@ -96,6 +101,8 @@ namespace SS3D.Engine.Atmospherics
             
 
             atmosManager.showPipes = showPipes;
+            atmosManager.selectedPipeLayer = selectedPipeLayer;
+            atmosManager.showOnlySelectedPipes = showOnlySelectedPipeLayer;
 
             // HandleUtility.Repaint();
         }
@@ -110,9 +117,11 @@ namespace SS3D.Engine.Atmospherics
 
         private bool showMessages = false;
         private bool showPipes = false;
+        private bool showOnlySelectedPipeLayer = false;
         private float updateRate = 0f;
 
         private AtmosManager.ViewType drawView;
         private AtmosGasses gassSelection;
+        private PipeLayer selectedPipeLayer;
     }
 }
