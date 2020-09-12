@@ -39,20 +39,23 @@ namespace SS3D.Engine.Health
             // LayerMask layerMask = ~(1 << LayerMask.NameToLayer ("Player"));
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if(!Physics.Raycast(ray, out hit, 10f))
+
+            LayerMask mask = LayerMask.GetMask("Player");
+
+            if (!Physics.Raycast(ray, out hit, 10f, mask))
             {
                 return;
             }
 
-            BodyPart target = hit.collider.GetComponent<BodyPart>();
+            BodyPartBehaviour target = hit.collider.GetComponent<BodyPartBehaviour>();
             if (!target)
             {
                 return;
             }
 
-            CmdAttackBodyPart(target.Body.gameObject, target.BodyPartType, damageAmount, hit.point);
+            // CmdAttackBodyPart(target.Body.gameObject, target.BodyPartType, damageAmount, hit.point);
 
-            // target.ReceiveDamage(DamageType.Brute, 10);
+            target.ReceiveDamage(DamageType.Brute, 10);
         }
 
         //TODO: should depend on the circumstances of the attack

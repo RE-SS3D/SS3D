@@ -12,11 +12,20 @@ namespace SS3D.Engine.Health
 
         public int MaxDamage = 200;
         public BodyPartType Type;
+
+        /// Specifies prefab to spawn if this body part is detached
+        [SerializeField] private GameObject severedBodyPartPrefab = null;
+
+        /// The skinnedMeshRenderer associated with this bodypart. It will be hidden if the bodypart is detached
+        [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer = null;
+
         public bool isBleeding = false;
         public CreatureHealth creatureHealth;
 
         public DamageSeverity Severity;
         public float OverallDamage => BruteDamage + BurnDamage;
+
+        private bool isSevered = false;
 
         /// Randomized hit zone. 0f for totally random, 0.99f for 99% chance of provided one
         /// <param name="aim"></param>
@@ -71,6 +80,7 @@ namespace SS3D.Engine.Health
                     BurnDamage += damage;
                     break;
             }
+            UpdateSeverity();
         }
 
         // Restore damage from here
@@ -145,14 +155,53 @@ namespace SS3D.Engine.Health
             else if (severity >= 1f)
             {
                 Severity = DamageSeverity.Max;
-
-                // TODO: Sever body part
+                SeverBodyPart();
             }
 
             Debug.Log(("Checking damage: " + Severity.ToString()));
 
             UpdateUi();
         }
+
+        private void SeverBodyPart()
+        {
+            if (severedBodyPartPrefab == null)
+            {
+                Debug.LogError($"No SeveredBodyPart defined on the BodyParts {gameObject.name}");
+            }
+
+            if (!isSevered)
+            {
+                // Spawn the severed body part
+                GameObject mainBodypart = Instantiate(severedBodyPartPrefab, transform.position, Quaternion.identity);
+
+                // Update the skinned mesh renderer
+                UpdateBodyPartVisuals(mainBodypart.GetComponent<SkinnedMeshRenderer>(), skinnedMeshRenderer);
+
+                // Spawn the severed part for other clients as well
+                // NetworkServer.Spawn(mainBodypart);
+
+                HideSeveredBodyPart();
+                isSevered = true;
+            }
+        }
+
+        private void HideSeveredBodyPart()
+        {
+            skinnedMeshRenderer.enabled = false;
+        }
+
+        private void UpdateBodyPartVisuals(SkinnedMeshRenderer newBodyPart, SkinnedMeshRenderer bodyPart)
+        {
+            Material[] materials = bodyPart.sharedMaterials;
+            newBodyPart.materials = materials;
+
+            for (int i = 0; i < newBodyPart.sharedMesh.blendShapeCount; i++)
+            {
+                newBodyPart.SetBlendShapeWeight(i, bodyPart.GetBlendShapeWeight(i));
+            }
+        }
+
 
         // TODO: updates the health UI 
         private void UpdateUi()
