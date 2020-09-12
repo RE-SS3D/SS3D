@@ -42,13 +42,13 @@ GameObject:
   - component: {fileID: 7477522284070196005}
   - component: {fileID: 7209712567220946026}
   - component: {fileID: 8016222924898131284}
-  - component: {fileID: 2275976470507102713}
   - component: {fileID: -6751516305611895406}
+  - component: {fileID: 2275976470507102713}
   - component: {fileID: 4927198185291025271}
   - component: {fileID: 6816536106933793647}
+  - component: {fileID: 6143507213145409448}
   - component: {fileID: 3512292834628846155}
   - component: {fileID: 5688882188462630418}
-  - component: {fileID: 6143507213145409448}
   - component: {fileID: 8805611969679259197}
   m_Layer: 16
   m_Name: banana
@@ -135,6 +135,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &-6751516305611895406
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8722317747974713380}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 3216447080179446721, guid: e40e3f4ef919bad45a7c34e8bf6473eb, type: 3}
 --- !u!54 &2275976470507102713
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -151,20 +165,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!64 &-6751516305611895406
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8722317747974713380}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 3216447080179446721, guid: e40e3f4ef919bad45a7c34e8bf6473eb, type: 3}
 --- !u!114 &4927198185291025271
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,7 +199,7 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: banana
   Name: banana
-  Volume: 10
+  Volume: 9
   container: {fileID: 0}
   sprite: {fileID: 0}
   prefab: {fileID: 8722317747974713380}
@@ -207,6 +207,20 @@ MonoBehaviour:
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
+--- !u!114 &6143507213145409448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8722317747974713380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text: 
+  MaxDistance: 0
 --- !u!114 &3512292834628846155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,26 +261,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Volume: 5
+  Volume: 800
   Temperature: 0
   Locked: 0
   substances:
-  - Substance: {fileID: 11400000, guid: b8980899917cbe5448c75ab705a4751e, type: 2}
-    Moles: 5
---- !u!114 &6143507213145409448
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8722317747974713380}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Text: Careful.
-  MaxDistance: 0
+  - Substance: {fileID: 11400000, guid: 80d989d222d73b54bb0fdded2783af74, type: 2}
+    Moles: 4
 --- !u!82 &8805611969679259197
 AudioSource:
   m_ObjectHideFlags: 0

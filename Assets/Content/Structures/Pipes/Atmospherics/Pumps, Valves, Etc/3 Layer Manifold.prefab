@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 5937939672719015625}
   - component: {fileID: 4012921308355476879}
   - component: {fileID: 8936394620877737717}
-  - component: {fileID: 6406515006924486677}
   - component: {fileID: 7650047217586248362}
   - component: {fileID: 8054511455686520210}
+  - component: {fileID: 5079598720285918506}
   m_Layer: 0
   m_Name: 3 Layer Manifold
   m_TagString: Untagged
@@ -100,19 +100,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &6406515006924486677
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6937106039017095358}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fb7ede8181b28b4082944d5e44dd86e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  volume: 1
 --- !u!64 &7650047217586248362
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -139,5 +126,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: <b>Atmospheric Pipe Layer Manifold</b>
+  DisplayName: Atmospheric Pipe Layer Manifold
+  Text: 
   MaxDistance: 0
+--- !u!114 &5079598720285918506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6937106039017095358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2325e25557c9e9428c2f0d4a6e3a1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layer: 1
+  volume: 0.1
+  manifoldType: 1

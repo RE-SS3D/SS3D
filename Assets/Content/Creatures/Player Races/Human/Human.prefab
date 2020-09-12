@@ -328,7 +328,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 289348138277843802}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0556901c8047ec9c6e4283a9f1f7c8, type: 3}
   m_Name: 
@@ -355,7 +355,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  prefab: {fileID: 5727570337167516730, guid: f86d70d91f583f44e95c5a20aea0fa31, type: 3}
+  prefab: {fileID: 5727570337167516730, guid: 7c4e08d1ee59141438c6c6737a2f7cf1, type: 3}
 --- !u!114 &7747405895790833225
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -456,9 +456,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: '<b>Goao</b>
-
-    The naked man.'
+  DisplayName: Goao
+  Text: The naked man.
   MaxDistance: 0
 --- !u!114 &340761490495231774
 MonoBehaviour:

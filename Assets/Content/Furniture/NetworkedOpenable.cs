@@ -8,7 +8,7 @@ namespace SS3D.Content.Furniture
     [RequireComponent(typeof(Animator))]
     public class NetworkedOpenable : InteractionTargetNetworkBehaviour
     {
-        private Animator animator;
+        protected Animator animator;
         private static readonly int Open = Animator.StringToHash("Open");
 
         [SerializeField] private Sprite OpenIcon;

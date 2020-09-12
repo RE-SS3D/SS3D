@@ -142,7 +142,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: <b>Poker Table</b>
+  DisplayName: Poker Table
+  Text: 
   MaxDistance: 0
 --- !u!1001 &6293662703714347641
 PrefabInstance:

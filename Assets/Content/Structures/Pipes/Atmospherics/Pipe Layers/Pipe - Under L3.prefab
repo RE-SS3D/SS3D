@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2183948917681095833}
   - component: {fileID: 8044363620118605159}
   m_Layer: 0
-  m_Name: Pipe L3 Under
+  m_Name: Pipe - Under L3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -137,6 +137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fb7ede8181b28b4082944d5e44dd86e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layer: 2
   volume: 1
 --- !u!114 &8044363620118605159
 MonoBehaviour:
@@ -150,5 +151,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: <b>Atmospheric Pipe</b>
+  DisplayName: Atmospheric Pipe
+  Text: 
   MaxDistance: 0

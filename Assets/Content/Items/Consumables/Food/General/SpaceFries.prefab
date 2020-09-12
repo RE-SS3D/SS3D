@@ -830,11 +830,14 @@ GameObject:
   m_Component:
   - component: {fileID: 7232019348805334279}
   - component: {fileID: 2045114757119070375}
-  - component: {fileID: 2154479770022788754}
   - component: {fileID: 9078880203578673513}
+  - component: {fileID: 2154479770022788754}
+  - component: {fileID: -342697699264856680}
   - component: {fileID: 8953095679271663709}
   - component: {fileID: 8656329211243488448}
-  - component: {fileID: -342697699264856680}
+  - component: {fileID: 1982316591228338259}
+  - component: {fileID: 8950354282276981418}
+  - component: {fileID: 7312695758170229688}
   m_Layer: 16
   m_Name: SpaceFries
   m_TagString: Untagged
@@ -887,6 +890,19 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
+--- !u!65 &9078880203578673513
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5910432035244984084}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.24531314, y: 0.3083501, z: 0.21692303}
+  m_Center: {x: -0.0009316653, y: 0.1486665, z: 0.00003837049}
 --- !u!54 &2154479770022788754
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -903,19 +919,24 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &9078880203578673513
-BoxCollider:
+--- !u!114 &-342697699264856680
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5910432035244984084}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.24531314, y: 0.3083501, z: 0.21692303}
-  m_Center: {x: -0.0009316653, y: 0.1486665, z: 0.00003837049}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  clientAuthority: 0
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01
 --- !u!114 &8953095679271663709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -932,7 +953,7 @@ MonoBehaviour:
   syncInterval: 0.1
   ItemId: fries_space
   Name: Space Fries
-  Volume: 12
+  Volume: 10
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5910432035244984084}
@@ -954,7 +975,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Text: Fried potato slices.
   MaxDistance: 0
---- !u!114 &-342697699264856680
+--- !u!114 &1982316591228338259
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -963,15 +984,138 @@ MonoBehaviour:
   m_GameObject: {fileID: 5910432035244984084}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Script: {fileID: 11500000, guid: 9d41435391f55af44bf8a254724a129a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  content: {fileID: 8950354282276981418}
+  contentPerUse: 2
+  trashPrefab: {fileID: 0}
+  destroyObject: 1
+  audio: {fileID: 7312695758170229688}
+  sounds:
+  - {fileID: 8300000, guid: dcb671bcc99906d49a3bbc0abbac071f, type: 3}
+  - {fileID: 8300000, guid: a24c00d8a1105b749a5bd770d80a3fc7, type: 3}
+  consumeVerb: eat
+  feedTime: 1
+  LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
+    type: 3}
+  item: {fileID: 8953095679271663709}
+--- !u!114 &8950354282276981418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5910432035244984084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Volume: 1000
+  Temperature: 0
+  Locked: 0
+  substances:
+  - Substance: {fileID: 11400000, guid: 80d989d222d73b54bb0fdded2783af74, type: 2}
+    Moles: 5
+--- !u!82 &7312695758170229688
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5910432035244984084}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &6324070648879734009
 GameObject:
   m_ObjectHideFlags: 0

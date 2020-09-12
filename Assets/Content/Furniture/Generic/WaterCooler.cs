@@ -44,5 +44,10 @@ namespace SS3D.Content.Furniture.Generic
         {
             return $"{NumberOfCups} cups remaining.";
         }
+		
+        public virtual string GetName(GameObject examinator)
+        {
+            return "";
+        }		
     }
 }

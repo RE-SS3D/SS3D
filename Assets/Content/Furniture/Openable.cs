@@ -9,7 +9,7 @@ namespace SS3D.Content.Furniture
     [RequireComponent(typeof(Animator))]
     public class Openable : InteractionTargetBehaviour
     {
-        private Animator animator;
+        protected Animator animator;
         private static readonly int OpenId = Animator.StringToHash("Open");
         [SerializeField] private Sprite openInteractionIcon;
 

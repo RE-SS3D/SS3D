@@ -4,8 +4,12 @@ namespace SS3D.Engine.Examine
 {
     public class SimpleExaminable : MonoBehaviour, IExaminable
     {
+        [TextArea(1, 15)]
+		[SerializeField]
+        private string DisplayName;
         [TextArea(5, 15)]
         public string Text;
+
         public float MaxDistance;
 
         public bool CanExamine(GameObject examinator)
@@ -29,5 +33,12 @@ namespace SS3D.Engine.Examine
         {
             return Text;
         }
+		
+        public virtual string GetName(GameObject examinator)
+        {
+            return DisplayName;
+        }		
+		
+		
     }
 }

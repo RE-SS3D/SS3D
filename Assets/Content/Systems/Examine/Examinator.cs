@@ -117,13 +117,32 @@ namespace SS3D.Content.Systems.Examine
                     NetworkIdentity identity = hitObject.GetComponent<NetworkIdentity>();
                     if (identity == null)
                     {
-                        // Client examine
+                        // Examine non-networked items
                         UpdateExamine(examinables);
                     }
                     else
                     {
-                        // Server examine
-                        CmdRequestExamine(identity);
+						if (identity.netId == 0){
+							
+							// Treat this as a non-networked item. A bit hacky. Seems to affect turfs / fixtures created by clients...
+							 UpdateExamine(examinables);
+							 
+						} else {
+							
+							// Network examine
+							if (!isServer){
+								// Clients must request the Rpc through a Command to the Server
+								CmdRequestExamine(identity);
+							} else {
+								// The Server can perform the Rpc directly.
+								TargetExamine(identity);
+							}				
+							
+						}
+						
+						
+						
+
                     }
 
                     return;
@@ -133,9 +152,18 @@ namespace SS3D.Content.Systems.Examine
             ClearExamine();
         }
 
+
         [Command]
         private void CmdRequestExamine(NetworkIdentity target)
         {
+			TargetExamine(target);
+		}
+		
+		
+		[TargetRpc]
+		private void TargetExamine(NetworkIdentity target)
+		{
+
             IExaminable[] examinables = target.GetComponents<IExaminable>();
             if (examinables.Length < 1)
             {
@@ -155,20 +183,14 @@ namespace SS3D.Content.Systems.Examine
             {
                 return;
             }
-
+			
             string hoverText = GetHoverText(examinables);
             if (hoverText != null)
             {
-                TargetExamine(hoverText);
-            }
-        }
-
-        [TargetRpc]
-        private void TargetExamine(string text)
-        {
-            examineUi.SetText(text);
-            uiInstance.SetActive(true);
-        }
+                examineUi.SetText(hoverText);
+				uiInstance.SetActive(true);
+            }			
+		}
 
         private void UpdateExamine(IExaminable[] examinables)
         {
@@ -193,7 +215,19 @@ namespace SS3D.Content.Systems.Examine
             {
                 if (examinable.CanExamine(go))
                 {
-                    builder.AppendLine(examinable.GetDescription(go));
+					
+					string displayName = examinable.GetName(go);
+					string displayDesc = examinable.GetDescription(go);
+					
+					// Prevent blank lines being appended (relevant where a GameObject has multiple components implementing iExaminable.
+					// (in this case, make displayName blank in all but one of them. For example, see Water Cooler prefab)
+					if (displayName != ""){
+						builder.AppendLine("<b>" + displayName + "</b>");
+					}
+                    if (displayDesc != ""){
+						builder.AppendLine(displayDesc);
+					}
+					
                 }
             }
 

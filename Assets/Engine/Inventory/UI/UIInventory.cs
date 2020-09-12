@@ -18,10 +18,24 @@ namespace SS3D.Engine.Inventory.UI
     */
     public class UIInventory : MonoBehaviour, UIAbstractContainer.UIInventoryHandler
     {
+        public Animator animator;
         // The prefab for when a new container needs to be made
         public GameObject genericContainerPrefab;
         // The existing ui element for the player body
         public UIAbstractContainer playerContainer;
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                animator.SetTrigger("toggleBodyInventory");
+            }
+
+            if (Input.GetKeyDown(KeyCode.I) && Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                playerContainer.gameObject.SetActive(!playerContainer.gameObject.activeSelf);
+            }
+        }
 
         public void StartUI(Inventory inventory)
         {
