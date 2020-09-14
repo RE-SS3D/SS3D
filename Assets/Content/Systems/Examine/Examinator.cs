@@ -21,7 +21,9 @@ namespace SS3D.Content.Systems.Examine
         private Vector2 lastMousePosition;
         private Vector3 lastCameraPosition;
         private Quaternion lastCameraRotation;
+		public CompositeItemSelector selector;
         private GameObject currentTarget;
+		private bool currentTargetIsComposite;
 
         private void Start()
         {
@@ -36,6 +38,7 @@ namespace SS3D.Content.Systems.Examine
             examineUi = uiInstance.GetComponent<ExamineUI>();
             Assert.IsNotNull(examineUi);
             uiInstance.SetActive(false);
+			selector = Camera.main.transform.GetChild(0).GetComponent<CompositeItemSelector>();
         }
 
         private void Update()
@@ -69,6 +72,7 @@ namespace SS3D.Content.Systems.Examine
             {
                 lastMousePosition = Vector2.negativeInfinity;
                 ClearExamine();
+				selector.DisableCamera();
             }
         }
 
@@ -89,29 +93,53 @@ namespace SS3D.Content.Systems.Examine
                 IExaminable[] examinables = hitObject.GetComponents<IExaminable>();
                 if (examinables.Length > 0)
                 {
-                    // Do nothing if ray hit current object
-                    if (currentTarget == hitObject)
+                    // Do nothing if ray hit current object (and that object is not composed of multiple Examinables)
+                    if (currentTarget == hitObject && !currentTargetIsComposite)
                     {
                         return;
                     }
+					
+					// Check view distance
+					if (Vector2.Distance(new Vector2(hit.point.x, hit.point.z),
+							new Vector2(transform.position.x, transform.position.z)) > ViewRange)
+					{
+						ClearExamine();
+						return;
+					}
 
-                    // Check view distance
-                    if (Vector2.Distance(new Vector2(hit.point.x, hit.point.z),
-                            new Vector2(transform.position.x, transform.position.z)) > ViewRange)
-                    {
-                        ClearExamine();
-                        return;
-                    }
-
-                    // Check obstacles
-                    if (Physics.Linecast(transform.position, hit.point, ObstacleMask))
-                    {
-                        ClearExamine();
-                        return;
-                    }
-
+					// Check obstacles
+					if (Physics.Linecast(transform.position, hit.point, ObstacleMask))
+					{
+						ClearExamine();
+						return;
+					}
 
                     currentTarget = hitObject;
+					currentTargetIsComposite = selector.IsCompositeExaminable(hitObject);
+
+					if (currentTargetIsComposite)
+					{
+						// Need to get ALL possible hits, because the initial hit may have gaps through which we can see other Examinables
+						RaycastHit[] hits = Physics.RaycastAll(ray, 200f);
+						// Convert the RaycastHits to GameObjects
+						GameObject[] gameObjects = new GameObject[hits.Length];
+						for (int i = 0; i < hits.Length; i++)
+						{
+							gameObjects[i] = hits[i].transform.gameObject;
+						}
+						selector.AddMeshesToLists(gameObjects);
+						hitObject = selector.GetCurrentExaminable();
+						
+						// HitObject will always be null on the first frame - the render hasn't occurred yet
+						if (hitObject == null)
+						{
+							return;
+						}
+						else
+						{
+							examinables = hitObject.GetComponents<IExaminable>();
+						}
+					}
 
                     // Check if object is networked synced
                     NetworkIdentity identity = hitObject.GetComponent<NetworkIdentity>();
