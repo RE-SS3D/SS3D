@@ -94,6 +94,7 @@ namespace SS3D.Engine.Inventory
             if (!CanStore(this, itemComponent))
                 throw new Exception("Item cannot be stored");
 
+            item.SetActive(false);
             items[slot] = item;
             itemComponent.container = this;
             RecalculateVolume(this);
@@ -106,7 +107,6 @@ namespace SS3D.Engine.Inventory
         [Server]
         public int AddItem(GameObject item)
         {
-            item.SetActive(false);
             var itemComponent = item.GetComponent<Item>();
             for (int i = 0; i < items.Count; ++i) {
                 if (items[i] == null && CanStore(this, itemComponent)) {
@@ -115,7 +115,6 @@ namespace SS3D.Engine.Inventory
                 }
             }
             RecalculateVolume(this);
-
             return -1;
         }
 

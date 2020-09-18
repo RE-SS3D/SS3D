@@ -284,7 +284,7 @@ MonoBehaviour:
   containerFilter: {fileID: 0}
   volumeLimited: 1
   maxVolume: 50
-  slots: 0
+  slots: 6
 --- !u!114 &4265221962216021434
 MonoBehaviour:
   m_ObjectHideFlags: 0
