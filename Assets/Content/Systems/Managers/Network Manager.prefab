@@ -1,0 +1,160 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6976582009294150638
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6976582009294150639}
+  - component: {fileID: 6976582009294150633}
+  - component: {fileID: 6976582009294150632}
+  m_Layer: 5
+  m_Name: Network Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6976582009294150639
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6976582009294150638}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6976582009294150633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6976582009294150638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e18662efaf26e54092f89e9db082f23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 1
+  runInBackground: 1
+  startOnHeadless: 1
+  showDebugMessages: 0
+  serverTickRate: 30
+  offlineScene: 
+  onlineScene: 
+  transport: {fileID: 6976582009294150632}
+  networkAddress: localhost
+  maxConnections: 4
+  disconnectInactiveConnections: 0
+  disconnectInactiveTimeout: 60
+  authenticator: {fileID: 0}
+  playerPrefab: {fileID: 289348138277843802, guid: 808fc3b770e18cf4a8fe9dbd48fa2444,
+    type: 3}
+  autoCreatePlayer: 1
+  playerSpawnMethod: 0
+  spawnPrefabs:
+  - {fileID: 2153916105656836095, guid: 4f869bcb1ae6e4b45b121ee768dc357d, type: 3}
+  - {fileID: 7113309295090581735, guid: e588e1504ef97444383402ca69ef72c1, type: 3}
+  - {fileID: 8244500010475539155, guid: 4f19f54776d7be74fb03d031f7503730, type: 3}
+  - {fileID: 4857545638466335823, guid: 967d973cc161a6b41a209194450e2ce0, type: 3}
+  - {fileID: 4328654258577221477, guid: 42ebcc557e2b8ef4b8340a91ea1f3ca5, type: 3}
+  - {fileID: 5868782653734892547, guid: 4f6ad28353158fc4bb9809dd3dd78fc0, type: 3}
+  - {fileID: 7692702130422137242, guid: a8c422faa301ff5478c260d4329ffe75, type: 3}
+  - {fileID: 5066420831570730394, guid: 060e6d91133c3c7469ee871e33e0739d, type: 3}
+  - {fileID: 654445344519657877, guid: 6ee2e72b69fdb9245938ac4b706b6262, type: 3}
+  - {fileID: 9065781347890963744, guid: 328795e01276a1949a0706a32af9c42e, type: 3}
+  - {fileID: 1651226480257078777, guid: 448d053ff33fb6548bc38d8087ecd4bf, type: 3}
+  - {fileID: 49752237346604910, guid: b75fa84abd6b041448faf94e8fd2addf, type: 3}
+  - {fileID: 5971329175774576902, guid: 26827041aa44ab349b348e0bbb681561, type: 3}
+  - {fileID: 3688303657299898446, guid: 80daf321e17b17c43bb8e5ffffd54a08, type: 3}
+  - {fileID: 627160345329782587, guid: 5d67e251a2fd2d247bb104ad5f680f0e, type: 3}
+  - {fileID: 627160345329782587, guid: af6227ef4be59994d9f6b980c9e1a0dd, type: 3}
+  - {fileID: 627160345329782587, guid: b1c0e24729caa5a4e9f684c072d6fd33, type: 3}
+  - {fileID: 627160345329782587, guid: 78cc8263d43e33f459a0be6a0fffb48f, type: 3}
+  - {fileID: 627160345329782587, guid: a163a3df772b9714eba117ae525e0b2b, type: 3}
+  - {fileID: 627160345329782587, guid: 35ab71a67eac0c84db9a4a40847c0cee, type: 3}
+  - {fileID: 627160345329782587, guid: 733ccc95cfe23f742b9762e1e799fb2a, type: 3}
+  - {fileID: 627160345329782587, guid: 639f9d56102e8a84c95fef5b83a3244c, type: 3}
+  - {fileID: 5297952924634552147, guid: c42f46e927c4d02458b0b39466700928, type: 3}
+  - {fileID: 197787038674958444, guid: 049558f02528ebb4199a7b557ae60715, type: 3}
+  - {fileID: 4462294093420203598, guid: 824793a63c105e14785008e3f1b2a5c8, type: 3}
+  - {fileID: 8025821132411324115, guid: 82018d13b985aaf4a9e389170d41e55a, type: 3}
+  - {fileID: 8953399703975470614, guid: 34cf1e9d82659b14d86bff1e51d9ca42, type: 3}
+  - {fileID: 1998283610537428600, guid: 4f0e866f8c9a51e4c8fabc2abd4880d7, type: 3}
+  - {fileID: 6405106075082308508, guid: 49f04538e44880a4f8951c2e770e57b2, type: 3}
+  - {fileID: 3792017003477948967, guid: 772da386eb7b01745913050fee544c32, type: 3}
+  - {fileID: 1888703706215615217, guid: 7becfab153276864f9fc7636a839d837, type: 3}
+  - {fileID: 5447298468117708068, guid: 4b57ef9a7f221f749be5edc010605894, type: 3}
+  - {fileID: 298201769935591731, guid: 74ead4cc2020eb640a1c074780eb5081, type: 3}
+  - {fileID: 3794527162878356835, guid: 91eda91fbc40c2a44ad628ea4d71fd39, type: 3}
+  - {fileID: 3794527162878356835, guid: 411b513efc8f06a40aecfc47d0c5fc5a, type: 3}
+  - {fileID: 7333537291608176250, guid: a64c8c235237b904da5a95b725f53610, type: 3}
+  - {fileID: 3794527162878356835, guid: 69f7efe59f4d75c4aab94c934e94602a, type: 3}
+  - {fileID: 3969530706517246485, guid: 8a7ad5ebd3f7e934dae7786a7a56294b, type: 3}
+  - {fileID: 3969530706517246485, guid: 56b1aff2041026242bed0f064dee56bb, type: 3}
+  - {fileID: 3969530706517246485, guid: 4c36b4020da2d844e919b70291b81156, type: 3}
+  - {fileID: 3969530706517246485, guid: dd0c2ecf82c562347a62855491e68886, type: 3}
+  - {fileID: 5533951594911835035, guid: ca1dc9505ebfe1b49959d3cfa6aa4b01, type: 3}
+  - {fileID: 5533951594911835035, guid: 6504a09c112fa4d478c3bce81801f878, type: 3}
+  - {fileID: 5367923578081395378, guid: 425c09b347f9d3949b40163fd9aa6c30, type: 3}
+  useLoginSystem: 0
+  warmupTime: 3
+  loginServerAddress: http://35.198.114.92
+  playerDummyPrefab: {fileID: 5297952924634552147, guid: c42f46e927c4d02458b0b39466700928,
+    type: 3}
+  loginManagerPrefab: {fileID: 757364905391698792, guid: 16d73a43abe25d14c8aacb4207acd152,
+    type: 3}
+  roundManagerPrefab: {fileID: 197787038674958444, guid: 049558f02528ebb4199a7b557ae60715,
+    type: 3}
+  roundManager: {fileID: 0}
+--- !u!114 &6976582009294150632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6976582009294150638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7424c1070fad4ba2a7a96b02fbeb4bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnClientConnected:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientDataReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientError:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientDisconnected:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerConnected:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerDataReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerError:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerDisconnected:
+    m_PersistentCalls:
+      m_Calls: []
+  port: 7777
+  NoDelay: 1
+  serverMaxMessageSize: 16384
+  serverMaxReceivesPerTick: 10000
+  clientMaxMessageSize: 16384
+  clientMaxReceivesPerTick: 1000
