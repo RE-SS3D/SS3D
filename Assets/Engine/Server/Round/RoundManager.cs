@@ -16,29 +16,34 @@ namespace SS3D.Engine.Server.Round
     {
         [SerializeField] private int warmupTimeSeconds = 5;
         [SerializeField] private int roundTimeSeconds = 300;
-        [SerializeField] private TextMeshProUGUI timerText = null;
-        [SerializeField] private RectTransform timerUi = null;
-        [SerializeField] private RectTransform controlUi = null;
 
         private int timerSeconds = 0;
         private bool started = false;
         private Coroutine tickCoroutine;
-            
+
+        public event System.Action Server_OnWarmupStarted;
+        public event System.Action Server_OnRoundStarted;
+        public event System.Action Server_OnRoundRestarted;
+        public event System.Action<string> Client_OnTimmerUpdated;
+
         public bool IsRoundStarted => started;
 
         public void StartWarmup()
         {
-            timerSeconds = warmupTimeSeconds;
             gameObject.SetActive(true);
+            timerSeconds = warmupTimeSeconds;
             StartCoroutine(TickWarmup());
+
+            Server_OnWarmupStarted?.Invoke();
         }
 
         public void StartRound()
         {
-            started = true;
-            controlUi.gameObject.SetActive(true);
             gameObject.SetActive(true);
+            started = true;
             tickCoroutine = StartCoroutine(Tick());
+
+            Server_OnRoundStarted?.Invoke();
         }
         
         public void RestartRound()
@@ -50,6 +55,8 @@ namespace SS3D.Engine.Server.Round
             
             StopCoroutine(tickCoroutine);
             NetworkManager.singleton.ServerChangeScene(SceneManager.GetActiveScene().name);
+
+            Server_OnRoundRestarted?.Invoke();
         }
         
         private IEnumerator TickWarmup()
@@ -79,12 +86,7 @@ namespace SS3D.Engine.Server.Round
         [ClientRpc]
         private void RpcUpdateClientClocks(string text)
         {
-            if (!timerUi.gameObject.activeSelf)
-            {
-                timerUi.gameObject.SetActive(true);
-            }
-
-            timerText.text = text;
+            Client_OnTimmerUpdated?.Invoke(text);
         }
 
         private string GetTimerText()
