@@ -88,24 +88,6 @@ namespace Mirror
         }
 
         /// <summary>
-        /// Starts the client using an input field to determine the URI
-        /// </summary>
-        /// <param name="inputField"></param>
-        public void StartClient(TMPro.TMP_InputField inputField)
-        {
-            UriBuilder uriBuilder = new UriBuilder();
-            uriBuilder.Scheme = "tcp4";
-            if (IPAddress.TryParse(inputField.text, out IPAddress address)) {
-                uriBuilder.Host = address.ToString();
-            } else {
-                uriBuilder.Host = "localhost";
-            }
-
-            var uri = new Uri(uriBuilder.ToString(), UriKind.Absolute);
-            StartClient(uri);
-        }
-
-        /// <summary>
         /// Initial server setup
         /// </summary>
         public override void OnStartServer()
