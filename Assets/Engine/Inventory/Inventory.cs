@@ -176,7 +176,19 @@ namespace SS3D.Engine.Inventory
                     Debug.Log(
                         "Still have that mirror bug where transmitting self in OnStartServer for some reason doesnt fucking work");
                 else
-                    containers.AddRange(obj.GetComponentsInChildren<Container>());
+				{
+					/* Checks whether the container is already listed before adding it. This is done because mobile inventories (such
+					   as the medkit or toolbox) are returned twice while they are held by a player (once as a child of the player, once
+					   in thier own right). This was previously causing errors with duplicate Dictionary entries and doubled UI. */
+					var objContainers = obj.GetComponentsInChildren<Container>();
+					foreach (Container subordinateContainer in objContainers)
+					{
+						if (!containers.Contains(subordinateContainer))
+						{
+							containers.Add(subordinateContainer);
+						}
+					}					
+				}
             }
 
             return containers;
