@@ -251,9 +251,13 @@ namespace SS3D.Engine.Tiles
             // Fill in our references to objects using the saved information from our tile variable.
             // Effectively, this code expects the tile's children to match up to the turf and fixtures.
             // If it finds any inconsistencies, it rectifies them.
+			GameObject alternateNameObject;
             if (tile.plenum)
             {
+				// Check both the instance name and the prefab name. Save whichever we have as our plenum.
                 plenum = transform.Find("plenum_" + tile.plenum.id)?.gameObject;
+				alternateNameObject = transform.Find(tile.plenum.name)?.gameObject;
+				plenum = plenum ?? alternateNameObject;
 
                 if (plenum == null)
                 {
@@ -276,7 +280,11 @@ namespace SS3D.Engine.Tiles
 
             if (tile.turf)
             {
+				// Check both the instance name and the prefab name. Save whichever we have as our turf.
                 turf = transform.Find("turf_" + tile.turf.id)?.gameObject;
+				alternateNameObject = transform.Find(tile.turf.name)?.gameObject;
+				turf = turf ?? alternateNameObject;
+				
 
                 if (turf != null)
                 {
@@ -287,7 +295,7 @@ namespace SS3D.Engine.Tiles
                     // Update our tile object to make up for the fact that the object doesn't exist in the world.
                     // A user would have to fuck around in the editor to get to this point.
                     if (shouldWarn)
-                        Debug.LogWarning("Tile's turf was not created? Creating now.");
+                        Debug.LogWarning("Tile's turf was not created? Creating now. ");
 
                     // Create the object
                     CreateTurf(tile.turf);
@@ -342,6 +350,8 @@ namespace SS3D.Engine.Tiles
             // FixturesContainer must exist
             if (tile.fixtures != null)
             {
+				GameObject alternateNameObject;
+
                 // Loop through every tile layer
                 foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
                 {
@@ -350,7 +360,11 @@ namespace SS3D.Engine.Tiles
                     {
 
                         string layerName = layer.ToString();
+						
+						// Check both the instance name and the prefab name. Save whichever we have as our fixture.
                         fixtures[i] = transform.Find("fixture_" + "tile_" + layerName.ToLower() + "_" + tileFixture.id)?.gameObject;
+						alternateNameObject = transform.Find(tileFixture.name)?.gameObject;
+						fixtures[i] = fixtures[i] ?? alternateNameObject;
 
                         if (fixtures[i] != null)
                         {
@@ -382,7 +396,11 @@ namespace SS3D.Engine.Tiles
                     {
 
                         string layerName = layer.ToString();
+						
+						// Check both the instance name and the prefab name. Save whichever we have as our fixture.
                         fixtures[i] = transform.Find("fixture_" + "wall_" + layerName.ToLower() + "_" + wallFixture.id)?.gameObject;
+						alternateNameObject = transform.Find(wallFixture.name)?.gameObject;
+						fixtures[i] = fixtures[i] ?? alternateNameObject;
 
                         if (fixtures[i] == null)
                         {
@@ -408,8 +426,12 @@ namespace SS3D.Engine.Tiles
                     {
 
                         string layerName = layer.ToString();
+						
+						// Check both the instance name and the prefab name. Save whichever we have as our fixture.
                         fixtures[i] = transform.Find("fixture_" + "floor_" + layerName.ToLower() + "_" + floorFixture.id)?.gameObject;
-
+						alternateNameObject = transform.Find(floorFixture.name)?.gameObject;
+						fixtures[i] = fixtures[i] ?? alternateNameObject;
+						
                         if (fixtures[i] != null)
                         {
                             floorFixtureConnectors[i - TileDefinition.GetTileFixtureLayerSize() - TileDefinition.GetWallFixtureLayerSize()] = fixtures[i].GetComponent<AdjacencyConnector>();
