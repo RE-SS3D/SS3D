@@ -21,10 +21,10 @@ namespace SS3D.Engine.Server.Round
         private bool started = false;
         private Coroutine tickCoroutine;
 
-        public event System.Action Server_OnWarmupStarted;
-        public event System.Action Server_OnRoundStarted;
-        public event System.Action Server_OnRoundRestarted;
-        public event System.Action<string> Client_OnTimmerUpdated;
+        public event System.Action ServerWarmupStarted;
+        public event System.Action ServerRoundStarted;
+        public event System.Action ServerRoundRestarted;
+        public event System.Action<string> ClientTimerUpdated;
 
         public bool IsRoundStarted => started;
 
@@ -34,7 +34,7 @@ namespace SS3D.Engine.Server.Round
             timerSeconds = warmupTimeSeconds;
             StartCoroutine(TickWarmup());
 
-            Server_OnWarmupStarted?.Invoke();
+            ServerWarmupStarted?.Invoke();
         }
 
         public void StartRound()
@@ -43,7 +43,7 @@ namespace SS3D.Engine.Server.Round
             started = true;
             tickCoroutine = StartCoroutine(Tick());
 
-            Server_OnRoundStarted?.Invoke();
+            ServerRoundStarted?.Invoke();
         }
         
         public void RestartRound()
@@ -56,7 +56,7 @@ namespace SS3D.Engine.Server.Round
             StopCoroutine(tickCoroutine);
             NetworkManager.singleton.ServerChangeScene(SceneManager.GetActiveScene().name);
 
-            Server_OnRoundRestarted?.Invoke();
+            ServerRoundRestarted?.Invoke();
         }
         
         private IEnumerator TickWarmup()
@@ -86,7 +86,7 @@ namespace SS3D.Engine.Server.Round
         [ClientRpc]
         private void RpcUpdateClientClocks(string text)
         {
-            Client_OnTimmerUpdated?.Invoke(text);
+            ClientTimerUpdated?.Invoke(text);
         }
 
         private string GetTimerText()
