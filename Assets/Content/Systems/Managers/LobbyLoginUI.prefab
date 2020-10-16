@@ -429,7 +429,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 1, g: 1, b: 1, a: 0.7529412}
-  m_Text: Localhost
+  m_Text: localhost
   m_CaretBlinkRate: 0
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -478,7 +478,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -84}
-  m_SizeDelta: {x: -202.80585, y: 67.899994}
+  m_SizeDelta: {x: -87.98071, y: 67.899994}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6795732657437310259
 CanvasRenderer:
@@ -560,20 +560,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: StartHost
+      - m_Target: {fileID: 4282305140430295671}
+        m_MethodName: OnHostButtonPressed
         m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 7054195789446113916}
-        m_MethodName: SetActive
-        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -669,7 +658,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 49.6}
-  m_SizeDelta: {x: -202.80585, y: 163.66743}
+  m_SizeDelta: {x: -87.98071, y: 163.66743}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5206790625420000153
 CanvasRenderer:
@@ -751,20 +740,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: StartClient
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 6808936566223018411}
-          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 7054195789446113916}
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 4282305140430295671}
+        m_MethodName: OnJoinButtonPressed
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -784,7 +762,8 @@ GameObject:
   - component: {fileID: 265072263576197880}
   - component: {fileID: 1905608984360446013}
   - component: {fileID: 7369752885757284378}
-  - component: {fileID: 5334666174762846377}
+  - component: {fileID: 4282305140430295671}
+  - component: {fileID: 2677266313033479783}
   m_Layer: 5
   m_Name: LobbyLoginUI
   m_TagString: Untagged
@@ -799,7 +778,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7054195789446113916}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -851,7 +830,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 3
---- !u!95 &5334666174762846377
+--- !u!114 &4282305140430295671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7054195789446113916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0388b51b83050d48be7c31dbad1778d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ipAddressInputField: {fileID: 6808936566223018411}
+--- !u!95 &2677266313033479783
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0
@@ -1008,7 +1000,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Localhost\u200B"
+  m_text: "localhost\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0d8da653bf6ebc640b69676085b38b91, type: 2}
   m_sharedMaterial: {fileID: -5479874421949242954, guid: 0d8da653bf6ebc640b69676085b38b91,
