@@ -70,6 +70,7 @@ namespace Mirror
 
         private bool hasLoginServer; // whether the login server is found and alive
 
+        [SerializeField] private GameObject loadingScreen;
         public override void Start()
         {
             base.Start();
@@ -107,6 +108,8 @@ namespace Mirror
             SetupServerManagers();
             NetworkServer.SendToAll(new LoginServerMessage
                 {serverAddress = hasLoginServer ? loginServerAddress : null});
+            
+            UpdateLoadingScreen(false);
         }
 
         public override void OnStartClient()
@@ -118,6 +121,7 @@ namespace Mirror
 
         private void SetupServerManagers()
         {
+            roundManager = GameObject.FindObjectOfType<RoundManager>();
             if (roundManager == null)
             {
                 roundManager = Instantiate(roundManagerPrefab).GetComponent<RoundManager>();
@@ -287,6 +291,33 @@ namespace Mirror
             }
 
             return true;
+        }
+
+        public override void OnClientChangeScene(string newSceneName, SceneOperation sceneOperation, bool customHandling)
+        {
+            base.OnClientChangeScene(newSceneName, sceneOperation, customHandling);
+
+            UpdateLoadingScreen(true);
+        }
+
+        public override void OnServerChangeScene(string newSceneName)
+        {
+            base.OnServerChangeScene(newSceneName);
+            
+            UpdateLoadingScreen(true);
+        }
+
+        public override void OnClientSceneChanged(NetworkConnection conn)
+        {
+            base.OnClientSceneChanged(conn);
+            
+            
+        }
+
+        private void UpdateLoadingScreen(bool state)
+        {
+            if (loadingScreen != null)
+                loadingScreen?.SetActive(state);
         }
     }
 }
