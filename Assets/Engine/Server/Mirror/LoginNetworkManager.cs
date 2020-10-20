@@ -311,7 +311,7 @@ namespace Mirror
         {
             base.OnClientSceneChanged(conn);
             
-            
+            UpdateLoadingScreen(false);
         }
 
         private void UpdateLoadingScreen(bool state)
