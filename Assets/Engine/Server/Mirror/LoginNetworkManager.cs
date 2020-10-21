@@ -5,8 +5,9 @@ using SS3D.Engine.Server.Login.Data;
 using SS3D.Engine.Server.Login.Networking;
 using SS3D.Engine.Server.Round;
 using System.Net;
+    using UnityEngine.UI;
 
-namespace Mirror
+    namespace Mirror
 {
     /// <summary>
     /// Custom implementation of Network manager to accomodate requiring the player to login before spawning them.
