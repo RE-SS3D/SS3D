@@ -93,8 +93,11 @@ GameObject:
   - component: {fileID: 2239357942738063126}
   - component: {fileID: -8840783221955267004}
   - component: {fileID: -2355442327488266867}
+  - component: {fileID: 4272314014040592508}
+  - component: {fileID: 3389569277275911604}
+  - component: {fileID: 7567431014262820083}
   m_Layer: 0
-  m_Name: Human test
+  m_Name: Human 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -456,6 +459,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: '<b>Goao</b>
 
     The naked man.'
@@ -614,16 +618,16 @@ MonoBehaviour:
   syncInterval: 0.1
   maxHealth: 100
   canBreathAnywhere: 0
-  bloodSystem: {fileID: 0}
+  bloodSystem: {fileID: 4272314014040592508}
   brainSystem: {fileID: 0}
-  respiratorySystem: {fileID: 0}
+  respiratorySystem: {fileID: 3389569277275911604}
   bloodColor: 0
   BodyParts:
   - {fileID: -8011510250873885795, guid: 448d053ff33fb6548bc38d8087ecd4bf, type: 3}
   - {fileID: -4530326210429120263, guid: 80daf321e17b17c43bb8e5ffffd54a08, type: 3}
   AllowKnifeHarvest: 0
   butcherResults: []
-  metabolism: {fileID: 0}
+  metabolism: {fileID: 7567431014262820083}
 --- !u!114 &-2355442327488266867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -642,6 +646,53 @@ MonoBehaviour:
     type: 3}
   attackType: 0
   damageAmount: 10
+--- !u!114 &4272314014040592508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c2822f40835fc54484ed69b757615c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  BloodLevel: 560
+--- !u!114 &3389569277275911604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fce3c0ea470504443b341fad31242ec5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  IsSuffocating: 0
+--- !u!114 &7567431014262820083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 332e690669da217478064a7659413ecf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  metabolismRate: 5
+  starvingRunDebuff: 2
+  starvingWalkDebuff: 1
 --- !u!1 &290878266594310021
 GameObject:
   m_ObjectHideFlags: 0
@@ -906,7 +957,7 @@ BoxCollider:
   m_GameObject: {fileID: 745838129924863547}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.28732437, y: 0.22618452, z: 0.19415453}
   m_Center: {x: 0.000120818615, y: 0.11309208, z: -0.00962241}
@@ -1540,6 +1591,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7514392608354105106}
   - component: {fileID: 3453540392095469432}
+  - component: {fileID: 6269331463739318298}
   m_Layer: 15
   m_Name: eye_l
   m_TagString: Untagged
@@ -1580,6 +1632,27 @@ MonoBehaviour:
   bodyPartStatuses: 0
   skinnedMeshRenderer: {fileID: 6017340379799902929}
   body: {fileID: 0}
+--- !u!114 &6269331463739318298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1364040790074449624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxDamage: 200
+  Type: 1
+  severedBodyPartPrefab: {fileID: 2153916105656836095, guid: 4f869bcb1ae6e4b45b121ee768dc357d,
+    type: 3}
+  skinnedMeshRenderer: {fileID: 6108569423093115461}
+  childrenParts: []
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &1432977978567209782
 GameObject:
   m_ObjectHideFlags: 0
@@ -1686,6 +1759,7 @@ GameObject:
   - component: {fileID: 3420469997494009254}
   - component: {fileID: 4487458991691251741}
   - component: {fileID: 2167618319810982954}
+  - component: {fileID: 5249506360283613233}
   m_Layer: 15
   m_Name: head
   m_TagString: Untagged
@@ -1768,6 +1842,28 @@ MonoBehaviour:
     x: 0
     y: 0
     z: 0
+--- !u!114 &5249506360283613233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1497768525724101046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxDamage: 200
+  Type: 9
+  severedBodyPartPrefab: {fileID: 1651226480257078777, guid: 448d053ff33fb6548bc38d8087ecd4bf,
+    type: 3}
+  skinnedMeshRenderer: {fileID: 4396348641062937663}
+  childrenParts:
+  - {fileID: 6269331463739318298}
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &1556632828458685282
 GameObject:
   m_ObjectHideFlags: 0
@@ -2847,7 +2943,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1110166879942812220}
   - component: {fileID: 4396348641062937663}
-  - component: {fileID: 5905126814132388309}
   m_Layer: 0
   m_Name: 01 Body - Human Head
   m_TagString: Untagged
@@ -2968,29 +3063,6 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.000000059604645, y: 0.5879549, z: -0.024717052}
     m_Extent: {x: 0.10535497, y: 0.16734734, z: 0.13802585}
   m_DirtyAABB: 0
---- !u!114 &5905126814132388309
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4068008035294483697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bodyPartType: 9
-  severedBodyPartPrefab: {fileID: 1651226480257078777, guid: 448d053ff33fb6548bc38d8087ecd4bf,
-    type: 3}
-  childrenParts:
-  - {fileID: 3453540392095469432}
-  - {fileID: 6047689268155075226}
-  - {fileID: 8108324689140164922}
-  - {fileID: 852240104608316358}
-  bodyPartStatuses: 0
-  skinnedMeshRenderer: {fileID: 4396348641062937663}
-  body: {fileID: 0}
 --- !u!1 &4217935746962631363
 GameObject:
   m_ObjectHideFlags: 0
@@ -3966,7 +4038,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8816584030875756}
   - component: {fileID: 6392763146934917176}
-  - component: {fileID: 4860632590736402688}
   m_Layer: 15
   m_Name: chest
   m_TagString: Untagged
@@ -4011,19 +4082,6 @@ MonoBehaviour:
   bodyPartStatuses: 0
   skinnedMeshRenderer: {fileID: 1067344262487053123}
   body: {fileID: 0}
---- !u!65 &4860632590736402688
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6743960455634992275}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.28732437, y: 0.22618452, z: 0.19415453}
-  m_Center: {x: 0.000120818615, y: 0.02, z: -0.00962241}
 --- !u!1 &6793449098192051331
 GameObject:
   m_ObjectHideFlags: 0
@@ -4034,7 +4092,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8200820077652235051}
   - component: {fileID: 5640873502109975346}
-  - component: {fileID: 4603250806077004400}
   m_Layer: 15
   m_Name: hand_l
   m_TagString: Untagged
@@ -4080,20 +4137,6 @@ MonoBehaviour:
   bodyPartStatuses: 0
   skinnedMeshRenderer: {fileID: 1002436508960242065}
   body: {fileID: 0}
---- !u!136 &4603250806077004400
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6793449098192051331}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.08
-  m_Height: 0.3
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.03, z: 0}
 --- !u!1 &7165410278998248383
 GameObject:
   m_ObjectHideFlags: 0
@@ -4429,7 +4472,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.05
+  m_Radius: 0.04913969
   m_Height: 0.19655876
   m_Direction: 1
   m_Center: {x: 0, y: 0.09827938, z: 0}
@@ -4588,10 +4631,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.06
-  m_Height: 0.26
+  m_Radius: 0.08196795
+  m_Height: 0.40983975
   m_Direction: 1
-  m_Center: {x: 0, y: 0.1, z: 0}
+  m_Center: {x: 0, y: 0.20491987, z: 0}
 --- !u!54 &2705517779868773576
 Rigidbody:
   m_ObjectHideFlags: 0

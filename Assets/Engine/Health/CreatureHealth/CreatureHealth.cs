@@ -129,7 +129,7 @@ namespace SS3D.Engine.Health
             var tryGetHead = FindBodyPart(BodyPartType.Head);
             if (tryGetHead != null && brainSystem == null)
             {
-                if (tryGetHead.Type != BodyPartType.Torso)
+                if (tryGetHead.Type != BodyPartType.Chest)
                 {
                     //Head exists, install a brain system
                     brainSystem = gameObject.AddComponent<BrainSystem>();
@@ -180,7 +180,7 @@ namespace SS3D.Engine.Health
             DNABloodType = JsonUtility.FromJson<DNABloodType>(updatedDNA);
         }
 
-        private BodyPartBehaviour GetBodyPart(float amount, DamageType damageType, BodyPartType bodyPartAim = BodyPartType.Torso)
+        private BodyPartBehaviour GetBodyPart(float amount, DamageType damageType, BodyPartType bodyPartAim = BodyPartType.Chest)
         {
             if (amount <= 0 || IsDead)
             {
@@ -216,10 +216,10 @@ namespace SS3D.Engine.Health
                     }
                 }
 
-                //If the body part does not exist then try to find the torso instead
+                //If the body part does not exist then try to find the Chest instead
                 if (bodyPartBehaviour == null)
                 {
-                    var getTorsoIndex = BodyParts.FindIndex(x => x.Type == BodyPartType.Torso);
+                    var getTorsoIndex = BodyParts.FindIndex(x => x.Type == BodyPartType.Chest);
                     if (getTorsoIndex != -1)
                     {
                         bodyPartBehaviour = BodyParts[getTorsoIndex];
@@ -243,8 +243,8 @@ namespace SS3D.Engine.Health
             {
                 return BodyParts[searchIndex];
             }
-            //If nothing is found then try to find a torso component:
-            searchIndex = BodyParts.FindIndex(x => x.Type == BodyPartType.Torso);
+            //If nothing is found then try to find a Chest component:
+            searchIndex = BodyParts.FindIndex(x => x.Type == BodyPartType.Chest);
             if (searchIndex != -1)
             {
                 return BodyParts[searchIndex];

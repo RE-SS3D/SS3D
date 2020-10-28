@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace SS3D.Engine.Health
 {
@@ -19,11 +20,17 @@ namespace SS3D.Engine.Health
         /// The skinnedMeshRenderer associated with this bodypart. It will be hidden if the bodypart is detached
         [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer = null;
 
+        /// List of children for this bodypart. For example, the hand should be a child of the arm, etc.
+        [SerializeField] private List<BodyPartBehaviour> childrenParts = new List<BodyPartBehaviour>();
+
         public bool isBleeding = false;
         public CreatureHealth creatureHealth;
 
         public DamageSeverity Severity;
         public float OverallDamage => BruteDamage + BurnDamage;
+        public List<BodyPartBehaviour> ChildrenParts => childrenParts;
+        public GameObject SeveredBodyPartPrefab => severedBodyPartPrefab;
+        public SkinnedMeshRenderer SkinnedMeshRenderer => skinnedMeshRenderer;
 
         private bool isSevered = false;
 
@@ -45,10 +52,10 @@ namespace SS3D.Engine.Health
                 return BodyPartType.Head;
             if (t <= 10)
                 //	7/50
-                return BodyPartType.BicepsLeft;
+                return BodyPartType.ArmLeft;
             if (t <= 17)
                 //	7/50
-                return BodyPartType.BicepsRight;
+                return BodyPartType.ArmRight;
             if (t <= 24)
                 //	7/50
                 return BodyPartType.LegLeft;
@@ -57,9 +64,9 @@ namespace SS3D.Engine.Health
                 return BodyPartType.LegRight;
             if (t <= 41)
                 //	7/50
-                return BodyPartType.Torso;
+                return BodyPartType.Chest;
             //	9/50
-            return BodyPartType.Torso;
+            return BodyPartType.Chest;
         }
 
         // Apply damages from here.
@@ -158,7 +165,7 @@ namespace SS3D.Engine.Health
                 SeverBodyPart();
             }
 
-            Debug.Log(("Checking damage: " + Severity.ToString()));
+            Debug.Log(("Limb " + Type.ToString() + "  has " + Severity.ToString()) + " damage");
 
             UpdateUi();
         }
@@ -180,6 +187,15 @@ namespace SS3D.Engine.Health
 
                 // Spawn the severed part for other clients as well
                 // NetworkServer.Spawn(mainBodypart);
+
+                // Do childeren body parts as well
+                childrenParts.ForEach(child =>
+                {
+                    GameObject childBodyPart = Instantiate(child.SeveredBodyPartPrefab, child.transform.position, Quaternion.identity);
+                    UpdateBodyPartVisuals(childBodyPart.GetComponent<SkinnedMeshRenderer>(), child.SkinnedMeshRenderer);
+
+                    // NetworkServer.Spawn(childBodyPart);
+                });
 
                 HideSeveredBodyPart();
                 isSevered = true;
