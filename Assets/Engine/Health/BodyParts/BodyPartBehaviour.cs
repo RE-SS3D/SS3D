@@ -8,8 +8,8 @@ namespace SS3D.Engine.Health
     {
         private float bruteDamage;
         private float burnDamage;
-        public float BruteDamage { get { return bruteDamage; } set { bruteDamage = Mathf.Clamp(value, 0, 200); } }
-        public float BurnDamage { get { return burnDamage; } set { burnDamage = Mathf.Clamp(value, 0, 200); } }
+        public float BruteDamage { get { return bruteDamage; } set { bruteDamage = Mathf.Clamp(value, 0, MaxDamage); } }
+        public float BurnDamage { get { return burnDamage; } set { burnDamage = Mathf.Clamp(value, 0, MaxDamage); } }
 
         public int MaxDamage = 200;
         public BodyPartType Type;
@@ -176,8 +176,11 @@ namespace SS3D.Engine.Health
 
             foreach (BodyPartBehaviour child in root.childrenParts)
             {
-                bodyParts.Add(child);
-                bodyParts.AddRange(child.childrenParts);
+                if (child != null)
+                {
+                    bodyParts.Add(child);
+                    bodyParts.AddRange(child.childrenParts);
+                }
             }
 
             return bodyParts;

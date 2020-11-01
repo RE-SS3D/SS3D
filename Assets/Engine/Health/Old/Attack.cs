@@ -50,7 +50,10 @@ namespace SS3D.Engine.Health
             BodyPartBehaviour target = hit.collider.GetComponent<BodyPartBehaviour>();
             if (!target)
             {
-                return;
+                // We may have a limb that consists of 2 colliders
+                target = hit.collider.GetComponentInParent<BodyPartBehaviour>();
+                if (!target)
+                    return;
             }
 
             // CmdAttackBodyPart(target.Body.gameObject, target.BodyPartType, damageAmount, hit.point);
