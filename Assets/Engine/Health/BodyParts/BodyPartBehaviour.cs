@@ -170,6 +170,19 @@ namespace SS3D.Engine.Health
             UpdateUi();
         }
 
+        private List<BodyPartBehaviour> GetAllBodyParts(BodyPartBehaviour root)
+        {
+            List<BodyPartBehaviour> bodyParts = new List<BodyPartBehaviour>();
+
+            foreach (BodyPartBehaviour child in root.childrenParts)
+            {
+                bodyParts.Add(child);
+                bodyParts.AddRange(child.childrenParts);
+            }
+
+            return bodyParts;
+        }
+
         private void SeverBodyPart()
         {
             if (severedBodyPartPrefab == null)
@@ -188,11 +201,19 @@ namespace SS3D.Engine.Health
                 // Spawn the severed part for other clients as well
                 // NetworkServer.Spawn(mainBodypart);
 
+
                 // Do childeren body parts as well
-                childrenParts.ForEach(child =>
+                GetAllBodyParts(this).ForEach(child =>
                 {
                     GameObject childBodyPart = Instantiate(child.SeveredBodyPartPrefab, child.transform.position, Quaternion.identity);
                     UpdateBodyPartVisuals(childBodyPart.GetComponent<SkinnedMeshRenderer>(), child.SkinnedMeshRenderer);
+
+                    /// Freeze the rigid body to the child parts remain attached
+                    //childBodyPart.transform.SetParent(mainBodypart.transform);
+                    //Rigidbody childRigid = childBodyPart.GetComponent<Rigidbody>();
+                    //childRigid.constraints = RigidbodyConstraints.FreezeAll;
+
+                    child.HideSeveredBodyPart();
 
                     // NetworkServer.Spawn(childBodyPart);
                 });

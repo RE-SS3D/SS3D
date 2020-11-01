@@ -55,6 +55,7 @@ namespace SS3D.Engine.Health
 
             // CmdAttackBodyPart(target.Body.gameObject, target.BodyPartType, damageAmount, hit.point);
 
+            Instantiate(attackParticleEffect, hit.point, Quaternion.identity);
             target.ReceiveDamage(DamageType.Brute, 10);
         }
 
