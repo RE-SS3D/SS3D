@@ -115,7 +115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: Roboto
   m_EditorClassIdentifier: 
-  hashCode: 780160355
+  hashCode: -955500245
   material: {fileID: -3545793355179933867}
   materialHashCode: -1988092024
   m_Version: 1.1.0
@@ -2706,8 +2706,8 @@ Texture2D:
   m_TextureDimension: 2
   m_TextureSettings:
     serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
+    m_FilterMode: 2
+    m_Aniso: 16
     m_MipBias: 0
     m_WrapU: 0
     m_WrapV: 0
