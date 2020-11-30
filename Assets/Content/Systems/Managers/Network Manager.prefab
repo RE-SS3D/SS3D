@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 6976582009294150639}
   - component: {fileID: 6976582009294150633}
   - component: {fileID: 6976582009294150632}
+  - component: {fileID: 8700257}
+  - component: {fileID: 8700261}
   m_Layer: 5
   m_Name: Network Manager
   m_TagString: Untagged
@@ -49,8 +51,8 @@ MonoBehaviour:
   startOnHeadless: 1
   showDebugMessages: 0
   serverTickRate: 30
-  offlineScene: 
-  onlineScene: 
+  offlineScene: Assets/Content/Scenes/Main Menu.unity
+  onlineScene: Assets/Content/Scenes/Server Lobby.unity
   transport: {fileID: 6976582009294150632}
   networkAddress: localhost
   maxConnections: 4
@@ -106,16 +108,17 @@ MonoBehaviour:
   - {fileID: 5533951594911835035, guid: ca1dc9505ebfe1b49959d3cfa6aa4b01, type: 3}
   - {fileID: 5533951594911835035, guid: 6504a09c112fa4d478c3bce81801f878, type: 3}
   - {fileID: 5367923578081395378, guid: 425c09b347f9d3949b40163fd9aa6c30, type: 3}
-  useLoginSystem: 0
   warmupTime: 3
   loginServerAddress: http://35.198.114.92
   playerDummyPrefab: {fileID: 5297952924634552147, guid: c42f46e927c4d02458b0b39466700928,
     type: 3}
   loginManagerPrefab: {fileID: 757364905391698792, guid: 16d73a43abe25d14c8aacb4207acd152,
     type: 3}
-  roundManagerPrefab: {fileID: 197787038674958444, guid: 049558f02528ebb4199a7b557ae60715,
+  roundManagerPrefab: {fileID: 6354123221177745285, guid: e84c1b8cfcb1483478aeb2d2767ebf1b,
     type: 3}
+  useLoginSystem: 0
   roundManager: {fileID: 0}
+  loadingScreen: {fileID: 0}
 --- !u!114 &6976582009294150632
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,3 +161,37 @@ MonoBehaviour:
   serverMaxReceivesPerTick: 10000
   clientMaxMessageSize: 16384
   clientMaxReceivesPerTick: 1000
+--- !u!114 &8700257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6976582009294150638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33e70e6441e87ca4c9a172808785cdfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  forceHidden: 0
+  selectedMap: {fileID: 102900000, guid: 6ab2cdc504d5b4349b777855eb364936, type: 3}
+  maps:
+  - {fileID: 102900000, guid: 6ab2cdc504d5b4349b777855eb364936, type: 3}
+--- !u!114 &8700261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6976582009294150638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0

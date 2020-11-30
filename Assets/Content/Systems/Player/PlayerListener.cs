@@ -27,9 +27,15 @@ namespace SS3D.Content.Systems.Player
             }
 
             listener = GetComponent<AudioListener>();
-            
+
+            GameObject sceneCamera = GameObject.FindGameObjectWithTag("PlayerCamera");
             // Get camera
-            if (Camera.main != null) camera = Camera.main.GetComponent<CameraFollow>();
+            if (GameObject.FindGameObjectWithTag("PlayerCamera") != null && Camera.main != null)
+            {
+                Camera.main.enabled = false;
+                camera = sceneCamera.GetComponent<CameraFollow>();
+            }
+            camera.enabled = true;
             if (camera == null)
             {
                 Debug.LogError("Can't find camera follow");

@@ -368,10 +368,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 8700261, guid: 8fae6473a9524504fb4453411967b0e2, type: 3}
+      propertyPath: sceneId
+      value: 2197829440
+      objectReference: {fileID: 0}
     - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}
       propertyPath: onlineScene
-      value: Assets/Content/Scenes/Main Station.unity
+      value: Assets/Content/Scenes/Server Lobby.unity
       objectReference: {fileID: 0}
     - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}

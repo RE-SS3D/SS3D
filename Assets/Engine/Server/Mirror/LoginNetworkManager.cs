@@ -5,6 +5,7 @@ using SS3D.Engine.Server.Login.Data;
 using SS3D.Engine.Server.Login.Networking;
 using SS3D.Engine.Server.Round;
 using System.Net;
+    using UnityEngine.SceneManagement;
     using UnityEngine.UI;
 
     namespace Mirror
@@ -35,12 +36,6 @@ using System.Net;
     /// </summary>
     public class LoginNetworkManager : NetworkManager
     {
-        // This is a server-only field. On the client it will mean nothing.
-        //[SerializeField] bool useLoginSystemOnLocalHost;
-
-        // Does the server require ingame login?
-        [SerializeField] bool useLoginSystem;
-
         // Warmup time until round starts
         [Range(3, 3600)]
         [SerializeField] int warmupTime;
@@ -61,16 +56,18 @@ using System.Net;
             public CharacterResponse character;
         }
 
+        // LOGIN STUFF
+        private bool hasLoginServer; // whether the login server is found and alive
         [SerializeField] private string loginServerAddress = null;
         [SerializeField] private GameObject playerDummyPrefab = null;
         [SerializeField] private LoginManager loginManagerPrefab = null;
         [SerializeField] private GameObject roundManagerPrefab = null;
-
-        private LoginManager loginManager;
+        // Does the server require ingame login?
+        [SerializeField] bool useLoginSystem;
+        private LoginManager loginManager;      
         public RoundManager roundManager;
 
-        private bool hasLoginServer; // whether the login server is found and alive
-
+        // Loading screen object, perhaps might be removed later
         [SerializeField] private GameObject loadingScreen;
         public override void Start()
         {
@@ -307,7 +304,7 @@ using System.Net;
             
             UpdateLoadingScreen(true);
         }
-
+        
         public override void OnClientSceneChanged(NetworkConnection conn)
         {
             base.OnClientSceneChanged(conn);

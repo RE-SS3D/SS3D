@@ -37,6 +37,7 @@ namespace SS3D.Engine.Server.Round
             ServerWarmupStarted?.Invoke();
         }
 
+        [ContextMenu("Start Round")]
         public void StartRound()
         {
             gameObject.SetActive(true);
