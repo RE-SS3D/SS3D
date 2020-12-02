@@ -36,6 +36,8 @@ using System.Net;
     /// </summary>
     public class LoginNetworkManager : NetworkManager
     {
+        public static LoginNetworkManager singleton { get; private set; }
+
         // Warmup time until round starts
         [Range(3, 3600)]
         [SerializeField] int warmupTime;
@@ -190,6 +192,7 @@ using System.Net;
          */
         public override void OnServerAddPlayer(NetworkConnection conn)
         {
+            Debug.Log("OnServerAddPlayer");
             GameObject player = Instantiate(playerDummyPrefab);
             NetworkServer.AddPlayerForConnection(conn, player);
         }
@@ -225,11 +228,12 @@ using System.Net;
         /**
          * If the client is told that the login server doesn't exist, we build them a John Doe.
          */
-        private void SpawnPlayerWithoutLoginServer(NetworkConnection conn)
+        private CharacterResponse SpawnPlayerWithoutLoginServer(NetworkConnection conn)
         {
             CharacterResponse characterResponse = new CharacterResponse();
             characterResponse.name = "John Doe";
             conn.Send(new CharacterSelectMessage {character = characterResponse});
+            return characterResponse;
         }
 
         /**
@@ -242,10 +246,34 @@ using System.Net;
                 return;
             }
 
-            StartCoroutine(SpawnPlayerAfterRoundStart(conn, characterSelection));
+            //StartCoroutine(SpawnPlayerAfterRoundStart(conn, characterSelection));
         }
+        
+        public void SpawnPlayerAfterRoundStart()
+        {
+            NetworkConnection conn = NetworkClient.connection;
+            CharacterResponse character = SpawnPlayerWithoutLoginServer(conn);
+            // TODO: Should store players in an object until round is started, then spawn them all at once.
+            if (!roundManager.IsRoundStarted) { return;}
+            
+            //Something has gone horribly wrong
+            if (character == null) throw new Exception("Could not read character data");
 
-        private IEnumerator SpawnPlayerAfterRoundStart(NetworkConnection conn, CharacterSelectMessage characterSelection)
+            // Spawn player based on their character choices
+            Transform startPos = GetStartPosition();
+            GameObject player = startPos != null
+                ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
+                : Instantiate(playerPrefab);
+            player.name = character.name;
+
+            // NetworkServer.ReplacePlayerForConnection(conn, player);
+            //Destroy dummy player
+            NetworkServer.DestroyPlayerForConnection(conn);
+            //Spawn actual player
+            NetworkServer.AddPlayerForConnection(conn, player);
+        }
+        
+        public IEnumerator SpawnPlayerAfterRoundStart(NetworkConnection conn, CharacterSelectMessage characterSelection)
         {
             // TODO: Should store players in an object until round is started, then spawn them all at once.
             yield return new WaitUntil(() => roundManager.IsRoundStarted);
