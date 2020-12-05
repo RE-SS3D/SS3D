@@ -487,10 +487,12 @@ GameObject:
   - component: {fileID: 6258711892491357218}
   - component: {fileID: 2884915648782529247}
   - component: {fileID: -4694851487162049909}
-  - component: {fileID: 1231252429595080780}
   - component: {fileID: -8822467730395627730}
   - component: {fileID: -396234361631906964}
   - component: {fileID: -873706720358734130}
+  - component: {fileID: 3578116224902229382}
+  - component: {fileID: 967319583440751856}
+  - component: {fileID: 5383969629031452887}
   m_Layer: 16
   m_Name: Cigarette Pack
   m_TagString: Untagged
@@ -577,12 +579,12 @@ MonoBehaviour:
   ItemId: cigarette_pack
   Name: Cigarette Pack
   Volume: 8
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5533951594911835035}
   attachmentPoint: {fileID: 6311512130502363032}
   bulkSize: 1
   traits: []
+  Size: {x: 0, y: 0}
 --- !u!114 &-4694851487162049909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -601,41 +603,6 @@ MonoBehaviour:
   OnlyStoreWhenOpen: 1
   MaxDistance: 1.5
   viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
---- !u!114 &1231252429595080780
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533951594911835035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69f0cfe7ad268bc44b2e36b581d0086c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  containerName: cigarette pack
-  containerFilter: {fileID: 11400000, guid: 82e9b88d2855d804caf0719d41240302, type: 2}
-  volumeLimited: 1
-  maxVolume: 7.5
-  slots: 15
-  displays:
-  - {fileID: 4604584927860148574}
-  - {fileID: 364392390191599412}
-  - {fileID: 6042555931585498554}
-  - {fileID: 5782550245647892975}
-  - {fileID: 563957987183268449}
-  - {fileID: 2232881618033872164}
-  - {fileID: 1166048142290787351}
-  - {fileID: 4103339937382175043}
-  - {fileID: 4149984190818936410}
-  - {fileID: 8810457633895627949}
-  - {fileID: 7884188868556886612}
-  - {fileID: 8565920164485927227}
-  - {fileID: 2286813392868847023}
-  - {fileID: 1741897816718725290}
-  - {fileID: 196823579575733245}
 --- !u!114 &-8822467730395627730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -688,6 +655,48 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3578116224902229382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2119b201c85e4ba2896540c7243a4b1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+--- !u!114 &967319583440751856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HideItems: 1
+  AttachItems: 1
+--- !u!114 &5383969629031452887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AttachedContainer: {fileID: 967319583440751856}
+  Size: {x: 2, y: 2}
 --- !u!1 &5782550245647892975
 GameObject:
   m_ObjectHideFlags: 0

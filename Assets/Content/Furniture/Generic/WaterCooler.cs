@@ -31,7 +31,7 @@ namespace SS3D.Content.Furniture.Generic
         private void DispenseCup(InteractionEvent interactionEvent, InteractionReference arg2)
         {
             Item cup = ItemHelpers.CreateItem(CupPrefab);
-            interactionEvent.Source.GetHands().Pickup(cup.gameObject);
+            interactionEvent.Source.GetHands().Pickup(cup);
             NumberOfCups--;
         }
 
