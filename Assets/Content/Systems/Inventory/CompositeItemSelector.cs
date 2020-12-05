@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,9 +13,9 @@ namespace SS3D.Content.Systems.Examine
 	/// us to return specifically which subordinate GameObject the cursor is over.
     /// </summary>
 	public class CompositeItemSelector : MonoBehaviour
-	{
-		
-		public Camera cam;
+    {
+	    public static CompositeItemSelector singleton { get; private set; }
+	    public Camera cam;
 		public Material singleColourMaterial;
 		
 		// Data structures to store our mesh and colour affiliations
@@ -48,8 +49,16 @@ namespace SS3D.Content.Systems.Examine
 		public void Start(){
 			tex = new Texture2D(1, 1);
 
+			if (singleton != null) Destroy(gameObject);
+			singleton = this;
+			
 		}
-		
+
+		private void Awake()
+		{
+			cam = CameraManager.singleton.examineCamera;
+		}
+
 		public void OnPostRender()
 		{
 			// If the window size has changed, amend the RenderTexture correspondingly.
@@ -177,8 +186,11 @@ namespace SS3D.Content.Systems.Examine
 		
 		/// This method enables the camera and establishes our data structures.
 		private void EnableCamera(){
+			if (cam == null)
+				cam = CameraManager.singleton.examineCamera;
 			if (!cam.enabled)
 			{
+				
 				// Enable the Camera component
 				cam.enabled = true;
 				
@@ -208,6 +220,8 @@ namespace SS3D.Content.Systems.Examine
 		/// so that they can be reclaimed by garbage collection.
 		public void DisableCamera()
 		{
+			if (cam == null)
+				cam = CameraManager.singleton.examineCamera;
 			// Turn off the camera
 			cam.enabled = false;
 			

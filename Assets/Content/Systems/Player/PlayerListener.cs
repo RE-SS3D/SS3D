@@ -28,13 +28,14 @@ namespace SS3D.Content.Systems.Player
 
             listener = GetComponent<AudioListener>();
 
-            GameObject sceneCamera = GameObject.FindGameObjectWithTag("PlayerCamera");
+            Camera sceneCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Camera>();
             // Get camera
             if (GameObject.FindGameObjectWithTag("PlayerCamera") != null && Camera.main != null)
             {
-                Camera.main.enabled = false;
+                Camera.main.gameObject.SetActive(false);
                 camera = sceneCamera.GetComponent<CameraFollow>();
             }
+            sceneCamera.enabled = true;
             camera.enabled = true;
             if (camera == null)
             {
@@ -45,7 +46,7 @@ namespace SS3D.Content.Systems.Player
 
         private void LateUpdate()
         {
-            transform.rotation = Quaternion.Euler(0, 0, camera.angle - 90);
+           // transform.rotation = Quaternion.Euler(0, 0, camera.angle - 90);
         }
     }
 }

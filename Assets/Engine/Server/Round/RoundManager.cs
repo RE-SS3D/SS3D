@@ -14,6 +14,8 @@ namespace SS3D.Engine.Server.Round
     /// </summary>
     public class RoundManager : NetworkBehaviour
     {
+        public static RoundManager singleton { get; private set; }
+
         [SerializeField] private int warmupTimeSeconds = 5;
         [SerializeField] private int roundTimeSeconds = 300;
 
@@ -27,6 +29,12 @@ namespace SS3D.Engine.Server.Round
         public event System.Action<string> ClientTimerUpdated;
 
         public bool IsRoundStarted => started;
+
+
+        private void Start()
+        {
+            InitializeSingleton();
+        }
 
         public void StartWarmup()
         {
@@ -43,23 +51,24 @@ namespace SS3D.Engine.Server.Round
             gameObject.SetActive(true);
             started = true;
             tickCoroutine = StartCoroutine(Tick());
-
+            
+            Debug.Log("Round Started");
             ServerRoundStarted?.Invoke();
         }
-        
+
         public void RestartRound()
         {
             if (!isServer)
             {
                 return;
             }
-            
+
             StopCoroutine(tickCoroutine);
             NetworkManager.singleton.ServerChangeScene(SceneManager.GetActiveScene().name);
 
             ServerRoundRestarted?.Invoke();
         }
-        
+
         private IEnumerator TickWarmup()
         {
             while (timerSeconds > 0)
@@ -68,10 +77,10 @@ namespace SS3D.Engine.Server.Round
                 timerSeconds--;
                 yield return new WaitForSeconds(1);
             }
-            
+
             StartRound();
         }
-        
+
         private IEnumerator Tick()
         {
             while (timerSeconds < roundTimeSeconds)
@@ -81,6 +90,7 @@ namespace SS3D.Engine.Server.Round
                 yield return new WaitForSeconds(1);
             }
             
+            Debug.Log("Restarting Round");
             RestartRound();
         }
 
@@ -93,13 +103,19 @@ namespace SS3D.Engine.Server.Round
         private string GetTimerText()
         {
             TimeSpan timeSpan = TimeSpan.FromSeconds(timerSeconds);
-            string timer =  timeSpan.ToString(@"hh\:mm\:ss");
+            string timer = timeSpan.ToString(@"hh\:mm\:ss");
             return IsRoundStarted ? $"Round Time: {timer}" : $"Round Start In: {timer}";
         }
 
         public void SetWarmupTime(int newTime)
         {
             warmupTimeSeconds = newTime;
+        }
+
+        void InitializeSingleton()
+        {
+            if (singleton != null) Destroy(gameObject);
+            singleton = this;
         }
     }
 }

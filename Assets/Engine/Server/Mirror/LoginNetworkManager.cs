@@ -88,6 +88,43 @@ using System.Net;
             }
         }
 
+        public override void Awake()
+        {
+            base.Awake();
+            InitializeSingleton();
+        }
+        
+        bool InitializeSingleton()
+        {
+            if (singleton != null && singleton == this) return true;
+            
+            if (dontDestroyOnLoad)
+            {
+                if (singleton != null)
+                {
+                    logger.LogWarning("Multiple NetworkManagers detected in the scene. Only one NetworkManager can exist at a time. The duplicate NetworkManager will be destroyed.");
+                    Destroy(gameObject);
+
+                    // Return false to not allow collision-destroyed second instance to continue.
+                    return false;
+                }
+                logger.Log("NetworkManager created singleton (DontDestroyOnLoad)");
+                singleton = this;
+                if (Application.isPlaying) DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                logger.Log("NetworkManager created singleton (ForScene)");
+                singleton = this;
+            }
+
+            // set active transport AFTER setting singleton.
+            // so only if we didn't destroy ourselves.
+            Transport.activeTransport = transport;
+
+            return true;
+        }
+
         /// <summary>
         /// Initial server setup
         /// </summary>
@@ -130,7 +167,7 @@ using System.Net;
             NetworkServer.Spawn(roundManager.gameObject);
             roundManager = roundManager.GetComponent<RoundManager>();
             roundManager.SetWarmupTime(warmupTime);
-            roundManager.StartWarmup();
+            //roundManager.StartWarmup();
         }
 
         private void ConfirmLoginServer(string response, bool apiAlive)
@@ -193,8 +230,8 @@ using System.Net;
         public override void OnServerAddPlayer(NetworkConnection conn)
         {
             Debug.Log("OnServerAddPlayer");
-            GameObject player = Instantiate(playerDummyPrefab);
-            NetworkServer.AddPlayerForConnection(conn, player);
+            //GameObject player = Instantiate(playerDummyPrefab);
+            //NetworkServer.AddPlayerForConnection(conn, player);
         }
 
         /**
@@ -251,11 +288,10 @@ using System.Net;
         
         public void SpawnPlayerAfterRoundStart()
         {
-            NetworkConnection conn = NetworkClient.connection;
+            NetworkConnection conn = NetworkServer.localConnection != null ? NetworkServer.localConnection : NetworkClient.connection;
             CharacterResponse character = SpawnPlayerWithoutLoginServer(conn);
-            // TODO: Should store players in an object until round is started, then spawn them all at once.
-            if (!roundManager.IsRoundStarted) { return;}
-            
+
+            Debug.Log("Spawning player after round start " + "conn: " + conn.address + " character: " + character.name);
             //Something has gone horribly wrong
             if (character == null) throw new Exception("Could not read character data");
 
@@ -265,10 +301,10 @@ using System.Net;
                 ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
                 : Instantiate(playerPrefab);
             player.name = character.name;
-
+            
             // NetworkServer.ReplacePlayerForConnection(conn, player);
             //Destroy dummy player
-            NetworkServer.DestroyPlayerForConnection(conn);
+            //NetworkServer.DestroyPlayerForConnection(conn);
             //Spawn actual player
             NetworkServer.AddPlayerForConnection(conn, player);
         }
@@ -287,7 +323,7 @@ using System.Net;
                 ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
                 : Instantiate(playerPrefab);
             player.name = characterSelection.character.name;
-
+            
             // NetworkServer.ReplacePlayerForConnection(conn, player);
             //Destroy dummy player
             NetworkServer.DestroyPlayerForConnection(conn);

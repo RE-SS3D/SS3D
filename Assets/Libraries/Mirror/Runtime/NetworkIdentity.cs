@@ -257,7 +257,7 @@ namespace Mirror
             }
 
             // otherwise set the owner connection
-            connectionToClient = (NetworkConnectionToClient)conn;
+            connectionToClient = (NetworkConnectionToClient) conn;
         }
 
         static uint nextNetworkId = 1;
