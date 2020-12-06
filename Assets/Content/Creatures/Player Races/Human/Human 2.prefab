@@ -90,8 +90,14 @@ GameObject:
   - component: {fileID: 340761490495231774}
   - component: {fileID: 4063789926441153806}
   - component: {fileID: -8569418428762442770}
+  - component: {fileID: 2239357942738063126}
+  - component: {fileID: -8840783221955267004}
+  - component: {fileID: -2355442327488266867}
+  - component: {fileID: 4272314014040592508}
+  - component: {fileID: 3389569277275911604}
+  - component: {fileID: 7567431014262820083}
   m_Layer: 0
-  m_Name: Human
+  m_Name: Human 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -325,7 +331,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 289348138277843802}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0556901c8047ec9c6e4283a9f1f7c8, type: 3}
   m_Name: 
@@ -352,7 +358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  prefab: {fileID: 5727570337167516730, guid: 7c4e08d1ee59141438c6c6737a2f7cf1, type: 3}
+  prefab: {fileID: 5727570337167516730, guid: f86d70d91f583f44e95c5a20aea0fa31, type: 3}
 --- !u!114 &7747405895790833225
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -453,8 +459,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Goao
-  Text: The naked man.
+  DisplayName: 
+  Text: '<b>Goao</b>
+
+    The naked man.'
   MaxDistance: 0
 --- !u!114 &340761490495231774
 MonoBehaviour:
@@ -580,6 +588,123 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aec684877e2d2ef4dbae8f2ca19b9e0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2239357942738063126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 371f0c209e4d9674194d38947ea696a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+--- !u!114 &-8840783221955267004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4608dfe08a474ed47abd4530e7bf84b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  maxHealth: 100
+  canBreathAnywhere: 0
+  bloodSystem: {fileID: 4272314014040592508}
+  brainSystem: {fileID: 0}
+  respiratorySystem: {fileID: 3389569277275911604}
+  bloodColor: 0
+  BodyParts:
+  - {fileID: 5767818248009347039}
+  - {fileID: 6608475868217291065}
+  - {fileID: 6269331463739318298}
+  - {fileID: 6828451211994314818}
+  - {fileID: 1462749580064314009}
+  - {fileID: 1468036660462602000}
+  - {fileID: 3722885849661290526}
+  - {fileID: 2843872160160377177}
+  - {fileID: 5249506360283613233}
+  - {fileID: 7316605453605000970}
+  - {fileID: 6075539607419367913}
+  - {fileID: 8795819825233502403}
+  - {fileID: 8663111124554818723}
+  - {fileID: 8051722974487092832}
+  AllowKnifeHarvest: 0
+  butcherResults: []
+  metabolism: {fileID: 7567431014262820083}
+--- !u!114 &-2355442327488266867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdd6cd3e839c6b64180c2b08eaa2f8e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  attackParticleEffect: {fileID: 7714517724079113232, guid: b604ce3224264694392255a281108306,
+    type: 3}
+  attackType: 0
+  damageAmount: 10
+--- !u!114 &4272314014040592508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c2822f40835fc54484ed69b757615c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  BloodLevel: 560
+--- !u!114 &3389569277275911604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fce3c0ea470504443b341fad31242ec5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  IsSuffocating: 0
+--- !u!114 &7567431014262820083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 332e690669da217478064a7659413ecf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  metabolismRate: 5
+  starvingRunDebuff: 2
+  starvingWalkDebuff: 1
 --- !u!1 &290878266594310021
 GameObject:
   m_ObjectHideFlags: 0
@@ -813,6 +938,7 @@ GameObject:
   - component: {fileID: 8068360918929990557}
   - component: {fileID: 308611985261760445}
   - component: {fileID: 88794333294593480}
+  - component: {fileID: 7316605453605000970}
   m_Layer: 15
   m_Name: spine
   m_TagString: Untagged
@@ -846,8 +972,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.28732437, y: 0.22618452, z: 0.19415453}
-  m_Center: {x: 0.000120818615, y: 0.11309208, z: -0.00962241}
+  m_Size: {x: 0.28732437, y: 0.53, z: 0.19415453}
+  m_Center: {x: 0.000120818615, y: -0.01, z: -0.00962241}
 --- !u!54 &308611985261760445
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -909,6 +1035,31 @@ CharacterJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &7316605453605000970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 745838129924863547}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxDamage: 200
+  Type: 12
+  severedBodyPartPrefab: {fileID: 3688303657299898446, guid: 80daf321e17b17c43bb8e5ffffd54a08,
+    type: 3}
+  skinnedMeshRenderer: {fileID: 1067344262487053123}
+  childrenParts:
+  - {fileID: 6075539607419367913}
+  - {fileID: 8795819825233502403}
+  - {fileID: 8663111124554818723}
+  - {fileID: 8051722974487092832}
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &853240037037099473
 GameObject:
   m_ObjectHideFlags: 0
@@ -1211,6 +1362,7 @@ GameObject:
   - component: {fileID: 8576093165344856464}
   - component: {fileID: 34453185688829692}
   - component: {fileID: 3654375617878735132}
+  - component: {fileID: 8795819825233502403}
   m_Layer: 15
   m_Name: thigh_r
   m_TagString: Untagged
@@ -1308,6 +1460,28 @@ CharacterJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &8795819825233502403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1101491913099737916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxDamage: 50
+  Type: 11
+  severedBodyPartPrefab: {fileID: 5971329175774576902, guid: 26827041aa44ab349b348e0bbb681561,
+    type: 3}
+  skinnedMeshRenderer: {fileID: 1581323012658661593}
+  childrenParts:
+  - {fileID: 1468036660462602000}
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &1152188084189215825
 GameObject:
   m_ObjectHideFlags: 0
@@ -1477,7 +1651,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7514392608354105106}
-  - component: {fileID: 3453540392095469432}
+  - component: {fileID: 6269331463739318298}
   m_Layer: 15
   m_Name: eye_l
   m_TagString: Untagged
@@ -1499,7 +1673,7 @@ Transform:
   m_Father: {fileID: 6681181371901804768}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3453540392095469432
+--- !u!114 &6269331463739318298
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1508,16 +1682,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1364040790074449624}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bodyPartType: 1
+  MaxDamage: 10
+  Type: 1
   severedBodyPartPrefab: {fileID: 2153916105656836095, guid: 4f869bcb1ae6e4b45b121ee768dc357d,
     type: 3}
-  childrenParts: []
-  bodyPartStatuses: 0
   skinnedMeshRenderer: {fileID: 6017340379799902929}
-  body: {fileID: 0}
+  childrenParts: []
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &1432977978567209782
 GameObject:
   m_ObjectHideFlags: 0
@@ -1557,7 +1733,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2233422433550402390}
-  - component: {fileID: 6267098236324212994}
   - component: {fileID: 3394284442279990566}
   m_Layer: 15
   m_Name: hips
@@ -1583,19 +1758,6 @@ Transform:
   m_Father: {fileID: 1078238172721072839}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &6267098236324212994
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1438875014519723851}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.28733063, y: 0.1621615, z: 0.19371225}
-  m_Center: {x: 0.000000461936, y: 0.056784853, z: -0.012523927}
 --- !u!54 &3394284442279990566
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1621,9 +1783,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6681181371901804768}
-  - component: {fileID: 3420469997494009254}
   - component: {fileID: 4487458991691251741}
   - component: {fileID: 2167618319810982954}
+  - component: {fileID: 5249506360283613233}
   m_Layer: 15
   m_Name: head
   m_TagString: Untagged
@@ -1649,29 +1811,6 @@ Transform:
   m_Father: {fileID: 8896557735071800847}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -2.48, y: 0.775, z: 0}
---- !u!114 &3420469997494009254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1497768525724101046}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bodyPartType: 9
-  severedBodyPartPrefab: {fileID: 1651226480257078777, guid: 448d053ff33fb6548bc38d8087ecd4bf,
-    type: 3}
-  childrenParts:
-  - {fileID: 3453540392095469432}
-  - {fileID: 6047689268155075226}
-  - {fileID: 8108324689140164922}
-  - {fileID: 852240104608316358}
-  bodyPartStatuses: 0
-  skinnedMeshRenderer: {fileID: 4396348641062937663}
-  body: {fileID: 0}
 --- !u!135 &4487458991691251741
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1706,6 +1845,31 @@ MonoBehaviour:
     x: 0
     y: 0
     z: 0
+--- !u!114 &5249506360283613233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1497768525724101046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxDamage: 50
+  Type: 9
+  severedBodyPartPrefab: {fileID: 1651226480257078777, guid: 448d053ff33fb6548bc38d8087ecd4bf,
+    type: 3}
+  skinnedMeshRenderer: {fileID: 4396348641062937663}
+  childrenParts:
+  - {fileID: 6269331463739318298}
+  - {fileID: 6828451211994314818}
+  - {fileID: 5767818248009347039}
+  - {fileID: 6608475868217291065}
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &1556632828458685282
 GameObject:
   m_ObjectHideFlags: 0
@@ -2088,7 +2252,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9114095814780560127}
-  - component: {fileID: 5306361817331504544}
+  - component: {fileID: 470244483249385511}
+  - component: {fileID: 2843872160160377177}
   m_Layer: 15
   m_Name: hand_r
   m_TagString: Untagged
@@ -2115,7 +2280,21 @@ Transform:
   m_Father: {fileID: 2071208397633030950}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5306361817331504544
+--- !u!136 &470244483249385511
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2448277291314358949}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.08196796
+  m_Height: 0.40983978
+  m_Direction: 1
+  m_Center: {x: 0, y: -0.03, z: 0}
+--- !u!114 &2843872160160377177
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2124,16 +2303,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 2448277291314358949}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bodyPartType: 8
+  MaxDamage: 20
+  Type: 8
   severedBodyPartPrefab: {fileID: 9065781347890963744, guid: 328795e01276a1949a0706a32af9c42e,
     type: 3}
-  childrenParts: []
-  bodyPartStatuses: 0
   skinnedMeshRenderer: {fileID: 6572013783268959225}
-  body: {fileID: 0}
+  childrenParts: []
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &2667178978926422381
 GameObject:
   m_ObjectHideFlags: 0
@@ -2397,7 +2578,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7952093795563383385}
-  - component: {fileID: 852240104608316358}
+  - component: {fileID: 6608475868217291065}
   m_Layer: 15
   m_Name: ear_r
   m_TagString: Untagged
@@ -2419,7 +2600,7 @@ Transform:
   m_Father: {fileID: 6681181371901804768}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &852240104608316358
+--- !u!114 &6608475868217291065
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2428,16 +2609,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 3142991917847240270}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bodyPartType: 14
+  MaxDamage: 10
+  Type: 14
   severedBodyPartPrefab: {fileID: 5868782653734892547, guid: 4f6ad28353158fc4bb9809dd3dd78fc0,
     type: 3}
-  childrenParts: []
-  bodyPartStatuses: 0
   skinnedMeshRenderer: {fileID: 9173512282848130471}
-  body: {fileID: 0}
+  childrenParts: []
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &3305451640578205426
 GameObject:
   m_ObjectHideFlags: 0
@@ -2447,8 +2630,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6930663826040439799}
-  - component: {fileID: 4436781836291350293}
   - component: {fileID: 2305759329704497362}
+  - component: {fileID: 1462749580064314009}
   m_Layer: 15
   m_Name: foot_l
   m_TagString: Untagged
@@ -2471,25 +2654,6 @@ Transform:
   m_Father: {fileID: 3513020490693240951}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4436781836291350293
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3305451640578205426}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bodyPartType: 5
-  severedBodyPartPrefab: {fileID: 7692702130422137242, guid: a8c422faa301ff5478c260d4329ffe75,
-    type: 3}
-  childrenParts: []
-  bodyPartStatuses: 0
-  skinnedMeshRenderer: {fileID: 6793039037740655146}
-  body: {fileID: 0}
 --- !u!135 &2305759329704497362
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2501,8 +2665,29 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.06
+  m_Radius: 0.09
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1462749580064314009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3305451640578205426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxDamage: 20
+  Type: 5
+  severedBodyPartPrefab: {fileID: 7692702130422137242, guid: a8c422faa301ff5478c260d4329ffe75,
+    type: 3}
+  skinnedMeshRenderer: {fileID: 6793039037740655146}
+  childrenParts: []
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &3369670715688881329
 GameObject:
   m_ObjectHideFlags: 0
@@ -2574,7 +2759,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4047616091812857556}
-  - component: {fileID: 8108324689140164922}
+  - component: {fileID: 5767818248009347039}
   m_Layer: 15
   m_Name: ear_l
   m_TagString: Untagged
@@ -2596,7 +2781,7 @@ Transform:
   m_Father: {fileID: 6681181371901804768}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8108324689140164922
+--- !u!114 &5767818248009347039
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2605,16 +2790,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 3438258769382926511}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bodyPartType: 13
+  MaxDamage: 10
+  Type: 13
   severedBodyPartPrefab: {fileID: 4328654258577221477, guid: 42ebcc557e2b8ef4b8340a91ea1f3ca5,
     type: 3}
-  childrenParts: []
-  bodyPartStatuses: 0
   skinnedMeshRenderer: {fileID: 4803009265966514941}
-  body: {fileID: 0}
+  childrenParts: []
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &3817551990209081614
 GameObject:
   m_ObjectHideFlags: 0
@@ -3222,6 +3409,7 @@ GameObject:
   - component: {fileID: 6049170981942561146}
   - component: {fileID: 1455513196012597152}
   - component: {fileID: 164384418684361128}
+  - component: {fileID: 6075539607419367913}
   m_Layer: 15
   m_Name: thigh_l
   m_TagString: Untagged
@@ -3319,6 +3507,28 @@ CharacterJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &6075539607419367913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5762323358555043600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxDamage: 50
+  Type: 10
+  severedBodyPartPrefab: {fileID: 49752237346604910, guid: b75fa84abd6b041448faf94e8fd2addf,
+    type: 3}
+  skinnedMeshRenderer: {fileID: 3904368510060676930}
+  childrenParts:
+  - {fileID: 1462749580064314009}
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &5827952840995609896
 GameObject:
   m_ObjectHideFlags: 0
@@ -3458,7 +3668,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3513020490693240951}
-  - component: {fileID: 4609009237702000451}
   - component: {fileID: 1033878748674406714}
   - component: {fileID: 4723261815152960280}
   - component: {fileID: 6295419775204354262}
@@ -3484,26 +3693,6 @@ Transform:
   m_Father: {fileID: 2341344369346644983}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4609009237702000451
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5866007114630413015}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bodyPartType: 10
-  severedBodyPartPrefab: {fileID: 49752237346604910, guid: b75fa84abd6b041448faf94e8fd2addf,
-    type: 3}
-  childrenParts:
-  - {fileID: 4436781836291350293}
-  bodyPartStatuses: 0
-  skinnedMeshRenderer: {fileID: 3904368510060676930}
-  body: {fileID: 0}
 --- !u!136 &1033878748674406714
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3879,7 +4068,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8816584030875756}
-  - component: {fileID: 6392763146934917176}
   m_Layer: 15
   m_Name: chest
   m_TagString: Untagged
@@ -3904,26 +4092,6 @@ Transform:
   m_Father: {fileID: 2328713702297184196}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6392763146934917176
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6743960455634992275}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bodyPartType: 12
-  severedBodyPartPrefab: {fileID: 3688303657299898446, guid: 80daf321e17b17c43bb8e5ffffd54a08,
-    type: 3}
-  childrenParts:
-  - {fileID: 3420469997494009254}
-  bodyPartStatuses: 0
-  skinnedMeshRenderer: {fileID: 1067344262487053123}
-  body: {fileID: 0}
 --- !u!1 &6793449098192051331
 GameObject:
   m_ObjectHideFlags: 0
@@ -3933,7 +4101,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8200820077652235051}
-  - component: {fileID: 5640873502109975346}
+  - component: {fileID: 3722885849661290526}
+  - component: {fileID: 1466733318686508225}
   m_Layer: 15
   m_Name: hand_l
   m_TagString: Untagged
@@ -3949,7 +4118,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6793449098192051331}
   m_LocalRotation: {x: 0.008004051, y: 0.7188739, z: 0.008328429, w: 0.6950445}
-  m_LocalPosition: {x: 0.000000025553163, y: 0.23644222, z: 0.0000000037252903}
+  m_LocalPosition: {x: -0.0003, y: 0.2215, z: 0.0013}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5239376399502097001}
@@ -3960,7 +4129,7 @@ Transform:
   m_Father: {fileID: 6807288178842245690}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5640873502109975346
+--- !u!114 &3722885849661290526
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3969,16 +4138,32 @@ MonoBehaviour:
   m_GameObject: {fileID: 6793449098192051331}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bodyPartType: 7
+  MaxDamage: 20
+  Type: 7
   severedBodyPartPrefab: {fileID: 654445344519657877, guid: 6ee2e72b69fdb9245938ac4b706b6262,
     type: 3}
-  childrenParts: []
-  bodyPartStatuses: 0
   skinnedMeshRenderer: {fileID: 1002436508960242065}
-  body: {fileID: 0}
+  childrenParts: []
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
+--- !u!136 &1466733318686508225
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6793449098192051331}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.08
+  m_Height: 0.42
+  m_Direction: 1
+  m_Center: {x: 0, y: -0.02, z: 0}
 --- !u!1 &7165410278998248383
 GameObject:
   m_ObjectHideFlags: 0
@@ -3988,7 +4173,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2071208397633030950}
-  - component: {fileID: 8572407641408054863}
   - component: {fileID: 4904560410962280382}
   - component: {fileID: 2168720019655540748}
   m_Layer: 15
@@ -4013,20 +4197,6 @@ Transform:
   m_Father: {fileID: 6017722416250676142}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &8572407641408054863
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7165410278998248383}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.08196796
-  m_Height: 0.40983978
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.20491989, z: 0}
 --- !u!54 &4904560410962280382
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4128,10 +4298,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6017722416250676142}
-  - component: {fileID: 3768680966980245273}
   - component: {fileID: 2766022156703606999}
   - component: {fileID: 648204662570148100}
   - component: {fileID: 9222971428241139614}
+  - component: {fileID: 8051722974487092832}
   m_Layer: 15
   m_Name: upper_arm_r
   m_TagString: Untagged
@@ -4154,26 +4324,6 @@ Transform:
   m_Father: {fileID: 5191844449187181620}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3768680966980245273
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7212482561194611411}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bodyPartType: 4
-  severedBodyPartPrefab: {fileID: 4857545638466335823, guid: 967d973cc161a6b41a209194450e2ce0,
-    type: 3}
-  childrenParts:
-  - {fileID: 5306361817331504544}
-  bodyPartStatuses: 0
-  skinnedMeshRenderer: {fileID: 4778829470729522669}
-  body: {fileID: 0}
 --- !u!136 &2766022156703606999
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4249,6 +4399,28 @@ CharacterJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &8051722974487092832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7212482561194611411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxDamage: 50
+  Type: 4
+  severedBodyPartPrefab: {fileID: 4857545638466335823, guid: 967d973cc161a6b41a209194450e2ce0,
+    type: 3}
+  skinnedMeshRenderer: {fileID: 4778829470729522669}
+  childrenParts:
+  - {fileID: 2843872160160377177}
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &7267393936856771503
 GameObject:
   m_ObjectHideFlags: 0
@@ -4258,10 +4430,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5336619301271533508}
-  - component: {fileID: 8687742992606680394}
   - component: {fileID: 9169400380374065078}
   - component: {fileID: 3147562026505485607}
   - component: {fileID: 8028694094288154185}
+  - component: {fileID: 8663111124554818723}
   m_Layer: 15
   m_Name: upper_arm_l
   m_TagString: Untagged
@@ -4284,26 +4456,6 @@ Transform:
   m_Father: {fileID: 8106520253581256472}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8687742992606680394
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7267393936856771503}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bodyPartType: 3
-  severedBodyPartPrefab: {fileID: 8244500010475539155, guid: 4f19f54776d7be74fb03d031f7503730,
-    type: 3}
-  childrenParts:
-  - {fileID: 5640873502109975346}
-  bodyPartStatuses: 0
-  skinnedMeshRenderer: {fileID: 5743449105094055550}
-  body: {fileID: 0}
 --- !u!136 &9169400380374065078
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4379,6 +4531,28 @@ CharacterJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &8663111124554818723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7267393936856771503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxDamage: 50
+  Type: 3
+  severedBodyPartPrefab: {fileID: 8244500010475539155, guid: 4f19f54776d7be74fb03d031f7503730,
+    type: 3}
+  skinnedMeshRenderer: {fileID: 5743449105094055550}
+  childrenParts:
+  - {fileID: 3722885849661290526}
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &7572186199095698605
 GameObject:
   m_ObjectHideFlags: 0
@@ -4388,7 +4562,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5545457080978589109}
-  - component: {fileID: 6047689268155075226}
+  - component: {fileID: 6828451211994314818}
   m_Layer: 15
   m_Name: eye_r
   m_TagString: Untagged
@@ -4410,7 +4584,7 @@ Transform:
   m_Father: {fileID: 6681181371901804768}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6047689268155075226
+--- !u!114 &6828451211994314818
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4419,16 +4593,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 7572186199095698605}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bodyPartType: 2
+  MaxDamage: 10
+  Type: 2
   severedBodyPartPrefab: {fileID: 7113309295090581735, guid: e588e1504ef97444383402ca69ef72c1,
     type: 3}
-  childrenParts: []
-  bodyPartStatuses: 0
   skinnedMeshRenderer: {fileID: 6108569423093115461}
-  body: {fileID: 0}
+  childrenParts: []
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &7682845225729386884
 GameObject:
   m_ObjectHideFlags: 0
@@ -4438,7 +4614,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6807288178842245690}
-  - component: {fileID: 8409136112264014857}
   - component: {fileID: 2705517779868773576}
   - component: {fileID: 8380338606818155691}
   m_Layer: 15
@@ -4463,20 +4638,6 @@ Transform:
   m_Father: {fileID: 5336619301271533508}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &8409136112264014857
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7682845225729386884}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.08196795
-  m_Height: 0.40983975
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.20491987, z: 0}
 --- !u!54 &2705517779868773576
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4977,7 +5138,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9221847707907725801}
-  - component: {fileID: 4511676135405278141}
   - component: {fileID: 1160928281713104382}
   - component: {fileID: 1449895679366463926}
   - component: {fileID: 3601770722395075975}
@@ -5003,26 +5163,6 @@ Transform:
   m_Father: {fileID: 8572353680598787067}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4511676135405278141
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8562793896622748013}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bodyPartType: 11
-  severedBodyPartPrefab: {fileID: 5971329175774576902, guid: 26827041aa44ab349b348e0bbb681561,
-    type: 3}
-  childrenParts:
-  - {fileID: 4154344349649893306}
-  bodyPartStatuses: 0
-  skinnedMeshRenderer: {fileID: 1581323012658661593}
-  body: {fileID: 0}
 --- !u!136 &1160928281713104382
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5138,8 +5278,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7245073763762241657}
-  - component: {fileID: 4154344349649893306}
   - component: {fileID: 2145857803566684874}
+  - component: {fileID: 1468036660462602000}
   m_Layer: 15
   m_Name: foot_r
   m_TagString: Untagged
@@ -5162,25 +5302,6 @@ Transform:
   m_Father: {fileID: 9221847707907725801}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4154344349649893306
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8715993811148055229}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49333a11e4f1842897329501b4fc49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bodyPartType: 6
-  severedBodyPartPrefab: {fileID: 5066420831570730394, guid: 060e6d91133c3c7469ee871e33e0739d,
-    type: 3}
-  childrenParts: []
-  bodyPartStatuses: 0
-  skinnedMeshRenderer: {fileID: 9022174436378143941}
-  body: {fileID: 0}
 --- !u!135 &2145857803566684874
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -5192,8 +5313,29 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.06
+  m_Radius: 0.09
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1468036660462602000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8715993811148055229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55dc60e60601f474e9058a6614d71ee4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxDamage: 20
+  Type: 6
+  severedBodyPartPrefab: {fileID: 5066420831570730394, guid: 060e6d91133c3c7469ee871e33e0739d,
+    type: 3}
+  skinnedMeshRenderer: {fileID: 9022174436378143941}
+  childrenParts: []
+  isBleeding: 0
+  creatureHealth: {fileID: -8840783221955267004}
+  Severity: 0
 --- !u!1 &9108728269119932586
 GameObject:
   m_ObjectHideFlags: 0

@@ -16,7 +16,7 @@ namespace SS3D.Engine.Health
     public class Attack : NetworkBehaviour
     {
         [SerializeField] private GameObject attackParticleEffect = null;
-        [SerializeField] private AttackType attackType = AttackType.Blunt;
+        [SerializeField] private AttackType attackType = AttackType.Melee;
         [SerializeField][Range(1,10)] private float damageAmount = 1f;
 
         private void Update()
@@ -36,21 +36,30 @@ namespace SS3D.Engine.Health
                 return;
             }
 
-            LayerMask layerMask = ~(1 << LayerMask.NameToLayer ("Player"));
+            // LayerMask layerMask = ~(1 << LayerMask.NameToLayer ("Player"));
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if(!Physics.Raycast(ray, out hit, 10f, layerMask))
+
+            LayerMask mask = LayerMask.GetMask("Player");
+
+            if (!Physics.Raycast(ray, out hit, 10f, mask))
             {
                 return;
             }
 
-            BodyPart target = hit.collider.GetComponent<BodyPart>();
+            BodyPartBehaviour target = hit.collider.GetComponent<BodyPartBehaviour>();
             if (!target)
             {
-                return;
+                // We may have a limb that consists of 2 colliders
+                target = hit.collider.GetComponentInParent<BodyPartBehaviour>();
+                if (!target)
+                    return;
             }
 
-            CmdAttackBodyPart(target.Body.gameObject, target.BodyPartType, damageAmount, hit.point);
+            // CmdAttackBodyPart(target.Body.gameObject, target.BodyPartType, damageAmount, hit.point);
+
+            Instantiate(attackParticleEffect, hit.point, Quaternion.identity);
+            target.ReceiveDamage(DamageType.Brute, 10);
         }
 
         //TODO: should depend on the circumstances of the attack

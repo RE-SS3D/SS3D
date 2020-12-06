@@ -170,7 +170,7 @@ namespace SS3D.Engine.Atmospherics
 
         public bool IsBreathable()
         {
-            return (GetPartialPressure(AtmosGasses.Oxygen) >= 16f && GetPartialPressure(AtmosGasses.CarbonDioxide) < 8f);
+            return (GetPartialPressure(AtmosGasses.Oxygen) >= Gas.minOxygenPressureBreathing && GetPartialPressure(AtmosGasses.CarbonDioxide) < Gas.maxCarbonDioxideBreathing);
         }
 
         public AtmosContainer GetAtmosContainer()
