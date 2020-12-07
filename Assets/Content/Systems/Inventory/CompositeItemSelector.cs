@@ -14,7 +14,6 @@ namespace SS3D.Content.Systems.Examine
     /// </summary>
 	public class CompositeItemSelector : MonoBehaviour
     {
-	    public static CompositeItemSelector singleton { get; private set; }
 	    public Camera cam;
 		public Material singleColourMaterial;
 		
@@ -46,17 +45,10 @@ namespace SS3D.Content.Systems.Examine
 		private int recordedScreenWidth;
 		private int recordedScreenHeight;
 				
-		public void Start(){
-			tex = new Texture2D(1, 1);
-
-			if (singleton != null) Destroy(gameObject);
-			singleton = this;
-			
-		}
-
-		private void Awake()
+		public void Start()
 		{
 			cam = CameraManager.singleton.examineCamera;
+			tex = new Texture2D(1, 1);
 		}
 
 		public void OnPostRender()
@@ -220,8 +212,6 @@ namespace SS3D.Content.Systems.Examine
 		/// so that they can be reclaimed by garbage collection.
 		public void DisableCamera()
 		{
-			if (cam == null)
-				cam = CameraManager.singleton.examineCamera;
 			// Turn off the camera
 			cam.enabled = false;
 			

@@ -43,7 +43,7 @@ namespace SS3D.Content.Systems.Player
             characterController = GetComponent<CharacterController>();
             characterAnimator = GetComponent<Animator>();
             chatRegister = GetComponent<ChatRegister>();
-            camera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Camera>();
+            camera = CameraManager.singleton.playerCamera;
             camera.GetComponent<CameraFollow>().SetTarget(gameObject);
         }
 

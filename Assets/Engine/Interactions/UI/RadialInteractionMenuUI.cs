@@ -26,8 +26,9 @@ namespace SS3D.Engine.Interactions.UI
         public TextMeshProUGUI objectName;
         public TextMeshProUGUI interactionName;
 		public TextMeshProUGUI interactionNameAltPosition;
-		
 
+        private Camera camera;
+        
         [HideInInspector]
         public float mouseAngle;
         public float buttonAngle = 22.5f;
@@ -79,6 +80,8 @@ namespace SS3D.Engine.Interactions.UI
 
         private void Start()
         {
+            camera = CameraManager.singleton.playerCamera;
+            
             petalsManager = GetComponent<PetalsManager>();
             petalsManager.contextMenu = this;
             if (contextMenuManagerInstance != null)
@@ -98,7 +101,6 @@ namespace SS3D.Engine.Interactions.UI
         {
             //parent.GetComponent<CanvasScaler>().scaleFactor = scale;
             parent.localScale = new Vector2(menuScale, menuScale);
-
 
             float currentAngle = indicator.eulerAngles.z;
 
@@ -177,7 +179,8 @@ namespace SS3D.Engine.Interactions.UI
 
                 petalButton.onClick.AddListener(() =>
                 {
-                    Destroy(gameObject);
+                    Disappear();
+                    //Destroy(gameObject);
                     onSelect?.Invoke(interaction);
                 });
             }
@@ -185,11 +188,12 @@ namespace SS3D.Engine.Interactions.UI
 
         public bool Appear(Vector2 screenPos, float scale, PetalFolder spawnFolder)
         {
+            if (camera == null) camera = CameraManager.singleton.playerCamera;
             //Debug.Log("appear called");
             //this.transform.position
             if (menuAnimator.GetBool("Visible") == true)
                 return (false);
-            this.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 1));
+            transform.position = camera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 1));
             folder = spawnFolder;
             if (spawnFolder != null)
             {

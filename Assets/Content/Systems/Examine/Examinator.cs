@@ -36,7 +36,7 @@ namespace SS3D.Content.Systems.Examine
             }
 
             camera = CameraManager.singleton.examineCamera;
-            selector = CompositeItemSelector.singleton;
+            selector = camera.GetComponent<CompositeItemSelector>();
 	        
 	        Assert.IsNotNull(UiPrefab);
             uiInstance = Instantiate(UiPrefab);
@@ -79,8 +79,7 @@ namespace SS3D.Content.Systems.Examine
                 ClearExamine();
                 if (selector == null)
                 {
-	                selector = CompositeItemSelector.singleton;
-
+	                selector = camera.GetComponent<CompositeItemSelector>();
                 }
                 selector.DisableCamera();
             }
