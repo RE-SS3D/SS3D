@@ -4,6 +4,7 @@ using Mirror;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace SS3D.Engine.Server.Round
 {
@@ -30,6 +31,9 @@ namespace SS3D.Engine.Server.Round
 
         public bool IsRoundStarted => started;
 
+        [SerializeField] private Button embarkButton;
+        [SerializeField] private TMP_Text embarkText;
+
 
         private void Start()
         {
@@ -51,7 +55,9 @@ namespace SS3D.Engine.Server.Round
             gameObject.SetActive(true);
             started = true;
             tickCoroutine = StartCoroutine(Tick());
-            
+
+            embarkButton.interactable = true;
+            embarkText.text = "Embark";
             Debug.Log("Round Started");
             ServerRoundStarted?.Invoke();
         }
@@ -74,6 +80,7 @@ namespace SS3D.Engine.Server.Round
             while (timerSeconds > 0)
             {
                 RpcUpdateClientClocks(GetTimerText());
+                SetTimerText();
                 timerSeconds--;
                 yield return new WaitForSeconds(1);
             }
@@ -100,6 +107,11 @@ namespace SS3D.Engine.Server.Round
             ClientTimerUpdated?.Invoke(text);
         }
 
+        private void SetTimerText()
+        {
+            embarkText.text = TimeSpan.FromSeconds(timerSeconds).TotalSeconds.ToString();
+        }
+
         private string GetTimerText()
         {
             TimeSpan timeSpan = TimeSpan.FromSeconds(timerSeconds);
@@ -107,6 +119,10 @@ namespace SS3D.Engine.Server.Round
             return IsRoundStarted ? $"Round Time: {timer}" : $"Round Start In: {timer}";
         }
 
+        public void SetWarmupTime(TMP_InputField newTime)
+        {
+            warmupTimeSeconds = Int32.Parse(newTime.text);
+        } 
         public void SetWarmupTime(int newTime)
         {
             warmupTimeSeconds = newTime;
