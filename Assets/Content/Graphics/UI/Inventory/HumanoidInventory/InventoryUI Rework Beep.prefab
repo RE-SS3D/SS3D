@@ -10424,7 +10424,7 @@ PrefabInstance:
     - target: {fileID: 7289801393049687634, guid: 562c604faa4f8e749870e771d92fa7d3,
         type: 3}
       propertyPath: m_Name
-      value: Vest
+      value: Jumpsuit
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 562c604faa4f8e749870e771d92fa7d3, type: 3}
@@ -10696,7 +10696,7 @@ PrefabInstance:
     - target: {fileID: 7289801393049687634, guid: 562c604faa4f8e749870e771d92fa7d3,
         type: 3}
       propertyPath: m_Name
-      value: Shirt
+      value: Exosuit
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 562c604faa4f8e749870e771d92fa7d3, type: 3}
@@ -10968,7 +10968,7 @@ PrefabInstance:
     - target: {fileID: 7289801393049687634, guid: 562c604faa4f8e749870e771d92fa7d3,
         type: 3}
       propertyPath: m_Name
-      value: Helmet
+      value: Head
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 562c604faa4f8e749870e771d92fa7d3, type: 3}

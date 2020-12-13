@@ -13,19 +13,19 @@ namespace SS3D.Engine.Inventory.UI
                 return;
             }
             
-            // TODO: Once we have a proper implementation of body parts/clothing this should not create containers on the creature root
-            /*var inventory = transform.GetComponentInParent<InventoryUi>().Inventory;
+            // Connects ui clothing slots to containers on the creature
+            var inventory = transform.GetComponentInParent<InventoryUi>().Inventory;
             GameObject creature = inventory.Hands.GetComponentInParent<Creature>().gameObject;
+            var clothingContainers = creature.GetComponent<ClothingContainers>();
             var slots = GetComponentsInChildren<SingleItemContainerSlot>();
             foreach (SingleItemContainerSlot slot in slots)
             {
-                var attachedContainer = creature.AddComponent<AttachedContainer>();
-                attachedContainer.Container = new Container{Size = new Vector2Int(10, 10)};
-                slot.Container = attachedContainer;
-                slot.Inventory = inventory;
+                if (clothingContainers.Containers.TryGetValue(slot.name, out AttachedContainer container))
+                {
+                    slot.Inventory = inventory;
+                    slot.Container = container;
+                }
             }
-            
-            creature.GetComponent<ContainerSync>().UpdateContainers();*/
         }
     }
 }

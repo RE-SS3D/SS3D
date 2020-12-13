@@ -10,5 +10,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 192f2453d05363c4bb6101f58fb7c844, type: 3}
-  m_Name: Suit
+  m_Name: ClothingGloves
   m_EditorClassIdentifier: 

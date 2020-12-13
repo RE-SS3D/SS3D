@@ -42,6 +42,22 @@ namespace SS3D.Engine.Inventory
             set => UpdateContainer(value);
         }
 
+        public static AttachedContainer CreateEmpty(GameObject gameObject, Vector2Int size, IEnumerable<Filter> filters = null)
+        {
+            var attachedContainer = gameObject.AddComponent<AttachedContainer>();
+            var container = new Container
+            {
+                Size = size
+            };
+            if (filters != null)
+            {
+                container.Filters.AddRange(filters);
+            }
+            attachedContainer.Container = container;
+            
+            return attachedContainer;
+        }
+
         public void OnDestroy()
         {
             Container?.Destroy();
