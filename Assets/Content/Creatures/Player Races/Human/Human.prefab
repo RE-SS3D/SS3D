@@ -400,8 +400,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  runSpeed: 5
-  walkSpeed: 2
+  runSpeed: 5.5
+  walkSpeed: 1.5
   absoluteMovement: {x: 0, y: 0, z: 0}
   heightOffGround: 0.1
   LookAt:
@@ -441,6 +441,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   ViewRange: 25
+  selector: {fileID: 0}
 --- !u!114 &1045010266948518310
 MonoBehaviour:
   m_ObjectHideFlags: 0
