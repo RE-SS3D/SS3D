@@ -121,6 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: Helps you seen in dark areas.
   MaxDistance: 0
 --- !u!114 &-3925197901788839770
@@ -184,8 +185,8 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 0.9811321, g: 0.962701, b: 0.7358491, a: 1}
-  m_Intensity: 1.5
-  m_Range: 5
+  m_Intensity: 3
+  m_Range: 7
   m_SpotAngle: 90
   m_InnerSpotAngle: 1
   m_CookieSize: 10
