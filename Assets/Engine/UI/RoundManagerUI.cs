@@ -1,4 +1,5 @@
-﻿using SS3D.Engine.Server.Round;
+﻿using System;
+using SS3D.Engine.Server.Round;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -13,6 +14,11 @@ namespace SS3D.UI
         [SerializeField] private TextMeshProUGUI timerText = null;
         [SerializeField] private RectTransform timerUi = null;
         [SerializeField] private RectTransform controlUi = null;
+
+        private void Start()
+        {
+            roundManager = RoundManager.singleton;
+        }
 
         private void Awake()
         {

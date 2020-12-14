@@ -12,7 +12,7 @@ public class PauseMenu : NetworkBehaviour
     void Start() 
     {
         if (animator == null)
-        animator = GetComponent<Animator>();
+            animator = GetComponent<Animator>();
         networkManager = FindObjectOfType<LoginNetworkManager>();
     }
     

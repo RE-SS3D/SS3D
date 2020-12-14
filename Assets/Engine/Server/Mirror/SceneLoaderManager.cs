@@ -85,7 +85,8 @@ public class SceneLoaderManager : NetworkSceneChecker
         
         if (IsSelectedMapLoaded() && selectedMap.name == name) return;
         
-        UnloadSelectedMap();
+        if (IsSelectedMapLoaded())
+            UnloadSelectedMap();
             
         foreach (SceneAsset map in maps)
         {

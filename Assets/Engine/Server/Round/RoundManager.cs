@@ -34,10 +34,13 @@ namespace SS3D.Engine.Server.Round
         [SerializeField] private Button embarkButton;
         [SerializeField] private TMP_Text embarkText;
 
+        [SerializeField] private Button serverSettingsButton;
 
         private void Start()
         {
             InitializeSingleton();
+
+            if (NetworkServer.localConnection == null) serverSettingsButton.interactable = false;
         }
 
         public void StartWarmup()
