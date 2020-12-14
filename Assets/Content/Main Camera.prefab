@@ -96,9 +96,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef59ce420ebdf1645aa58c640ac5c406, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
   cam: {fileID: 2133984709589219736}
-  output: {fileID: 0}
+  singleColourMaterial: {fileID: 0}
 --- !u!1 &8192375152356925988
 GameObject:
   m_ObjectHideFlags: 0
@@ -279,7 +278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sharedProfile: {fileID: 11400000, guid: ae1cfeacc4e7ea74fa76aad23a44eebb, type: 2}
+  sharedProfile: {fileID: 11400000, guid: 5b44ecd1900b0eb418ef3238b1c87d36, type: 2}
   isGlobal: 1
   blendDistance: 0
   weight: 1
@@ -297,7 +296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationCount: 4
-  stepCount: 16
+  stepCount: 8
   radius: 3.5
   expStart: 1
   expFactor: 1.05
