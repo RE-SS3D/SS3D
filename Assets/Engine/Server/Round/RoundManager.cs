@@ -31,16 +31,10 @@ namespace SS3D.Engine.Server.Round
 
         public bool IsRoundStarted => started;
 
-        [SerializeField] private Button embarkButton;
-        [SerializeField] private TMP_Text embarkText;
-
-        [SerializeField] private Button serverSettingsButton;
-
         private void Start()
         {
             InitializeSingleton();
 
-            if (NetworkServer.localConnection == null) serverSettingsButton.interactable = false;
         }
 
         public void StartWarmup()
@@ -59,8 +53,6 @@ namespace SS3D.Engine.Server.Round
             started = true;
             tickCoroutine = StartCoroutine(Tick());
 
-            embarkButton.interactable = true;
-            embarkText.text = "Embark";
             Debug.Log("Round Started");
             ServerRoundStarted?.Invoke();
         }
@@ -82,8 +74,8 @@ namespace SS3D.Engine.Server.Round
         {
             while (timerSeconds > 0)
             {
-                RpcUpdateClientClocks(GetTimerText());
-                SetTimerText();
+                UpdateClock(GetTimerText());
+                Debug.Log("Round start timer:" + timerSeconds);
                 timerSeconds--;
                 yield return new WaitForSeconds(1);
             }
@@ -95,7 +87,7 @@ namespace SS3D.Engine.Server.Round
         {
             while (timerSeconds < roundTimeSeconds)
             {
-                RpcUpdateClientClocks(GetTimerText());
+                UpdateClock(GetTimerText());
                 timerSeconds++;
                 yield return new WaitForSeconds(1);
             }
@@ -104,22 +96,23 @@ namespace SS3D.Engine.Server.Round
             RestartRound();
         }
 
+        private void UpdateClock(string text)
+        {
+            ClientTimerUpdated?.Invoke(text);
+            RpcUpdateClientClocks(text);
+        }
+
         [ClientRpc]
         private void RpcUpdateClientClocks(string text)
         {
             ClientTimerUpdated?.Invoke(text);
         }
-
-        private void SetTimerText()
-        {
-            embarkText.text = TimeSpan.FromSeconds(timerSeconds).TotalSeconds.ToString();
-        }
-
+        
         private string GetTimerText()
         {
             TimeSpan timeSpan = TimeSpan.FromSeconds(timerSeconds);
-            string timer = timeSpan.ToString(@"hh\:mm\:ss");
-            return IsRoundStarted ? $"Round Time: {timer}" : $"Round Start In: {timer}";
+            string timer = timeSpan.TotalSeconds.ToString();
+            return timer;
         }
 
         public void SetWarmupTime(TMP_InputField newTime)

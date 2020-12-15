@@ -11,9 +11,10 @@ using UnityEngine.UI;
 public class SceneLoaderManager : NetworkSceneChecker
 {
     public static SceneLoaderManager singleton { get; private set; }
-    // MAPS
-    [SerializeField] private SceneAsset selectedMap;
-    [SerializeField] private SceneAsset[] maps;
+    
+    // MAPS IN BUILD
+    [SerializeField] private String selectedMap;
+    [SerializeField] private String[] maps;
     
     [SerializeField] private Button startRoundButton;
     [SerializeField] private TMP_Text loadSceneButtonText;
@@ -35,7 +36,7 @@ public class SceneLoaderManager : NetworkSceneChecker
         loadSceneButtonText.text = "loading...";
         LoadingSceneHelper();
         
-        SceneManager.LoadSceneAsync(selectedMap.name, LoadSceneMode.Additive);
+        SceneManager.LoadSceneAsync(selectedMap, LoadSceneMode.Additive);
         SceneManager.sceneLoaded += SetActiveScene;
         Debug.Log("New active scene set " + GetCurrentLoadedScene().name);
         loadSceneButtonText.text = "scene loaded";
@@ -43,7 +44,7 @@ public class SceneLoaderManager : NetworkSceneChecker
         
         SceneMessage msg = new SceneMessage
         {
-            sceneName = selectedMap.name,
+            sceneName = selectedMap,
             sceneOperation = SceneOperation.LoadAdditive
         };
 
@@ -55,12 +56,13 @@ public class SceneLoaderManager : NetworkSceneChecker
     {
         List<TMP_Dropdown.OptionData> mapList = new List<TMP_Dropdown.OptionData>();
 
-        foreach (SceneAsset map in maps)
+        foreach (String map in maps)
         {
-            TMP_Dropdown.OptionData option = new TMP_Dropdown.OptionData(map.name);
+            TMP_Dropdown.OptionData option = new TMP_Dropdown.OptionData(map);
             mapList.Add(option);
         }
         mapSelectionDropdown.options = mapList;
+        selectedMap = mapList[0].text;
     }
     public IEnumerator LoadingSceneHelper()
     {
@@ -69,13 +71,13 @@ public class SceneLoaderManager : NetworkSceneChecker
     
     public bool IsSelectedMapLoaded()
     {
-        if (SceneManager.GetSceneByName(selectedMap.name).isLoaded) return true;
+        if (SceneManager.GetSceneByName(selectedMap).isLoaded) return true;
         return false;
     }
 
     public void UnloadSelectedMap()
     {
-        SceneManager.UnloadSceneAsync(selectedMap.name);
+        SceneManager.UnloadSceneAsync(selectedMap);
     }
     
     public void SetSelectedMap(TMP_Dropdown dropdown)
@@ -83,26 +85,26 @@ public class SceneLoaderManager : NetworkSceneChecker
         String name = dropdown.captionText.text;
         loadSceneButtonText.text = "load map";
         
-        if (IsSelectedMapLoaded() && selectedMap.name == name) return;
+        if (IsSelectedMapLoaded() && selectedMap == name) return;
         
         if (IsSelectedMapLoaded())
             UnloadSelectedMap();
             
-        foreach (SceneAsset map in maps)
+        foreach (String map in maps)
         {
-            if (map.name == name) selectedMap = map;
+            if (map == name) selectedMap = map;
         }
     }
 
     public void SetActiveScene(Scene scene, LoadSceneMode mode)
     {
         Debug.Log("Setting new active scene: " + scene.name);
-        if (scene.name == selectedMap.name)
+        if (scene.name == selectedMap)
             SceneManager.SetActiveScene(GetCurrentLoadedScene());
     }
     
     public Scene GetCurrentLoadedScene()
     {
-        return SceneManager.GetSceneByName(selectedMap.name);
+        return SceneManager.GetSceneByName(selectedMap);
     }
 }

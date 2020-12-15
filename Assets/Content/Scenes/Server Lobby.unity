@@ -777,7 +777,7 @@ PrefabInstance:
     - target: {fileID: 2937323514760455239, guid: cc858c3b9ba626b4c825d8c51a91f069,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -47.599976
+      value: -47.59999
       objectReference: {fileID: 0}
     - target: {fileID: 2937323514760455239, guid: cc858c3b9ba626b4c825d8c51a91f069,
         type: 3}
@@ -1317,6 +1317,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f31b59ac8f0152e448004b46d86b3b4a, type: 3}
+--- !u!1 &893055983 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: f31b59ac8f0152e448004b46d86b3b4a,
+    type: 3}
+  m_PrefabInstance: {fileID: 893055982}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &946233536
 GameObject:
   m_ObjectHideFlags: 0
@@ -1711,7 +1717,7 @@ PrefabInstance:
     - target: {fileID: 8784957920597707496, guid: 74f47f717af7bf4458faa835b660d139,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8784957920597707496, guid: 74f47f717af7bf4458faa835b660d139,
         type: 3}
@@ -1731,7 +1737,7 @@ PrefabInstance:
     - target: {fileID: 8784957920597707496, guid: 74f47f717af7bf4458faa835b660d139,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8784957920597707496, guid: 74f47f717af7bf4458faa835b660d139,
         type: 3}
@@ -1742,11 +1748,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 893055983}
     - target: {fileID: 8784957920597707496, guid: 74f47f717af7bf4458faa835b660d139,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: SpawnPlayerAfterRoundStart
+      value: SetActive
       objectReference: {fileID: 0}
     - target: {fileID: 8784957920597707496, guid: 74f47f717af7bf4458faa835b660d139,
         type: 3}
@@ -3068,7 +3074,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   embarkButton: {fileID: 1076105029}
+  embarkText: {fileID: 1076105028}
   animator: {fileID: 2118773770}
+  serverSettingsButton: {fileID: 1076105030}
 --- !u!4 &8816582938982441
 Transform:
   m_ObjectHideFlags: 0
@@ -5605,9 +5613,33 @@ PrefabInstance:
     - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
       propertyPath: maps.Array.data[1]
-      value: 
-      objectReference: {fileID: 102900000, guid: 07cfce2a5e0921549bcc950b52bba099,
+      value: Main Station
+      objectReference: {fileID: 0}
+    - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
+      propertyPath: maps.Array.data[0].m_Handle
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
+        type: 3}
+      propertyPath: maps.Array.data[1].m_Handle
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
+        type: 3}
+      propertyPath: maps.Array.data[0]
+      value: EmptyMapScene
+      objectReference: {fileID: 0}
+    - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
+        type: 3}
+      propertyPath: selectedMap
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
+        type: 3}
+      propertyPath: forceHidden
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4457496469010000567, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
       propertyPath: lobbyCamera
