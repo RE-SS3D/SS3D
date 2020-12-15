@@ -254,9 +254,9 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
+  m_Mesh: {fileID: -458811993458521797, guid: 2bb544022dbb334419969396af5f52f8, type: 3}
 --- !u!114 &5248164760307354391
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -292,6 +292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
 --- !u!114 &-4235786043834150045
