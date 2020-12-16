@@ -91,6 +91,10 @@ v2f vert(appdata v)
 	v2f o;
 	o.pos = v.vertex;
 	o.uv = v.uv;
+	if (_ProjectionParams.x > 0)
+	{
+		o.uv.y = 1 - o.uv.y;
+	}
 	return o;
 }
 
