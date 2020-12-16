@@ -18,8 +18,9 @@ public class ServerLobbyUIHelper : MonoBehaviour
     
     private void Start()
     {
-        RoundManager.singleton.ServerRoundStarted += ChangeEmbarkText;
-        RoundManager.singleton.ClientTimerUpdated += SetTimerText;
+        RoundManager.ClientTimerUpdated += SetTimerText;
+        
+        RoundManager.ServerRoundStarted += ChangeEmbarkText;
         embarkButton.onClick.AddListener(delegate { LoginNetworkManager.singleton.SpawnPlayerAfterRoundStart(); });
         
         if (NetworkServer.localConnection == null) serverSettingsButton.interactable = true;
@@ -27,6 +28,7 @@ public class ServerLobbyUIHelper : MonoBehaviour
 
     public void ChangeEmbarkText()
     {
+        RoundManager.ClientTimerUpdated -= SetTimerText;
         Debug.Log("Updating embark text");
         embarkButton.interactable = true;
         embarkText.text = "Embark";

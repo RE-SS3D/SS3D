@@ -26,9 +26,9 @@ namespace SS3D.UI
             {
                 // why do we subscribe UI class to server events?
                 // doesn't make much sense
-                roundManager.ServerWarmupStarted += OnWarmupStarted;
-                roundManager.ServerRoundStarted += OnRoundStarted;
-                roundManager.ClientTimerUpdated += OnTimerUpdated;
+                RoundManager.ServerWarmupStarted += OnWarmupStarted;
+                RoundManager.ServerRoundStarted += OnRoundStarted;
+                RoundManager.ClientTimerUpdated += OnTimerUpdated;
             }
         }
 

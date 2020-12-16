@@ -24,10 +24,10 @@ namespace SS3D.Engine.Server.Round
         private bool started = false;
         private Coroutine tickCoroutine;
 
-        public event System.Action ServerWarmupStarted;
-        public event System.Action ServerRoundStarted;
-        public event System.Action ServerRoundRestarted;
-        public event System.Action<string> ClientTimerUpdated;
+        public static event System.Action ServerWarmupStarted;
+        public static event System.Action ServerRoundStarted;
+        public static event System.Action ServerRoundRestarted;
+        public static event System.Action<string> ClientTimerUpdated;
 
         public bool IsRoundStarted => started;
 
@@ -48,6 +48,18 @@ namespace SS3D.Engine.Server.Round
 
         [ContextMenu("Start Round")]
         public void StartRound()
+        {
+            gameObject.SetActive(true);
+            started = true;
+            tickCoroutine = StartCoroutine(Tick());
+
+            Debug.Log("Round Started");
+            ServerRoundStarted?.Invoke();
+            RpcStartRound();
+        }
+
+        [ClientRpc]
+        public void RpcStartRound()
         {
             gameObject.SetActive(true);
             started = true;
