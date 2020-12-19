@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e313b54981c941a47a9c78d688acdf7d
+guid: 946cc3dc74dfac9488127087b6c9eba2
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable: []
@@ -7,13 +7,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Glass
-    second: {fileID: 2100000, guid: 4156b958be0668e49b2e9f5120660e50, type: 2}
+      name: Liquid
+    second: {fileID: 2100000, guid: 787ae9b505972c34e98b5dac87e1ca9d, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Liquid
-    second: {fileID: 2100000, guid: 787ae9b505972c34e98b5dac87e1ca9d, type: 2}
+      name: Palette05
+    second: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Palette05 Glass
+    second: {fileID: 2100000, guid: 4156b958be0668e49b2e9f5120660e50, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
