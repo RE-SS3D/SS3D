@@ -520,7 +520,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DisplayName: Poke N' Toke
-  Text: Dispenses cigarette paraphernalia.
+  Text: Dispenses smoking paraphernalia.
   MaxDistance: 0
 --- !u!1 &9139902570717850779
 GameObject:
