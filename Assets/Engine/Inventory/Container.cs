@@ -19,6 +19,11 @@ namespace SS3D.Engine.Inventory
         /// Filters for this container
         /// </summary>
         public readonly List<Filter> Filters = new List<Filter>();
+        
+        /// <summary>
+        /// An optional reference to an attached container
+        /// </summary>
+        public AttachedContainer AttachedTo { get; set; }
 
         private readonly List<StoredItem> items = new List<StoredItem>();
         private readonly object modificationLock = new object();
@@ -156,20 +161,11 @@ namespace SS3D.Engine.Inventory
         private void AddItemUnchecked(Item item, Vector2Int position)
         {
             var newItem = new StoredItem(item, position);
-            // Update entry if already present
-            for (var i = 0; i < items.Count; i++)
-            {
-                StoredItem x = items[i];
-                if (x.Item == item)
-                {
-                    if (x.Position != position)
-                    {
-                        items[i] = newItem;
-                        LastModification = Time.time;
-                    }
 
-                    return;
-                }
+            // Move it if it is already in the container
+            if (MoveItemUnchecked(newItem))
+            {
+                return;
             }
 
             items.Add(newItem);
@@ -270,6 +266,45 @@ namespace SS3D.Engine.Inventory
             LastModification = Time.time;
             
             OnContainerChanged(itemsToRemove, ContainerChangeType.Remove);
+        }
+
+        /// <summary>
+        /// Moves an item without performing validation
+        /// </summary>
+        /// <param name="item">The item to move</param>
+        /// <returns>If the item was moved</returns>
+        public bool MoveItemUnchecked(StoredItem item)
+        {
+            for (var i = 0; i < items.Count; i++)
+            {
+                StoredItem x = items[i];
+                if (x.Item == item.Item)
+                {
+                    if (x.Position != item.Position)
+                    {
+                        items[i] = item;
+                        LastModification = Time.time;
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Moves multiple items without performing validation
+        /// </summary>
+        /// <param name="items">The items to move</param>
+        public void MoveItemsUnchecked(StoredItem[] items)
+        {
+            foreach (StoredItem storedItem in items)
+            {
+                MoveItemUnchecked(storedItem);
+            }
+            
+            OnContainerChanged(items.Select(x => x.Item), ContainerChangeType.Move);
         }
 
         /// <summary>

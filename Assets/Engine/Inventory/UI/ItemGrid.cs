@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace SS3D.Engine.Inventory.UI
 {
-    public class ItemGrid : MonoBehaviour, IPointerClickHandler
+    public class ItemGrid : MonoBehaviour, IPointerClickHandler, IDropHandler
     {
         /// <summary>
         /// A prefab for each slot in this grid
@@ -26,6 +26,15 @@ namespace SS3D.Engine.Inventory.UI
         private GridLayoutGroup gridLayout;
         private List<ItemGridItem> gridItems = new List<ItemGridItem>();
 
+        /// <summary>
+        /// Called when an item is dragged and dropped outside the container
+        /// </summary>
+        /// <param name="item">The dragged item</param>
+        public void DropItemOutside(Item item)
+        {
+            Inventory.ClientDropItem(item);
+        }
+        
         private void Start()
         {
             if (gridLayout == null)
@@ -46,7 +55,7 @@ namespace SS3D.Engine.Inventory.UI
             {
                 StartCoroutine(DisplayInitialItems());
             }
-            
+
             container.ContentsChanged += ContainerOnContentsChanged;
         }
 
@@ -112,12 +121,15 @@ namespace SS3D.Engine.Inventory.UI
             }
         }
 
-        public Vector2Int GetSlotPosition(Transform slot)
+        public Vector2Int GetSlotPosition(Vector2 screenPosition)
         {
-            int containerIndex = slot.GetSiblingIndex();
-            int sizeX = AttachedContainer.Container.Size.x;
-            int y = containerIndex / sizeX;
-            int x = containerIndex - y * sizeX;
+            Vector3[] corners = new Vector3[4];
+            gridLayout.GetComponent<RectTransform>().GetWorldCorners(corners);
+            Vector2 localPoint = new Vector2(screenPosition.x - corners[1].x, corners[1].y - screenPosition.y);
+            Vector3 scale = gridLayout.transform.localToWorldMatrix.lossyScale;
+            int x = Mathf.FloorToInt(localPoint.x / (gridLayout.cellSize.x * scale.x));
+            int y = Mathf.FloorToInt(localPoint.y / (gridLayout.cellSize.y * scale.y));
+            
             return new Vector2Int(x, y);
         }
 
@@ -146,17 +158,48 @@ namespace SS3D.Engine.Inventory.UI
             {
                 return;
             }
+            
 
             Transform parent = clicked.transform.parent;
-            if (parent == gridLayout.transform)
+            if (parent == gridLayout.transform || parent == transform)
             {
-                Vector2Int slotPosition = GetSlotPosition(clicked.transform);
+                Vector2Int slotPosition = GetSlotPosition(eventData.position);
                 Inventory.ClientInteractWithContainerSlot(AttachedContainer, slotPosition);
             }
         }
         
+        public void OnDrop(PointerEventData eventData)
+        {
+            GameObject drag = eventData.pointerDrag;
+            if (drag == null)
+            {
+                return;
+            }
+
+            var gridItem = drag.GetComponent<ItemGridItem>();
+            if (gridItem == null)
+            {
+                return;
+            }
+            Item item = gridItem.Item;
+            Vector2Int size = item.Size;
+            Vector3 dragPosition = drag.transform.position;
+            var position = GetSlotPosition(new Vector2(dragPosition.x, dragPosition.y));
+            if (!AttachedContainer.Container.IsAreaFree(new RectInt(position, size)))
+            {
+                return;
+            }
+
+            gridItem.DropHandled = true;
+            Inventory.ClientTransferItem(item, position, AttachedContainer);
+        }
+        
         private void MoveToSlot(Transform transform, Vector2Int position)
         {
+            if (transform.parent != this.transform)
+            {
+                transform.SetParent(this.transform, false);
+            }
             Vector2Int containerSize = AttachedContainer.Container.Size;
             int slotIndex = position.y * containerSize.x + position.x;
             Transform slot = gridLayout.transform.GetChild(slotIndex);

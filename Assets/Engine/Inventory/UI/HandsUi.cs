@@ -66,9 +66,11 @@ namespace SS3D.Engine.Inventory.UI
         private void CreateHandDisplays()
         {
             // Destroy existing elements
-            foreach(Transform child in HandsContainer.transform)
+            Transform containerTransform = HandsContainer.transform;
+            int childCount = containerTransform.childCount;
+            for (var i = 0; i < childCount; i++)
             {
-                Destroy(child.gameObject);
+                DestroyImmediate(containerTransform.GetChild(0).gameObject);
             }
 
             // Create hand for every hand container
@@ -79,11 +81,6 @@ namespace SS3D.Engine.Inventory.UI
                 GameObject handElement = Instantiate(i % 2 == 0 ? LeftHandPrefab : RightHandPrefab, HandsContainer, false);
                 var slot = handElement.GetComponent<SingleItemContainerSlot>();
                 slot.Container = attachedContainer;
-            }
-
-            if (currentHandIndex != -1)
-            {
-                SetHandHighlight(currentHandIndex, true);
             }
         }
     }

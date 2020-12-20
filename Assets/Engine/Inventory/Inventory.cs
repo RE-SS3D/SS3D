@@ -128,11 +128,32 @@ namespace SS3D.Engine.Inventory
             CmdTransferItem(item.gameObject, position, (NetworkedContainerReference) reference);
         }
 
+        /// <summary>
+        /// Requests the server to drop an item out of a container
+        /// </summary>
+        /// <param name="item">The item to drop</param>
+        public void ClientDropItem(Item item)
+        {
+            CmdDropItem(item.gameObject);
+        }
+
         [Command]
         private void CmdTransferItem(GameObject itemObject, Vector2Int position, NetworkedContainerReference reference)
         {
             var item = itemObject.GetComponent<Item>();
             if (item == null)
+            {
+                return;
+            }
+
+            Container itemContainer = item.Container;
+            if (itemContainer == null)
+            {
+                return;
+            }
+
+            AttachedContainer attachedTo = itemContainer.AttachedTo;
+            if (attachedTo == null)
             {
                 return;
             }
@@ -144,21 +165,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
-            // TODO: hack because of missing item to attached container reference
-            Transform itemParent = item.transform.parent;
-            if (itemParent != null)
-            {
-                var component = itemParent.GetComponent<AttachedContainer>();
-                if (component != null)
-                {
-                    if (!CanModifyContainer(component))
-                    {
-                        return;
-                    }
-                }
-            }
-            
-            if (!CanModifyContainer(attachedContainer))
+            if (!CanModifyContainer(attachedTo) || !CanModifyContainer(attachedContainer))
             {
                 return;
             }
@@ -213,6 +220,29 @@ namespace SS3D.Engine.Inventory
         public bool HasContainer(AttachedContainer container)
         {
             return openedContainers.Contains(container);
+        }
+
+        [Command]
+        private void CmdDropItem(GameObject gameObject)
+        {
+            var item = gameObject.GetComponent<Item>();
+            if (item == null)
+            {
+                return;
+            }
+
+            AttachedContainer attachedTo = item.Container?.AttachedTo;
+            if (attachedTo == null)
+            {
+                return;
+            }
+
+            if (!CanModifyContainer(attachedTo))
+            {
+                return;
+            }
+
+            item.Container = null;
         }
 
         [TargetRpc]

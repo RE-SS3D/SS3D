@@ -116,13 +116,12 @@ namespace SS3D.Engine.Inventory
             Container container = attachedContainer.Container;
 
             Container.StoredItem[] storedItems = null;
-            if (type == Container.ContainerChangeType.Add)
+            if (type == Container.ContainerChangeType.Add || type == Container.ContainerChangeType.Move)
             {
                 storedItems = new Container.StoredItem[items.Length];
                 for (var i = 0; i < items.Length; i++)
                 {
-                    storedItems[i] = new Container.StoredItem(items[i],
-                        container.StoredItems[container.FindItem(items[i])].Position);
+                    storedItems[i] = container.StoredItems[container.FindItem(items[i])];
                 }
             }
 
@@ -150,9 +149,13 @@ namespace SS3D.Engine.Inventory
                 {
                     TargetSyncItemsRemove(client, index, itemGameObjects);
                 }
-                else if (type == Container.ContainerChangeType.Add || type == Container.ContainerChangeType.Move)
+                else if (type == Container.ContainerChangeType.Add)
                 {
                     TargetSyncItemsAdd(client, index, storedItems);
+                }
+                else if (type == Container.ContainerChangeType.Move)
+                {
+                    TargetSyncItemsMove(client, index, storedItems);
                 }
             }
         }
@@ -190,6 +193,18 @@ namespace SS3D.Engine.Inventory
 
             var accessibleContainer = Containers[containerId];
             accessibleContainer.Container.RemoveItems(items.Select(x => x.GetComponent<Item>()).ToArray());
+        }
+
+        [TargetRpc]
+        private void TargetSyncItemsMove(NetworkConnection target, int containerId, Container.StoredItem[] items)
+        {
+            if (NetworkServer.active)
+            {
+                return;
+            }
+
+            var accessibleContainer = Containers[containerId];
+            accessibleContainer.Container.MoveItemsUnchecked(items);
         }
     }
 }

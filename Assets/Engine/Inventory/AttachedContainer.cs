@@ -112,6 +112,7 @@ namespace SS3D.Engine.Inventory
             if (container != null)
             {
                 container.ContentsChanged -= ContainerContentsChanged;
+                container.AttachedTo = null;
             }
 
             if (newContainer == null)
@@ -120,6 +121,7 @@ namespace SS3D.Engine.Inventory
             }
             
             newContainer.ContentsChanged += ContainerContentsChanged;
+            newContainer.AttachedTo = this;
             container = newContainer;
         }
 
