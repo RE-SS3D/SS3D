@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
   m_Name: AmbrosiaDeus_Stage4
   m_EditorClassIdentifier: 
-  id: ambrosia_deus4
+  id: ambrosia_deus_stage4
   genericType: plant
   prefab: {fileID: 8757431509704750092, guid: f1c6e696873b7f54b92a98a7a849abe5, type: 3}

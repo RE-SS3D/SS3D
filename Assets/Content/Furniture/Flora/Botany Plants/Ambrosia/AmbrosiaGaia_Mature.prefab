@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5752218603018864159}
   m_Layer: 0
-  m_Name: AmbrosiaGaia_Ready
+  m_Name: AmbrosiaGaia_Mature
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 5955931921593470441}
   - component: {fileID: 7655033026907760786}
   m_Layer: 0
-  m_Name: AmbrosiaGaia_Ready
+  m_Name: AmbrosiaGaia_Mature
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

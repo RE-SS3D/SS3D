@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
-  m_Name: AmbrosiaVulgaris_Ready
+  m_Name: AmbrosiaVulgaris_Mature
   m_EditorClassIdentifier: 
-  id: ambrosia_vulgaris_ready
+  id: ambrosia_vulgaris_mature
   genericType: plant
-  prefab: {fileID: 8757431509704750092, guid: c1c317f8ebcff99459345efdf0d7948c, type: 3}
+  prefab: {fileID: 8757431509704750092, guid: e927fec544735cb4e84fd17d4700dfeb, type: 3}
