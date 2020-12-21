@@ -302,7 +302,7 @@ MonoBehaviour:
   expFactor: 1.05
   jitterSamples: 1
   GIBoost: 10
-  lightBufferHDR: 0
+  lightBufferHDR: 1
   lightBufferResolution: 2
   LnDlOffset: 0
   nDlOffset: 0
