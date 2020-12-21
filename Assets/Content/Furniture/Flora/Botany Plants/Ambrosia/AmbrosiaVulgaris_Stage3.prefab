@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 2908185540786701765}
   - component: {fileID: 7842115812951011959}
   - component: {fileID: 1926618790220488794}
+  - component: {fileID: 6853804758203999650}
   - component: {fileID: 3319862244132228756}
   m_Layer: 0
   m_Name: AmbrosiaVulgaris_Stage3
@@ -126,6 +127,22 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -5320685457850259029, guid: aee15cab4da95ce4ba0ad9f0783f809e, type: 3}
+--- !u!114 &6853804758203999650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8824788415378046448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Volume: 10000
+  Temperature: 0
+  Locked: 0
+  substances: []
 --- !u!114 &3319862244132228756
 MonoBehaviour:
   m_ObjectHideFlags: 0

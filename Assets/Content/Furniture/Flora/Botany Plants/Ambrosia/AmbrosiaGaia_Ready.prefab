@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 2908185540786701765}
   - component: {fileID: 7842115812951011959}
   - component: {fileID: 1926618790220488794}
+  - component: {fileID: 5955931921593470441}
   - component: {fileID: 7655033026907760786}
   m_Layer: 0
   m_Name: AmbrosiaGaia_Ready
@@ -126,6 +127,22 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 7718165510984741708, guid: aee15cab4da95ce4ba0ad9f0783f809e, type: 3}
+--- !u!114 &5955931921593470441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8824788415378046448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Volume: 10000
+  Temperature: 0
+  Locked: 0
+  substances: []
 --- !u!114 &7655033026907760786
 MonoBehaviour:
   m_ObjectHideFlags: 0
