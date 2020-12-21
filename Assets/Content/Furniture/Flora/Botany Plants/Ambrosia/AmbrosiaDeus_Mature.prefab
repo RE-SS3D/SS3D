@@ -157,5 +157,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DisplayName: Ambrosia Deus Plant
-  Text: 
+  Text: Looks ready to harvest.
   MaxDistance: 0

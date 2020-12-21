@@ -157,5 +157,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DisplayName: Holymelon Plant
-  Text: 
+  Text: Looks ready to harvest.
   MaxDistance: 0
