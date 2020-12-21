@@ -23,13 +23,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5025484519060260302}
-  m_LocalRotation: {x: 0, y: 0.96126175, z: 0, w: 0.27563742}
-  m_LocalPosition: {x: 0.09, y: 0.015, z: 0.142}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.026, z: -0.148}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5715274770703499831}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 148, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8722317747974713380
 GameObject:
   m_ObjectHideFlags: 0
@@ -65,7 +65,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8722317747974713380}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.013, y: 0, z: 0.04}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6244230459157494590}
@@ -198,7 +198,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   ItemId: ambrosia_deus
-  Name: ambrosia deus
+  Name: Ambrosia Deus
   Volume: 8
   container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
