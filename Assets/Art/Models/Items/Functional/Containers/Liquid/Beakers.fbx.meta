@@ -1,15 +1,24 @@
 fileFormatVersion: 2
-guid: 27a9a8aefa5425041b49a19d88589c4b
+guid: 946cc3dc74dfac9488127087b6c9eba2
 ModelImporter:
   serializedVersion: 19300
-  internalIDToNameTable:
+  internalIDToNameTable: []
+  externalObjects:
   - first:
-      74: -6692001049259174838
-    second: AirScrubberFans|On
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Liquid
+    second: {fileID: 2100000, guid: 787ae9b505972c34e98b5dac87e1ca9d, type: 2}
   - first:
-      74: 619003842051949599
-    second: AirScrubberFans|On.001
-  externalObjects: {}
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Palette05
+    second: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Palette05 Glass
+    second: {fileID: 2100000, guid: 4156b958be0668e49b2e9f5120660e50, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0

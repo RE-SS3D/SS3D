@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5690885613668309}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.282, y: 0.735, z: 0.282}
+  m_LocalPosition: {x: -0.282, y: 0.32, z: 0.282}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6038773036230548675}
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 32967740200445319}
   - component: {fileID: 9204918293919080062}
   m_Layer: 0
-  m_Name: Cigarette Vendor Maintenance Panel
+  m_Name: Booze Vendor Maintenance Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -138,8 +138,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.020137042, y: 0.50904727, z: 0.3723752}
-  m_Center: {x: -0.4570772, y: 0.35050112, z: 0.058431946}
+  m_Size: {x: 0.027258039, y: 0.49845764, z: 0.26630652}
+  m_Center: {x: -0.39946, y: 0.34999436, z: 0.04245895}
 --- !u!1 &6809638930720855837
 GameObject:
   m_ObjectHideFlags: 0
@@ -154,7 +154,7 @@ GameObject:
   - component: {fileID: 1918001620574020781}
   - component: {fileID: 4848886018081697495}
   m_Layer: 0
-  m_Name: Cigarette Vendor Glass Broken
+  m_Name: Booze Vendor Glass Broken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -248,8 +248,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.48067278, y: 0.9989142, z: 0}
-  m_Center: {x: 0.12153229, y: 0.9556606, z: 0.33429107}
+  m_Size: {x: 0.31078434, y: 1.6368581, z: 0.00000032782555}
+  m_Center: {x: 0.097765714, y: 0.9238309, z: 0.32510096}
 --- !u!1 &7319846706112917200
 GameObject:
   m_ObjectHideFlags: 0
@@ -589,7 +589,7 @@ GameObject:
   - component: {fileID: 2463290690161719472}
   - component: {fileID: 2883166973879690658}
   m_Layer: 0
-  m_Name: Cigarette Vendor Glass
+  m_Name: Booze Vendor Glass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -683,5 +683,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.48067278, y: 0.9989142, z: 0}
-  m_Center: {x: 0.12153229, y: 0.9556606, z: 0.33429107}
+  m_Size: {x: 0.4806728, y: 1.6368581, z: 0.00000035762787}
+  m_Center: {x: 0.18270995, y: 0.9238309, z: 0.325101}

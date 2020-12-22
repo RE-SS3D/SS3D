@@ -7,6 +7,17 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: DoorLight
+    second: {fileID: 2100000, guid: 583ec5095c87a4543a564d1e7211889b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DoorLight.001
+    second: {fileID: 6633863843210329022, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Palette05
     second: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   - first:

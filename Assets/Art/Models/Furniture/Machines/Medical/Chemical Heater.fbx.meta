@@ -13,8 +13,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Palette05 Glass
-    second: {fileID: -1374168824873744867, guid: 380bbcbeccf452742ab43640e6cc76b5,
-      type: 3}
+    second: {fileID: 2100000, guid: 4156b958be0668e49b2e9f5120660e50, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
