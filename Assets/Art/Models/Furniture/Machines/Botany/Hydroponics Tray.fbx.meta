@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e313b54981c941a47a9c78d688acdf7d
+guid: 5e4da01c6d2d52a4b831d50759bb0941
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable: []
@@ -7,13 +7,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Glass
-    second: {fileID: 2100000, guid: 4156b958be0668e49b2e9f5120660e50, type: 2}
+      name: Hydrogel
+    second: {fileID: 2100000, guid: d4200162d183d4b4380ec26627333490, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Liquid
-    second: {fileID: 2100000, guid: 787ae9b505972c34e98b5dac87e1ca9d, type: 2}
+      name: Palette05
+    second: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Palette05 Emission
+    second: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0

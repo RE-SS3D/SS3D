@@ -14,6 +14,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Palette05 Emission
     second: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Palette05 Glass
+    second: {fileID: 2100000, guid: d4200162d183d4b4380ec26627333490, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0

@@ -1,15 +1,19 @@
 fileFormatVersion: 2
-guid: 306763192ed5c254883b84ad42b5e420
+guid: 6bcdd128340b0f14ba42672048dfdff0
 ModelImporter:
   serializedVersion: 19300
-  internalIDToNameTable:
+  internalIDToNameTable: []
+  externalObjects:
   - first:
-      74: -5183151006770252600
-    second: Vent.Fan|On
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Palette05
+    second: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   - first:
-      74: -637453913362771955
-    second: Vent.Fan|On.001
-  externalObjects: {}
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Palette05 Emission
+    second: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
