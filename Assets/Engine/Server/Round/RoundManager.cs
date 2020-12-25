@@ -47,6 +47,7 @@ namespace SS3D.Engine.Server.Round
         }
 
         [ContextMenu("Start Round")]
+        [Server]
         public void StartRound()
         {
             gameObject.SetActive(true);

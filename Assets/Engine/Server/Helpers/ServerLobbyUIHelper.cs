@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class ServerLobbyUIHelper : MonoBehaviour
+public class ServerLobbyUIHelper : NetworkBehaviour
 {
     [SerializeField] private Button embarkButton;
     [SerializeField] private TMP_Text embarkText;

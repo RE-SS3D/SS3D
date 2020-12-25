@@ -63,6 +63,22 @@ public class SceneLoaderManager : NetworkSceneChecker
         }
         mapSelectionDropdown.options = mapList;
         selectedMap = mapList[0].text;
+        
+        RpcLoadMapList();
+    }
+
+    [ClientRpc]
+    private void RpcLoadMapList()
+    {
+        List<TMP_Dropdown.OptionData> mapList = new List<TMP_Dropdown.OptionData>();
+
+        foreach (String map in maps)
+        {
+            TMP_Dropdown.OptionData option = new TMP_Dropdown.OptionData(map);
+            mapList.Add(option);
+        }
+        mapSelectionDropdown.options = mapList;
+        selectedMap = mapList[0].text;
     }
     public IEnumerator LoadingSceneHelper()
     {
