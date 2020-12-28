@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SubstanceMaterial
+  m_Shader: {fileID: 4800000, guid: b62c281b724551946b13838e85e1e7e6, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _FillAmount: 0
+    - _Rim: 0
+    - _RimPower: 0
+    - _WobbleX: 0
+    - _WobbleZ: 0
+    m_Colors:
+    - _FoamColor: {r: 0.9433962, g: 0.9433962, b: 0.9433962, a: 1}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Tint: {r: 0.40392143, g: 0.55294114, b: 0.72156864, a: 1}
+    - _TopColor: {r: 0.40392157, g: 0.5529412, b: 0.72156864, a: 1}
