@@ -12,6 +12,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
 {
     [SerializeField] private Button embarkButton;
     [SerializeField] private TMP_Text embarkText;
+    [SerializeField] private TMP_Text timer;
     [SerializeField] private Animator animator;
 
     [SerializeField] private Button serverSettingsButton;
@@ -19,8 +20,8 @@ public class ServerLobbyUIHelper : NetworkBehaviour
     private void Start()
     {
         RoundManager.ClientTimerUpdated += SetTimerText;
-        
         RoundManager.ServerRoundStarted += ChangeEmbarkText;
+        
         embarkButton.onClick.AddListener(delegate { LoginNetworkManager.singleton.SpawnPlayerAfterRoundStart(); });
         
         if (NetworkServer.localConnection == null) serverSettingsButton.interactable = true;
@@ -28,15 +29,15 @@ public class ServerLobbyUIHelper : NetworkBehaviour
 
     public void ChangeEmbarkText()
     {
-        RoundManager.ClientTimerUpdated -= SetTimerText;
-        Debug.Log("Updating embark text");
+        timer.gameObject.SetActive(false);
+        Debug.Log("Updating embark button");
         embarkButton.interactable = true;
-        embarkText.text = "Embark";
+        embarkText.gameObject.SetActive(true);
     }
     
     private void SetTimerText(string text)
     {
-        embarkText.text = text;
+        timer.text = text;
     } 
 
 }

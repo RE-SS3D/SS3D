@@ -288,7 +288,7 @@ using System.Net;
         
         public void SpawnPlayerAfterRoundStart()
         {
-            NetworkConnection conn = NetworkServer.localConnection != null ? NetworkServer.localConnection : NetworkClient.connection;
+            NetworkConnection conn = NetworkClient.connection != null ? NetworkClient.connection : NetworkServer.localConnection;
             CharacterResponse character = SpawnPlayerWithoutLoginServer(conn);
 
             Debug.Log("Spawning player after round start " + "conn: " + conn.address + " character: " + character.name);

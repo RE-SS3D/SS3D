@@ -14,6 +14,7 @@ public class SceneLoaderManager : NetworkSceneChecker
     
     // MAPS IN BUILD
     [SerializeField] private String selectedMap;
+
     [SerializeField] private String[] maps;
     
     [SerializeField] private Button startRoundButton;
@@ -48,8 +49,7 @@ public class SceneLoaderManager : NetworkSceneChecker
             sceneOperation = SceneOperation.LoadAdditive
         };
 
-        if (connectionToClient != null)
-            connectionToClient.Send(msg);
+        NetworkServer.SendToAll(msg);
     }
 
     public void LoadMapList()

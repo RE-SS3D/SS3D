@@ -47,7 +47,6 @@ namespace SS3D.Engine.Server.Round
         }
 
         [ContextMenu("Start Round")]
-        [Server]
         public void StartRound()
         {
             gameObject.SetActive(true);
@@ -109,6 +108,7 @@ namespace SS3D.Engine.Server.Round
             RestartRound();
         }
 
+        [Server]
         private void UpdateClock(string text)
         {
             ClientTimerUpdated?.Invoke(text);
