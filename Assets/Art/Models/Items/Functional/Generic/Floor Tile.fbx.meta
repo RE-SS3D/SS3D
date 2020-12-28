@@ -9,6 +9,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Floor
     second: {fileID: 2100000, guid: 11a544979af09ca4192afae76113cb55, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: FloorTexture
+    second: {fileID: 2100000, guid: 11a544979af09ca4192afae76113cb55, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0

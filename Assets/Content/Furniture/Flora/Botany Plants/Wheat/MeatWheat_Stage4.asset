@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
+  m_Name: MeatWheat_Stage4
+  m_EditorClassIdentifier: 
+  id: meat_wheat_stage4
+  genericType: plant
+  prefab: {fileID: 8757431509704750092, guid: 7cde1369aec26ff408e4777630bce04d, type: 3}
