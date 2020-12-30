@@ -1,10 +1,11 @@
-﻿    using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 using SS3D.Engine.Server.Login.Data;
 using SS3D.Engine.Server.Login.Networking;
 using SS3D.Engine.Server.Round;
-using System.Net;
+    
+    using System.Net;
     using UnityEngine.SceneManagement;
     using UnityEngine.UI;
 
@@ -86,6 +87,7 @@ using System.Net;
                     character => SpawnPlayerWithLoginServer(NetworkServer.localConnection, character));
                 loginManager.ApiHeartbeat(ConfirmLoginServer);
             }
+
         }
 
         public override void Awake()
@@ -286,9 +288,9 @@ using System.Net;
             //StartCoroutine(SpawnPlayerAfterRoundStart(conn, characterSelection));
         }
         
-        public void SpawnPlayerAfterRoundStart()
+        public void SpawnPlayerAfterRoundStart(NetworkConnection conn)
         {
-            NetworkConnection conn = NetworkClient.connection != null ? NetworkClient.connection : NetworkServer.localConnection;
+            Debug.LogError(conn.address);
             CharacterResponse character = SpawnPlayerWithoutLoginServer(conn);
 
             Debug.Log("Spawning player after round start " + "conn: " + conn.address + " character: " + character.name);
@@ -305,8 +307,9 @@ using System.Net;
             // NetworkServer.ReplacePlayerForConnection(conn, player);
             //Destroy dummy player
             //NetworkServer.DestroyPlayerForConnection(conn);
+            
             //Spawn actual player
-            NetworkServer.AddPlayerForConnection(conn, player);
+            NetworkServer.AddPlayerForConnection(conn, player);   
         }
         
         public IEnumerator SpawnPlayerAfterRoundStart(NetworkConnection conn, CharacterSelectMessage characterSelection)

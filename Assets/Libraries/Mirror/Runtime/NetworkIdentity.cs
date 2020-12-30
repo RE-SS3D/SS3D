@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Security.Cryptography;
+using Mirror.Websocket;
 using UnityEngine;
 using UnityEngine.Serialization;
 #if UNITY_EDITOR
@@ -256,6 +257,7 @@ namespace Mirror
                 return;
             }
 
+            
             // otherwise set the owner connection
             connectionToClient = (NetworkConnectionToClient) conn;
         }

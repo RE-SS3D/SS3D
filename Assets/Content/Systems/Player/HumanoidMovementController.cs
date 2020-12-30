@@ -43,7 +43,9 @@ namespace SS3D.Content.Systems.Player
             characterController = GetComponent<CharacterController>();
             characterAnimator = GetComponent<Animator>();
             chatRegister = GetComponent<ChatRegister>();
-            camera = CameraManager.singleton.playerCamera;
+            camera = CameraManager.singleton.playerCamera; 
+            
+            if(!isServer) return;
             camera.GetComponent<CameraFollow>().SetTarget(gameObject);
         }
 

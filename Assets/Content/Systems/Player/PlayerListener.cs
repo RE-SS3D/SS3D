@@ -14,7 +14,7 @@ namespace SS3D.Content.Systems.Player
         {
             if (NetworkClient.active)
             {
-                if (NetworkClient.connection.identity.gameObject != transform.parent.gameObject)
+                if (NetworkClient.connection.identity.gameObject != transform.gameObject)
                 {
                     // Destroy if listener of other player
                     Destroy(gameObject);
@@ -28,11 +28,11 @@ namespace SS3D.Content.Systems.Player
 
             listener = GetComponent<AudioListener>();
 
-            Camera sceneCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Camera>();
+            Camera sceneCamera = CameraManager.singleton.playerCamera;
             // Get camera
-            if (GameObject.FindGameObjectWithTag("PlayerCamera") != null && Camera.main != null)
+            if (sceneCamera != null)
             {
-                Camera.main.gameObject.SetActive(false);
+                CameraManager.singleton.lobbyCamera.gameObject.SetActive(false);
                 camera = sceneCamera.GetComponent<CameraFollow>();
             }
             sceneCamera.enabled = true;

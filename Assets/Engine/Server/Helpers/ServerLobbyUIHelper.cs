@@ -22,9 +22,15 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         RoundManager.ClientTimerUpdated += SetTimerText;
         RoundManager.ServerRoundStarted += ChangeEmbarkText;
         
-        embarkButton.onClick.AddListener(delegate { LoginNetworkManager.singleton.SpawnPlayerAfterRoundStart(); });
+        embarkButton.onClick.AddListener(delegate { CmdRequestEmbark(); });
         
         if (NetworkServer.localConnection == null) serverSettingsButton.interactable = true;
+    }
+
+    [Command(ignoreAuthority = true)]
+    public void CmdRequestEmbark(NetworkConnectionToClient sender = null)
+    {
+        LoginNetworkManager.singleton.SpawnPlayerAfterRoundStart(sender);
     }
 
     public void ChangeEmbarkText()
@@ -38,6 +44,5 @@ public class ServerLobbyUIHelper : NetworkBehaviour
     private void SetTimerText(string text)
     {
         timer.text = text;
-    } 
-
+    }
 }
