@@ -13,25 +13,7 @@ namespace SS3D.Content.Systems.Player
         private void Start()
         {
             camera = CameraManager.singleton.playerCamera;
-        }
-
-        public override void OnStartLocalPlayer()
-        {
-            if (camera == null) camera = CameraManager.singleton.playerCamera;
-            
-            if (NetworkClient.active)
-            {
-                if (NetworkClient.connection.identity.gameObject != transform.parent.gameObject)
-                {
-                    // Destroy if listener of other player
-                    Destroy(gameObject);
-                }
-            }
-            else if (NetworkServer.active)
-            {
-                // Destroy if server only
-                Destroy(gameObject);
-            }
+            if(!isLocalPlayer) return;
             
             CameraFollow cameraFollow = camera.GetComponent<CameraFollow>();
             

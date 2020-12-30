@@ -14,18 +14,18 @@ namespace SS3D.Content.Systems.Player
         {
             if (NetworkClient.active)
             {
-                if (NetworkClient.connection.identity.gameObject != transform.gameObject)
+                if (NetworkClient.connection.identity.gameObject != transform.parent.gameObject)
                 {
                     // Destroy if listener of other player
                     Destroy(gameObject);
                 }
             }
+            
             else if (NetworkServer.active)
             {
                 // Destroy if server only
                 Destroy(gameObject);
             }
-
             listener = GetComponent<AudioListener>();
 
             Camera sceneCamera = CameraManager.singleton.playerCamera;

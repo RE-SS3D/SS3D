@@ -45,7 +45,7 @@ namespace SS3D.Content.Systems.Player
             chatRegister = GetComponent<ChatRegister>();
             camera = CameraManager.singleton.playerCamera; 
             
-            if(!isServer) return;
+            if(!isLocalPlayer) return;
             camera.GetComponent<CameraFollow>().SetTarget(gameObject);
         }
 
