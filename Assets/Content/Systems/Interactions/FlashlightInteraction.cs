@@ -7,6 +7,11 @@ namespace SS3D.Content.Systems.Interactions
     public class FlashlightInteraction : IInteraction
     {
         public Sprite icon;
+
+        public Material onMaterial;
+        public Material offMaterial;
+
+        public MeshRenderer bulbRenderer;
         private class ClientFlashlightInteraction : IClientInteraction
         {
             public bool ClientStart(InteractionEvent interactionEvent)
@@ -14,6 +19,10 @@ namespace SS3D.Content.Systems.Interactions
                 if (interactionEvent.Target is Flashlight flashlight)
                 {
                     flashlight.light.enabled = !flashlight.light.enabled;
+                    
+                    // Set flashlight bulb material based on power state
+                    flashlight.bulbRenderer.sharedMaterial = (flashlight.light.enabled ? flashlight.onMaterial : flashlight.offMaterial);
+    
                 }
 
                 return false;

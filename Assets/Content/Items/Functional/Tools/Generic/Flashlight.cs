@@ -13,11 +13,30 @@ namespace SS3D.Content.Items.Functional.Tools
         [SerializeField]
         public new Light light = null;
         public Sprite turnOnIcon;
+
+        // Materials to display on bulb object when on / off
+        public Material onMaterial;
+        public Material offMaterial;
+
+        // Reference to bulb object within flashlight
+        public GameObject bulbObject;
+
+
+        [System.NonSerialized]
+        public MeshRenderer bulbRenderer;
         
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
+            // Retrieves renderer from bulb object
+            this.bulbRenderer = bulbObject.GetComponent<MeshRenderer>();
+                
             List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
-            list.Add(new FlashlightInteraction{ icon = turnOnIcon });
+            list.Add(new FlashlightInteraction{
+                icon = turnOnIcon,
+                bulbRenderer = bulbRenderer,
+                onMaterial = onMaterial,
+                offMaterial = offMaterial
+            });
             return list.ToArray();
         }
     }
