@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using SS3D.Engine.Tiles;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -32,7 +33,7 @@ public class SceneLoaderManager : NetworkSceneChecker
 
     public void LoadMapScene()
     {
-        if (IsSelectedMapLoaded())
+        if (IsSelectedMapLoaded()) return;
     
         loadSceneButtonText.text = "loading...";
         LoadingSceneHelper();
@@ -40,6 +41,12 @@ public class SceneLoaderManager : NetworkSceneChecker
         SceneManager.LoadSceneAsync(selectedMap, LoadSceneMode.Additive);
         SceneManager.sceneLoaded += SetActiveScene;
         Debug.Log("New active scene set " + GetCurrentLoadedScene().name);
+
+        TileManager.TileManagerLoaded += UnlockRoundStart;
+    }
+
+    public void UnlockRoundStart()
+    {
         loadSceneButtonText.text = "scene loaded";
         startRoundButton.interactable = true;
         
@@ -51,7 +58,6 @@ public class SceneLoaderManager : NetworkSceneChecker
 
         NetworkServer.SendToAll(msg);
     }
-
     public void LoadMapList()
     {
         List<TMP_Dropdown.OptionData> mapList = new List<TMP_Dropdown.OptionData>();
