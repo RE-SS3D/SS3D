@@ -42,7 +42,7 @@ public class SceneLoaderManager : NetworkSceneChecker
         SceneManager.sceneLoaded += SetActiveScene;
         Debug.Log("New active scene set " + GetCurrentLoadedScene().name);
 
-        TileManager.TileManagerLoaded += UnlockRoundStart;
+        TileManager.tileManagerLoaded += UnlockRoundStart;
     }
 
     public void UnlockRoundStart()

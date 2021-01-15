@@ -26,7 +26,7 @@ namespace SS3D.Engine.Tiles {
             public TileDefinition definition;
         }
         
-        public static event System.Action TileManagerLoaded;
+        public static event System.Action tileManagerLoaded;
 
         public static bool IsOnServer(GameObject tileChild)
         {
@@ -193,7 +193,7 @@ namespace SS3D.Engine.Tiles {
         [Server]
         private void LoadTileMap()
         {
-            TileManagerLoaded?.Invoke();
+            tileManagerLoaded?.Invoke();
         }
 
 #if UNITY_EDITOR

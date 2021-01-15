@@ -10,6 +10,8 @@ namespace Telepathy
         public TcpClient client;
         Thread receiveThread;
         Thread sendThread;
+        
+        public static event System.Action connectionFailed;
 
         // TcpClient.Connected doesn't check if socket != null, which
         // results in NullReferenceExceptions if connection was closed.
@@ -76,6 +78,8 @@ namespace Telepathy
                 // add 'Disconnected' event to message queue so that the caller
                 // knows that the Connect failed. otherwise they will never know
                 receiveQueue.Enqueue(new Message(0, EventType.Disconnected, null));
+
+                connectionFailed?.Invoke();
             }
             catch (ThreadInterruptedException)
             {

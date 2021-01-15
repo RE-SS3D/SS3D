@@ -6,7 +6,8 @@ using SS3D.Engine.Server.Login.Networking;
 using SS3D.Engine.Server.Round;
     
     using System.Net;
-    using UnityEngine.SceneManagement;
+using Telepathy;
+using UnityEngine.SceneManagement;
     using UnityEngine.UI;
 
     namespace Mirror
@@ -87,7 +88,6 @@ using SS3D.Engine.Server.Round;
                     character => SpawnPlayerWithLoginServer(NetworkServer.localConnection, character));
                 loginManager.ApiHeartbeat(ConfirmLoginServer);
             }
-
         }
 
         public override void Awake()
@@ -357,7 +357,7 @@ using SS3D.Engine.Server.Round;
 
             return true;
         }
-
+        
         public override void OnClientChangeScene(string newSceneName, SceneOperation sceneOperation, bool customHandling)
         {
             base.OnClientChangeScene(newSceneName, sceneOperation, customHandling);

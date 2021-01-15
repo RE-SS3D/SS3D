@@ -2,9 +2,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Net;
+using Telepathy;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace SS3D.UI
 {
@@ -15,13 +18,24 @@ namespace SS3D.UI
     {
         public TMP_InputField ipAddressInputField;
 
+        private bool connecting;
         private Animator animator;
+        
+        [SerializeField] private TMP_Text joinButtonText;
+        [SerializeField] private TMP_Text errorMessageText;
+        
         private int toggleAnimatorID;
+
+        private void Start()
+        {
+            Client.connectionFailed += OnClientFailConnection;
+        }
 
         private void Awake()
         {
             animator = GetComponent<Animator>();
             toggleAnimatorID = Animator.StringToHash("Toggle");
+           
         }
 
         public void OnJoinButtonPressed()
@@ -29,7 +43,28 @@ namespace SS3D.UI
             var uriAdress = TryParseIpAddress();
             NetworkManager.singleton.StartClient(uriAdress);
 
-            animator?.SetTrigger(toggleAnimatorID);
+            joinButtonText.alignment = TextAlignmentOptions.Left;
+            connecting = true;
+            StartCoroutine(ChangeJoinText());
+            
+            if (animator.GetBool("ToggleError"))
+                animator.SetBool("ToggleError", false);
+
+        }
+
+        public IEnumerator ChangeJoinText()
+        {
+            while (connecting)
+            {
+                joinButtonText.text = "joining.";
+                yield return new WaitForSeconds(.2f);
+                joinButtonText.text = "joining..";
+                yield return new WaitForSeconds(.2f);
+                joinButtonText.text = "joining...";
+                yield return new WaitForSeconds(.2f);
+            }
+            joinButtonText.alignment = TextAlignmentOptions.Midline;
+            joinButtonText.text = "join";
         }
 
         public void OnHostButtonPressed()
@@ -37,6 +72,18 @@ namespace SS3D.UI
             NetworkManager.singleton.StartHost();
 
             animator?.SetTrigger(toggleAnimatorID);
+        }
+        
+        public void OnClientFailConnection()
+        {
+            UnityMainThread.wkr.AddJob(delegate
+            {
+                connecting = false;
+                animator.SetBool("ToggleError", true);
+
+                errorMessageText.text = "Connection to the server failed";
+            });
+            
         }
 
         private Uri TryParseIpAddress()
