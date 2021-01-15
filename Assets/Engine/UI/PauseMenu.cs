@@ -26,6 +26,11 @@ public class PauseMenu : NetworkBehaviour
 
     public void Toggle()
     {
+        if (!animator.gameObject.active)
+        { 
+            animator.gameObject.SetActive(true); 
+            return;
+        }
         animator.SetBool("Toggle", !animator.GetBool("Toggle"));
     }
 
