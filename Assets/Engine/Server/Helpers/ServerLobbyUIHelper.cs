@@ -30,6 +30,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
     [Command(ignoreAuthority = true)]
     public void CmdRequestEmbark(NetworkConnectionToClient sender = null)
     {
+        embarkButton.interactable = false;
         LoginNetworkManager.singleton.SpawnPlayerAfterRoundStart(sender);
     }
 
