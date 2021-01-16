@@ -29,6 +29,8 @@ namespace SS3D.Engine.Server.Round
         public static event System.Action ServerRoundRestarted;
         public static event System.Action<string> ClientTimerUpdated;
 
+        public static event System.Action ServerRoundEnded; 
+
         public bool IsRoundStarted => started;
 
         private void Start()
@@ -79,6 +81,7 @@ namespace SS3D.Engine.Server.Round
             StopCoroutine(tickCoroutine);
             NetworkManager.singleton.ServerChangeScene(SceneManager.GetActiveScene().name);
 
+            ServerRoundEnded?.Invoke();
             ServerRoundRestarted?.Invoke();
         }
 

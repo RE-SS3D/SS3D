@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using SS3D.Engine.Server.Round;
 using UnityEngine;
 using UnityEngine.Networking.Types;
 
@@ -14,24 +15,37 @@ public class PauseMenu : NetworkBehaviour
         if (animator == null)
             animator = GetComponent<Animator>();
         networkManager = FindObjectOfType<LoginNetworkManager>();
+
+        RoundManager.ServerRoundEnded += ForceToggleOff;
     }
     
     void Update() 
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) 
+        if (Input.GetKeyDown(KeyCode.Escape) && !CameraManager.singleton.lobbyCamera.gameObject.activeSelf) 
         {
             Toggle();
         }
     }
 
+    
     public void Toggle()
     {
-        if (!animator.gameObject.active)
+        if (!animator.enabled)
         { 
-            animator.gameObject.SetActive(true); 
+            animator.enabled = true; 
             return;
         }
         animator.SetBool("Toggle", !animator.GetBool("Toggle"));
+    }
+
+    public void ForceToggleOff()
+    {
+        if (!animator.enabled)
+        { 
+            animator.enabled = true;
+            return;
+        }
+        animator.SetBool("Toggle", false); 
     }
 
     public void Disconnect()
