@@ -750,5 +750,21 @@ namespace SS3D.Engine.Tiles
         private GameObject[] fixtures = new GameObject[TileDefinition.GetAllFixtureLayerSize()];
         private AdjacencyConnector[] tileFixtureConnectors = new AdjacencyConnector[TileDefinition.GetTileFixtureLayerSize()];
         private AdjacencyConnector[] floorFixtureConnectors = new AdjacencyConnector[TileDefinition.GetFloorFixtureLayerSize()];
+
+
+        public GameObject GetLayer(int i)
+        {
+            switch (i)
+            {
+                case 0:
+                    return plenum;
+                case 1:
+                    return turf;
+                default:
+                    if (i >= fixtures.Length)
+                        return null;
+                    return fixtures[i];
+            }
+        }
     }
 }

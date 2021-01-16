@@ -7,10 +7,21 @@ using static Tile.TileMapEditorHelpers;
 
 namespace SS3D.Engine.Tiles.Editor.TileMap
 {
+
     public class TileMapEditor : EditorWindow
     {
+        private struct Layer
+        {
+            public string name;
+            public bool visibile;
+
+            public static implicit operator Layer(string value)
+            {
+                return new Layer() { name = value, visibile = true };
+            }
+        }
+
         [MenuItem("RE:SS3D Editor Tools/TileMap Editor")]
-        
         public static void ShowWindow()
         {
             // This bullshit makes the icon and the name appear on the editor
@@ -27,7 +38,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             GetWindow(typeof(TileMapEditor)).titleContent = gUIContent;
 
             GetWindow(typeof(TileMapEditor)).Show();
-
         }
 
         private bool enableVisualHelp;
@@ -40,6 +50,8 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
             tiles.Update(tileManager);
 
+            LoadLayerVisibility();
+
             SceneView.duringSceneGui += OnSceneGUI;
         }
         public void OnDisable()
@@ -51,11 +63,14 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             tiles.Destroy();
             DestroyAllGhosts(tileManager);
 
+            ResetTileVisibility();
+
             SceneView.duringSceneGui -= OnSceneGUI;
         }
 
         public void OnGUI()
         {
+            // Ensure that we have a tile manager instance
             if(tileManager == null)
                 tileManager = FindObjectOfType<TileManager>();
 
@@ -63,6 +78,24 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 return;
 
             tiles.Update(tileManager);
+
+            // Change the visibility of different tilemap layers
+            showVisibility = EditorGUILayout.BeginFoldoutHeaderGroup(showVisibility, "Visibility");
+            if (showVisibility)
+            {
+                EditorGUI.indentLevel++;
+                // Draw for each layer in the tilemap
+                for (int i = 0; i < layerVisibility.Length; i++)
+                {
+                    if (layerVisibility[i].visibile = EditorGUILayout.Toggle(layerVisibility[i].name, layerVisibility[i].visibile))
+                    {
+                        UpdateTileVisibility(false);
+                    }
+                }
+                EditorGUI.indentLevel--;
+            }
+            EditorGUILayout.EndFoldoutHeaderGroup();
+
 
             enableVisualHelp = EditorGUILayout.Toggle("Enable visual help: ", enableVisualHelp);
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
@@ -101,6 +134,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
             if (GUILayout.Button("Refresh TileMap")) {
                 tileManager.ReinitializeFromChildren();
+                UpdateTileVisibility(false);
             }
         }
 
@@ -180,6 +214,16 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             Handles.DrawLines(lines);
         }
 
+        private void LoadLayerVisibility()
+        {
+            TileLayers[] layers = (TileLayers[])Enum.GetValues(typeof(TileLayers));
+            layerVisibility = new Layer[layers.Length];
+            for (int i = 0; i < layers.Length; i++)
+            {
+                layerVisibility[i] = layers[i].ToString();
+            }
+        }
+
         /**
          * Switches currently in-use ghost tile to the one specified
          */
@@ -192,9 +236,37 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             if(selectedTileIndex != -1)
                 tiles.ShowTile(index);
         }
+
+        private void UpdateTileVisibility(bool reset)
+        {
+            // Loop all tiles
+            foreach (TileObject tileObject in tileManager.GetAllTiles())
+            {
+                // Loop each layer
+                for (int i = 0; i < layerVisibility.Length; i++)
+                {
+                    GameObject layerObject = tileObject.GetLayer(i);
+                    if (layerObject != null)
+                    {
+                        if (reset)
+                        {
+                            layerObject.SetActive(true);
+                        }
+                        else
+                        {
+                            layerObject.SetActive(layerVisibility[i].visibile);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ResetTileVisibility()
+        {
+            UpdateTileVisibility(true);
+        }
         
         private TileManager tileManager;
-
         private TileSet tiles = new TileSet();
 
         // Stuff for editing scene
@@ -204,5 +276,8 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         private TileDragHandler dragHandler;
         private Vector2 scrollPosition;
+
+        private bool showVisibility = false;
+        private Layer[] layerVisibility;
     }
 }
