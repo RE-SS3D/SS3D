@@ -754,6 +754,8 @@ namespace SS3D.Engine.Tiles
 
         public GameObject GetLayer(int i)
         {
+            int offset = -2;
+
             switch (i)
             {
                 case 0:
@@ -761,9 +763,11 @@ namespace SS3D.Engine.Tiles
                 case 1:
                     return turf;
                 default:
-                    if (i >= fixtures.Length)
+                    if ((i + offset) >= fixtures.Length)
                         return null;
-                    return fixtures[i];
+                    if (fixtures[i + offset] != null)
+                        return fixtures[i + offset];
+                    else return null;
             }
         }
     }

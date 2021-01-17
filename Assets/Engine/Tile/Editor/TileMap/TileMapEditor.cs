@@ -63,7 +63,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             tiles.Destroy();
             DestroyAllGhosts(tileManager);
 
-            ResetTileVisibility();
+            ResetTileVisibility(true);
 
             SceneView.duringSceneGui -= OnSceneGUI;
         }
@@ -89,9 +89,22 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 {
                     if (layerVisibility[i].visibile = EditorGUILayout.Toggle(layerVisibility[i].name, layerVisibility[i].visibile))
                     {
-                        UpdateTileVisibility(false);
+                        UpdateTileVisibility();
                     }
                 }
+
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.Space();
+                if (GUILayout.Button("Show All"))
+                {
+                    ResetTileVisibility(true);
+                }
+                if (GUILayout.Button("Hide All"))
+                {
+                    ResetTileVisibility(false);
+                }
+                EditorGUILayout.EndHorizontal();
+
                 EditorGUI.indentLevel--;
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
@@ -134,7 +147,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
             if (GUILayout.Button("Refresh TileMap")) {
                 tileManager.ReinitializeFromChildren();
-                UpdateTileVisibility(false);
+                UpdateTileVisibility();
             }
         }
 
@@ -237,7 +250,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 tiles.ShowTile(index);
         }
 
-        private void UpdateTileVisibility(bool reset)
+        private void UpdateTileVisibility()
         {
             // Loop all tiles
             foreach (TileObject tileObject in tileManager.GetAllTiles())
@@ -248,22 +261,22 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                     GameObject layerObject = tileObject.GetLayer(i);
                     if (layerObject != null)
                     {
-                        if (reset)
-                        {
-                            layerObject.SetActive(true);
-                        }
-                        else
-                        {
-                            layerObject.SetActive(layerVisibility[i].visibile);
-                        }
+                        layerObject.SetActive(layerVisibility[i].visibile);
                     }
                 }
             }
         }
 
-        private void ResetTileVisibility()
+        private void ResetTileVisibility(bool showAll)
         {
-            UpdateTileVisibility(true);
+            for (int i = 0; i < layerVisibility.Length; i++)
+            {
+                if (showAll)
+                    layerVisibility[i].visibile = true;
+                else
+                    layerVisibility[i].visibile = false;
+            }
+            UpdateTileVisibility();
         }
         
         private TileManager tileManager;
