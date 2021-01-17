@@ -14,14 +14,15 @@ namespace SS3D.Content.Systems.Player
         {
             camera = CameraManager.singleton.playerCamera;
             if(!isLocalPlayer) return;
+
+            CameraManager.singleton.lobbyCamera.gameObject.SetActive(false);
+            CameraManager.singleton.playerCamera.gameObject.SetActive(true);
             
+            //camera.GetComponent<CameraFollow>().SetTarget(gameObject);
             CameraFollow cameraFollow = camera.GetComponent<CameraFollow>();
-            
-            if (cameraFollow.target != null)
-            {
-                cameraFollow.SetTarget(gameObject);
-                cameraFollow.enabled = true;
-            }
+
+            cameraFollow.SetTarget(gameObject);
+            cameraFollow.enabled = true;
         }
     }
 }

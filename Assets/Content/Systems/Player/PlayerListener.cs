@@ -8,7 +8,6 @@ namespace SS3D.Content.Systems.Player
     public class PlayerListener : MonoBehaviour
     {
         private AudioListener listener;
-        private new CameraFollow camera;
 
         private void Start()
         {
@@ -26,27 +25,6 @@ namespace SS3D.Content.Systems.Player
                 // Destroy if server only
                 Destroy(gameObject);
             }
-            listener = GetComponent<AudioListener>();
-
-            Camera sceneCamera = CameraManager.singleton.playerCamera;
-            // Get camera
-            if (sceneCamera != null)
-            {
-                CameraManager.singleton.lobbyCamera.gameObject.SetActive(false);
-                camera = sceneCamera.GetComponent<CameraFollow>();
-            }
-            sceneCamera.enabled = true;
-            camera.enabled = true;
-            if (camera == null)
-            {
-                Debug.LogError("Can't find camera follow");
-                Destroy(this);
-            }
-        }
-
-        private void LateUpdate()
-        {
-           // transform.rotation = Quaternion.Euler(0, 0, camera.angle - 90);
         }
     }
 }

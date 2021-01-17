@@ -23,6 +23,7 @@ public class SceneLoaderManager : NetworkSceneChecker
 
     [SerializeField] private TMP_Dropdown mapSelectionDropdown;
     
+    
     private void Start()
     {
         if (singleton != null) Destroy(gameObject);
@@ -37,7 +38,7 @@ public class SceneLoaderManager : NetworkSceneChecker
     
         loadSceneButtonText.text = "loading...";
         LoadingSceneHelper();
-        
+
         SceneManager.LoadSceneAsync(selectedMap, LoadSceneMode.Additive);
         SceneManager.sceneLoaded += SetActiveScene;
         Debug.Log("New active scene set " + GetCurrentLoadedScene().name);
@@ -109,7 +110,7 @@ public class SceneLoaderManager : NetworkSceneChecker
         
         if (IsSelectedMapLoaded() && selectedMap == name) return;
         
-        if (IsSelectedMapLoaded())
+        if (IsSelectedMapLoaded() && selectedMap != name)
             UnloadSelectedMap();
             
         foreach (String map in maps)

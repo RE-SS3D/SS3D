@@ -69,7 +69,7 @@ public class SimpleBodyPartLookAt : MonoBehaviour
         target.position = transform.position;
         currentRot = Quaternion.identity;
 
-        camera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Camera>();
+        camera = CameraManager.singleton.playerCamera.GetComponent<Camera>();
     }
 
     public void MoveTarget()

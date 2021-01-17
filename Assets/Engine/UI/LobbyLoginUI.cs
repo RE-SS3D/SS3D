@@ -20,7 +20,8 @@ namespace SS3D.UI
 
         private bool connecting;
         private Animator animator;
-        
+
+        [SerializeField] private Button joinButton;
         [SerializeField] private TMP_Text joinButtonText;
         [SerializeField] private TMP_Text errorMessageText;
         
@@ -54,6 +55,7 @@ namespace SS3D.UI
 
         public IEnumerator ChangeJoinText()
         {
+            joinButton.interactable = false;
             while (connecting)
             {
                 joinButtonText.text = "joining.";
@@ -63,6 +65,7 @@ namespace SS3D.UI
                 joinButtonText.text = "joining...";
                 yield return new WaitForSeconds(.2f);
             }
+            joinButton.interactable = true;
             joinButtonText.alignment = TextAlignmentOptions.Midline;
             joinButtonText.text = "join";
         }
