@@ -101,18 +101,26 @@ public class SceneLoaderManager : NetworkSceneChecker
     public void UnloadSelectedMap()
     {
         SceneManager.UnloadSceneAsync(selectedMap);
+        
+        SceneMessage msg = new SceneMessage
+        {
+            sceneName = selectedMap,
+            sceneOperation = SceneOperation.UnloadAdditive
+        };
+
+        NetworkServer.SendToAll(msg);
     }
     
     public void SetSelectedMap(TMP_Dropdown dropdown)
     {
         String name = dropdown.captionText.text;
-        loadSceneButtonText.text = "load map";
         
         if (IsSelectedMapLoaded() && selectedMap == name) return;
         
         if (IsSelectedMapLoaded() && selectedMap != name)
             UnloadSelectedMap();
-            
+        
+        loadSceneButtonText.text = "load map";
         foreach (String map in maps)
         {
             if (map == name) selectedMap = map;
