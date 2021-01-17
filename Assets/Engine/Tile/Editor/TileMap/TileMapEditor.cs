@@ -111,7 +111,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
 
             enableVisualHelp = EditorGUILayout.Toggle("Enable visual help: ", enableVisualHelp);
-            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+            scrollPositionTile = EditorGUILayout.BeginScrollView(scrollPositionTile);
             for (int i = 0; i < tiles.Definitions.Count; ++i) {
                 tiles.ShowInspectorFor(i);
 
@@ -137,6 +137,8 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 if (GUILayout.Button("Remove Tile Definition")) {
                     tiles.RemoveAt(i);
                 }
+
+
                 EditorGUILayout.EndHorizontal();
             }
             EditorGUILayout.EndScrollView();
@@ -149,6 +151,26 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 tileManager.ReinitializeFromChildren();
                 UpdateTileVisibility();
             }
+
+            // EditorGUIUtility.ShowObjectPicker<Fixture>(selectedFixture, false, "", 0);
+            //selectedFixture = (GameObject)EditorGUILayout.ObjectField(selectedFixture, typeof(GameObject), true);
+            //if (selectedFixture != null)
+            //{
+            //    if (gameObjectEditor == null)
+            //        gameObjectEditor = UnityEditor.Editor.CreateEditor(selectedFixture);
+
+            //    gameObjectEditor.OnPreviewGUI(GUILayoutUtility.GetRect(200, 200), EditorStyles.whiteLabel);
+            //}
+
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Selected layer:");
+            selectedTileLayer = (TileLayers)EditorGUILayout.EnumPopup(selectedTileLayer);
+            EditorGUILayout.EndHorizontal();
+
+            scrollPositionSelection = EditorGUILayout.BeginScrollView(scrollPositionSelection);
+            LoadTileLayer(selectedTileLayer);
+            EditorGUILayout.EndScrollView();
         }
 
         private void OnSceneGUI(SceneView sceneView)
@@ -278,6 +300,75 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             }
             UpdateTileVisibility();
         }
+
+        private void LoadAssetLayer<T>() where T : Fixture
+        {
+            buildTargets_icons.Clear();
+            string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(T)));
+
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
+                T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+
+                Texture2D texture = AssetPreview.GetAssetPreview(asset.prefab);
+                buildTargets_icons.Add(new GUIContent(texture));
+            }
+
+            buildTargets_index = GUILayout.SelectionGrid(buildTargets_index, buildTargets_icons.ToArray(), 2);
+        }
+
+        private void LoadTileLayer(TileLayers tileLayers)
+        {
+            switch (tileLayers)
+            {
+                case TileLayers.Plenum:
+                    // LoadAssetLayer<Plenum>();
+                    break;
+                case TileLayers.Turf:
+                    // LoadAssetLayer<Turf>();
+                    break;
+                case TileLayers.Wire:
+                    LoadAssetLayer<WireFixture>();
+                    break;
+                case TileLayers.Disposal:
+                    LoadAssetLayer<DisposalFixture>();
+                    break;
+                case TileLayers.Pipe1:
+                case TileLayers.Pipe2:
+                case TileLayers.Pipe3:
+                    LoadAssetLayer<PipeFixture>();
+                    break;
+                case TileLayers.HighWallNorth:
+                case TileLayers.HighWallEast:
+                case TileLayers.HighWallSouth:
+                case TileLayers.HighWallWest:
+                    LoadAssetLayer<HighWallFixture>();
+                    break;
+                case TileLayers.LowWallNorth:
+                case TileLayers.LowWallEast:
+                case TileLayers.LowWallSouth:
+                case TileLayers.LowWallWest:
+                    LoadAssetLayer<LowWallFixture>();
+                    break;
+                case TileLayers.PipeUpper:
+                    LoadAssetLayer<PipeFloorFixture>();
+                    break;
+                case TileLayers.FurnitureMain:
+                case TileLayers.Furniture2:
+                case TileLayers.Furniture3:
+                case TileLayers.Furniture4:
+                case TileLayers.Furniture5:
+                    LoadAssetLayer<FurnitureFloorFixture>();
+                    break;
+                case TileLayers.Overlay1:
+                case TileLayers.Overlay2:
+                case TileLayers.Overlay3:
+                    LoadAssetLayer<OverlayFloorFixture>();
+                    break;
+            }
+
+        }
         
         private TileManager tileManager;
         private TileSet tiles = new TileSet();
@@ -288,9 +379,16 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         private Vector2Int lastPlacement;
 
         private TileDragHandler dragHandler;
-        private Vector2 scrollPosition;
+        private Vector2 scrollPositionTile;
+        private Vector2 scrollPositionSelection;
 
         private bool showVisibility = false;
         private Layer[] layerVisibility;
+
+        private GameObject selectedFixture;
+        private TileLayers selectedTileLayer;
+        UnityEditor.Editor gameObjectEditor;
+        private List<GUIContent> buildTargets_icons = new List<GUIContent>();
+        private int buildTargets_index;
     }
 }
