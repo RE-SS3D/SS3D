@@ -111,46 +111,58 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
 
             enableVisualHelp = EditorGUILayout.Toggle("Enable visual help: ", enableVisualHelp);
-            scrollPositionTile = EditorGUILayout.BeginScrollView(scrollPositionTile);
-            for (int i = 0; i < tiles.Definitions.Count; ++i) {
-                tiles.ShowInspectorFor(i);
+            //scrollPositionTile = EditorGUILayout.BeginScrollView(scrollPositionTile);
+            //for (int i = 0; i < tiles.Definitions.Count; ++i) {
+            //    tiles.ShowInspectorFor(i);
 
-                // Now add some actions for the tile
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.Space();
-                if (GUILayout.Button("Add Tiles")) {
-                    if(tiles.Objects[i] != null)
-                        SelectTile(i);
-                    else
-                        Debug.LogWarning("Can't add tiles - tile definition is empty");
-                }
-                if (GUILayout.Button("Delete Tiles"))
-                {
-                    if (tiles.Objects[i] != null)
-                    {
-                        deleteTiles = true;
-                        SelectTile(i);
-                    }
-                    else
-                        Debug.LogWarning("Can't delete tiles - tile definition is empty");
-                }
-                if (GUILayout.Button("Remove Tile Definition")) {
-                    tiles.RemoveAt(i);
-                }
+            //    // Now add some actions for the tile
+            //    EditorGUILayout.BeginHorizontal();
+            //    EditorGUILayout.Space();
+            //    if (GUILayout.Button("Add Tiles")) {
+            //        if(tiles.Objects[i] != null)
+            //            SelectTile(i);
+            //        else
+            //            Debug.LogWarning("Can't add tiles - tile definition is empty");
+            //    }
+            //    if (GUILayout.Button("Delete Tiles"))
+            //    {
+            //        if (tiles.Objects[i] != null)
+            //        {
+            //            deleteTiles = true;
+            //            SelectTile(i);
+            //        }
+            //        else
+            //            Debug.LogWarning("Can't delete tiles - tile definition is empty");
+            //    }
+            //    if (GUILayout.Button("Remove Tile Definition")) {
+            //        tiles.RemoveAt(i);
+            //    }
 
 
-                EditorGUILayout.EndHorizontal();
+            //    EditorGUILayout.EndHorizontal();
+            //}
+            //EditorGUILayout.EndScrollView();
+
+            //if (GUILayout.Button("Add Tile Type")) {
+            //    tiles.Add();
+            //}
+
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Add"))
+            {
+                
             }
-            EditorGUILayout.EndScrollView();
+            if (GUILayout.Button("Delete"))
+            {
 
-            if (GUILayout.Button("Add Tile Type")) {
-                tiles.Add();
             }
-
+            EditorGUILayout.Space();
             if (GUILayout.Button("Refresh TileMap")) {
                 tileManager.ReinitializeFromChildren();
                 UpdateTileVisibility();
             }
+            EditorGUILayout.EndHorizontal();
 
             // EditorGUIUtility.ShowObjectPicker<Fixture>(selectedFixture, false, "", 0);
             //selectedFixture = (GameObject)EditorGUILayout.ObjectField(selectedFixture, typeof(GameObject), true);
@@ -301,7 +313,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             UpdateTileVisibility();
         }
 
-        private void LoadAssetLayer<T>() where T : Fixture
+        private void LoadAssetLayer<T>() where T : TileBase
         {
             buildTargets_icons.Clear();
             string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(T)));
@@ -323,10 +335,10 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             switch (tileLayers)
             {
                 case TileLayers.Plenum:
-                    // LoadAssetLayer<Plenum>();
+                    LoadAssetLayer<Plenum>();
                     break;
                 case TileLayers.Turf:
-                    // LoadAssetLayer<Turf>();
+                    LoadAssetLayer<Turf>();
                     break;
                 case TileLayers.Wire:
                     LoadAssetLayer<WireFixture>();

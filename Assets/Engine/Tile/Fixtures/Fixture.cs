@@ -17,13 +17,8 @@ namespace SS3D.Engine.Tiles {
     /**
      * Describes an object that is attached to a turf.
      */
-    public class Fixture : ScriptableObject
+    public class Fixture : TileBase
     {
-        public string id;
-        public string genericType;
-
-        protected FixtureType fixtureType;
-        // protected FixtureLayers layer;
-        public GameObject prefab;
+        
     }
 }
