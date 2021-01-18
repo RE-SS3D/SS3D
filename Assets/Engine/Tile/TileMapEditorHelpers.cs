@@ -83,7 +83,7 @@ namespace Tile
                 for (int i = 0; i < tileBases.ToArray().Length; i++)
                 {
                     if (tileBases[i] != null)
-                        oldDefinition = SetTileItem(tileDefinition, tileBases[i], i);
+                        oldDefinition = SetTileItem(oldDefinition, tileBases[i], i);
                 }
 
                 

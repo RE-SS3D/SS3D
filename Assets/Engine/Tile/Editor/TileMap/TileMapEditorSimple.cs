@@ -32,6 +32,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         private List<TileBase> assetList = new List<TileBase>();
         private List<GUIContent> assetIcons = new List<GUIContent>();
         private int assetIndex;
+        private int lastAssetIndex;
 
 
         private struct Layer
@@ -164,6 +165,15 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             scrollPositionSelection = EditorGUILayout.BeginScrollView(scrollPositionSelection);
             LoadTileLayer(selectedTileLayer);
             EditorGUILayout.EndScrollView();
+
+
+            if (GUI.changed)
+            {
+                ResetTileDefinition();
+
+                // Update our currently selected item
+                SetSelectionDefinition();
+            }
         }
 
         private void OnSceneGUI(SceneView sceneView)
@@ -171,8 +181,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             if (enablePlacement == false)
                 return;
 
-            // Update our currently selected item
-            SetSelectionDefinition();
+
 
             var selectionTile = currentTile;
             // Ensure the user can't use other scene controls whilst this one is active.
@@ -199,6 +208,8 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                     HideTile();
 
                     dragHandler = new TileDragHandler(tileManager, currentDefinition, tilePosition);
+                    if (deleteTiles)
+                        dragHandler.SetDelete();
                 }
                 dragHandler.HandleDrag(tilePosition);
             }
@@ -368,16 +379,16 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         public void CreateTileObject()
         {
             if (currentDefinition == null)
-                CreateTileDefinition();
+                ResetTileDefinition();
 
             // Temporary
-            // currentDefinition.plenum = (Plenum)assetList[assetIndex];
+            currentDefinition.plenum = (Plenum)assetList[assetIndex];
 
             currentTile = CreateGhostTile(tileManager, currentDefinition);
             HideTile();
         }
 
-        public void CreateTileDefinition()
+        public void ResetTileDefinition()
         {
             TileDefinition def = new TileDefinition
             {

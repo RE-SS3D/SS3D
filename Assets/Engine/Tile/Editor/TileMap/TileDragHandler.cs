@@ -139,8 +139,12 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             int xInc = startPosition.x < curPosition.x ? 1 : -1;
             int yInc = startPosition.y < curPosition.y ? 1 : -1;
             for (int x = startPosition.x; x != curPosition.x + xInc; x += xInc) {
-                for (int y = startPosition.y; y != curPosition.y + yInc; y += yInc) {
-                    SetTile(tileManager, tileDefinition, x, y);
+                for (int y = startPosition.y; y != curPosition.y + yInc; y += yInc)
+                {
+                    if (delete)
+                        DeleteTile(tileManager, x, y);
+                    else
+                        SetTile(tileManager, tileDefinition, x, y);
                 }
             }
         }
@@ -158,11 +162,18 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             dragTiles.Clear();
         }
 
+        public void SetDelete()
+        {
+            delete = true;
+        }
+
         private readonly TileManager tileManager;
         private readonly TileDefinition tileDefinition;
         private readonly Vector2Int startPosition;
         private Vector2Int curPosition;
         private List<TileObject> dragTiles = new List<TileObject>();
+
+        private bool delete;
     }
 
 }
