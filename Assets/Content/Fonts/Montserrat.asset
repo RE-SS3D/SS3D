@@ -27,8 +27,8 @@ Texture2D:
   m_TextureDimension: 2
   m_TextureSettings:
     serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
+    m_FilterMode: 2
+    m_Aniso: 16
     m_MipBias: 0
     m_WrapU: 0
     m_WrapV: 0
@@ -53,9 +53,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: Montserrat
   m_EditorClassIdentifier: 
-  hashCode: 0
+  hashCode: 312758299
   material: {fileID: 1521877302608213421}
-  materialHashCode: 0
+  materialHashCode: -198342736
   m_Version: 1.1.0
   m_SourceFontFileGUID: 8fe6f62d833a0db47b0e59d05b5909be
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 8fe6f62d833a0db47b0e59d05b5909be,
