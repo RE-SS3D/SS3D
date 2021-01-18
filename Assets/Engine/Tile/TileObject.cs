@@ -213,6 +213,9 @@ namespace SS3D.Engine.Tiles
             bool altered = false;
             string reason = "";
 
+            if (tileDefinition.plenum == null)
+                Debug.LogError("No plenum found in new tile definition");
+
             // Turfs cannot be build on lattices
             if (tileDefinition.plenum.name.Contains("Lattice") && tileDefinition.turf != null)
             {

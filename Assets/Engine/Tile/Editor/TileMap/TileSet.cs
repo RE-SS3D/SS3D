@@ -29,17 +29,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
          */
         public void Update(TileManager tileManager)
         {
-            // Clean up tiles which where deleted in the editor
-            // Debug.Log("Looping all tiles...");
-            //foreach (TileObject tile in tileManager.GetAllTiles())
-            //{
-            //    if (tile.transform.childCount == 0)
-            //    {
-            //        tileManager.RemoveTile(tile);
-            //        Debug.LogWarning("Deleting tiles which where not deleted correctly");
-            //    }
-            //}
-
             if (savedSettings == null)
             {
                 savedSettings = TileMapEditorSettingsAsset.LoadFromAsset();
