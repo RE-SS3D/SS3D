@@ -220,7 +220,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   animator: {fileID: 719821119340649544}
-  networkManager: {fileID: 0}
 --- !u!114 &120066164296813277
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,10 +232,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c813b8d438d3924e9de35c561786049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roundManager: {fileID: 0}
   timerText: {fileID: 6991537844058698062}
   timerUi: {fileID: 1710756159920525587}
-  controlUi: {fileID: 1710756159920525587}
 --- !u!1 &435088719435060922
 GameObject:
   m_ObjectHideFlags: 0
@@ -719,8 +716,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 83.57}
-  m_SizeDelta: {x: 203.06393, y: 248.8742}
+  m_AnchoredPosition: {x: 0, y: 81.821}
+  m_SizeDelta: {x: 203.06393, y: 245.37604}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4794403208482221866
 CanvasRenderer:
@@ -881,6 +878,17 @@ MonoBehaviour:
       - m_Target: {fileID: 120066164296813277}
         m_MethodName: OnRestartRoundButtonPressed
         m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7137401812317684174}
+        m_MethodName: set_interactable
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1707,8 +1715,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 2080374783
+  m_fontColor: {r: 1, g: 1, b: 1, a: 0.48235294}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1841,8 +1849,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 2080374783
+  m_fontColor: {r: 1, g: 1, b: 1, a: 0.48235294}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2001,7 +2009,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.26666668}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -2254,7 +2262,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.26666668}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -2408,7 +2416,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9019608, g: 0.6784314, b: 0.3254902, a: 1}
+  m_Color: {r: 0.40392157, g: 0.5529412, b: 0.72156864, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -2761,4 +2769,4 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 31.8
+  m_PixelsPerUnitMultiplier: 43.8

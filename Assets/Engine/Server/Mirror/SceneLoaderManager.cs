@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using SS3D.Engine.Server.Round;
 using SS3D.Engine.Tiles;
 using TMPro;
 using UnityEditor;
@@ -19,7 +20,11 @@ public class SceneLoaderManager : NetworkSceneChecker
     [SerializeField] private String[] maps;
     
     [SerializeField] private Button startRoundButton;
+    [SerializeField] private TMP_Text startRoundButtonText;
+
+    
     [SerializeField] private TMP_Text loadSceneButtonText;
+    [SerializeField] private Button loadSceneButton;
 
     [SerializeField] private TMP_Dropdown mapSelectionDropdown;
     
@@ -29,13 +34,26 @@ public class SceneLoaderManager : NetworkSceneChecker
         if (singleton != null) Destroy(gameObject);
         singleton = this;
 
+        // perish
+        RoundManager.ServerRoundEnded += delegate { startRoundButtonText.text = "start round"; };
+        
+        startRoundButton.onClick.AddListener(delegate
+        {
+            HandleRoundButton();
+        });
         LoadMapList();
     }
 
     public void LoadMapScene()
     {
         if (IsSelectedMapLoaded()) return;
-    
+
+        if (RoundManager.singleton.IsOnWarmup || RoundManager.singleton.IsRoundStarted)
+        {
+            startRoundButtonText.text = "start round";
+            RoundManager.singleton.EndRound();
+        }
+        
         loadSceneButtonText.text = "loading...";
         LoadingSceneHelper();
 
@@ -102,6 +120,10 @@ public class SceneLoaderManager : NetworkSceneChecker
     {
         SceneManager.UnloadSceneAsync(selectedMap);
         
+        // just in case (Restarts for example)
+        loadSceneButtonText.text = "load map";
+        loadSceneButton.interactable = true;
+        
         SceneMessage msg = new SceneMessage
         {
             sceneName = selectedMap,
@@ -113,6 +135,7 @@ public class SceneLoaderManager : NetworkSceneChecker
     
     public void SetSelectedMap(TMP_Dropdown dropdown)
     {
+        // Gets the name from the dropdown
         String name = dropdown.captionText.text;
         
         if (IsSelectedMapLoaded() && selectedMap == name) return;
@@ -137,5 +160,23 @@ public class SceneLoaderManager : NetworkSceneChecker
     public Scene GetCurrentLoadedScene()
     {
         return SceneManager.GetSceneByName(selectedMap);
+    }
+
+    public void HandleRoundButton()
+    {
+        RoundManager roundManager = RoundManager.singleton;
+        Debug.Log(roundManager.IsRoundStarted);
+        Debug.Log(roundManager.IsOnWarmup);
+        if (roundManager.IsOnWarmup || roundManager.IsRoundStarted)
+        {
+            startRoundButtonText.text = "start round";
+            roundManager.EndRound();
+        }
+
+        else if (!roundManager.IsRoundStarted || !roundManager.IsOnWarmup)
+        {
+            startRoundButtonText.text = "stop round";
+            roundManager.StartWarmup();
+        }
     }
 }

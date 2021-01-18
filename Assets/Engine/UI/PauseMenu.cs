@@ -2,21 +2,23 @@
 using System.Collections.Generic;
 using Mirror;
 using SS3D.Engine.Server.Round;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Networking.Types;
 
 public class PauseMenu : NetworkBehaviour
 {
     [SerializeField] Animator animator;
-    [SerializeField] LoginNetworkManager networkManager;
+    LoginNetworkManager networkManager;
     
     void Start() 
     {
         if (animator == null)
             animator = GetComponent<Animator>();
-        networkManager = FindObjectOfType<LoginNetworkManager>();
+        networkManager = LoginNetworkManager.singleton;
 
-        RoundManager.ServerRoundEnded += ForceToggleOff;
+        // turned off for now, I need a better solution for that
+        //RoundManager.ServerRoundEnded += ForceToggleOff;
     }
     
     void Update() 
@@ -27,7 +29,6 @@ public class PauseMenu : NetworkBehaviour
         }
     }
 
-    
     public void Toggle()
     {
         if (!animator.enabled)
@@ -40,12 +41,13 @@ public class PauseMenu : NetworkBehaviour
 
     public void ForceToggleOff()
     {
-        if (!animator.enabled)
+        if (animator == null) return;
+        
+        if (!animator.enabled && animator.GetBool("Toggle"))
         { 
             animator.enabled = true;
-            return;
+            animator.SetBool("Toggle", false); 
         }
-        animator.SetBool("Toggle", false); 
     }
 
     public void Disconnect()

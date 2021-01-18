@@ -17,9 +17,11 @@ namespace SS3D.Engine.Server.Round
     {
         public static RoundManager singleton { get; private set; }
 
+        private bool warmingUp;
         [SerializeField] private int warmupTimeSeconds = 5;
         [SerializeField] private int roundTimeSeconds = 300;
-
+        private Coroutine warmupCoroutine;     
+        
         private int timerSeconds = 0;
         private bool started = false;
         private Coroutine tickCoroutine;
@@ -27,32 +29,35 @@ namespace SS3D.Engine.Server.Round
         public static event System.Action ServerWarmupStarted;
         public static event System.Action ServerRoundStarted;
         public static event System.Action ServerRoundRestarted;
-        public static event System.Action<string> ClientTimerUpdated;
+        public static event System.Action<int> ClientTimerUpdated;
 
         public static event System.Action ServerRoundEnded; 
 
         public bool IsRoundStarted => started;
+        public bool IsOnWarmup => warmingUp;
 
         private void Start()
         {
             InitializeSingleton();
-
         }
         
         public void StartWarmup()
         {
             gameObject.SetActive(true);
             timerSeconds = warmupTimeSeconds;
-            StartCoroutine(TickWarmup());
+            warmupCoroutine = StartCoroutine(TickWarmup());
 
+            warmingUp = true;
             ServerWarmupStarted?.Invoke();
         }
 
         [ContextMenu("Start Round")]
         public void StartRound()
         {
+            
             gameObject.SetActive(true);
             started = true;
+            warmingUp = false;
             tickCoroutine = StartCoroutine(Tick());
 
             Debug.Log("Round Started");
@@ -71,6 +76,34 @@ namespace SS3D.Engine.Server.Round
             ServerRoundStarted?.Invoke();
         }
 
+        public void EndRound()
+        {
+            if (!isServer) return;
+            
+            // if the round didn't even start we cancel the warmup
+            if (warmingUp)
+            {
+                warmingUp = false;
+                StopCoroutine(warmupCoroutine);
+
+                return;
+            }
+            
+            started = false;
+            ServerRoundEnded?.Invoke();
+            
+            StopCoroutine(tickCoroutine);
+            
+            RpcEndRound();
+        }
+
+        public void RpcEndRound()
+        {
+            started = false;
+            ServerRoundEnded?.Invoke();
+            StopCoroutine(tickCoroutine);
+        }
+        
         public void RestartRound()
         {
             if (!isServer)
@@ -79,9 +112,15 @@ namespace SS3D.Engine.Server.Round
             }
 
             StopCoroutine(tickCoroutine);
-            NetworkManager.singleton.ServerChangeScene(SceneManager.GetActiveScene().name);
-
-            ServerRoundEnded?.Invoke();
+            //NetworkManager.singleton.ServerChangeScene(SceneManager.GetActiveScene().name);
+            
+            CameraManager.singleton.playerCamera.gameObject.SetActive(false);
+            CameraManager.singleton.lobbyCamera.gameObject.SetActive(true);
+            
+            SceneLoaderManager.singleton.UnloadSelectedMap();
+            
+            if (started) EndRound();
+            
             ServerRoundRestarted?.Invoke();
         }
 
@@ -89,7 +128,7 @@ namespace SS3D.Engine.Server.Round
         {
             while (timerSeconds > 0)
             {
-                UpdateClock(GetTimerText());
+                UpdateClock(GetTimerTextSeconds());
                 Debug.Log("Round start timer:" + timerSeconds);
                 timerSeconds--;
                 yield return new WaitForSeconds(1);
@@ -102,7 +141,7 @@ namespace SS3D.Engine.Server.Round
         {
             while (timerSeconds < roundTimeSeconds)
             {
-                UpdateClock(GetTimerText());
+                UpdateClock(GetTimerTextSeconds());
                 timerSeconds++;
                 yield return new WaitForSeconds(1);
             }
@@ -112,27 +151,28 @@ namespace SS3D.Engine.Server.Round
         }
 
         [Server]
-        private void UpdateClock(string text)
+        private void UpdateClock(int time)
         {
-            ClientTimerUpdated?.Invoke(text);
-            RpcUpdateClientClocks(text);
+            ClientTimerUpdated?.Invoke(time);
+            RpcUpdateClientClocks(time);
         }
 
         [ClientRpc]
-        private void RpcUpdateClientClocks(string text)
+        private void RpcUpdateClientClocks(int time)
         {
-            ClientTimerUpdated?.Invoke(text);
+            ClientTimerUpdated?.Invoke(time);
         }
         
-        private string GetTimerText()
+        private int GetTimerTextSeconds()
         {
             TimeSpan timeSpan = TimeSpan.FromSeconds(timerSeconds);
-            string timer = timeSpan.TotalSeconds.ToString();
+            int timer = (int)timeSpan.TotalSeconds;
             return timer;
         }
 
         public void SetWarmupTime(TMP_InputField newTime)
         {
+            if (newTime.text == null) return;
             warmupTimeSeconds = Int32.Parse(newTime.text);
         } 
         public void SetWarmupTime(int newTime)
