@@ -19,6 +19,7 @@ public class SceneLoaderManager : NetworkSceneChecker
 
     [SerializeField] private String[] maps;
     
+    [SerializeField] private Image startRoundImage;
     [SerializeField] private Button startRoundButton;
     [SerializeField] private TMP_Text startRoundButtonText;
 
@@ -50,6 +51,7 @@ public class SceneLoaderManager : NetworkSceneChecker
 
         if (RoundManager.singleton.IsOnWarmup || RoundManager.singleton.IsRoundStarted)
         {
+            startRoundButton.interactable = true;
             startRoundButtonText.text = "start round";
             RoundManager.singleton.EndRound();
         }
@@ -123,6 +125,7 @@ public class SceneLoaderManager : NetworkSceneChecker
         // just in case (Restarts for example)
         loadSceneButtonText.text = "load map";
         loadSceneButton.interactable = true;
+        startRoundButton.interactable = false;
         
         SceneMessage msg = new SceneMessage
         {
@@ -170,12 +173,14 @@ public class SceneLoaderManager : NetworkSceneChecker
         if (roundManager.IsOnWarmup || roundManager.IsRoundStarted)
         {
             startRoundButtonText.text = "start round";
+            startRoundImage.color = MaterialChanger.GetColor(MaterialChanger.Palette01.green);
             roundManager.EndRound();
         }
 
         else if (!roundManager.IsRoundStarted || !roundManager.IsOnWarmup)
         {
             startRoundButtonText.text = "stop round";
+            startRoundImage.color = MaterialChanger.GetColor(MaterialChanger.Palette01.red);
             roundManager.StartWarmup();
         }
     }
