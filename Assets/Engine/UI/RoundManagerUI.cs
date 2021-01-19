@@ -45,9 +45,12 @@ namespace SS3D.UI
             gameObject.SetActive(true);
         }
 
-        public void OnRestartRoundButtonPressed()
+        public void OnEndRoundButtonPressed()
         {
-            roundManager?.RestartRound();
+            RoundManager.ServerWarmupStarted -= OnWarmupStarted;
+            RoundManager.ServerRoundStarted -= OnRoundStarted;
+            RoundManager.ClientTimerUpdated -= OnTimerUpdated;
+            roundManager?.EndRound();
         }
 
         private void OnDestroy()

@@ -44,7 +44,12 @@ namespace SS3D.Engine.Server.Round
         public void StartWarmup()
         {
             gameObject.SetActive(true);
+
+            started = false;
+            StopAllCoroutines();
+            
             timerSeconds = warmupTimeSeconds;
+
             warmupCoroutine = StartCoroutine(TickWarmup());
 
             warmingUp = true;
@@ -54,11 +59,13 @@ namespace SS3D.Engine.Server.Round
         [ContextMenu("Start Round")]
         public void StartRound()
         {
-            
             gameObject.SetActive(true);
             started = true;
             warmingUp = false;
-            tickCoroutine = StartCoroutine(Tick());
+            
+            StopCoroutine(warmupCoroutine);
+            
+            tickCoroutine = StartCoroutine("Tick");
 
             Debug.Log("Round Started");
             ServerRoundStarted?.Invoke();
@@ -70,40 +77,63 @@ namespace SS3D.Engine.Server.Round
         {
             gameObject.SetActive(true);
             started = true;
-            tickCoroutine = StartCoroutine(Tick());
-
+            warmingUp = false;
+            
+            StopCoroutine(warmupCoroutine); 
+            
+            tickCoroutine = StartCoroutine("Tick");
+            
             Debug.Log("Round Started");
+            ServerRoundStarted?.Invoke();
             ServerRoundStarted?.Invoke();
         }
 
         public void EndRound()
         {
             if (!isServer) return;
-            
+
             // if the round didn't even start we cancel the warmup
             if (warmingUp)
             {
                 warmingUp = false;
                 StopCoroutine(warmupCoroutine);
-
-                return;
             }
-            
+
             started = false;
             ServerRoundEnded?.Invoke();
+
+            CameraManager.singleton.playerCamera.gameObject.SetActive(false);
+            CameraManager.singleton.lobbyCamera.gameObject.SetActive(true);
             
             StopCoroutine(tickCoroutine);
-            
+            SceneLoaderManager.singleton.UnloadSelectedMap();
+
             RpcEndRound();
         }
 
+        [ClientRpc]
         public void RpcEndRound()
         {
+            // if the round didn't even start we cancel the warmup
+            if (warmingUp)
+            {
+                warmingUp = false;
+                StopCoroutine(warmupCoroutine);
+            }
+
             started = false;
             ServerRoundEnded?.Invoke();
+
+            CameraManager.singleton.playerCamera.gameObject.SetActive(false);
+            CameraManager.singleton.lobbyCamera.gameObject.SetActive(true);
+
+            StopCoroutine(tickCoroutine);
+            SceneLoaderManager.singleton.UnloadSelectedMap();
+
             StopCoroutine(tickCoroutine);
         }
         
+        // Ignore this for now
         public void RestartRound()
         {
             if (!isServer)
@@ -111,14 +141,6 @@ namespace SS3D.Engine.Server.Round
                 return;
             }
 
-            StopCoroutine(tickCoroutine);
-            //NetworkManager.singleton.ServerChangeScene(SceneManager.GetActiveScene().name);
-            
-            CameraManager.singleton.playerCamera.gameObject.SetActive(false);
-            CameraManager.singleton.lobbyCamera.gameObject.SetActive(true);
-            
-            SceneLoaderManager.singleton.UnloadSelectedMap();
-            
             if (started) EndRound();
             
             ServerRoundRestarted?.Invoke();
@@ -139,15 +161,15 @@ namespace SS3D.Engine.Server.Round
 
         private IEnumerator Tick()
         {
-            while (timerSeconds < roundTimeSeconds)
+            while (started)
             {
+                Debug.Log("Tick: " + timerSeconds);
                 UpdateClock(GetTimerTextSeconds());
                 timerSeconds++;
                 yield return new WaitForSeconds(1);
             }
-            
-            Debug.Log("Restarting Round");
-            RestartRound();
+            Debug.Log("Coroutine running while round is not started: " + started);
+            //RestartRound();
         }
 
         [Server]

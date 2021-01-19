@@ -36,7 +36,11 @@ public class SceneLoaderManager : NetworkSceneChecker
         singleton = this;
 
         // perish
-        RoundManager.ServerRoundEnded += delegate { startRoundButtonText.text = "start round"; };
+        RoundManager.ServerRoundEnded += delegate
+        {
+            startRoundButtonText.text = "start round";
+            startRoundImage.color = MaterialChanger.GetColor(MaterialChanger.Palette01.green);
+        };
         
         startRoundButton.onClick.AddListener(delegate
         {
@@ -53,6 +57,7 @@ public class SceneLoaderManager : NetworkSceneChecker
         {
             startRoundButton.interactable = true;
             startRoundButtonText.text = "start round";
+            startRoundImage.color = MaterialChanger.GetColor(MaterialChanger.Palette01.green);
             RoundManager.singleton.EndRound();
         }
         
@@ -168,8 +173,7 @@ public class SceneLoaderManager : NetworkSceneChecker
     public void HandleRoundButton()
     {
         RoundManager roundManager = RoundManager.singleton;
-        Debug.Log(roundManager.IsRoundStarted);
-        Debug.Log(roundManager.IsOnWarmup);
+        
         if (roundManager.IsOnWarmup || roundManager.IsRoundStarted)
         {
             startRoundButtonText.text = "start round";
