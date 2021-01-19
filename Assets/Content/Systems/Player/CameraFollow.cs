@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using SS3D.Engine.Chat;
 using SS3D.Engine.FOV;
@@ -35,6 +36,11 @@ namespace SS3D.Content.Systems.Player
         public float angle = 90f; // horizontal angle of the camera (around the z axis)
         public float vAngle = 60f; // angle above the player
         public float yOffset = 1f;
+
+        private void Start()
+        {
+            CameraManager.singleton.playerCamera = this.GetComponent<Camera>();
+        }
 
         /**
          * Updates the target the camera is meant to follow

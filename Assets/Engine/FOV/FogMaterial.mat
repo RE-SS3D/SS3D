@@ -78,7 +78,7 @@ Material:
     - _Height: 2.35
     - _Metallic: 0
     - _Mode: 0
-    - _NoiseStrength: 0.03
+    - _NoiseStrength: 0.104
     - _NumberOfStacks: 35
     - _OcclusionStrength: 1
     - _Parallax: 0.02

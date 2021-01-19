@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: Channels
   m_EditorClassIdentifier: 
   Channels:
+  - Name: OOC
+    Abbreviation: ooc
+    Color: {r: 1, g: 0.10849059, b: 0.25398695, a: 1}
+    Hidable: 1
   - Name: AI
     Abbreviation: AI
     Color: {r: 1, g: 0.33333334, b: 1, a: 1}
