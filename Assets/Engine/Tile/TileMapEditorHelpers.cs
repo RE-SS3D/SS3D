@@ -77,6 +77,13 @@ namespace Tile
             {
                 // Save old definition
                 TileDefinition oldDefinition = tileManager.GetTile(x, y).Tile;
+                // Copy object to avoid dupplication between editor and tilemap
+                if (oldDefinition.fixtures != null)
+                {
+                    FixturesContainer f = (FixturesContainer)oldDefinition.fixtures.Clone();
+                    oldDefinition.fixtures = f;
+                }
+
 
                 // Existing tile found. We try to update the non-null items in the tiledefinition
                 List<TileBase> tileBases = GetTileItems(tileDefinition);
@@ -125,7 +132,7 @@ namespace Tile
                 def.turf = (Turf)item;
             
             // We are a fixture
-            else if (index < 1 && index < (2 + TileDefinition.GetAllFixtureLayerSize()))
+            else if (index > 1 && index < (2 + TileDefinition.GetAllFixtureLayerSize()))
             {
                 def.fixtures.SetFixtureAtIndex((Fixture)item, index - 2);
             }

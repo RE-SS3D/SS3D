@@ -16,7 +16,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         private bool deleteTiles = false;
         private Vector2Int lastPlacement;
 
-        private bool enableVisualHelp;
+        private bool enableVisualHelp = true;
         private TileDragHandler dragHandler;
         private Vector2 scrollPositionTile;
         private Vector2 scrollPositionSelection;
@@ -70,8 +70,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             tileManager = FindObjectOfType<TileManager>();
             DestroyAllGhosts(tileManager);
 
-            CreateTileObject();
             LoadLayerVisibility();
+            // CreateTileObject();
+
 
             SceneView.duringSceneGui += OnSceneGUI;
         }
@@ -131,7 +132,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             enableVisualHelp = EditorGUILayout.Toggle("Enable visual help: ", enableVisualHelp);
 
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Add 2"))
+            if (GUILayout.Button("Add"))
             {
                 enablePlacement = true;
                 if (currentTile == null)
@@ -322,7 +323,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 assetList.Add(asset);
             }
 
-            assetIndex = GUILayout.SelectionGrid(assetIndex, assetIcons.ToArray(), 2);
+            assetIndex = GUILayout.SelectionGrid(assetIndex, assetIcons.ToArray(), 3);
         }
 
         private void LoadTileLayer(TileLayers tileLayers)
