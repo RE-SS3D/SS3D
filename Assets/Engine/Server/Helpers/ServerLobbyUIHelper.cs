@@ -98,4 +98,12 @@ public class ServerLobbyUIHelper : NetworkBehaviour
     {
         timer.text = time.ToString();
     }
+
+    private void OnDestroy()
+    {
+        RoundManager.ClientTimerUpdated -= SetTimerText;
+        RoundManager.ServerWarmupStarted -= EnableTimer;
+        RoundManager.ServerRoundStarted -= ChangeEmbarkText;
+        RoundManager.ServerRoundEnded -= ForceToggleOn;
+    }
 }

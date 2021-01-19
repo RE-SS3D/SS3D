@@ -75,6 +75,8 @@ namespace SS3D.Engine.Server.Round
         [ClientRpc]
         public void RpcStartRound()
         {
+            if (isServer) return;
+            
             gameObject.SetActive(true);
             started = true;
             warmingUp = false;
@@ -114,6 +116,7 @@ namespace SS3D.Engine.Server.Round
         [ClientRpc]
         public void RpcEndRound()
         {
+            if (isServer) return;
             // if the round didn't even start we cancel the warmup
             if (warmingUp)
             {
