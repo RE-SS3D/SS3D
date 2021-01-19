@@ -59,5 +59,12 @@ namespace SS3D.UI
             RoundManager.ServerRoundStarted -= OnRoundStarted;
             RoundManager.ClientTimerUpdated -= OnTimerUpdated;
         }
+
+        private void OnDestroy()
+        {
+            RoundManager.ServerWarmupStarted -= OnWarmupStarted;
+            RoundManager.ServerRoundStarted -= OnRoundStarted;
+            RoundManager.ClientTimerUpdated -= OnTimerUpdated;
+        }
     }
 }
