@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Tile;
 using UnityEditor;
 using UnityEngine;
 using static Tile.TileMapEditorHelpers;
@@ -137,7 +138,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 enablePlacement = true;
                 if (currentTile == null)
                 {
-                    CreateTileObject();
+                    ResetTileObject();
                 }
             }
             if (GUILayout.Button("Delete"))
@@ -146,7 +147,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 deleteTiles = true;
                 if (currentTile == null)
                 {
-                    CreateTileObject();
+                    ResetTileObject();
                 }
             }
             EditorGUILayout.Space();
@@ -196,6 +197,12 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             // Set ghost tile's position
             selectionTile.transform.position = snappedPosition;
             Vector2Int tilePosition = tileManager.GetIndexAt(snappedPosition);
+
+            // Set ghost visibility
+            if (deleteTiles)
+                selectionTile.gameObject.SetActive(false);
+            else
+                selectionTile.gameObject.SetActive(true);
 
             if (enableVisualHelp)
                 DisplayVisualHelp(snappedPosition);
@@ -248,6 +255,8 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 }
                 deleteTiles = false;
                 enablePlacement = false;
+                HideTile();
+                // DestroyAllGhosts(tileManager);
             }
         }
 
@@ -377,13 +386,14 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             }
         }
 
-        public void CreateTileObject()
+        public void ResetTileObject()
         {
             if (currentDefinition == null)
                 ResetTileDefinition();
 
             // Temporary
-            currentDefinition.plenum = (Plenum)assetList[assetIndex];
+            // currentDefinition.plenum = (Plenum)assetList[assetIndex];
+            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], (int)selectedTileLayer);
 
             currentTile = CreateGhostTile(tileManager, currentDefinition);
             HideTile();
@@ -418,6 +428,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         private void SetSelectionDefinition()
         {
             currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], (int)selectedTileLayer);
+            ResetTileObject();
         }
     }
 }

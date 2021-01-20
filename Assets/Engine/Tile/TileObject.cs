@@ -182,7 +182,10 @@ namespace SS3D.Engine.Tiles
          */
         private void SetContents(TileDefinition newTile)
         {
-            newTile = ValidateTurf(newTile);
+            // We are not a ghost tile
+            if (!gameObject.name.Contains("Ghost"))
+                newTile = ValidateTurf(newTile);
+
             if (newTile.plenum != tile.plenum)
                 CreatePlenum(newTile.plenum);
             if (newTile.turf != tile.turf)

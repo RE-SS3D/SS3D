@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using static Tile.TileMapEditorHelpers;
 
@@ -120,7 +121,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                     for (int j = 0; j < columnLength; j++) {
                         var tile = CreateGhostTile(tileManager, tileDefinition, " [" + (rowStart + i * rowInc).ToString() + ", " + (columnStart + j * columnInc).ToString() + "]");
                         tile.transform.position = tileManager.GetPosition(rowStart + i * rowInc, columnStart + j * columnInc);
-
+                        // DisplayVisualHelp(tile.transform.position);
                         dragTiles.Insert(columnLength * i + j, tile);
                     }
                 }
@@ -141,7 +142,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             for (int x = startPosition.x; x != curPosition.x + xInc; x += xInc) {
                 for (int y = startPosition.y; y != curPosition.y + yInc; y += yInc)
                 {
-                    if (delete)
+                    if (deleteTiles)
                         DeleteTile(tileManager, x, y);
                     else
                         SetTile(tileManager, tileDefinition, x, y);
@@ -164,7 +165,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         public void SetDelete()
         {
-            delete = true;
+            deleteTiles = true;
         }
 
         private readonly TileManager tileManager;
@@ -173,7 +174,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         private Vector2Int curPosition;
         private List<TileObject> dragTiles = new List<TileObject>();
 
-        private bool delete;
+        private bool deleteTiles;
     }
 
 }
