@@ -388,6 +388,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         public void ResetTileObject()
         {
+            if (currentTile != null)
+                UnityEngine.Object.DestroyImmediate(currentTile);
+
             if (currentDefinition == null)
                 ResetTileDefinition();
 
