@@ -388,8 +388,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         public void ResetTileObject()
         {
-            if (currentTile != null)
-                UnityEngine.Object.DestroyImmediate(currentTile);
 
             if (currentDefinition == null)
                 ResetTileDefinition();
@@ -398,7 +396,8 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             // currentDefinition.plenum = (Plenum)assetList[assetIndex];
             currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], (int)selectedTileLayer);
 
-            currentTile = CreateGhostTile(tileManager, currentDefinition);
+            if (currentTile == null)
+                currentTile = CreateGhostTile(tileManager, currentDefinition);
             HideTile();
         }
 
@@ -430,8 +429,14 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         private void SetSelectionDefinition()
         {
+            // If we just switched tabs, take the first items by default
+            if (assetIndex > assetList.Count)
+                assetIndex = 0;
             currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], (int)selectedTileLayer);
-            ResetTileObject();
+
+            if (currentTile != null)
+                currentTile.Tile = currentDefinition;
+            //ResetTileObject();
         }
     }
 }

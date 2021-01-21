@@ -252,13 +252,13 @@ namespace SS3D.Engine.Tiles
                 SetTileFixtureAtLayer((TileFixture)fixture, (TileFixtureLayers)index);
             }
 
-            else if (index >= offsetFloor && index < offsetWall)
+            else if (index >= offsetFloor && index < (offsetFloor + offsetWall))
             {
                 // We are a Wall fixture
                 SetWallFixtureAtLayer((WallFixture) fixture, (WallFixtureLayers)(index - offsetFloor));
             }
 
-            else if (index >= offsetWall && index < offsetTotal)
+            else if (index >= (offsetFloor + offsetWall) && index < offsetTotal)
             {
                 // We are a Floor fixture
                 SetFloorFixtureAtLayer((FloorFixture) fixture, (FloorFixtureLayers)(index - offsetFloor - offsetWall));
