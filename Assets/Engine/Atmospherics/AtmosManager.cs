@@ -34,7 +34,7 @@ namespace SS3D.Engine.Atmospherics
         private List<PipeObject> pipeTiles;
         private List<IAtmosLoop> deviceTiles;
 
-        private float updateRate = 0f;
+        private float updateRate = 0.1f;
         private int activeTiles = 0;
         private float lastStep;
         private float lastClick;
