@@ -14,7 +14,7 @@ namespace SS3D.UI
     /// <summary>
     /// UI controller for join/host SS3D session
     /// </summary>
-    public class LobbyLoginUI : MonoBehaviour
+    public class MainMenuUI : MonoBehaviour
     {
         public TMP_InputField ipAddressInputField;
 

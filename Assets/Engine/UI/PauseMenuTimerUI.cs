@@ -5,9 +5,13 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+
 namespace SS3D.UI
 {
-    public class RoundManagerUI : MonoBehaviour
+    /// <summary>
+    /// UI controller for the timer UI in the pause menu
+    /// </summary>
+    public class PauseMenuTimerUI : MonoBehaviour
     {
         private RoundManager roundManager;
 

@@ -6,26 +6,30 @@ using SS3D.Engine.Server.Round;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Networking.Types;
 using UnityEngine.UI;
 
-// This class server sole purpose of helping me control UI,
-// I despise how it works but it is the solution I have found.
-// cum.
+/// <summary>
+/// This class server sole purpose of helping control the server lobby UI,
+/// I despise how it works but it is the solution I have found.
+/// cum.
+/// </summary>
 public class ServerLobbyUIHelper : NetworkBehaviour
 {
     [SerializeField] private Button embarkButton;
     
     // Look, the only reason why there are two text objects on the embark part
-    // is cause for some reason I can't do RoundManager.ClientTimerUpdated -= SetTimerText();
-    // otherwise I would have done.
+    // is cause for some reason "RoundManager.ClientTimerUpdated -= SetTimerText();" doesn't work,
+    // otherwise I would have done that.
     [SerializeField] private TMP_Text embarkText;
     [SerializeField] private TMP_Text timer;
     
     [SerializeField] private Animator animator;
 
+    // The admin panel, should be only accessible to admin users, for now used only for the host
     [SerializeField] private Button serverSettingsButton;
     
-    private void Start()
+    private void Awake()
     {
         // Here begins the disaster 
         
@@ -45,9 +49,6 @@ public class ServerLobbyUIHelper : NetworkBehaviour
             Toggle(false);
         });
         
-        // TODO:
-        // Sync server list and set up user authority to open admin panel
-        if (!isLocalPlayer) serverSettingsButton.interactable = true;
         
         // Not sure if this work, probably not
         if (RoundManager.singleton.IsRoundStarted)
@@ -56,11 +57,16 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         }
     }
 
+    private void Start()
+    {
+        // TODO:
+        // Sync server list and set up user authority to open admin panel
+        if (isServer) serverSettingsButton.interactable = true;
+    }
+
     [Command(ignoreAuthority = true)]
     public void CmdRequestEmbark(NetworkConnectionToClient sender = null)
     {
-        embarkButton.interactable = false;
-        
         // Spawns the player
         LoginNetworkManager.singleton.SpawnPlayerAfterRoundStart(sender);
     }
@@ -80,6 +86,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         Toggle(true);
         timer.gameObject.SetActive(false);
         embarkText.gameObject.SetActive(true);
+        embarkButton.interactable = false;
     }
     
     private void Toggle(bool toggle)

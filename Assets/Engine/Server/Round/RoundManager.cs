@@ -36,13 +36,31 @@ namespace SS3D.Engine.Server.Round
         public bool IsRoundStarted => started;
         public bool IsOnWarmup => warmingUp;
 
-        private void Start()
+        private void Awake()
         {
             InitializeSingleton();
         }
         
         public void StartWarmup()
         {
+            gameObject.SetActive(true);
+
+            started = false;
+            StopAllCoroutines();
+            
+            timerSeconds = warmupTimeSeconds;
+
+            warmupCoroutine = StartCoroutine(TickWarmup());
+
+            warmingUp = true;
+            ServerWarmupStarted?.Invoke();
+            RpcStartWarmup();
+        }
+
+        [ClientRpc]
+        private void RpcStartWarmup()
+        {
+            if (isServer) return;
             gameObject.SetActive(true);
 
             started = false;
@@ -81,12 +99,11 @@ namespace SS3D.Engine.Server.Round
             started = true;
             warmingUp = false;
             
-            StopCoroutine(warmupCoroutine); 
+            if (warmupCoroutine != null) StopCoroutine(warmupCoroutine); 
             
             tickCoroutine = StartCoroutine("Tick");
             
             Debug.Log("Round Started");
-            ServerRoundStarted?.Invoke();
             ServerRoundStarted?.Invoke();
         }
 
@@ -166,12 +183,11 @@ namespace SS3D.Engine.Server.Round
         {
             while (started)
             {
-                Debug.Log("Tick: " + timerSeconds);
                 UpdateClock(GetTimerTextSeconds());
                 timerSeconds++;
                 yield return new WaitForSeconds(1);
             }
-            Debug.Log("Coroutine running while round is not started: " + started);
+            Debug.Log("Coroutine running while round is not started, IsRoundStarted: " + started);
             //RestartRound();
         }
 
@@ -207,8 +223,13 @@ namespace SS3D.Engine.Server.Round
 
         void InitializeSingleton()
         {
-            if (singleton != null) Destroy(gameObject);
-            singleton = this;
+            if (singleton != null && singleton != this) { 
+                Destroy(gameObject);
+            }
+            else
+            {
+                singleton = this;   
+            }
         }
     }
 }
