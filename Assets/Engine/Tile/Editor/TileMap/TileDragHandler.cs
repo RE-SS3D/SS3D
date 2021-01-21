@@ -121,7 +121,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                     for (int j = 0; j < columnLength; j++) {
                         var tile = CreateGhostTile(tileManager, tileDefinition, " [" + (rowStart + i * rowInc).ToString() + ", " + (columnStart + j * columnInc).ToString() + "]");
                         tile.transform.position = tileManager.GetPosition(rowStart + i * rowInc, columnStart + j * columnInc);
-                        // DisplayVisualHelp(tile.transform.position);
                         dragTiles.Insert(columnLength * i + j, tile);
                     }
                 }

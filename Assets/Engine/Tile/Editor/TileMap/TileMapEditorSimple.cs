@@ -72,8 +72,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             DestroyAllGhosts(tileManager);
 
             LoadLayerVisibility();
-            // CreateTileObject();
-
 
             SceneView.duringSceneGui += OnSceneGUI;
         }
@@ -392,8 +390,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             if (currentDefinition == null)
                 ResetTileDefinition();
 
-            // Temporary
-            // currentDefinition.plenum = (Plenum)assetList[assetIndex];
             currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], (int)selectedTileLayer);
 
             if (currentTile == null)
@@ -436,7 +432,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
             if (currentTile != null)
                 currentTile.Tile = currentDefinition;
-            //ResetTileObject();
         }
     }
 }
