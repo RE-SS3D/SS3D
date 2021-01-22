@@ -445,7 +445,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             if (currentDefinition == null)
                 ResetTileDefinition();
             
-            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], GetTileOffsetIndex());
+            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], GetTileOffsetIndex(), selectedRotation);
 
             if (currentTile == null)
                 currentTile = CreateGhostTile(tileManager, currentDefinition);
@@ -516,8 +516,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         private void SetSelectionDefinition()
         {
-            
-
             // If we just switched tabs, take the first items by default
             if (assetIndex > assetList.Count)
                 assetIndex = 0;

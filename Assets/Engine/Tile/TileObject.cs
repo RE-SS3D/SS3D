@@ -513,6 +513,8 @@ namespace SS3D.Engine.Tiles
                 }
                 fixtures[index] = EditorAndRuntime.InstantiatePrefab(fixtureDefinition.prefab, transform);
                 tileFixtureConnectors[index] = fixtures[index].GetComponent<AdjacencyConnector>();
+
+                RotateTileBase(fixtures[index], fixtureDefinition.GetRotation());
             }
             else
             {
@@ -569,23 +571,24 @@ namespace SS3D.Engine.Tiles
                     Debug.LogWarning("Trying to overwrite fixture");
                 }
                 GameObject fixtureObject = EditorAndRuntime.InstantiatePrefab(wallFixtureDefinition.prefab, transform);
+                RotateTileBase(fixtureObject, wallFixtureDefinition.GetRotation());
 
-                // Rotate the wall fixture
-                switch (wallFixtureDefinition.GetRotation())
-                {
-                    case Rotation.North:
-                        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 0f, fixtureObject.transform.rotation.z);
-                        break;
-                    case Rotation.East:
-                        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 90f, fixtureObject.transform.rotation.z);
-                        break;
-                    case Rotation.South:
-                        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 180f, fixtureObject.transform.rotation.z);
-                        break;
-                    case Rotation.West:
-                        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 270f, fixtureObject.transform.rotation.z);
-                        break;
-                }
+                //// Rotate the wall fixture
+                //switch (wallFixtureDefinition.GetRotation())
+                //{
+                //    case Rotation.North:
+                //        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 0f, fixtureObject.transform.rotation.z);
+                //        break;
+                //    case Rotation.East:
+                //        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 90f, fixtureObject.transform.rotation.z);
+                //        break;
+                //    case Rotation.South:
+                //        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 180f, fixtureObject.transform.rotation.z);
+                //        break;
+                //    case Rotation.West:
+                //        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 270f, fixtureObject.transform.rotation.z);
+                //        break;
+                //}
                 fixtures[index + offset] = fixtureObject;
             }
             else
@@ -618,7 +621,7 @@ namespace SS3D.Engine.Tiles
                     floorFixtureConnectors[index] = connector;
                     connector.LayerIndex = index + offset;
                 }
-                
+                RotateTileBase(fixtures[index + offset], fixtureDefinition.GetRotation());
             }
             else
             {
@@ -647,7 +650,25 @@ namespace SS3D.Engine.Tiles
             {
                 CreateFloorFixture(fixturesDefinition.GetFloorFixtureAtLayer(layer), layer);
             }
+        }
 
+        private void RotateTileBase(GameObject tileBaseObject, Rotation rotation)
+        {
+            switch (rotation)
+            {
+                case Rotation.North:
+                    tileBaseObject.transform.Rotate(tileBaseObject.transform.rotation.x, 0f, tileBaseObject.transform.rotation.z);
+                    break;
+                case Rotation.East:
+                    tileBaseObject.transform.Rotate(tileBaseObject.transform.rotation.x, 90f, tileBaseObject.transform.rotation.z);
+                    break;
+                case Rotation.South:
+                    tileBaseObject.transform.Rotate(tileBaseObject.transform.rotation.x, 180f, tileBaseObject.transform.rotation.z);
+                    break;
+                case Rotation.West:
+                    tileBaseObject.transform.Rotate(tileBaseObject.transform.rotation.x, 270f, tileBaseObject.transform.rotation.z);
+                    break;
+            }
         }
 
         private void UpdateChildrenFromSubData(TileDefinition newTile)

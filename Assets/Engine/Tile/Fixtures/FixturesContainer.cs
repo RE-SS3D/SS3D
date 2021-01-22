@@ -251,6 +251,8 @@ namespace SS3D.Engine.Tiles
             int offsetWall = TileDefinition.GetWallFixtureLayerSize();
             int offsetTotal = offsetFloor + offsetWall + TileDefinition.GetFloorFixtureLayerSize();
 
+            fixture.SetRotation(rotation);
+
             if (index < offsetFloor)
             {
                 // We are a Tile fixture

@@ -40,17 +40,6 @@ namespace SS3D.Engine.Tiles
     
     abstract public class FloorFixture : Fixture
     {
-        [SerializeField]
-        private Rotation rotation;
 
-        public void SetRotation(Rotation rotation)
-        {
-            this.rotation = rotation;
-        }
-
-        public Rotation GetRotation()
-        {
-            return rotation;
-        }
     }
 }
