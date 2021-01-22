@@ -74,11 +74,32 @@ namespace SS3D.Engine.Tiles {
         }
     }
 
-    public enum TileLayer
+    public enum TileLayers
     {
         Plenum,
         Turf,
-        FixturesContainer,
+        Wire,
+        Disposal,
+        Pipe1,
+        Pipe2,
+        Pipe3,
+        HighWallNorth,
+        HighWallEast,
+        HighWallSouth,
+        HighWallWest,
+        LowWallNorth,
+        LowWallEast,
+        LowWallSouth,
+        LowWallWest,
+        PipeUpper,
+        Overlay1,
+        Overlay2,
+        Overlay3,
+        FurnitureMain,
+        Furniture2,
+        Furniture3,
+        Furniture4,
+        Furniture5,
         AtmosObject,
     }
 
