@@ -538,29 +538,29 @@ namespace SS3D.Engine.Tiles
                 switch (layer)
                 {
                     case WallFixtureLayers.HighWallNorth:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.North);
+                        wallFixtureDefinition.SetRotation(Rotation.North);
                         break;
                     case WallFixtureLayers.HighWallEast:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.East);
+                        wallFixtureDefinition.SetRotation(Rotation.East);
                         break;
                     case WallFixtureLayers.HighWallSouth:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.South);
+                        wallFixtureDefinition.SetRotation(Rotation.South);
                         break;
                     case WallFixtureLayers.HighWallWest:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.West);
+                        wallFixtureDefinition.SetRotation(Rotation.West);
                         break;
 
                     case WallFixtureLayers.LowWallNorth:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.North);
+                        wallFixtureDefinition.SetRotation(Rotation.North);
                         break;
                     case WallFixtureLayers.LowWallEast:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.East);
+                        wallFixtureDefinition.SetRotation(Rotation.East);
                         break;
                     case WallFixtureLayers.LowWallSouth:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.South);
+                        wallFixtureDefinition.SetRotation(Rotation.South);
                         break;
                     case WallFixtureLayers.LowWallWest:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.West);
+                        wallFixtureDefinition.SetRotation(Rotation.West);
                         break;
                 }
 
@@ -571,18 +571,18 @@ namespace SS3D.Engine.Tiles
                 GameObject fixtureObject = EditorAndRuntime.InstantiatePrefab(wallFixtureDefinition.prefab, transform);
 
                 // Rotate the wall fixture
-                switch (wallFixtureDefinition.GetOrientation())
+                switch (wallFixtureDefinition.GetRotation())
                 {
-                    case WallFixture.Orientation.North:
+                    case Rotation.North:
                         fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 0f, fixtureObject.transform.rotation.z);
                         break;
-                    case WallFixture.Orientation.East:
+                    case Rotation.East:
                         fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 90f, fixtureObject.transform.rotation.z);
                         break;
-                    case WallFixture.Orientation.South:
+                    case Rotation.South:
                         fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 180f, fixtureObject.transform.rotation.z);
                         break;
-                    case WallFixture.Orientation.West:
+                    case Rotation.West:
                         fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 270f, fixtureObject.transform.rotation.z);
                         break;
                 }

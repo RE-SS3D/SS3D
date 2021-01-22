@@ -30,26 +30,21 @@ namespace SS3D.Engine.Tiles
         LowWallWest
     }
 
+    [Serializable]
     abstract public class WallFixture : Fixture
     {
-        public enum Orientation
+
+        [SerializeField]
+        private Rotation rotation;
+
+        public void SetRotation(Rotation rotation)
         {
-            North,
-            East,
-            South,
-            West
+            this.rotation = rotation;
         }
 
-        private Orientation orientation;
-
-        public void SetOrientation(Orientation orientation)
+        public Rotation GetRotation()
         {
-            this.orientation = orientation;
-        }
-
-        public Orientation GetOrientation()
-        {
-            return orientation;
+            return rotation;
         }
     }
 }

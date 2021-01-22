@@ -118,7 +118,7 @@ namespace SS3D.Content.Systems.Construction
                     container.SetWallFixtureAtLayer((WallFixture) Fixture, wallLayer);
                     break;
                 case FixtureType.FloorFixture:
-                    container.SetFloorFixtureAtLayer((FloorFixture) Fixture, floorLayer);
+                    container.SetFloorFixtureAtLayer((FloorFixture) Fixture, floorLayer, Rotation.North);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

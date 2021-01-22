@@ -608,7 +608,7 @@ namespace SS3D.Engine.Tiles {
                 {
                     FloorFixture ff = (FloorFixture)fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
 
-                    tileDefinition.fixtures.SetFloorFixtureAtLayer(ff, layer);
+                    tileDefinition.fixtures.SetFloorFixtureAtLayer(ff, layer, ff.GetRotation());
                     if (ff == null)
                     {
                         Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");

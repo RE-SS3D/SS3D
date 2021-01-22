@@ -24,16 +24,21 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         private bool showVisibility = false;
         private Layer[] layerVisibility;
+        private Layer[] layerVisibilitySelection;
 
-        private GameObject selectedFixture;
-        private TileLayers selectedTileLayer;
         private TileObject currentTile;
         private TileDefinition currentDefinition;
+
+        private TileVisibilityLayers selectedTileLayer;
+        private PipeLayers selectedPipeLayer;
+        private OverlayLayers selectedOverlayLayer;
+        private FurnitureLayers selectedFurnitureLayer;
+        private Rotation selectedRotation;
+
 
         private List<TileBase> assetList = new List<TileBase>();
         private List<GUIContent> assetIcons = new List<GUIContent>();
         private int assetIndex;
-        private int lastAssetIndex;
 
 
         private struct Layer
@@ -103,9 +108,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             {
                 EditorGUI.indentLevel++;
                 // Draw for each layer in the tilemap
-                for (int i = 0; i < layerVisibility.Length; i++)
+                for (int i = 0; i < layerVisibilitySelection.Length; i++)
                 {
-                    if (layerVisibility[i].visibile = EditorGUILayout.Toggle(layerVisibility[i].name, layerVisibility[i].visibile))
+                    if (layerVisibilitySelection[i].visibile = EditorGUILayout.Toggle(layerVisibilitySelection[i].name, layerVisibilitySelection[i].visibile))
                     {
                         UpdateTileVisibility();
                     }
@@ -159,7 +164,42 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             EditorGUILayout.Space();
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Selected layer:");
-            selectedTileLayer = (TileLayers)EditorGUILayout.EnumPopup(selectedTileLayer);
+            selectedTileLayer = (TileVisibilityLayers)EditorGUILayout.EnumPopup(selectedTileLayer);
+            EditorGUILayout.EndHorizontal();
+
+
+            // Display sub layers depending on the layer selected
+            EditorGUILayout.BeginHorizontal();
+            switch (selectedTileLayer)
+            {
+                case TileVisibilityLayers.Pipe:
+                    EditorGUILayout.PrefixLabel("Sub layer:");
+                    selectedPipeLayer = (PipeLayers)EditorGUILayout.EnumPopup(selectedPipeLayer);
+                    break;
+                case TileVisibilityLayers.Overlay:
+                    EditorGUILayout.PrefixLabel("Sub layer:");
+                    selectedOverlayLayer = (OverlayLayers)EditorGUILayout.EnumPopup(selectedOverlayLayer);
+                    break;
+                case TileVisibilityLayers.Furniture:
+                    EditorGUILayout.PrefixLabel("Sub layer:");
+                    selectedFurnitureLayer = (FurnitureLayers)EditorGUILayout.EnumPopup(selectedFurnitureLayer);
+                    break;
+            }
+            EditorGUILayout.EndHorizontal();
+
+
+            EditorGUILayout.BeginHorizontal();
+            switch (selectedTileLayer)
+            {
+                case TileVisibilityLayers.HighWall:
+                case TileVisibilityLayers.LowWall:
+                case TileVisibilityLayers.Overlay:
+                case TileVisibilityLayers.AtmosMachinery:
+                case TileVisibilityLayers.Furniture:
+                    EditorGUILayout.PrefixLabel("Rotation:");
+                    selectedRotation = (Rotation)EditorGUILayout.EnumPopup(selectedRotation);
+                    break;
+            }
             EditorGUILayout.EndHorizontal();
 
             scrollPositionSelection = EditorGUILayout.BeginScrollView(scrollPositionSelection);
@@ -277,16 +317,35 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         private void LoadLayerVisibility()
         {
-            TileLayers[] layers = (TileLayers[])Enum.GetValues(typeof(TileLayers));
-            layerVisibility = new Layer[layers.Length];
-            for (int i = 0; i < layers.Length; i++)
+            TileLayers[] layersEnum = (TileLayers[])Enum.GetValues(typeof(TileLayers));
+            layerVisibility = new Layer[layersEnum.Length];
+            for (int i = 0; i < layersEnum.Length; i++)
             {
-                layerVisibility[i] = layers[i].ToString();
+                layerVisibility[i] = layersEnum[i].ToString();
+            }
+
+            TileVisibilityLayers[] layersVisibleEnum = (TileVisibilityLayers[])Enum.GetValues(typeof(TileVisibilityLayers));
+            layerVisibilitySelection = new Layer[layersVisibleEnum.Length];
+            for (int i = 0; i < layersVisibleEnum.Length; i++)
+            {
+                layerVisibilitySelection[i] = layersVisibleEnum[i].ToString();
             }
         }
 
         private void UpdateTileVisibility()
         {
+            // First map our selection to real layers
+            foreach (Layer layer in layerVisibilitySelection)
+            {
+                for (int i = 0; i < layerVisibility.Length; i++)
+                {
+                   if (layerVisibility[i].name.Contains(layer.name))
+                    {
+                        layerVisibility[i].visibile = layer.visibile;
+                    }
+                }
+            }
+
             // Loop all tiles
             foreach (TileObject tileObject in tileManager.GetAllTiles())
             {
@@ -304,6 +363,16 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         private void ResetTileVisibility(bool showAll)
         {
+            // List where walls, pipes etc are combined
+            for (int i = 0; i < layerVisibilitySelection.Length; i++)
+            {
+                if (showAll)
+                    layerVisibilitySelection[i].visibile = true;
+                else
+                    layerVisibilitySelection[i].visibile = false;
+            }
+
+            // List with all layers
             for (int i = 0; i < layerVisibility.Length; i++)
             {
                 if (showAll)
@@ -333,52 +402,38 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             assetIndex = GUILayout.SelectionGrid(assetIndex, assetIcons.ToArray(), 3);
         }
 
-        private void LoadTileLayer(TileLayers tileLayers)
+        private void LoadTileLayer(TileVisibilityLayers tileLayers)
         {
             switch (tileLayers)
             {
-                case TileLayers.Plenum:
+                case TileVisibilityLayers.Plenum:
                     LoadAssetLayer<Plenum>();
                     break;
-                case TileLayers.Turf:
+                case TileVisibilityLayers.Turf:
                     LoadAssetLayer<Turf>();
                     break;
-                case TileLayers.Wire:
+                case TileVisibilityLayers.Wire:
                     LoadAssetLayer<WireFixture>();
                     break;
-                case TileLayers.Disposal:
+                case TileVisibilityLayers.Disposal:
                     LoadAssetLayer<DisposalFixture>();
                     break;
-                case TileLayers.Pipe1:
-                case TileLayers.Pipe2:
-                case TileLayers.Pipe3:
+                case TileVisibilityLayers.Pipe:
                     LoadAssetLayer<PipeFixture>();
                     break;
-                case TileLayers.HighWallNorth:
-                case TileLayers.HighWallEast:
-                case TileLayers.HighWallSouth:
-                case TileLayers.HighWallWest:
+                case TileVisibilityLayers.HighWall:
                     LoadAssetLayer<HighWallFixture>();
                     break;
-                case TileLayers.LowWallNorth:
-                case TileLayers.LowWallEast:
-                case TileLayers.LowWallSouth:
-                case TileLayers.LowWallWest:
+                case TileVisibilityLayers.LowWall:
                     LoadAssetLayer<LowWallFixture>();
                     break;
-                case TileLayers.PipeUpper:
+                case TileVisibilityLayers.AtmosMachinery:
                     LoadAssetLayer<PipeFloorFixture>();
                     break;
-                case TileLayers.FurnitureMain:
-                case TileLayers.Furniture2:
-                case TileLayers.Furniture3:
-                case TileLayers.Furniture4:
-                case TileLayers.Furniture5:
+                case TileVisibilityLayers.Furniture:
                     LoadAssetLayer<FurnitureFloorFixture>();
                     break;
-                case TileLayers.Overlay1:
-                case TileLayers.Overlay2:
-                case TileLayers.Overlay3:
+                case TileVisibilityLayers.Overlay:
                     LoadAssetLayer<OverlayFloorFixture>();
                     break;
             }
@@ -389,8 +444,8 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
             if (currentDefinition == null)
                 ResetTileDefinition();
-
-            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], (int)selectedTileLayer);
+            
+            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], GetTileOffsetIndex());
 
             if (currentTile == null)
                 currentTile = CreateGhostTile(tileManager, currentDefinition);
@@ -423,12 +478,50 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 UnityEngine.Object.DestroyImmediate(currentTile);
         }
 
+        private int GetTileOffsetIndex()
+        {
+            int offsetTileLayer = -1;
+            string layerName = selectedTileLayer.ToString();
+
+            // Handle sub layers cases (i.e. pipes, overlays etc)
+            switch (selectedTileLayer)
+            {
+                case TileVisibilityLayers.HighWall:
+                    layerName += selectedRotation.ToString();
+                    break;
+                case TileVisibilityLayers.LowWall:
+                    layerName += selectedRotation.ToString();
+                    break;
+                case TileVisibilityLayers.Pipe:
+                    layerName = selectedPipeLayer.ToString();
+                    break;
+                case TileVisibilityLayers.Overlay:
+                    layerName = selectedOverlayLayer.ToString();
+                    break;
+                case TileVisibilityLayers.Furniture:
+                    layerName = selectedFurnitureLayer.ToString();
+                    break;
+            }
+
+            // Now find the index that corresponds with the layer name
+            TileLayers[] tileLayers = (TileLayers[])Enum.GetValues(typeof(TileLayers));
+            for (int i = 0; i < tileLayers.Length; i++)
+            {
+                if (tileLayers[i].ToString().Equals(layerName))
+                    offsetTileLayer = i;
+            }
+
+            return offsetTileLayer;
+        }
+
         private void SetSelectionDefinition()
         {
+            
+
             // If we just switched tabs, take the first items by default
             if (assetIndex > assetList.Count)
                 assetIndex = 0;
-            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], (int)selectedTileLayer);
+            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], GetTileOffsetIndex(), selectedRotation);
 
             if (currentTile != null)
                 currentTile.Tile = currentDefinition;

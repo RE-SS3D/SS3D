@@ -90,7 +90,7 @@ namespace Tile
                 for (int i = 0; i < tileBases.ToArray().Length; i++)
                 {
                     if (tileBases[i] != null)
-                        oldDefinition = SetTileItem(oldDefinition, tileBases[i], i);
+                        oldDefinition = SetTileItem(oldDefinition, tileBases[i], i, tileBases[i].GetRotation());
                 }
 
                 
@@ -122,7 +122,7 @@ namespace Tile
             return items;
         }
 
-        public static TileDefinition SetTileItem(TileDefinition tileDefinition, TileBase item, int index)
+        public static TileDefinition SetTileItem(TileDefinition tileDefinition, TileBase item, int index, Rotation rotation)
         {
             TileDefinition def = tileDefinition;
 
@@ -134,7 +134,7 @@ namespace Tile
             // We are a fixture
             else if (index > 1 && index < (2 + TileDefinition.GetAllFixtureLayerSize()))
             {
-                def.fixtures.SetFixtureAtIndex((Fixture)item, index - 2);
+                def.fixtures.SetFixtureAtIndex((Fixture)item, index - 2, rotation);
             }
             else
             {
