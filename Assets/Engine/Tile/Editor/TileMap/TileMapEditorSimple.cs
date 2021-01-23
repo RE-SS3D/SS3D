@@ -163,6 +163,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             }
             EditorGUILayout.EndHorizontal();
 
+            // Tile layer select
             EditorGUILayout.Space();
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Selected layer:");
@@ -189,7 +190,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             }
             EditorGUILayout.EndHorizontal();
 
-
+            // Rotation select
             EditorGUILayout.BeginHorizontal();
             switch (selectedTileLayer)
             {
@@ -210,21 +211,15 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             searchString = EditorGUILayout.TextField(searchString);
             EditorGUILayout.EndHorizontal();
 
+            // Selection grid
             scrollPositionSelection = EditorGUILayout.BeginScrollView(scrollPositionSelection);
-            if (selectedTileLayer != lastSelectedTileLayer)
-                LoadTileLayer(selectedTileLayer);
-            UpdateSelectionGrid();
+            UpdateSelectionGrid(selectedTileLayer, searchString);
             EditorGUILayout.EndScrollView();
 
-
+            // Update everything if the user makes a change
             if (GUI.changed)
             {
                 ResetTileDefinition();
-
-                if (searchString != "")
-                    SearchAsset(searchString);
-
-                // Update our currently selected item
                 SetSelectionDefinition();
             }
         }
@@ -307,7 +302,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 deleteTiles = false;
                 enablePlacement = false;
                 HideTile();
-                // DestroyAllGhosts(tileManager);
             }
         }
 
@@ -396,21 +390,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             UpdateTileVisibility();
         }
 
-        private void SearchAsset(string assetName)
-        {
-            List<TileBase> filterdAssetList = new List<TileBase>();
-
-            foreach(TileBase tileBase in assetList)
-            {
-                if (tileBase.name.Contains(assetName))
-                    filterdAssetList.Add(tileBase);
-            }
-
-            assetList = filterdAssetList;
-            assetIndex = 0;
-        }
-
-        private void LoadAssetLayer<T>() where T : TileBase
+        private void LoadAssetLayer<T>(string assetName = "") where T : TileBase
         {
             assetList.Clear();
             assetIcons.Clear();
@@ -421,14 +401,21 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
                 T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
 
+                // Case insensitive search for name
+                if (assetName != "" && !asset.name.ToUpper().Contains(assetName.ToUpper()))
+                {
+                    continue;
+                }
                 Texture2D texture = AssetPreview.GetAssetPreview(asset.prefab);
                 assetIcons.Add(new GUIContent(asset.name, texture));
                 assetList.Add(asset);
             }
         }
 
-        private void UpdateSelectionGrid()
+        private void UpdateSelectionGrid(TileVisibilityLayers layer, string search)
         {
+            LoadTileLayer(layer, search);
+
             GUIStyle style = new GUIStyle();
             style.imagePosition = ImagePosition.ImageAbove;
             style.contentOffset = new Vector2(10, 10);
@@ -438,39 +425,39 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             assetIndex = GUILayout.SelectionGrid(assetIndex, assetIcons.ToArray(), 3, style);
         }
 
-        private void LoadTileLayer(TileVisibilityLayers tileLayers)
+        private void LoadTileLayer(TileVisibilityLayers tileLayers, string assetName = "")
         {
             switch (tileLayers)
             {
                 case TileVisibilityLayers.Plenum:
-                    LoadAssetLayer<Plenum>();
+                    LoadAssetLayer<Plenum>(assetName);
                     break;
                 case TileVisibilityLayers.Turf:
-                    LoadAssetLayer<Turf>();
+                    LoadAssetLayer<Turf>(assetName);
                     break;
                 case TileVisibilityLayers.Wire:
-                    LoadAssetLayer<WireFixture>();
+                    LoadAssetLayer<WireFixture>(assetName);
                     break;
                 case TileVisibilityLayers.Disposal:
-                    LoadAssetLayer<DisposalFixture>();
+                    LoadAssetLayer<DisposalFixture>(assetName);
                     break;
                 case TileVisibilityLayers.Pipe:
-                    LoadAssetLayer<PipeFixture>();
+                    LoadAssetLayer<PipeFixture>(assetName);
                     break;
                 case TileVisibilityLayers.HighWall:
-                    LoadAssetLayer<HighWallFixture>();
+                    LoadAssetLayer<HighWallFixture>(assetName);
                     break;
                 case TileVisibilityLayers.LowWall:
-                    LoadAssetLayer<LowWallFixture>();
+                    LoadAssetLayer<LowWallFixture>(assetName);
                     break;
                 case TileVisibilityLayers.AtmosMachinery:
-                    LoadAssetLayer<PipeFloorFixture>();
+                    LoadAssetLayer<PipeFloorFixture>(assetName);
                     break;
                 case TileVisibilityLayers.Furniture:
-                    LoadAssetLayer<FurnitureFloorFixture>();
+                    LoadAssetLayer<FurnitureFloorFixture>(assetName);
                     break;
                 case TileVisibilityLayers.Overlay:
-                    LoadAssetLayer<OverlayFloorFixture>();
+                    LoadAssetLayer<OverlayFloorFixture>(assetName);
                     break;
             }
             lastSelectedTileLayer = selectedTileLayer;
@@ -512,7 +499,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         public void Destroy()
         {
             if (currentTile != null)
-                UnityEngine.Object.DestroyImmediate(currentTile);
+                DestroyImmediate(currentTile);
         }
 
         private int GetTileOffsetIndex()
@@ -553,8 +540,11 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         private void SetSelectionDefinition()
         {
+            if (assetList.Count == 0)
+                return;
+
             // If we just switched tabs, take the first items by default
-            if (assetIndex > assetList.Count)
+            if (assetIndex >= assetList.Count)
                 assetIndex = 0;
             currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], GetTileOffsetIndex(), selectedRotation);
 

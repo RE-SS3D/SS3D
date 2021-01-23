@@ -138,7 +138,7 @@ namespace Tile
             }
             else
             {
-                Debug.LogError("Out of range tile item was tried to be set");
+                Debug.LogWarning("Out of range tile item was tried to be set");
             }
 
             return def;
