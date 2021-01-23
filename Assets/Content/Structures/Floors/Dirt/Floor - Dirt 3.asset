@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f55f41c36d703aa4b9b6025fa003c12a, type: 3}
   m_Name: Floor - Dirt 3
   m_EditorClassIdentifier: Assembly-CSharp:TileMap:Turf
-  id: floor_wood
+  id: floor_dirt3
   genericType: floor
   isWall: 0
   prefab: {fileID: 6767447678079105841, guid: ae51840668a4b6940a4920adca7f742a, type: 3}
