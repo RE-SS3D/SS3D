@@ -339,8 +339,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.4809304, y: 1.5629163, z: 0.09296769}
-  m_Center: {x: -0.25684312, y: 0.0006606579, z: -0.00045208633}
+  m_Size: {x: 0.09149597, y: 0.22393996, z: 0.28642678}
+  m_Center: {x: -0.29023173, y: 0.84999895, z: 0.1568953}
 --- !u!114 &8460467522893431941
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -395,7 +395,7 @@ GameObject:
   - component: {fileID: 2520167261024532551}
   - component: {fileID: 9070210520109077429}
   m_Layer: 0
-  m_Name: fixture_floor_furniturefixturemain_locker_basic_secure
+  m_Name: Locker Basic Secure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

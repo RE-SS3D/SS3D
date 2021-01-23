@@ -115,7 +115,7 @@ GameObject:
   - component: {fileID: 6371223980325206078}
   - component: {fileID: 1176681601152780847}
   m_Layer: 0
-  m_Name: cryotube
+  m_Name: Cryotube - Blue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -524,10 +524,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.64462554
-  m_Height: 3.1376395
+  m_Radius: 0.63528347
+  m_Height: 3.3797712
   m_Direction: 1
-  m_Center: {x: 0.50062823, y: 1.611732, z: 0.5012473}
+  m_Center: {x: -0.49999976, y: 1.4906664, z: -0.5001116}
 --- !u!1 &9205250489425835359
 GameObject:
   m_ObjectHideFlags: 0
