@@ -156,23 +156,23 @@ namespace SS3D.Engine.Tiles
             {
                 case FloorFixtureLayers.FurnitureFixtureMain:
                     floorFixtureDefinition.furnitureMain = (FurnitureFloorFixture)fixture;
-                    floorFixtureDefinition.furnitureMain.SetRotation(rotation);
+                    floorFixtureDefinition.furnitureMain?.SetRotation(rotation);
                     break;
                 case FloorFixtureLayers.FurnitureFixture2:
                     floorFixtureDefinition.furniture2 = (FurnitureFloorFixture)fixture;
-                    floorFixtureDefinition.furniture2.SetRotation(rotation);
+                    floorFixtureDefinition.furniture2?.SetRotation(rotation);
                     break;
                 case FloorFixtureLayers.FurnitureFixture3:
                     floorFixtureDefinition.furniture3 = (FurnitureFloorFixture)fixture;
-                    floorFixtureDefinition.furniture3.SetRotation(rotation);
+                    floorFixtureDefinition.furniture3?.SetRotation(rotation);
                     break;
                 case FloorFixtureLayers.FurnitureFixture4:
                     floorFixtureDefinition.furniture4 = (FurnitureFloorFixture)fixture;
-                    floorFixtureDefinition.furniture4.SetRotation(rotation);
+                    floorFixtureDefinition.furniture4?.SetRotation(rotation);
                     break;
                 case FloorFixtureLayers.FurnitureFixture5:
                     floorFixtureDefinition.furniture5 = (FurnitureFloorFixture)fixture;
-                    floorFixtureDefinition.furniture5.SetRotation(rotation);
+                    floorFixtureDefinition.furniture5?.SetRotation(rotation);
                     break;
 
                 case FloorFixtureLayers.OverlayFixture1:
@@ -186,7 +186,7 @@ namespace SS3D.Engine.Tiles
                     break;
                 case FloorFixtureLayers.PipeUpperFixture:
                     floorFixtureDefinition.pipeUpper = (PipeFloorFixture)fixture;
-                    floorFixtureDefinition.pipeUpper.SetRotation(rotation);
+                    floorFixtureDefinition.pipeUpper?.SetRotation(rotation);
                     break;
             }
         }
@@ -303,41 +303,18 @@ namespace SS3D.Engine.Tiles
                     reason += "Lattices do not support any wall/floor fixture.\n";
             }
 
-            // If catwalk
-            if (tileDefinition.plenum.name.Contains("Catwalk"))
-            {
-                // Allow only the wire layer in tile fixtures
-                foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
-                {
-                    if (layer != TileFixtureLayers.Wire)
-                    {
-                        if (tileDefinition.fixtures.GetTileFixtureAtLayer(layer) != null)
-                        {
-                            altered = true;
-                            reason += "Catwalk only supports a wire and upper pipe layer.\n";
-                            tileDefinition.fixtures.SetTileFixtureAtLayer(null, layer);
-                        }
-                    }
-                }
-            }
-
-            if ((tileDefinition.turf != null && tileDefinition.turf.isWall) || tileDefinition.turf == null || tileDefinition.plenum.name.Contains("Lattice"))
+            if (((tileDefinition.turf != null && tileDefinition.turf.isWall) || tileDefinition.turf == null) && tileDefinition.plenum.name.Contains("Lattice"))
             {
                 // Remove floor fixtures
                 foreach (FloorFixtureLayers layer in TileDefinition.GetFloorFixtureLayerNames())
                 {
-                    // Allow upper pipe layer with a catwalk plenum
-                    if (tileDefinition.plenum.name.Contains("Catwalk") && layer == FloorFixtureLayers.PipeUpperFixture)
-                        continue;
-
                     if (tileDefinition.fixtures.GetFloorFixtureAtLayer(layer) != null)
                     {
                         altered = true;
-                        reason += "Cannot set a floor fixture when there is no floor.\n";
-                        Debug.Log("Cannot set a floor fixture when there is no floor");
+                        reason += "Cannot set a floor fixture on lattice.\n";
+                        Debug.Log("Cannot set a floor fixture on lattice");
+                        tileDefinition.fixtures.SetFloorFixtureAtLayer(null, layer, Rotation.North);
                     }
-
-                    tileDefinition.fixtures.SetFloorFixtureAtLayer(null, layer, Rotation.North);
                 }
             }
 

@@ -194,10 +194,8 @@ namespace SS3D.Engine.Tiles
             }
             if (newTile.fixtures != tile.fixtures)
             {
-                //if (newTile.turf == null && newTile.fixtures.floorFixtureDefinition.IsEmpty())
-                //    Debug.LogWarning("Created a floor fixture with no turf present");
-
-                // FixturesContainer.ValidateFixtures(newTile);
+                if (!gameObject.name.Contains("Ghost"))
+                    newTile = FixturesContainer.ValidateFixtures(newTile);
                 CreateFixtures(newTile.fixtures);
             }
 
@@ -225,14 +223,6 @@ namespace SS3D.Engine.Tiles
                 altered = true;
                 tileDefinition.turf = null;
                 reason += "No wall or floor can be build on lattices.\n";
-            }
-
-            // Only allow floor plating
-            if (tileDefinition.plenum.name.Contains("Catwalk") && tileDefinition.turf != null && !tileDefinition.turf.name.Contains("FloorPlating"))
-            {
-                tileDefinition.turf = null;
-                altered = true;
-                reason += "Catwalk only allows floor plating.\n";
             }
 
 #if UNITY_EDITOR
@@ -536,7 +526,7 @@ namespace SS3D.Engine.Tiles
 
             if (wallFixtureDefinition != null)
             {
-                // Set orientation... Ugly and should be moved
+                //// Set orientation... Ugly and should be moved
                 switch (layer)
                 {
                     case WallFixtureLayers.HighWallNorth:
@@ -551,7 +541,6 @@ namespace SS3D.Engine.Tiles
                     case WallFixtureLayers.HighWallWest:
                         wallFixtureDefinition.SetRotation(Rotation.West);
                         break;
-
                     case WallFixtureLayers.LowWallNorth:
                         wallFixtureDefinition.SetRotation(Rotation.North);
                         break;

@@ -141,6 +141,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             if (GUILayout.Button("Add"))
             {
                 enablePlacement = true;
+                deleteTiles = false;
                 if (currentTile == null)
                 {
                     ResetTileObject();
