@@ -240,6 +240,35 @@ namespace SS3D.Engine.Tiles
             return null;
         }
 
+        public void SetFixtureAtIndex(Fixture fixture, int index)
+        {
+            int offsetFloor = TileDefinition.GetTileFixtureLayerSize();
+            int offsetWall = TileDefinition.GetWallFixtureLayerSize();
+            int offsetTotal = offsetFloor + offsetWall + TileDefinition.GetFloorFixtureLayerSize();
+
+            if (index < offsetFloor)
+            {
+                // We are a Tile fixture
+                SetTileFixtureAtLayer((TileFixture)fixture, (TileFixtureLayers)index);
+            }
+
+            else if (index >= offsetFloor && index < (offsetFloor + offsetWall))
+            {
+                // We are a Wall fixture
+                SetWallFixtureAtLayer((WallFixture) fixture, (WallFixtureLayers)(index - offsetFloor));
+            }
+
+            else if (index >= (offsetFloor + offsetWall) && index < offsetTotal)
+            {
+                // We are a Floor fixture
+                SetFloorFixtureAtLayer((FloorFixture) fixture, (FloorFixtureLayers)(index - offsetFloor - offsetWall));
+            }
+            else
+            {
+                Debug.LogError("Requesting out of index Fixture");
+            }
+        }
+
         public object Clone()
         {
             return this.MemberwiseClone();

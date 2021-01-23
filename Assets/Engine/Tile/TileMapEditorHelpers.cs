@@ -1,4 +1,5 @@
 ﻿using SS3D.Engine.Tiles;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -57,19 +58,45 @@ namespace Tile
         public static void SetTile(TileManager tileManager, TileDefinition tileDefinition, int x, int y)
         {
             // Copy object to avoid dupplication between editor and tilemap
-            FixturesContainer f = (FixturesContainer)tileDefinition.fixtures.Clone();
-            tileDefinition.fixtures = f;
+            if (tileDefinition.fixtures != null)
+            {
+                FixturesContainer f = (FixturesContainer)tileDefinition.fixtures.Clone();
+                tileDefinition.fixtures = f;
+            }
 
             if (tileManager.GetTile(x, y) == null)
             {
+                // Create a new tile, but only if the plenum is not empty
+                if (tileDefinition.plenum == null)
+                    return;
 
                 tileManager.EditorCreateTile(x, y, tileDefinition);
                 Undo.RegisterCreatedObjectUndo(tileManager.GetTile(x, y).gameObject, "Created tile");
             }
             else
             {
+                // Save old definition
+                TileDefinition oldDefinition = tileManager.GetTile(x, y).Tile;
+                // Copy object to avoid dupplication between editor and tilemap
+                if (oldDefinition.fixtures != null)
+                {
+                    FixturesContainer f = (FixturesContainer)oldDefinition.fixtures.Clone();
+                    oldDefinition.fixtures = f;
+                }
+
+
+                // Existing tile found. We try to update the non-null items in the tiledefinition
+                List<TileBase> tileBases = GetTileItems(tileDefinition);
+                for (int i = 0; i < tileBases.ToArray().Length; i++)
+                {
+                    if (tileBases[i] != null)
+                        oldDefinition = SetTileItem(oldDefinition, tileBases[i], i);
+                }
+
+                
+
                 Undo.RecordObject(tileManager.GetTile(x, y).gameObject, "Updated tile");
-                tileManager.EditorUpdateTile(x, y, tileDefinition);
+                tileManager.EditorUpdateTile(x, y, oldDefinition);
             }
         }
 
@@ -83,6 +110,41 @@ namespace Tile
                     Object.DestroyImmediate(tileManager.transform.GetChild(i).gameObject);
             }
         }
+
+        public static List<TileBase> GetTileItems(TileDefinition tileDefinition)
+        {
+            List<TileBase> items = new List<TileBase>();
+
+            items.Add(tileDefinition.plenum);
+            items.Add(tileDefinition.turf);
+            items.AddRange(tileDefinition.fixtures.GetAllFixtures());
+
+            return items;
+        }
+
+        public static TileDefinition SetTileItem(TileDefinition tileDefinition, TileBase item, int index)
+        {
+            TileDefinition def = tileDefinition;
+
+            if (index == 0)
+                def.plenum = (Plenum)item;
+            else if (index == 1)
+                def.turf = (Turf)item;
+            
+            // We are a fixture
+            else if (index > 1 && index < (2 + TileDefinition.GetAllFixtureLayerSize()))
+            {
+                def.fixtures.SetFixtureAtIndex((Fixture)item, index - 2);
+            }
+            else
+            {
+                Debug.LogError("Out of range tile item was tried to be set");
+            }
+
+            return def;
+        }
+
+
 #endif
     }
 }
