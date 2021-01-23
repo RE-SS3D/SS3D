@@ -30,6 +30,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         private TileDefinition currentDefinition;
 
         private TileVisibilityLayers selectedTileLayer;
+        private TileVisibilityLayers lastSelectedTileLayer;
         private PipeLayers selectedPipeLayer;
         private OverlayLayers selectedOverlayLayer;
         private FurnitureLayers selectedFurnitureLayer;
@@ -39,6 +40,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         private List<TileBase> assetList = new List<TileBase>();
         private List<GUIContent> assetIcons = new List<GUIContent>();
         private int assetIndex;
+        private string searchString = "";
 
 
         private struct Layer
@@ -202,14 +204,25 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             }
             EditorGUILayout.EndHorizontal();
 
+            // Search bar
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Search:");
+            searchString = EditorGUILayout.TextField(searchString);
+            EditorGUILayout.EndHorizontal();
+
             scrollPositionSelection = EditorGUILayout.BeginScrollView(scrollPositionSelection);
-            LoadTileLayer(selectedTileLayer);
+            if (selectedTileLayer != lastSelectedTileLayer)
+                LoadTileLayer(selectedTileLayer);
+            UpdateSelectionGrid();
             EditorGUILayout.EndScrollView();
 
 
             if (GUI.changed)
             {
                 ResetTileDefinition();
+
+                if (searchString != "")
+                    SearchAsset(searchString);
 
                 // Update our currently selected item
                 SetSelectionDefinition();
@@ -383,6 +396,20 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             UpdateTileVisibility();
         }
 
+        private void SearchAsset(string assetName)
+        {
+            List<TileBase> filterdAssetList = new List<TileBase>();
+
+            foreach(TileBase tileBase in assetList)
+            {
+                if (tileBase.name.Contains(assetName))
+                    filterdAssetList.Add(tileBase);
+            }
+
+            assetList = filterdAssetList;
+            assetIndex = 0;
+        }
+
         private void LoadAssetLayer<T>() where T : TileBase
         {
             assetList.Clear();
@@ -395,11 +422,20 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
 
                 Texture2D texture = AssetPreview.GetAssetPreview(asset.prefab);
-                assetIcons.Add(new GUIContent(texture));
+                assetIcons.Add(new GUIContent(asset.name, texture));
                 assetList.Add(asset);
             }
+        }
 
-            assetIndex = GUILayout.SelectionGrid(assetIndex, assetIcons.ToArray(), 3);
+        private void UpdateSelectionGrid()
+        {
+            GUIStyle style = new GUIStyle();
+            style.imagePosition = ImagePosition.ImageAbove;
+            style.contentOffset = new Vector2(10, 10);
+            style.margin.bottom = 15;
+            style.onNormal.background = Texture2D.grayTexture;
+
+            assetIndex = GUILayout.SelectionGrid(assetIndex, assetIcons.ToArray(), 3, style);
         }
 
         private void LoadTileLayer(TileVisibilityLayers tileLayers)
@@ -437,6 +473,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                     LoadAssetLayer<OverlayFloorFixture>();
                     break;
             }
+            lastSelectedTileLayer = selectedTileLayer;
         }
 
         public void ResetTileObject()

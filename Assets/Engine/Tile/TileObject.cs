@@ -570,25 +570,9 @@ namespace SS3D.Engine.Tiles
                 {
                     Debug.LogWarning("Trying to overwrite fixture");
                 }
+
                 GameObject fixtureObject = EditorAndRuntime.InstantiatePrefab(wallFixtureDefinition.prefab, transform);
                 RotateTileBase(fixtureObject, wallFixtureDefinition.GetRotation());
-
-                //// Rotate the wall fixture
-                //switch (wallFixtureDefinition.GetRotation())
-                //{
-                //    case Rotation.North:
-                //        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 0f, fixtureObject.transform.rotation.z);
-                //        break;
-                //    case Rotation.East:
-                //        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 90f, fixtureObject.transform.rotation.z);
-                //        break;
-                //    case Rotation.South:
-                //        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 180f, fixtureObject.transform.rotation.z);
-                //        break;
-                //    case Rotation.West:
-                //        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 270f, fixtureObject.transform.rotation.z);
-                //        break;
-                //}
                 fixtures[index + offset] = fixtureObject;
             }
             else
