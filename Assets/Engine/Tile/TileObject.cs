@@ -182,7 +182,10 @@ namespace SS3D.Engine.Tiles
          */
         private void SetContents(TileDefinition newTile)
         {
-            newTile = ValidateTurf(newTile);
+            // We are not a ghost tile
+            if (!gameObject.name.Contains("Ghost"))
+                newTile = ValidateTurf(newTile);
+
             if (newTile.plenum != tile.plenum)
                 CreatePlenum(newTile.plenum);
             if (newTile.turf != tile.turf)
@@ -191,8 +194,8 @@ namespace SS3D.Engine.Tiles
             }
             if (newTile.fixtures != tile.fixtures)
             {
-                if (newTile.turf == null && newTile.fixtures.floorFixtureDefinition.IsEmpty())
-                    Debug.LogWarning("Created a floor fixture with no turf present");
+                //if (newTile.turf == null && newTile.fixtures.floorFixtureDefinition.IsEmpty())
+                //    Debug.LogWarning("Created a floor fixture with no turf present");
 
                 // FixturesContainer.ValidateFixtures(newTile);
                 CreateFixtures(newTile.fixtures);
@@ -212,6 +215,9 @@ namespace SS3D.Engine.Tiles
         {
             bool altered = false;
             string reason = "";
+
+            if (tileDefinition.plenum == null)
+                Debug.LogError("No plenum found in new tile definition");
 
             // Turfs cannot be build on lattices
             if (tileDefinition.plenum.name.Contains("Lattice") && tileDefinition.turf != null)
@@ -462,10 +468,10 @@ namespace SS3D.Engine.Tiles
         {
             if (plenum != null)
                 EditorAndRuntime.Destroy(plenum);
-            plenum = EditorAndRuntime.InstantiatePrefab(plenumDefinition.prefab, transform);
-
+            
             if (plenumDefinition != null)
             {
+                plenum = EditorAndRuntime.InstantiatePrefab(plenumDefinition.prefab, transform);
                 plenum.name = "plenum_" + plenumDefinition.id;
                 plenumConnector = plenum.GetComponent<AdjacencyConnector>();
             }
@@ -685,54 +691,6 @@ namespace SS3D.Engine.Tiles
          */
         private bool MigrateTileDefinition()
         {
-            //// set array to proper size
-            //// tile.fixtures = new Fixture[TileDefinition.GetFixtureLayerSize()];
-            //Fixture oldFurniture = null;
-            //FixtureLayers assetLayer = FixtureLayers.Furniture;
-
-            //// Determine all assets
-            //List<Fixture> fixtureList = new List<Fixture>();
-            //string[] aMaterialFiles = Directory.GetFiles(Application.dataPath, "*.asset", SearchOption.AllDirectories);
-            //foreach (string matFile in aMaterialFiles)
-            //{
-            //    string assetPath = "Assets" + matFile.Replace(Application.dataPath, "").Replace('\\', '/');
-            //    Fixture sourceFixture = (Fixture)AssetDatabase.LoadAssetAtPath(assetPath, typeof(Fixture));
-            //    if (sourceFixture != null)
-            //        fixtureList.Add(sourceFixture);
-            //}
-
-            //// find old fixture
-            //foreach (Transform child in transform)
-            //{
-            //    if (child.gameObject.name.Contains("fixture"))
-            //    {
-            //        fixtures[0] = child.gameObject;
-            //        string assetNameWithLayer = fixtures[0].name.Replace("fixture_", "");
-
-            //        // We got the asset name, now get the layer name
-            //        foreach (FixtureLayers layer in TileDefinition.GetFixtureLayerNames())
-            //        {
-            //            if (assetNameWithLayer.Contains(layer.ToString().ToLower()))
-            //            {
-            //                assetLayer = layer;
-            //            }
-            //        }
-            //        string assetName = assetNameWithLayer.Replace(assetLayer.ToString().ToLower() + "_", "");
-            //        foreach (Fixture fix in fixtureList)
-            //        {
-
-            //            if (fix.id.Equals(assetName))
-            //                oldFurniture = fix;
-            //        }
-            //    }
-            //}
-
-            //// update reference
-            //if (oldFurniture != null)
-            //{
-            //    tile.fixtures.SetFixtureAtLayer(oldFurniture, assetLayer);
-            //    return true;
-            //}
             return false;
         }
 #endif
@@ -750,5 +708,25 @@ namespace SS3D.Engine.Tiles
         private GameObject[] fixtures = new GameObject[TileDefinition.GetAllFixtureLayerSize()];
         private AdjacencyConnector[] tileFixtureConnectors = new AdjacencyConnector[TileDefinition.GetTileFixtureLayerSize()];
         private AdjacencyConnector[] floorFixtureConnectors = new AdjacencyConnector[TileDefinition.GetFloorFixtureLayerSize()];
+
+
+        public GameObject GetLayer(int i)
+        {
+            int offset = -2;
+
+            switch (i)
+            {
+                case 0:
+                    return plenum;
+                case 1:
+                    return turf;
+                default:
+                    if ((i + offset) >= fixtures.Length)
+                        return null;
+                    if (fixtures[i + offset] != null)
+                        return fixtures[i + offset];
+                    else return null;
+            }
+        }
     }
 }
