@@ -113,16 +113,14 @@ namespace SS3D.Engine.Inventory
                 // Try to move existing item
                 if (existingItem.Position != position)
                 {
-                    if (IsAreaFree(new RectInt(position, item.Size)))
+                    if (IsAreaFreeExcluding(new RectInt(position, item.Size), item))
                     {
                         StoredItems[itemIndex] = new StoredItem(item, position);
                         OnContainerChanged(new[] {item}, ContainerChangeType.Move);
                         return true;
                     }
-                    else
-                    {
-                        return false;
-                    }
+
+                    return false;
                 }
 
                 // Item at same position, nothing to do
@@ -222,6 +220,32 @@ namespace SS3D.Engine.Inventory
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Checks if a given area in the container is free, while excluding an item
+        /// </summary>
+        /// <param name="area">The area to check</param>
+        /// <param name="item">The item to exclude from the check</param>
+        /// <returns>If the given area is free</returns>
+        public bool IsAreaFreeExcluding(RectInt area, Item item)
+        {
+            int i = FindItem(item);
+            StoredItem storedItem = default;
+            if (i != -1)
+            {
+                storedItem = items[i];
+                items[i] = new StoredItem(storedItem.Item, new Vector2Int(100000, 100000));
+            }
+
+            bool areaFree = IsAreaFree(area);
+
+            if (i != -1)
+            {
+                items[i] = storedItem;
+            }
+
+            return areaFree;
         }
 
         /// <summary>

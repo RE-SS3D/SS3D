@@ -11,11 +11,12 @@ namespace SS3D.Engine.Inventory.UI
         
         [NonSerialized]
         public bool DropHandled;
+        [NonSerialized]
+        public Vector3 OldPosition;
         
         private Item item;
         private Transform oldParent;
-        private Vector3 oldPosition;
-        
+
         private Vector3 startMousePosition;
         private Vector3 startPosition;
         private Image image;
@@ -58,7 +59,7 @@ namespace SS3D.Engine.Inventory.UI
         public void OnBeginDrag(PointerEventData eventData)
         {
             oldParent = transform.parent;
-            oldPosition = GetComponent<RectTransform>().localPosition;
+            OldPosition = GetComponent<RectTransform>().localPosition;
             Vector3 tempPosition = transform.position;
             transform.SetParent(transform.root, false);
             transform.position = tempPosition;
@@ -83,7 +84,7 @@ namespace SS3D.Engine.Inventory.UI
             }
             
             transform.SetParent(oldParent, false);
-            GetComponent<RectTransform>().localPosition = oldPosition;
+            GetComponent<RectTransform>().localPosition = OldPosition;
 
             GameObject o = eventData.pointerCurrentRaycast.gameObject;
             if (o == null)

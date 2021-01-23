@@ -185,7 +185,7 @@ namespace SS3D.Engine.Inventory.UI
             Vector2Int size = item.Size;
             Vector3 dragPosition = drag.transform.position;
             var position = GetSlotPosition(new Vector2(dragPosition.x, dragPosition.y));
-            if (!AttachedContainer.Container.IsAreaFree(new RectInt(position, size)))
+            if (!AttachedContainer.Container.IsAreaFreeExcluding(new RectInt(position, size), item))
             {
                 return;
             }
