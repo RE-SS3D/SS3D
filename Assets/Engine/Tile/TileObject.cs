@@ -448,8 +448,6 @@ namespace SS3D.Engine.Tiles
                     }
                     i++;
                 }
-            
-
             }
         }
 
@@ -503,8 +501,6 @@ namespace SS3D.Engine.Tiles
                 }
                 fixtures[index] = EditorAndRuntime.InstantiatePrefab(fixtureDefinition.prefab, transform);
                 tileFixtureConnectors[index] = fixtures[index].GetComponent<AdjacencyConnector>();
-
-                RotateTileBase(fixtures[index], fixtureDefinition.GetRotation());
             }
             else
             {
@@ -526,42 +522,12 @@ namespace SS3D.Engine.Tiles
 
             if (wallFixtureDefinition != null)
             {
-                //// Set orientation... Ugly and should be moved
-                switch (layer)
-                {
-                    case WallFixtureLayers.HighWallNorth:
-                        wallFixtureDefinition.SetRotation(Rotation.North);
-                        break;
-                    case WallFixtureLayers.HighWallEast:
-                        wallFixtureDefinition.SetRotation(Rotation.East);
-                        break;
-                    case WallFixtureLayers.HighWallSouth:
-                        wallFixtureDefinition.SetRotation(Rotation.South);
-                        break;
-                    case WallFixtureLayers.HighWallWest:
-                        wallFixtureDefinition.SetRotation(Rotation.West);
-                        break;
-                    case WallFixtureLayers.LowWallNorth:
-                        wallFixtureDefinition.SetRotation(Rotation.North);
-                        break;
-                    case WallFixtureLayers.LowWallEast:
-                        wallFixtureDefinition.SetRotation(Rotation.East);
-                        break;
-                    case WallFixtureLayers.LowWallSouth:
-                        wallFixtureDefinition.SetRotation(Rotation.South);
-                        break;
-                    case WallFixtureLayers.LowWallWest:
-                        wallFixtureDefinition.SetRotation(Rotation.West);
-                        break;
-                }
-
                 if (fixtures[index + offset] != null)
                 {
                     Debug.LogWarning("Trying to overwrite fixture");
                 }
 
                 GameObject fixtureObject = EditorAndRuntime.InstantiatePrefab(wallFixtureDefinition.prefab, transform);
-                RotateTileBase(fixtureObject, wallFixtureDefinition.GetRotation());
                 fixtures[index + offset] = fixtureObject;
             }
             else
@@ -594,7 +560,6 @@ namespace SS3D.Engine.Tiles
                     floorFixtureConnectors[index] = connector;
                     connector.LayerIndex = index + offset;
                 }
-                RotateTileBase(fixtures[index + offset], fixtureDefinition.GetRotation());
             }
             else
             {
@@ -622,25 +587,6 @@ namespace SS3D.Engine.Tiles
             foreach (FloorFixtureLayers layer in TileDefinition.GetFloorFixtureLayerNames())
             {
                 CreateFloorFixture(fixturesDefinition.GetFloorFixtureAtLayer(layer), layer);
-            }
-        }
-
-        private void RotateTileBase(GameObject tileBaseObject, Rotation rotation)
-        {
-            switch (rotation)
-            {
-                case Rotation.North:
-                    tileBaseObject.transform.Rotate(tileBaseObject.transform.rotation.x, 0f, tileBaseObject.transform.rotation.z);
-                    break;
-                case Rotation.East:
-                    tileBaseObject.transform.Rotate(tileBaseObject.transform.rotation.x, 90f, tileBaseObject.transform.rotation.z);
-                    break;
-                case Rotation.South:
-                    tileBaseObject.transform.Rotate(tileBaseObject.transform.rotation.x, 180f, tileBaseObject.transform.rotation.z);
-                    break;
-                case Rotation.West:
-                    tileBaseObject.transform.Rotate(tileBaseObject.transform.rotation.x, 270f, tileBaseObject.transform.rotation.z);
-                    break;
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using SS3D.Engine.Tiles;
+using SS3D.Engine.Tiles.State;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -90,13 +91,30 @@ namespace Tile
                 for (int i = 0; i < tileBases.ToArray().Length; i++)
                 {
                     if (tileBases[i] != null)
-                        oldDefinition = SetTileItem(oldDefinition, tileBases[i], i, tileBases[i].GetRotation());
+                    {
+                        oldDefinition = SetTileItem(oldDefinition, tileBases[i], i);
+                    }
                 }
-
-                
 
                 Undo.RecordObject(tileManager.GetTile(x, y).gameObject, "Updated tile");
                 tileManager.EditorUpdateTile(x, y, oldDefinition);
+            }
+        }
+
+        public static void SetFixtureRotation(TileObject tileObject, int fixtureIndex, Rotation rotation)
+        {
+            GameObject fixtureObject = tileObject.GetLayer(fixtureIndex);
+
+            if (fixtureObject != null)
+            {
+                FixtureStateMaintainer maintainer = fixtureObject.GetComponent<FixtureStateMaintainer>();
+                if (maintainer != null)
+                {
+                    var stateNow = maintainer.TileState;
+                    
+                    stateNow.rotation = rotation;
+                    maintainer.SetTileState(stateNow);
+                }
             }
         }
 
@@ -122,7 +140,7 @@ namespace Tile
             return items;
         }
 
-        public static TileDefinition SetTileItem(TileDefinition tileDefinition, TileBase item, int index, Rotation rotation)
+        public static TileDefinition SetTileItem(TileDefinition tileDefinition, TileBase item, int index)
         {
             TileDefinition def = tileDefinition;
 
@@ -134,7 +152,7 @@ namespace Tile
             // We are a fixture
             else if (index > 1 && index < (2 + TileDefinition.GetAllFixtureLayerSize()))
             {
-                def.fixtures.SetFixtureAtIndex((Fixture)item, index - 2, rotation);
+                def.fixtures.SetFixtureAtIndex((Fixture)item, index - 2);
             }
             else
             {

@@ -495,11 +495,16 @@ namespace SS3D.Engine.Tiles {
                 if (f)
                 {
                     writer.WriteString(f.name ?? "");
+
+                    // Write tile rotation
+                    // writer.WriteString(f.GetRotation().ToString());
                 }
                 else
                 {
                     writer.WriteString("");
                 }
+
+                
             }
 
             // Write all wall fixtures
@@ -509,6 +514,9 @@ namespace SS3D.Engine.Tiles {
                 if (f)
                 {
                     writer.WriteString(f.name ?? "");
+
+                    // Write tile rotation
+                    // writer.WriteString(f.GetRotation().ToString());
                 }
                 else
                 {
@@ -523,6 +531,12 @@ namespace SS3D.Engine.Tiles {
                 if (f)
                 {
                     writer.WriteString(f.name ?? "");
+
+                    // Write tile rotation
+                    // writer.WriteString(f.GetRotation().ToString());
+
+                    // if (f.GetRotation().ToString() != "North")
+                    //    Debug.Log("Not north");
                 }
                 else
                 {
@@ -576,6 +590,9 @@ namespace SS3D.Engine.Tiles {
                 {
                     TileFixture tf = (TileFixture)fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
 
+                    //string rotation = reader.ReadString();
+                    //tf.SetRotation((Rotation)Enum.Parse(typeof(Rotation), rotation));
+
                     tileDefinition.fixtures.SetTileFixtureAtLayer(tf, layer);
                     if (tf == null)
                     {
@@ -591,6 +608,9 @@ namespace SS3D.Engine.Tiles {
                 if (!string.IsNullOrEmpty(fixtureName))
                 {
                     WallFixture wf = (WallFixture)fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
+
+                    //string rotation = reader.ReadString();
+                    //wf.SetRotation((Rotation)Enum.Parse(typeof(Rotation), rotation));
 
                     tileDefinition.fixtures.SetWallFixtureAtLayer(wf, layer);
                     if (wf == null)
@@ -608,7 +628,13 @@ namespace SS3D.Engine.Tiles {
                 {
                     FloorFixture ff = (FloorFixture)fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
 
-                    tileDefinition.fixtures.SetFloorFixtureAtLayer(ff, layer, ff.GetRotation());
+                    //string rotation = reader.ReadString();
+                    //if (rotation != "North")
+                    //    Debug.Log("Not north rotation read");
+
+                    //ff.SetRotation((Rotation)Enum.Parse(typeof(Rotation), rotation));
+
+                    tileDefinition.fixtures.SetFloorFixtureAtLayer(ff, layer);
                     if (ff == null)
                     {
                         Debug.LogError($"Network recieved fixture with name {fixtureName} could not be found");
@@ -628,6 +654,8 @@ namespace SS3D.Engine.Tiles {
             // TODO: Should substates be initialized to null array?
             return tileDefinition;
         }
+
+        
 
         // Store a list of all turfs and fixtures to be used in networking communications.
         // This might not be the final place of these resources (could be a public singleton), given that these could be

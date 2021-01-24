@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SS3D.Engine.Tiles.State;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Tile;
@@ -16,6 +17,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         private bool enablePlacement = false;
         private bool deleteTiles = false;
         private Vector2Int lastPlacement;
+        private double lastPlacementTime;
 
         private bool enableVisualHelp = true;
         private TileDragHandler dragHandler;
@@ -35,6 +37,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         private OverlayLayers selectedOverlayLayer;
         private FurnitureLayers selectedFurnitureLayer;
         private Rotation selectedRotation;
+        private Rotation lastRotation;
 
 
         private List<TileBase> assetList = new List<TileBase>();
@@ -231,8 +234,12 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 return;
 
 
-
             var selectionTile = currentTile;
+
+            // Set rotation
+            if (selectedRotation != lastRotation)
+                SetFixtureRotation(selectionTile, GetTileOffsetIndex(), selectedRotation);
+
             // Ensure the user can't use other scene controls whilst this one is active.
             HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
 
@@ -279,8 +286,10 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             // (Simpler) placing handle - click to place
             else if ((Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag) && Event.current.button == 0)
             {
-                if (lastPlacement != tilePosition)
+                
+                if (EditorApplication.timeSinceStartup - lastPlacementTime > 0.5 || lastPlacement != tilePosition)
                 {
+                    lastPlacementTime = EditorApplication.timeSinceStartup;
                     lastPlacement = tilePosition;
                     if (deleteTiles)
                     {
@@ -289,6 +298,10 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                     else
                     {
                         SetTile(tileManager, currentDefinition, tilePosition.x, tilePosition.y);
+
+                        // Rotate the newly created object
+                        TileObject newTile = tileManager.GetTile(tilePosition.x, tilePosition.y);
+                        SetFixtureRotation(newTile, GetTileOffsetIndex(), selectedRotation);
                     }
                 }
             }
@@ -470,7 +483,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             if (currentDefinition == null)
                 ResetTileDefinition();
             
-            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], GetTileOffsetIndex(), selectedRotation);
+            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], GetTileOffsetIndex());
 
             if (currentTile == null)
                 currentTile = CreateGhostTile(tileManager, currentDefinition);
@@ -483,6 +496,8 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             {
                 fixtures = new FixturesContainer()
             };
+
+            def.subStates = new object[TileDefinition.GetAllFixtureLayerSize() + 2];
 
             currentDefinition = def;
         }
@@ -547,10 +562,24 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             // If we just switched tabs, take the first items by default
             if (assetIndex >= assetList.Count)
                 assetIndex = 0;
-            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], GetTileOffsetIndex(), selectedRotation);
+            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], GetTileOffsetIndex());
 
+            // Set the rotation if a FixtureStateMaintainer is available
             if (currentTile != null)
+            {
                 currentTile.Tile = currentDefinition;
+                lastRotation = selectedRotation;
+                SetFixtureRotation(currentTile, GetTileOffsetIndex(), selectedRotation);
+
+                // Give a warning 
+                GameObject fixtureObject = currentTile.GetLayer(GetTileOffsetIndex());
+                FixtureStateMaintainer maintainer = fixtureObject.GetComponent<FixtureStateMaintainer>();
+
+                if (maintainer == null && (selectedTileLayer == TileVisibilityLayers.Furniture || selectedTileLayer == TileVisibilityLayers.LowWall || selectedTileLayer == TileVisibilityLayers.HighWall))
+                {
+                    Debug.LogWarning("Current selection cannot be rotated because it lacks a FixtureStateMaintainer. Please add one if you want to be able to rotate it.");
+                }
+            }   
         }
     }
 }

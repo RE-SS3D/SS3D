@@ -47,13 +47,13 @@ namespace SS3D.Content.Systems.Interactions
             {
                 if (tile.fixtures.GetFloorFixtureAtLayer(FloorFixtureLayers.FurnitureFixtureMain) == TableToConstruct) // If the fixture is a table
                 {
-                    tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.FurnitureFixtureMain, Rotation.North); // Deconstruct
+                    tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.FurnitureFixtureMain); // Deconstruct
                 }
             }
             else // If there is no fixture on place
             {
                 // TODO: Change default rotation to north
-                tile.fixtures.SetFloorFixtureAtLayer(TableToConstruct, FloorFixtureLayers.FurnitureFixtureMain, Rotation.North); // Construct
+                tile.fixtures.SetFloorFixtureAtLayer(TableToConstruct, FloorFixtureLayers.FurnitureFixtureMain); // Construct
             }
             
             // TODO: Make an easier way of doing this.

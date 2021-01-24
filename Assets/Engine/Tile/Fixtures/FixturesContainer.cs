@@ -115,64 +115,51 @@ namespace SS3D.Engine.Tiles
             {
                 case WallFixtureLayers.HighWallNorth:
                     wallFixtureDefinition.highWallNorth = (HighWallFixture)fixture;
-                    wallFixtureDefinition.highWallNorth?.SetRotation(Rotation.North);
                     break;
                 case WallFixtureLayers.HighWallEast:
                     wallFixtureDefinition.highWallEast = (HighWallFixture)fixture;
-                    wallFixtureDefinition.highWallEast?.SetRotation(Rotation.East);
                     break;
                 case WallFixtureLayers.HighWallSouth:
                     wallFixtureDefinition.highWallSouth = (HighWallFixture)fixture;
-                    wallFixtureDefinition.highWallSouth?.SetRotation(Rotation.South);
                     break;
                 case WallFixtureLayers.HighWallWest:
                     wallFixtureDefinition.highWallWest = (HighWallFixture)fixture;
-                    wallFixtureDefinition.highWallWest?.SetRotation(Rotation.West);
                     break;
 
                 case WallFixtureLayers.LowWallNorth:
                     wallFixtureDefinition.lowWallNorth = (LowWallFixture)fixture;
-                    wallFixtureDefinition.lowWallNorth?.SetRotation(Rotation.North);
                     break;
                 case WallFixtureLayers.LowWallEast:
                     wallFixtureDefinition.lowWallEast = (LowWallFixture)fixture;
-                    wallFixtureDefinition.lowWallEast?.SetRotation(Rotation.East);
                     break;
                 case WallFixtureLayers.LowWallSouth:
                     wallFixtureDefinition.lowWallSouth = (LowWallFixture)fixture;
-                    wallFixtureDefinition.lowWallSouth?.SetRotation(Rotation.South);
                     break;
                 case WallFixtureLayers.LowWallWest:
                     wallFixtureDefinition.lowWallWest = (LowWallFixture)fixture;
-                    wallFixtureDefinition.lowWallWest?.SetRotation(Rotation.West);
                     break;
 
             }
         }
 
-        public void SetFloorFixtureAtLayer(FloorFixture fixture, FloorFixtureLayers layer, Rotation rotation)
+        public void SetFloorFixtureAtLayer(FloorFixture fixture, FloorFixtureLayers layer)
         {
             switch (layer)
             {
                 case FloorFixtureLayers.FurnitureFixtureMain:
                     floorFixtureDefinition.furnitureMain = (FurnitureFloorFixture)fixture;
-                    floorFixtureDefinition.furnitureMain?.SetRotation(rotation);
                     break;
                 case FloorFixtureLayers.FurnitureFixture2:
                     floorFixtureDefinition.furniture2 = (FurnitureFloorFixture)fixture;
-                    floorFixtureDefinition.furniture2?.SetRotation(rotation);
                     break;
                 case FloorFixtureLayers.FurnitureFixture3:
                     floorFixtureDefinition.furniture3 = (FurnitureFloorFixture)fixture;
-                    floorFixtureDefinition.furniture3?.SetRotation(rotation);
                     break;
                 case FloorFixtureLayers.FurnitureFixture4:
                     floorFixtureDefinition.furniture4 = (FurnitureFloorFixture)fixture;
-                    floorFixtureDefinition.furniture4?.SetRotation(rotation);
                     break;
                 case FloorFixtureLayers.FurnitureFixture5:
                     floorFixtureDefinition.furniture5 = (FurnitureFloorFixture)fixture;
-                    floorFixtureDefinition.furniture5?.SetRotation(rotation);
                     break;
 
                 case FloorFixtureLayers.OverlayFixture1:
@@ -186,7 +173,6 @@ namespace SS3D.Engine.Tiles
                     break;
                 case FloorFixtureLayers.PipeUpperFixture:
                     floorFixtureDefinition.pipeUpper = (PipeFloorFixture)fixture;
-                    floorFixtureDefinition.pipeUpper?.SetRotation(rotation);
                     break;
             }
         }
@@ -245,13 +231,11 @@ namespace SS3D.Engine.Tiles
             return null;
         }
 
-        public void SetFixtureAtIndex(Fixture fixture, int index, Rotation rotation)
+        public void SetFixtureAtIndex(Fixture fixture, int index)
         {
             int offsetFloor = TileDefinition.GetTileFixtureLayerSize();
             int offsetWall = TileDefinition.GetWallFixtureLayerSize();
             int offsetTotal = offsetFloor + offsetWall + TileDefinition.GetFloorFixtureLayerSize();
-
-            fixture.SetRotation(rotation);
 
             if (index < offsetFloor)
             {
@@ -268,7 +252,7 @@ namespace SS3D.Engine.Tiles
             else if (index >= (offsetFloor + offsetWall) && index < offsetTotal)
             {
                 // We are a Floor fixture
-                SetFloorFixtureAtLayer((FloorFixture) fixture, (FloorFixtureLayers)(index - offsetFloor - offsetWall), rotation);
+                SetFloorFixtureAtLayer((FloorFixture) fixture, (FloorFixtureLayers)(index - offsetFloor - offsetWall));
             }
             else
             {
@@ -313,7 +297,7 @@ namespace SS3D.Engine.Tiles
                         altered = true;
                         reason += "Cannot set a floor fixture on lattice.\n";
                         Debug.Log("Cannot set a floor fixture on lattice");
-                        tileDefinition.fixtures.SetFloorFixtureAtLayer(null, layer, Rotation.North);
+                        tileDefinition.fixtures.SetFloorFixtureAtLayer(null, layer);
                     }
                 }
             }
