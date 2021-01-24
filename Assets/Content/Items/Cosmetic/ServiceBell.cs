@@ -72,8 +72,9 @@ namespace SS3D.Content.Items.Cosmetic
         [SerializeField] private AudioClip bellSound = null;
         private AudioSource audioSource;
 
-        public void Start()
+        public override void Start()
         {
+            base.Start();
             audioSource = GetComponent<AudioSource>();
             GenerateNewIcon(); 
         }

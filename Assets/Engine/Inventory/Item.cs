@@ -71,7 +71,7 @@ namespace SS3D.Engine.Inventory
         }
         
         [ContextMenu("Create Icon")]
-        public void Start()
+        public virtual void Start()
         {
             foreach (var animator in GetComponents<Animator>())
             {

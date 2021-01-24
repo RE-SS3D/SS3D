@@ -71,8 +71,9 @@ namespace SS3D.Content.Items.Cosmetic
 
         public Sprite useIcon;
 
-        public void Start()
+        public override void Start()
         {
+            base.Start();
             audioSource = GetComponent<AudioSource>();
             GenerateNewIcon(); 
         }
