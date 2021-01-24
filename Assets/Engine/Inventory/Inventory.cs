@@ -29,6 +29,11 @@ namespace SS3D.Engine.Inventory
         public event ContainerEventHandler ContainerOpened;
         public event ContainerEventHandler ContainerClosed;
 
+        public void Awake()
+        {
+            Hands.Inventory = this;
+        }
+
         public void Update()
         {
             float time = Time.time;

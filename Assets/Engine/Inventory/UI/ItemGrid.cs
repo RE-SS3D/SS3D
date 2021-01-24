@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace SS3D.Engine.Inventory.UI
 {
-    public class ItemGrid : MonoBehaviour, IPointerClickHandler, IDropHandler
+    public class ItemGrid : InventoryDisplayElement, IPointerClickHandler, IDropHandler
     {
         /// <summary>
         /// A prefab for each slot in this grid
@@ -17,7 +17,6 @@ namespace SS3D.Engine.Inventory.UI
         /// A prefab for displaying items inside the container
         /// </summary>
         public GameObject ItemDisplayPrefab;
-        public Inventory Inventory;
         /// <summary>
         /// The container this grid displays
         /// </summary>
@@ -26,13 +25,9 @@ namespace SS3D.Engine.Inventory.UI
         private GridLayoutGroup gridLayout;
         private List<ItemGridItem> gridItems = new List<ItemGridItem>();
 
-        /// <summary>
-        /// Called when an item is dragged and dropped outside the container
-        /// </summary>
-        /// <param name="item">The dragged item</param>
-        public void DropItemOutside(Item item)
+        public void RemoveGridItem(ItemGridItem item)
         {
-            Inventory.ClientDropItem(item);
+            gridItems.Remove(item);
         }
         
         private void Start()
@@ -121,16 +116,29 @@ namespace SS3D.Engine.Inventory.UI
             }
         }
 
-        public Vector2Int GetSlotPosition(Vector2 screenPosition)
+        /// <summary>
+        /// Get a slot position given a screen position, without rounding
+        /// </summary>
+        public Vector2 GetSlotPositionExact(Vector2 screenPosition)
         {
             Vector3[] corners = new Vector3[4];
             gridLayout.GetComponent<RectTransform>().GetWorldCorners(corners);
             Vector2 localPoint = new Vector2(screenPosition.x - corners[1].x, corners[1].y - screenPosition.y);
             Vector3 scale = gridLayout.transform.localToWorldMatrix.lossyScale;
-            int x = Mathf.FloorToInt(localPoint.x / (gridLayout.cellSize.x * scale.x));
-            int y = Mathf.FloorToInt(localPoint.y / (gridLayout.cellSize.y * scale.y));
+            var cellSize = gridLayout.cellSize;
+            float x = localPoint.x / (cellSize.x * scale.x);
+            float y = localPoint.y / (cellSize.y * scale.y);
             
-            return new Vector2Int(x, y);
+            return new Vector2(x, y);
+        }
+        
+        /// <summary>
+        /// Get a slot position given a screen position
+        /// </summary>
+        public Vector2Int GetSlotPosition(Vector2 screenPosition)
+        {
+            Vector2 exact = GetSlotPositionExact(screenPosition);
+            return new Vector2Int(Mathf.FloorToInt(exact.x), Mathf.FloorToInt(exact.y));
         }
 
         public Vector2 GetGridDimensions()
@@ -168,30 +176,28 @@ namespace SS3D.Engine.Inventory.UI
             }
         }
         
-        public void OnDrop(PointerEventData eventData)
+        public override void OnItemDrop(ItemDisplay display)
         {
-            GameObject drag = eventData.pointerDrag;
-            if (drag == null)
-            {
-                return;
-            }
-
-            var gridItem = drag.GetComponent<ItemGridItem>();
-            if (gridItem == null)
-            {
-                return;
-            }
-            Item item = gridItem.Item;
+            Item item = display.Item;
             Vector2Int size = item.Size;
-            Vector3 dragPosition = drag.transform.position;
-            var position = GetSlotPosition(new Vector2(dragPosition.x, dragPosition.y));
-            if (!AttachedContainer.Container.IsAreaFreeExcluding(new RectInt(position, size), item))
+            Vector3 dragPosition = display.transform.position;
+            
+            // Get item center position
+            var rect = display.GetComponent<RectTransform>().rect;
+            Vector2 rectCenter = new Vector2(rect.width / 2, rect.height / 2);
+            var position = GetSlotPositionExact(new Vector2(dragPosition.x + rectCenter.x, dragPosition.y - rectCenter.y));
+            
+            // Offset slot by item dimensions
+            var slot = new Vector2Int( Mathf.RoundToInt(position.x - size.x / 2f), Mathf.RoundToInt(position.y - size.y / 2f));
+            
+            if (!AttachedContainer.Container.IsAreaFreeExcluding(new RectInt(slot, size), item))
             {
                 return;
             }
 
-            gridItem.DropHandled = true;
-            Inventory.ClientTransferItem(item, position, AttachedContainer);
+            display.DropAccepted = true;
+            CreateItemDisplay(display.Item, slot);
+            Inventory.ClientTransferItem(item, slot, AttachedContainer);
         }
         
         private void MoveToSlot(Transform transform, Vector2Int position)

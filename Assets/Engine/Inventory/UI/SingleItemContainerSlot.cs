@@ -1,20 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace SS3D.Engine.Inventory.UI
 {
     /// <summary>
     /// A ui element to modify a container that contains one item
     /// </summary>
-    [RequireComponent(typeof(ItemDisplay))]
-    public class SingleItemContainerSlot : MonoBehaviour
+    public class SingleItemContainerSlot : InventoryDisplayElement
     {
-        public Inventory Inventory;
-        
+        public ItemDisplay ItemDisplay;
         private AttachedContainer container;
-        private ItemDisplay itemDisplay;
-        
+
         public AttachedContainer Container
         {
             get => container;
@@ -23,11 +21,23 @@ namespace SS3D.Engine.Inventory.UI
 
         public void Start()
         {
-            itemDisplay = GetComponent<ItemDisplay>();
+            Assert.IsNotNull(ItemDisplay);
             if (Container != null)
             {
                 UpdateContainer(Container);
             }
+        }
+        
+        public override void OnItemDrop(ItemDisplay display)
+        {
+            if (!container.Container.Empty)
+            {
+                return;
+            }
+
+            display.DropAccepted = true;
+            ItemDisplay.Item = display.Item;
+            Inventory.ClientTransferItem(ItemDisplay.Item, Vector2Int.zero, Container);
         }
 
         public void ClickedOn()
@@ -37,7 +47,7 @@ namespace SS3D.Engine.Inventory.UI
 
         private void UpdateDisplay()
         {
-            itemDisplay.Item = container.Container.Items.FirstOrDefault();
+            ItemDisplay.Item = container.Container.Items.FirstOrDefault();
         }
 
         private void UpdateContainer(AttachedContainer newContainer)

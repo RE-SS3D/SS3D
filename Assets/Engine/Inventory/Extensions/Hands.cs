@@ -13,7 +13,9 @@ namespace SS3D.Engine.Inventory.Extensions
     {
         [SerializeField] public AttachedContainer[] HandContainers;
         [SerializeField] private float handRange;
-        
+
+        [NonSerialized]
+        public Inventory Inventory;
         public int SelectedHandIndex { get; private set; }
         public RangeLimit range = new RangeLimit(1.5f, 1);
         public Transform interactionOrigin;

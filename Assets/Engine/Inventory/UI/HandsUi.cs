@@ -80,6 +80,7 @@ namespace SS3D.Engine.Inventory.UI
                 AttachedContainer attachedContainer = containers[i];
                 GameObject handElement = Instantiate(i % 2 == 0 ? LeftHandPrefab : RightHandPrefab, HandsContainer, false);
                 var slot = handElement.GetComponent<SingleItemContainerSlot>();
+                slot.Inventory = Hands.Inventory;
                 slot.Container = attachedContainer;
             }
         }
