@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 public class SimpleBodyPartLookAt : MonoBehaviour
 {
+    [SerializeField] public Camera camera;
     [SerializeField] public Transform target;
     private Vector3 mousePos = Vector3.zero;
 
@@ -67,6 +68,8 @@ public class SimpleBodyPartLookAt : MonoBehaviour
     {
         target.position = transform.position;
         currentRot = Quaternion.identity;
+
+        camera = CameraManager.singleton.playerCamera.GetComponent<Camera>();
     }
 
     public void MoveTarget()
@@ -77,7 +80,7 @@ public class SimpleBodyPartLookAt : MonoBehaviour
 
     public Vector3 GetMousePosition(bool changeYAxis)
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
         Vector3 mousePos = ray.origin - ray.direction * (ray.origin.y / ray.direction.y);
         mousePos = new Vector3(mousePos.x, changeYAxis ? mousePos.y : transform.position.y, mousePos.z);
 

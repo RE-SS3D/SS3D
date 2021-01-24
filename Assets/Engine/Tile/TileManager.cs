@@ -25,6 +25,8 @@ namespace SS3D.Engine.Tiles {
             public Vector2Int position;
             public TileDefinition definition;
         }
+        
+        public static event System.Action tileManagerLoaded;
 
         public static bool IsOnServer(GameObject tileChild)
         {
@@ -182,6 +184,17 @@ namespace SS3D.Engine.Tiles {
         }
 
         public override void OnStartServer() => ReinitializeFromChildren();
+
+        private void OnEnable()
+        {
+            LoadTileMap();
+        }
+
+        [Server]
+        private void LoadTileMap()
+        {
+            tileManagerLoaded?.Invoke();
+        }
 
 #if UNITY_EDITOR
         private void OnValidate()
