@@ -35,8 +35,6 @@ namespace SS3D.Engine.Inventory
                 filters[0] = filter;
                 Containers.Add(slotName, AttachedContainer.CreateEmpty(gameObject, Vector2Int.one, filters));
             }
-            
-            Debug.Log("");
         }
     }
 }
