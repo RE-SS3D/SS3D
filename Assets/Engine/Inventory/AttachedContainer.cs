@@ -20,6 +20,10 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         public bool AttachItems = true;
         /// <summary>
+        /// The local position of attached items
+        /// </summary>
+        public Vector3 AttachmentOffset = Vector3.zero;
+        /// <summary>
         /// The creatures looking at this container
         /// </summary>
         public HashSet<Creature> Observers = new HashSet<Creature>();
@@ -145,7 +149,7 @@ namespace SS3D.Engine.Inventory
                         {
                             Transform itemTransform = item.transform;
                             itemTransform.SetParent(transform, false);
-                            itemTransform.localPosition = Vector3.zero;
+                            itemTransform.localPosition = AttachmentOffset;
                             OnItemAttached(item);
                         }
                     }
@@ -165,7 +169,7 @@ namespace SS3D.Engine.Inventory
                         // Remove parent if child of this
                         if (item.transform.parent == transform)
                         {
-                            item.transform.SetParent(null);
+                            item.transform.SetParent(null, true);
                         }
                         OnItemDetached(item);
                     }
