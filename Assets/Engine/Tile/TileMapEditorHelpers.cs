@@ -103,6 +103,10 @@ namespace Tile
 
         public static void SetFixtureRotation(TileObject tileObject, int fixtureIndex, Rotation rotation)
         {
+            if (tileObject == null)
+                return;
+
+
             GameObject fixtureObject = tileObject.GetLayer(fixtureIndex);
 
             if (fixtureObject != null)
@@ -114,6 +118,9 @@ namespace Tile
                     
                     stateNow.rotation = rotation;
                     maintainer.SetTileState(stateNow);
+
+                    // Refresh the subdata because it still has the old tilestate
+                    tileObject.RefreshSubData();
                 }
             }
         }
