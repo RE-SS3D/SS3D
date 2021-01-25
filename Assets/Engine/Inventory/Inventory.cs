@@ -2,6 +2,7 @@ using System;
 using Mirror;
 using System.Collections.Generic;
 using System.Linq;
+using SS3D.Engine.Interactions;
 using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
 
@@ -65,6 +66,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
+            
             if (Hands.SelectedHandEmpty)
             {
                 if (!container.Container.Empty)
@@ -77,6 +79,14 @@ namespace SS3D.Engine.Inventory
                 if (container.Container.Empty)
                 {
                     ClientTransferItem(Hands.ItemInHand, Vector2Int.zero, container);
+                }
+                else if (Hands.SelectedHand == container)
+                {
+                    var handler = GetComponent<InteractionHandler>();
+                    if (handler != null)
+                    {
+                        handler.InteractInHand(Hands.ItemInHand.gameObject, gameObject);
+                    }
                 }
             }
         }

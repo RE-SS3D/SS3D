@@ -2,13 +2,14 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.EventSystems;
 
 namespace SS3D.Engine.Inventory.UI
 {
     /// <summary>
     /// A ui element to modify a container that contains one item
     /// </summary>
-    public class SingleItemContainerSlot : InventoryDisplayElement
+    public class SingleItemContainerSlot : InventoryDisplayElement, IPointerClickHandler
     {
         public ItemDisplay ItemDisplay;
         private AttachedContainer container;
@@ -40,11 +41,6 @@ namespace SS3D.Engine.Inventory.UI
             Inventory.ClientTransferItem(ItemDisplay.Item, Vector2Int.zero, Container);
         }
 
-        public void ClickedOn()
-        {
-            Inventory.ClientInteractWithSingleSlot(container);
-        }
-
         private void UpdateDisplay()
         {
             ItemDisplay.Item = container.Container.Items.FirstOrDefault();
@@ -72,6 +68,11 @@ namespace SS3D.Engine.Inventory.UI
             {
                 UpdateDisplay();
             }
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            Inventory.ClientInteractWithSingleSlot(container);
         }
     }
 }
