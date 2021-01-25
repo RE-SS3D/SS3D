@@ -1,4 +1,5 @@
 ﻿using SS3D.Engine.Tiles;
+using SS3D.Engine.Tiles.State;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -90,13 +91,37 @@ namespace Tile
                 for (int i = 0; i < tileBases.ToArray().Length; i++)
                 {
                     if (tileBases[i] != null)
+                    {
                         oldDefinition = SetTileItem(oldDefinition, tileBases[i], i);
+                    }
                 }
-
-                
 
                 Undo.RecordObject(tileManager.GetTile(x, y).gameObject, "Updated tile");
                 tileManager.EditorUpdateTile(x, y, oldDefinition);
+            }
+        }
+
+        public static void SetFixtureRotation(TileObject tileObject, int fixtureIndex, Rotation rotation)
+        {
+            if (tileObject == null)
+                return;
+
+
+            GameObject fixtureObject = tileObject.GetLayer(fixtureIndex);
+
+            if (fixtureObject != null)
+            {
+                FixtureStateMaintainer maintainer = fixtureObject.GetComponent<FixtureStateMaintainer>();
+                if (maintainer != null)
+                {
+                    var stateNow = maintainer.TileState;
+                    
+                    stateNow.rotation = rotation;
+                    maintainer.SetTileState(stateNow);
+
+                    // Refresh the subdata because it still has the old tilestate
+                    tileObject.RefreshSubData();
+                }
             }
         }
 
@@ -138,7 +163,7 @@ namespace Tile
             }
             else
             {
-                Debug.LogError("Out of range tile item was tried to be set");
+                Debug.LogWarning("Out of range tile item was tried to be set");
             }
 
             return def;

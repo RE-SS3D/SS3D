@@ -52,6 +52,7 @@ namespace SS3D.Content.Systems.Interactions
             }
             else // If there is no fixture on place
             {
+                // TODO: Change default rotation to north
                 tile.fixtures.SetFloorFixtureAtLayer(TableToConstruct, FloorFixtureLayers.FurnitureFixtureMain); // Construct
             }
             

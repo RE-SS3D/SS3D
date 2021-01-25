@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SS3D.Engine.Tiles.State;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Tile;
@@ -16,6 +17,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         private bool enablePlacement = false;
         private bool deleteTiles = false;
         private Vector2Int lastPlacement;
+        private double lastPlacementTime;
 
         private bool enableVisualHelp = true;
         private TileDragHandler dragHandler;
@@ -24,16 +26,24 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         private bool showVisibility = false;
         private Layer[] layerVisibility;
+        private Layer[] layerVisibilitySelection;
 
-        private GameObject selectedFixture;
-        private TileLayers selectedTileLayer;
         private TileObject currentTile;
         private TileDefinition currentDefinition;
+
+        private TileVisibilityLayers selectedTileLayer;
+        private TileVisibilityLayers lastSelectedTileLayer;
+        private PipeLayers selectedPipeLayer;
+        private OverlayLayers selectedOverlayLayer;
+        private FurnitureLayers selectedFurnitureLayer;
+        private Rotation selectedRotation;
+        private Rotation lastRotation;
+
 
         private List<TileBase> assetList = new List<TileBase>();
         private List<GUIContent> assetIcons = new List<GUIContent>();
         private int assetIndex;
-        private int lastAssetIndex;
+        private string searchString = "";
 
 
         private struct Layer
@@ -103,9 +113,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             {
                 EditorGUI.indentLevel++;
                 // Draw for each layer in the tilemap
-                for (int i = 0; i < layerVisibility.Length; i++)
+                for (int i = 0; i < layerVisibilitySelection.Length; i++)
                 {
-                    if (layerVisibility[i].visibile = EditorGUILayout.Toggle(layerVisibility[i].name, layerVisibility[i].visibile))
+                    if (layerVisibilitySelection[i].visibile = EditorGUILayout.Toggle(layerVisibilitySelection[i].name, layerVisibilitySelection[i].visibile))
                     {
                         UpdateTileVisibility();
                     }
@@ -134,6 +144,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             if (GUILayout.Button("Add"))
             {
                 enablePlacement = true;
+                deleteTiles = false;
                 if (currentTile == null)
                 {
                     ResetTileObject();
@@ -156,22 +167,63 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             }
             EditorGUILayout.EndHorizontal();
 
+            // Tile layer select
             EditorGUILayout.Space();
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Selected layer:");
-            selectedTileLayer = (TileLayers)EditorGUILayout.EnumPopup(selectedTileLayer);
+            selectedTileLayer = (TileVisibilityLayers)EditorGUILayout.EnumPopup(selectedTileLayer);
             EditorGUILayout.EndHorizontal();
 
+
+            // Display sub layers depending on the layer selected
+            EditorGUILayout.BeginHorizontal();
+            switch (selectedTileLayer)
+            {
+                case TileVisibilityLayers.Pipe:
+                    EditorGUILayout.PrefixLabel("Sub layer:");
+                    selectedPipeLayer = (PipeLayers)EditorGUILayout.EnumPopup(selectedPipeLayer);
+                    break;
+                case TileVisibilityLayers.Overlay:
+                    EditorGUILayout.PrefixLabel("Sub layer:");
+                    selectedOverlayLayer = (OverlayLayers)EditorGUILayout.EnumPopup(selectedOverlayLayer);
+                    break;
+                case TileVisibilityLayers.Furniture:
+                    EditorGUILayout.PrefixLabel("Sub layer:");
+                    selectedFurnitureLayer = (FurnitureLayers)EditorGUILayout.EnumPopup(selectedFurnitureLayer);
+                    break;
+            }
+            EditorGUILayout.EndHorizontal();
+
+            // Rotation select
+            EditorGUILayout.BeginHorizontal();
+            switch (selectedTileLayer)
+            {
+                case TileVisibilityLayers.HighWall:
+                case TileVisibilityLayers.LowWall:
+                case TileVisibilityLayers.Overlay:
+                case TileVisibilityLayers.AtmosMachinery:
+                case TileVisibilityLayers.Furniture:
+                    EditorGUILayout.PrefixLabel("Rotation:");
+                    selectedRotation = (Rotation)EditorGUILayout.EnumPopup(selectedRotation);
+                    break;
+            }
+            EditorGUILayout.EndHorizontal();
+
+            // Search bar
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Search:");
+            searchString = EditorGUILayout.TextField(searchString);
+            EditorGUILayout.EndHorizontal();
+
+            // Selection grid
             scrollPositionSelection = EditorGUILayout.BeginScrollView(scrollPositionSelection);
-            LoadTileLayer(selectedTileLayer);
+            UpdateSelectionGrid(selectedTileLayer, searchString);
             EditorGUILayout.EndScrollView();
 
-
+            // Update everything if the user makes a change
             if (GUI.changed)
             {
                 ResetTileDefinition();
-
-                // Update our currently selected item
                 SetSelectionDefinition();
             }
         }
@@ -182,8 +234,12 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 return;
 
 
-
             var selectionTile = currentTile;
+
+            // Set rotation
+            if (selectedRotation != lastRotation)
+                SetFixtureRotation(selectionTile, GetTileOffsetIndex(), selectedRotation);
+
             // Ensure the user can't use other scene controls whilst this one is active.
             HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
 
@@ -230,8 +286,10 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             // (Simpler) placing handle - click to place
             else if ((Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag) && Event.current.button == 0)
             {
-                if (lastPlacement != tilePosition)
+                
+                if (EditorApplication.timeSinceStartup - lastPlacementTime > 0.5 || lastPlacement != tilePosition)
                 {
+                    lastPlacementTime = EditorApplication.timeSinceStartup;
                     lastPlacement = tilePosition;
                     if (deleteTiles)
                     {
@@ -240,6 +298,10 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                     else
                     {
                         SetTile(tileManager, currentDefinition, tilePosition.x, tilePosition.y);
+
+                        // Rotate the newly created object
+                        TileObject newTile = tileManager.GetTile(tilePosition.x, tilePosition.y);
+                        SetFixtureRotation(newTile, GetTileOffsetIndex(), selectedRotation);
                     }
                 }
             }
@@ -254,7 +316,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 deleteTiles = false;
                 enablePlacement = false;
                 HideTile();
-                // DestroyAllGhosts(tileManager);
             }
         }
 
@@ -277,16 +338,35 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         private void LoadLayerVisibility()
         {
-            TileLayers[] layers = (TileLayers[])Enum.GetValues(typeof(TileLayers));
-            layerVisibility = new Layer[layers.Length];
-            for (int i = 0; i < layers.Length; i++)
+            TileLayers[] layersEnum = (TileLayers[])Enum.GetValues(typeof(TileLayers));
+            layerVisibility = new Layer[layersEnum.Length];
+            for (int i = 0; i < layersEnum.Length; i++)
             {
-                layerVisibility[i] = layers[i].ToString();
+                layerVisibility[i] = layersEnum[i].ToString();
+            }
+
+            TileVisibilityLayers[] layersVisibleEnum = (TileVisibilityLayers[])Enum.GetValues(typeof(TileVisibilityLayers));
+            layerVisibilitySelection = new Layer[layersVisibleEnum.Length];
+            for (int i = 0; i < layersVisibleEnum.Length; i++)
+            {
+                layerVisibilitySelection[i] = layersVisibleEnum[i].ToString();
             }
         }
 
         private void UpdateTileVisibility()
         {
+            // First map our selection to real layers
+            foreach (Layer layer in layerVisibilitySelection)
+            {
+                for (int i = 0; i < layerVisibility.Length; i++)
+                {
+                   if (layerVisibility[i].name.Contains(layer.name))
+                    {
+                        layerVisibility[i].visibile = layer.visibile;
+                    }
+                }
+            }
+
             // Loop all tiles
             foreach (TileObject tileObject in tileManager.GetAllTiles())
             {
@@ -304,6 +384,16 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
         private void ResetTileVisibility(bool showAll)
         {
+            // List where walls, pipes etc are combined
+            for (int i = 0; i < layerVisibilitySelection.Length; i++)
+            {
+                if (showAll)
+                    layerVisibilitySelection[i].visibile = true;
+                else
+                    layerVisibilitySelection[i].visibile = false;
+            }
+
+            // List with all layers
             for (int i = 0; i < layerVisibility.Length; i++)
             {
                 if (showAll)
@@ -314,7 +404,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             UpdateTileVisibility();
         }
 
-        private void LoadAssetLayer<T>() where T : TileBase
+        private void LoadAssetLayer<T>(string assetName = "") where T : TileBase
         {
             assetList.Clear();
             assetIcons.Clear();
@@ -325,63 +415,66 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                 string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
                 T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
 
+                // Case insensitive search for name
+                if (assetName != "" && !asset.name.ToUpper().Contains(assetName.ToUpper()))
+                {
+                    continue;
+                }
                 Texture2D texture = AssetPreview.GetAssetPreview(asset.prefab);
-                assetIcons.Add(new GUIContent(texture));
+                assetIcons.Add(new GUIContent(asset.name, texture));
                 assetList.Add(asset);
             }
-
-            assetIndex = GUILayout.SelectionGrid(assetIndex, assetIcons.ToArray(), 3);
         }
 
-        private void LoadTileLayer(TileLayers tileLayers)
+        private void UpdateSelectionGrid(TileVisibilityLayers layer, string search)
+        {
+            LoadTileLayer(layer, search);
+
+            GUIStyle style = new GUIStyle();
+            style.imagePosition = ImagePosition.ImageAbove;
+            style.contentOffset = new Vector2(10, 10);
+            style.margin.bottom = 15;
+            style.onNormal.background = Texture2D.grayTexture;
+
+            assetIndex = GUILayout.SelectionGrid(assetIndex, assetIcons.ToArray(), 3, style);
+        }
+
+        private void LoadTileLayer(TileVisibilityLayers tileLayers, string assetName = "")
         {
             switch (tileLayers)
             {
-                case TileLayers.Plenum:
-                    LoadAssetLayer<Plenum>();
+                case TileVisibilityLayers.Plenum:
+                    LoadAssetLayer<Plenum>(assetName);
                     break;
-                case TileLayers.Turf:
-                    LoadAssetLayer<Turf>();
+                case TileVisibilityLayers.Turf:
+                    LoadAssetLayer<Turf>(assetName);
                     break;
-                case TileLayers.Wire:
-                    LoadAssetLayer<WireFixture>();
+                case TileVisibilityLayers.Wire:
+                    LoadAssetLayer<WireFixture>(assetName);
                     break;
-                case TileLayers.Disposal:
-                    LoadAssetLayer<DisposalFixture>();
+                case TileVisibilityLayers.Disposal:
+                    LoadAssetLayer<DisposalFixture>(assetName);
                     break;
-                case TileLayers.Pipe1:
-                case TileLayers.Pipe2:
-                case TileLayers.Pipe3:
-                    LoadAssetLayer<PipeFixture>();
+                case TileVisibilityLayers.Pipe:
+                    LoadAssetLayer<PipeFixture>(assetName);
                     break;
-                case TileLayers.HighWallNorth:
-                case TileLayers.HighWallEast:
-                case TileLayers.HighWallSouth:
-                case TileLayers.HighWallWest:
-                    LoadAssetLayer<HighWallFixture>();
+                case TileVisibilityLayers.HighWall:
+                    LoadAssetLayer<HighWallFixture>(assetName);
                     break;
-                case TileLayers.LowWallNorth:
-                case TileLayers.LowWallEast:
-                case TileLayers.LowWallSouth:
-                case TileLayers.LowWallWest:
-                    LoadAssetLayer<LowWallFixture>();
+                case TileVisibilityLayers.LowWall:
+                    LoadAssetLayer<LowWallFixture>(assetName);
                     break;
-                case TileLayers.PipeUpper:
-                    LoadAssetLayer<PipeFloorFixture>();
+                case TileVisibilityLayers.AtmosMachinery:
+                    LoadAssetLayer<PipeFloorFixture>(assetName);
                     break;
-                case TileLayers.FurnitureMain:
-                case TileLayers.Furniture2:
-                case TileLayers.Furniture3:
-                case TileLayers.Furniture4:
-                case TileLayers.Furniture5:
-                    LoadAssetLayer<FurnitureFloorFixture>();
+                case TileVisibilityLayers.Furniture:
+                    LoadAssetLayer<FurnitureFloorFixture>(assetName);
                     break;
-                case TileLayers.Overlay1:
-                case TileLayers.Overlay2:
-                case TileLayers.Overlay3:
-                    LoadAssetLayer<OverlayFloorFixture>();
+                case TileVisibilityLayers.Overlay:
+                    LoadAssetLayer<OverlayFloorFixture>(assetName);
                     break;
             }
+            lastSelectedTileLayer = selectedTileLayer;
         }
 
         public void ResetTileObject()
@@ -389,8 +482,8 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
             if (currentDefinition == null)
                 ResetTileDefinition();
-
-            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], (int)selectedTileLayer);
+            
+            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], GetTileOffsetIndex());
 
             if (currentTile == null)
                 currentTile = CreateGhostTile(tileManager, currentDefinition);
@@ -403,6 +496,8 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             {
                 fixtures = new FixturesContainer()
             };
+
+            def.subStates = new object[TileDefinition.GetAllFixtureLayerSize() + 2];
 
             currentDefinition = def;
         }
@@ -420,18 +515,71 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
         public void Destroy()
         {
             if (currentTile != null)
-                UnityEngine.Object.DestroyImmediate(currentTile);
+                DestroyImmediate(currentTile);
+        }
+
+        private int GetTileOffsetIndex()
+        {
+            int offsetTileLayer = -1;
+            string layerName = selectedTileLayer.ToString();
+
+            // Handle sub layers cases (i.e. pipes, overlays etc)
+            switch (selectedTileLayer)
+            {
+                case TileVisibilityLayers.HighWall:
+                    layerName += selectedRotation.ToString();
+                    break;
+                case TileVisibilityLayers.LowWall:
+                    layerName += selectedRotation.ToString();
+                    break;
+                case TileVisibilityLayers.Pipe:
+                    layerName = selectedPipeLayer.ToString();
+                    break;
+                case TileVisibilityLayers.Overlay:
+                    layerName = selectedOverlayLayer.ToString();
+                    break;
+                case TileVisibilityLayers.Furniture:
+                    layerName = selectedFurnitureLayer.ToString();
+                    break;
+            }
+
+            // Now find the index that corresponds with the layer name
+            TileLayers[] tileLayers = (TileLayers[])Enum.GetValues(typeof(TileLayers));
+            for (int i = 0; i < tileLayers.Length; i++)
+            {
+                if (tileLayers[i].ToString().Equals(layerName))
+                    offsetTileLayer = i;
+            }
+
+            return offsetTileLayer;
         }
 
         private void SetSelectionDefinition()
         {
-            // If we just switched tabs, take the first items by default
-            if (assetIndex > assetList.Count)
-                assetIndex = 0;
-            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], (int)selectedTileLayer);
+            if (assetList.Count == 0)
+                return;
 
+            // If we just switched tabs, take the first items by default
+            if (assetIndex >= assetList.Count)
+                assetIndex = 0;
+            currentDefinition = SetTileItem(currentDefinition, assetList[assetIndex], GetTileOffsetIndex());
+
+            // Set the rotation if a FixtureStateMaintainer is available
             if (currentTile != null)
+            {
                 currentTile.Tile = currentDefinition;
+                lastRotation = selectedRotation;
+                SetFixtureRotation(currentTile, GetTileOffsetIndex(), selectedRotation);
+
+                // Give a warning 
+                GameObject fixtureObject = currentTile.GetLayer(GetTileOffsetIndex());
+                FixtureStateMaintainer maintainer = fixtureObject.GetComponent<FixtureStateMaintainer>();
+
+                if (maintainer == null && (selectedTileLayer == TileVisibilityLayers.Furniture || selectedTileLayer == TileVisibilityLayers.LowWall || selectedTileLayer == TileVisibilityLayers.HighWall))
+                {
+                    Debug.LogWarning("Current selection cannot be rotated because it lacks a FixtureStateMaintainer. Please add one if you want to be able to rotate it.");
+                }
+            }   
         }
     }
 }
