@@ -18,6 +18,9 @@ namespace SS3D.Engine.Tiles.Connections
             Fixture,
         }
 
+        // Which locations should be blocked, from North -> West clockwise
+        public bool[] Blocked = new bool[Enum.GetValues(typeof(Direction)).Length];
+
         public int LayerIndex { get; set; }
 
         // Id that adjacent objects must be to count. If null, any id is accepted
@@ -94,6 +97,9 @@ namespace SS3D.Engine.Tiles.Connections
             isConnected |= (tile.turf && (tile.turf.genericType == type || type == null));
             if (tile.fixtures != null)
                 isConnected |= (tile.fixtures.GetFixtureAtLayerIndex(index) && (tile.fixtures.GetFixtureAtLayerIndex(index).genericType == type || type == null));
+
+            isConnected &= !Blocked[(int)direction];
+
             return adjacents.UpdateDirection(direction, isConnected, true);
         }
 
