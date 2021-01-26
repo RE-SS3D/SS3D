@@ -251,9 +251,7 @@ namespace SS3D.Engine.Health
             //TODO: PRIORITY! Do Blood healing!
         }
 
-        // --------------------
-        // UPDATES FROM SERVER
-        // --------------------
+        // Set from server
         public void UpdateClientBloodStats(int heartRate, float bloodVolume, float _oxygenDamage, float _toxinLevel)
         {
             if (isServer)

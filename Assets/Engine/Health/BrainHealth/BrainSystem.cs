@@ -85,10 +85,6 @@ namespace SS3D.Engine.Health
             }
         }
 
-        // --------------------
-        // UPDATES FROM SERVER
-        // --------------------
-
         /// <summary>
         /// Updated via server NetMsg
         /// </summary>

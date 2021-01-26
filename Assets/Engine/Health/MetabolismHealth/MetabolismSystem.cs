@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using SS3D.Content.Systems.Player;
 using UnityEngine;
 
 namespace SS3D.Engine.Health
@@ -29,7 +30,7 @@ namespace SS3D.Engine.Health
 
         [SerializeField]
         [Tooltip("Speed debuff when running and starving")]
-        private float starvingRunDebuff = 2f;
+        private float starvingRunDebuff = 3f;
 
         [SerializeField]
         [Tooltip("Speed debuff when walking and starving")]
@@ -47,24 +48,6 @@ namespace SS3D.Engine.Health
             set
             {
                 // TODO: Handle hunger messages when chat is properly implemented
-                //if (!NetworkManager.isHeadless && PlayerManager.LocalPlayer == gameObject)
-                //{
-                //    if (value == HungerState.Full && this.HungerState != HungerState.Full)
-                //        Chat.AddExamineMsgToClient("You're stuffed!");
-
-                //    if (value == HungerState.Normal && this.HungerState != HungerState.Normal)
-                //        Chat.AddExamineMsgToClient("You're satiated.");
-
-                //    if (value == HungerState.Hungry && this.HungerState != HungerState.Hungry)
-                //        Chat.AddExamineMsgToClient("You feel hungry.");
-
-                //    if (value == HungerState.Malnourished && this.HungerState != HungerState.Malnourished)
-                //        Chat.AddWarningMsgToClient("Your stomach rumbles violently.");
-
-                //    if (value == HungerState.Starving && this.HungerState != HungerState.Starving)
-                //        Chat.AddWarningMsgToClient("Your malnourished body aches!");
-                //}
-
                 hungerState = value;
             }
         }
@@ -74,7 +57,7 @@ namespace SS3D.Engine.Health
         public bool IsHungry => HungerState >= HungerState.Hungry;
         public bool IsStarving => HungerState == HungerState.Starving;
 
-        // <summary>
+        /// <summary>
         /// How much hunger is applied per metabolism tick
         /// </summary>
         public int HungerRate { get; set; } = 1;
@@ -140,6 +123,9 @@ namespace SS3D.Engine.Health
 
                     // TODO: Do damage when starving
 
+                    // Do damage when starving
+
+
                     tick = 0;
                 }
             }
@@ -160,9 +146,18 @@ namespace SS3D.Engine.Health
         /// </summary>
         private void ApplySpeedDebuff()
         {
-            // TODO: Apply debuff to the actual player
-            //playerMove.ServerChangeSpeed( run: playerMove.RunSpeed - starvingRunDebuff,
-            //    walk: playerMove.WalkSpeed - starvingWalkDebuff);
+
+            HumanoidMovementController controller = GetComponent<HumanoidMovementController>();
+            if (controller != null)
+            {
+                controller.runSpeed -= starvingRunDebuff;
+                controller.walkSpeed -= starvingWalkDebuff;
+            }
+            else
+            {
+                Debug.LogWarning("Could not apply speed debuf to player because no controller was found");
+            }
+
             appliedStarvingDebuff = true;
         }
 
@@ -171,9 +166,18 @@ namespace SS3D.Engine.Health
         /// </summary>
         private void RemoveSpeedDebuff()
         {
-            // TODO: Remove debuff from the actual player
-            //playerMove.ServerChangeSpeed( run: playerMove.RunSpeed + starvingRunDebuff,
-            //    walk: playerMove.WalkSpeed + starvingWalkDebuff);
+            HumanoidMovementController controller = GetComponent<HumanoidMovementController>();
+            if (controller != null)
+            {
+                controller.runSpeed += starvingRunDebuff;
+                controller.walkSpeed += starvingWalkDebuff;
+            }
+            else
+            {
+                Debug.LogWarning("Could not remove speed debuf to player because no controller was found");
+            }
+
+
             appliedStarvingDebuff = false;
         }
 
