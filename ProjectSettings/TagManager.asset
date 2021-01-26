@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - MainCanvas
+  - PlayerCamera
   layers:
   - Default
   - TransparentFX
@@ -29,7 +30,7 @@ TagManager:
   - Render Texture Mask
   - 
   - 
-  - 
+  - Character Preview
   - 
   - 
   - 

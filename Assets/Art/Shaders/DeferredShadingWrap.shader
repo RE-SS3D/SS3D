@@ -70,7 +70,7 @@ half4 WrapBRDF (half3 diffColor, half3 specColor, half oneMinusReflectivity, hal
     half lh = saturate(dot(light.dir, halfDir));
 
     // Diffuse term
-    half diffuseTerm = DisneyDiffuse(nv, nl, lh, perceptualRoughness) * (dot(normal, light.dir) * 0.5 + 0.5);
+    half diffuseTerm = DisneyDiffuse(nv, nl, lh, perceptualRoughness) * nl * 0.5 + 0.5;
 
     // Specular term
     // HACK: theoretically we should divide diffuseTerm by Pi and not multiply specularTerm!

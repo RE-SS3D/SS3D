@@ -49,8 +49,8 @@ MonoBehaviour:
   startOnHeadless: 1
   showDebugMessages: 0
   serverTickRate: 30
-  offlineScene: 
-  onlineScene: 
+  offlineScene: Assets/Content/Scenes/Main Menu.unity
+  onlineScene: Assets/Content/Scenes/Server Lobby.unity
   transport: {fileID: 6976582009294150632}
   networkAddress: localhost
   maxConnections: 4
@@ -59,7 +59,7 @@ MonoBehaviour:
   authenticator: {fileID: 0}
   playerPrefab: {fileID: 289348138277843802, guid: 808fc3b770e18cf4a8fe9dbd48fa2444,
     type: 3}
-  autoCreatePlayer: 1
+  autoCreatePlayer: 0
   playerSpawnMethod: 0
   spawnPrefabs:
   - {fileID: 2153916105656836095, guid: 4f869bcb1ae6e4b45b121ee768dc357d, type: 3}
@@ -106,16 +106,17 @@ MonoBehaviour:
   - {fileID: 5533951594911835035, guid: ca1dc9505ebfe1b49959d3cfa6aa4b01, type: 3}
   - {fileID: 5533951594911835035, guid: 6504a09c112fa4d478c3bce81801f878, type: 3}
   - {fileID: 5367923578081395378, guid: 425c09b347f9d3949b40163fd9aa6c30, type: 3}
-  useLoginSystem: 0
   warmupTime: 3
   loginServerAddress: http://35.198.114.92
   playerDummyPrefab: {fileID: 5297952924634552147, guid: c42f46e927c4d02458b0b39466700928,
     type: 3}
   loginManagerPrefab: {fileID: 757364905391698792, guid: 16d73a43abe25d14c8aacb4207acd152,
     type: 3}
-  roundManagerPrefab: {fileID: 197787038674958444, guid: 049558f02528ebb4199a7b557ae60715,
+  roundManagerPrefab: {fileID: 6354123221177745285, guid: e84c1b8cfcb1483478aeb2d2767ebf1b,
     type: 3}
+  useLoginSystem: 0
   roundManager: {fileID: 0}
+  loadingScreen: {fileID: 0}
 --- !u!114 &6976582009294150632
 MonoBehaviour:
   m_ObjectHideFlags: 0

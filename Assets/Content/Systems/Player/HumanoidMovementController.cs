@@ -22,7 +22,7 @@ namespace SS3D.Content.Systems.Player
 
         private Animator characterAnimator;
         private CharacterController characterController;
-        private Camera mainCamera;
+        private Camera camera;
 
         // Current movement the player is making.
         private Vector2 currentMovement = new Vector2();
@@ -43,7 +43,7 @@ namespace SS3D.Content.Systems.Player
             characterController = GetComponent<CharacterController>();
             characterAnimator = GetComponent<Animator>();
             chatRegister = GetComponent<ChatRegister>();
-            mainCamera = Camera.main;
+            camera = CameraManager.singleton.playerCamera; 
         }
 
         void Update()
@@ -81,8 +81,8 @@ namespace SS3D.Content.Systems.Player
             {
                 // Determine the absolute movement by aligning input to the camera's looking direction
                 absoluteMovement =
-                currentMovement.y * Vector3.Cross(mainCamera.transform.right, Vector3.up).normalized +
-                currentMovement.x * Vector3.Cross(Vector3.up, mainCamera.transform.forward).normalized;
+                currentMovement.y * Vector3.Cross(camera.transform.right, Vector3.up).normalized +
+                currentMovement.x * Vector3.Cross(Vector3.up, camera.transform.forward).normalized;
 
                 if (intendedMovement != Vector2.zero)
                 {

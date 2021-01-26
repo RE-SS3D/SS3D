@@ -92,7 +92,7 @@ Material:
     - _DistortionStrength: 1
     - _DistortionStrengthScaled: 0.1
     - _DstBlend: 1
-    - _EdgeThickness: 0.35
+    - _EdgeThickness: 0.49
     - _EmissionEnabled: 0
     - _EnableExternalAlpha: 0
     - _EnvironmentReflections: 0
@@ -128,9 +128,9 @@ Material:
     - _BaseColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
     - _ClearColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.5943396, g: 0.5943396, b: 0.5943396, a: 0.019607844}
+    - _Color: {r: 0.7169812, g: 0.7169812, b: 0.7169812, a: 0.019607844}
     - _ColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
-    - _EdgeColor: {r: 0.8584906, g: 0.8584906, b: 0.8584906, a: 1}
+    - _EdgeColor: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 1}
     - _EmissionColor: {r: 232.9098, g: 232.9098, b: 232.9098, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _FogColor: {r: 1, g: 1, b: 1, a: 1}

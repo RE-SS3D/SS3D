@@ -149,7 +149,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6280353383926828322}
-  - component: {fileID: 5677221229182274821}
   - component: {fileID: 7055828895189131133}
   - component: {fileID: 3436612527983747956}
   - component: {fileID: 6541211281956070803}
@@ -174,22 +173,6 @@ Transform:
   m_Father: {fileID: 6038773036230548675}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5677221229182274821
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6209058330834610918}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!33 &7055828895189131133
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -537,7 +520,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DisplayName: Poke N' Toke
-  Text: Dispenses cigarette paraphernalia.
+  Text: Dispenses smoking paraphernalia.
   MaxDistance: 0
 --- !u!1 &9139902570717850779
 GameObject:

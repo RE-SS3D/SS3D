@@ -34,7 +34,7 @@ namespace SS3D.Engine.Atmospherics
         public bool filterCarbonDioxide = false;
         public bool filterPlasma = false;
 
-        
+
         public PipeLayer pipeLayer;
 
         private bool deviceActive = true;
@@ -44,6 +44,9 @@ namespace SS3D.Engine.Atmospherics
         private PipeObject connectedPipe;
         private TileObject[] tileNeighbours = { null, null, null, null };
         private AtmosObject[] atmosNeighbours = { null, null, null, null };
+        private AtmosObject input = null;
+
+        private AtmosGasses[] atmosGasses = (AtmosGasses[])Enum.GetValues(typeof(AtmosGasses));
 
         void Update()
         {
@@ -95,9 +98,11 @@ namespace SS3D.Engine.Atmospherics
                 for (int i = 0; i < numOfTiles; i++)
                 {
 
-                    AtmosObject input = null;
                     if (i == 0)
-                        input = GetComponentInParent<TileObject>().atmos;
+                    {
+                        if (input == null)
+                            input = GetComponentInParent<TileObject>().atmos;
+                    }
                     else
                         input = atmosNeighbours[i - 1];
 
@@ -130,34 +135,34 @@ namespace SS3D.Engine.Atmospherics
                         if (transferMoles > totalMoles)
                             transferMoles = totalMoles;
 
-                        foreach (AtmosGasses gas in Enum.GetValues(typeof(AtmosGasses)))
+                        for (int j = 0; j < atmosGasses.Length; j++)
                         {
                             if (mode == OperatingMode.Siphoning)
                             {
                                 scrubActive = true;
 
                                 // Divide the moles according to their percentage
-                                float molePerGas = (inputContainer.GetGas(gas) / input.GetTotalMoles()) * transferMoles;
-                                if (inputContainer.GetGas(gas) > 0f)
+                                float molePerGas = (inputContainer.GetGas(atmosGasses[j]) / input.GetTotalMoles()) * transferMoles;
+                                if (inputContainer.GetGas(atmosGasses[j]) > 0f)
                                 {
-                                    input.RemoveGas(gas, molePerGas);
-                                    output.AddGas(gas, molePerGas);
+                                    input.RemoveGas(atmosGasses[j], molePerGas);
+                                    output.AddGas(atmosGasses[j], molePerGas);
 
                                 }
                             }
 
                             // If scrubbing, remove only filtered gas
-                            if (mode == OperatingMode.Scrubbing && IsFiltered(gas))
+                            if (mode == OperatingMode.Scrubbing && IsFiltered(atmosGasses[j]))
                             {
-                                if (inputContainer.GetGas(gas) > 0f)
+                                if (inputContainer.GetGas(atmosGasses[j]) > 0f)
                                 {
                                     scrubActive = true;
 
                                     // To avoid leaving a small amount of a certain gas, we apply the min threshold again
-                                    float molePerGas = Mathf.Min(transferMoles, inputContainer.GetGas(gas));
+                                    float molePerGas = Mathf.Min(transferMoles, inputContainer.GetGas(atmosGasses[j]));
 
-                                    input.RemoveGas(gas, molePerGas);
-                                    output.AddGas(gas, molePerGas);
+                                    input.RemoveGas(atmosGasses[j], molePerGas);
+                                    output.AddGas(atmosGasses[j], molePerGas);
                                 }
                             }
                         }

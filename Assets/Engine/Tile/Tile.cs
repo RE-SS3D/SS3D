@@ -23,6 +23,14 @@ namespace SS3D.Engine.Tiles {
         Horizontal // East-West
     }
 
+    public enum Rotation
+    {
+        North,
+        East,
+        South,
+        West
+    }
+
     public static class DirectionHelper
     {
         /**
@@ -74,13 +82,74 @@ namespace SS3D.Engine.Tiles {
         }
     }
 
-    public enum TileLayer
+    public enum TileLayers
     {
         Plenum,
         Turf,
-        FixturesContainer,
+        Wire,
+        Disposal,
+        Pipe1,
+        Pipe2,
+        Pipe3,
+        HighWallNorth,
+        HighWallEast,
+        HighWallSouth,
+        HighWallWest,
+        LowWallNorth,
+        LowWallEast,
+        LowWallSouth,
+        LowWallWest,
+        AtmosMachinery,
+        Overlay1,
+        Overlay2,
+        Overlay3,
+        FurnitureMain,
+        Furniture2,
+        Furniture3,
+        Furniture4,
+        Furniture5,
         AtmosObject,
     }
+
+    public enum TileVisibilityLayers
+    {
+        Plenum,
+        Turf,
+        Wire,
+        Disposal,
+        Pipe,
+        HighWall,
+        LowWall,
+        AtmosMachinery,
+        Overlay,
+        Furniture,
+        AtmosObject,
+    }
+
+    public enum PipeLayers
+    {
+        Pipe1,
+        Pipe2,
+        Pipe3,
+    }
+
+    public enum OverlayLayers
+    {
+        Overlay1,
+        Overlay2,
+        Overlay3,
+    }
+
+    public enum FurnitureLayers
+    {
+        FurnitureMain,
+        Furniture2,
+        Furniture3,
+        Furniture4,
+        Furniture5,
+    }
+
+
 
     /**
      * Same as above but with IDs converted to actual scriptable objects

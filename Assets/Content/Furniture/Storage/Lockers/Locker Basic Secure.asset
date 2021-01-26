@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: locker_basic_secure
   genericType: locker
-  prefab: {fileID: 6672312764699140244, guid: 8c3b7434f9d6ed64f89d4852cb4b11e6, type: 3}
+  prefab: {fileID: 2876708453869312076, guid: 0c883e26a8fe3b6428667bdaf906cc9a, type: 3}

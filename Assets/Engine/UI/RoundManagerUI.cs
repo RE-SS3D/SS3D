@@ -1,4 +1,5 @@
-﻿using SS3D.Engine.Server.Round;
+﻿using System;
+using SS3D.Engine.Server.Round;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -8,38 +9,35 @@ namespace SS3D.UI
 {
     public class RoundManagerUI : MonoBehaviour
     {
-        public RoundManager roundManager;
+        private RoundManager roundManager;
 
         [SerializeField] private TextMeshProUGUI timerText = null;
         [SerializeField] private RectTransform timerUi = null;
-        [SerializeField] private RectTransform controlUi = null;
 
-        private void Awake()
+        private void Start()
         {
-            if (roundManager)
-            {
-                // why do we subscribe UI class to server events?
-                // doesn't make much sense
-                roundManager.ServerWarmupStarted += OnWarmupStarted;
-                roundManager.ServerRoundStarted += OnRoundStarted;
-                roundManager.ClientTimerUpdated += OnTimerUpdated;
-            }
+            roundManager = RoundManager.singleton;
+            
+            // why do we subscribe UI class to server events?
+            // doesn't make much sense
+            RoundManager.ServerWarmupStarted += OnWarmupStarted;
+            RoundManager.ServerRoundStarted += OnRoundStarted;
+            RoundManager.ClientTimerUpdated += OnTimerUpdated;
         }
 
-        private void OnTimerUpdated(string text)
+        private void OnTimerUpdated(int time)
         {
             if (!timerUi.gameObject.activeSelf)
             {
                 timerUi.gameObject.SetActive(true);
             }
 
-            timerText.text = text;
+            timerText.text = TimeSpan.FromSeconds(time).ToString("hh\\:mm\\:ss");
         }
 
         private void OnRoundStarted()
         {
             gameObject.SetActive(true);
-            controlUi?.gameObject.SetActive(true);
         }
 
         private void OnWarmupStarted()
@@ -50,6 +48,13 @@ namespace SS3D.UI
         public void OnRestartRoundButtonPressed()
         {
             roundManager?.RestartRound();
+        }
+
+        private void OnDestroy()
+        {
+            RoundManager.ServerWarmupStarted -= OnWarmupStarted;
+            RoundManager.ServerRoundStarted -= OnRoundStarted;
+            RoundManager.ClientTimerUpdated -= OnTimerUpdated;
         }
     }
 }

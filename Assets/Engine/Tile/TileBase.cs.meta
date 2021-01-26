@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Engine/Tile/TileBase.cs.meta
+guid: 3fbe1919b238f5f47851de3f56fc0167
+=======
+guid: 0ec239178bc4ef641bdaa2c430aa2918
+>>>>>>> SS3D_original/master:Assets/Content/Systems/Managers/LoadingScreenManager.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
