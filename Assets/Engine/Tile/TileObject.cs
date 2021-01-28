@@ -123,6 +123,18 @@ namespace SS3D.Engine.Tiles
         {
             UpdateSubDataFromChildren();
         }
+
+        public void RefreshAdjacencies()
+        {
+            var tileManager = transform.root.GetComponent<TileManager>();
+
+            if (tileManager != null && tileManager.Count > 0 && !TileMapEditorHelpers.IsGhostTile(this))
+            {
+                var pos = tileManager.GetIndexAt(transform.position);
+                tileManager.EditorUpdateTile(pos.x, pos.y, tile);
+            }
+        }
+
 #endif
 
         /**
