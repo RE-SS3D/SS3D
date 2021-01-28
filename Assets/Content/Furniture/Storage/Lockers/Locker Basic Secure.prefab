@@ -394,6 +394,7 @@ GameObject:
   - component: {fileID: 8250042059239114656}
   - component: {fileID: 2520167261024532551}
   - component: {fileID: 9070210520109077429}
+  - component: {fileID: -6522267390035620388}
   m_Layer: 0
   m_Name: Locker Basic Secure
   m_TagString: Untagged
@@ -408,7 +409,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2876708453869312076}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -607,6 +608,20 @@ MonoBehaviour:
   DisplayName: Secure Locker
   Text: Stores stuff.
   MaxDistance: 0
+--- !u!114 &-6522267390035620388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876708453869312076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &5007033570441933088
 GameObject:
   m_ObjectHideFlags: 0

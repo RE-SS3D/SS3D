@@ -514,6 +514,7 @@ GameObject:
   - component: {fileID: 6431728947182756207}
   - component: {fileID: 6371223980325206078}
   - component: {fileID: 1176681601152780847}
+  - component: {fileID: 1670868707989539676}
   m_Layer: 0
   m_Name: Hydroponics Tray
   m_TagString: Untagged
@@ -656,6 +657,20 @@ MonoBehaviour:
   DisplayName: Hydroponics Tray
   Text: 
   MaxDistance: 0
+--- !u!114 &1670868707989539676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5385663273565442968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &5557553485053775265
 GameObject:
   m_ObjectHideFlags: 0

@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 7091454980463605699}
   - component: {fileID: 4777442227839160600}
   - component: {fileID: 4265221962216021434}
+  - component: {fileID: 6001035929918065389}
   m_Layer: 0
   m_Name: Disposal Bin
   m_TagString: Untagged
@@ -300,6 +301,20 @@ MonoBehaviour:
   DisplayName: Disposal Bin
   Text: Flushes away items.
   MaxDistance: 0
+--- !u!114 &6001035929918065389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6905024007199924851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &7531797193249841566
 GameObject:
   m_ObjectHideFlags: 0

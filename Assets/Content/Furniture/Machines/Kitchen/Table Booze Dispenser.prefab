@@ -179,6 +179,7 @@ GameObject:
   - component: {fileID: -1809232113325138168}
   - component: {fileID: 4690348828412999625}
   - component: {fileID: 8459775035855032299}
+  - component: {fileID: 8547586250767248101}
   m_Layer: 0
   m_Name: Table Booze Dispenser
   m_TagString: Untagged
@@ -353,6 +354,20 @@ MonoBehaviour:
   DisplayName: Booze Dispenser
   Text: Dispenses various types of booze.
   MaxDistance: 0
+--- !u!114 &8547586250767248101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1998574153158042118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &8961199219136555141
 GameObject:
   m_ObjectHideFlags: 0

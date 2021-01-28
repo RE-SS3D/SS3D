@@ -278,6 +278,7 @@ GameObject:
   - component: {fileID: 8477674700107838901}
   - component: {fileID: 6792938277122204052}
   - component: {fileID: 7600463449433580494}
+  - component: {fileID: 3686945184983522228}
   m_Layer: 0
   m_Name: crate
   m_TagString: Untagged
@@ -490,3 +491,17 @@ MonoBehaviour:
   DisplayName: Crate
   Text: Stores stuff.
   MaxDistance: 0
+--- !u!114 &3686945184983522228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6595280268747972349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0

@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 1466501899615533262}
   - component: {fileID: 3494353215513587477}
   - component: {fileID: 2111343728438321531}
+  - component: {fileID: 7832031327173030360}
   m_Layer: 0
   m_Name: fridge
   m_TagString: Untagged
@@ -231,6 +232,20 @@ MonoBehaviour:
   DisplayName: Fridge
   Text: Stores food and bodyparts (optional).
   MaxDistance: 0
+--- !u!114 &7832031327173030360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4214221335928705926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &5240830354732226920
 GameObject:
   m_ObjectHideFlags: 0

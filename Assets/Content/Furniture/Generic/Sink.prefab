@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7518424092208512007}
   - component: {fileID: 4318521627488898313}
   - component: {fileID: 3282234824440748568}
+  - component: {fileID: 4437022230373823828}
   m_Layer: 0
   m_Name: Sink
   m_TagString: Untagged
@@ -143,6 +144,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: 
-  Text: <b></b>
+  DisplayName: Sink
+  Text: 
   MaxDistance: 0
+--- !u!114 &4437022230373823828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4170175011264555292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
