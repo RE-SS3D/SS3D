@@ -303,8 +303,11 @@ using UnityEngine.SceneManagement;
                 ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
                 : Instantiate(playerPrefab);
             player.name = character.name;
-            
-            if (NetworkServer.ReplacePlayerForConnection(conn, player)) return;
+
+            if (NetworkClient.connection.identity != null)
+            {
+                NetworkServer.DestroyPlayerForConnection(conn);
+            }
             //Destroy dummy player
             //NetworkServer.DestroyPlayerForConnection(conn);
             

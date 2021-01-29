@@ -20,6 +20,7 @@ namespace SS3D
     {
         public static SceneLoaderManager singleton { get; private set; }
 
+        public static event System.Action mapLoaded;
         // MAPS IN BUILD
         [SerializeField] [SyncVar] private String selectedMap;
 
@@ -63,10 +64,20 @@ namespace SS3D
 
             loadSceneButtonText.text = "loading...";
             
+            mapLoaded.Invoke();
+            RpcInvokeMapLoaded();
+
             SceneManager.LoadSceneAsync(selectedMap, LoadSceneMode.Additive);
             StartCoroutine(SetActiveScene(selectedMap));
 
             TileManager.tileManagerLoaded += UnlockRoundStart;
+        }
+
+        [ClientRpc]
+        private void RpcInvokeMapLoaded()
+        {
+            if (isServer) return;
+            mapLoaded.Invoke();
         }
 
         public void UnlockRoundStart()
