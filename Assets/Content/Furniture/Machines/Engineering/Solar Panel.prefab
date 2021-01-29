@@ -659,6 +659,7 @@ GameObject:
   - component: {fileID: 6792359248975966104}
   - component: {fileID: 7122567289991769524}
   - component: {fileID: 2635529883807067752}
+  - component: {fileID: 5234343953018934327}
   m_Layer: 0
   m_Name: Solar Panel
   m_TagString: Untagged
@@ -713,6 +714,20 @@ MonoBehaviour:
   DisplayName: Solar Panel
   Text: 
   MaxDistance: 0
+--- !u!114 &5234343953018934327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7500770911366929803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &7963112909100304895
 GameObject:
   m_ObjectHideFlags: 0

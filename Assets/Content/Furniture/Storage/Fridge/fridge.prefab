@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 602897750533537464}
   - component: {fileID: 3829014715871801907}
   - component: {fileID: 4364131529940279445}
+  - component: {fileID: -5508761035162611030}
   m_Layer: 0
   m_Name: fridge
   m_TagString: Untagged
@@ -233,6 +234,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HideItems: 1
   AttachItems: 1
+  AttachmentOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &4364131529940279445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,6 +249,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AttachedContainer: {fileID: 3829014715871801907}
   Size: {x: 5, y: 3}
+--- !u!114 &-5508761035162611030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4214221335928705926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &5240830354732226920
 GameObject:
   m_ObjectHideFlags: 0

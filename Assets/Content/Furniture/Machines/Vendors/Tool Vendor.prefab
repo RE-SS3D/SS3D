@@ -158,6 +158,7 @@ GameObject:
   - component: {fileID: 1650163529337778107}
   - component: {fileID: 5522326736482285483}
   - component: {fileID: 8716617303496286320}
+  - component: {fileID: -7178640359135565531}
   m_Layer: 0
   m_Name: Tool Vendor
   m_TagString: Untagged
@@ -431,3 +432,17 @@ MonoBehaviour:
   DisplayName: YouTool
   Text: Dispenses tools.
   MaxDistance: 0
+--- !u!114 &-7178640359135565531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7319846706112917200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0

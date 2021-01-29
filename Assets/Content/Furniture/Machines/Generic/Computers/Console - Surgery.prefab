@@ -472,6 +472,7 @@ GameObject:
   - component: {fileID: 6355683579538927932}
   - component: {fileID: 1089358274311549676}
   - component: {fileID: -1818736779901110930}
+  - component: {fileID: 8967797197890206676}
   m_Layer: 0
   m_Name: Console - Surgery
   m_TagString: Untagged
@@ -559,6 +560,20 @@ MonoBehaviour:
   DisplayName: Surgery Console
   Text: 
   MaxDistance: 0
+--- !u!114 &8967797197890206676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6477574049359786441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &6505763806015701181
 GameObject:
   m_ObjectHideFlags: 0

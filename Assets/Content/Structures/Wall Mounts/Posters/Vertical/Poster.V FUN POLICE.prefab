@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3122845527458025482}
   - component: {fileID: 8648403125281566512}
   - component: {fileID: 4130787966479373255}
+  - component: {fileID: -4438138769155180973}
   m_Layer: 0
   m_Name: Poster.V FUN POLICE
   m_TagString: Untagged
@@ -109,3 +110,17 @@ MonoBehaviour:
   DisplayName: Poster - FUN POLICE
   Text: 
   MaxDistance: 0
+--- !u!114 &-4438138769155180973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5161561551087789900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
