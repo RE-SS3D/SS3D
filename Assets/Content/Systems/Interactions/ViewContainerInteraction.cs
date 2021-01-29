@@ -32,26 +32,33 @@ namespace SS3D.Content.Systems.Interactions
             {
                 return false;
             }
-            return (interactionEvent.Target as IGameObjectProvider)?.GameObject?.GetComponent<Container>() != null;
+
+            var container = interactionEvent.Target.GetComponent<AttachedContainer>();
+            if (container == null)
+            {
+                return false;
+            }
+            var inventory = interactionEvent.Source.GetComponentInTree<Inventory>();
+            if (inventory == null)
+            {
+                return false;
+            }
+            
+            Creature creature = interactionEvent.Source.GetCreature();
+            if (creature == null)
+            {
+                return false;
+            }
+            return !inventory.HasContainer(container) && creature.CanInteract(container.gameObject);
         }
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            GameObject source = ((IGameObjectProvider)interactionEvent.Source.GetRootSource()).GameObject;
-            GameObject target = ((IGameObjectProvider)interactionEvent.Target).GameObject;
-            Inventory inventory = source.GetComponent<Inventory>();
-            if (!inventory.HasContainer(target))
-            {
-                var attacher = source.AddComponent<ContainerAttachment>();
-                attacher.container = target.GetComponent<Container>();
-                attacher.inventory = inventory;
-                attacher.range = MaxDistance;
-            }
-            else
-            {
-                inventory.RemoveContainer(target);
-            }
+            var inventory = interactionEvent.Source.GetComponentInTree<Inventory>();
+            var attachedContainer = interactionEvent.Target.GetComponent<AttachedContainer>();
             
+            inventory.OpenContainer(attachedContainer);
+
             return false;
         }
 

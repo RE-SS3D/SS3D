@@ -5,7 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Filter", menuName = "Inventory/Filter")]
 public class Filter : ScriptableObject
 {
-    public BulkSize bulkSize = BulkSize.Medium;
     public bool mustHaveAll;
     public List<Trait> acceptedTraits;
     public List<Trait> deniedTraits;
@@ -13,8 +12,6 @@ public class Filter : ScriptableObject
     public bool CanStore(Item item)
     {
         int traitCount = 0;
-        if (item.bulkSize > bulkSize)
-            return false;
         if (acceptedTraits.Count == 0 && deniedTraits.Count == 0)
             return true;
 

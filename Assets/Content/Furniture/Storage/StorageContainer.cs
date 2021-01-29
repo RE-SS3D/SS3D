@@ -18,7 +18,7 @@ namespace SS3D.Content.Furniture.Storage
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = base.GenerateInteractions(interactionEvent).ToList();
-            StoreInteraction storeInteraction = new StoreInteraction {OnlyWhenOpen = OnlyStoreWhenOpen};
+            StoreInteraction storeInteraction = new StoreInteraction();
             ViewContainerInteraction view = new ViewContainerInteraction {MaxDistance = MaxDistance, icon = viewContainerIcon};
 
             if (IsOpen())

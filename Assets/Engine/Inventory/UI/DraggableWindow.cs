@@ -60,14 +60,12 @@ namespace SS3D.Engine.Interactions.UI
             panelRectTransform.GetWorldCorners(panelRectCorners);
 
             if (panelRectCorners[2].x > canvasCorners[2].x) {
-                Debug.Log("Panel is to the right of canvas limits");
                 if (!clampedToRight) clampedToRight = true;
             }
             else if (clampedToRight) {
                 clampedToRight = false;
             }
             else if (panelRectCorners[0].x < canvasCorners[0].x) {
-                Debug.Log("Panel is to the left of canvas limits");
                 if (!clampedToLeft) clampedToLeft = true;
             }
             else if (clampedToLeft) {
@@ -75,14 +73,12 @@ namespace SS3D.Engine.Interactions.UI
             }
 
             if (panelRectCorners[2].y > canvasCorners[2].y) {
-                Debug.Log("Panel is to the top of canvas limits");
                 if (!clampedToTop) clampedToTop = true;
             }
             else if (clampedToTop) {
                 clampedToTop = false;
             }
             else if (panelRectCorners[0].y < canvasCorners[0].y) {
-                Debug.Log("Panel is to the bottom of canvas limits");
                 if (!clampedToBottom) clampedToBottom = true;
             }
             else if (clampedToBottom) {

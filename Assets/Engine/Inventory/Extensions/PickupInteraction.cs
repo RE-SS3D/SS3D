@@ -28,7 +28,7 @@ namespace SS3D.Engine.Inventory.Extensions
         {
             if (interactionEvent.Target is IGameObjectProvider targetBehaviour && interactionEvent.Source is Hands hands)
             {
-                if (hands.GetItemInHand() != null)
+                if (!hands.SelectedHandEmpty)
                 {
                     return false;
                 }
@@ -47,9 +47,9 @@ namespace SS3D.Engine.Inventory.Extensions
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            if (interactionEvent.Source is Hands hands && interactionEvent.Target is IGameObjectProvider target)
+            if (interactionEvent.Source is Hands hands && interactionEvent.Target is Item target)
             {
-                hands.Pickup(target.GameObject);
+                hands.Pickup(target);
             }
             return false;
         }

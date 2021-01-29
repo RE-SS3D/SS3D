@@ -109,7 +109,7 @@ namespace SS3D.Content.Systems.Construction
         public void CmdConstruct(int index, NetworkConnectionToClient client = null)
         {
             // Check if sending player is holding 
-            if (client != null && client.identity.GetComponent<Hands>().GetItemInHand().gameObject != gameObject)
+            if (client != null && client.identity.GetComponent<Hands>().ItemInHand.gameObject != gameObject)
             {
                 return;
             }
