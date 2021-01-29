@@ -69,7 +69,7 @@ namespace SS3D.Engine.Interactions
                     Hands hands = GetComponent<Hands>();
                     if (hands != null )
                     {
-                        Item item = hands.Container.GetItem(hands.HeldSlot);
+                        Item item = hands.ItemInHand;
                         if (item != null)
                         {
                             InteractInHand(item.gameObject, gameObject, true);
@@ -104,7 +104,7 @@ namespace SS3D.Engine.Interactions
                 Hands hands = GetComponent<Hands>();
                 if (hands != null )
                 {
-                    Item item = hands.Container.GetItem(hands.HeldSlot);
+                    Item item = hands.ItemInHand;
                     if (item != null)
                     {
                         InteractInHand(item.gameObject, gameObject);

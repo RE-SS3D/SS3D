@@ -16,12 +16,13 @@ namespace SS3D.Content.Systems.Interactions
         /// <param name="destroyOriginal">If the original item should be destroyed</param>
         public static void ReplaceItem(Item original, Item replacement, bool destroyOriginal = true)
         {
-            Container container = original.container;
+            Container container = original.Container;
             if (container != null)
             {
-                int slot = container.GetSlotFromItem(original);
-                container.RemoveItem(slot);
-                container.AddItem(slot, replacement.gameObject);
+                int index = container.FindItem(original);
+                Container.StoredItem storedItem = container.StoredItems[index];
+                container.RemoveItem(storedItem.Item);
+                container.AddItem(replacement, storedItem.Position);
             }
             else
             {
@@ -39,7 +40,13 @@ namespace SS3D.Content.Systems.Interactions
         {
             GameObject gameObject = Object.Instantiate(prefab);
             NetworkServer.Spawn(gameObject);
-            return gameObject.GetComponent<Item>();
+            var item = gameObject.GetComponent<Item>();
+            if (NetworkClient.active)
+            {
+                // Render the preview right after creation
+                Sprite unused = item.InventorySprite;
+            }
+            return item;
         }
     }
 }

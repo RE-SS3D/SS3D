@@ -40,6 +40,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5200706287935933437}
   - component: {fileID: 1836099743179439511}
+  - component: {fileID: 4106634476070866544}
   - component: {fileID: 3852715610614067659}
   - component: {fileID: 7371003924595805490}
   - component: {fileID: 8018462483327430340}
@@ -84,6 +85,24 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
+--- !u!114 &4106634476070866544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9112971210699389422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  clientAuthority: 0
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01
 --- !u!33 &3852715610614067659
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -178,13 +197,13 @@ MonoBehaviour:
   ItemId: bat_baseball
   Name: Baseball Bat
   Volume: 12
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 9112971210699389422}
   attachmentPoint: {fileID: 3586972927019977724}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 08c4bae5b95cea146826e467131ec146, type: 2}
+  Size: {x: 1, y: 2}
 --- !u!114 &-378578217423609848
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,5 +216,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0

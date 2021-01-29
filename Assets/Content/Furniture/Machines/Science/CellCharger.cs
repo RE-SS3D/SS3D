@@ -1,42 +1,30 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using SS3D.Content.Furniture.Storage;
-using SS3D.Content.Systems.Interactions;
-using SS3D.Engine.Interactions;
-using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Inventory;
 using UnityEngine;
 using Mirror;
 using UnityEngine.Assertions;
 
-[RequireComponent(typeof(Container))]
 public class CellCharger : NetworkBehaviour
 {
+    public AttachedContainer AttachedContainer;
+    
     private StorageContainer storageContainer;
-    private Container container;
     private Item powerCell;
     public MeshRenderer renderer;
 
     private void Start()
     {
-        container = GetComponent<Container>();
-        Assert.IsNotNull(container);
-        
-        container.onChange += (op, index, oldItem, newItem) =>
+        Assert.IsNotNull(AttachedContainer);
+
+        AttachedContainer.Container.ContentsChanged += (_, items, type) =>
         {
-            if (newItem == null) {
-                powerCell = null;
-                renderer.enabled = false;
-            } else {
-                powerCell = newItem.GetComponent<Item>();
-                renderer.enabled = true;
-            }
+            renderer.enabled = !AttachedContainer.Container.Empty;
         };
-        
+
         if (isServer)
         {
-            StartCoroutine("StartCharge");
+            StartCoroutine(StartCharge());
         }
     }
 
@@ -51,16 +39,14 @@ public class CellCharger : NetworkBehaviour
 
     private void Recharge()
     {
-        if (powerCell != null)
+        foreach (Item item in AttachedContainer.Container.Items)
         {
-            RechargePowerCell(powerCell);
+            IChargeable chargeable = item.GetComponent<IChargeable>();
+            if (chargeable != null)
+            {
+                chargeable.AddCharge(chargeable.GetChargeRate());
+            }
+            
         }
-    }
-
-    [Server]
-    private void RechargePowerCell(Item item)
-    {
-        IChargeable chargeable = item.GetComponent<IChargeable>();
-        chargeable.AddCharge(chargeable.GetChargeRate());
     }
 }

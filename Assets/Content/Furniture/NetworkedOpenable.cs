@@ -9,7 +9,10 @@ namespace SS3D.Content.Furniture
     public class NetworkedOpenable : InteractionTargetNetworkBehaviour
     {
         protected Animator animator;
-        private static readonly int Open = Animator.StringToHash("Open");
+        private static readonly int OpenAnimation = Animator.StringToHash("Open");
+
+        [SyncVar(hook = nameof(OpenHook))]
+        private bool openState;
 
         [SerializeField] private Sprite OpenIcon;
 
@@ -23,23 +26,28 @@ namespace SS3D.Content.Furniture
         
         public bool IsOpen()
         {
-            return animator.GetBool(Open);
-        }
-
-        private void OnOpenStateChange(object sender, bool e)
-        {
-            RpcSetOpenState(e);
+            return openState;
         }
 
         protected virtual void Start()
         {
             animator = GetComponent<Animator>();
         }
-        
-        [ClientRpc]
-        private void RpcSetOpenState(bool open)
+
+        private void OnOpenStateChange(object sender, bool e)
         {
-            animator.SetBool(Open, open);
+            openState = e;
+            UpdateAnimator();
+        }
+        
+        private void OpenHook(bool oldVal, bool newVal)
+        {
+            UpdateAnimator();
+        }
+        
+        private void UpdateAnimator()
+        {
+            animator.SetBool(OpenAnimation, openState);
         }
     }
 }

@@ -22,28 +22,76 @@ namespace SS3D.Engine.Inventory
         public string ItemId;
         public string Name;
         public float Volume = 10f;
-        [HideInInspector]public Container container;
         public Sprite sprite;
         public GameObject prefab;
         public Transform attachmentPoint;
         public BulkSize bulkSize = BulkSize.Medium;
         public List<Trait> traits;
+        [Tooltip("The size of the item inside a container")]
+        public Vector2Int Size;
+        
+        private Stackable stack;
+        private Container container;
+        private FrozenItem frozenItem;
+
+        public Sprite InventorySprite
+        {
+            get
+            {
+                if (sprite == null)
+                {
+                    GenerateNewIcon();
+                }
+
+                return sprite;
+            }
+        }
+
+        public Item()
+        {
+            frozenItem = new FrozenItem(this);
+        }
 
         /// <summary>
         /// The stack of this item, can be null
         /// </summary>
         public Stackable Stack => stack ? stack : stack = GetComponent<Stackable>();
-        private Stackable stack;
+        /// <summary>
+        /// The container this item is in
+        /// </summary>
+        public Container Container
+        {
+            get => container;
+            set => SetContainer(value, false, false);
+        }
 
+        public void Awake()
+        {
+            sprite = null;
+        }
+        
         [ContextMenu("Create Icon")]
-        public void Start()
+        public virtual void Start()
         {
             foreach (var animator in GetComponents<Animator>())
             {
                 animator.keepAnimatorControllerStateOnDisable = true;
             }
-
-            GenerateNewIcon();
+            
+            // Items can't have no size
+            if (Size.x == 0)
+            {
+                Size = new Vector2Int(1, Size.y);
+            }
+            if (Size.y == 0)
+            {
+                Size = new Vector2Int(Size.x, 1);
+            }
+            
+            if (sprite == null && NetworkClient.active)
+            {
+                GenerateNewIcon();
+            }
         }
 
         public void GenerateNewIcon()
@@ -121,11 +169,7 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         public void Destroy()
         {
-            if (container != null)
-            {
-                container.RemoveItem(gameObject);
-                container = null;
-            }
+            Container = null;
             
             if (isServer)
             {
@@ -137,12 +181,50 @@ namespace SS3D.Engine.Inventory
             }
         }
 
+        /// <summary>
+        /// Freezes the item, making it not move or collide
+        /// </summary>
+        public void Freeze()
+        {
+            frozenItem.Freeze();
+        }
+
+        /// <summary>
+        /// Unfreezes the item, restoring normal functionality
+        /// </summary>
+        public void Unfreeze()
+        {
+            frozenItem.Unfreeze();
+        }
+
+        /// <summary>
+        /// Sets if this item is visible or not
+        /// </summary>
+        /// <param name="visible">Should the item be visible</param>
+        public void SetVisibility(bool visible)
+        {
+            // TODO: Make this handle multiple renderers, with different states
+            var renderer = GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                renderer.enabled = visible;
+            }
+        }
+
+        /// <summary>
+        /// Is this item visible in any way
+        /// </summary>
+        public bool IsVisible()
+        {
+            // TODO: Make this handle multiple renderers
+            var renderer = GetComponent<Renderer>();
+            return renderer != null && renderer.enabled;
+        }
+
         void OnDestroy()
         {
-            if (container != null)
-            {
-                container.RemoveItem(gameObject);
-            }
+            container = null;
+            frozenItem = null;
         }
 
 #if UNITY_EDITOR
@@ -206,6 +288,32 @@ namespace SS3D.Engine.Inventory
                     return true;
             }
             return false;
+        }
+
+        public void SetContainer(Container newContainer, bool alreadyAdded, bool alreadyRemoved)
+        {
+            if (container == newContainer)
+            {
+                return;
+            }
+            
+            container?.RemoveItem(this);
+            
+            if (!alreadyAdded && newContainer != null)
+            {
+                newContainer.AddItem(this);
+            }
+
+            container = newContainer;
+        }
+
+        /// <summary>
+        /// Simply sets the container variable of this item, without doing anything
+        /// <remarks>Make sure the item is only listed in the new container, or weird bugs will occur</remarks>
+        /// </summary>
+        public void SetContainerUnchecked(Container newContainer)
+        {
+            container = newContainer;
         }
     }
 }

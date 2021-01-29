@@ -85,17 +85,11 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
             }
         }
 
-        [ClientRpc]
-        public void RpcDisposeContents()
-        {
-            container.Purge();
-        }
-
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = new List<IInteraction>();
             
-            StoreInteraction storeInteraction = new StoreInteraction { OnlyWhenOpen = false };
+            StoreInteraction storeInteraction = new StoreInteraction();
             ViewContainerInteraction view = new ViewContainerInteraction { MaxDistance = range };
             DisposeInteraction disposeInteraction = new DisposeInteraction();
 

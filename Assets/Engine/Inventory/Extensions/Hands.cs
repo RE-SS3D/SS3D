@@ -11,42 +11,68 @@ namespace SS3D.Engine.Inventory.Extensions
     [RequireComponent(typeof(Inventory))]
     public class Hands : InteractionSourceNetworkBehaviour, IToolHolder, IInteractionRangeLimit, IInteractionOriginProvider
     {
-        [SerializeField] private Container handContainer = null;
-        [SerializeField] private float handRange = 0f;
+        [SerializeField] public AttachedContainer[] HandContainers;
+        [SerializeField] private float handRange;
 
-        public event Action<int> onHandChange;
-        public int SelectedHand { get; private set; } = 0;
+        [NonSerialized]
+        public Inventory Inventory;
+        public int SelectedHandIndex { get; private set; }
         public RangeLimit range = new RangeLimit(1.5f, 1);
         public Transform interactionOrigin;
 
         public Sprite pickupIcon;
 
-        // Use these for inventory actions
-        public Container Container => handContainer;
-        public GameObject ContainerObject => Container.gameObject;
-        public int HeldSlot => handSlots[SelectedHand];
+        /// <summary>
+        /// Called when the active hand gets changed
+        /// </summary>
+        public event Action<int> HandChanged;
+        
+        /// <summary>
+        /// The item held in the active hand
+        /// </summary>
+        public Item ItemInHand => SelectedHandContainer?.Items.FirstOrDefault();
+        
+        /// <summary>
+        /// The currently active hand
+        /// </summary>
+        public AttachedContainer SelectedHand => SelectedHandIndex < HandContainers.Length ? HandContainers[SelectedHandIndex] : null;
+        
+        /// <summary>
+        /// The container of the currently active hand
+        /// </summary>
+        public Container SelectedHandContainer => SelectedHand != null ? SelectedHand.Container : null;
+
+        /// <summary>
+        /// If the selected hand is empty
+        /// </summary>
+        public bool SelectedHandEmpty => SelectedHandContainer.Empty;
 
         public void Start()
         {
             SupportsMultipleInteractions = true;
+            
+            // Initialize hand containers
+            foreach (AttachedContainer attachedContainer in HandContainers)
+            {
+                attachedContainer.Container = new Container
+                {
+                    Size = new Vector2Int(5, 5)
+                };
+            }
         }
 
         [Server]
-        public void Pickup(GameObject target)
+        public void Pickup(Item item)
         {
-            if (GetItemInHand() == null)
+            if (SelectedHandEmpty)
             {
-                inventory.AddItem(target, ContainerObject, HeldSlot);
-            }
-            else
-            {
-                Debug.LogWarning("Trying to pick up with a non-empty hand");
+                SelectedHandContainer.AddItem(item);
             }
         }
 
         public bool IsEmpty()
         {
-            return Container.GetItem(HeldSlot) == null;
+            return SelectedHandContainer.Empty;
         }
 
         /*
@@ -55,74 +81,25 @@ namespace SS3D.Engine.Inventory.Extensions
         [Server]
         public void DropHeldItem()
         {
-            if (GetItemInHand() == null) return;
-
-            var transform = GetItemInHand().transform;
-            inventory.PlaceItem(ContainerObject, HeldSlot, transform.position, transform.rotation);
-        }
-        [Server]
-        public void PlaceHeldItem(Vector3 position, Quaternion rotation) => inventory.PlaceItem(ContainerObject, HeldSlot, position, rotation);
-        [Server]
-        public void DestroyHeldItem() => inventory.DestroyItem(ContainerObject, HeldSlot);
-
-        public Item GetItemInHand()
-        {
-            return handContainer.GetItem(HeldSlot);
-        }
-
-        /**
-         * Attaches a container to the player's inventory.
-         * Uses the ContainerAttachment component (on the server)
-         * to ensure that the container is removed from the players inventory
-         * when they get out of range.
-         */
-        [Command]
-        private void CmdConnectContainer(GameObject containerObject)
-        {
-            Container container = containerObject.GetComponent<Container>();
-
-            // If there's already an attachment, don't make another one
-            var prevAttaches = GetComponents<ContainerAttachment>();
-            if(prevAttaches.Any(attachment => attachment.container == container))
+            if (SelectedHandEmpty)
+            {
                 return;
-
-            var attach = gameObject.AddComponent<ContainerAttachment>();
-            attach.inventory = GetComponent<Inventory>();
-            attach.container = container;
-            attach.range = handRange;
+            }
+            
+            SelectedHandContainer.Dump();
         }
 
-        private void Awake()
+        [Server]
+        public void PlaceHeldItem(Vector3 position, Quaternion rotation)
         {
-            inventory = GetComponent<Inventory>();
-
-            // Find the indices in the hand container corresponding to the correct slots
-            // Because we just make calls to GetSlot, which is set pre-Awake, this is safe.
-            handSlots = new int[2] { -1, -1 };
-            for (int i = 0; i < handContainer.Length(); ++i) {
-                if (handContainer.GetFilter(i).Hash == Filters.LeftHand)
-                    handSlots[0] = i;
-                else if (handContainer.GetFilter(i).Hash == Filters.RightHand)
-                {
-                    handSlots[1] = i;
-                }
-            }
-            if (handSlots[0] == -1 || handSlots[1] == -1)
-                Debug.LogWarning("Player container does not contain slots for hands upon initialization. Maybe they were severed though?");
-
-        }
-
-        public override void OnStartClient()
-        {
-            handContainer.onChange += (a, b, c, d) =>
+            if (SelectedHandEmpty)
             {
-                //UpdateTool()
-            };
-            if (handContainer.GetItems().Count > 0)
-            {
-                inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[SelectedHand]);
-                //UpdateTool();
+                return;
             }
+
+            Item item = ItemInHand;
+            item.Container = null;
+            ItemUtility.Place(item, position, rotation, transform);
         }
 
         public override void Update()
@@ -133,16 +110,17 @@ namespace SS3D.Engine.Inventory.Extensions
                 return;
 
             // Hand-related buttons
-            if (Input.GetButtonDown("Swap Active"))
+            if (Input.GetButtonDown("Swap Active") && HandContainers.Length > 0)
             {
-                SelectedHand = 1 - SelectedHand;
-                inventory.holdingSlot = new Inventory.SlotReference(handContainer, handSlots[SelectedHand]);
-                onHandChange?.Invoke(SelectedHand);
-                CmdSetActiveHand(SelectedHand);
-                //UpdateTool();
+                SelectedHandIndex = (SelectedHandIndex + 1) % HandContainers.Length;
+                HandChanged?.Invoke(SelectedHandIndex);
+                CmdSetActiveHand(SelectedHandIndex);
             }
 
-            if (Input.GetButtonDown("Drop Item")) CmdDropHeldItem();
+            if (Input.GetButtonDown("Drop Item"))
+            {
+                CmdDropHeldItem();
+            }
         }
 
         [Command]
@@ -154,9 +132,9 @@ namespace SS3D.Engine.Inventory.Extensions
         [Command]
         private void CmdSetActiveHand(int selectedHand)
         {
-            if (selectedHand >= 0 && selectedHand < handSlots.Length)
+            if (selectedHand >= 0 && selectedHand < HandContainers.Length)
             {
-                SelectedHand = selectedHand;
+                SelectedHandIndex = selectedHand;
             }
             else
             {
@@ -164,12 +142,9 @@ namespace SS3D.Engine.Inventory.Extensions
             }
         }
 
-        // The indices in the container that contains the hands
-        private int[] handSlots;
-        private Inventory inventory;
         public IInteractionSource GetActiveTool()
         {
-            Item itemInHand = GetItemInHand();
+            Item itemInHand = ItemInHand;
             if (itemInHand == null)
             {
                 return null;
