@@ -2,6 +2,8 @@
 using System.Collections;
 using SS3D.Engine.Tiles.Connections;
 using System;
+using SS3D.Engine.Tiles.State;
+using UnityEditor;
 
 namespace SS3D.Engine.Tiles.Connections
 {
@@ -9,8 +11,16 @@ namespace SS3D.Engine.Tiles.Connections
      * The wires adjacency connector is built off the Simple adjaceny
      * connection but with some uniqueness.
      */
+
+    [Serializable]
+    public struct WireState
+    {
+        public byte blockedDirection;
+    }
+
+    [ExecuteAlways]
     [RequireComponent(typeof(MeshFilter))]
-    public class WiresAdjacencyConnector : MonoBehaviour, AdjacencyConnector
+    public class WiresAdjacencyConnector : TileStateMaintainer<WireState>, AdjacencyConnector
     {
         public enum TileLayer
         {
@@ -18,8 +28,8 @@ namespace SS3D.Engine.Tiles.Connections
             Fixture,
         }
 
-        // Which locations should be blocked, from North -> West clockwise
-        public bool[] Blocked = new bool[Enum.GetValues(typeof(Direction)).Length];
+        // Which locations should be blocked
+        // public bool[] Blocked = new bool[Enum.GetValues(typeof(Direction)).Length];
 
         public int LayerIndex { get; set; }
 
@@ -98,7 +108,19 @@ namespace SS3D.Engine.Tiles.Connections
             if (tile.fixtures != null)
                 isConnected |= (tile.fixtures.GetFixtureAtLayerIndex(index) && (tile.fixtures.GetFixtureAtLayerIndex(index).genericType == type || type == null));
 
-            isConnected &= !Blocked[(int)direction];
+            // Ugly hack because the array isn't initialized...
+            //if (Blocked.Length > 0)
+            //{
+            //    isConnected &= !Blocked[(int)direction];
+            //}
+            //else
+            //{
+            //    Blocked = new bool[Enum.GetValues(typeof(Direction)).Length];
+            //}
+
+            isConnected &= (AdjacencyBitmap.Adjacent(TileState.blockedDirection, direction) == 0);
+                
+            // !Blocked[(int)direction];
 
             return adjacents.UpdateDirection(direction, isConnected, true);
         }
@@ -144,6 +166,24 @@ namespace SS3D.Engine.Tiles.Connections
             filter.mesh = mesh;
             transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, rotation, transform.localRotation.eulerAngles.z);
         }
+
+        protected override void OnStateUpdate(WireState prevState = new WireState())
+        {
+            //if (TileState.Blocked != null)
+            //    Blocked = TileState.Blocked;
+        }
+
+//#if UNITY_EDITOR
+//        private void OnValidate()
+//        {
+//            EditorApplication.delayCall += () => {
+//                if (this)
+//                {
+//                    OnStateUpdate();
+//                }
+//            };
+//        }
+//#endif
 
         // A bitfield of connections. Total of 8 connections -> 8 bits, ascending order with direction.
         private AdjacencyBitmap adjacents = new AdjacencyBitmap();
