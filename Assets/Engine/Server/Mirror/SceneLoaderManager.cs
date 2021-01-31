@@ -64,7 +64,7 @@ namespace SS3D
 
             loadSceneButtonText.text = "loading...";
             
-            mapLoaded.Invoke();
+            mapLoaded?.Invoke();
             RpcInvokeMapLoaded();
 
             SceneManager.LoadSceneAsync(selectedMap, LoadSceneMode.Additive);
@@ -77,7 +77,7 @@ namespace SS3D
         private void RpcInvokeMapLoaded()
         {
             if (isServer) return;
-            mapLoaded.Invoke();
+            mapLoaded?.Invoke();
         }
 
         public void UnlockRoundStart()

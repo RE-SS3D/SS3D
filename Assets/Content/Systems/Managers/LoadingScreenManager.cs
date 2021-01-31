@@ -18,7 +18,7 @@ public class LoadingScreenManager : MonoBehaviour
     [SerializeField]
     private Image image;
 
-    private void Awake()
+    private void Start()
     {
         SceneLoaderManager.mapLoaded += delegate { Toggle(true); };
         TileManager.tileManagerLoaded += delegate { Toggle(false); };

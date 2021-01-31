@@ -44,12 +44,12 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         RoundManager.ServerRoundEnded += ForceToggleOn;
         
         // Makes the button's function be CmdRequestEmbark and the UI fade out
-        embarkButton.onClick.AddListener(delegate { 
+        embarkButton.onClick.AddListener(delegate
+        {
             CmdRequestEmbark();
             Toggle(false);
         });
-        
-        
+
         // Not sure if this work, probably not
         if (RoundManager.singleton.IsRoundStarted)
         {
