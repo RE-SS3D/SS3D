@@ -10,8 +10,7 @@ namespace SS3D.Content.Systems.Interactions
     public class StoreInteraction : IInteraction
     {
         public Sprite icon;
-        public bool OnlyWhenOpen { get; set; }
-        
+
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
             return null;
@@ -33,27 +32,26 @@ namespace SS3D.Content.Systems.Interactions
             {
                 return false;
             }
-            
-            if (interactionEvent.Source.Parent is Hands hands && interactionEvent.Target is IGameObjectProvider target)
+
+            var target = interactionEvent.Target.GetComponent<ViewableContainer>();
+            if (interactionEvent.Source.Parent is Hands hands && target != null)
             {
-                return hands.GetItemInHand() != null && CanStore(target.GameObject);
+                return !hands.SelectedHandEmpty && CanStore(interactionEvent.Source.GetComponentInTree<Creature>(), interactionEvent.GetSourceItem(), target);
             }
 
             return false;
         }
 
-        public bool CanStore(GameObject target)
+        private bool CanStore(Creature creature, Item item, ViewableContainer target)
         {
-            if(OnlyWhenOpen)
-                return target.GetComponent<NetworkedOpenable>()?.IsOpen() ?? false;
-            return true;
+            return target.CanModify(creature) && target.AttachedContainer.Container.CouldStoreItem(item);
         }
 
         public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Hands hands = (Hands) interactionEvent.Source.Parent;
-            hands.GameObject.GetComponent<Inventory>()
-                .MoveItem(hands.ContainerObject, hands.HeldSlot, ((IGameObjectProvider)interactionEvent.Target).GameObject);
+            hands.ItemInHand.Container = interactionEvent.Target.GetComponent<ViewableContainer>().AttachedContainer.Container;
+
             return false;
         }
 

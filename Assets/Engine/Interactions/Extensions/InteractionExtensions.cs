@@ -35,11 +35,7 @@ namespace SS3D.Engine.Interactions.Extensions
 
 
             RangeLimit range = interactionEvent.Source.GetRange();
-            float horizontal = range.horizontal;
-            // Check horizontal and vertical range
-            return Mathf.Abs(point.y - sourcePosition.y) < range.vertical &&
-                   (new Vector2(point.x, point.z) - new Vector2(sourcePosition.x, sourcePosition.z)).sqrMagnitude <
-                   horizontal * horizontal;
+            return range.IsInRange(sourcePosition, point);
         }
     }
 }

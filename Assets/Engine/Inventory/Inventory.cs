@@ -1,5 +1,9 @@
+using System;
 using Mirror;
 using System.Collections.Generic;
+using System.Linq;
+using SS3D.Engine.Interactions;
+using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
 
 namespace SS3D.Engine.Inventory
@@ -12,222 +16,260 @@ namespace SS3D.Engine.Inventory
     */
     public class Inventory : NetworkBehaviour
     {
-        public class InventoryOperationException : System.Exception
+
+        /// <summary>
+        /// The hands used by this inventory
+        /// </summary>
+        public Hands Hands;
+        
+        private readonly List<AttachedContainer> openedContainers = new List<AttachedContainer>();
+        private float nextAccessCheck;
+
+        public delegate void ContainerEventHandler(AttachedContainer container);
+
+        public event ContainerEventHandler ContainerOpened;
+        public event ContainerEventHandler ContainerClosed;
+
+        public void Awake()
         {
-            public InventoryOperationException()
+            Hands.Inventory = this;
+        }
+
+        public void Update()
+        {
+            float time = Time.time;
+            if (time > nextAccessCheck)
             {
-            }
+                var creature = GetComponent<Creature>();
+                for (var i = 0; i < openedContainers.Count; i++)
+                {
+                    AttachedContainer attachedContainer = openedContainers[i];
+                    if (!creature.CanInteract(attachedContainer.gameObject))
+                    {
+                        RemoveContainer(attachedContainer);
+                        i--;
+                    }
+                }
 
-            public InventoryOperationException(string message)
-                : base(message)
-            {
-            }
-        }
-
-        public struct SlotReference
-        {
-            public SlotReference(Container container, int slotIndex)
-            {
-                this.container = container;
-                this.slotIndex = slotIndex;
-            }
-
-            public Container container;
-            public int slotIndex;
-        }
-
-        private class GameObjectList : SyncList<GameObject>
-        {
-        }
-
-        // Called whenever the containers change
-        public event GameObjectList.SyncListChanged EventOnChange
-        {
-            add { objectSources.Callback += value; }
-            remove { objectSources.Callback -= value; }
-        }
-
-        // The slot the player currently has selected. May be null (container will be null, slotindex will be -1)
-        // Note: NOT SYNCHRONIZED. LOCAL PLAYER ONLY
-        public SlotReference holdingSlot = new SlotReference(null, -1);
-
-        /**
-         * Adds a container source.
-         */
-        [Server]
-        public void AddContainer(GameObject containerObject)
-        {
-            objectSources.Add(containerObject);
-        }
-
-        /**
-         * Removes a container source
-         */
-        [Server]
-        public void RemoveContainer(GameObject containerObject)
-        {
-            objectSources.Remove(containerObject);
-        }
-
-        public bool HasContainer(GameObject containerObject) => objectSources.Contains(containerObject);
-
-        /**
-         * Add an item from the world into a container.
-         */
-        [Server]
-        public void AddItem(GameObject item, GameObject toContainer, int toIndex)
-        {
-            Container container = toContainer.GetComponent<Container>();
-            Item itemComponent = item.GetComponent<Item>();
-            if (container.containerFilter.CanStore(itemComponent))
-            {
-                Despawn(item);
-                container.AddItem(toIndex, item);
-            }
-        }
-        [Server]
-        public void AddItem(GameObject item, GameObject toContainer)
-        {
-            Container container = toContainer.GetComponent<Container>();
-            Item itemComponent = item.GetComponent<Item>();
-            if (container.containerFilter.CanStore(itemComponent))
-            {
-                Despawn(item);
-                container.AddItem(item);
+                nextAccessCheck = time + 0.5f;
             }
         }
 
-        /**
-         * Place an item from a container into the world.
-         */
-        [Server]
-        public void PlaceItem(GameObject fromContainer, int fromIndex, Vector3 location, Quaternion rotation)
+        /// <summary>
+        /// Interacting with a container that has one "slot"
+        /// </summary>
+        public void ClientInteractWithSingleSlot(AttachedContainer container)
         {
-            GameObject item = fromContainer.GetComponent<Container>().RemoveItem(fromIndex);
-            Spawn(item, location, rotation);
-        }
-
-        /**
-         * Destroy an item in the container
-         */
-        [Server]
-        public void DestroyItem(GameObject fromContainer, int fromIndex)
-        {
-            GameObject item = fromContainer.GetComponent<Container>().RemoveItem(fromIndex);
-            Despawn(item);
-            Destroy(item);
-        }
-
-        /**
-         * Move an item from one container to another.
-         * This is intended to be called by the UI, when the user drags an item from one place to another
-         */
-        [Server]
-        public void MoveItem(GameObject fromContainer, int fromIndex, GameObject toContainer, int toIndex)
-        {
-            var from = fromContainer.GetComponent<Container>();
-            var to = toContainer.GetComponent<Container>();
-
-            if (!Container.AreCompatible(to.GetFilter(toIndex), from.GetItem(fromIndex)))
-                throw new InventoryOperationException("Item not compatible with slot");
-
-            GameObject item = from.RemoveItem(fromIndex);
-            to.AddItem(toIndex, item);
-        }
-
-        /**
-         * Move an item from one container to the default position at another.
-         */
-        [Server]
-        public void MoveItem(GameObject fromContainer, int fromIndex, GameObject toContainer)
-        {
-            var from = fromContainer.GetComponent<Container>();
-            var to = toContainer.GetComponent<Container>();
-
-            GameObject item = from.RemoveItem(fromIndex);
-            int itemIndex = to.AddItem(item);
-
-            // If we couldn't add the item, Put it back
-            if (itemIndex == -1)
-                from.AddItem(fromIndex, item);
-        }
-
-        // Note: You need a good reason to call ANY of these.
-        //       Currently, only the UIInventory calls these.
-
-        [Command]
-        public void CmdAddItem(GameObject item, GameObject toContainer, int toIndex) => AddItem(item, toContainer, toIndex);
-        [Command]
-        public void CmdAddItemToDefault(GameObject item, GameObject toContainer) => AddItem(item, toContainer);
-        [Command]
-        public void CmdPlaceItem(GameObject fromContainer, int fromIndex, Vector3 location, Quaternion rotation) => PlaceItem(fromContainer, fromIndex, location, rotation);
-        [Command]
-        public void CmdMoveItem(GameObject fromContainer, int fromIndex, GameObject toContainer, int toIndex) => MoveItem(fromContainer, fromIndex, toContainer, toIndex);
-        [Command]
-        public void CmdDestroyItem(GameObject fromContainer, int fromIndex) => DestroyItem(fromContainer, fromIndex);
-
-        public List<Container> GetContainers()
-        {
-            List<Container> containers = new List<Container>();
-
-            foreach (var obj in objectSources)
+            // no touchy ;)
+            if (Hands == null)
             {
-                if (obj == null)
-                    Debug.Log(
-                        "Still have that mirror bug where transmitting self in OnStartServer for some reason doesnt fucking work");
-                else
-				{
-					/* Checks whether the container is already listed before adding it. This is done because mobile inventories (such
-					   as the medkit or toolbox) are returned twice while they are held by a player (once as a child of the player, once
-					   in thier own right). This was previously causing errors with duplicate Dictionary entries and doubled UI. */
-					var objContainers = obj.GetComponentsInChildren<Container>();
-					foreach (Container subordinateContainer in objContainers)
-					{
-						if (!containers.Contains(subordinateContainer))
-						{
-							containers.Add(subordinateContainer);
-						}
-					}					
-				}
+                return;
             }
 
-            return containers;
+            
+            if (Hands.SelectedHandEmpty)
+            {
+                if (!container.Container.Empty)
+                {
+                    ClientTransferItem(container.Container.Items.First(), Vector2Int.zero, Hands.SelectedHand);
+                }
+            }
+            else
+            {
+                if (container.Container.Empty)
+                {
+                    ClientTransferItem(Hands.ItemInHand, Vector2Int.zero, container);
+                }
+                else if (Hands.SelectedHand == container)
+                {
+                    var handler = GetComponent<InteractionHandler>();
+                    if (handler != null)
+                    {
+                        handler.InteractInHand(Hands.ItemInHand.gameObject, gameObject);
+                    }
+                }
+            }
         }
 
-        public override void OnStartLocalPlayer()
+        /// <summary>
+        /// Interact with a container at a certain position
+        /// </summary>
+        /// <param name="container">The container being interacted with</param>
+        /// <param name="position">At which position the interaction happened</param>
+        public void ClientInteractWithContainerSlot(AttachedContainer container, Vector2Int position)
         {
-            base.OnStartLocalPlayer();
-            CmdAddSelf();
+            if (Hands == null)
+            {
+                return;
+            }
+
+            Item item = container.Container.ItemAt(position);
+            if (Hands.SelectedHandEmpty)
+            {
+                if (item != null)
+                {
+                    ClientTransferItem(item, Vector2Int.zero, Hands.SelectedHand);
+                }
+            }
+            else
+            {
+                if (item == null)
+                {
+                    ClientTransferItem(Hands.ItemInHand, position, container);
+                }
+            }
         }
 
-        /**
-         * Sets up the containers. Must run on server.
-         * Only called in OnStartLocalPlayer. If I try to run the AddSelf code directly
-         * in OnStartServer the thing has a fucking tantrum and just adds null to the objectSources list.
-         */
+        public bool CanModifyContainer(AttachedContainer container)
+        {
+            // TODO: This root transform check might allow you to take out your own organs down the road O_O
+            return openedContainers.Contains(container) || container.transform.root == transform;
+        }
+
+        /// <summary>
+        /// Requests the server to transfer an item
+        /// </summary>
+        /// <param name="item">The item to transfer</param>
+        /// <param name="targetContainer">Into which container to move the item</param>
+        public void ClientTransferItem(Item item, Vector2Int position, AttachedContainer targetContainer)
+        {
+            NetworkedContainerReference? reference = NetworkedContainerReference.CreateReference(targetContainer);
+            if (reference == null)
+            {
+                Debug.LogError("Couldn't create reference for container in item transfer", targetContainer);
+                return;
+            }
+            
+            CmdTransferItem(item.gameObject, position, (NetworkedContainerReference) reference);
+        }
+
+        /// <summary>
+        /// Requests the server to drop an item out of a container
+        /// </summary>
+        /// <param name="item">The item to drop</param>
+        public void ClientDropItem(Item item)
+        {
+            CmdDropItem(item.gameObject);
+        }
+
         [Command]
-        private void CmdAddSelf()
+        private void CmdTransferItem(GameObject itemObject, Vector2Int position, NetworkedContainerReference reference)
         {
-            objectSources.Add(gameObject);
+            var item = itemObject.GetComponent<Item>();
+            if (item == null)
+            {
+                return;
+            }
+
+            Container itemContainer = item.Container;
+            if (itemContainer == null)
+            {
+                return;
+            }
+
+            AttachedContainer attachedTo = itemContainer.AttachedTo;
+            if (attachedTo == null)
+            {
+                return;
+            }
+
+            AttachedContainer attachedContainer = reference.FindContainer();
+            if (attachedContainer == null)
+            {
+                Debug.LogError($"Client sent invalid container reference: NetId {reference.SyncNetworkId}, Container {reference.ContainerIndex}");
+                return;
+            }
+
+            if (!CanModifyContainer(attachedTo) || !CanModifyContainer(attachedContainer))
+            {
+                return;
+            }
+
+            var creature = GetComponent<Creature>();
+            if (creature == null || !creature.CanInteract(attachedContainer.gameObject))
+            {
+                return;
+            }
+            
+            attachedContainer.Container.AddItem(item, position);
         }
 
-        /**
-         * Graphically removes the object from the world (for server and all clients).
-         * Must be called from server initially
-         */
-        private void Despawn(GameObject item)
+        /// <summary>
+        /// Make this inventory open an container
+        /// </summary>
+        public void OpenContainer(AttachedContainer container)
         {
-            item.SetActive(false);
-
-            if (isServer)
-                RpcDespawn(item);
+            container.AddObserver(GetComponent<Creature>());
+            openedContainers.Add(container);
+            NetworkConnection client = connectionToClient;
+            if (client != null)
+            {
+                TargetOpenContainer(client, container);
+            }
         }
 
-        [ClientRpc]
-        private void RpcDespawn(GameObject item)
+        /// <summary>
+        /// Removes an container from this inventory
+        /// </summary>
+        public void RemoveContainer(AttachedContainer container)
         {
-            if (!isServer) // Prevent server double-dipping
-                Despawn(item);
+            if (openedContainers.Remove(container))
+            {
+                NetworkConnection client = connectionToClient;
+                if (client != null)
+                {
+                    TargetCloseContainer(client, container);
+                }
+            }
+        }
+
+        [Command]
+        public void CmdContainerClose(AttachedContainer container)
+        {
+            RemoveContainer(container);
+        }
+
+        /// <summary>
+        /// Does this inventory have a specific container
+        /// </summary>
+        public bool HasContainer(AttachedContainer container)
+        {
+            return openedContainers.Contains(container);
+        }
+
+        [Command]
+        private void CmdDropItem(GameObject gameObject)
+        {
+            var item = gameObject.GetComponent<Item>();
+            if (item == null)
+            {
+                return;
+            }
+
+            AttachedContainer attachedTo = item.Container?.AttachedTo;
+            if (attachedTo == null)
+            {
+                return;
+            }
+
+            if (!CanModifyContainer(attachedTo))
+            {
+                return;
+            }
+
+            item.Container = null;
+        }
+
+        [TargetRpc]
+        private void TargetOpenContainer(NetworkConnection target, AttachedContainer container)
+        {
+            OnContainerOpened(container);
+        }
+        
+        [TargetRpc]
+        private void TargetCloseContainer(NetworkConnection target, AttachedContainer container)
+        {
+            OnContainerClosed(container);
         }
 
         /**
@@ -273,7 +315,14 @@ namespace SS3D.Engine.Inventory
                 Spawn(item, position, rotation);
         }
 
-        // All objects containing containers usable by this player
-        private readonly GameObjectList objectSources = new GameObjectList();
+        protected virtual void OnContainerOpened(AttachedContainer container)
+        {
+            ContainerOpened?.Invoke(container);
+        }
+
+        protected virtual void OnContainerClosed(AttachedContainer container)
+        {
+            ContainerClosed?.Invoke(container);
+        }
     }
 }

@@ -158,6 +158,7 @@ GameObject:
   - component: {fileID: 3294617668968618146}
   - component: {fileID: 2566576608268049575}
   - component: {fileID: -2780369696669274638}
+  - component: {fileID: -4310236570622198423}
   m_Layer: 0
   m_Name: Fertilizer Vendor
   m_TagString: Untagged
@@ -421,6 +422,20 @@ MonoBehaviour:
   DisplayName: NutriMax
   Text: Dispenses fertilizer.
   MaxDistance: 0
+--- !u!114 &-4310236570622198423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2586569897008141548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &3093441728811756974
 GameObject:
   m_ObjectHideFlags: 0

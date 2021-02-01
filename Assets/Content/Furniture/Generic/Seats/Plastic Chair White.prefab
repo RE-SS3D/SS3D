@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: -8156723714722616328}
   - component: {fileID: -6983877296690229618}
   - component: {fileID: -3935074142501851505}
+  - component: {fileID: 1028852968725196715}
   m_Layer: 0
   m_Name: Plastic Chair White
   m_TagString: Untagged
@@ -146,3 +147,17 @@ MonoBehaviour:
   DisplayName: Plastic Chair
   Text: 
   MaxDistance: 0
+--- !u!114 &1028852968725196715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3429521441155049302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0

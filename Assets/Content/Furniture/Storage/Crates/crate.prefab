@@ -275,9 +275,12 @@ GameObject:
   - component: {fileID: 4546630534243469778}
   - component: {fileID: 2799784227175584040}
   - component: {fileID: 4099879624315271291}
-  - component: {fileID: 8477674700107838901}
   - component: {fileID: 6792938277122204052}
   - component: {fileID: 7600463449433580494}
+  - component: {fileID: 1468054869162274489}
+  - component: {fileID: 6922833338521329428}
+  - component: {fileID: 8493215061523384573}
+  - component: {fileID: -4932771894846862062}
   m_Layer: 0
   m_Name: crate
   m_TagString: Untagged
@@ -429,34 +432,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.6092, y: 0.5958949, z: 0.87511265}
   m_Center: {x: 0, y: 0.2978271, z: 0}
---- !u!114 &8477674700107838901
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6595280268747972349}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69f0cfe7ad268bc44b2e36b581d0086c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  containerName: crate
-  containerFilter: {fileID: 11400000, guid: 40e3b946dc1dc314592ef8d6afcd9162, type: 2}
-  volumeLimited: 1
-  maxVolume: 150
-  slots: 8
-  displays:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!114 &6792938277122204052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -490,3 +465,60 @@ MonoBehaviour:
   DisplayName: Crate
   Text: Stores stuff.
   MaxDistance: 0
+--- !u!114 &1468054869162274489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6595280268747972349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HideItems: 1
+  AttachItems: 1
+  AttachmentOffset: {x: 0, y: 0, z: 0}
+--- !u!114 &6922833338521329428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6595280268747972349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AttachedContainer: {fileID: 1468054869162274489}
+  Size: {x: 8, y: 6}
+--- !u!114 &8493215061523384573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6595280268747972349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2119b201c85e4ba2896540c7243a4b1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+--- !u!114 &-4932771894846862062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6595280268747972349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0

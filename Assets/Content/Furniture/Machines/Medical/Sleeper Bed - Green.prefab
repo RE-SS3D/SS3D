@@ -107,6 +107,7 @@ GameObject:
   - component: {fileID: 9000129320134025611}
   - component: {fileID: 5973026916691883557}
   - component: {fileID: 1176681601152780847}
+  - component: {fileID: 5548526620504260175}
   m_Layer: 0
   m_Name: Sleeper Bed - Green
   m_TagString: Untagged
@@ -160,6 +161,20 @@ MonoBehaviour:
   DisplayName: Sleeper
   Text: 
   MaxDistance: 0
+--- !u!114 &5548526620504260175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5385663273565442968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &9199454391362990948
 GameObject:
   m_ObjectHideFlags: 0

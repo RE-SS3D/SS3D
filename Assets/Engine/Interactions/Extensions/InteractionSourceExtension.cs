@@ -58,5 +58,10 @@ namespace SS3D.Engine.Interactions.Extensions
         {
             return source.GetComponentInTree<Hands>();
         }
-    }
+
+        public static Creature GetCreature(this IInteractionSource source)
+        {
+            return source.GetRootSource().GetComponent<Creature>();
+        }
+    }    
 }

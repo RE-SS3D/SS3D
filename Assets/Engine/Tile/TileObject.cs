@@ -194,10 +194,8 @@ namespace SS3D.Engine.Tiles
             }
             if (newTile.fixtures != tile.fixtures)
             {
-                //if (newTile.turf == null && newTile.fixtures.floorFixtureDefinition.IsEmpty())
-                //    Debug.LogWarning("Created a floor fixture with no turf present");
-
-                // FixturesContainer.ValidateFixtures(newTile);
+                if (!gameObject.name.Contains("Ghost"))
+                    newTile = FixturesContainer.ValidateFixtures(newTile);
                 CreateFixtures(newTile.fixtures);
             }
 
@@ -225,14 +223,6 @@ namespace SS3D.Engine.Tiles
                 altered = true;
                 tileDefinition.turf = null;
                 reason += "No wall or floor can be build on lattices.\n";
-            }
-
-            // Only allow floor plating
-            if (tileDefinition.plenum.name.Contains("Catwalk") && tileDefinition.turf != null && !tileDefinition.turf.name.Contains("FloorPlating"))
-            {
-                tileDefinition.turf = null;
-                altered = true;
-                reason += "Catwalk only allows floor plating.\n";
             }
 
 #if UNITY_EDITOR
@@ -458,8 +448,6 @@ namespace SS3D.Engine.Tiles
                     }
                     i++;
                 }
-            
-
             }
         }
 
@@ -534,58 +522,12 @@ namespace SS3D.Engine.Tiles
 
             if (wallFixtureDefinition != null)
             {
-                // Set orientation... Ugly and should be moved
-                switch (layer)
-                {
-                    case WallFixtureLayers.HighWallNorth:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.North);
-                        break;
-                    case WallFixtureLayers.HighWallEast:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.East);
-                        break;
-                    case WallFixtureLayers.HighWallSouth:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.South);
-                        break;
-                    case WallFixtureLayers.HighWallWest:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.West);
-                        break;
-
-                    case WallFixtureLayers.LowWallNorth:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.North);
-                        break;
-                    case WallFixtureLayers.LowWallEast:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.East);
-                        break;
-                    case WallFixtureLayers.LowWallSouth:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.South);
-                        break;
-                    case WallFixtureLayers.LowWallWest:
-                        wallFixtureDefinition.SetOrientation(WallFixture.Orientation.West);
-                        break;
-                }
-
                 if (fixtures[index + offset] != null)
                 {
                     Debug.LogWarning("Trying to overwrite fixture");
                 }
-                GameObject fixtureObject = EditorAndRuntime.InstantiatePrefab(wallFixtureDefinition.prefab, transform);
 
-                // Rotate the wall fixture
-                switch (wallFixtureDefinition.GetOrientation())
-                {
-                    case WallFixture.Orientation.North:
-                        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 0f, fixtureObject.transform.rotation.z);
-                        break;
-                    case WallFixture.Orientation.East:
-                        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 90f, fixtureObject.transform.rotation.z);
-                        break;
-                    case WallFixture.Orientation.South:
-                        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 180f, fixtureObject.transform.rotation.z);
-                        break;
-                    case WallFixture.Orientation.West:
-                        fixtureObject.transform.Rotate(fixtureObject.transform.rotation.x, 270f, fixtureObject.transform.rotation.z);
-                        break;
-                }
+                GameObject fixtureObject = EditorAndRuntime.InstantiatePrefab(wallFixtureDefinition.prefab, transform);
                 fixtures[index + offset] = fixtureObject;
             }
             else
@@ -618,7 +560,6 @@ namespace SS3D.Engine.Tiles
                     floorFixtureConnectors[index] = connector;
                     connector.LayerIndex = index + offset;
                 }
-                
             }
             else
             {
@@ -647,7 +588,6 @@ namespace SS3D.Engine.Tiles
             {
                 CreateFloorFixture(fixturesDefinition.GetFloorFixtureAtLayer(layer), layer);
             }
-
         }
 
         private void UpdateChildrenFromSubData(TileDefinition newTile)

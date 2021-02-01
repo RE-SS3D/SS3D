@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: 3294617668968618146}
   - component: {fileID: 2566576608268049575}
   - component: {fileID: -2780369696669274638}
+  - component: {fileID: 6692794325200270153}
   m_Layer: 0
   m_Name: Soda Vendor
   m_TagString: Untagged
@@ -321,6 +322,20 @@ MonoBehaviour:
   DisplayName: Robust Softdrinks
   Text: Dispenses sodas.
   MaxDistance: 0
+--- !u!114 &6692794325200270153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2586569897008141548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &5847245816668003842
 GameObject:
   m_ObjectHideFlags: 0

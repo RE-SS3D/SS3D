@@ -1,5 +1,8 @@
-﻿using SS3D.Engine.Inventory.UI;
+﻿using System;
 using Mirror;
+using SS3D.Engine.Inventory;
+using SS3D.Engine.Inventory.Extensions;
+using SS3D.Engine.Inventory.UI;
 using UnityEngine;
 
 namespace SS3D.Content.Systems.Player
@@ -9,10 +12,21 @@ namespace SS3D.Content.Systems.Player
     {
         public GameObject prefab;
 
+        private GameObject instance;
+
         public override void OnStartLocalPlayer()
         {
-            var obj = Instantiate(prefab);
-            obj.GetComponent<UIInventory>().StartUI(GetComponent<Engine.Inventory.Inventory>());
+            instance = Instantiate(prefab);
+            var inventoryUi = instance.GetComponent<InventoryUi>();
+            inventoryUi.Inventory = GetComponent<Inventory>();
+        }
+
+        public void OnDestroy()
+        {
+            if (instance != null)
+            {
+                Destroy(instance);
+            }
         }
     }
 }

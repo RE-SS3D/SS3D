@@ -51,6 +51,7 @@ namespace SS3D.Content.Systems.Interactions
             else // Construct
                 tile.turf = WallToConstruct;
 
+            // TODO: Change rotation from defaulting to North
             tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.FurnitureFixtureMain);
             FixturesContainer.ValidateFixtures(tile);
 

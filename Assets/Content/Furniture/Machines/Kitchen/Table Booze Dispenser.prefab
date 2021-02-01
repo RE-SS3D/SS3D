@@ -171,14 +171,10 @@ GameObject:
   - component: {fileID: 3307618234900271125}
   - component: {fileID: 6091090163078253202}
   - component: {fileID: 3623022032063148311}
-  - component: {fileID: 7955108645699875577}
-  - component: {fileID: 9010655720752431288}
-  - component: {fileID: 3545916405821262346}
-  - component: {fileID: 5016894336416919686}
-  - component: {fileID: 7017826239347601780}
   - component: {fileID: -1809232113325138168}
   - component: {fileID: 4690348828412999625}
   - component: {fileID: 8459775035855032299}
+  - component: {fileID: 8547586250767248101}
   m_Layer: 0
   m_Name: Table Booze Dispenser
   m_TagString: Untagged
@@ -229,81 +225,6 @@ MonoBehaviour:
   InteractionName: 
   Substance: vodka
   Moles: 0.43103448
---- !u!114 &7955108645699875577
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1998574153158042118}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9feeb703d0314349836b03dcc586d5b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  InteractionName: 
-  Substance: kahlua
-  Moles: 0.43103448
---- !u!114 &9010655720752431288
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1998574153158042118}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9feeb703d0314349836b03dcc586d5b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  InteractionName: 
-  Substance: absinthe
-  Moles: 0.43103448
---- !u!114 &3545916405821262346
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1998574153158042118}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9feeb703d0314349836b03dcc586d5b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  InteractionName: 
-  Substance: cognac
-  Moles: 0.43103448
---- !u!114 &5016894336416919686
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1998574153158042118}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9feeb703d0314349836b03dcc586d5b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  InteractionName: 
-  Substance: gin
-  Moles: 0.43103448
---- !u!114 &7017826239347601780
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1998574153158042118}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9feeb703d0314349836b03dcc586d5b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  InteractionName: 
-  Substance: rum
-  Moles: 0.43103448
 --- !u!114 &-1809232113325138168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,6 +274,20 @@ MonoBehaviour:
   DisplayName: Booze Dispenser
   Text: Dispenses various types of booze.
   MaxDistance: 0
+--- !u!114 &8547586250767248101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1998574153158042118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &8961199219136555141
 GameObject:
   m_ObjectHideFlags: 0
