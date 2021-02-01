@@ -28,6 +28,10 @@ namespace SS3D.Engine.Tiles {
         
         public static event System.Action tileManagerLoaded;
 
+        public bool IsEnabled()
+        {
+            return gameObject.activeSelf;
+        }
         public static bool IsOnServer(GameObject tileChild)
         {
             return tileChild.transform.root.GetComponent<NetworkIdentity>().isServer;

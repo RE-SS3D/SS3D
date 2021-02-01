@@ -35,7 +35,6 @@ namespace SS3D
 
         [SerializeField] private TMP_Dropdown mapSelectionDropdown;
 
-
         private void Awake()
         {
             if (singleton != null && singleton != this)

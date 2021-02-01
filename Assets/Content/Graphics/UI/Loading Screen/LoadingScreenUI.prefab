@@ -224,14 +224,13 @@ GameObject:
   - component: {fileID: 2937323515178198331}
   - component: {fileID: 2937323515178198330}
   - component: {fileID: 2937323515178198329}
-  - component: {fileID: 2937323515178198332}
   m_Layer: 5
   m_Name: LoadingScreenUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2937323515178198331
 RectTransform:
   m_ObjectHideFlags: 0
@@ -289,26 +288,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2937323515178198332
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2937323515178198328}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ec239178bc4ef641bdaa2c430aa2918, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wallpapers:
-  - {fileID: 21300000, guid: 63c55101b0d5ce545b11698351a70e2e, type: 3}
-  - {fileID: 21300000, guid: 339be282255be054fa495ec517b5c08d, type: 3}
-  - {fileID: 21300000, guid: 0f65d4d511100a94faf964ddab01a37a, type: 3}
-  - {fileID: 21300000, guid: 8fe8fb5223f531f43b7f6c63b1c1a2cc, type: 3}
-  - {fileID: 21300000, guid: d41064de63da70b4a92ffa75d5aa1644, type: 3}
-  animator: {fileID: 1158511790279964552}
-  image: {fileID: 2937323514760455240}
 --- !u!1 &4788378114567676196
 GameObject:
   m_ObjectHideFlags: 0

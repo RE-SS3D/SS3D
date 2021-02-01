@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using SS3D.Engine.Server.Round;
+using SS3D.Engine.Tiles;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -16,6 +17,8 @@ using UnityEngine.UI;
 /// </summary>
 public class ServerLobbyUIHelper : NetworkBehaviour
 {
+    public static ServerLobbyUIHelper singleton { get; private set; }
+    
     [SerializeField] private Button embarkButton;
     
     // Look, the only reason why there are two text objects on the embark part
@@ -28,11 +31,20 @@ public class ServerLobbyUIHelper : NetworkBehaviour
 
     // The admin panel, should be only accessible to admin users, for now used only for the host
     [SerializeField] private Button serverSettingsButton;
-    
+
     private void Awake()
     {
         // Here begins the disaster 
-        
+
+        if (singleton != null && singleton != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            singleton = this;
+        }
+
         // ClientTimerUpdated sets up the "string text" of SetTimerText,
         // that event is called on the RoundManager when the timer is running (Countdown and Round time)
         RoundManager.ClientTimerUpdated += SetTimerText;
@@ -56,28 +68,42 @@ public class ServerLobbyUIHelper : NetworkBehaviour
             embarkButton.interactable = true;
         }
     }
-
-    private void Start()
+    
+    public void UnlockServerSettings() 
     {
         // TODO:
         // Sync server list and set up user authority to open admin panel
-        if (isServer) serverSettingsButton.interactable = true;
+        serverSettingsButton.interactable = true;
     }
-
+    
     [Command(ignoreAuthority = true)]
     public void CmdRequestEmbark(NetworkConnectionToClient sender = null)
     {
         // Spawns the player
         LoginNetworkManager.singleton.SpawnPlayerAfterRoundStart(sender);
-    }
+    }  
 
     public void ChangeEmbarkText()
     {
         // There's a timer UI so we deactivate it and make the embark appear
         timer.gameObject.SetActive(false);
         //Debug.Log("Updating embark button");
-        embarkButton.interactable = true;
         embarkText.gameObject.SetActive(true);
+
+        StartCoroutine(WaitUntilMapLoaded());
+    }
+
+    public IEnumerator WaitUntilMapLoaded()
+    {
+        yield return new WaitUntil(
+            delegate
+            {
+                TileManager tileManager = GameObject.FindObjectOfType<TileManager>();
+                return tileManager.IsEnabled();
+            }
+        );
+        
+        embarkButton.interactable = true;
     }
 
     private void ForceToggleOn()
