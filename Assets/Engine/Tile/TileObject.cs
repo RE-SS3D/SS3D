@@ -610,14 +610,15 @@ namespace SS3D.Engine.Tiles
             if (newTile.subStates != null && newTile.subStates.Length >= 2 && newTile.subStates[1] != null)
                 turf?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[1]);
 
-            int i = 0;
-            foreach (GameObject fixture in fixtures)
+            // int i = 0;
+            // foreach (GameObject fixture in fixtures)
+            for (int i = 0; i < fixtures.Length; i++)
             {
                 if (newTile.subStates != null && newTile.subStates.Length >= i + 3 && newTile.subStates[i + 2] != null)
                 {
                     fixtures[i]?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[i + 2]);
                 }
-                i++;
+                //i++;
             }
         }
 
@@ -629,12 +630,13 @@ namespace SS3D.Engine.Tiles
             tile.subStates[0] = plenum != null ? plenum?.GetComponent<TileStateCommunicator>()?.GetTileState() : null;
             tile.subStates[1] = turf != null ? turf?.GetComponent<TileStateCommunicator>()?.GetTileState() : null;
 
-            int i = 2;
-            foreach (GameObject fixture in fixtures)
+            // int i = 2;
+            // foreach (GameObject fixture in fixtures)
+            for (int i = 0; i < fixtures.Length; i++)
             {
-                if (fixture)
-                    tile.subStates[i] = fixture?.GetComponent<TileStateCommunicator>()?.GetTileState();
-                i++;
+                if (fixtures[i] != null)
+                    tile.subStates[i + 2] = fixtures[i].GetComponent<TileStateCommunicator>()?.GetTileState();
+                // i++;
             }
         }
 #if UNITY_EDITOR

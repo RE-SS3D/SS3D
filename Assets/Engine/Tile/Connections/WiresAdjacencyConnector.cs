@@ -171,12 +171,14 @@ namespace SS3D.Engine.Tiles.Connections
         {
             //if (TileState.Blocked != null)
             //    Blocked = TileState.Blocked;
+            /// 
         }
 
 //#if UNITY_EDITOR
 //        private void OnValidate()
 //        {
-//            EditorApplication.delayCall += () => {
+//            EditorApplication.delayCall += () =>
+//            {
 //                if (this)
 //                {
 //                    OnStateUpdate();
