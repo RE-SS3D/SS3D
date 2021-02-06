@@ -16,9 +16,12 @@ GameObject:
   - component: {fileID: 6837642831737930921}
   - component: {fileID: 5126815357632273491}
   - component: {fileID: 6420300491935642880}
-  - component: {fileID: 1466501899615533262}
   - component: {fileID: 3494353215513587477}
   - component: {fileID: 2111343728438321531}
+  - component: {fileID: 602897750533537464}
+  - component: {fileID: 3829014715871801907}
+  - component: {fileID: 4364131529940279445}
+  - component: {fileID: -5508761035162611030}
   m_Layer: 0
   m_Name: fridge
   m_TagString: Untagged
@@ -170,34 +173,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.90727323, y: 1.7814867, z: 0.83085436}
   m_Center: {x: 0.0003873706, y: 0.89431536, z: 0.06968558}
---- !u!114 &1466501899615533262
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4214221335928705926}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69f0cfe7ad268bc44b2e36b581d0086c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  containerName: fridge
-  containerFilter: {fileID: 11400000, guid: 40e3b946dc1dc314592ef8d6afcd9162, type: 2}
-  volumeLimited: 1
-  maxVolume: 80
-  slots: 8
-  displays:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!114 &3494353215513587477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -231,6 +206,63 @@ MonoBehaviour:
   DisplayName: Fridge
   Text: Stores food and bodyparts (optional).
   MaxDistance: 0
+--- !u!114 &602897750533537464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4214221335928705926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2119b201c85e4ba2896540c7243a4b1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+--- !u!114 &3829014715871801907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4214221335928705926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HideItems: 1
+  AttachItems: 1
+  AttachmentOffset: {x: 0, y: 0, z: 0}
+--- !u!114 &4364131529940279445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4214221335928705926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AttachedContainer: {fileID: 3829014715871801907}
+  Size: {x: 5, y: 3}
+--- !u!114 &-5508761035162611030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4214221335928705926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &5240830354732226920
 GameObject:
   m_ObjectHideFlags: 0
@@ -260,7 +292,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5240830354732226920}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.44, y: 0.872, z: -0.328}
+  m_LocalPosition: {x: -0.446, y: 0.872, z: 0.318}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 873894190221746581}
@@ -324,8 +356,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.91609585, y: 1.7028121, z: 0.18759534}
-  m_Center: {x: -0.44432867, y: 0.0014936328, z: -0.06708367}
+  m_Size: {x: 0.91609585, y: 1.7028121, z: 0.18759532}
+  m_Center: {x: 0.44432867, y: 0.0014936328, z: 0.067083396}
 --- !u!114 &4285060363148910370
 MonoBehaviour:
   m_ObjectHideFlags: 0

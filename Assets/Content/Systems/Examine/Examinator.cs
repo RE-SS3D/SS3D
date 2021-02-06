@@ -16,6 +16,8 @@ namespace SS3D.Content.Systems.Examine
         public LayerMask ObstacleMask;
         public float ViewRange = 25f;
 
+        private Camera camera;
+        
         private GameObject uiInstance;
         private ExamineUI examineUi;
         private Vector2 lastMousePosition;
@@ -33,12 +35,16 @@ namespace SS3D.Content.Systems.Examine
                 Destroy(this);
             }
 
-            Assert.IsNotNull(UiPrefab);
+            camera = CameraManager.singleton.examineCamera;
+            selector = camera.GetComponent<CompositeItemSelector>();
+	        
+	        Assert.IsNotNull(UiPrefab);
             uiInstance = Instantiate(UiPrefab);
             examineUi = uiInstance.GetComponent<ExamineUI>();
             Assert.IsNotNull(examineUi);
             uiInstance.SetActive(false);
-			selector = Camera.main.transform.GetChild(0).GetComponent<CompositeItemSelector>();
+            
+			//selector = Camera.main.transform.GetChild(0).GetComponent<CompositeItemSelector>();
         }
 
         private void Update()
@@ -52,7 +58,6 @@ namespace SS3D.Content.Systems.Examine
             {
                 Vector3 mousePosition = Input.mousePosition;
                 Vector2 position = new Vector2(mousePosition.x, mousePosition.y);
-                Camera camera = Camera.main;
                 Vector3 cameraPos = camera.transform.position;
                 Quaternion rotation = camera.transform.rotation;
 
@@ -72,13 +77,16 @@ namespace SS3D.Content.Systems.Examine
             {
                 lastMousePosition = Vector2.negativeInfinity;
                 ClearExamine();
-				selector.DisableCamera();
+                if (selector == null)
+                {
+	                selector = camera.GetComponent<CompositeItemSelector>();
+                }
+                selector.DisableCamera();
             }
         }
 
         private void CalculateExamine()
         {
-            Camera camera = Camera.main;
             if (camera == null)
             {
                 return;
@@ -164,13 +172,8 @@ namespace SS3D.Content.Systems.Examine
 							} else {
 								// The Server can perform the Rpc directly.
 								TargetExamine(identity);
-							}				
-							
+							}
 						}
-						
-						
-						
-
                     }
 
                     return;

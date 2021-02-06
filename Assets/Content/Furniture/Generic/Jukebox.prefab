@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3282234824440748568}
   - component: {fileID: 2780048927197938333}
   - component: {fileID: 6944020250224238214}
+  - component: {fileID: -6616646715259926527}
   m_Layer: 0
   m_Name: Jukebox
   m_TagString: Untagged
@@ -277,3 +278,17 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-6616646715259926527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4170175011264555292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0

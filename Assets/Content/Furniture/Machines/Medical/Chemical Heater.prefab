@@ -59,8 +59,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
+  - {fileID: 2100000, guid: 0dfcd2fea1adf10409cb067ed40da41b, type: 2}
   - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
-  - {fileID: 2100000, guid: 4156b958be0668e49b2e9f5120660e50, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -108,6 +108,7 @@ GameObject:
   - component: {fileID: 6585454789370932796}
   - component: {fileID: 7246000501682530352}
   - component: {fileID: 1176681601152780847}
+  - component: {fileID: -815652890903664024}
   m_Layer: 0
   m_Name: Chemical Heater
   m_TagString: Untagged
@@ -221,3 +222,17 @@ MonoBehaviour:
   DisplayName: Chemical Heater
   Text: 
   MaxDistance: 0
+--- !u!114 &-815652890903664024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5385663273565442968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0

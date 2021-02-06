@@ -24,7 +24,7 @@ namespace Mirror
     [HelpURL("https://mirror-networking.com/docs/Components/NetworkManager.html")]
     public class NetworkManager : MonoBehaviour
     {
-        static readonly ILogger logger = LogFactory.GetLogger<NetworkManager>();
+        protected static readonly ILogger logger = LogFactory.GetLogger<NetworkManager>();
 
         /// <summary>
         /// A flag to control whether the NetworkManager object is destroyed when the scene changes.

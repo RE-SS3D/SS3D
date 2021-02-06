@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d72368ce8da05a44864afc6112ce014, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
   m_Name: Solar Panel
   m_EditorClassIdentifier: 
   id: solar_panel

@@ -312,7 +312,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 8556262120643298411, guid: 1fa72a3feeb97854b820c0ef021338c0, type: 3}
+  - {fileID: 2100000, guid: 007ddb364a635b248bf59eae2f77e1ae, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -346,6 +346,7 @@ GameObject:
   - component: {fileID: 6355683579538927932}
   - component: {fileID: 1089358274311549676}
   - component: {fileID: -1818736779901110930}
+  - component: {fileID: 3336861161618438464}
   m_Layer: 0
   m_Name: Console - Off
   m_TagString: Untagged
@@ -433,6 +434,20 @@ MonoBehaviour:
   DisplayName: Console
   Text: 
   MaxDistance: 0
+--- !u!114 &3336861161618438464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6477574049359786441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &6505763806015701181
 GameObject:
   m_ObjectHideFlags: 0

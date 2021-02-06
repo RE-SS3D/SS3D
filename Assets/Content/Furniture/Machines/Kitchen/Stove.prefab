@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1218585396523493878}
   - component: {fileID: -1626851182345008755}
   - component: {fileID: 7473536715898471882}
+  - component: {fileID: 8207463133414275323}
   m_Layer: 0
   m_Name: Stove
   m_TagString: Untagged
@@ -162,3 +163,17 @@ MonoBehaviour:
   DisplayName: Stove
   Text: 
   MaxDistance: 0
+--- !u!114 &8207463133414275323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4711035701283732717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0

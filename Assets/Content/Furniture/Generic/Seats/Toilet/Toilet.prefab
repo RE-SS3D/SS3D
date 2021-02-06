@@ -91,9 +91,12 @@ GameObject:
   - component: {fileID: 3059472895816432833}
   - component: {fileID: 670817264003822935}
   - component: {fileID: 404650530671391029}
-  - component: {fileID: 7877769298701249696}
   - component: {fileID: -8007393211677902780}
   - component: {fileID: 6933098557949719560}
+  - component: {fileID: 4736502494625233072}
+  - component: {fileID: 6410542327681874041}
+  - component: {fileID: 5281519465761832601}
+  - component: {fileID: -3453679615323309297}
   m_Layer: 0
   m_Name: Toilet
   m_TagString: Untagged
@@ -165,28 +168,6 @@ MonoBehaviour:
   OnlyStoreWhenOpen: 1
   MaxDistance: 1.5
   viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
---- !u!114 &7877769298701249696
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5161561551087789900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69f0cfe7ad268bc44b2e36b581d0086c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  containerName: toilet
-  containerFilter: {fileID: 0}
-  volumeLimited: 1
-  maxVolume: 30
-  slots: 2
-  displays:
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!114 &-8007393211677902780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,6 +202,63 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &4736502494625233072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5161561551087789900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2119b201c85e4ba2896540c7243a4b1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+--- !u!114 &6410542327681874041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5161561551087789900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HideItems: 1
+  AttachItems: 1
+  AttachmentOffset: {x: 0, y: 0, z: 0}
+--- !u!114 &5281519465761832601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5161561551087789900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AttachedContainer: {fileID: 6410542327681874041}
+  Size: {x: 2, y: 2}
+--- !u!114 &-3453679615323309297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5161561551087789900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &5218468364695561986
 GameObject:
   m_ObjectHideFlags: 0

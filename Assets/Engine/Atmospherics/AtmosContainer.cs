@@ -108,7 +108,7 @@ namespace SS3D.Engine.Atmospherics
 
         public float GetPressure()
         {
-            return gasses.Sum() * Gas.gasConstant * temperature / Volume / 1000f;
+            return GetTotalMoles() * Gas.gasConstant * temperature / Volume / 1000f;
         }
 
         public float GetPartialPressure(int index)

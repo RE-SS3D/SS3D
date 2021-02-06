@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using SS3D.Engine.Inventory;
@@ -22,10 +23,17 @@ namespace SS3D.Engine.Interactions
         [SerializeField]
         private GameObject menuPrefab = null;
 
+        private Camera camera;
+
+        private void Start()
+        {
+            camera = CameraManager.singleton.playerCamera;
+        }
+
         public void Update()
         {
             // Ensure that mouse isn't over ui (game objects aren't tracked by the eventsystem, so ispointer would return false
-            if (!isLocalPlayer || Camera.main == null || EventSystem.current.IsPointerOverGameObject())
+            if (!isLocalPlayer || camera == null || EventSystem.current.IsPointerOverGameObject())
             {
                 return;
             }
@@ -39,7 +47,7 @@ namespace SS3D.Engine.Interactions
                 }
 
                 // Run the most prioritised action
-                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                var ray = camera.ScreenPointToRay(Input.mousePosition);
                 var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
 
                 if (viableInteractions.Count > 0)
@@ -61,7 +69,7 @@ namespace SS3D.Engine.Interactions
                     Hands hands = GetComponent<Hands>();
                     if (hands != null )
                     {
-                        Item item = hands.Container.GetItem(hands.HeldSlot);
+                        Item item = hands.ItemInHand;
                         if (item != null)
                         {
                             InteractInHand(item.gameObject, gameObject, true);
@@ -70,7 +78,7 @@ namespace SS3D.Engine.Interactions
                 }
                 else
                 {
-                    var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    var ray = camera.ScreenPointToRay(Input.mousePosition);
                     var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
                     if (viableInteractions.Select(x => x.Interaction).ToList().Count > 0)
                     {
@@ -96,7 +104,7 @@ namespace SS3D.Engine.Interactions
                 Hands hands = GetComponent<Hands>();
                 if (hands != null )
                 {
-                    Item item = hands.Container.GetItem(hands.HeldSlot);
+                    Item item = hands.ItemInHand;
                     if (item != null)
                     {
                         InteractInHand(item.gameObject, gameObject);

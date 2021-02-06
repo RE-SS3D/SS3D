@@ -339,8 +339,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.4809304, y: 1.5629163, z: 0.09296769}
-  m_Center: {x: -0.25684312, y: 0.0006606579, z: -0.00045208633}
+  m_Size: {x: 0.09149597, y: 0.22393996, z: 0.28642678}
+  m_Center: {x: -0.29023173, y: 0.84999895, z: 0.1568953}
 --- !u!114 &8460467522893431941
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -391,11 +391,15 @@ GameObject:
   - component: {fileID: 2313279728372933186}
   - component: {fileID: 226357803256970257}
   - component: {fileID: 8390364960802322756}
-  - component: {fileID: 8250042059239114656}
   - component: {fileID: 2520167261024532551}
   - component: {fileID: 9070210520109077429}
+  - component: {fileID: -8913688814251431353}
+  - component: {fileID: 8292858669515769004}
+  - component: {fileID: 8628883032725803104}
+  - component: {fileID: 1656061045202297066}
+  - component: {fileID: -6522267390035620388}
   m_Layer: 0
-  m_Name: fixture_floor_furniturefixturemain_locker_basic_secure
+  m_Name: Locker Basic Secure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -408,7 +412,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2876708453869312076}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -546,34 +550,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.63288033, y: 1.7198707, z: 0.55178964}
   m_Center: {x: 0.000000044703484, y: 0.8598699, z: 0.0024448484}
---- !u!114 &8250042059239114656
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2876708453869312076}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69f0cfe7ad268bc44b2e36b581d0086c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  containerName: locker
-  containerFilter: {fileID: 11400000, guid: 40e3b946dc1dc314592ef8d6afcd9162, type: 2}
-  volumeLimited: 1
-  maxVolume: 100
-  slots: 8
-  displays:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!114 &2520167261024532551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -607,6 +583,77 @@ MonoBehaviour:
   DisplayName: Secure Locker
   Text: Stores stuff.
   MaxDistance: 0
+--- !u!114 &-8913688814251431353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876708453869312076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HideItems: 1
+  AttachItems: 1
+  AttachmentOffset: {x: 0, y: 0.5, z: 0}
+--- !u!114 &8292858669515769004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876708453869312076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AttachedContainer: {fileID: -8913688814251431353}
+  Size: {x: 10, y: 10}
+--- !u!114 &8628883032725803104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876708453869312076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2119b201c85e4ba2896540c7243a4b1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+--- !u!114 &1656061045202297066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876708453869312076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CheckObserversInterval: 1
+  AttachedContainer: {fileID: 0}
+--- !u!114 &-6522267390035620388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876708453869312076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
 --- !u!1 &5007033570441933088
 GameObject:
   m_ObjectHideFlags: 0

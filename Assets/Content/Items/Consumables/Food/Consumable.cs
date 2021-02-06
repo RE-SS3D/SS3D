@@ -141,7 +141,7 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
             GameObject target = interactionEvent.Target?.GetComponent<Transform>().gameObject;
 
             // I absolutely despise how this is done, please if you have the knowledge to clean this mess do it
-            Consumable itemInHand = source.GetComponentInChildren<Hands>().GetItemInHand()?.GetComponent<Consumable>();
+            Consumable itemInHand = interactionEvent.Source.GetComponent<Consumable>();
             Creature creature = source.GetComponent<Creature>();
             Creature targetCreature = target?.GetComponent<Creature>();
 
@@ -187,7 +187,7 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
         {
             GameObject source = interactionEvent.Source?.GetComponentInTree<Creature>().gameObject;
             GameObject target = interactionEvent.Target.GetComponent<Transform>().gameObject;            
-            Consumable itemInHand = source?.GetComponentInChildren<Hands>().GetItemInHand()?.GetComponent<Consumable>();
+            Consumable itemInHand = source.GetComponent<Consumable>();
 
             // Item in hand and interacting with origin
             if (target == null) 

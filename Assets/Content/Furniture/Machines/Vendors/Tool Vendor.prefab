@@ -138,8 +138,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.19388208, y: 0.45819488, z: 0.01838401}
-  m_Center: {x: -0.29450738, y: 0.3250663, z: 0.32777762}
+  m_Size: {x: 0.22452463, y: 0.52553326, z: 0.0031385124}
+  m_Center: {x: -0.29770505, y: 0.32058182, z: 0.31992972}
 --- !u!1 &7319846706112917200
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,6 +158,7 @@ GameObject:
   - component: {fileID: 1650163529337778107}
   - component: {fileID: 5522326736482285483}
   - component: {fileID: 8716617303496286320}
+  - component: {fileID: -7178640359135565531}
   m_Layer: 0
   m_Name: Tool Vendor
   m_TagString: Untagged
@@ -431,3 +432,17 @@ MonoBehaviour:
   DisplayName: YouTool
   Text: Dispenses tools.
   MaxDistance: 0
+--- !u!114 &-7178640359135565531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7319846706112917200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0

@@ -115,36 +115,28 @@ namespace SS3D.Engine.Tiles
             {
                 case WallFixtureLayers.HighWallNorth:
                     wallFixtureDefinition.highWallNorth = (HighWallFixture)fixture;
-                    wallFixtureDefinition.highWallNorth?.SetOrientation(WallFixture.Orientation.North);
                     break;
                 case WallFixtureLayers.HighWallEast:
                     wallFixtureDefinition.highWallEast = (HighWallFixture)fixture;
-                    wallFixtureDefinition.highWallEast?.SetOrientation(WallFixture.Orientation.East);
                     break;
                 case WallFixtureLayers.HighWallSouth:
                     wallFixtureDefinition.highWallSouth = (HighWallFixture)fixture;
-                    wallFixtureDefinition.highWallSouth?.SetOrientation(WallFixture.Orientation.South);
                     break;
                 case WallFixtureLayers.HighWallWest:
                     wallFixtureDefinition.highWallWest = (HighWallFixture)fixture;
-                    wallFixtureDefinition.highWallWest?.SetOrientation(WallFixture.Orientation.West);
                     break;
 
                 case WallFixtureLayers.LowWallNorth:
                     wallFixtureDefinition.lowWallNorth = (LowWallFixture)fixture;
-                    wallFixtureDefinition.lowWallNorth?.SetOrientation(WallFixture.Orientation.North);
                     break;
                 case WallFixtureLayers.LowWallEast:
                     wallFixtureDefinition.lowWallEast = (LowWallFixture)fixture;
-                    wallFixtureDefinition.lowWallEast?.SetOrientation(WallFixture.Orientation.East);
                     break;
                 case WallFixtureLayers.LowWallSouth:
                     wallFixtureDefinition.lowWallSouth = (LowWallFixture)fixture;
-                    wallFixtureDefinition.lowWallSouth?.SetOrientation(WallFixture.Orientation.South);
                     break;
                 case WallFixtureLayers.LowWallWest:
                     wallFixtureDefinition.lowWallWest = (LowWallFixture)fixture;
-                    wallFixtureDefinition.lowWallWest?.SetOrientation(WallFixture.Orientation.West);
                     break;
 
             }
@@ -179,7 +171,6 @@ namespace SS3D.Engine.Tiles
                 case FloorFixtureLayers.OverlayFixture3:
                     floorFixtureDefinition.overlay3 = (OverlayFloorFixture)fixture;
                     break;
-
                 case FloorFixtureLayers.PipeUpperFixture:
                     floorFixtureDefinition.pipeUpper = (PipeFloorFixture)fixture;
                     break;
@@ -240,6 +231,35 @@ namespace SS3D.Engine.Tiles
             return null;
         }
 
+        public void SetFixtureAtIndex(Fixture fixture, int index)
+        {
+            int offsetFloor = TileDefinition.GetTileFixtureLayerSize();
+            int offsetWall = TileDefinition.GetWallFixtureLayerSize();
+            int offsetTotal = offsetFloor + offsetWall + TileDefinition.GetFloorFixtureLayerSize();
+
+            if (index < offsetFloor)
+            {
+                // We are a Tile fixture
+                SetTileFixtureAtLayer((TileFixture)fixture, (TileFixtureLayers)index);
+            }
+
+            else if (index >= offsetFloor && index < (offsetFloor + offsetWall))
+            {
+                // We are a Wall fixture
+                SetWallFixtureAtLayer((WallFixture) fixture, (WallFixtureLayers)(index - offsetFloor));
+            }
+
+            else if (index >= (offsetFloor + offsetWall) && index < offsetTotal)
+            {
+                // We are a Floor fixture
+                SetFloorFixtureAtLayer((FloorFixture) fixture, (FloorFixtureLayers)(index - offsetFloor - offsetWall));
+            }
+            else
+            {
+                Debug.LogError("Requesting out of index Fixture");
+            }
+        }
+
         public object Clone()
         {
             return this.MemberwiseClone();
@@ -267,41 +287,18 @@ namespace SS3D.Engine.Tiles
                     reason += "Lattices do not support any wall/floor fixture.\n";
             }
 
-            // If catwalk
-            if (tileDefinition.plenum.name.Contains("Catwalk"))
-            {
-                // Allow only the wire layer in tile fixtures
-                foreach (TileFixtureLayers layer in TileDefinition.GetTileFixtureLayerNames())
-                {
-                    if (layer != TileFixtureLayers.Wire)
-                    {
-                        if (tileDefinition.fixtures.GetTileFixtureAtLayer(layer) != null)
-                        {
-                            altered = true;
-                            reason += "Catwalk only supports a wire and upper pipe layer.\n";
-                            tileDefinition.fixtures.SetTileFixtureAtLayer(null, layer);
-                        }
-                    }
-                }
-            }
-
-            if ((tileDefinition.turf != null && tileDefinition.turf.isWall) || tileDefinition.turf == null || tileDefinition.plenum.name.Contains("Lattice"))
+            if (((tileDefinition.turf != null && tileDefinition.turf.isWall) || tileDefinition.turf == null) && tileDefinition.plenum.name.Contains("Lattice"))
             {
                 // Remove floor fixtures
                 foreach (FloorFixtureLayers layer in TileDefinition.GetFloorFixtureLayerNames())
                 {
-                    // Allow upper pipe layer with a catwalk plenum
-                    if (tileDefinition.plenum.name.Contains("Catwalk") && layer == FloorFixtureLayers.PipeUpperFixture)
-                        continue;
-
                     if (tileDefinition.fixtures.GetFloorFixtureAtLayer(layer) != null)
                     {
                         altered = true;
-                        reason += "Cannot set a floor fixture when there is no floor.\n";
-                        Debug.Log("Cannot set a floor fixture when there is no floor");
+                        reason += "Cannot set a floor fixture on lattice.\n";
+                        Debug.Log("Cannot set a floor fixture on lattice");
+                        tileDefinition.fixtures.SetFloorFixtureAtLayer(null, layer);
                     }
-
-                    tileDefinition.fixtures.SetFloorFixtureAtLayer(null, layer);
                 }
             }
 

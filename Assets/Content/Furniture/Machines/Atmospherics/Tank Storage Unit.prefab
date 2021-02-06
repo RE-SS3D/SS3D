@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: 2928619056195421076}
   - component: {fileID: 6947381346998146940}
   - component: {fileID: 3959135070748397564}
+  - component: {fileID: 1866690735240689045}
   m_Layer: 0
   m_Name: Tank Storage Unit
   m_TagString: Untagged
@@ -275,3 +276,17 @@ MonoBehaviour:
   DisplayName: Tank Storage Unit
   Text: 
   MaxDistance: 0
+--- !u!114 &1866690735240689045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7348721911392627679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileState:
+    rotation: 0
