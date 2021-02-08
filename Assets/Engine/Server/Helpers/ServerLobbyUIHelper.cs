@@ -61,12 +61,6 @@ public class ServerLobbyUIHelper : NetworkBehaviour
             CmdRequestEmbark();
             Toggle(false);
         });
-
-        // Not sure if this work, probably not
-        if (RoundManager.singleton.IsRoundStarted)
-        {
-            embarkButton.interactable = true;
-        }
     }
     
     public void UnlockServerSettings() 
@@ -98,8 +92,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         yield return new WaitUntil(
             delegate
             {
-                TileManager tileManager = GameObject.FindObjectOfType<TileManager>();
-                return tileManager.IsEnabled();
+                return TileManager.singleton.IsEnabled();
             }
         );
         

@@ -15,6 +15,7 @@ namespace SS3D.Engine.Tiles {
     [ExecuteAlways]
     public class TileManager : NetworkBehaviour
     {
+        public static TileManager singleton { get; private set; }
         /// <summary>
         /// How many tiles are serialized per rpc
         /// </summary>
@@ -192,6 +193,18 @@ namespace SS3D.Engine.Tiles {
         private void OnEnable()
         {
             LoadTileMap();
+        }
+
+        private void Awake()
+        {
+            if (singleton != null && singleton != this)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                singleton = this;
+            }
         }
 
         [Server]
