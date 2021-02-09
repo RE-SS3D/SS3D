@@ -44,8 +44,7 @@ GameObject:
   - component: {fileID: 7838308888416727430}
   - component: {fileID: 7334983109677519472}
   - component: {fileID: 3541546131235516538}
-  - component: {fileID: 8763634506270647443}
-  - component: {fileID: -1695933415644116206}
+  - component: {fileID: 1436701974858568618}
   - component: {fileID: -7916679988573165787}
   m_Layer: 16
   m_Name: pepperspray
@@ -163,7 +162,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 9067431505445562313, guid: 1d027408b61acc647a8e6c6785bb5b5d, type: 3}
---- !u!114 &8763634506270647443
+--- !u!114 &1436701974858568618
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -172,7 +171,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8429492116086818138}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Script: {fileID: 11500000, guid: 2b2da253dedfcc247b09ba258f4e9479, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
@@ -180,28 +179,17 @@ MonoBehaviour:
   ItemId: pepper_spray
   Name: Pepper Spray
   Volume: 10
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8429492116086818138}
   attachmentPoint: {fileID: 4272554562607298376}
   bulkSize: 2
   traits:
-  - {fileID: 11400000, guid: a86f8b10eacec4540a203b13004c2389, type: 2}
---- !u!114 &-1695933415644116206
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8429492116086818138}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DisplayName: 
-  Text: 
-  MaxDistance: 0
+  - {fileID: 0}
+  Size: {x: 0, y: 0}
+  spraySound: {fileID: 0}
+  particleSystem: {fileID: 8762605811191177629}
+  cooldownInSeconds: 3
+  useIcon: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
 --- !u!114 &-7916679988573165787
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -357,6 +345,21 @@ PrefabInstance:
       propertyPath: ColorModule.gradient.maxGradient.atime2
       value: 44718
       objectReference: {fileID: 0}
+    - target: {fileID: 4068288819870881742, guid: 7fc08e70e0552eb4da30f809aadf8666,
+        type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4068288819870881742, guid: 7fc08e70e0552eb4da30f809aadf8666,
+        type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].cycleCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4068288819870881742, guid: 7fc08e70e0552eb4da30f809aadf8666,
+        type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].repeatInterval
+      value: 0.01
+      objectReference: {fileID: 0}
     - target: {fileID: 9146105795711067569, guid: 7fc08e70e0552eb4da30f809aadf8666,
         type: 3}
       propertyPath: m_Name
@@ -367,6 +370,12 @@ PrefabInstance:
 --- !u!4 &5252636112136700484 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 651733426864796695, guid: 7fc08e70e0552eb4da30f809aadf8666,
+    type: 3}
+  m_PrefabInstance: {fileID: 4750858556440983123}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &8762605811191177629 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 4068288819870881742, guid: 7fc08e70e0552eb4da30f809aadf8666,
     type: 3}
   m_PrefabInstance: {fileID: 4750858556440983123}
   m_PrefabAsset: {fileID: 0}
