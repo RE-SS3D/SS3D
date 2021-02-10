@@ -1,7 +1,9 @@
 ﻿using SS3D.Engine.Tiles.Connections;
+using SS3D.Engine.Tiles.State;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,15 +12,21 @@ namespace SS3D.Engine.Tiles.Editor
     [CustomEditor(typeof(WiresAdjacencyConnector))]
     public class AdjacencyEditor : UnityEditor.Editor
     {
+        private Dictionary<string, SerializedObject> extraState;
         private bool[] blocked = new bool[Enum.GetValues(typeof(Direction)).Length];
 
         public override void OnInspectorGUI()
         {
             WiresAdjacencyConnector connector = (WiresAdjacencyConnector)target;
+            //var connectorSerial = connector.GetComponentInChildren(typeof(TileStateCommunicator));
+            var subTiles = connector.GetComponentsInChildren(typeof(TileStateCommunicator));
+            if (extraState == null || subTiles.Length != extraState.Count || subTiles.Any(subTile => !extraState.ContainsKey(subTile.gameObject.name)))
+            {
+                extraState = subTiles.Select(state => new Tuple<string, SerializedObject>(state.gameObject.name, new SerializedObject(state))).ToDictionary(x => x.Item1, x => x.Item2);
+            }
+
             TileObject tileObject = connector.GetComponentInParent<TileObject>();
-            // blocked = ((WireState)connector.GetTileState()).Blocked;
-            //if (connector.Blocked != null && connector.Blocked.Length > 0)
-            //    blocked = connector.Blocked;
+            
 
             blocked = ParseBitmap(connector.TileState.blockedDirection);
 
@@ -45,24 +53,42 @@ namespace SS3D.Engine.Tiles.Editor
             blocked[4] = EditorGUILayout.Toggle(blocked[4]);
             EditorGUILayout.EndHorizontal();
 
-
-            serializedObject.ApplyModifiedProperties();
-
             if (GUI.changed)
             {
                 if (tileObject != null)
                 {
-                    var stateNow = connector.TileState;
+                    //foreach (var state in extraState)
+                    //{
+                    //    state.Value.Update();
+                    //    SerializedProperty property = state.Value.FindProperty("tileState");
+                    //    state.Value.ApplyModifiedProperties();
+                    //}
 
-                    stateNow.blockedDirection = SetBitmap(blocked);
-                    connector.SetTileState(stateNow);
+                    bool modified = false;
+                    var connectorSerial = new SerializedObject(connector);
+                    connectorSerial.Update();
 
-                    tileObject.RefreshSubData();
-                    tileObject.RefreshAdjacencies();
+                    SerializedProperty property = connectorSerial.FindProperty("tileState");
+                    property.FindPropertyRelative("blockedDirection").intValue = SetBitmap(blocked);
+
+                    //var stateNow = connector.TileState;
+
+                    //stateNow.blockedDirection = SetBitmap(blocked);
+                    //connector.SetTileState(stateNow);
+
+                    modified = connectorSerial.ApplyModifiedProperties();
+
+                    if (modified)
+                    {
+                        tileObject.RefreshSubData();
+                        tileObject.RefreshAdjacencies();
+                    }
                 }
                 else
                     Debug.LogWarning("No tileobject found by adjacency editor");
             }
+
+            serializedObject.ApplyModifiedProperties();
         }
 
 

@@ -167,12 +167,12 @@ namespace SS3D.Engine.Tiles.Connections
             transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, rotation, transform.localRotation.eulerAngles.z);
         }
 
-        protected override void OnStateUpdate(WireState prevState = new WireState())
-        {
-            //if (TileState.Blocked != null)
-            //    Blocked = TileState.Blocked;
-            /// 
-        }
+        //protected override void OnStateUpdate(WireState prevState = new WireState())
+        //{
+        //    //if (TileState.Blocked != null)
+        //    //    Blocked = TileState.Blocked;
+        //    /// 
+        //}
 
 //#if UNITY_EDITOR
 //        private void OnValidate()
