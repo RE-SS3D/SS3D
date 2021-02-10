@@ -183,8 +183,7 @@ MonoBehaviour:
   prefab: {fileID: 8429492116086818138}
   attachmentPoint: {fileID: 4272554562607298376}
   bulkSize: 2
-  traits:
-  - {fileID: 0}
+  traits: []
   Size: {x: 0, y: 0}
   spraySound: {fileID: 0}
   particleSystem: {fileID: 8762605811191177629}
@@ -359,6 +358,11 @@ PrefabInstance:
         type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].repeatInterval
       value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 4068288819870881742, guid: 7fc08e70e0552eb4da30f809aadf8666,
+        type: 3}
+      propertyPath: CollisionModule.collidesWith.m_Bits
+      value: 9520950
       objectReference: {fileID: 0}
     - target: {fileID: 9146105795711067569, guid: 7fc08e70e0552eb4da30f809aadf8666,
         type: 3}
