@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace SS3D.Engine.Tiles.Editor
 {
-    [CustomEditor(typeof(WiresAdjacencyConnector))]
+    [CustomEditor(typeof(WiresAdjacencyConnector), true)]
     public class AdjacencyEditor : UnityEditor.Editor
     {
         private Dictionary<string, SerializedObject> extraState;
@@ -17,6 +17,8 @@ namespace SS3D.Engine.Tiles.Editor
 
         public override void OnInspectorGUI()
         {
+            base.DrawDefaultInspector();
+
             WiresAdjacencyConnector connector = (WiresAdjacencyConnector)target;
             //var connectorSerial = connector.GetComponentInChildren(typeof(TileStateCommunicator));
             var subTiles = connector.GetComponentsInChildren(typeof(TileStateCommunicator));
