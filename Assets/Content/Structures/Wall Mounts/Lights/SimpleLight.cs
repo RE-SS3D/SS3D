@@ -1,4 +1,5 @@
-﻿using SS3D.Content.Systems.Interactions;
+﻿using Mirror;
+using SS3D.Content.Systems.Interactions;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Interactions.Extensions;
 using System.Collections;
@@ -36,6 +37,20 @@ public class SimpleLight : InteractionTargetNetworkBehaviour
     {
         on = !on;
 
+        foreach (Light light in lights)
+        {
+            light.enabled = on;
+        }
+
+        bulbRenderer.material = on ? onMaterial : offMaterial;
+
+        RpcToggle(on);
+    }
+
+
+    [ClientRpc]
+    private void RpcToggle(bool on)
+    {
         foreach (Light light in lights)
         {
             light.enabled = on;

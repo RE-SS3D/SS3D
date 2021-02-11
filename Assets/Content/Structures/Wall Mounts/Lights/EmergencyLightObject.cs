@@ -1,4 +1,5 @@
-﻿using SS3D.Content.Systems.Interactions;
+﻿using Mirror;
+using SS3D.Content.Systems.Interactions;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Interactions.Extensions;
 using System.Collections;
@@ -34,10 +35,23 @@ public class EmergencyLightObject : InteractionTargetNetworkBehaviour
         return new IInteraction[] { interaction };
     }
 
+    
     private void Toggle(InteractionEvent interactionEvent, InteractionReference reference)
     {
         on = !on;
 
+        animator.SetBool(OnHash, on);
+        foreach (Light light in lights)
+        {
+            light.enabled = on;
+        }
+
+        RpcToggle(on);
+    }
+
+    [ClientRpc]
+    private void RpcToggle(bool on)
+    {
         animator.SetBool(OnHash, on);
         foreach (Light light in lights)
         {
