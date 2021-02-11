@@ -11,25 +11,14 @@ namespace SS3D.Engine.Tiles.Connections
      * The wires adjacency connector is built off the Simple adjaceny
      * connection but with some uniqueness.
      */
-
-    [Serializable]
-    public struct WireState
-    {
-        public byte blockedDirection;
-    }
-
-    [ExecuteAlways]
     [RequireComponent(typeof(MeshFilter))]
-    public class WiresAdjacencyConnector : TileStateMaintainer<WireState>, AdjacencyConnector
+    public class WiresAdjacencyConnector : AdjacencyStateMaintainer, AdjacencyConnector
     {
         public enum TileLayer
         {
             Turf,
             Fixture,
         }
-
-        // Which locations should be blocked
-        // public bool[] Blocked = new bool[Enum.GetValues(typeof(Direction)).Length];
 
         public int LayerIndex { get; set; }
 
@@ -108,19 +97,8 @@ namespace SS3D.Engine.Tiles.Connections
             if (tile.fixtures != null)
                 isConnected |= (tile.fixtures.GetFixtureAtLayerIndex(index) && (tile.fixtures.GetFixtureAtLayerIndex(index).genericType == type || type == null));
 
-            // Ugly hack because the array isn't initialized...
-            //if (Blocked.Length > 0)
-            //{
-            //    isConnected &= !Blocked[(int)direction];
-            //}
-            //else
-            //{
-            //    Blocked = new bool[Enum.GetValues(typeof(Direction)).Length];
-            //}
 
             isConnected &= (AdjacencyBitmap.Adjacent(TileState.blockedDirection, direction) == 0);
-                
-            // !Blocked[(int)direction];
 
             return adjacents.UpdateDirection(direction, isConnected, true);
         }
@@ -166,26 +144,6 @@ namespace SS3D.Engine.Tiles.Connections
             filter.mesh = mesh;
             transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, rotation, transform.localRotation.eulerAngles.z);
         }
-
-        //protected override void OnStateUpdate(WireState prevState = new WireState())
-        //{
-        //    //if (TileState.Blocked != null)
-        //    //    Blocked = TileState.Blocked;
-        //    /// 
-        //}
-
-//#if UNITY_EDITOR
-//        private void OnValidate()
-//        {
-//            EditorApplication.delayCall += () =>
-//            {
-//                if (this)
-//                {
-//                    OnStateUpdate();
-//                }
-//            };
-//        }
-//#endif
 
         // A bitfield of connections. Total of 8 connections -> 8 bits, ascending order with direction.
         private AdjacencyBitmap adjacents = new AdjacencyBitmap();

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace SS3D.Engine.Tiles.Editor
 {
-    [CustomEditor(typeof(WiresAdjacencyConnector), true)]
+    [CustomEditor(typeof(AdjacencyStateMaintainer), true)]
     public class AdjacencyEditor : UnityEditor.Editor
     {
         private Dictionary<string, SerializedObject> extraState;
@@ -19,14 +19,7 @@ namespace SS3D.Engine.Tiles.Editor
         {
             base.DrawDefaultInspector();
 
-            WiresAdjacencyConnector connector = (WiresAdjacencyConnector)target;
-            //var connectorSerial = connector.GetComponentInChildren(typeof(TileStateCommunicator));
-            var subTiles = connector.GetComponentsInChildren(typeof(TileStateCommunicator));
-            if (extraState == null || subTiles.Length != extraState.Count || subTiles.Any(subTile => !extraState.ContainsKey(subTile.gameObject.name)))
-            {
-                extraState = subTiles.Select(state => new Tuple<string, SerializedObject>(state.gameObject.name, new SerializedObject(state))).ToDictionary(x => x.Item1, x => x.Item2);
-            }
-
+            AdjacencyStateMaintainer connector = (AdjacencyStateMaintainer)target;
             TileObject tileObject = connector.GetComponentInParent<TileObject>();
             
 
@@ -59,12 +52,6 @@ namespace SS3D.Engine.Tiles.Editor
             {
                 if (tileObject != null)
                 {
-                    //foreach (var state in extraState)
-                    //{
-                    //    state.Value.Update();
-                    //    SerializedProperty property = state.Value.FindProperty("tileState");
-                    //    state.Value.ApplyModifiedProperties();
-                    //}
 
                     bool modified = false;
                     var connectorSerial = new SerializedObject(connector);
@@ -73,13 +60,7 @@ namespace SS3D.Engine.Tiles.Editor
                     SerializedProperty property = connectorSerial.FindProperty("tileState");
                     property.FindPropertyRelative("blockedDirection").intValue = SetBitmap(blocked);
 
-                    //var stateNow = connector.TileState;
-
-                    //stateNow.blockedDirection = SetBitmap(blocked);
-                    //connector.SetTileState(stateNow);
-
                     modified = connectorSerial.ApplyModifiedProperties();
-
                     if (modified)
                     {
                         tileObject.RefreshSubData();
