@@ -344,6 +344,8 @@ GameObject:
   - component: {fileID: 5034072719782870709}
   - component: {fileID: -1648229310630695525}
   - component: {fileID: -2312561482214671454}
+  - component: {fileID: 709808169560035747}
+  - component: {fileID: 7846543073528734464}
   m_Layer: 0
   m_Name: Light Bulb Fixture
   m_TagString: Untagged
@@ -408,3 +410,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileState:
     rotation: 0
+--- !u!114 &709808169560035747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8824907131049981641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
+--- !u!114 &7846543073528734464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8824907131049981641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96366c8f4df7c734e856c80b8620ecc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  turnOnIcon: {fileID: 21300000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
+  onMaterial: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  offMaterial: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+  bulbRenderer: {fileID: 3189588032500677955}

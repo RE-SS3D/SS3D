@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 8648403125281566512}
   - component: {fileID: -5688893441080166448}
   - component: {fileID: -7347470021286839313}
+  - component: {fileID: 4876898310796429852}
+  - component: {fileID: 211638627342979835}
   m_Layer: 0
   m_Name: Light Tube Fixture
   m_TagString: Untagged
@@ -76,6 +78,40 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileState:
     rotation: 0
+--- !u!114 &4876898310796429852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5161561551087789900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
+--- !u!114 &211638627342979835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5161561551087789900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96366c8f4df7c734e856c80b8620ecc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  turnOnIcon: {fileID: 21300000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
+  onMaterial: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  offMaterial: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+  bulbRenderer: {fileID: 1268435986470628550}
 --- !u!1 &5181080420812569886
 GameObject:
   m_ObjectHideFlags: 0
