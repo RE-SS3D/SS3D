@@ -207,7 +207,7 @@ namespace SS3D.Engine.Tiles {
             }
         }
 
-        [Server]
+
         private void LoadTileMap()
         {
             tileManagerLoaded?.Invoke();
