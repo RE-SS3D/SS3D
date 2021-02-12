@@ -234,6 +234,7 @@ GameObject:
   - component: {fileID: 1890660286906580188}
   - component: {fileID: 3102639245006521848}
   - component: {fileID: 3514104566132575562}
+  - component: {fileID: 897093870037508195}
   m_Layer: 16
   m_Name: Wet Floor Sign
   m_TagString: Untagged
@@ -379,3 +380,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openInteractionIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987,
     type: 3}
+--- !u!114 &897093870037508195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5895479272048837318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  clientAuthority: 0
+  animator: {fileID: 3102639245006521848}
