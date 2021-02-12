@@ -63,11 +63,16 @@ using UnityEngine.SceneManagement;
         // LOGIN STUFF
         private bool hasLoginServer; // whether the login server is found and alive
         [SerializeField] private string loginServerAddress = null;
-        [SerializeField] private GameObject playerDummyPrefab = null;
+        
+        [SerializeField] private GameObject soulPrefab = null;
+        
         [SerializeField] private LoginManager loginManagerPrefab = null;
         [SerializeField] private GameObject roundManagerPrefab = null;
+        
+        
         // Does the server require ingame login?
         [SerializeField] bool useLoginSystem;
+        
         private LoginManager loginManager;      
         public RoundManager roundManager;
 
@@ -220,7 +225,6 @@ using UnityEngine.SceneManagement;
                 Debug.LogWarning("The Login system does not support having a separate Online Scene yet!");
                 return;
             }
-
             ClientScene.AddPlayer(conn);
         }
 
@@ -232,6 +236,10 @@ using UnityEngine.SceneManagement;
         public override void OnServerAddPlayer(NetworkConnection conn)
         {
             Debug.Log("OnServerAddPlayer");
+
+            GameObject soul = Instantiate(soulPrefab);
+            
+            NetworkServer.AddPlayerForConnection(conn, soul);
             //GameObject player = Instantiate(playerDummyPrefab);
             //NetworkServer.AddPlayerForConnection(conn, player);
         }
@@ -303,8 +311,11 @@ using UnityEngine.SceneManagement;
                 ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
                 : Instantiate(playerPrefab);
             player.name = character.name;
-            
-            // NetworkServer.ReplacePlayerForConnection(conn, player);
+
+            if (NetworkClient.connection.identity != null)
+            {
+                NetworkServer.DestroyPlayerForConnection(conn);
+            }
             //Destroy dummy player
             //NetworkServer.DestroyPlayerForConnection(conn);
             
@@ -349,7 +360,7 @@ using UnityEngine.SceneManagement;
                 return false;
             }
 
-            if (conn.identity != null && conn.identity.name != $"{playerDummyPrefab.name}(Clone)")
+            if (conn.identity != null)
             {
                 Debug.LogError("There is already a player for this connections.");
                 return false;
