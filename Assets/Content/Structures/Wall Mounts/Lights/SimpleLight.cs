@@ -14,7 +14,7 @@ public class SimpleLight : InteractionTargetNetworkBehaviour
     public MeshRenderer bulbRenderer;
 
     private Light[] lights;
-    private bool on;
+    private bool on = true;
 
     void Start()
     {
