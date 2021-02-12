@@ -8929,7 +8929,7 @@ Animator:
   m_Avatar: {fileID: 9000000, guid: c6342afa3e7f05f4682ae0c6be03dc4c, type: 3}
   m_Controller: {fileID: 9100000, guid: a1ac53162579a7d47aed8500b36be080, type: 2}
   m_CullingMode: 1
-  m_UpdateMode: 2
+  m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
