@@ -5,7 +5,7 @@ namespace SS3D.Content.Items.Cosmetic
 {
     public class FloorSignOpener : Openable
     {
-        private bool lastFrameInContainer;
+        private bool lastInContainer;
         private Item item;
 
         public override void Start()
@@ -13,23 +13,22 @@ namespace SS3D.Content.Items.Cosmetic
             base.Start();
             item = GetComponent<Item>();
 
-            lastFrameInContainer = item.InContainer();
-            UpdateStatus(lastFrameInContainer);
+            OnContainerUpdate(item.InContainer());
         }
 
         private void Update()
         {
             bool newInContainer = item.InContainer();
-            if (lastFrameInContainer != newInContainer)
+            if (lastInContainer != newInContainer)
             {
-                UpdateStatus(newInContainer);
+                OnContainerUpdate(newInContainer);
             }
-            lastFrameInContainer = newInContainer;
         }
 
-        private void UpdateStatus(bool inContainer)
+        private void OnContainerUpdate(bool inContainer)
         {
             SetOpen(!inContainer);
+            lastInContainer = inContainer;
         }
     }
 }
