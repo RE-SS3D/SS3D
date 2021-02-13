@@ -11,7 +11,19 @@
 
 # This is the way.
 
-create table characterData (
-	name varchar(200),
-    gender varchar(200)
+CREATE DATABASE IF NOT EXISTS SS3D
+DEFAULT CHARACTER SET utf8;
+
+CREATE TABLE IF NOT EXISTS registeredUsers(
+	ckey VARCHAR(60) PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS characterData (
+    idCharacterData  INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    ckey VARCHAR(60) NOT NULL	,
+	name VARCHAR(200),
+    jobPreferences JSON,
+    
+    FOREIGN KEY (ckey)
+    REFERENCES registeredUsers(ckey)
 )

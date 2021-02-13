@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using Mirror;
 using UnityEngine;
 
 using MySql;
 using MySql.Data.MySqlClient;
 using Debug = UnityEngine.Debug;
 
-public class DatabaseConnectionManager : MonoBehaviour
+public class DatabaseConnectionManager : NetworkBehaviour
 {
     public static DatabaseConnectionManager singleton { get; private set; }
     
@@ -37,7 +38,7 @@ public class DatabaseConnectionManager : MonoBehaviour
     {
         Connect();
     }
-
+    
     [ContextMenu("Connect")]
     public void Connect()
     {

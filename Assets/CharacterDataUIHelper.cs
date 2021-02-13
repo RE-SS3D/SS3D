@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class CharacterDataUIHelper : MonoBehaviour
 {
-    public CharacterData character;
+    public CharacterDatabaseObject character;
     
     public void SetCharacterName(TMP_InputField inputField)
     {
@@ -14,10 +14,8 @@ public class CharacterDataUIHelper : MonoBehaviour
         character.name = name;
     }
 
-    public void SetGender(TMP_Text text)
+    public void SetCharacterNameUI()
     {
-        string gender = text.text;
-        character.gender = gender;
+        // TODO: Use character.GetCharacterData()
     }
-    
 }

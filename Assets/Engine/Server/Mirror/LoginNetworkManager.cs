@@ -40,6 +40,8 @@ using UnityEngine.SceneManagement;
     {
         public static LoginNetworkManager singleton { get; private set; }
 
+        public string localCkey;
+        
         // Warmup time until round starts
         [Range(3, 3600)]
         [SerializeField] int warmupTime;
@@ -132,6 +134,27 @@ using UnityEngine.SceneManagement;
             return true;
         }
 
+        public void StartHost(string ckey)
+        {
+            base.StartHost();
+
+            if (ckey == "username" || ckey == "")
+            {
+                ckey = "guest"; 
+            }
+            localCkey = ckey;
+        }
+
+        public void StartClient(Uri uri, string ckey)
+        {
+            base.StartClient(uri);
+            
+            if (ckey == "username" || ckey == "")
+            {
+                ckey = "guest"; 
+            }
+            localCkey = ckey;
+        }
         /// <summary>
         /// Initial server setup
         /// </summary>

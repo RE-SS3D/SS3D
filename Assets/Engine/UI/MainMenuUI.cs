@@ -21,6 +21,8 @@ namespace SS3D.UI
         private bool connecting;
         private Animator animator;
 
+        [SerializeField] private TMP_InputField username;
+        
         [SerializeField] private Button joinButton;
         [SerializeField] private TMP_Text joinButtonText;
         [SerializeField] private TMP_Text errorMessageText;
@@ -42,7 +44,7 @@ namespace SS3D.UI
         public void OnJoinButtonPressed()
         {
             var uriAdress = TryParseIpAddress();
-            NetworkManager.singleton.StartClient(uriAdress);
+            LoginNetworkManager.singleton.StartClient(uriAdress, username.text);
 
             joinButtonText.alignment = TextAlignmentOptions.Left;
             connecting = true;
@@ -72,7 +74,7 @@ namespace SS3D.UI
 
         public void OnHostButtonPressed()
         {
-            NetworkManager.singleton.StartHost();
+            LoginNetworkManager.singleton.StartHost(username.text);
 
             animator?.SetTrigger(toggleAnimatorID);
         }

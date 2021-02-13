@@ -8,6 +8,9 @@ public class LocalPlayerManager : MonoBehaviour
 {
     public static LocalPlayerManager singleton { get; private set; }
 
+    // Unique client username
+    public string ckey;
+    
     public NetworkConnection networkConnection;
     
     private void Awake()
