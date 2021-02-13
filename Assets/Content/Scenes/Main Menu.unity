@@ -121,6 +121,54 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &342930456
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 342930458}
+  - component: {fileID: 342930457}
+  m_Layer: 0
+  m_Name: DatabaseTesting
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &342930457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342930456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 962891f742e2add4786d8e30c8f2c897, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serverURL: 127.0.0.1
+  user: root
+  database: ss3d
+  port: 3306
+  password: 123456789
+--- !u!4 &342930458
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342930456}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.770335, y: -3.0814147, z: -5.4788747}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &349645322
 GameObject:
   m_ObjectHideFlags: 0
@@ -1408,7 +1456,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -14.4, y: 1.6307}
+  m_AnchoredPosition: {x: -14.399994, y: 1.6307}
   m_SizeDelta: {x: 43.956528, y: 43.956528}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!1 &3010197764239462212
@@ -1509,7 +1557,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -4.5596, y: 57.3}
+  m_AnchoredPosition: {x: -4.559601, y: 57.3}
   m_SizeDelta: {x: 9.119125, y: 31.598724}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!1 &4226223480858895429
