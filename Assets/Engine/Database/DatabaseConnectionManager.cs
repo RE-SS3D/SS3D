@@ -20,6 +20,7 @@ public class DatabaseConnectionManager : MonoBehaviour
     [SerializeField] private string password;
 
     private string connectionString;
+    public MySqlConnection conn;
 
     private void Awake()
     {
@@ -48,7 +49,7 @@ public class DatabaseConnectionManager : MonoBehaviour
             "password=" + password;
 
         connectionString = connection;
-        MySqlConnection conn = new MySqlConnection(connection);
+        conn = new MySqlConnection(connection);
         conn.Open();
         
         GetDatabaseState(conn);
