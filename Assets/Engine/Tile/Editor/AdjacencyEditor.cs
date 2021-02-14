@@ -12,16 +12,26 @@ namespace SS3D.Engine.Tiles.Editor
     [CustomEditor(typeof(AdjacencyStateMaintainer), true)]
     public class AdjacencyEditor : UnityEditor.Editor
     {
-        private Dictionary<string, SerializedObject> extraState;
         private bool[] blocked = new bool[Enum.GetValues(typeof(Direction)).Length];
+
+        private TileObject[] neighbourTiles;
+        private TileManager tileManager;
+
 
         public override void OnInspectorGUI()
         {
+            if (tileManager == null)
+                tileManager = FindObjectOfType<TileManager>();
+
             base.DrawDefaultInspector();
 
             AdjacencyStateMaintainer connector = (AdjacencyStateMaintainer)target;
             TileObject tileObject = connector.GetComponentInParent<TileObject>();
-            
+            AdjacencyConnector adjacencyConnector = (AdjacencyConnector)connector;
+
+
+            // Load the neighbours
+            neighbourTiles = tileManager.GetAdjacentTileObjects(tileObject);
 
             blocked = ParseBitmap(connector.TileState.blockedDirection);
 
@@ -63,6 +73,32 @@ namespace SS3D.Engine.Tiles.Editor
                     modified = connectorSerial.ApplyModifiedProperties();
                     if (modified)
                     {
+                        // Update our neighbour tiles
+                        for (int i = 0; i < neighbourTiles.Length; i++)
+                        {
+                            // Get fixtures on the same layer
+                            var stateMaintainer = neighbourTiles[i]?.GetLayer(adjacencyConnector.LayerIndex + 2)?.GetComponent<AdjacencyStateMaintainer>();
+                            if (stateMaintainer == null)
+                                continue;
+
+                            var serialNeighbour = new SerializedObject(stateMaintainer);
+
+                            var propertyNeighbour = serialNeighbour.FindProperty("tileState");
+                            var directionPropery = propertyNeighbour.FindPropertyRelative("blockedDirection");
+
+                            // Set the opposite side blocked
+                            byte neighbourBlocked = (byte)directionPropery.intValue;
+                            neighbourBlocked = AdjacencyBitmap.SetDirection(neighbourBlocked, DirectionHelper.GetOpposite((Direction)i), blocked[i]);
+
+                            // Finally update the blocked byte;
+                            directionPropery.intValue = neighbourBlocked;
+                            serialNeighbour.ApplyModifiedProperties();
+
+                            // Refresh the subdata and meshes
+                            neighbourTiles[i].RefreshSubData();
+                            neighbourTiles[i].RefreshAdjacencies();
+                        }
+
                         tileObject.RefreshSubData();
                         tileObject.RefreshAdjacencies();
                     }

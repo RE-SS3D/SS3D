@@ -639,6 +639,26 @@ namespace SS3D.Engine.Tiles
                 // i++;
             }
         }
+
+        public GameObject GetLayer(int i)
+        {
+            int offset = -2;
+
+            switch (i)
+            {
+                case 0:
+                    return plenum;
+                case 1:
+                    return turf;
+                default:
+                    if ((i + offset) >= fixtures.Length)
+                        return null;
+                    if (fixtures[i + offset] != null)
+                        return fixtures[i + offset];
+                    else return null;
+            }
+        }
+
 #if UNITY_EDITOR
         /**
          * Migrates existing fixtures that do not have a fixturelayer set.
@@ -662,25 +682,5 @@ namespace SS3D.Engine.Tiles
         private GameObject[] fixtures = new GameObject[TileDefinition.GetAllFixtureLayerSize()];
         private AdjacencyConnector[] tileFixtureConnectors = new AdjacencyConnector[TileDefinition.GetTileFixtureLayerSize()];
         private AdjacencyConnector[] floorFixtureConnectors = new AdjacencyConnector[TileDefinition.GetFloorFixtureLayerSize()];
-
-
-        public GameObject GetLayer(int i)
-        {
-            int offset = -2;
-
-            switch (i)
-            {
-                case 0:
-                    return plenum;
-                case 1:
-                    return turf;
-                default:
-                    if ((i + offset) >= fixtures.Length)
-                        return null;
-                    if (fixtures[i + offset] != null)
-                        return fixtures[i + offset];
-                    else return null;
-            }
-        }
     }
 }

@@ -477,6 +477,33 @@ namespace SS3D.Engine.Tiles {
             return tiles.Values.ToList<TileObject>();
         }
 
+        public TileObject[] GetAdjacentTileObjects(TileObject tileObject)
+        {
+            TileObject[] adjacents = new TileObject[8];
+            var index = GetIndexAt(tileObject.transform.position);
+
+            for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction += 1)
+            {
+                // Take the cardinal direction, but use it in negative, so direction means the direction from OTHER to the just updated tile.
+                var modifier = DirectionHelper.ToCardinalVector(direction);
+
+                if (index.y + modifier.Item2 < 0 || index.x + modifier.Item1 < 0)
+                    continue;
+
+                ulong otherKey = GetKey(index.x + modifier.Item1, index.y + modifier.Item2);
+                if (tiles.ContainsKey(otherKey))
+                {
+                    adjacents[(int)direction] = tiles[otherKey];
+                }
+                else
+                {
+                    adjacents[(int)direction] = null;
+                }
+            }
+
+            return adjacents;
+        }
+
         // TODO: This is an inefficient data structure for our purposes.
         // TODO: Allow negatives
         // The key is the concatenated y,x position of the tile.
