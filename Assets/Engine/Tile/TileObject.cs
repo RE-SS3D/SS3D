@@ -123,6 +123,18 @@ namespace SS3D.Engine.Tiles
         {
             UpdateSubDataFromChildren();
         }
+
+        public void RefreshAdjacencies()
+        {
+            var tileManager = transform.root.GetComponent<TileManager>();
+
+            if (tileManager != null && tileManager.Count > 0 && !TileMapEditorHelpers.IsGhostTile(this))
+            {
+                var pos = tileManager.GetIndexAt(transform.position);
+                tileManager.EditorUpdateTile(pos.x, pos.y, tile);
+            }
+        }
+
 #endif
 
         /**
@@ -598,14 +610,15 @@ namespace SS3D.Engine.Tiles
             if (newTile.subStates != null && newTile.subStates.Length >= 2 && newTile.subStates[1] != null)
                 turf?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[1]);
 
-            int i = 0;
-            foreach (GameObject fixture in fixtures)
+            // int i = 0;
+            // foreach (GameObject fixture in fixtures)
+            for (int i = 0; i < fixtures.Length; i++)
             {
                 if (newTile.subStates != null && newTile.subStates.Length >= i + 3 && newTile.subStates[i + 2] != null)
                 {
                     fixtures[i]?.GetComponent<TileStateCommunicator>()?.SetTileState(newTile.subStates[i + 2]);
                 }
-                i++;
+                //i++;
             }
         }
 
@@ -617,14 +630,35 @@ namespace SS3D.Engine.Tiles
             tile.subStates[0] = plenum != null ? plenum?.GetComponent<TileStateCommunicator>()?.GetTileState() : null;
             tile.subStates[1] = turf != null ? turf?.GetComponent<TileStateCommunicator>()?.GetTileState() : null;
 
-            int i = 2;
-            foreach (GameObject fixture in fixtures)
+            // int i = 2;
+            // foreach (GameObject fixture in fixtures)
+            for (int i = 0; i < fixtures.Length; i++)
             {
-                if (fixture)
-                    tile.subStates[i] = fixture?.GetComponent<TileStateCommunicator>()?.GetTileState();
-                i++;
+                if (fixtures[i] != null)
+                    tile.subStates[i + 2] = fixtures[i].GetComponent<TileStateCommunicator>()?.GetTileState();
+                // i++;
             }
         }
+
+        public GameObject GetLayer(int i)
+        {
+            int offset = -2;
+
+            switch (i)
+            {
+                case 0:
+                    return plenum;
+                case 1:
+                    return turf;
+                default:
+                    if ((i + offset) >= fixtures.Length)
+                        return null;
+                    if (fixtures[i + offset] != null)
+                        return fixtures[i + offset];
+                    else return null;
+            }
+        }
+
 #if UNITY_EDITOR
         /**
          * Migrates existing fixtures that do not have a fixturelayer set.
@@ -648,25 +682,5 @@ namespace SS3D.Engine.Tiles
         private GameObject[] fixtures = new GameObject[TileDefinition.GetAllFixtureLayerSize()];
         private AdjacencyConnector[] tileFixtureConnectors = new AdjacencyConnector[TileDefinition.GetTileFixtureLayerSize()];
         private AdjacencyConnector[] floorFixtureConnectors = new AdjacencyConnector[TileDefinition.GetFloorFixtureLayerSize()];
-
-
-        public GameObject GetLayer(int i)
-        {
-            int offset = -2;
-
-            switch (i)
-            {
-                case 0:
-                    return plenum;
-                case 1:
-                    return turf;
-                default:
-                    if ((i + offset) >= fixtures.Length)
-                        return null;
-                    if (fixtures[i + offset] != null)
-                        return fixtures[i + offset];
-                    else return null;
-            }
-        }
     }
 }
