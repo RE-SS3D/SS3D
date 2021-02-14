@@ -62,6 +62,5 @@ public class PauseMenu : NetworkBehaviour
             Debug.Log("client");
             networkManager.StopClient();
         }
-        
     }
 }
