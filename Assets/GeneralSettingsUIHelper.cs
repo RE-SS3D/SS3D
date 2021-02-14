@@ -11,12 +11,16 @@ public class GeneralSettingsUIHelper : MonoBehaviour
 
     public Button[] graphicButtons;
 
+    public Button[] tabs;
+    
     private void Start()
     {
         GeneralSettingsManager settings = GeneralSettingsManager.singleton;
 
         toggleSSRT.isOn = settings.ssrt.enabled;
 
+        tabs[0].Select();
+        
         graphicButtons[(int)settings.graphicSettings].Select();
     }
 }

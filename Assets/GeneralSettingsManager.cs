@@ -6,6 +6,7 @@ using UnityEngine.Rendering;
 public class GeneralSettingsManager : MonoBehaviour
 {
     public static GeneralSettingsManager singleton { get; private set; }
+    public static event System.Action<int> OnGraphicsChanged; 
     
     public SSRT ssrt;
     public GraphicSettings graphicSettings = GraphicSettings.low;
@@ -28,5 +29,14 @@ public class GeneralSettingsManager : MonoBehaviour
         {
             singleton = this;
         }
+    }
+
+    public void SetGraphicSettings(GraphicSettings level)
+    {
+        QualitySettings.SetQualityLevel((int)level ,true);
+    }
+    public void SetGraphicSettings(int level)
+    {
+        QualitySettings.SetQualityLevel(level, true);
     }
 }
