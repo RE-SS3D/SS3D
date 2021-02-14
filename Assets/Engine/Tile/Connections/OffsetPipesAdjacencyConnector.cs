@@ -2,6 +2,7 @@
 using System.Collections;
 using SS3D.Engine.Tiles.Connections;
 using System;
+using SS3D.Engine.Tiles.State;
 
 namespace SS3D.Engine.Tiles.Connections
 {
@@ -9,7 +10,7 @@ namespace SS3D.Engine.Tiles.Connections
      * The offset pipes adjacency connector is for small pipes layers 1 and 3...
      */
     [RequireComponent(typeof(MeshFilter))]
-    public class OffsetPipesAdjacencyConnector : MonoBehaviour, AdjacencyConnector
+    public class OffsetPipesAdjacencyConnector : AdjacencyStateMaintainer, AdjacencyConnector
     {
         public enum TileLayer
         {
@@ -116,7 +117,12 @@ namespace SS3D.Engine.Tiles.Connections
         {
             bool isConnected = (tile.turf && (tile.turf.genericType == type || type == null));
             if (tile.fixtures != null)
+            {
                 isConnected = isConnected || (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex) && (tile.fixtures.GetFixtureAtLayerIndex(LayerIndex).genericType == type || type == null));
+            }
+
+            isConnected &= (AdjacencyBitmap.Adjacent(TileState.blockedDirection, direction) == 0);
+
             return adjacents.UpdateDirection(direction, isConnected, true);
         }
 

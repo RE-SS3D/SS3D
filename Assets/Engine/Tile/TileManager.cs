@@ -494,6 +494,33 @@ namespace SS3D.Engine.Tiles {
             return tiles.Values.ToList<TileObject>();
         }
 
+        public TileObject[] GetAdjacentTileObjects(TileObject tileObject)
+        {
+            TileObject[] adjacents = new TileObject[8];
+            var index = GetIndexAt(tileObject.transform.position);
+
+            for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction += 1)
+            {
+                // Take the cardinal direction, but use it in negative, so direction means the direction from OTHER to the just updated tile.
+                var modifier = DirectionHelper.ToCardinalVector(direction);
+
+                if (index.y + modifier.Item2 < 0 || index.x + modifier.Item1 < 0)
+                    continue;
+
+                ulong otherKey = GetKey(index.x + modifier.Item1, index.y + modifier.Item2);
+                if (tiles.ContainsKey(otherKey))
+                {
+                    adjacents[(int)direction] = tiles[otherKey];
+                }
+                else
+                {
+                    adjacents[(int)direction] = null;
+                }
+            }
+
+            return adjacents;
+        }
+
         // TODO: This is an inefficient data structure for our purposes.
         // TODO: Allow negatives
         // The key is the concatenated y,x position of the tile.
@@ -525,9 +552,6 @@ namespace SS3D.Engine.Tiles {
                 if (f)
                 {
                     writer.WriteString(f.name ?? "");
-
-                    // Write tile rotation
-                    // writer.WriteString(f.GetRotation().ToString());
                 }
                 else
                 {
@@ -544,9 +568,6 @@ namespace SS3D.Engine.Tiles {
                 if (f)
                 {
                     writer.WriteString(f.name ?? "");
-
-                    // Write tile rotation
-                    // writer.WriteString(f.GetRotation().ToString());
                 }
                 else
                 {
@@ -561,12 +582,6 @@ namespace SS3D.Engine.Tiles {
                 if (f)
                 {
                     writer.WriteString(f.name ?? "");
-
-                    // Write tile rotation
-                    // writer.WriteString(f.GetRotation().ToString());
-
-                    // if (f.GetRotation().ToString() != "North")
-                    //    Debug.Log("Not north");
                 }
                 else
                 {
@@ -620,9 +635,6 @@ namespace SS3D.Engine.Tiles {
                 {
                     TileFixture tf = (TileFixture)fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
 
-                    //string rotation = reader.ReadString();
-                    //tf.SetRotation((Rotation)Enum.Parse(typeof(Rotation), rotation));
-
                     tileDefinition.fixtures.SetTileFixtureAtLayer(tf, layer);
                     if (tf == null)
                     {
@@ -639,9 +651,6 @@ namespace SS3D.Engine.Tiles {
                 {
                     WallFixture wf = (WallFixture)fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
 
-                    //string rotation = reader.ReadString();
-                    //wf.SetRotation((Rotation)Enum.Parse(typeof(Rotation), rotation));
-
                     tileDefinition.fixtures.SetWallFixtureAtLayer(wf, layer);
                     if (wf == null)
                     {
@@ -657,12 +666,6 @@ namespace SS3D.Engine.Tiles {
                 if (!string.IsNullOrEmpty(fixtureName))
                 {
                     FloorFixture ff = (FloorFixture)fixtures.FirstOrDefault(fixture => fixture.name == fixtureName);
-
-                    //string rotation = reader.ReadString();
-                    //if (rotation != "North")
-                    //    Debug.Log("Not north rotation read");
-
-                    //ff.SetRotation((Rotation)Enum.Parse(typeof(Rotation), rotation));
 
                     tileDefinition.fixtures.SetFloorFixtureAtLayer(ff, layer);
                     if (ff == null)

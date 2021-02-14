@@ -2,6 +2,8 @@
 using System.Collections;
 using SS3D.Engine.Tiles.Connections;
 using System;
+using SS3D.Engine.Tiles.State;
+using UnityEditor;
 
 namespace SS3D.Engine.Tiles.Connections
 {
@@ -10,7 +12,7 @@ namespace SS3D.Engine.Tiles.Connections
      * connection but with some uniqueness.
      */
     [RequireComponent(typeof(MeshFilter))]
-    public class WiresAdjacencyConnector : MonoBehaviour, AdjacencyConnector
+    public class WiresAdjacencyConnector : AdjacencyStateMaintainer, AdjacencyConnector
     {
         public enum TileLayer
         {
@@ -94,6 +96,10 @@ namespace SS3D.Engine.Tiles.Connections
             isConnected |= (tile.turf && (tile.turf.genericType == type || type == null));
             if (tile.fixtures != null)
                 isConnected |= (tile.fixtures.GetFixtureAtLayerIndex(index) && (tile.fixtures.GetFixtureAtLayerIndex(index).genericType == type || type == null));
+
+
+            isConnected &= (AdjacencyBitmap.Adjacent(TileState.blockedDirection, direction) == 0);
+
             return adjacents.UpdateDirection(direction, isConnected, true);
         }
 
