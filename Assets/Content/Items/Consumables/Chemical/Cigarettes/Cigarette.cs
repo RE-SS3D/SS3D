@@ -35,7 +35,7 @@ namespace SS3D.Content.Items.Consumables
 
         public bool CanBeLit => !Lit && !FullyConsumed;
 
-        public bool Lit { get; private set; }
+        public bool Lit => consumeCoroutine != null;
 
         public void Ignite()
         {
@@ -45,7 +45,7 @@ namespace SS3D.Content.Items.Consumables
                 return;
             }
 
-            Lit = true;
+            //Lit = true;
             consumeCoroutine = StartCoroutine(ConsumeCigaretteCoroutine());
             UpdateMesh();
         }
