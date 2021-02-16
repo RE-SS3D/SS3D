@@ -41,23 +41,24 @@ namespace SS3D.Content.Items.Consumables
         {
             if (FullyConsumed)
             {
+                Extinguish();
                 return;
             }
 
             Lit = true;
-            if (Lit)
-            {
-                consumeCoroutine = StartCoroutine(ConsumeCigaretteCoroutine());
-            }
-            else
+            consumeCoroutine = StartCoroutine(ConsumeCigaretteCoroutine());
+            UpdateMesh();
+        }
+
+        public void Extinguish()
+        {
+            if (consumeCoroutine != null)
             {
                 StopCoroutine(consumeCoroutine);
                 consumeCoroutine = null;
             }
-            UpdateMesh();
+            CreateButt();
         }
-
-        public void Extinguish() => CreateButt();
 
         private void UpdateMesh()
         {
@@ -89,7 +90,7 @@ namespace SS3D.Content.Items.Consumables
                 UpdateMesh();
                 yield return null;
             }
-            CreateButt();
+            Extinguish();
         }
 
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
