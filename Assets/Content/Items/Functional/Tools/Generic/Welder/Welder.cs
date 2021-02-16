@@ -9,7 +9,7 @@ using SS3D.Engine.Tiles;
 
 namespace SS3D.Content.Items.Functional.Tools
 {
-    public class Welder : Item, IToggleable
+    public class Welder : Item, IToggleable, IIgniter
     {
         [SerializeField]
         public ParticleSystem hotFlame;
@@ -32,7 +32,9 @@ namespace SS3D.Content.Items.Functional.Tools
         public Sprite constructIcon;
 
         private Dictionary<Turf, Turf> reinforceDict;
-        
+
+        public bool CanIgnite => GetState();
+
         public override void Start()
         {
             base.Start();
