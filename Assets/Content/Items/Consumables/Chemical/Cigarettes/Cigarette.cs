@@ -24,6 +24,9 @@ namespace SS3D.Content.Items.Consumables
         private SkinnedMeshRenderer litMeshRenderer;
 
         [SerializeField]
+        private ParticleSystem smokeParticle;
+
+        [SerializeField]
         private float timeToSmoke;
 
 
@@ -48,6 +51,7 @@ namespace SS3D.Content.Items.Consumables
 
             lit = true;
             consumeCoroutine = StartCoroutine(ConsumeCigaretteCoroutine());
+            RpcSetParticle(true); 
             RpcUpdateMesh();
         }
 
@@ -60,6 +64,7 @@ namespace SS3D.Content.Items.Consumables
                 consumeCoroutine = null;
             }
             CreateButt();
+            RpcSetParticle(false);
         }
 
         [ClientRpc]
@@ -76,6 +81,18 @@ namespace SS3D.Content.Items.Consumables
                 litMeshRenderer.gameObject.SetActive(false);
                 unlitMeshRenderer.gameObject.SetActive(true);
             }
+        }
+
+        [ClientRpc]
+        private void RpcSetParticle(bool play)
+        {
+            if (smokeParticle == null)
+            {
+                return;
+            }
+
+            if (play) smokeParticle.Play();
+            else smokeParticle.Stop();
         }
 
         private void CreateButt()
