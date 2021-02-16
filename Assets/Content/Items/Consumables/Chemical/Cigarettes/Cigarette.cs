@@ -4,7 +4,7 @@ using System.Linq;
 using SS3D.Content.Systems.Interactions;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Inventory;
-using SS3D.Engine.Tiles;
+using Mirror;
 using UnityEngine;
 
 namespace SS3D.Content.Items.Consumables
@@ -28,14 +28,15 @@ namespace SS3D.Content.Items.Consumables
 
 
         private Coroutine consumeCoroutine;
-        private float activeBurnTime;
-        private float amountConsumed;
+        [SyncVar] private float activeBurnTime;
+        [SyncVar] private float amountConsumed;
+        [SyncVar] private bool lit;
 
         public bool FullyConsumed => amountConsumed == 1;
 
         public bool CanBeLit => !Lit && !FullyConsumed;
 
-        public bool Lit => consumeCoroutine != null;
+        public bool Lit => lit;
 
         public void Ignite()
         {
@@ -45,13 +46,14 @@ namespace SS3D.Content.Items.Consumables
                 return;
             }
 
-            //Lit = true;
+            lit = true;
             consumeCoroutine = StartCoroutine(ConsumeCigaretteCoroutine());
-            UpdateMesh();
+            RpcUpdateMesh();
         }
 
         public void Extinguish()
         {
+            lit = false;
             if (consumeCoroutine != null)
             {
                 StopCoroutine(consumeCoroutine);
@@ -60,7 +62,8 @@ namespace SS3D.Content.Items.Consumables
             CreateButt();
         }
 
-        private void UpdateMesh()
+        [ClientRpc]
+        private void RpcUpdateMesh()
         {
             if (Lit)
             {
@@ -77,20 +80,26 @@ namespace SS3D.Content.Items.Consumables
 
         private void CreateButt()
         {
-            ItemHelpers.ReplaceItem(this, ItemHelpers.CreateItem(buttPrefab));
+            Item butt = ItemHelpers.CreateItem(buttPrefab);
+            ItemHelpers.ReplaceItem(this, butt);
         }
 
         private IEnumerator ConsumeCigaretteCoroutine()
         {
             while (!FullyConsumed)
             {
-                activeBurnTime += Time.deltaTime;
-                amountConsumed = activeBurnTime / timeToSmoke;
-                amountConsumed = Mathf.Min(amountConsumed, 1);
-                UpdateMesh();
+                ConsumeUpdate();
                 yield return null;
             }
             Extinguish();
+        }
+
+        private void ConsumeUpdate()
+        {
+            activeBurnTime += Time.deltaTime;
+            amountConsumed = activeBurnTime / timeToSmoke;
+            amountConsumed = Mathf.Min(amountConsumed, 1);
+            RpcUpdateMesh();
         }
 
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
