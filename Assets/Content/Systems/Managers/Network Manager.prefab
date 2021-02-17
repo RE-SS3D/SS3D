@@ -106,11 +106,10 @@ MonoBehaviour:
   - {fileID: 5533951594911835035, guid: ca1dc9505ebfe1b49959d3cfa6aa4b01, type: 3}
   - {fileID: 5533951594911835035, guid: 6504a09c112fa4d478c3bce81801f878, type: 3}
   - {fileID: 5367923578081395378, guid: 425c09b347f9d3949b40163fd9aa6c30, type: 3}
-  - {fileID: 5533951594911835035, guid: 09395ab15b931124c995d3d78e698779, type: 3}
-  - {fileID: 5533951594911835035, guid: f7511c589eca2124487cf90539caa2d6, type: 3}
   warmupTime: 3
   loginServerAddress: http://35.198.114.92
-  soulPrefab: {fileID: 0}
+  playerDummyPrefab: {fileID: 5297952924634552147, guid: c42f46e927c4d02458b0b39466700928,
+    type: 3}
   loginManagerPrefab: {fileID: 757364905391698792, guid: 16d73a43abe25d14c8aacb4207acd152,
     type: 3}
   roundManagerPrefab: {fileID: 6354123221177745285, guid: e84c1b8cfcb1483478aeb2d2767ebf1b,
