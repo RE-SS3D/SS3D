@@ -141,8 +141,17 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             for (int x = startPosition.x; x != curPosition.x + xInc; x += xInc) {
                 for (int y = startPosition.y; y != curPosition.y + yInc; y += yInc)
                 {
-                    if (deleteTiles)
-                        DeleteTile(tileManager, x, y);
+                    if (DeleteTiles)
+                    {
+                        if (SelectedTileLayer == TileVisibilityLayers.Plenum)
+                        {
+                            DeleteTile(tileManager, x, y);
+                        }
+                        else
+                        {
+                            DeleteTileLayer(tileManager, (int)SelectedTileLayer, x, y);
+                        }
+                    }
                     else
                         SetTile(tileManager, tileDefinition, x, y);
                 }
@@ -162,18 +171,14 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
             dragTiles.Clear();
         }
 
-        public void SetDelete()
-        {
-            deleteTiles = true;
-        }
-
         private readonly TileManager tileManager;
         private readonly TileDefinition tileDefinition;
         private readonly Vector2Int startPosition;
         private Vector2Int curPosition;
         private List<TileObject> dragTiles = new List<TileObject>();
 
-        private bool deleteTiles;
+        public bool DeleteTiles { get; set; }
+        public TileVisibilityLayers SelectedTileLayer { get; set; }
     }
 
 }
