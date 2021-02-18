@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Data;
-using System.Diagnostics;
 using Mirror;
 using UnityEngine;
 
@@ -10,84 +7,109 @@ using MySql;
 using MySql.Data.MySqlClient;
 using Debug = UnityEngine.Debug;
 
-public class DatabaseConnectionManager : NetworkBehaviour
+namespace SS3D.Engine.Database
 {
-    public static DatabaseConnectionManager singleton { get; private set; }
-    
-    [SerializeField] private string serverURL;
-    [SerializeField] private string user;
-    [SerializeField] private string database;
-    [SerializeField] private string port;
-    [SerializeField] private string password;
-
-    private string connectionString;
-    public MySqlConnection conn;
-
-    private void Awake()
+    public class DatabaseConnectionManager : NetworkBehaviour
     {
-        if (singleton != null && singleton != this)
+        public static DatabaseConnectionManager singleton { get; private set; }
+
+        [SerializeField] private string serverURL;
+        [SerializeField] private string user;
+        [SerializeField] private string database;
+        [SerializeField] private string port;
+        [SerializeField] private string password;
+
+        private string connectionString;
+        public MySqlConnection conn;
+
+        private void Awake()
         {
-            Destroy(gameObject);
+            if (singleton != null && singleton != this)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                singleton = this;
+            }
         }
-        else
+
+        private void Start()
         {
-            singleton = this;
+            Connect();
         }
-    }
-    private void Start()
-    {
-        Connect();
-    }
-    
-    [ContextMenu("Connect")]
-    public void Connect()
-    {
-        string connection =
-            "server=" + serverURL + ";" +
-            "user=" + user + ";" +
-            "database=" + database + ";" +
-            "port=" + port + ";" +
-            "password=" + password;
 
-        connectionString = connection;
-        conn = new MySqlConnection(connection);
-        conn.Open();
-        
-        GetDatabaseState(conn);
-    }
-
-    public ConnectionState GetDatabaseState(MySqlConnection conn)
-    {
-        ConnectionState state = conn.State;
-
-        StartCoroutine(WaitUntilConnected(state));
-        Debug.Log("connecting to database: " + connectionString);
-
-        switch(state)
+        [Server]
+        [ContextMenu("Connect")]
+        public void Connect()
         {
-            case ConnectionState.Open:
-                Debug.Log("connected");
-                break;
-            case ConnectionState.Closed:
-                Debug.Log("failed to connect");
-                break;
-            case ConnectionState.Broken:
-                Debug.Log("connection lost");
-                break;
-            case ConnectionState.Executing:
-                Debug.Log("database is executing a command");
-                break;
-            case ConnectionState.Fetching:
-                Debug.Log("database is fetching data");
-                break;
+            string connection =
+                "server=" + serverURL + ";" +
+                "user=" + user + ";" +
+                "database=" + database + ";" +
+                "port=" + port + ";" +
+                "password=" + password;
+
+            connectionString = connection;
+            conn = new MySqlConnection(connection);
+            conn.Open();
+
+            GetDatabaseState(conn);
         }
+
+        public ConnectionState GetDatabaseState(MySqlConnection conn)
+        {
+            ConnectionState state = conn.State;
+
+            StartCoroutine(WaitUntilConnected(state));
+            Debug.Log("connecting to database: " + connectionString);
+
+            switch (state)
+            {
+                case ConnectionState.Open:
+                    Debug.Log("connected");
+                    break;
+                case ConnectionState.Closed:
+                    Debug.Log("failed to connect");
+                    break;
+                case ConnectionState.Broken:
+                    Debug.Log("connection lost");
+                    break;
+                case ConnectionState.Executing:
+                    Debug.Log("database is executing a command");
+                    break;
+                case ConnectionState.Fetching:
+                    Debug.Log("database is fetching data");
+                    break;
+            }
+
+            return state;
+        }
+
+        public IEnumerator WaitUntilConnected(ConnectionState state)
+        {
+            yield return new WaitUntil(delegate { return state != ConnectionState.Connecting; });
+        }
+
+        [Server]
+        public void ExecuteQuerry(string sql)
+        {
+            ConnectionState state = GetDatabaseState(conn);
             
-        return state;
-    }
+            Debug.Log("Executing new SQL query, database state: " + conn);
 
-    public IEnumerator WaitUntilConnected(ConnectionState state)
-    {
-        yield return new WaitUntil(delegate { return state != ConnectionState.Connecting; });
+            if (state == ConnectionState.Closed || state == ConnectionState.Broken)
+            {
+                Connect();
+            }
+            
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+
+            object result = cmd.ExecuteScalar();
+
+            if (result != null)
+                Debug.Log(cmd.ExecuteScalar().ToString());
+        }
+
     }
-    
 }

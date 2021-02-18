@@ -1,35 +1,39 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Mirror;
-using MySql.Data.MySqlClient;
+﻿using Mirror;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
-public class UserDatabaseObject : MonoBehaviour
+namespace SS3D.Engine.Database
 {
-    public string ckey;
-
-    private void Start()
+    public class UserDatabaseObject : NetworkBehaviour
     {
-        UpdateCkey();
-    }
+        public string ckey;
 
-    [ContextMenu("Update CKey")]
-    public void UpdateCkey()
-    {
-        ckey = LoginNetworkManager.singleton.localCkey;
-        LocalPlayerManager.singleton.ckey = ckey;
-    }
-    
-    [ContextMenu("Save user")]
-    public void Save()
-    {
-        DatabaseConnectionManager database = DatabaseConnectionManager.singleton;
+        private void Start()
+        {
+            UpdateCkey();
+        }
+        
+        [Client]
+        [ContextMenu("Update CKey")]
+        public void UpdateCkey()
+        {
+            ckey = LoginNetworkManager.singleton.localCkey;
+            LocalPlayerManager.singleton.ckey = ckey;
+        }
 
-        string sql = "INSERT INTO registeredUsers(ckey) VALUES ('" + ckey + "')";
-        MySqlCommand cmd = new MySqlCommand(sql, database.conn);
+        [Command(ignoreAuthority = true)]
+        [ContextMenu("Save user")]
+        public void CmdSaveUser(string ckey)
+        {
+            DatabaseConnectionManager database = DatabaseConnectionManager.singleton;
 
-        Debug.Log(cmd.ExecuteScalar());
+            string sql = "INSERT INTO registeredUsers(ckey) VALUES ('" + ckey + "')";
+
+            database.ExecuteQuerry(sql);
+        }
+
+        public void SaveUser()
+        {
+            CmdSaveUser(ckey);
+        }
     }
 }

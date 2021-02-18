@@ -1,10 +1,9 @@
 ﻿using Mirror;
-using MySql.Data.MySqlClient;
 using UnityEngine;
 
 namespace SS3D.Engine.Database
 {
-    public class CharacterDatabaseObject : MonoBehaviour
+    public class CharacterDatabaseObject : NetworkBehaviour
     {
         public string name;
         // TODO: Job preferences
@@ -15,7 +14,8 @@ namespace SS3D.Engine.Database
             // TODO: Try getting data, if there's none, Save it otherwise, update it
         }
 
-        public void SaveCharacterData()
+        [Command(ignoreAuthority = true)]
+        public void CmdSaveCharacterData()
         {
             DatabaseConnectionManager database = DatabaseConnectionManager.singleton;
             string ckey = LocalPlayerManager.singleton.ckey;
@@ -27,24 +27,20 @@ namespace SS3D.Engine.Database
                          "', '" +
                          name +
                          "')";
-            MySqlCommand cmd = new MySqlCommand(sql, database.conn);
             
-            Debug.Log(cmd.ExecuteScalar()); 
+            database.ExecuteQuerry(sql);
         }
         
-        [Command]
+        [Command(ignoreAuthority = true)]
         [ContextMenu("Get Character Data")]
-        public string GetCharacterData()
+        public void CmdGetCharacterData()
         {
             DatabaseConnectionManager database = DatabaseConnectionManager.singleton;
             string ckey = LocalPlayerManager.singleton.ckey;
             
             string sql = "SELECT * FROM CharacterData WHERE ckey = '" + ckey + "'";
 
-            MySqlCommand cmd = new MySqlCommand(sql, database.conn);
-            
-            string result = cmd.ExecuteScalar().ToString();
-            return result;
+            database.ExecuteQuerry(sql);
         }
     }
 }

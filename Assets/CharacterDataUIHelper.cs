@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using SS3D.Engine.Database;
+﻿using SS3D.Engine.Database;
 using TMPro;
 using UnityEngine;
 
