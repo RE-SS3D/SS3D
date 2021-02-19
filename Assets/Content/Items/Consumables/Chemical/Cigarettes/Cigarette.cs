@@ -63,8 +63,8 @@ namespace SS3D.Content.Items.Consumables
                 StopCoroutine(consumeCoroutine);
                 consumeCoroutine = null;
             }
-            CreateButt();
             RpcSetParticle(false);
+            CreateButt();
         }
 
         [ClientRpc]
