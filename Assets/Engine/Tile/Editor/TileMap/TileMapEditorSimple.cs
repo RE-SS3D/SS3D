@@ -273,7 +273,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                     if (deleteTiles)
                     {
                         dragHandler.DeleteTiles = true;
-                        dragHandler.SelectedTileLayer = selectedTileLayer;
+                        dragHandler.SelectedTileLayerIndex = GetTileOffsetIndex();
                     }
                 }
                 dragHandler.HandleDrag(tilePosition);
@@ -302,7 +302,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                         }
                         else
                         {
-                            DeleteTileLayer(tileManager, (int)selectedTileLayer, tilePosition.x, tilePosition.y);
+                            DeleteTileLayer(tileManager, GetTileOffsetIndex(), tilePosition.x, tilePosition.y);
                         }
                     }
                     else
