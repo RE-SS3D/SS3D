@@ -111,13 +111,23 @@ namespace Tile
 
             if (fixtureObject != null)
             {
+                
+
+
                 FixtureStateMaintainer maintainer = fixtureObject.GetComponent<FixtureStateMaintainer>();
                 if (maintainer != null)
                 {
-                    var stateNow = maintainer.TileState;
+                    var fixtureSerial = new SerializedObject(maintainer);
+                    fixtureSerial.Update();
+
+                    SerializedProperty property = fixtureSerial.FindProperty("tileState");
+                    property.FindPropertyRelative("rotation").intValue = (int)rotation;
+                    fixtureSerial.ApplyModifiedProperties();
+
+                    //var stateNow = maintainer.TileState;
                     
-                    stateNow.rotation = rotation;
-                    maintainer.SetTileState(stateNow);
+                    //stateNow.rotation = rotation;
+                    //maintainer.SetTileState(stateNow);
 
                     // Refresh the subdata because it still has the old tilestate
                     tileObject.RefreshSubData();

@@ -34,7 +34,7 @@ namespace SS3D.Content.Furniture
             animator = GetComponent<Animator>();
         }
 
-        private void OnOpenStateChange(object sender, bool e)
+        protected virtual void OnOpenStateChange(object sender, bool e)
         {
             openState = e;
             UpdateAnimator();
