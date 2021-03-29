@@ -44,10 +44,12 @@ namespace SS3D.UI
         public void OnJoinButtonPressed()
         {
             var uriAdress = TryParseIpAddress();
+            // we send the host ip and the selected username, temporary of course (or not)
             LoginNetworkManager.singleton.StartClient(uriAdress, username.text);
 
             joinButtonText.alignment = TextAlignmentOptions.Left;
             connecting = true;
+            // updates the embark text
             StartCoroutine(ChangeJoinText());
             
             if (animator.GetBool("ToggleError"))
