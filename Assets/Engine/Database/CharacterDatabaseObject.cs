@@ -3,8 +3,10 @@ using UnityEngine;
 
 namespace SS3D.Engine.Database
 {
+    // Database Object of the character data
     public class CharacterDatabaseObject : NetworkBehaviour
     {
+        // Character name
         public string name;
         // TODO: Job preferences
 
