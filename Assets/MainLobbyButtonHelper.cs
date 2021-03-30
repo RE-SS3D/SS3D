@@ -25,7 +25,7 @@ public class MainLobbyButtonHelper : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) animator.SetTrigger("Fade");
+        //if (Input.GetKeyDown(KeyCode.Escape)) animator.SetTrigger("Fade");
     }
 
     public void Disconnect()

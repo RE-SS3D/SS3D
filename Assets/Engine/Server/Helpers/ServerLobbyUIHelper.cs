@@ -52,7 +52,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         
         // Updates the Embark button text to "Embark"
         RoundManager.ServerRoundStarted += ChangeEmbarkText;
-
+        // Updates the menu if the round ends, maybe we can chance later to a final round end later
         RoundManager.ServerRoundEnded += ForceToggleOn;
         
         // Makes the button's function be CmdRequestEmbark and the UI fade out
@@ -62,7 +62,15 @@ public class ServerLobbyUIHelper : NetworkBehaviour
             Toggle(false);
         });
     }
-    
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && RoundManager.singleton.IsRoundStarted)
+        {
+            Toggle();
+        }
+    }
+
     public void UnlockServerSettings() 
     {
         // TODO:
@@ -112,6 +120,12 @@ public class ServerLobbyUIHelper : NetworkBehaviour
     {
         if (!animator.enabled) animator.enabled = true;
         animator.SetBool("Toggle", toggle);
+    }
+
+    private void Toggle()
+    {
+        bool state = animator.GetBool("Toggle");
+        Toggle(!state);
     }
 
     // Triggered when warmup is started
