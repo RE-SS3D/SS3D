@@ -56,7 +56,7 @@ namespace SS3D.Engine.Inventory.Extensions
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-	    // remember that when we call this Start, we are starting the interaction per see
+	    // remember that when we call this Start, we are starting the interaction per se
 	    // so we check if the source of the interaction is a Hand, and if the target is an Item
             if (interactionEvent.Source is Hands hands && interactionEvent.Target is Item target)
             {
