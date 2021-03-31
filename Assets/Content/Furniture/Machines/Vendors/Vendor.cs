@@ -18,7 +18,7 @@ namespace SS3D.Content.Furniture.Machines.Vendors
         /// </summary>
         public Transform EjectionPoint;
         /// <summary>
-        /// The velocity at which the item is launched, should be able to be hacked
+        /// The velocity at which the item is dispensed, should be able to be hacked
         /// </summary>
         public Vector3 EjectionVelocity;
         /// <summary>
