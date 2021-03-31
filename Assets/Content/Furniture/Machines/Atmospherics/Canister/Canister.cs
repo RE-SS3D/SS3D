@@ -11,7 +11,7 @@ using UnityEngine.Tilemaps;
 namespace SS3D.Content.Furniture.Machines.Atmospherics {
     // This handles the gas canister process, where we can put only Atmos stuff.
     // This can only store gas (for now), and we have a maximum ammount of gas that can be stored.
-    // You can open the valve to release gas and you can set up the pressure the gas leak
+    // You can open the valve to release gas and you can also set the release pressure
     public class Canister : InteractionTargetBehaviour, IAtmosLoop
     {
 	// An AtmosObject is in the object's tile
@@ -98,7 +98,7 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics {
             return;
         }
 
-	// This handles the gas leaking
+	// This handles the gas releasing
         public void Step()
         {
 	    // if there's an atmos object, if we still have gas, and the valve is open
