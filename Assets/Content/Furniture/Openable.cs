@@ -6,8 +6,8 @@ using UnityEngine.Assertions;
 
 namespace SS3D.Content.Furniture
 {
-    // This handles a object or an item that can be opened
-    // by this requires the target to have a container to open
+    // This handles an object or an item that can be opened
+    // this requires the target to have a container to open
     [RequireComponent(typeof(Animator))]
     public class Openable : InteractionTargetBehaviour
     {
