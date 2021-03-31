@@ -8,11 +8,16 @@ using UnityEngine;
 
 namespace SS3D.Content.Items.Functional.Tools.Generic
 {
+    // This needs a good rework
     public class Crowbar : Item
     {
         public GameObject LoadingBarPrefab;
+
+	// nope
         public Turf WallToConstruct;
         public Turf FloorToConstruct;
+
+	// Delay to create/destroy stuff
         public float Delay;
         public LayerMask ObstacleMask;
 

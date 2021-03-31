@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Networking.Types;
 
+// This is probably unused now that the lobby is integrated with the pause menu
 public class PauseMenu : NetworkBehaviour
 {
     [SerializeField] Animator animator;

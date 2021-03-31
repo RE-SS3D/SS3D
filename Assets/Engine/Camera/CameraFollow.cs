@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+// This handles the camera following the player when it is spawned
+// Also controls the rotation and zoom
 public class CameraFollow : MonoBehaviour
 {
     // Sensitivities and Accelerations

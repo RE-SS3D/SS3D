@@ -9,8 +9,11 @@ using SS3D.Engine.Tiles;
 
 namespace SS3D.Content.Items.Functional.Tools
 {
+    // Works nice but will be reworked in the future
+    // TODO: Add fuel and rework for new construction
     public class Welder : Item, IToggleable
     {
+	// hot flame, cold flame and light particle are mere VFX stuff
         [SerializeField]
         public ParticleSystem hotFlame;
         [SerializeField]
@@ -18,6 +21,8 @@ namespace SS3D.Content.Items.Functional.Tools
         [SerializeField]
         public ParticleSystem lightParticle;
         [SerializeField]
+
+	// for the temporary construction stuff
         private Turf commonWall = null;
         [SerializeField]
         private Turf reinforcedWall = null;
@@ -25,9 +30,13 @@ namespace SS3D.Content.Items.Functional.Tools
         private Turf commonFloor = null;
         [SerializeField]
         private Turf reinforcedFloor = null;
+
+	// the prefab for the loading bar that is spawned when we start an interaction
         public GameObject LoadingBarPrefab;
+	// the time this takes to construct something
         public float Delay;
 
+	// temporary icon stuff while we don't have asset data
         public Sprite turnOnIcon;
         public Sprite constructIcon;
 
