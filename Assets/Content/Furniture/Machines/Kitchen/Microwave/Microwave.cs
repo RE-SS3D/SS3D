@@ -12,7 +12,7 @@ using Mirror;
 using UnityEngine.Assertions;
 
 // Handles the microwave object
-// TODO: IMPORTANT, renamed the SND stuff to Sound
+// TODO: IMPORTANT, rename the SND stuff to Sound
 [RequireComponent(typeof(AudioSource))]
 public class Microwave : InteractionTargetNetworkBehaviour
 {
