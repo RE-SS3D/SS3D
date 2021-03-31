@@ -93,7 +93,7 @@ namespace SS3D.Content.Furniture.Machines.Vendors
 	    // Spawn the item on the server
             NetworkServer.Spawn(gameObject);
 
-	    // Adds a little bit of force in the thrown item
+	    // Adds a little bit of force in the dispensed item
             Rigidbody body = gameObject.GetComponent<Rigidbody>();
             if (body != null)
             {
