@@ -27,7 +27,7 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
         public float range;
 
 	// Interaction that handles the disposal of items
-	// This should be worked once we have disposals pipes goin
+	// This should be reworked once we have disposals pipes going
 	// Currently it only deletes the items
         private class DisposeInteraction : IInteraction
         {
