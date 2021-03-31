@@ -14,6 +14,7 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
         public GameObject LoadingBarPrefab;
 
 	// nope
+	// should be removed later once we rework construction
         public Turf WallToConstruct;
         public Turf FloorToConstruct;
 
