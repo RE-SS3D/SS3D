@@ -12,7 +12,7 @@ using UnityEngine.UI;
 namespace SS3D.UI
 {
     /// <summary>
-    /// UI controller for join/host a SS3D session
+    /// UI controller to join/host a SS3D session
     /// </summary>
     public class MainMenuUI : MonoBehaviour
     {
