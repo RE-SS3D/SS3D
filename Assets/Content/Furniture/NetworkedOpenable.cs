@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace SS3D.Content.Furniture
 {
+    // This handles networking for an Openable object
     [RequireComponent(typeof(Animator))]
     public class NetworkedOpenable : InteractionTargetNetworkBehaviour
     {
