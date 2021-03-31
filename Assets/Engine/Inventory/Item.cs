@@ -121,7 +121,7 @@ namespace SS3D.Engine.Inventory
             sprite.name = transform.name;
         }
         
-	// this create the base interactions for an item, in this case, the drop interaction
+	// this creates the base interactions for an item, in this case, the drop interaction
         public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
             base.CreateInteractions(targets, interactions);
