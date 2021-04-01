@@ -55,7 +55,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         
         // Updates the Embark button text to "Embark"
         RoundManager.ServerRoundStarted += ChangeEmbarkText;
-        // Updates the menu if the round ends, maybe we can chance later to a final round end later
+        // Updates the menu if the round ends, maybe we can change later to a final round end later
         RoundManager.ServerRoundEnded += ForceToggleOn;
         
         // Makes the button's function be CmdRequestEmbark and the UI fade out
