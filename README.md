@@ -38,7 +38,7 @@ Trello hosts all our other boards, including the task boards for our various ass
 
 [<img src="Documents/Images/paypal.png" alt="PayPal" width="150" align="left">](https://www.paypal.me/SpaceStation3D)
 
-Our primary monetary hub. Donations from all avenues will work their way to PayPal before being redistributed out to development costs. You can donate directly to our PayPal either via the link or our email: ress3d.project@gmail.com.
+Our primary monetary hub where donations from all avenues end up before being distributed out to development costs. You can donate directly either via the link or our email (ress3d.project@gmail.com).
 
 [<img src="Documents/Images/patreon.png" alt="Patreon" width="150" align="left">](https://www.patreon.com/ss3d)
 
