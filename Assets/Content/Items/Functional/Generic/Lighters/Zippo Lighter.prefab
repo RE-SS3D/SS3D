@@ -171,7 +171,7 @@ GameObject:
   - component: {fileID: 2081909342595332650}
   - component: {fileID: 6258711892491357218}
   - component: {fileID: 2884915648782529247}
-  - component: {fileID: -4694851487162049909}
+  - component: {fileID: 8607411644904752404}
   - component: {fileID: -2101227061012043363}
   - component: {fileID: -396234361631906964}
   - component: {fileID: -873706720358734130}
@@ -196,6 +196,7 @@ Transform:
   - {fileID: 8589716264412980536}
   - {fileID: 8186896568802821264}
   - {fileID: 6311512130502363032}
+  - {fileID: 3037030990319387530}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -261,13 +262,13 @@ MonoBehaviour:
   ItemId: lighter_zippo
   Name: Zippo Lighter
   Volume: 6
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5533951594911835035}
   attachmentPoint: {fileID: 6311512130502363032}
   bulkSize: 1
   traits: []
---- !u!114 &-4694851487162049909
+  Size: {x: 0, y: 0}
+--- !u!114 &8607411644904752404
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -276,15 +277,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 5533951594911835035}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Script: {fileID: 11500000, guid: 275b023cf01d51d41b14999361d62870, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
   OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
-  OnlyStoreWhenOpen: 1
-  MaxDistance: 1.5
-  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
+  fireParticle: {fileID: 1532267249460559170}
 --- !u!114 &-2101227061012043363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -297,6 +296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
 --- !u!114 &-396234361631906964
@@ -360,9 +360,90 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8066562249021099569}
   m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: 0, y: -0.0212, z: -0}
+  m_LocalPosition: {x: 0, y: -0.035, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8833760637642068360}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 90}
+--- !u!1001 &7439927138961673302
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 8833760637642068360}
+    m_Modifications:
+    - target: {fileID: 5555856207200014300, guid: 477c22a98cd41824fa0f5e01255f739d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 5555856207200014300, guid: 477c22a98cd41824fa0f5e01255f739d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.075
+      objectReference: {fileID: 0}
+    - target: {fileID: 5555856207200014300, guid: 477c22a98cd41824fa0f5e01255f739d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5555856207200014300, guid: 477c22a98cd41824fa0f5e01255f739d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.6830127
+      objectReference: {fileID: 0}
+    - target: {fileID: 5555856207200014300, guid: 477c22a98cd41824fa0f5e01255f739d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.18301274
+      objectReference: {fileID: 0}
+    - target: {fileID: 5555856207200014300, guid: 477c22a98cd41824fa0f5e01255f739d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.18301274
+      objectReference: {fileID: 0}
+    - target: {fileID: 5555856207200014300, guid: 477c22a98cd41824fa0f5e01255f739d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.6830127
+      objectReference: {fileID: 0}
+    - target: {fileID: 5555856207200014300, guid: 477c22a98cd41824fa0f5e01255f739d,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5555856207200014300, guid: 477c22a98cd41824fa0f5e01255f739d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 5555856207200014300, guid: 477c22a98cd41824fa0f5e01255f739d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 5555856207200014300, guid: 477c22a98cd41824fa0f5e01255f739d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7644583622279306294, guid: 477c22a98cd41824fa0f5e01255f739d,
+        type: 3}
+      propertyPath: m_Name
+      value: Lighter Light
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 477c22a98cd41824fa0f5e01255f739d, type: 3}
+--- !u!4 &3037030990319387530 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5555856207200014300, guid: 477c22a98cd41824fa0f5e01255f739d,
+    type: 3}
+  m_PrefabInstance: {fileID: 7439927138961673302}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &1532267249460559170 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 8249568266877858068, guid: 477c22a98cd41824fa0f5e01255f739d,
+    type: 3}
+  m_PrefabInstance: {fileID: 7439927138961673302}
+  m_PrefabAsset: {fileID: 0}

@@ -8,9 +8,12 @@ using UnityEngine;
 
 namespace SS3D.Content.Items.Functional.Tools.Generic
 {
+    // Needs rework too
     public class Wrench : Item
     {
         public GameObject LoadingBarPrefab;
+
+	// nope
         public FurnitureFloorFixture TableToConstruct;
         public float Delay;
         public LayerMask ObstacleMask;

@@ -14,25 +14,32 @@ using UnityEngine.UI;
 namespace SS3D
 {
     /// <summary>
-    /// Scene loader manager, also manages admin settings UI
+    /// This handles the scene loading and unloading, also manages admin settings UI
     /// </summary>
     public class SceneLoaderManager : NetworkBehaviour
     {
         public static SceneLoaderManager singleton { get; private set; }
 
+	// Fires when a map is loaded
         public static event System.Action mapLoaded;
-        // MAPS IN BUILD
+
+        // Select map that will be loaded or is loaded
         [SerializeField] [SyncVar] private String selectedMap;
 
+	// All the maps that are possible to be loaded
+	// its a string because Unity is special
         [SerializeField] private String[] maps;
 
+	// I do not recall what this does
         [SerializeField] private Image startRoundImage;
         [SerializeField] private Button startRoundButton;
         [SerializeField] private TMP_Text startRoundButtonText;
         
+	// the "load" button in the server admin panel, in the settings tab
         [SerializeField] private TMP_Text loadSceneButtonText;
         [SerializeField] private Button loadSceneButton;
 
+	// the dropdown that should be with the possible maps
         [SerializeField] private TMP_Dropdown mapSelectionDropdown;
 
         private void Awake()
@@ -57,6 +64,7 @@ namespace SS3D
             LoadMapList();
         }
 
+	// Here we load the selected map
         public void LoadMapScene()
         {
             if (IsSelectedMapLoaded()) return;
@@ -79,20 +87,28 @@ namespace SS3D
             mapLoaded?.Invoke();
         }
 
+	// Unlock round start when the map is loaded, also sends the client the scene to load for some reason
+	// I'll move it to another place
+	// TODO: move the scene message to LoadMapScene()
         public void UnlockRoundStart()
         {
+	    // UI stuff
             loadSceneButtonText.text = "scene loaded";
             startRoundButton.interactable = true;
 
+	    // creates a message for the clients that tell them to load the selected scene
             SceneMessage msg = new SceneMessage
             {
                 sceneName = selectedMap,
                 sceneOperation = SceneOperation.LoadAdditive
             };
 
+	    // sends said message to all clients
             NetworkServer.SendToAll(msg);
         }
 
+	// Updates map list in the dropdown using the map list
+	// TODO: Update the map list via Server
         public void LoadMapList()
         {
             List<TMP_Dropdown.OptionData> mapList = new List<TMP_Dropdown.OptionData>();
@@ -122,21 +138,26 @@ namespace SS3D
             return false;
         }
 
+	
+	// Unloads the current selected map
         public void UnloadSelectedMap()
         {
+	    // Unloads the map
             SceneManager.UnloadSceneAsync(selectedMap);
 
             // just in case (Restarts for example)
             loadSceneButtonText.text = "load map";
             loadSceneButton.interactable = true;
             startRoundButton.interactable = false;
-
+		
+	    // Creates a message to tell clients what scene to unload
             SceneMessage msg = new SceneMessage
             {
                 sceneName = selectedMap,
                 sceneOperation = SceneOperation.UnloadAdditive
             };
-
+	    
+	    // Sends the client the message
             NetworkServer.SendToAll(msg);
         }
 
@@ -207,6 +228,7 @@ namespace SS3D
             return SceneManager.GetSceneByName(selectedMap);
         }
 
+	//
         public void HandleRoundButton()
         {
             RoundManager roundManager = RoundManager.singleton;

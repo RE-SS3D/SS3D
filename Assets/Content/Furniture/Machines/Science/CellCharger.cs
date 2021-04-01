@@ -5,11 +5,18 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.Assertions;
 
+// This handles the cell charger, responsable for exclusivery recharging batteries
+
+// THIS IS NOT NETWORKED
 public class CellCharger : NetworkBehaviour
 {
+    // Visual container for the cell to be put in
     public AttachedContainer AttachedContainer;
     
+    // Actual container
     private StorageContainer storageContainer;
+
+    // Current cell being recharged
     private Item powerCell;
     public MeshRenderer renderer;
 
@@ -37,6 +44,7 @@ public class CellCharger : NetworkBehaviour
         }
     }
 
+    // Recharges the current cell that is placed on it
     private void Recharge()
     {
         foreach (Item item in AttachedContainer.Container.Items)
@@ -44,6 +52,7 @@ public class CellCharger : NetworkBehaviour
             IChargeable chargeable = item.GetComponent<IChargeable>();
             if (chargeable != null)
             {
+		// Effectively add charge
                 chargeable.AddCharge(chargeable.GetChargeRate());
             }
             

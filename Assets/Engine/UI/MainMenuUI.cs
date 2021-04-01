@@ -12,17 +12,17 @@ using UnityEngine.UI;
 namespace SS3D.UI
 {
     /// <summary>
-    /// UI controller for join/host SS3D session
+    /// UI controller to join/host a SS3D session
     /// </summary>
     public class MainMenuUI : MonoBehaviour
     {
         public TMP_InputField ipAddressInputField;
 
+	// are we connecting to a server
         private bool connecting;
         private Animator animator;
 
-        [SerializeField] private TMP_InputField username;
-        
+	// UI references
         [SerializeField] private Button joinButton;
         [SerializeField] private TMP_Text joinButtonText;
         [SerializeField] private TMP_Text errorMessageText;
@@ -44,12 +44,10 @@ namespace SS3D.UI
         public void OnJoinButtonPressed()
         {
             var uriAdress = TryParseIpAddress();
-            // we send the host ip and the selected username, temporary of course (or not)
-            LoginNetworkManager.singleton.StartClient(uriAdress, username.text);
+            NetworkManager.singleton.StartClient(uriAdress);
 
             joinButtonText.alignment = TextAlignmentOptions.Left;
             connecting = true;
-            // updates the embark text
             StartCoroutine(ChangeJoinText());
             
             if (animator.GetBool("ToggleError"))
@@ -57,9 +55,12 @@ namespace SS3D.UI
 
         }
 
+	// When we click join, this is called
         public IEnumerator ChangeJoinText()
         {
             joinButton.interactable = false;
+	    // while we connect we have to display something
+	    // for the user to know he is in fact connecting
             while (connecting)
             {
                 joinButtonText.text = "joining.";
@@ -76,7 +77,7 @@ namespace SS3D.UI
 
         public void OnHostButtonPressed()
         {
-            LoginNetworkManager.singleton.StartHost(username.text);
+            NetworkManager.singleton.StartHost();
 
             animator?.SetTrigger(toggleAnimatorID);
         }
@@ -92,7 +93,9 @@ namespace SS3D.UI
             });
             
         }
-
+	
+	// This handles getting the IP address from the input field
+	// it needs to be transformed in a Uri in order for us to send it to the NetworkManager
         private Uri TryParseIpAddress()
         {
             UriBuilder uriBuilder = new UriBuilder();

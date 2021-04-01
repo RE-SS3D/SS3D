@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace SS3D.Content.Furniture
 {
+    // This handles networking for an Openable object
     [RequireComponent(typeof(Animator))]
     public class NetworkedOpenable : InteractionTargetNetworkBehaviour
     {
@@ -34,7 +35,7 @@ namespace SS3D.Content.Furniture
             animator = GetComponent<Animator>();
         }
 
-        private void OnOpenStateChange(object sender, bool e)
+        protected virtual void OnOpenStateChange(object sender, bool e)
         {
             openState = e;
             UpdateAnimator();

@@ -4,8 +4,13 @@ using SS3D.Content.Systems.Player;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+// TODO: Rename the namespace to Entities
 namespace SS3D.Content.Creatures.Human
 {
+    // TODO: Should probably be renamed to humanoid ragdoll or just RagdollManager
+
+    // This controls a human ragdoll
+    // the process of ragdolling and then controlling the get up part too
     [RequireComponent(typeof(Animator))]
     public class HumanRagdoll : NetworkBehaviour
     {
