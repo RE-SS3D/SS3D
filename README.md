@@ -36,9 +36,9 @@ Trello hosts all our other boards, including the task boards for our various ass
 
 ## DONATE:
 
-[<img src="Documents/Images/paypal.png" alt="PayPal" width="150">](https://www.paypal.me/SpaceStation3D)
-[<img src="Documents/Images/patreon.png" alt="Patreon" width="150">](https://www.patreon.com/ss3d)
-[<img src="Documents/Images/subscribestar.png" alt="SubscribeStar" width="150">](https://www.subscribestar.com/space-station-3d)
+[<img src="Documents/Images/paypal.png" alt="PayPal" width="150">](https://www.paypal.me/SpaceStation3D) **-**
+[<img src="Documents/Images/patreon.png" alt="Patreon" width="150">](https://www.patreon.com/ss3d) **-**
+[<img src="Documents/Images/subscribestar.png" alt="SubscribeStar" width="150">](https://www.subscribestar.com/space-station-3d) **-**
 [<img src="Documents/Images/crypto.png" alt="Crypto" width="150">](spacestation3d.crypto)
 
 ## INFO:
