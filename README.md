@@ -34,6 +34,13 @@ This GitHub repo hosts our project board for tracking the completion status of t
 
 Trello hosts all our other boards, including the task boards for our various asset types (3D, 2D, audio, etc.) and our management board.
 
+## DONATE:
+
+[<img src="Documents/Images/paypal.png" alt="PayPal" width="150" align="left">](https://www.paypal.me/SpaceStation3D)
+[<img src="Documents/Images/patreon.png" alt="Patreon" width="150" align="left">](https://www.patreon.com/ss3d)
+[<img src="Documents/Images/subscribestar.png" alt="SubscribeStar" width="150" align="left">](https://www.subscribestar.com/space-station-3d)
+[<img src="Documents/Images/crypto.png" alt="Crypto" width="150" align="left">](spacestation3d.crypto)
+
 ## INFO:
 
 **[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
