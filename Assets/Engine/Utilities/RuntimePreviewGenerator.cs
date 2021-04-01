@@ -7,6 +7,7 @@ using Object = UnityEngine.Object;
 
 namespace SS3D.Engine.Utilities
 {
+	// This handles generating icon previews
 	public static class RuntimePreviewGenerator
 	{
 		// Source: https://github.com/MattRix/UnityDecompiled/blob/master/UnityEngine/UnityEngine/Plane.cs

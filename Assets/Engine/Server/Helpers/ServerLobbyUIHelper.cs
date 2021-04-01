@@ -19,8 +19,10 @@ public class ServerLobbyUIHelper : NetworkBehaviour
 {
     public static ServerLobbyUIHelper singleton { get; private set; }
     
+    // the button we use to join a round
     [SerializeField] private Button embarkButton;
     
+    // Here we have the embarkText which just displays "embark" and the timer countdown.
     // Look, the only reason why there are two text objects on the embark part
     // is cause for some reason "RoundManager.ClientTimerUpdated -= SetTimerText();" doesn't work,
     // otherwise I would have done that.
@@ -30,6 +32,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
     [SerializeField] private Animator animator;
 
     // The admin panel, should be only accessible to admin users, for now used only for the host
+    // TODO: User permissions
     [SerializeField] private Button serverSettingsButton;
 
     private void Awake()
@@ -96,6 +99,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         //Debug.Log("Updating embark button");
         embarkText.gameObject.SetActive(true);
 
+	// and we wait until the map is loaded (locally) for the embark button to be unlocked
         StartCoroutine(WaitUntilMapLoaded());
     }
 
@@ -111,6 +115,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         embarkButton.interactable = true;
     }
 
+    // in the case we need to force the Lobby on the player, when the round ends for example
     private void ForceToggleOn()
     {
         // pain

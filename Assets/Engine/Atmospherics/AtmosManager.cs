@@ -15,7 +15,6 @@ namespace SS3D.Engine.Atmospherics
     {
         // Test
         public Turf floor;
-
         public enum ViewType { Pressure, Content, Temperature, Combined, Wind };
         public bool drawDebug = false;
         public bool drawTiles = true;

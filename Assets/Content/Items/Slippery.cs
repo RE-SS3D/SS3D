@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace SS3D.Content.Items
 {
+    // handles sliperry items, that makes you slip
     public class Slippery : NetworkBehaviour
     {
         /// <summary>
@@ -26,6 +27,7 @@ namespace SS3D.Content.Items
             slippedBodies = new Dictionary<HumanRagdoll, float>();
         }
 
+	// when something touches it
         private void OnCollisionEnter(Collision other)
         {
             if (!isServer)
@@ -33,9 +35,11 @@ namespace SS3D.Content.Items
                 return;
             }
             
+	    // tries to get the ragdoll manager in the collision that touched it
             HumanRagdoll humanRagdoll = other.transform.root.gameObject.GetComponent<HumanRagdoll>();
             if (humanRagdoll != null && !humanRagdoll.BodyEnabled)
             {
+		// Add a threshold for the ragdoll to slip, for example when you use clown shoes you cant slip on bananas
                 CleanBodyDictionary();
                 if (!slippedBodies.ContainsKey(humanRagdoll))
                 {
@@ -46,6 +50,7 @@ namespace SS3D.Content.Items
             
         }
 
+	// Removes all the previous slipped people
         private void CleanBodyDictionary()
         {
             var keyValuePairs = slippedBodies.Where(x => x.Value + 4f < Time.time).ToList();
