@@ -7,10 +7,13 @@ namespace SS3D.Content.Items.Functional.Generic.PowerCells
     /// <summary>
     /// Handles powercells
     /// </summary>
+    // TODO: Put the power cell properties in this file
+    // TODO: Make the public variables low case
     public class PowerCell : NetworkBehaviour, IChargeable
     {
         [SerializeField] private PowerCellProperties propertiesPrefab = null;
 
+	// properties of a power cell, maximum charge, recharge rate
         public PowerCellProperties Properties { get; private set; } = null;
 
         private void Start()

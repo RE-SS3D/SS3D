@@ -5,10 +5,17 @@ using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
 using UnityEngine.XR;
 
+// TODO: First and foremost, I should rename this to Entity.
+
+// An entity should be used for anything that ressembles the creature idea
+// it can walk, interact with stuff, be controlled by a player
+// do combat, etc.
+// Anything you expect that is a creature should be considered an Entity
 public class Creature : MonoBehaviour
 {
+    // view range for the FOV
     public float ViewRange = 10f;
-
+    // hands for the interactions
     private Hands hands;
 
     public Hands Hands

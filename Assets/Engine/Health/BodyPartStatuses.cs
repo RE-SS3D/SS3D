@@ -2,6 +2,7 @@ using System;
 
 namespace SS3D.Engine.Health
 {
+    // Defines the status of a body part, should be renamed to BodyPartStatus
     [Flags]
     public enum BodyPartStatuses
     {

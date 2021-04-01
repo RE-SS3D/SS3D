@@ -21,12 +21,26 @@ namespace SS3D.Engine.Inventory
     {
         public string ItemId;
         public string Name;
+
+	[Tooltip("The volume an item ocuppies in a container")]
         public float Volume = 10f;
+	
+	// TODO: Make this private or just not show in the editor
+	// the sprite used for containers UI
         public Sprite sprite;
+
+	[Tooltip("the item prefab, you can click on the item name and drag from Unity's file explorer")]
         public GameObject prefab;
+
+	[Tooltip("a point we use to know how the item should be oriented when held in a hand")]
         public Transform attachmentPoint;
+
+	[Tooltip("the bulk of the item, how heavy it is")]
         public BulkSize bulkSize = BulkSize.Medium;
+
+	[Tooltip("traits are attributes we use for stuff like "is this item food", "is this item a robot's part")]
         public List<Trait> traits;
+
         [Tooltip("The size of the item inside a container")]
         public Vector2Int Size;
         
@@ -94,6 +108,9 @@ namespace SS3D.Engine.Inventory
             }
         }
 
+	// TODO: Improve this
+	// we have this to generate icons at start, I do not know how bad it is for performance
+	// if you know anything about it, tell us
         public void GenerateNewIcon()
         {
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
@@ -104,6 +121,7 @@ namespace SS3D.Engine.Inventory
             sprite.name = transform.name;
         }
         
+	// this creates the base interactions for an item, in this case, the drop interaction
         public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
             base.CreateInteractions(targets, interactions);
