@@ -36,10 +36,21 @@ Trello hosts all our other boards, including the task boards for our various ass
 
 ## DONATE:
 
-[<img src="Documents/Images/paypal.png" alt="PayPal" width="150">](https://www.paypal.me/SpaceStation3D) **-**
-[<img src="Documents/Images/patreon.png" alt="Patreon" width="150">](https://www.patreon.com/ss3d) **-**
-[<img src="Documents/Images/subscribestar.png" alt="SubscribeStar" width="150">](https://www.subscribestar.com/space-station-3d) **-**
-[<img src="Documents/Images/crypto.png" alt="Crypto" width="150">](spacestation3d.crypto)
+[<img src="Documents/Images/paypal.png" alt="PayPal" width="150">](https://www.paypal.me/SpaceStation3D)
+
+Our primary monetary hub. Donations from all avenues will work their way to PayPal before being redistributed out to development costs. You can donate directly to our PayPal either via the link or our email: ress3d.project@gmail.com.
+
+[<img src="Documents/Images/patreon.png" alt="Patreon" width="150">](https://www.patreon.com/ss3d)
+
+Our primary subscription based donation platform.
+
+[<img src="Documents/Images/subscribestar.png" alt="SubscribeStar" width="150">](https://www.subscribestar.com/space-station-3d)
+
+Another subscription based donation platform.
+
+[<img src="Documents/Images/crypto.png" alt="Crypto" width="150">](SpaceStation3D.crypto)
+
+Currently we accept $BCH, $BTC, ETH, & $LTC. You can send it to "SpaceStation3D.crypto" but some wallets don't accept that format so specific addresses can be found [here](https://github.com/RE-SS3D/SS3D/wiki/Related-Sites-&-Resources).
 
 ## INFO:
 
