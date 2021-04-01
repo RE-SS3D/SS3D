@@ -14,7 +14,7 @@ This is the current state of the RE:SS3D project in a .zip file. You will have t
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
-Discord is the primary communication for our community and devs. There's plenty of helpful people there, capable of answering most of your questions, as well as WIP content.
+Discord is the primary communication for our devs and community. There's plenty of helpful people there capable of answering most of your questions, as well as WIP content.
 
 [<img src="Documents/Images/reddit.png" alt="Reddit" width="150" align="left">](https://www.reddit.com/r/RESS3D/)
 
