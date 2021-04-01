@@ -42,7 +42,7 @@ Our primary monetary hub. Donations from all avenues will work their way to PayP
 
 [<img src="Documents/Images/patreon.png" alt="Patreon" width="150" align="left">](https://www.patreon.com/ss3d)
 
-Our primary subscription based donation platform.
+Our primary subscription based donation platform with tiered subscription options (currently no extra benefit for different tiers).
 
 [<img src="Documents/Images/subscribestar.png" alt="SubscribeStar" width="150" align="left">](https://www.subscribestar.com/space-station-3d)
 
