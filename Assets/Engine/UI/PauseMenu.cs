@@ -24,7 +24,7 @@ public class PauseMenu : NetworkBehaviour
     
     void Update() 
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && !CameraManager.singleton.lobbyCamera.gameObject.activeSelf) 
+        if (Input.GetKeyDown(KeyCode.Escape) && !CameraManager.singleton.playerCamera.gameObject.activeSelf && RoundManager.singleton.IsRoundStarted) 
         {
             Toggle();
         }

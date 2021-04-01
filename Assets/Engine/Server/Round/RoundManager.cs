@@ -120,9 +120,6 @@ namespace SS3D.Engine.Server.Round
 
             started = false;
             ServerRoundEnded?.Invoke();
-
-            CameraManager.singleton.playerCamera.gameObject.SetActive(false);
-            CameraManager.singleton.lobbyCamera.gameObject.SetActive(true);
             
             StopCoroutine(tickCoroutine);
             SceneLoaderManager.singleton.UnloadSelectedMap();
@@ -143,9 +140,6 @@ namespace SS3D.Engine.Server.Round
 
             started = false;
             ServerRoundEnded?.Invoke();
-
-            CameraManager.singleton.playerCamera.gameObject.SetActive(false);
-            CameraManager.singleton.lobbyCamera.gameObject.SetActive(true);
 
             StopCoroutine(tickCoroutine);
             SceneLoaderManager.singleton.UnloadSelectedMap();
