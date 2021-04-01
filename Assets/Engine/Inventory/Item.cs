@@ -38,7 +38,7 @@ namespace SS3D.Engine.Inventory
 	[Tooltip("the bulk of the item, how heavy it is")]
         public BulkSize bulkSize = BulkSize.Medium;
 
-	[Tooltip("traits are attributes we use for stuff like "is this item food", "is this item a robot's part")]
+	[Tooltip("traits are attributes we use for stuff like 'is this item food', 'is this item a robot's part")]
         public List<Trait> traits;
 
         [Tooltip("The size of the item inside a container")]
