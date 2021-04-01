@@ -14,7 +14,7 @@ This is the current state of the RE:SS3D project in a .zip file. You will have t
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
-Discord is the primary communication for our community and devs. There's plenty of helpful people there, capable of answering most of your questions, as well as WIP content.
+Discord is the primary communication for our devs and community. There's plenty of helpful people there capable of answering most of your questions, as well as WIP content.
 
 [<img src="Documents/Images/reddit.png" alt="Reddit" width="150" align="left">](https://www.reddit.com/r/RESS3D/)
 
@@ -33,6 +33,24 @@ This GitHub repo hosts our project board for tracking the completion status of t
 [<img src="Documents/Images/trello.png" alt="Trello" width="150" align="left">](https://trello.com/ress3d)
 
 Trello hosts all our other boards, including the task boards for our various asset types (3D, 2D, audio, etc.) and our management board.
+
+## DONATE:
+
+[<img src="Documents/Images/paypal.png" alt="PayPal" width="150" align="left">](https://www.paypal.me/SpaceStation3D)
+
+Our monetary hub where all donations end up before distribution to development costs. You can donate directly either via the link or our email (ress3d.project@gmail.com).
+
+[<img src="Documents/Images/patreon.png" alt="Patreon" width="150" align="left">](https://www.patreon.com/ss3d)
+
+Our primary subscription based donation platform with tiered subscription options (currently no extra benefit for different tiers).
+
+[<img src="Documents/Images/subscribestar.png" alt="SubscribeStar" width="150" align="left">](https://www.subscribestar.com/space-station-3d)
+
+Another subscription based donation platform. Has less features and isn't as popular as PayPal. This may need to be updated.
+
+[<img src="Documents/Images/crypto.png" alt="Crypto" width="150" align="left">](SpaceStation3D.crypto)
+
+We accept $BCH, $BTC, ETH, & $LTC at "SpaceStation3D.crypto" but some wallets don't accept that format so specific addresses can be found [here](https://github.com/RE-SS3D/SS3D/wiki/Related-Sites-&-Resources).
 
 ## INFO:
 
