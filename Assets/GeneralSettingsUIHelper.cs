@@ -5,18 +5,28 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 
+/// <summary>
+/// This helps out GeneralSettingsManager to set up graphics settings and sound via UI,
+/// currently being used on the lobby menu
+/// </summary>
 public class GeneralSettingsUIHelper : MonoBehaviour
 {
+    // we reference the settings singleton
     private GeneralSettingsManager settings;
     
+    // is SSRT enabled? (the weird thing seteron worked on)
     public Toggle toggleSSRT;
 
+    // these are the graphic options buttons
     public Button[] graphicButtons;
 
-    public Button[] tabs;
-
+    // these are the settings tabs buttons
+    public Button[] tabsButtons;
+    public GameObject[] tabs;
+    // we need to know which tab we are in
     public int selectedTab = 0;
 
+    // slider to control the master volume
     public Slider soundSlider;
     
     private void Start()
@@ -36,12 +46,18 @@ public class GeneralSettingsUIHelper : MonoBehaviour
         // set selected tab to the first one
         selectedTab = 0;
         UpdateTabsState(selectedTab);
+
+        // assigns the sound value, once we have a way to save 
+        // a user's config, we'll have a proper use for this
+        soundSlider.value = AudioListener.volume;
         
-        // subscribe to the event
+        // subscribe to the event, so we update the buttons when that event is invoked
         GeneralSettingsManager.OnGraphicsChanged += UpdateButtonsState;
     }
 
     // make sure buttons update correctly
+    // when we click a button, it is disabled and
+    // the others will be interactable again
     private void UpdateButtonsState(int quality)
     {
         for (int i = 0; i < graphicButtons.Length; i++)
@@ -58,17 +74,20 @@ public class GeneralSettingsUIHelper : MonoBehaviour
     }
     
     // make sure tabs update correctly
+    // same thing as the buttons
     public void UpdateTabsState(int tabIndex) 
     {
-    for (int i = 0; i < tabs.Length; i++)
+    for (int i = 0; i < tabsButtons.Length; i++)
             {
                 if (i != tabIndex)
                 {
-                    tabs[i].interactable = true;
+                    tabsButtons[i].interactable = true;
+                    tabs[i].SetActive(false);
                 }
                 else
                 {
-                    tabs[i].interactable = false;
+                    tabsButtons[i].interactable = false;
+                    tabs[i].SetActive(true);
                 }
             }
     }
@@ -76,8 +95,12 @@ public class GeneralSettingsUIHelper : MonoBehaviour
     // updates master volume
     public void UpdateMasterVolume()
     {
+        // for now we only update the master volume
+        // I don't care enough on doing specific sound sliders
+        // the only exception would be bass boost slider lol
         settings.SetMasterVolume(soundSlider.value);
     }
+    
     // prevent null ref errors
     private void OnDestroy()
     {

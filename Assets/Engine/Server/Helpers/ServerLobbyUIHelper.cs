@@ -71,6 +71,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         }
     }
 
+    // Here we allow the player to access the server settings
     public void UnlockServerSettings() 
     {
         // TODO:
@@ -78,6 +79,8 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         serverSettingsButton.interactable = true;
     }
     
+    // Handles asking the server to spawn the player
+    // the "sender" param is handled by Mirror, no need to worry about it
     [Command(ignoreAuthority = true)]
     public void CmdRequestEmbark(NetworkConnectionToClient sender = null)
     {
@@ -85,6 +88,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         LoginNetworkManager.singleton.SpawnPlayerAfterRoundStart(sender);
     }  
 
+    // Updates the embark text status according to the round status (starting, started, stopped)
     public void ChangeEmbarkText()
     {
         // There's a timer UI so we deactivate it and make the embark appear
