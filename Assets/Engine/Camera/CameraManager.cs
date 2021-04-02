@@ -8,7 +8,6 @@ public class CameraManager : MonoBehaviour
 {
     public static CameraManager singleton { get; private set; }
 
-    public Camera lobbyCamera;
     public Camera playerCamera;
     public Camera examineCamera;
 
