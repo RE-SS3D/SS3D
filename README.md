@@ -4,7 +4,7 @@
 
 [<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://github.com/RE-SS3D/SS3D/releases/latest)
 
-This is the latest official build of the RE:SS3D project. It currently works on Windows, but needs testing on other operating systems still.
+This is the latest official build of the RE:SS3D project. It currently works on Windows but needs testing on other operating systems still.
 
 [<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
 
@@ -38,19 +38,19 @@ Trello hosts all our other boards, including the task boards for our various ass
 
 [<img src="Documents/Images/paypal.png" alt="PayPal" width="150" align="left">](https://www.paypal.me/SpaceStation3D)
 
-Our monetary hub where all donations end up before distribution to development costs. You can donate directly either via the link or our email (ress3d.project@gmail.com).
+PayPal is our monetary hub where all donations go before distribution to development costs. You can donate either via the link or our email (ress3d.project@gmail.com).
 
 [<img src="Documents/Images/patreon.png" alt="Patreon" width="150" align="left">](https://www.patreon.com/ss3d)
 
-Our primary subscription based donation platform with tiered subscription options (currently no extra benefit for different tiers).
+Patreon is our primary subscription-based donation platform with tiers (currently no extra benefit for different tiers).
 
 [<img src="Documents/Images/subscribestar.png" alt="SubscribeStar" width="150" align="left">](https://www.subscribestar.com/space-station-3d)
 
-Another subscription based donation platform. Has less features and isn't as popular as PayPal. This may need to be updated.
+Subscribestar is our other subscription-based donation platform. Has fewer features and isn't as popular as our PayPal.
 
 [<img src="Documents/Images/crypto.png" alt="Crypto" width="150" align="left">](SpaceStation3D.crypto)
 
-We accept $BCH, $BTC, ETH, & $LTC at "SpaceStation3D.crypto" but some wallets don't accept that format so specific addresses can be found [here](https://github.com/RE-SS3D/SS3D/wiki/Related-Sites-&-Resources).
+"SpaceStation3D.crypto" is our crypto domain which currently routes BCH, BTC, ETH, & LTC payments. But [specific addresses can be found at the bottom of this page](https://github.com/RE-SS3D/SS3D/wiki/Related-Sites-&-Resources).
 
 ## INFO:
 
@@ -58,12 +58,12 @@ We accept $BCH, $BTC, ETH, & $LTC at "SpaceStation3D.crypto" but some wallets do
 
 ## CONTRIBUTING:
 
-[CONTRIBUTING.md](CONTRIBUTING.md) contains the information regarding technical contributions, including what version of Unity the project uses, how to set-up and run the project, reporting bugs, pull requests, and styling code.
+[CONTRIBUTING.md](CONTRIBUTING.md) contains the information regarding technical contributions, including what version of Unity the project uses, how to set up and run the project, reporting bugs, pull requests, and styling code.
 
 [https://ss3d.space/contribute/](https://ss3d.space/contribute/) has a breakdown of the different contribution types (including art assets) with links to helpful guides and todo boards, making contributing art assets a lot easier for new contributors.
 
 ## LICENSING:
 
-**This project and it's code** fall under the **[MIT](LICENSE-CODE.md)** license.
+**This project and its code** fall under the **[MIT](LICENSE-CODE.md)** license.
 
 **All asset contributions** fall under the **[CC BY-NC-SA 4.0](LICENSE-ASSETS.md)** license.
