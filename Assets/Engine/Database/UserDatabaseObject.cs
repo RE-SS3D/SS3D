@@ -3,7 +3,22 @@ using UnityEngine;
 
 namespace SS3D.Engine.Database
 {
-    // Handles user database operations
+    /// <summary>
+    /// Handles user database operations.
+    ///
+    /// This should be used to register users into your server,
+    /// when a new user joins, the database should know about it.
+    ///
+    /// This uses the DatabaseConnectionManager that is server-side to handle
+    /// sql queries.
+    /// 
+    /// CKEY:
+    ///     The client key should be unique, it will possibly eventually be
+    ///     passed by our Hub, we don't know how yet, but that's how it should work,
+    ///     once that is going, we will have out own database with that user's character data
+    ///     so characters can be transported from server to server.
+    ///     Also important for bans and admin permissions.
+    /// </summary>
     public class UserDatabaseObject : NetworkBehaviour
     {
         // unique key to users, ckey stands for client key
@@ -33,7 +48,7 @@ namespace SS3D.Engine.Database
 
             string sql = "INSERT INTO registeredUsers(ckey) VALUES ('" + ckey + "')";
 
-            database.ExecuteQuerry(sql);
+            database.ExecuteQuery(sql);
         }
 
         public void SaveUser()

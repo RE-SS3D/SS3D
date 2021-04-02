@@ -9,9 +9,21 @@ using Debug = UnityEngine.Debug;
 
 namespace SS3D.Engine.Database
 {
-    // Handles the connection to the local database on the host
+    /// <summary>
+    /// Handles the connection to the local database on the server.
+    ///
+    /// There's an explanation for the whole process to configure the database
+    /// in the file "database.sql", read it and then come back to this.
+    ///
+    /// This connects to the database and executes SQL queries,
+    /// they should all be serverside.
+    /// </summary>
     public class DatabaseConnectionManager : NetworkBehaviour
     {
+        // Our DatabaseConnectionManager should be a singleton,
+        // if you don't know what it is, its basically
+        // making sure there is only one of its kind
+        // and that we can easily find him via code
         public static DatabaseConnectionManager singleton { get; private set; }
 
         // database ip
@@ -22,13 +34,15 @@ namespace SS3D.Engine.Database
         [SerializeField] private string database;
         // database port
         [SerializeField] private string port;
-        // database pasword
+        // database password
         [SerializeField] private string password;
 
         // full connection string
         private string connectionString;
+        // this is needed for the MySQL framework, no need to understand,it is our connection to the database
         public MySqlConnection conn;
 
+        // Configures the singleton
         private void Awake()
         {
             if (singleton != null && singleton != this)
@@ -41,16 +55,19 @@ namespace SS3D.Engine.Database
             }
         }
 
+        // At start we try to connect with the database
+        // will throw a message if something goes wrong
         private void Start()
         {
             Connect();
         }
-
+        
+        // Handles the database connection
         [Server]
         [ContextMenu("Connect")]
-        // Handles the database connection
         public void Connect()
         {
+            // this creates the connection string to make the connection to the database with all the info we need
             string connection =
                 "server=" + serverURL + ";" +
                 "user=" + user + ";" +
@@ -58,15 +75,19 @@ namespace SS3D.Engine.Database
                 "port=" + port + ";" +
                 "password=" + password;
 
+            // we save it just in case we need it
             connectionString = connection;
+            // we create the connection object
             conn = new MySqlConnection(connection);
             // actually connects
             conn.Open();
             
-            // just to make sure lets do this
+            // checks if we are connected
             GetDatabaseState(conn);
         }
 
+        // This checks the connection to the database
+        // we try to connect for a few seconds
         public ConnectionState GetDatabaseState(MySqlConnection conn)
         {
             ConnectionState state = conn.State;
@@ -97,15 +118,16 @@ namespace SS3D.Engine.Database
             return state;
         }
 
+        // Coroutine to help GetConnectionState()
         public IEnumerator WaitUntilConnected(ConnectionState state)
         {
             // wait until we are not connecting
             yield return new WaitUntil(delegate { return state != ConnectionState.Connecting; });
         }
 
+        // handles any query execution
         [Server]
-        // handles any querry execution
-        public void ExecuteQuerry(string sql)
+        public void ExecuteQuery(string sql)
         {
             // we get the connection state to not try using a database that is offline
             ConnectionState state = GetDatabaseState(conn);
@@ -118,10 +140,10 @@ namespace SS3D.Engine.Database
                 Connect();
             }
             
-            // sets up the querry for the MySQL "framework"
+            // sets up the query for the MySQL framework
             MySqlCommand cmd = new MySqlCommand(sql, conn);
 
-            // executes the querry and handles the result of the querry
+            // executes the query and handles the result
             object result = cmd.ExecuteScalar();
 
             // if theres a result we debug it, or just comment it out. we should have a log for this eventually

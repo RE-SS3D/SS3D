@@ -3,7 +3,24 @@ using UnityEngine;
 
 namespace SS3D.Engine.Database
 {
-    // Database Object of the character data
+    /// <summary>
+    /// Database object for the character data
+    /// 
+    /// This should contain and manage:
+    ///     selected character index, the current selected character's name,
+    ///     the character job preferences, the character antag preferences and
+    ///     the Database SQL commands that we use to save them.
+    ///
+    /// How:
+    ///     Once we have a decent database configuration we will be able
+    ///     to have proper character saving, with many characters for a player
+    ///     to be able to save and load.
+    /// 
+    /// Important for the database:
+    ///     Each character should have his own job preferences, this is not
+    ///     included in BYOND's SS13 (I think) but I think its important
+    ///     to have.
+    /// </summary>
     public class CharacterDatabaseObject : NetworkBehaviour
     {
         // Character name
@@ -39,7 +56,7 @@ namespace SS3D.Engine.Database
                          name +
                          "')";
             
-            database.ExecuteQuerry(sql);
+            database.ExecuteQuery(sql);
         }
         
         [Command(ignoreAuthority = true)]
@@ -53,7 +70,7 @@ namespace SS3D.Engine.Database
             // TODO: Update this to put a selected character id
             string sql = "SELECT * FROM CharacterData WHERE ckey = '" + ckey + "'";
 
-            database.ExecuteQuerry(sql);
+            database.ExecuteQuery(sql);
         }
     }
 }
