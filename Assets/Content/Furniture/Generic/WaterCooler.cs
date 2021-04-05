@@ -10,9 +10,9 @@ namespace SS3D.Content.Furniture.Generic
     // Handles disposing water and water cups
     public class WaterCooler : InteractionTargetBehaviour, IExaminable
     {
-	// water cup prefab
+	    // water cup prefab
         public GameObject CupPrefab;
-	// how many we have now
+	    // how many we have now
         public int NumberOfCups;
     
         public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
@@ -28,13 +28,13 @@ namespace SS3D.Content.Furniture.Generic
 
         private bool CanDispenseCup(InteractionEvent interactionEvent)
         {
-	    // if we have cups left
-	    // if we don't have anything on our hands
+	        // if we have cups left
+	        // if we don't have anything on our hands
             // if we have hands, just to make sure
             return NumberOfCups > 0 && interactionEvent.GetSourceItem() == null && interactionEvent.Source.GetHands() != null;
         }
 
-	// creates the actual cup and adds it to your hands
+	    // creates the actual cup and adds it to your hands
         private void DispenseCup(InteractionEvent interactionEvent, InteractionReference arg2)
         {
             Item cup = ItemHelpers.CreateItem(CupPrefab);
