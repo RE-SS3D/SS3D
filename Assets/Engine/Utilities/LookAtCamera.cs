@@ -14,7 +14,7 @@ namespace SS3D.Engine.Utilities
         void Start ()
         {
             Debug.Assert(Camera.main != null, "Camera.main != null");
-            camera = Camera.main.transform;
+            camera = CameraManager.singleton.playerCamera.transform;
         }
     
         void Update()

@@ -1,8 +1,7 @@
 {
-    "name": "Engine.Utilities",
+    "name": "Camera",
     "references": [
-        "GUID:30817c1a0e6d646d99c048fc403f5979",
-        "GUID:b5449513a97142f48b6c88834d4e9941"
+        "GUID:1e949681062628c4f9a7de31721e38c0"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

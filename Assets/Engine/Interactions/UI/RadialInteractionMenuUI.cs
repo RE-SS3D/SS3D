@@ -27,7 +27,7 @@ namespace SS3D.Engine.Interactions.UI
         public TextMeshProUGUI interactionName;
 		public TextMeshProUGUI interactionNameAltPosition;
 
-        private Camera camera;
+        private UnityEngine.Camera camera;
         
         [HideInInspector]
         public float mouseAngle;

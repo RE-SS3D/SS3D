@@ -9,26 +9,26 @@ using Mirror;
 using System.Linq;
 using UnityEngine;
 
-namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
+namespace SS3D.Content.Furniture.Machines.Atmospherics
 {
     // This handles the disposal bin object
     public class DisposalBin : InteractionTargetNetworkBehaviour
     {
         public Animator animator;
 
-	// the container inside the bin
+	    // the container inside the bin
         public Container container;
 
-	// is the bin dumping trash right now?
+	    // is the bin dumping trash right now?
         public bool busy = false;
         
         public AudioSource audioSource;
 
         public float range;
 
-	// Interaction that handles the disposal of items
-	// This should be reworked once we have disposals pipes going
-	// Currently it only deletes the items
+	    // Interaction that handles the disposal of items
+	    // This should be reworked once we have disposals pipes going
+	    // Currently it only deletes the items
         private class DisposeInteraction : IInteraction
         {
             public Sprite icon;
@@ -70,7 +70,7 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
             {
                 if (interactionEvent.Target is DisposalBin disposal)
                 {
-		    // Calls the dispose method on the bin
+		            // Calls the dispose method on the bin
                     disposal.DisposeContents();
                 }
                 return false;
@@ -91,7 +91,7 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
                 
                 //busy = true;
                 // TODO: busy = false and Purge() or Dump() ? are called on the animation clip event
-		// ^ probably done already, check the animation, delete those lines if its already done
+		        // ^ probably done already, check the animation, delete those lines if its already done
             }
         }
 
@@ -101,11 +101,11 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
             
             StoreInteraction storeInteraction = new StoreInteraction();
 
-	    // Sets the interaction range
+	        // Sets the interaction range
             ViewContainerInteraction view = new ViewContainerInteraction { MaxDistance = range };
             DisposeInteraction disposeInteraction = new DisposeInteraction();
 
-	    // if we arent purging something already, we create the interactions
+	        // if we arent purging something already, we create the interactions
             if (!busy)
             {
                 interactions.Insert(0, storeInteraction);

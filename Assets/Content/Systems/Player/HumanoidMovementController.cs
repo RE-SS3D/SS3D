@@ -2,6 +2,7 @@
 using Mirror;
 using SS3D.Engine.Chat;
 using System.Numerics;
+using SS3D.Engine;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;

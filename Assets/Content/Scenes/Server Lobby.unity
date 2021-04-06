@@ -11523,6 +11523,11 @@ PrefabInstance:
       propertyPath: serverSettingsButton
       value: 
       objectReference: {fileID: 1076105030}
+    - target: {fileID: 8910863441607234012, guid: 5b47bfba5e38174439c06cc062db1ac3,
+        type: 3}
+      propertyPath: endOnNuclearExplosion
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5b47bfba5e38174439c06cc062db1ac3, type: 3}
 --- !u!4 &4457496468857493456 stripped

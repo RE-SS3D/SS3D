@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Mirror;
+using SS3D.Engine;
 using SS3D.Engine.Examine;
 using SS3D.Engine.FOV;
 using UnityEngine;
