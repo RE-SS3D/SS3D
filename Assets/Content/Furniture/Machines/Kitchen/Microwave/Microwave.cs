@@ -22,6 +22,8 @@ public class Microwave : InteractionTargetNetworkBehaviour
     public AudioClip onSound;
     public AudioClip finishSound;
 
+    private Material emissionMat;
+
     private bool isOn;
     private StorageContainer storageContainer;
 
@@ -31,6 +33,9 @@ public class Microwave : InteractionTargetNetworkBehaviour
         
         storageContainer = GetComponent<StorageContainer>();
         audioSource = GetComponent<AudioSource>();
+
+        emissionMat = GetComponent<Renderer>().materials[1];
+        emissionMat.DisableKeyword("_EMISSION");
     }
 
     public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
@@ -59,7 +64,7 @@ public class Microwave : InteractionTargetNetworkBehaviour
     private void TurnOn(InteractionEvent interactionEvent, InteractionReference reference)
     {
         SetActivated(true);
-        PlayOnSnd();
+        Running();
         StartCoroutine(BlastShit());
     }
 
@@ -75,7 +80,7 @@ public class Microwave : InteractionTargetNetworkBehaviour
     private IEnumerator BlastShit()
     {
         yield return new WaitForSeconds(MicrowaveDuration);
-        PlayFinishSnd();
+        FinishRun();
         SetActivated(false);
         CookItems();
     }
@@ -98,32 +103,40 @@ public class Microwave : InteractionTargetNetworkBehaviour
     }
 
     [Server]
-    private void PlayFinishSnd()
+    private void FinishRun()
     {
+        emissionMat.DisableKeyword("_EMISSION");
+
         audioSource.Stop();
         audioSource.PlayOneShot(finishSound);
-        RpcPlayFinishSnd();
+        RpcFinishRun();
     }
 
     [ClientRpc]
-    private void RpcPlayFinishSnd()
+    private void RpcFinishRun()
     {
+        emissionMat.DisableKeyword("_EMISSION");
+
         audioSource.Stop();
         audioSource.PlayOneShot(finishSound);
     }
 
     [Server]
-    private void PlayOnSnd()
+    private void Running()
     {
+        emissionMat.EnableKeyword("_EMISSION"); 
+
         audioSource.Stop();
         audioSource.clip = onSound;
         audioSource.Play();
-        RpcPlayOnSnd();
+        RpcRunning();
     }
 
     [ClientRpc]
-    private void RpcPlayOnSnd()
+    private void RpcRunning()
     {
+        emissionMat.EnableKeyword("_EMISSION");
+
         audioSource.Stop();
         audioSource.clip = onSound;
         audioSource.Play();
