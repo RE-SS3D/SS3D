@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace SS3D.Content.Items.Functional.Weapons
 {
+    // Handles the pepper spray item, currently just uses a particle system
     public class PepperSpray: Item
     {
         private class SprayInteraction : IInteraction
