@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
+using SS3D.Content;
 using UnityEngine;
 
 namespace SS3D.Engine.Inventory
@@ -77,7 +78,7 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="container">The container to synchronise</param>
         /// <param name="accessor">The creature to sync to</param>
-        private void SyncContainer(AttachedContainer container, Creature creature)
+        private void SyncContainer(AttachedContainer container, Entity creature)
         {
             var identity = creature.GetComponent<NetworkIdentity>();
             if (identity == null)
@@ -126,7 +127,7 @@ namespace SS3D.Engine.Inventory
             }
 
 
-            foreach (Creature creature in attachedContainer.Observers)
+            foreach (Entity creature in attachedContainer.Observers)
             {
                 if (creature == null)
                 {

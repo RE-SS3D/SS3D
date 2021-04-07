@@ -36,15 +36,15 @@ namespace SS3D.Content.Systems.Interactions
             var target = interactionEvent.Target.GetComponent<ViewableContainer>();
             if (interactionEvent.Source.Parent is Hands hands && target != null)
             {
-                return !hands.SelectedHandEmpty && CanStore(interactionEvent.Source.GetComponentInTree<Creature>(), interactionEvent.GetSourceItem(), target);
+                return !hands.SelectedHandEmpty && CanStore(interactionEvent.Source.GetComponentInTree<Entity>(), interactionEvent.GetSourceItem(), target);
             }
 
             return false;
         }
 
-        private bool CanStore(Creature creature, Item item, ViewableContainer target)
+        private bool CanStore(Entity entity, Item item, ViewableContainer target)
         {
-            return target.CanModify(creature) && target.AttachedContainer.Container.CouldStoreItem(item);
+            return target.CanModify(entity) && target.AttachedContainer.Container.CouldStoreItem(item);
         }
 
         public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)

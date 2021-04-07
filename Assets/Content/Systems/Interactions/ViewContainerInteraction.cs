@@ -44,12 +44,12 @@ namespace SS3D.Content.Systems.Interactions
                 return false;
             }
             
-            Creature creature = interactionEvent.Source.GetCreature();
-            if (creature == null)
+            Entity entity = interactionEvent.Source.GetEntity();
+            if (entity == null)
             {
                 return false;
             }
-            return !inventory.HasContainer(container) && creature.CanInteract(container.gameObject);
+            return !inventory.HasContainer(container) && entity.CanInteract(container.gameObject);
         }
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
