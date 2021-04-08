@@ -31,6 +31,7 @@ public class Microwave : InteractionTargetNetworkBehaviour
 
     //used to enable & disable microwave lights
     private Material emissionMaterial;
+    private Light light;
 
     // is it being used rn
     // should probably be renamed to busy
@@ -48,6 +49,8 @@ public class Microwave : InteractionTargetNetworkBehaviour
 
         emissionMaterial = GetComponent<Renderer>().materials[1];
         emissionMaterial.DisableKeyword("_EMISSION");
+        light = GetComponentInChildren<Light>();
+        light.enabled = false;
     }
 
     public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
@@ -130,6 +133,7 @@ public class Microwave : InteractionTargetNetworkBehaviour
     private void StopMicrowave()
     {
         emissionMaterial.DisableKeyword("_EMISSION");
+        light.enabled = false;
 
         audioSource.Stop();
         audioSource.PlayOneShot(finishSound);
@@ -140,6 +144,7 @@ public class Microwave : InteractionTargetNetworkBehaviour
     private void RpcStopMicrowave()
     {
         emissionMaterial.DisableKeyword("_EMISSION");
+        light.enabled = false;
 
         audioSource.Stop();
         audioSource.PlayOneShot(finishSound);
@@ -148,7 +153,8 @@ public class Microwave : InteractionTargetNetworkBehaviour
     [Server]
     private void RunMicrowave()
     {
-        emissionMaterial.EnableKeyword("_EMISSION"); 
+        emissionMaterial.EnableKeyword("_EMISSION");
+        light.enabled = true;
 
         audioSource.Stop();
         audioSource.clip = onSound;
@@ -160,6 +166,7 @@ public class Microwave : InteractionTargetNetworkBehaviour
     private void RpcRunMicrowave()
     {
         emissionMaterial.EnableKeyword("_EMISSION");
+        light.enabled = true;
 
         audioSource.Stop();
         audioSource.clip = onSound;
