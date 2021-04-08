@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using SS3D.Engine.Server.Login.Data;
 using SS3D.Engine.Server.Login.Networking;
@@ -65,10 +66,10 @@ using UnityEngine.SceneManagement;
         [SerializeField] private string loginServerAddress = null;
         
         [SerializeField] private GameObject soulPrefab = null;
+        public List<Soul> souls;
         
         [SerializeField] private LoginManager loginManagerPrefab = null;
         [SerializeField] private GameObject roundManagerPrefab = null;
-        
         
         // Does the server require ingame login?
         [SerializeField] bool useLoginSystem;
@@ -99,6 +100,20 @@ using UnityEngine.SceneManagement;
         {
             base.Awake();
             InitializeSingleton();
+        }
+
+        [Command(ignoreAuthority = true)]
+        public Soul GetSoul(NetworkConnectionToClient sender)
+        {
+            foreach (Soul soul in souls)
+            {
+                if (soul.connection == sender)
+                {
+                    return soul;
+                }
+            }
+
+            return null;
         }
         
         bool InitializeSingleton()
@@ -235,11 +250,17 @@ using UnityEngine.SceneManagement;
          */
         public override void OnServerAddPlayer(NetworkConnection conn)
         {
-            Debug.Log("OnServerAddPlayer");
-
-            GameObject soul = Instantiate(soulPrefab);
+            // Creates a Soul for the player
+            GameObject soulInstance = Instantiate(soulPrefab);
+            Soul soul = soulInstance.GetComponent<Soul>();
             
-            NetworkServer.AddPlayerForConnection(conn, soul);
+            // Checks if there is already a Soul for this player (should be updated later to use the CKEY)
+            if (!souls.Find(delegate(Soul soul1) { return soul1 == soul; }))
+            {
+                souls.Add(soul);
+            }
+            
+            NetworkServer.AddPlayerForConnection(conn, soulInstance);
             //GameObject player = Instantiate(playerDummyPrefab);
             //NetworkServer.AddPlayerForConnection(conn, player);
         }
@@ -292,7 +313,7 @@ using UnityEngine.SceneManagement;
             {
                 return;
             }
-
+            
             //StartCoroutine(SpawnPlayerAfterRoundStart(conn, characterSelection));
         }
         

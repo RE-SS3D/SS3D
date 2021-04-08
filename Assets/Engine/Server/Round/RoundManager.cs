@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using SS3D.Engine.Server.Gamemode;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,6 +19,8 @@ namespace SS3D.Engine.Server.Round
     {
         public static RoundManager singleton { get; private set; }
 
+        // manager that handles the current round's gamemode
+        public GamemodeManager gamemodeManager;
         // WARMUP
         
         // is it starting up?
@@ -68,7 +71,21 @@ namespace SS3D.Engine.Server.Round
         {
             InitializeSingleton();
         }
+            
+        [Command(ignoreAuthority = true)]
+        private void CmdSetPlayerReadyState(bool state, NetworkConnectionToClient sender = null)
+        {
+            if (state)
+            {
+                roundPlayers.Add(LoginNetworkManager.singleton.GetSoul(sender).GetComponent<Creature>());
+            }
+            else
+            {
+                roundPlayers.Remove(LoginNetworkManager.singleton.GetSoul(sender).GetComponent<Creature>());
+            }
+        }
         
+        // WARMUP - START - END
         public void StartWarmup()
         {
             gameObject.SetActive(true);
@@ -104,7 +121,7 @@ namespace SS3D.Engine.Server.Round
 
         // Asks the server to start the round
         [Command(ignoreAuthority = true)]
-        public void CmdStartRound()
+        public void CmdStartRound(NetworkConnectionToClient sender = null)
         {
             StartWarmup(); 
         }
@@ -144,7 +161,7 @@ namespace SS3D.Engine.Server.Round
         }
 
         [Command(ignoreAuthority = true)]
-        public void CmdEndRound()
+        public void CmdEndRound(NetworkConnectionToClient sender = null)
         {
             EndRound();
         }

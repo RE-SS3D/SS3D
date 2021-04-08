@@ -2025,6 +2025,72 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 417116613}
   m_CullTransparentMesh: 0
+--- !u!1 &417657866
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 417657869}
+  - component: {fileID: 417657868}
+  - component: {fileID: 417657867}
+  m_Layer: 0
+  m_Name: GamemodeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &417657867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417657866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 580a7629273341a39684264a441ac377, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  gamemode: {fileID: 11400000, guid: ac1111f91e593854082fe21f85e0dc6e, type: 2}
+  possibleGamemodes:
+  - {fileID: 11400000, guid: ac1111f91e593854082fe21f85e0dc6e, type: 2}
+  possibleObjectives: []
+--- !u!114 &417657868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417657866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 686589577
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
+--- !u!4 &417657869
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417657866}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4457496468857493457}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &442964567
 GameObject:
   m_ObjectHideFlags: 0
@@ -11528,11 +11594,22 @@ PrefabInstance:
       propertyPath: endOnNuclearExplosion
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8910863441607234012, guid: 5b47bfba5e38174439c06cc062db1ac3,
+        type: 3}
+      propertyPath: gamemodeManager
+      value: 
+      objectReference: {fileID: 417657867}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5b47bfba5e38174439c06cc062db1ac3, type: 3}
 --- !u!4 &4457496468857493456 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7577072770951373043, guid: 5b47bfba5e38174439c06cc062db1ac3,
+    type: 3}
+  m_PrefabInstance: {fileID: 4457496468857493455}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4457496468857493457 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3933579258257047947, guid: 5b47bfba5e38174439c06cc062db1ac3,
     type: 3}
   m_PrefabInstance: {fileID: 4457496468857493455}
   m_PrefabAsset: {fileID: 0}
