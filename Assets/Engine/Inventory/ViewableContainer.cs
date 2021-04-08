@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
+using SS3D.Content;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -39,10 +40,10 @@ namespace SS3D.Engine.Inventory
             }
         }
 
-        public void Access(Creature creature)
+        public void Access(Entity entity)
         {
             bool present = false;
-            Accessor accessor = Accessors.FirstOrDefault(x => x.Creature == creature);
+            Accessor accessor = Accessors.FirstOrDefault(x => x.Entity == entity);
             if (accessor != null)
             {
                 if (accessor.IsAccessing)
@@ -56,7 +57,7 @@ namespace SS3D.Engine.Inventory
             {
                 accessor = new Accessor
                 {
-                    Creature = creature
+                    Entity = entity
                 };
             }
             
@@ -75,11 +76,11 @@ namespace SS3D.Engine.Inventory
         /// If a creature is accessing this container
         /// </summary>
         /// <param name="creature">The creature to check</param>
-        public bool IsAccessing(Creature creature)
+        public bool IsAccessing(Entity entity)
         {
             foreach (Accessor accessor in Accessors)
             {
-                if (accessor.IsAccessing && accessor.Creature == creature)
+                if (accessor.IsAccessing && accessor.Entity == entity)
                 {
                     return true;
                 }
@@ -91,7 +92,7 @@ namespace SS3D.Engine.Inventory
         /// <summary>
         /// If a creature should be able to look into the container
         /// </summary>
-        public virtual bool CanAccess(Creature creature)
+        public virtual bool CanAccess(Entity entity)
         {
             return true;
         }
@@ -99,20 +100,20 @@ namespace SS3D.Engine.Inventory
         /// <summary>
         /// If a creature should be able to modify the contents of this container
         /// </summary>
-        public virtual bool CanModify(Creature creature)
+        public virtual bool CanModify(Entity entity)
         {
             return true;
         }
 
         protected virtual void OnAccessed(Accessor accessor)
         {
-            AttachedContainer.AddObserver(accessor.Creature);
+            AttachedContainer.AddObserver(accessor.Entity);
             Accessed?.Invoke(this, accessor);
         }
 
         public class Accessor
         {
-            public Creature Creature { get; set; }
+            public Entity Entity { get; set; }
             public float LastAccess { get; set; }
             public bool IsAccessing { get; set; }
         }
