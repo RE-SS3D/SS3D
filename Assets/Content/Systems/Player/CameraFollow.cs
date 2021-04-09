@@ -86,7 +86,8 @@ namespace SS3D.Content.Systems.Player
                 angleDelta = Input.GetAxis("Mouse X");
 
                 // Snap rotation to closest 90 degree angle in direction of mouse movement if mouse speed exceeds limit
-                if (Mathf.Abs(angleDelta) >= horizontalRotationFlickLimit && (Time.time - prevHorizontalRotationSnap) > CARDINAL_SNAP_TIME)
+                if (Mathf.Abs(angleDelta) >= horizontalRotationFlickLimit &&
+                    (Time.time - prevHorizontalRotationSnap) > CARDINAL_SNAP_TIME)
                 {
                     angle = Mathf.Round((angle + Mathf.Sign(angleDelta) * 45.1f) / 90.0f) * 90.0f;
                     prevHorizontalRotationSnap = Time.time;
