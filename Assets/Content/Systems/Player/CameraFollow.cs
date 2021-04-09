@@ -25,6 +25,8 @@ namespace SS3D.Content.Systems.Player
 
         private const float CARDINAL_SNAP_TIME = 0.3f;
 
+        [SerializeField, Min(0)] private float horizontalRotationFlickLimit = 5f;
+
         // The object to follow
         public GameObject target = null;
 
@@ -69,29 +71,27 @@ namespace SS3D.Content.Systems.Player
             if (EventSystem.current.IsPointerOverGameObject())
                 return;
 
-            if (EventSystem.current.IsPointerOverGameObject()) return;
-
-            // Check for double tap
-            if (Input.GetButtonDown("Camera Rotation"))
-                prevHorizontalAxisPress = Time.time;
-
-            // If a double tap actually works
-            // Round to closest 90 degree angle, going up or down based on whether axis is positive or negative
-            if (Input.GetButtonUp("Camera Rotation") && (Time.time - prevHorizontalAxisPress) < CARDINAL_SNAP_TIME)
-            {
-                angle = Mathf.Round((angle + (Input.GetAxis("Camera Rotation") > 0 ? 45.1f : -45.1f)) / 90.0f) * 90.0f;
-                prevHorizontalAxisPress = 0.0f;
-                return;
-            }
-
             // input handling
             float zoom = Input.GetAxis("Camera Zoom");
             float angleDelta = 0.0f;
             float vAngleDelta = 0.0f;
 
-            if (Input.GetButton("Camera Rotation") && (Time.time - prevHorizontalAxisPress) > CARDINAL_SNAP_TIME)
+            // Block rotation if snapped rotation recently
+            if ((Time.time - prevHorizontalRotationSnap) < CARDINAL_SNAP_TIME)
+                return;
+
+            // Rotate horizontally when middle mouse is pressed
+            if (Input.GetKey(KeyCode.Mouse2))
             {
-                angleDelta = Input.GetAxis("Camera Rotation") * HORIZONTAL_ROTATION_SENSITIVITY * Time.deltaTime;
+                angleDelta = Input.GetAxis("Mouse X");
+
+                // Snap rotation to closest 90 degree angle in direction of mouse movement if mouse speed exceeds limit
+                if (Mathf.Abs(angleDelta) >= horizontalRotationFlickLimit && (Time.time - prevHorizontalRotationSnap) > CARDINAL_SNAP_TIME)
+                {
+                    angle = Mathf.Round((angle + Mathf.Sign(angleDelta) * 45.1f) / 90.0f) * 90.0f;
+                    prevHorizontalRotationSnap = Time.time;
+                    return;
+                }
             }
 
             if (Input.GetButton("Camera Vertical Rotation"))
@@ -131,7 +131,7 @@ namespace SS3D.Content.Systems.Player
         }
 
         // Previous button downs for left and right axis movement
-        private float prevHorizontalAxisPress = 0.0f;
+        private float prevHorizontalRotationSnap = 0.0f;
 
         private float curHorizontalAngle;
         private float currentDistance;
