@@ -23,7 +23,7 @@ namespace SS3D.Engine.Interactions.Extensions
             }
 
             //Block interaction when point is on top of wall or above.
-            if (IsWallTop(point, 0.1f))
+            if (IsWallTop(point, 0.4f))
             {
                 return false;
             }
