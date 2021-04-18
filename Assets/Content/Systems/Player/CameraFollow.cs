@@ -25,8 +25,6 @@ namespace SS3D.Content.Systems.Player
 
         private const float CARDINAL_SNAP_TIME = 0.3f;
 
-        [SerializeField, Min(0)] private float horizontalRotationFlickLimit = 5f;
-
         // The object to follow
         public GameObject target = null;
 
@@ -38,6 +36,18 @@ namespace SS3D.Content.Systems.Player
         public float angle = 90f; // horizontal angle of the camera (around the z axis)
         public float vAngle = 60f; // angle above the player
         public float yOffset = 1f;
+
+        [SerializeField, Min(0)] private float horizontalRotationFlickLimit = 5f;
+
+        // Previous button downs for left and right axis movement
+        private float prevHorizontalRotationSnap = 0.0f;
+
+        private float rotationDuration;
+        private float curHorizontalAngle;
+        private float currentDistance;
+
+        // Offset of target transform position to camera focus point.
+        private Vector3 playerOffset = new Vector3();
 
         private void Start()
         {
@@ -76,23 +86,23 @@ namespace SS3D.Content.Systems.Player
             float angleDelta = 0.0f;
             float vAngleDelta = 0.0f;
 
-            // Block rotation if snapped rotation recently
-            if ((Time.time - prevHorizontalRotationSnap) < CARDINAL_SNAP_TIME)
-                return;
-
-            // Rotate horizontally when middle mouse is pressed
-            if (Input.GetKey(KeyCode.Mouse2))
+            // Rotate horizontally when middle mouse is pressed 
+            if (Input.GetKey(KeyCode.Mouse2) && (Time.time - prevHorizontalRotationSnap) > CARDINAL_SNAP_TIME)
             {
                 angleDelta = Input.GetAxis("Mouse X");
+                rotationDuration += Time.deltaTime;
 
                 // Snap rotation to closest 90 degree angle in direction of mouse movement if mouse speed exceeds limit
-                if (Mathf.Abs(angleDelta) >= horizontalRotationFlickLimit &&
-                    (Time.time - prevHorizontalRotationSnap) > CARDINAL_SNAP_TIME)
+                if (Mathf.Abs(angleDelta) >= horizontalRotationFlickLimit && rotationDuration<=CARDINAL_SNAP_TIME)
                 {
                     angle = Mathf.Round((angle + Mathf.Sign(angleDelta) * 45.1f) / 90.0f) * 90.0f;
                     prevHorizontalRotationSnap = Time.time;
                     return;
                 }
+            }
+            else
+            {
+                rotationDuration = 0;
             }
 
             if (Input.GetButton("Camera Vertical Rotation"))
@@ -130,14 +140,5 @@ namespace SS3D.Content.Systems.Player
             transform.position = targetPosition + relativePosition;
             transform.LookAt(targetPosition);
         }
-
-        // Previous button downs for left and right axis movement
-        private float prevHorizontalRotationSnap = 0.0f;
-
-        private float curHorizontalAngle;
-        private float currentDistance;
-
-        // Offset of target transform position to camera focus point.
-        private Vector3 playerOffset = new Vector3();
     }
 }
