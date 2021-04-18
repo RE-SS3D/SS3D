@@ -1,8 +1,6 @@
-﻿using System;
+﻿using SS3D.Engine.FOV;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using SS3D.Engine.Chat;
-using SS3D.Engine.FOV;
 
 namespace SS3D.Content.Systems.Player
 {
@@ -41,6 +39,7 @@ namespace SS3D.Content.Systems.Player
 
         // Previous button downs for left and right axis movement
         private float prevHorizontalRotationSnap = 0.0f;
+        private float prevHorizontalAxisPress = 0.0f;
 
         private float rotationDuration;
         private float curHorizontalAngle;
@@ -86,14 +85,20 @@ namespace SS3D.Content.Systems.Player
             float angleDelta = 0.0f;
             float vAngleDelta = 0.0f;
 
-            // Rotate horizontally when middle mouse is pressed 
+            // remember when rotation button was pressed
+            if (Input.GetButtonDown("Camera Rotation"))
+            {
+                prevHorizontalAxisPress = Time.time;
+            }
+
+            // middle mouse button rotation 
             if (Input.GetKey(KeyCode.Mouse2) && (Time.time - prevHorizontalRotationSnap) > CARDINAL_SNAP_TIME)
             {
                 angleDelta = Input.GetAxis("Mouse X");
                 rotationDuration += Time.deltaTime;
 
                 // Snap rotation to closest 90 degree angle in direction of mouse movement if mouse speed exceeds limit
-                if (Mathf.Abs(angleDelta) >= horizontalRotationFlickLimit && rotationDuration<=CARDINAL_SNAP_TIME)
+                if (Mathf.Abs(angleDelta) >= horizontalRotationFlickLimit && rotationDuration <= CARDINAL_SNAP_TIME)
                 {
                     angle = Mathf.Round((angle + Mathf.Sign(angleDelta) * 45.1f) / 90.0f) * 90.0f;
                     prevHorizontalRotationSnap = Time.time;
@@ -103,6 +108,25 @@ namespace SS3D.Content.Systems.Player
             else
             {
                 rotationDuration = 0;
+            }
+
+            // ctrl + q/e rotation
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                // snap camera if rotation button tapped
+                if (Input.GetButtonUp("Camera Rotation") && (Time.time - prevHorizontalAxisPress) < CARDINAL_SNAP_TIME)
+                {
+                    angleDelta = Input.GetAxis("Camera Rotation");
+                    angle = Mathf.Round((angle + Mathf.Sign(angleDelta) * 45.1f) / 90.0f) * 90.0f;
+                    prevHorizontalAxisPress = 0.0f;
+                    return;
+                }
+                
+                // rotate camera if rotation button is held down
+                if (Input.GetButton("Camera Rotation") && (Time.time - prevHorizontalAxisPress) > CARDINAL_SNAP_TIME)
+                {
+                    angleDelta = Input.GetAxis("Camera Rotation") * HORIZONTAL_ROTATION_SENSITIVITY * Time.deltaTime;
+                }
             }
 
             if (Input.GetButton("Camera Vertical Rotation"))
