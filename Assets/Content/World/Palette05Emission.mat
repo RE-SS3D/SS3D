@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Palette05 Emission
+  m_Name: Palette05Emission
   m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: EFFECT_BUMP _ALPHAMODULATE_ON _EMISSION _GLOSSYREFLECTIONS_OFF
     _SPECULARHIGHLIGHTS_OFF _SPECULAR_SETUP

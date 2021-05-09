@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Palette05 Glass
+  m_Name: Palette05Glass
   m_Shader: {fileID: 4800000, guid: e9086f741ba45234b89860232e85b84c, type: 3}
   m_ShaderKeywords: _ALPHABLEND_ON _GLOSSYREFLECTIONS_OFF _SPECULARHIGHLIGHTS_OFF
     _SPECULAR_COLOR

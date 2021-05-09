@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
-  m_Name: Orange Juice
+  m_Name: JuiceOrange
   m_EditorClassIdentifier: 
   Id: juice_orange
   Color: {r: 0.8962264, g: 0.6858085, b: 0.2494215, a: 0.8235294}
