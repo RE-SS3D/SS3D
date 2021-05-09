@@ -11,6 +11,7 @@ namespace SS3D.Engine.Inventory
     {
         public AttachedContainer AttachedContainer;
         public Vector2Int Size;
+        public Filter StartFilter;
 
         public void Start()
         {
@@ -20,6 +21,9 @@ namespace SS3D.Engine.Inventory
             {
                 Size = Size
             };
+
+            if (StartFilter != null)
+                AttachedContainer.Container.Filters.Add(StartFilter);
         }
     }
 }
