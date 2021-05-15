@@ -37,7 +37,7 @@ namespace SS3D.Engine.Inventory
 		
         public virtual string GetName(GameObject examinator)
         {
-            return gameObject.name;
+            return "";
         }		
     }
 }
