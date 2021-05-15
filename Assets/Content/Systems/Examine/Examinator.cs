@@ -160,18 +160,19 @@ namespace SS3D.Content.Systems.Examine
                     {
 						if (identity.netId == 0){
 							
-							// Treat this as a non-networked item. A bit hacky. Seems to affect turfs / fixtures created by clients...
-							 UpdateExamine(examinables);
+							// NetID should not be zero. If it is, there is a problem. Seems to affect turfs / fixtures created by clients...
+							// Instead of hiding the error, we will explicitly show it.
+							 NetIdError();
 							 
 						} else {
 							
 							// Network examine
 							if (!isServer){
 								// Clients must request the Rpc through a Command to the Server
-								CmdRequestExamine(identity);
+								CmdRequestExamine(identity, transform.gameObject);
 							} else {
-								// The Server can perform the Rpc directly.
-								TargetExamine(identity);
+								// The Server has already done the checks, so simply update the UI.
+								UpdateExamine(examinables);
 							}
 						}
                     }
@@ -185,47 +186,78 @@ namespace SS3D.Content.Systems.Examine
 
 
         [Command]
-        private void CmdRequestExamine(NetworkIdentity target)
+        private void CmdRequestExamine(NetworkIdentity target, GameObject examinator)
         {
-			TargetExamine(target);
-		}
-		
-		
-		[TargetRpc]
-		private void TargetExamine(NetworkIdentity target)
-		{
-
-            IExaminable[] examinables = target.GetComponents<IExaminable>();
+            Debug.Log("CmdRequestExamine called");
+			string hoverText = null;
+            IExaminable[] examinables = target.transform.gameObject.GetComponents<IExaminable>();
+            Debug.Log("Checking examinables.Length");
             if (examinables.Length < 1)
             {
-                return;
+                //return;
+				hoverText = "No examinables on target";
+                Debug.Log("No examinables on target");
             }
+            Debug.Log("Finished checking examinables.Length");
 
             // Check view distance
             Vector3 transformPosition = target.transform.position;
+            Debug.Log("Checking view distance");
             if (Vector2.Distance(new Vector2(transformPosition.x, transformPosition.z),
-                    new Vector2(transform.position.x, transform.position.z)) > ViewRange)
+                    new Vector2(examinator.transform.position.x, examinator.transform.position.z)) > ViewRange)
             {
-                return;
+                //return;
+                Debug.Log("Out of view range");
+                hoverText = "Out of view range";
             }
+            Debug.Log("Finished checking view distance");
 
             // Check obstacles
-            if (Physics.Linecast(transform.position, transformPosition, ObstacleMask))
+            Debug.Log("Checking Examinator");
+            Examinator e = examinator.GetComponent<Examinator>();
+            if (e == null) { Debug.Log("e is null"); }
+
+            Debug.Log("Finished checking Examinator");
+            Debug.Log("Checking Examinator ViewRange");
+            Debug.Log(e.ViewRange);
+            Debug.Log("Finished checking Examinator ViewRange");
+            Debug.Log("Checking ObstacleMask");
+            LayerMask o = e.ObstacleMask;
+            Debug.Log("Finished checking ObstacleMask");
+            Debug.Log("Checking ObstacleMask value");
+            Debug.Log(o.value);
+            Debug.Log("Finished checking ObstacleMask value");
+
+            Debug.Log("Checking obstacles");
+            if (Physics.Linecast(examinator.transform.position, transformPosition, examinator.GetComponent<Examinator>().ObstacleMask))
             {
-                return;
+                //return;
+				hoverText = "Obstacles in the way";
+                Debug.Log("Obstacles in the way");
             }
-			
-            string hoverText = GetHoverText(examinables);
-            if (hoverText != null)
+            Debug.Log("Finished checking obstacles");
+
+            if (hoverText == null){
+				hoverText = GetHoverText(examinables, examinator);
+            }
+			if (hoverText != null)
             {
-                examineUi.SetText(hoverText);
-				uiInstance.SetActive(true);
-            }			
+                Debug.Log("TargetExamine(" + hoverText + ")");
+                TargetExamine(hoverText);
+			}
+            Debug.Log("Finished CmdRequestExamine");
+        }
+		
+		[TargetRpc]
+		private void TargetExamine(string text)
+		{
+            examineUi.SetText(text);
+			uiInstance.SetActive(true);			
 		}
 
         private void UpdateExamine(IExaminable[] examinables)
         {
-            string text = GetHoverText(examinables);
+            string text = GetHoverText(examinables, gameObject);
             if (text != null)
             {
                 examineUi.SetText(text);
@@ -237,11 +269,11 @@ namespace SS3D.Content.Systems.Examine
             }
         }
 
-        private string GetHoverText(IExaminable[] examinables)
+        private string GetHoverText(IExaminable[] examinables, GameObject examinator)
         {
             StringBuilder builder = new StringBuilder();
 
-            GameObject go = gameObject;
+            GameObject go = examinator;
             foreach (var examinable in examinables)
             {
                 if (examinable.CanExamine(go))
@@ -264,7 +296,8 @@ namespace SS3D.Content.Systems.Examine
 
             if (builder.Length < 1)
             {
-                return null;
+                //return null;
+				return "Null returned from HoverText";
             }
 
             return builder.ToString();
@@ -274,6 +307,12 @@ namespace SS3D.Content.Systems.Examine
         {
             uiInstance.SetActive(false);
             currentTarget = null;
+        }
+		
+        private void NetIdError()
+        {
+            examineUi.SetText("NetID error on Client.");
+            uiInstance.SetActive(true);
         }
     }
 }
