@@ -260,10 +260,9 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
+                Mesh handGuide = (Mesh)AssetDatabase.LoadAssetAtPath("Assets/Editor/Models/handgizmo.fbx", typeof(Mesh));
 
-            MeshFilter meshFilter = GetComponent<MeshFilter>();
-            if (meshFilter != null && meshFilter.sharedMesh != null)
-            {
+                Gizmos.color = new Color32(255, 120, 20, 170);
                 Quaternion localRotation = attachmentPoint.localRotation;
                 Vector3 eulerAngles = localRotation.eulerAngles;
                 Vector3 parentPosition = attachmentPoint.parent.position;
@@ -271,9 +270,7 @@ namespace SS3D.Engine.Inventory
                 // Draw a wire mesh of the rotated model
                 Vector3 rotatedPoint = RotatePointAround(parentPosition, position, eulerAngles);
                 rotatedPoint += new Vector3(0, position.z, position.y);
-                Gizmos.DrawWireMesh(meshFilter.sharedMesh,
-                    rotatedPoint, localRotation);
-            }
+                Gizmos.DrawWireMesh(handGuide, attachmentPoint.position, localRotation);
         }
 
         private Vector3 RotatePointAround(Vector3 point, Vector3 pivot, Vector3 angles)
