@@ -260,7 +260,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
-                Mesh handGuide = (Mesh)AssetDatabase.LoadAssetAtPath("Assets/Editor/Models/handgizmo.fbx", typeof(Mesh));
+                Mesh handGuide = (Mesh)AssetDatabase.LoadAssetAtPath("Assets/Art/Models/Other/handgizmo.fbx", typeof(Mesh));
 
                 Gizmos.color = new Color32(255, 120, 20, 170);
                 Quaternion localRotation = attachmentPoint.localRotation;
