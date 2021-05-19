@@ -11,7 +11,7 @@ The game itself is made in Unity and written in C#, check out our  [code (C#) st
 
 Option A.
 1. Clone this (SS3D) repository.
-2. Download [Unity Hub](https://unity3d.com/pt/get-unity/download).
+2. Download [Unity Hub](https://unity3d.com/get-unity/download).
 3. Download the current Unity version that the project tells you.
 
 Option B.
