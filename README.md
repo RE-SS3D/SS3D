@@ -58,12 +58,12 @@ Subscribestar is our other subscription-based donation platform. Has fewer featu
 
 ## CONTRIBUTING:
 
-[CONTRIBUTING.md](CONTRIBUTING.md) contains the information regarding technical contributions, including what version of Unity the project uses, how to set up and run the project, reporting bugs, pull requests, and styling code.
+[CONTRIBUTING.md](Documents/CONTRIBUTING.md) contains the information regarding technical contributions, including what version of Unity the project uses, how to set up and run the project, reporting bugs, pull requests, and styling code.
 
 [https://ss3d.space/contribute/](https://ss3d.space/contribute/) has a breakdown of the different contribution types (including art assets) with links to helpful guides and todo boards, making contributing art assets a lot easier for new contributors.
 
 ## LICENSING:
 
-**This project and its code** fall under the **[MIT](LICENSE-CODE.md)** license.
+**This project and its code** fall under the **[MIT](Documents/LICENSE-CODE.md)** license.
 
-**All asset contributions** fall under the **[CC BY-NC-SA 4.0](LICENSE-ASSETS.md)** license.
+**All asset contributions** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.md)** license.
