@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
-  m_Name: Watermelon_Stage1
+  m_Name: HolymelonStage1
   m_EditorClassIdentifier: 
-  id: watermelon_stage1
+  id: HolymelonStage1
   genericType: plant
-  prefab: {fileID: 8757431509704750092, guid: 2895e002ffca514449c2301ab6595fc5, type: 3}
+  prefab: {fileID: 8757431509704750092, guid: d745100a43dbf5f4bbbbe78434405ee1, type: 3}

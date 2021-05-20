@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5752218603018864159}
   m_Layer: 0
-  m_Name: Holymelon_Stage1
+  m_Name: HolymelonStage4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,11 +42,11 @@ GameObject:
   - component: {fileID: 3905019506317992047}
   - component: {fileID: 2908185540786701765}
   - component: {fileID: 7842115812951011959}
-  - component: {fileID: 8117633419093593106}
-  - component: {fileID: 1847609907070840696}
-  - component: {fileID: 3397603298301539823}
+  - component: {fileID: 1926618790220488794}
+  - component: {fileID: 3605446301635745800}
+  - component: {fileID: 6349558950790465375}
   m_Layer: 0
-  m_Name: Holymelon_Stage1
+  m_Name: HolymelonStage4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73,7 +73,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8824788415378046448}
-  m_Mesh: {fileID: 887640641048000966, guid: 6d94353dcaf9d064f86aa612f2d9fe71, type: 3}
+  m_Mesh: {fileID: -8237000811898341235, guid: 6d94353dcaf9d064f86aa612f2d9fe71, type: 3}
 --- !u!23 &7842115812951011959
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -114,7 +114,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!64 &8117633419093593106
+--- !u!64 &1926618790220488794
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,8 +127,8 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 887640641048000966, guid: 6d94353dcaf9d064f86aa612f2d9fe71, type: 3}
---- !u!114 &1847609907070840696
+  m_Mesh: {fileID: -8237000811898341235, guid: 6d94353dcaf9d064f86aa612f2d9fe71, type: 3}
+--- !u!114 &3605446301635745800
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -144,7 +144,7 @@ MonoBehaviour:
   Temperature: 0
   Locked: 0
   substances: []
---- !u!114 &3397603298301539823
+--- !u!114 &6349558950790465375
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
