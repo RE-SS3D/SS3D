@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5752218603018864159}
   m_Layer: 0
-  m_Name: MeatWheat_Stage4
+  m_Name: MeatWheatStage4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 3605446301635745800}
   - component: {fileID: 6349558950790465375}
   m_Layer: 0
-  m_Name: MeatWheat_Stage4
+  m_Name: MeatWheatStage4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73,7 +73,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8824788415378046448}
-  m_Mesh: {fileID: 6886926705009043885, guid: fd1ec273c39e2db46bcb04d2ddb78145, type: 3}
+  m_Mesh: {fileID: -8145916568433848750, guid: fd1ec273c39e2db46bcb04d2ddb78145, type: 3}
 --- !u!23 &7842115812951011959
 MeshRenderer:
   m_ObjectHideFlags: 0

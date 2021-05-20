@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5752218603018864159}
   m_Layer: 0
-  m_Name: Wheat_Stage1
+  m_Name: MeatWheatStage2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,11 +42,11 @@ GameObject:
   - component: {fileID: 3905019506317992047}
   - component: {fileID: 2908185540786701765}
   - component: {fileID: 7842115812951011959}
-  - component: {fileID: 8117633419093593106}
-  - component: {fileID: 1847609907070840696}
-  - component: {fileID: 3397603298301539823}
+  - component: {fileID: 3153217450500752489}
+  - component: {fileID: 7799292905583907139}
+  - component: {fileID: 7255859004510184502}
   m_Layer: 0
-  m_Name: Wheat_Stage1
+  m_Name: MeatWheatStage2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73,7 +73,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8824788415378046448}
-  m_Mesh: {fileID: -2838605583201021691, guid: fd1ec273c39e2db46bcb04d2ddb78145, type: 3}
+  m_Mesh: {fileID: -8484793918969397509, guid: fd1ec273c39e2db46bcb04d2ddb78145, type: 3}
 --- !u!23 &7842115812951011959
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -113,7 +113,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!64 &8117633419093593106
+--- !u!64 &3153217450500752489
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -126,8 +126,8 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -2838605583201021691, guid: fd1ec273c39e2db46bcb04d2ddb78145, type: 3}
---- !u!114 &1847609907070840696
+  m_Mesh: {fileID: -8484793918969397509, guid: fd1ec273c39e2db46bcb04d2ddb78145, type: 3}
+--- !u!114 &7799292905583907139
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -143,7 +143,7 @@ MonoBehaviour:
   Temperature: 0
   Locked: 0
   substances: []
---- !u!114 &3397603298301539823
+--- !u!114 &7255859004510184502
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -155,6 +155,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Wheat Plant
+  DisplayName: Meat Wheat Plant
   Text: 
   MaxDistance: 0

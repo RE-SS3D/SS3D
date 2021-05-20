@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
-  m_Name: Wheat_Stage4
+  m_Name: WheatStage4
   m_EditorClassIdentifier: 
-  id: wheat_stage4
+  id: WheatStage4
   genericType: plant
   prefab: {fileID: 8757431509704750092, guid: 7b1344092848d6644abaf3c88a4e61dd, type: 3}
