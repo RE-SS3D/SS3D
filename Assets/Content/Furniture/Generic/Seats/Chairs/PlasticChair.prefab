@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 495010723332035723}
   - component: {fileID: 946744180037249438}
   m_Layer: 0
-  m_Name: ToiletLid
+  m_Name: PlasticChairBttom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3648840853805917807}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.978, z: -0.441}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8213111319263450463}
@@ -39,7 +39,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3648840853805917807}
-  m_Mesh: {fileID: -650957270937521012, guid: 64730c2ca04ebd84c8cab07dd7ed4ef0, type: 3}
+  m_Mesh: {fileID: -3238642808552340740, guid: 9cd1c4182089cb24cb5d4d045d27579c, type: 3}
 --- !u!23 &946744180037249438
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -90,15 +90,10 @@ GameObject:
   - component: {fileID: 8213111319263450463}
   - component: {fileID: 3059472895816432833}
   - component: {fileID: 670817264003822935}
-  - component: {fileID: 404650530671391029}
   - component: {fileID: -8007393211677902780}
-  - component: {fileID: 6933098557949719560}
-  - component: {fileID: 4736502494625233072}
-  - component: {fileID: 6410542327681874041}
-  - component: {fileID: 5281519465761832601}
   - component: {fileID: -3453679615323309297}
   m_Layer: 0
-  m_Name: Toilet
+  m_Name: PlasticChair (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -149,25 +144,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -8928055837537713139, guid: 64730c2ca04ebd84c8cab07dd7ed4ef0, type: 3}
---- !u!114 &404650530671391029
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5161561551087789900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
-  OnlyStoreWhenOpen: 1
-  MaxDistance: 1.5
-  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
+  m_Mesh: {fileID: -6224953987796416769, guid: 9cd1c4182089cb24cb5d4d045d27579c, type: 3}
 --- !u!114 &-8007393211677902780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,72 +157,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Toilet
+  DisplayName: Bar Stool
   Text: 
   MaxDistance: 0
---- !u!95 &6933098557949719560
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5161561551087789900}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 5d4ce43c1ec522943913cf98538da7b7, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &4736502494625233072
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5161561551087789900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2119b201c85e4ba2896540c7243a4b1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
---- !u!114 &6410542327681874041
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5161561551087789900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HideItems: 1
-  AttachItems: 1
-  AttachmentOffset: {x: 0, y: 0, z: 0}
---- !u!114 &5281519465761832601
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5161561551087789900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AttachedContainer: {fileID: 6410542327681874041}
-  Size: {x: 1, y: 1}
-  StartFilter: {fileID: 0}
 --- !u!114 &-3453679615323309297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -269,10 +183,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 254666270778612133}
-  - component: {fileID: 3115635699280541371}
   - component: {fileID: 8671510269173779519}
   m_Layer: 0
-  m_Name: Toilet
+  m_Name: PlasticChair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -292,14 +205,6 @@ Transform:
   m_Father: {fileID: 8213111319263450463}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3115635699280541371
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5218468364695561986}
-  m_Mesh: {fileID: -8928055837537713139, guid: 64730c2ca04ebd84c8cab07dd7ed4ef0, type: 3}
 --- !u!137 &8671510269173779519
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -319,7 +224,6 @@ SkinnedMeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
-  - {fileID: 2100000, guid: 2f0cd9508120d69438b9c48f09c359e8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -344,7 +248,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -8928055837537713139, guid: 64730c2ca04ebd84c8cab07dd7ed4ef0, type: 3}
+  m_Mesh: {fileID: -6224953987796416769, guid: 9cd1c4182089cb24cb5d4d045d27579c, type: 3}
   m_Bones: []
   m_BlendShapeWeights: []
   m_RootBone: {fileID: 0}

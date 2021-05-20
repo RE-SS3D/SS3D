@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
-  m_Name: Toilet
+  m_Name: PlasticChairBlue
   m_EditorClassIdentifier: 
-  id: Toilet
-  genericType: furniture
-  prefab: {fileID: 5161561551087789900, guid: 980eea1bed9274345a91d8bad0b48b3a, type: 3}
+  id: PlasticChairBlue
+  genericType: seat
+  prefab: {fileID: 5161561551087789900, guid: 6ddf79de623156e4596f10354b2227a9, type: 3}

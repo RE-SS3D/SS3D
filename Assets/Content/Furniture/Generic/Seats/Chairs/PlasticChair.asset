@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
-  m_Name: Stool
+  m_Name: PlasticChair
   m_EditorClassIdentifier: 
-  id: stool
+  id: PlasticChair
   genericType: seat
-  prefab: {fileID: 8848695623778231642, guid: 46fc785681ee256439524d5edab9f981, type: 3}
+  prefab: {fileID: 5161561551087789900, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
