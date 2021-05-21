@@ -12,9 +12,8 @@ GameObject:
   - component: {fileID: 7275455165246744443}
   - component: {fileID: 8926886091107077377}
   - component: {fileID: 7786279809998984}
-  - component: {fileID: 9210078956408609649}
   m_Layer: 14
-  m_Name: Tank Storage Unit Door
+  m_Name: TankStorageUnitDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,7 +56,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1673974766239670577}
-  m_Mesh: {fileID: -6986140088697841652, guid: ceb274e28e736954ca023669aead7b0b, type: 3}
+  m_Mesh: {fileID: 3654447633412305318, guid: ceb274e28e736954ca023669aead7b0b, type: 3}
 --- !u!23 &7786279809998984
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -97,19 +96,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &9210078956408609649
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1673974766239670577}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.6336395, y: 0.23818837, z: 0.096619725}
-  m_Center: {x: 0.0004029274, y: 0.11923026, z: 0.01925771}
 --- !u!1 &7348721911392627679
 GameObject:
   m_ObjectHideFlags: 0
@@ -128,7 +114,7 @@ GameObject:
   - component: {fileID: 3959135070748397564}
   - component: {fileID: 1866690735240689045}
   m_Layer: 0
-  m_Name: Tank Storage Unit
+  m_Name: TankStorageUnit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -274,7 +260,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DisplayName: Tank Storage Unit
-  Text: 
+  Text: Stores oxygen and plasma tanks.
   MaxDistance: 0
 --- !u!114 &1866690735240689045
 MonoBehaviour:

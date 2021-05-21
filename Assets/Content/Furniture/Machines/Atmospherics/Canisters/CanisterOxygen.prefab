@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 7394184406077612064}
   - component: {fileID: 8839139762038401630}
   m_Layer: 0
-  m_Name: Canister - Plasma
+  m_Name: CanisterOxygen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -80,7 +80,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 1
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -6417268524592866458, guid: bd512b41d297ad5428ac6db3a3712f9a, type: 3}
+  m_Mesh: {fileID: -392120652132929700, guid: bd512b41d297ad5428ac6db3a3712f9a, type: 3}
   m_Bones: []
   m_BlendShapeWeights:
   - 0
@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a55a29bb6f6ee084486e08ea167eaccf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gas: 3
+  gas: 0
   valvePressure: 0.1
   valveOpen: 0
   content: 500
@@ -159,7 +159,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -6417268524592866458, guid: bd512b41d297ad5428ac6db3a3712f9a, type: 3}
+  m_Mesh: {fileID: -392120652132929700, guid: bd512b41d297ad5428ac6db3a3712f9a, type: 3}
 --- !u!114 &8839139762038401630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,6 +172,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Plasma Canister
-  Text: CAUTION, contains Plasma!
+  DisplayName: Oxygen Canister
+  Text: Contains Oxygen, so make sure this doesn't run out.
   MaxDistance: 0
