@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6898774970817240223}
   - component: {fileID: -9066456429091602957}
   m_Layer: 0
-  m_Name: Table - Glass
+  m_Name: TableGlass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2839728781945606427}
-  m_Mesh: {fileID: -6753048190188894853, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  m_Mesh: {fileID: -6474879442438147634, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
 --- !u!23 &2885897057548802505
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -108,28 +108,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa3fb3fb0fa47e54bad7580218ea1e05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: table
-  o: {fileID: -6753048190188894853, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  c: {fileID: -6150233847627879041, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  i: {fileID: 8838564480020112740, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  lNone: {fileID: -6417055362158047220, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  lSingle: {fileID: -9036960313660322551, guid: f860e5d60928a9a428e4e08ced949943,
+  type: Table_Glass
+  o: {fileID: -6474879442438147634, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  c: {fileID: -3412306530883836957, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  i: {fileID: -2157360573737795375, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  lNone: {fileID: -9218815689037758219, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  lSingle: {fileID: 5792205659789282660, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  tNone: {fileID: -7743254500183085581, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  tSingleRight: {fileID: 7586772652465350641, guid: f860e5d60928a9a428e4e08ced949943,
     type: 3}
-  tNone: {fileID: 1596402203118896377, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  tSingleRight: {fileID: -3773819434336659393, guid: f860e5d60928a9a428e4e08ced949943,
+  tSingleLeft: {fileID: -7474841098566485520, guid: f860e5d60928a9a428e4e08ced949943,
     type: 3}
-  tSingleLeft: {fileID: -7893783300856650122, guid: f860e5d60928a9a428e4e08ced949943,
+  tDouble: {fileID: -4864732567356238751, guid: f860e5d60928a9a428e4e08ced949943,
     type: 3}
-  tDouble: {fileID: -4355739453775877451, guid: f860e5d60928a9a428e4e08ced949943,
+  xNone: {fileID: -6085528617014218902, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xSingle: {fileID: 2281259568970764498, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xSide: {fileID: -1858236571859294194, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xOpposite: {fileID: -7499845758377986718, guid: f860e5d60928a9a428e4e08ced949943,
     type: 3}
-  xNone: {fileID: -2406792910815590013, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  xSingle: {fileID: -7426879051649354720, guid: f860e5d60928a9a428e4e08ced949943,
-    type: 3}
-  xSide: {fileID: -6782220327287174847, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  xOpposite: {fileID: 1947121298513395368, guid: f860e5d60928a9a428e4e08ced949943,
-    type: 3}
-  xTriple: {fileID: 1894581812774664740, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  xQuad: {fileID: 2324832138844279276, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xTriple: {fileID: -827742640193887413, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xQuad: {fileID: 2518676867277241252, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   viewObstacles: []
   opaque: 0
 --- !u!114 &-9066456429091602957

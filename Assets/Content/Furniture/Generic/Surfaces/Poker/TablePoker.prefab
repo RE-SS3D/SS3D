@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5549007176416625144}
   - component: {fileID: -6754659111865001399}
   m_Layer: 0
-  m_Name: Table - Wood
+  m_Name: TablePoker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43,7 +43,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3879826479501069436}
-  m_Mesh: {fileID: -7160183601403200227, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  m_Mesh: {fileID: 24074734363293705, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
 --- !u!23 &4229887190052127918
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -108,28 +108,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa3fb3fb0fa47e54bad7580218ea1e05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: table
-  o: {fileID: -7160183601403200227, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  c: {fileID: -2045734413240052204, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  i: {fileID: 5882522681669869734, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  lNone: {fileID: 8697269778844656583, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  lSingle: {fileID: -8587178273707809285, guid: f860e5d60928a9a428e4e08ced949943,
+  type: Table_Poker
+  o: {fileID: 24074734363293705, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  c: {fileID: 816114919964496713, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  i: {fileID: 4166674255622024098, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  lNone: {fileID: 1626049959663255465, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  lSingle: {fileID: 2795500985105495790, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  tNone: {fileID: 5092837571169025286, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  tSingleRight: {fileID: -910562515610212240, guid: f860e5d60928a9a428e4e08ced949943,
     type: 3}
-  tNone: {fileID: 8158599618370468297, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  tSingleRight: {fileID: -2310355072671799426, guid: f860e5d60928a9a428e4e08ced949943,
+  tSingleLeft: {fileID: -4935310022599496271, guid: f860e5d60928a9a428e4e08ced949943,
     type: 3}
-  tSingleLeft: {fileID: -6740651753459302463, guid: f860e5d60928a9a428e4e08ced949943,
+  tDouble: {fileID: 2982981780037516712, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xNone: {fileID: -5904814429512308061, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xSingle: {fileID: -2401984232314654667, guid: f860e5d60928a9a428e4e08ced949943,
     type: 3}
-  tDouble: {fileID: -5820017183656547193, guid: f860e5d60928a9a428e4e08ced949943,
+  xSide: {fileID: -1503414270693362176, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xOpposite: {fileID: 1289849807563823264, guid: f860e5d60928a9a428e4e08ced949943,
     type: 3}
-  xNone: {fileID: -3798820631433195735, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  xSingle: {fileID: 8762234994935835851, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  xSide: {fileID: 5864278437066821480, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  xOpposite: {fileID: 8137773403272665023, guid: f860e5d60928a9a428e4e08ced949943,
-    type: 3}
-  xTriple: {fileID: -9182111347030143553, guid: f860e5d60928a9a428e4e08ced949943,
-    type: 3}
-  xQuad: {fileID: -7955426623419647981, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xTriple: {fileID: 5122654976511108460, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  xQuad: {fileID: -3265789347127315492, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   viewObstacles: []
   opaque: 0
 --- !u!114 &-6754659111865001399
@@ -144,7 +142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Wood Table
+  DisplayName: Poker Table
   Text: 
   MaxDistance: 0
 --- !u!1001 &6293662703714347641
