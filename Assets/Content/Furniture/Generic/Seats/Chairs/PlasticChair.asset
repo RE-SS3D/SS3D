@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: PlasticChair
   m_EditorClassIdentifier: 
   id: PlasticChair
-  genericType: seat
+  genericType: Seat
   prefab: {fileID: 5161561551087789900, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}

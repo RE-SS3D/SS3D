@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Stool
   m_EditorClassIdentifier: 
   id: Stool
-  genericType: seat
+  genericType: Seat
   prefab: {fileID: 8848695623778231642, guid: 46fc785681ee256439524d5edab9f981, type: 3}

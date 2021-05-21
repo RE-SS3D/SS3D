@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: OfficeChairGrey
   m_EditorClassIdentifier: 
   id: OfficeChairGrey
-  genericType: seat
+  genericType: Seat
   prefab: {fileID: 5161561551087789900, guid: 126c0de410b92c340895eca9048fcc03, type: 3}
