@@ -18,7 +18,7 @@ namespace SS3D.Engine.Examine
 			return Name;
 		}
 		
-		public string GetExamineDescription()
+		public string GetDescription()
 		{
 			return Description;
 		}
