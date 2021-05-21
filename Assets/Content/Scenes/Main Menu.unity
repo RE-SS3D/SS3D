@@ -302,44 +302,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
-        type: 3}
-      propertyPath: spawnPrefabs.Array.size
-      value: 46
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
-        type: 3}
-      propertyPath: loadingScreen
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
-        type: 3}
-      propertyPath: spawnPrefabs.Array.data[44]
-      value: 
-      objectReference: {fileID: 289348138277843802, guid: 808fc3b770e18cf4a8fe9dbd48fa2444,
-        type: 3}
-    - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
-        type: 3}
-      propertyPath: playerSpawnMethod
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
-        type: 3}
-      propertyPath: soulPrefab
-      value: 
-      objectReference: {fileID: 2238145400471485591, guid: 5e5f88b17a7e2c54e8608347cf0a9a71,
-        type: 3}
-    - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
-        type: 3}
-      propertyPath: spawnPrefabs.Array.data[45]
-      value: 
-      objectReference: {fileID: 2238145400471485591, guid: 5e5f88b17a7e2c54e8608347cf0a9a71,
-        type: 3}
-    - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
-        type: 3}
-      propertyPath: autoCreatePlayer
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6976582009294150638, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}
       propertyPath: m_Name
