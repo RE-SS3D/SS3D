@@ -170,9 +170,9 @@ GameObject:
   - component: {fileID: -159682028629777952}
   - component: {fileID: 2081909342595332650}
   - component: {fileID: 6258711892491357218}
-  - component: {fileID: 2884915648782529247}
+  - component: {fileID: 9167194944353027597}
   - component: {fileID: 8607411644904752404}
-  - component: {fileID: -2101227061012043363}
+  - component: {fileID: -2043925706902777227}
   - component: {fileID: -396234361631906964}
   - component: {fileID: -873706720358734130}
   m_Layer: 16
@@ -245,7 +245,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.12428376, y: 0.18336451, z: 0.05567938}
   m_Center: {x: -0.000000014901161, y: 0.004832089, z: -0.0011380017}
---- !u!114 &2884915648782529247
+--- !u!114 &9167194944353027597
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -254,7 +254,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5533951594911835035}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Script: {fileID: 11500000, guid: 5e27c12c4b88d814aa56084a29a40046, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
@@ -284,7 +284,7 @@ MonoBehaviour:
   syncInterval: 0.1
   OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
   fireParticle: {fileID: 1532267249460559170}
---- !u!114 &-2101227061012043363
+--- !u!114 &-2043925706902777227
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -296,7 +296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: 
+  DisplayName: Zippo Lighter
   Text: 
   MaxDistance: 0
 --- !u!114 &-396234361631906964

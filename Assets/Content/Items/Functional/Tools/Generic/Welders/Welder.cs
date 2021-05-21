@@ -9,9 +9,7 @@ using SS3D.Engine.Tiles;
 
 namespace SS3D.Content.Items.Functional.Tools
 {
-    // Works nice but will be reworked in the future
-    // TODO: Add fuel and rework for new construction
-    public class Welder : Item, IToggleable
+    public class Welder : Item, IToggleable, IIgniter
     {
 	// hot flame, cold flame and light particle are mere VFX stuff
         [SerializeField]
@@ -41,7 +39,9 @@ namespace SS3D.Content.Items.Functional.Tools
         public Sprite constructIcon;
 
         private Dictionary<Turf, Turf> reinforceDict;
-        
+
+        public bool CanIgnite => GetState();
+
         public override void Start()
         {
             base.Start();
