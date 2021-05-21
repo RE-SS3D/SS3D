@@ -8,7 +8,6 @@ namespace SS3D.Engine.Inventory
     {
         public Transform[] Displays;
         public AttachedContainer Container;
-        public bool Mirrored;
 
         private Item[] displayedItems;
 
@@ -47,11 +46,6 @@ namespace SS3D.Engine.Inventory
 
             // Check if a custom attachment point should be used
             Transform attachmentPoint = item.attachmentPoint;
-            if (Mirrored)
-            {
-                attachmentPoint = item.attachmentPointAlt;
-            }
-
             if (attachmentPoint != null)
             {
                 // Create new (temporary) point

@@ -32,13 +32,10 @@ namespace SS3D.Engine.Inventory
 	    [Tooltip("the item prefab, you can click on the item name and drag from Unity's file explorer")]
         public GameObject prefab;
 
-        [Tooltip("a point we use to know how the item should be oriented when held in a hand")]
+	    [Tooltip("a point we use to know how the item should be oriented when held in a hand")]
         public Transform attachmentPoint;
 
-        [Tooltip("same point but for the left hand, in cases where it's needed")]
-        public Transform attachmentPointAlt;
-
-        [Tooltip("the bulk of the item, how heavy it is")]
+	    [Tooltip("the bulk of the item, how heavy it is")]
         public BulkSize bulkSize = BulkSize.Medium;
 
 	    [Tooltip("traits are attributes we use for stuff like 'is this item food', 'is this item a robot's part")]
@@ -273,32 +270,7 @@ namespace SS3D.Engine.Inventory
                 // Draw a wire mesh of the rotated model
                 Vector3 rotatedPoint = RotatePointAround(parentPosition, position, eulerAngles);
                 rotatedPoint += new Vector3(0, position.z, position.y);
-<<<<<<< HEAD
                 Gizmos.DrawWireMesh(handGuide, attachmentPoint.position, localRotation);
-=======
-                Gizmos.DrawWireMesh(meshFilter.sharedMesh,
-                    rotatedPoint, localRotation);
-            }
-
-            // Same for the Left Hand
-            if (attachmentPointAlt == null)
-            {
-                return;
-            }
-
-            if (meshFilter != null && meshFilter.sharedMesh != null)
-            {
-                Quaternion localRotation = attachmentPointAlt.localRotation;
-                Vector3 eulerAngles = localRotation.eulerAngles;
-                Vector3 parentPosition = attachmentPointAlt.parent.position;
-                Vector3 position = attachmentPointAlt.localPosition;
-                // Draw a wire mesh of the rotated model
-                Vector3 rotatedPoint = RotatePointAround(parentPosition, position, eulerAngles);
-                rotatedPoint += new Vector3(0, position.z, position.y);
-                Gizmos.DrawWireMesh(meshFilter.sharedMesh,
-                    rotatedPoint, localRotation);
-            }
->>>>>>> parent of 9f83b4a (Revert "Secondary Hand Item Placement")
         }
 
         private Vector3 RotatePointAround(Vector3 point, Vector3 pivot, Vector3 angles)
