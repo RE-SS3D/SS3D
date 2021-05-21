@@ -19,7 +19,9 @@ namespace SS3D.Content.Systems.Examine
         private Camera camera;
         
         private GameObject uiInstance;
-        private ExamineUI examineUi;
+        //private ExamineUI examineUi;
+		private IExamineUI examineUi;
+
         private Vector2 lastMousePosition;
         private Vector3 lastCameraPosition;
         private Quaternion lastCameraRotation;
@@ -40,11 +42,10 @@ namespace SS3D.Content.Systems.Examine
 	        
 	        Assert.IsNotNull(UiPrefab);
             uiInstance = Instantiate(UiPrefab);
-            examineUi = uiInstance.GetComponent<ExamineUI>();
+            examineUi = uiInstance.GetComponent<IExamineUI>();   /////-------------
             Assert.IsNotNull(examineUi);
             uiInstance.SetActive(false);
             
-			//selector = Camera.main.transform.GetChild(0).GetComponent<CompositeItemSelector>();
         }
 
         private void Update()
@@ -151,7 +152,8 @@ namespace SS3D.Content.Systems.Examine
 
                     // Check if object is networked synced
                     NetworkIdentity identity = hitObject.GetComponent<NetworkIdentity>();
-                    if (identity == null)
+                    //if (identity == null)   //**********************************NETWORKING TEMPORARILY REMOVED
+					if (true == true)
                     {
                         // Examine non-networked items
                         UpdateExamine(examinables);
@@ -251,12 +253,23 @@ namespace SS3D.Content.Systems.Examine
 		[TargetRpc]
 		private void TargetExamine(string text)
 		{
-            examineUi.SetText(text);
+            //examineUi.SetText(text);   //********************************************
 			uiInstance.SetActive(true);			
 		}
 
         private void UpdateExamine(IExaminable[] examinables)
         {
+			Debug.Log("UpdateExamine called...");
+			IExamineData[] data = new IExamineData[examinables.Length];
+			int i = 0;
+			foreach (IExaminable examinable in examinables)
+			{
+				data[i] = examinable.GetData();
+			}
+			Debug.Log("Calling LoadExamineData...");
+			examineUi.LoadExamineData(data);
+			
+			/*
             string text = GetHoverText(examinables, gameObject);
             if (text != null)
             {
@@ -267,6 +280,7 @@ namespace SS3D.Content.Systems.Examine
             {
                 ClearExamine();
             }
+			*/
         }
 
         private string GetHoverText(IExaminable[] examinables, GameObject examinator)
@@ -311,7 +325,7 @@ namespace SS3D.Content.Systems.Examine
 		
         private void NetIdError()
         {
-            examineUi.SetText("NetID error on Client.");
+            //examineUi.SetText("NetID error on Client.");   //*************************************
             uiInstance.SetActive(true);
         }
     }

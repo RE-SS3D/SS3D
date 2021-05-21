@@ -51,6 +51,8 @@ namespace SS3D.Engine.Examine
 					}
 				}
             }
+			
+			gameObject.SetActive(true);
 			SetText(builder.ToString());
 		}
 		
