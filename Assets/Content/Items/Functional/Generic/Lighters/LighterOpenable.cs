@@ -2,7 +2,7 @@
 using SS3D.Content.Furniture;
 using Mirror;
 
-namespace SS3D.Content.Items.Functional.Generic.Lighters
+namespace SS3D.Content.Items.Functional.Generic
 {
     // believe it or not this handles opening and lighting a lighter
     public class LighterOpenable : NetworkedOpenable
