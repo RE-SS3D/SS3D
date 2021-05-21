@@ -23,7 +23,10 @@ namespace SS3D.Engine.Examine
             return base.GetDescription(examinator);
         }
 		
-		//Original GetDescription: return $"<b>{item.Name}</b>\n{base.GetDescription(examinator)}";
-
+		public IExamineData GetData()
+		{
+			return new DataNameDescription(item.Name, "... Description stub");  // FIX THIS **********************
+		}		
+		
     }
 }

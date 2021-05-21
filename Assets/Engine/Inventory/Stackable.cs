@@ -39,5 +39,10 @@ namespace SS3D.Engine.Inventory
         {
             return "";
         }		
+		
+		public IExamineData GetData()
+		{
+			return new DataNameDescription("", $"{amountInStack} in stack");
+		}
     }
 }

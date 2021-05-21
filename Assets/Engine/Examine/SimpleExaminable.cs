@@ -39,6 +39,10 @@ namespace SS3D.Engine.Examine
             return DisplayName;
         }		
 		
+		public IExamineData GetData()
+		{
+			return new DataNameDescription(DisplayName, Text);
+		}
 		
     }
 }

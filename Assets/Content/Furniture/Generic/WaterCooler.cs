@@ -56,5 +56,11 @@ namespace SS3D.Content.Furniture.Generic
         {
             return "";
         }		
+		
+		public IExamineData GetData()
+		{
+			return new DataNameDescription("", $"{NumberOfCups} cups remaining.");
+		}
+		
     }
 }
