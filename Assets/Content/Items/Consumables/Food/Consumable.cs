@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
+using SS3D.Content;
 using SS3D.Content.Systems.Interactions;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Interactions.Extensions;
@@ -137,21 +138,21 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
             }
             
             // easy access to shit
-            GameObject source = interactionEvent.Source.GetComponentInTree<Creature>().gameObject;
+            GameObject source = interactionEvent.Source.GetComponentInTree<Entity>().gameObject;
             GameObject target = interactionEvent.Target?.GetComponent<Transform>().gameObject;
 
             // I absolutely despise how this is done, please if you have the knowledge to clean this mess do it
             Consumable itemInHand = interactionEvent.Source.GetComponent<Consumable>();
-            Creature creature = source.GetComponent<Creature>();
-            Creature targetCreature = target?.GetComponent<Creature>();
+            Entity entity = source.GetComponent<Entity>();
+            Entity targetEntity = target?.GetComponent<Entity>();
 
-            // if there's no targeted creature and no item in hand
-            if (targetCreature == null && itemInHand == null)
+            // if there's no targeted entity and no item in hand
+            if (targetEntity == null && itemInHand == null)
             {
                 return false;
             }
-            // if there's no targeted creature and the item in hand is not the target (interactions with itself require this check)
-            if (targetCreature == null && itemInHand.gameObject != target)
+            // if there's no targeted entity and the item in hand is not the target (interactions with itself require this check)
+            if (targetEntity == null && itemInHand.gameObject != target)
             {
                 return false;
             }
@@ -162,8 +163,8 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
                 Delay = 0f;
             }
 
-            // if there's another creature as target and it's not the player
-            if (targetCreature && target != source)
+            // if there's another entity as target and it's not the player
+            if (targetEntity && target != source)
             {
                 Verb = "Feed";
                 Delay = itemInHand.feedTime;
@@ -185,7 +186,7 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
         }
         protected override void StartDelayed(InteractionEvent interactionEvent)
         {
-            GameObject source = interactionEvent.Source?.GetComponentInTree<Creature>().gameObject;
+            GameObject source = interactionEvent.Source?.GetComponentInTree<Entity>().gameObject;
             GameObject target = interactionEvent.Target.GetComponent<Transform>().gameObject;            
             Consumable itemInHand = source.GetComponent<Consumable>();
 
@@ -201,7 +202,7 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
                 targetedItem.ConsumeAction(source);
             }
             // Item in hand and interacting with other player
-            if (target.GetComponent<Creature>())
+            if (target.GetComponent<Entity>())
             {
                 itemInHand.ConsumeAction(source, target);
             }

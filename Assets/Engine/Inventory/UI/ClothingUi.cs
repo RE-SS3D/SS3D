@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using SS3D.Content;
 using UnityEngine;
 
 namespace SS3D.Engine.Inventory.UI
@@ -15,7 +16,7 @@ namespace SS3D.Engine.Inventory.UI
             
             // Connects ui clothing slots to containers on the creature
             var inventory = transform.GetComponentInParent<InventoryUi>().Inventory;
-            GameObject creature = inventory.Hands.GetComponentInParent<Creature>().gameObject;
+            GameObject creature = inventory.Hands.GetComponentInParent<Entity>().gameObject;
             var clothingContainers = creature.GetComponent<ClothingContainers>();
             var slots = GetComponentsInChildren<SingleItemContainerSlot>();
             foreach (SingleItemContainerSlot slot in slots)

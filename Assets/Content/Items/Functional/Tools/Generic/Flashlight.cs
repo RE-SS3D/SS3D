@@ -8,6 +8,7 @@ using SS3D.Engine.Inventory;
 
 namespace SS3D.Content.Items.Functional.Tools
 {
+    // Simple flashlight
     public class Flashlight : Item
     {
         [SerializeField]

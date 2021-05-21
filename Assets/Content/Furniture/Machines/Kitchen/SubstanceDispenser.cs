@@ -6,6 +6,7 @@ using UnityEngine.Assertions;
 
 namespace SS3D.Content.Furniture.Generic
 {
+    // This handles dispensing substances into substance containers
     public class SubstanceDispenser : InteractionTargetBehaviour
     {
         /// <summary>

@@ -11,6 +11,7 @@ namespace SS3D.UI
     /// <summary>
     /// UI controller for the timer UI in the pause menu
     /// </summary>
+    // Probably also unused
     public class PauseMenuTimerUI : MonoBehaviour
     {
         private RoundManager roundManager;

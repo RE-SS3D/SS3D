@@ -12,10 +12,12 @@ namespace SS3D.Engine.Atmospherics
         Pipe
     }
 
+    // An atmos container holds up gasses from the atmos system
     public class AtmosContainer
     {
         public AtmosContainerType ContainerType { get; set; }
         public float Volume { get; set; } = 2.5f;
+	// the temperature of this container
         private  float temperature = 293f;
         private float[] gasses = new float[Gas.numOfGases];
         

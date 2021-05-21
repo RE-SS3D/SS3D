@@ -7,9 +7,13 @@ namespace SS3D.Engine.Inventory
     [Serializable]
     public struct PowerSupply
     {
+	// current charge
         [SerializeField] [SyncVar] private int charge;
+	// max charge possible
         [SerializeField] private int maxCharge;
+	// the rate the battery charges
         [SerializeField] private int chargeRate;
+	// if it charges by itself
         [SerializeField] private bool selfRecharge;
 
         public int Charge => charge;

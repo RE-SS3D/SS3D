@@ -11,18 +11,33 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.Assertions;
 
+// Handles the microwave object
 [RequireComponent(typeof(AudioSource))]
 public class Microwave : InteractionTargetNetworkBehaviour
 {
+    // Duration of the cycle
     public float MicrowaveDuration = 5;
+    // Prefab for the ashes, when an item is burned
+    // TODO: implement the assetdata stuffs
     public GameObject DestroyedItemPrefab;
+    // Place for the container to place items that is placed in the object
     public AttachedContainer AttachedContainer;
 
     private AudioSource audioSource;
+    // Sound that plays when its turned on
     public AudioClip onSound;
+    // Sound that plays when it ends a cycle
     public AudioClip finishSound;
 
+    //used to enable & disable microwave lights
+    private Material emissionMaterial;
+    private Light light;
+
+    // is it being used rn
+    // should probably be renamed to busy
+    // we might have isOn for electricity stuff
     private bool isOn;
+    // actual container
     private StorageContainer storageContainer;
 
     private void Start()
@@ -31,16 +46,22 @@ public class Microwave : InteractionTargetNetworkBehaviour
         
         storageContainer = GetComponent<StorageContainer>();
         audioSource = GetComponent<AudioSource>();
+
+        emissionMaterial = GetComponent<Renderer>().materials[1];
+        emissionMaterial.DisableKeyword("_EMISSION");
+        light = GetComponentInChildren<Light>();
+        light.enabled = false;
     }
 
     public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
     {
         return new IInteraction[] {new SimpleInteraction
         {
+            // TODO: Should be a custom interaction
             Name = "Turn on", CanInteractCallback = CanTurnOn, Interact = TurnOn
         }};
     }
-
+    
     private bool CanTurnOn(InteractionEvent interactionEvent)
     {
         if (!InteractionExtensions.RangeCheck(interactionEvent))
@@ -48,6 +69,7 @@ public class Microwave : InteractionTargetNetworkBehaviour
             return false;
         }
 
+        // Can't be turned on if the door is open, we might add a hacking thing to bypass this later
         if (storageContainer != null && storageContainer.IsOpen())
         {
             return false;
@@ -59,10 +81,12 @@ public class Microwave : InteractionTargetNetworkBehaviour
     private void TurnOn(InteractionEvent interactionEvent, InteractionReference reference)
     {
         SetActivated(true);
-        PlayOnSnd();
+        RunMicrowave();
+        // Great naming
         StartCoroutine(BlastShit());
     }
 
+    // Sets the state to busy
     private void SetActivated(bool activated)
     {
         isOn = activated;
@@ -72,58 +96,78 @@ public class Microwave : InteractionTargetNetworkBehaviour
         }
     }
 
+    // Start a cycle
     private IEnumerator BlastShit()
     {
+        // waits until the cycle has finished
         yield return new WaitForSeconds(MicrowaveDuration);
-        PlayFinishSnd();
+        StopMicrowave();
         SetActivated(false);
+
+        // Process the contents
         CookItems();
     }
 
     private void CookItems()
     {
         var items = AttachedContainer.Container.Items.ToArray();
+
+        // tries to get a microweavable in each item that is in the container
         foreach (Item item in items)
         {
             Microwaveable microwaveable = item.GetComponent<Microwaveable>();
             if (microwaveable != null)
             {
+                // if the microwaveable has a result we produce it
                 ItemHelpers.ReplaceItem(item, ItemHelpers.CreateItem(microwaveable.ResultingObject));
             }
             else
             {
+                // if there's no recipe we throw trash
                 ItemHelpers.ReplaceItem(item, ItemHelpers.CreateItem(DestroyedItemPrefab));
             }
         }
     }
 
     [Server]
-    private void PlayFinishSnd()
+    private void StopMicrowave()
     {
+        emissionMaterial.DisableKeyword("_EMISSION");
+        light.enabled = false;
+
         audioSource.Stop();
         audioSource.PlayOneShot(finishSound);
-        RpcPlayFinishSnd();
+        RpcStopMicrowave();
     }
 
     [ClientRpc]
-    private void RpcPlayFinishSnd()
+    private void RpcStopMicrowave()
     {
+        emissionMaterial.DisableKeyword("_EMISSION");
+        light.enabled = false;
+
         audioSource.Stop();
         audioSource.PlayOneShot(finishSound);
     }
 
     [Server]
-    private void PlayOnSnd()
+    private void RunMicrowave()
     {
+        emissionMaterial.EnableKeyword("_EMISSION");
+        light.enabled = true;
+
         audioSource.Stop();
         audioSource.clip = onSound;
         audioSource.Play();
-        RpcPlayOnSnd();
+        RpcRunMicrowave();
     }
 
     [ClientRpc]
-    private void RpcPlayOnSnd()
+    private void RpcRunMicrowave()
     {
+        emissionMaterial.EnableKeyword("_EMISSION");
+        light.enabled = true;
+
         audioSource.Stop();
         audioSource.clip = onSound;
         audioSource.Play();
