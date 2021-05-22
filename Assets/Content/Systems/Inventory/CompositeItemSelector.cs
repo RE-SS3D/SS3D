@@ -286,7 +286,6 @@ namespace SS3D.Content.Systems.Examine
 					colours.Push(new Color(rValue, gValue, bValue, 1.0f));
 					AddChildToLists(ancestor.transform);
 					tiles.Add(ancestor);
-					Debug.Log(ancestor.name + ": RGB = (" + rValue + ", " + gValue + ", " + bValue + ")");
 				}
 				
 			}
@@ -305,6 +304,8 @@ namespace SS3D.Content.Systems.Examine
 			
 			// Determine whether the GameObject has a mesh or is Examinable
 			MeshFilter mf = child.gameObject.GetComponent<MeshFilter>();
+			SkinnedMeshRenderer smr = child.gameObject.GetComponent<SkinnedMeshRenderer>();
+			
 			IExaminable examinable = child.gameObject.GetComponent<IExaminable>();
 			
 			// If examinable, create a unique colour to affiliate the examinable with. All non-
@@ -314,13 +315,16 @@ namespace SS3D.Content.Systems.Examine
 				ChangeToNextColour();
 				colours.Push(new Color(rValue, gValue, bValue, 1.0f));
 				examinables.Add(new ExaminableColourAffiliation(child.gameObject, colours.Peek(), child.gameObject.name));
-				Debug.Log(child.gameObject.name + ": RGB = (" + rValue + ", " + gValue + ", " + bValue + ")");
 			}
 			
 			// If mesh exists, record the colour affiliation of it 
 			if (mf != null && child.gameObject.GetComponent<Renderer>().enabled)
 			{
 				meshes.Add(new MeshColourAffiliation(mf.mesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
+			}
+			if (smr != null && child.gameObject.GetComponent<Renderer>().enabled)
+			{
+				meshes.Add(new MeshColourAffiliation(smr.sharedMesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
 			}
 			
 			// Recursively call this method on each child
