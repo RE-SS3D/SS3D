@@ -29,17 +29,17 @@ namespace SS3D.Engine.Examine
             return true;
         }
 
-        public virtual string GetDescription(GameObject examinator)
+        public virtual string GetDescription()
         {
             return Text;
         }
 		
-        public virtual string GetName(GameObject examinator)
+        public virtual string GetName()
         {
             return DisplayName;
         }		
 		
-		public IExamineData GetData()
+		public virtual IExamineData GetData()
 		{
 			return new DataNameDescription(DisplayName, Text);
 		}

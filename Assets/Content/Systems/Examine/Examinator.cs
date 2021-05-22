@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Collections;
 using Mirror;
 using SS3D.Engine.Examine;
 using SS3D.Engine.FOV;
@@ -21,6 +22,8 @@ namespace SS3D.Content.Systems.Examine
         private GameObject uiInstance;
         //private ExamineUI examineUi;
 		private IExamineUI examineUi;
+		private IEnumerator coroutine;
+		
 
         private Vector2 lastMousePosition;
         private Vector3 lastCameraPosition;
@@ -86,13 +89,47 @@ namespace SS3D.Content.Systems.Examine
             }
         }
 
+
+
+
+
         private void CalculateExamine()
         {
+
             if (camera == null)
             {
                 return;
             }
+			selector.CalculateSelectedGameObject();
+			coroutine = UpdateUserInterface();
+			StartCoroutine(coroutine);
+		}
 
+		/// This function retrieves the current object from the selector. Because
+		/// this object is only available once the rendering has been completed, it
+		/// must be called inside a coroutine.
+		private IEnumerator UpdateUserInterface()
+		{
+			// Wait until the off-screen rendering occurs in OnPostRender().
+			yield return new WaitForEndOfFrame();
+			
+			// Retrieve the object the mouse is over.
+			GameObject hitObject = selector.GetCurrentExaminable();
+			
+			
+			if (hitObject != null)
+			{
+				IExaminable[] examinables = hitObject.GetComponents<IExaminable>();
+				UpdateExamine(examinables);
+			}
+			else
+			{
+				ClearExamine();
+			}			
+		}		
+		
+			
+			/*
             // Raycast to cursor position
             Ray ray = camera.ScreenPointToRay(lastMousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit, 200f))
@@ -149,7 +186,11 @@ namespace SS3D.Content.Systems.Examine
 							examinables = hitObject.GetComponents<IExaminable>();
 						}
 					}
+					*/
+					
+					//UpdateExamine(examinables);
 
+					/*
                     // Check if object is networked synced
                     NetworkIdentity identity = hitObject.GetComponent<NetworkIdentity>();
                     //if (identity == null)   //**********************************NETWORKING TEMPORARILY REMOVED
@@ -178,15 +219,17 @@ namespace SS3D.Content.Systems.Examine
 							}
 						}
                     }
-
+					
                     return;
                 }
             }
 
             ClearExamine();
+			
         }
+		*/
 
-
+		/*
         [Command]
         private void CmdRequestExamine(NetworkIdentity target, GameObject examinator)
         {
@@ -249,6 +292,7 @@ namespace SS3D.Content.Systems.Examine
 			}
             Debug.Log("Finished CmdRequestExamine");
         }
+		*/
 		
 		[TargetRpc]
 		private void TargetExamine(string text)
@@ -259,14 +303,12 @@ namespace SS3D.Content.Systems.Examine
 
         private void UpdateExamine(IExaminable[] examinables)
         {
-			Debug.Log("UpdateExamine called...");
 			IExamineData[] data = new IExamineData[examinables.Length];
 			int i = 0;
 			foreach (IExaminable examinable in examinables)
 			{
-				data[i] = examinable.GetData();
+				data[i++] = examinable.GetData();
 			}
-			Debug.Log("Calling LoadExamineData...");
 			examineUi.LoadExamineData(data);
 			
 			/*
@@ -282,7 +324,7 @@ namespace SS3D.Content.Systems.Examine
             }
 			*/
         }
-
+		/*
         private string GetHoverText(IExaminable[] examinables, GameObject examinator)
         {
             StringBuilder builder = new StringBuilder();
@@ -316,6 +358,7 @@ namespace SS3D.Content.Systems.Examine
 
             return builder.ToString();
         }
+		*/
 
         private void ClearExamine()
         {
@@ -323,10 +366,12 @@ namespace SS3D.Content.Systems.Examine
             currentTarget = null;
         }
 		
+		/*
         private void NetIdError()
         {
             //examineUi.SetText("NetID error on Client.");   //*************************************
             uiInstance.SetActive(true);
         }
+		*/
     }
 }

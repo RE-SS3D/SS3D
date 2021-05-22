@@ -13,19 +13,19 @@ namespace SS3D.Engine.Examine
             item = GetComponent<Item>();
         }
 
-        public override string GetName(GameObject examinator)
+        public override string GetName()
         {
 			return item.Name;
         }
 		
-        public override string GetDescription(GameObject examinator)
+        public override string GetDescription()
         {
-            return base.GetDescription(examinator);
+            return base.GetDescription();
         }
 		
-		public IExamineData GetData()
+		public override IExamineData GetData()
 		{
-			return new DataNameDescription(item.Name, "... Description stub");  // FIX THIS **********************
+			return new DataNameDescription(item.Name, base.GetDescription());  // FIX THIS **********************
 		}		
 		
     }
