@@ -189,10 +189,10 @@ namespace SS3D.Content.Systems.Examine
 			}
 		}
 		
-		/// This method returns the root GameObject (or the Tile, if the TileMap is the root object)
+		/// This method returns the root GameObject 
 		private GameObject GetAncestor (GameObject descendant)
 		{
-			while (descendant.transform.parent != null && descendant.transform.parent.name != "TileMap")
+			while (descendant.transform.parent != null && descendant.transform.parent.name != "TileMap" && descendant.transform.parent.name != "Objects")
 			{
 				descendant = descendant.transform.parent.gameObject;
 			}

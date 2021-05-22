@@ -6,40 +6,26 @@ namespace SS3D.Engine.Examine
     {
         [TextArea(1, 15)]
 		[SerializeField]
-        private string DisplayName;
+        public string DisplayName;
         [TextArea(5, 15)]
         public string Text;
 
         public float MaxDistance;
-
-        public bool CanExamine(GameObject examinator)
-        {
-            if (MaxDistance <= 0)
-            {
-                return true;
-            }
-            
-            Vector3 sourcePosition = examinator.transform.position;
-            var position = transform.position;
-            if (Vector2.Distance(new Vector2(sourcePosition.x, sourcePosition.z), new Vector2(position.x, position.z)) > MaxDistance)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public virtual string GetDescription()
-        {
-            return Text;
-        }
 		
-        public virtual string GetName()
-        {
-            return DisplayName;
-        }		
-		
-		public virtual IExamineData GetData()
+		private IExamineRequirement requirements;
+
+		public void Start()
+		{
+			requirements = new ReqPermitExamine(gameObject);
+			requirements = new ReqMaxRange(requirements, MaxDistance);
+		}
+
+		public IExamineRequirement GetRequirements()
+		{
+			return requirements;
+		}
+
+		public IExamineData GetData()
 		{
 			return new DataNameDescription(DisplayName, Text);
 		}

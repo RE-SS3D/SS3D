@@ -306,8 +306,11 @@ namespace SS3D.Content.Systems.Examine
 			IExamineData[] data = new IExamineData[examinables.Length];
 			int i = 0;
 			foreach (IExaminable examinable in examinables)
-			{
-				data[i++] = examinable.GetData();
+			{	
+				if (examinable.GetRequirements().CanExamine(gameObject))
+				{
+					data[i++] = examinable.GetData();
+				}
 			}
 			examineUi.LoadExamineData(data);
 			

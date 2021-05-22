@@ -4,28 +4,33 @@ using UnityEngine;
 namespace SS3D.Engine.Examine
 {
     [RequireComponent(typeof(Item))]
-    public class ItemExaminable : SimpleExaminable
+    public class ItemExaminable : MonoBehaviour, IExaminable
     {
         private Item item;
+		private IExamineRequirement requirements;
+        [TextArea(1, 15)]
+		[SerializeField]
+        public string DisplayName;
+        [TextArea(5, 15)]
+        public string Text;
 
-        private void Start()
+        public float MaxDistance;
+		
+        public void Start()
         {
             item = GetComponent<Item>();
+			requirements = new ReqPermitExamine(gameObject);
+			requirements = new ReqMaxRange(requirements, MaxDistance);
         }
 
-        public override string GetName()
-        {
-			return item.Name;
-        }
-		
-        public override string GetDescription()
-        {
-            return base.GetDescription();
-        }
-		
-		public override IExamineData GetData()
+		public IExamineRequirement GetRequirements()
 		{
-			return new DataNameDescription(item.Name, base.GetDescription());  // FIX THIS **********************
+			return requirements;
+		}
+		
+		public IExamineData GetData()
+		{
+			return new DataNameDescription(item.Name, Text);
 		}		
 		
     }

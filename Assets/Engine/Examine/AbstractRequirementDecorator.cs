@@ -11,7 +11,7 @@ namespace SS3D.Engine.Examine
 		
         public bool CanExamine(GameObject examinator)
 		{
-			return (MeetsRequirement(examinator) && DecoratedObject.MeetsRequirement(examinator));
+			return (MeetsRequirement(examinator) && DecoratedObject.CanExamine(examinator));
 		}
 		
 		public GameObject GetBaseObject()

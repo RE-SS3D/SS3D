@@ -4,7 +4,7 @@ namespace SS3D.Engine.Examine
 {
     public interface IExaminable
     {
-        bool CanExamine(GameObject examinator);
+		IExamineRequirement GetRequirements();
 		IExamineData GetData();
     }
 }
