@@ -13,8 +13,11 @@ namespace SS3D.Engine.Inventory
 
 		public void Start()
 		{
+			// Populate requirements for this item to be examined.
 			requirements = new ReqPermitExamine(gameObject);
 			requirements = new ReqMaxRange(requirements, 2.0f);  // Amount in stack only visible from 2 metres.
+			requirements = new ReqObstacleCheck(requirements);
+
 		}		
 
         private void OnValidate()

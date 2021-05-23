@@ -16,8 +16,10 @@ namespace SS3D.Content.Furniture.Generic
 
 		public void Start()
 		{
+			// Populate requirements for this item to be examined.
 			requirements = new ReqPermitExamine(gameObject);
 			requirements = new ReqMaxRange(requirements, 2.0f);  // Cups remaining only visible from 2 metres.
+			requirements = new ReqObstacleCheck(requirements);			
 		}
 
 

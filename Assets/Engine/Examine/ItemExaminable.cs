@@ -19,8 +19,12 @@ namespace SS3D.Engine.Examine
         public void Start()
         {
             item = GetComponent<Item>();
+			
+			// Populate requirements for this item to be examined.
 			requirements = new ReqPermitExamine(gameObject);
 			requirements = new ReqMaxRange(requirements, MaxDistance);
+			requirements = new ReqObstacleCheck(requirements);
+
         }
 
 		public IExamineRequirement GetRequirements()
