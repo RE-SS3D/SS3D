@@ -5,9 +5,9 @@ namespace SS3D.Engine.Examine
     public class DataImage : IExamineData
     {
 		private string Caption;
-		private Texture Image;
+		private Sprite Image;
 		
-		public DataImage(string caption, Texture image)
+		public DataImage(string caption, Sprite image)
 		{
 			Caption = caption;
 			Image = image;
@@ -18,7 +18,7 @@ namespace SS3D.Engine.Examine
 			return Caption;
 		}
 		
-		public Texture GetImage()
+		public Sprite GetImage()
 		{
 			return Image;
 		}

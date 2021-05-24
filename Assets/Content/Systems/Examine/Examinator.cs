@@ -21,7 +21,7 @@ namespace SS3D.Content.Systems.Examine
         
         private GameObject uiInstance;
         //private ExamineUI examineUi;
-		private IExamineUI examineUi;
+		private ExamineUI examineUi;
 		private IEnumerator coroutine;
 		
 
@@ -45,9 +45,8 @@ namespace SS3D.Content.Systems.Examine
 	        
 	        Assert.IsNotNull(UiPrefab);
             uiInstance = Instantiate(UiPrefab);
-            examineUi = uiInstance.GetComponent<IExamineUI>();   /////-------------
-            Assert.IsNotNull(examineUi);
-            uiInstance.SetActive(false);
+            examineUi = uiInstance.GetComponent<ExamineUI>();
+            //uiInstance.SetActive(false);
             
         }
 
@@ -74,13 +73,10 @@ namespace SS3D.Content.Systems.Examine
                     lastCameraRotation = rotation;
                     CalculateExamine();
                 }
-
-                examineUi.SetPosition(position);
             }
             else if (!float.IsNegativeInfinity(lastMousePosition.x))
             {
                 lastMousePosition = Vector2.negativeInfinity;
-                ClearExamine();
                 if (selector == null)
                 {
 	                selector = camera.GetComponent<CompositeItemSelector>();
@@ -122,10 +118,6 @@ namespace SS3D.Content.Systems.Examine
 				IExaminable[] examinables = hitObject.GetComponents<IExaminable>();
 				UpdateExamine(examinables);
 			}
-			else
-			{
-				ClearExamine();
-			}			
 		}		
 		
 			
@@ -312,8 +304,14 @@ namespace SS3D.Content.Systems.Examine
 					data[i++] = examinable.GetData();
 				}
 			}
-			examineUi.LoadExamineData(data);
-			
+			if (i > 0)
+			{
+				examineUi.LoadExamineData(data);
+			}
+			else
+			{
+				examineUi.ClearData();
+			}
 			/*
             string text = GetHoverText(examinables, gameObject);
             if (text != null)
@@ -362,12 +360,6 @@ namespace SS3D.Content.Systems.Examine
             return builder.ToString();
         }
 		*/
-
-        private void ClearExamine()
-        {
-            uiInstance.SetActive(false);
-            currentTarget = null;
-        }
 		
 		/*
         private void NetIdError()

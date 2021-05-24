@@ -5,10 +5,11 @@ using UnityEngine.Assertions;
 
 namespace SS3D.Engine.Examine
 {
-    public class UISimpleText : MonoBehaviour, IExamineUI
+    public class UISimpleText : AbstractExamineUIElement
     {
         public Transform Panel;
         public TMP_Text Text;		
+		private string displayText;
 
         public void Start()
         {
@@ -16,17 +17,13 @@ namespace SS3D.Engine.Examine
             Assert.IsNotNull(Text);
         }
         
-        private void SetText(string text)
+        public override void RefreshDisplay()
         {
-            Text.text = text;
-        }
-
-        public void SetPosition(Vector2 position)
-        {
-            Panel.position = new Vector3(position.x, position.y, 0);
+            Text.text = displayText;
+			Panel.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
         }
 		
-		public void LoadExamineData(IExamineData[] data)
+		public override void LoadExamineData(IExamineData[] data)
 		{
 			StringBuilder builder = new StringBuilder();
 			DataNameDescription currentExaminable;
@@ -52,18 +49,19 @@ namespace SS3D.Engine.Examine
 				}
             }
 			
-			gameObject.SetActive(true);
-			SetText(builder.ToString());
+			gameObject.SetActive(true);   // Should not need in here.
+			displayText = builder.ToString();
 		}
 		
-		public ExamineType GetExamineType()
+		public override ExamineType GetExamineType()
 		{
 			return ExamineType.SIMPLE_TEXT;
 		}
 		
-		public void Unload()
+		public override void DisableElement()
 		{
-			SetText("");
+			displayText = "";
+			RefreshDisplay();
 			gameObject.SetActive(false);
 		}
 		
