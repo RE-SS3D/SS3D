@@ -8,13 +8,17 @@ using System.Collections.Generic;
 using Mirror;
 using System.Linq;
 using UnityEngine;
+using SS3D.Engine.Examine;
 
 namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
 {
     // This handles the disposal bin object
-    public class DisposalBin : InteractionTargetNetworkBehaviour
+    public class DisposalBin : InteractionTargetNetworkBehaviour, IExaminable
     {
         public Animator animator;
+		private IExamineRequirement requirements;
+
+		
 
 	// the container inside the bin
         public Container container;
@@ -25,6 +29,27 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
         public AudioSource audioSource;
 
         public float range;
+
+		public void Start()
+		{
+			// Populate requirements for this item to be examined.
+			requirements = new ReqPermitExamine(gameObject);
+			requirements = new ReqMaxRange(requirements, 0f);
+			requirements = new ReqObstacleCheck(requirements);
+			requirements = new ReqItemCheck(requirements, "banana_peel");
+		}
+		
+		public IExamineRequirement GetRequirements()
+		{
+			return requirements;
+		}
+
+		public IExamineData GetData()
+		{
+			string ExamineMessage = "You ought to put the banana peel in here.";
+			return new DataNameDescription("", ExamineMessage);
+		}
+
 
 	// Interaction that handles the disposal of items
 	// This should be reworked once we have disposals pipes going
