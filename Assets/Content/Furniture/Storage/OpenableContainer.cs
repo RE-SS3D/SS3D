@@ -11,8 +11,17 @@ namespace SS3D.Content.Furniture.Storage
     public class OpenableContainer : NetworkedOpenable
     {
         [HideInInspector] public ContainerType StorageType = ContainerType.Normal;
+
+        /// <summary>
+        /// Does this container have a UI or can only be deposited/taken
+        /// </summary>
         [SerializeField] private bool Pile = false;
+
+        /// <summary>
+        /// Does the container have to be open for items to be placed
+        /// </summary>
         public bool OnlyStoreWhenOpen = false;
+
         public float MaxDistance = 5f;
 
         [SerializeField] private Sprite viewContainerIcon;

@@ -28,28 +28,23 @@ namespace SS3D.Content.Systems.Interactions
 
         public virtual bool CanInteract(InteractionEvent interactionEvent)
         {
-            Debug.Log("1");
             if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
-                Debug.Log("2");
                 return false;
             }
 
-            Debug.Log("3");
-            var target = interactionEvent.Target.GetComponent<VisibleContainer>();
+            var target = interactionEvent.Target.GetComponent<AttachedContainer>();
             if (interactionEvent.Source.Parent is Hands hands && target != null)
             {
-                Debug.Log("4");
                 return !hands.SelectedHandEmpty && CanStore(interactionEvent.GetSourceItem(), target);
             }
-
-            Debug.Log("5");
             return false;
         }
 
-        private bool CanStore(Item item, VisibleContainer target)
+        private bool CanStore(Item item, AttachedContainer target)
         {
-            return target.AttachedContainer.Container.CouldStoreItem(item);
+            Container container = target.Container;
+            return container.CouldStoreItem(item) && container.CouldHoldItem(item);
         }
 
         public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)

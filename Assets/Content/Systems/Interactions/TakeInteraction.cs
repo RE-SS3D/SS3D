@@ -36,10 +36,10 @@ namespace SS3D.Content.Systems.Interactions
             }
 
         // Will only appear if the current hand is empty and the container isn't empty
-            var target = interactionEvent.Target.GetComponent<VisibleContainer>();
+            var target = interactionEvent.Target.GetComponent<AttachedContainer>();
             if (interactionEvent.Source is Hands hands && target != null)
             {
-                return hands.SelectedHandEmpty && !target.AttachedContainer.Container.Empty;
+                return hands.SelectedHandEmpty && !target.Container.Empty;
             }
 
             return false;
@@ -48,7 +48,7 @@ namespace SS3D.Content.Systems.Interactions
         public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Hands hands = (Hands) interactionEvent.Source;
-            Item PickupItem = interactionEvent.Target.GetComponent<VisibleContainer>().AttachedContainer.Container.StoredItems[0].Item;
+            Item PickupItem = interactionEvent.Target.GetComponent<AttachedContainer>().Container.StoredItems[0].Item;
             if (PickupItem != null)
             {
                 hands.Pickup(PickupItem);

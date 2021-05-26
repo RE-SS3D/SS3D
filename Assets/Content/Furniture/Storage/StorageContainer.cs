@@ -17,7 +17,11 @@ namespace SS3D.Content.Furniture.Storage
 
     public class StorageContainer : InteractionTargetNetworkBehaviour
     {
+        /// <summary>
+        /// The type of container, changes weather it has UI or not, or is hidden
+        /// </summary>
         public ContainerType StorageType = ContainerType.Normal;
+
         public float MaxDistance = 5f;
 
         [SerializeField] private Sprite viewContainerIcon;
