@@ -83,9 +83,9 @@ namespace SS3D.Engine.Inventory
             int maxY = Size.y - itemSize.y;
 
             // TODO: Use a more efficient algorithm
-            for (int y = 0; y < maxY; y++)
+            for (int y = 0; y <= maxY; y++)
             {
-                for (int x = 0; x < maxX; x++)
+                for (int x = 0; x <= maxX; x++)
                 {
                     Vector2Int itemPosition = new Vector2Int(x, y);
                     if (AddItem(item, itemPosition))
@@ -515,6 +515,32 @@ namespace SS3D.Engine.Inventory
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Checks if this item fits inside the container
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool CouldHoldItem(Item item)
+        {
+            Vector2Int itemSize = item.Size;
+            int maxX = Size.x - itemSize.x;
+            int maxY = Size.y - itemSize.y;
+
+            // TODO: Use a more efficient algorithm
+            for (int y = 0; y <= maxY; y++)
+            {
+                for (int x = 0; x <= maxX; x++)
+                {
+                    if (IsAreaFreeExcluding(new RectInt(new Vector2Int(x, y), item.Size), item))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
