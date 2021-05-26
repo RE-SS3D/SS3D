@@ -83,9 +83,9 @@ namespace SS3D.Engine.Inventory
             int maxY = Size.y - itemSize.y;
 
             // TODO: Use a more efficient algorithm
-            for (int y = 0; y < maxY; y++)
+            for (int y = 0; y <= maxY; y++)
             {
-                for (int x = 0; x < maxX; x++)
+                for (int x = 0; x <= maxX; x++)
                 {
                     Vector2Int itemPosition = new Vector2Int(x, y);
                     if (AddItem(item, itemPosition))

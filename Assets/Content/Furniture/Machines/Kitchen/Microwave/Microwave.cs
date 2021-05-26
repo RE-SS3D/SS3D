@@ -38,13 +38,13 @@ public class Microwave : InteractionTargetNetworkBehaviour
     // we might have isOn for electricity stuff
     private bool isOn;
     // actual container
-    private StorageContainer storageContainer;
+    private OpenableContainer openableContainer;
 
     private void Start()
     {
         Assert.IsNotNull(AttachedContainer);
-        
-        storageContainer = GetComponent<StorageContainer>();
+
+        openableContainer = GetComponent<OpenableContainer>();
         audioSource = GetComponent<AudioSource>();
 
         emissionMaterial = GetComponent<Renderer>().materials[1];
@@ -70,7 +70,7 @@ public class Microwave : InteractionTargetNetworkBehaviour
         }
 
         // Can't be turned on if the door is open, we might add a hacking thing to bypass this later
-        if (storageContainer != null && storageContainer.IsOpen())
+        if (openableContainer != null && openableContainer.IsOpen())
         {
             return false;
         }
@@ -90,9 +90,9 @@ public class Microwave : InteractionTargetNetworkBehaviour
     private void SetActivated(bool activated)
     {
         isOn = activated;
-        if (storageContainer != null)
+        if (openableContainer != null)
         {
-            storageContainer.enabled = !activated;
+            openableContainer.enabled = !activated;
         }
     }
 

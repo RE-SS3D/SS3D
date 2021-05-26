@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 387266436717436548}
   - component: {fileID: 3091307957380661479}
   - component: {fileID: 1571593285745743663}
-  - component: {fileID: 9132179210238991822}
+  - component: {fileID: 1405522440386804809}
   m_Layer: 16
   m_Name: Cell Charger
   m_TagString: Untagged
@@ -397,8 +397,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AttachedContainer: {fileID: 8312077444202497988}
-  Size: {x: 1, y: 1}
-  StartFilter: {fileID: 11400000, guid: 47ba41d97fc87d9469fa5be5b67bcbc2, type: 2}
+  Size: {x: 2, y: 2}
+  StartFilter: {fileID: 0}
 --- !u!114 &387266436717436548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -414,6 +414,7 @@ MonoBehaviour:
   Displays:
   - {fileID: 2518627989031759827}
   Container: {fileID: 8312077444202497988}
+  Mirrored: 0
 --- !u!114 &3091307957380661479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -442,7 +443,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CheckObserversInterval: 2
   AttachedContainer: {fileID: 8312077444202497988}
---- !u!114 &9132179210238991822
+--- !u!114 &1405522440386804809
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -451,12 +452,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8232994725938073509}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Script: {fileID: 11500000, guid: 7af9ca4d0981a8140bebf788b3626b23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
-  OnlyStoreWhenOpen: 0
+  StorageType: 0
   MaxDistance: 5
-  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
+  viewContainerIcon: {fileID: 0}
