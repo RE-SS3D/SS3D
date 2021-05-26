@@ -2,8 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using SS3D.Engine.Examine;
+using SS3D.Engine.Inventory;
+using SS3D.Engine.Inventory.UI;
 
 
 namespace SS3D.Content.Systems.Examine
@@ -30,7 +33,7 @@ namespace SS3D.Content.Systems.Examine
 		private Rect imageArea;
 		
 		// The hidden texture used to render our targeted meshes. Needs to have identical resolution to screen.
-		private RenderTexture rt;
+		public RenderTexture rt;
 		
 		// This is how the Examinator gets access to the actual Examinable
 		private GameObject currentExaminable;
@@ -47,15 +50,26 @@ namespace SS3D.Content.Systems.Examine
 		private int recordedScreenWidth;
 		private int recordedScreenHeight;
 				
+		// Indicate whether mouse is currently over the UI
+		private bool mouseOverUI;
+				
 		public void Start()
+		
 		{
 			cam = CameraManager.singleton.examineCamera;
 			tex = new Texture2D(1, 1);
+			mouseOverUI = false;
 		}
 
 		public void OnPostRender()
 		{
-						
+			
+			// Don't bother with all of this work if the mouse is over the user interface.
+			if (mouseOverUI)
+			{
+				return;
+			}
+			
 			// If the window size has changed, amend the RenderTexture correspondingly.
 			ResizeTexturesIfRequired();
 			
@@ -114,6 +128,34 @@ namespace SS3D.Content.Systems.Examine
 		
 		public void CalculateSelectedGameObject()
 		{
+			
+			// Identify if mouse is over the user interface, or over objects in the game world.
+			if (EventSystem.current.IsPointerOverGameObject())
+			{
+				
+				// The cursor is over the UI. If the UI is examinable, this will override objects in the game world.
+				mouseOverUI = true;
+				currentExaminable = null;
+
+				// Get a list of all the UI elements under the cursor
+				var pointerEventData = new PointerEventData(EventSystem.current) {position = Input.mousePosition};
+				List<RaycastResult> UIhits = new List<RaycastResult>();
+				EventSystem.current.RaycastAll(pointerEventData, UIhits);			
+				
+				// Get the UI to give us the GameObject that a slot is displaying.
+				foreach (var hit in UIhits)
+				{
+					ISlotProvider slot = hit.gameObject.GetComponent<ISlotProvider>();
+					if (slot != null)
+					{
+						currentExaminable = slot.GetCurrentGameObjectInSlot();
+					}
+				}
+			}
+			else
+			{
+				mouseOverUI = false;
+			}
 			
             // Raycast to cursor position. Need to get all possible hits, because the initial hit may have gaps through which we can see other Examinables
             Ray ray = cam.ScreenPointToRay(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
@@ -192,7 +234,8 @@ namespace SS3D.Content.Systems.Examine
 		/// This method returns the root GameObject 
 		private GameObject GetAncestor (GameObject descendant)
 		{
-			while (descendant.transform.parent != null && descendant.transform.parent.name != "TileMap" && descendant.transform.parent.name != "Objects")
+			// This statement is very bad - need to confirm standard GameObject hierarchy...
+			while (descendant.transform.parent != null && descendant.transform.parent.name != "TileMap" && descendant.transform.parent.name != "Objects" && descendant.transform.parent.name != "InventoryUI Rework Beep")
 			{
 				descendant = descendant.transform.parent.gameObject;
 			}
@@ -257,7 +300,7 @@ namespace SS3D.Content.Systems.Examine
 			tiles = null;
 			colours = null;
 			
-			rt = null;
+			//rt = null;
 			currentExaminable = null;
 		}
 		

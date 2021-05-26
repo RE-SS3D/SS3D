@@ -14,8 +14,6 @@ namespace SS3D.Content.Systems.Examine
     public class Examinator : NetworkBehaviour
     {
         public GameObject UiPrefab;
-        public LayerMask ObstacleMask;
-        public float ViewRange = 25f;
 
         private Camera camera;
         
@@ -112,11 +110,13 @@ namespace SS3D.Content.Systems.Examine
 			// Retrieve the object the mouse is over.
 			GameObject hitObject = selector.GetCurrentExaminable();
 			
-			
 			if (hitObject != null)
 			{
 				IExaminable[] examinables = hitObject.GetComponents<IExaminable>();
 				UpdateExamine(examinables);
+			}
+			else{
+				examineUi.ClearData();
 			}
 		}		
 		
