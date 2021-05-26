@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
 {
+    // This Interaction takes the first available item inside a container
     public class TakeInteraction : IInteraction
     {
         public Sprite icon;
@@ -29,14 +30,14 @@ namespace SS3D.Content.Systems.Interactions
 
         public virtual bool CanInteract(InteractionEvent interactionEvent)
         {
-            return true;
             if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
                 return false;
             }
 
+        // Will only appear if the current hand is empty and the container isn't empty
             var target = interactionEvent.Target.GetComponent<VisibleContainer>();
-            if (interactionEvent.Source.Parent is Hands hands && target != null)
+            if (interactionEvent.Source is Hands hands && target != null)
             {
                 return hands.SelectedHandEmpty && !target.AttachedContainer.Container.Empty;
             }
@@ -46,7 +47,7 @@ namespace SS3D.Content.Systems.Interactions
 
         public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Hands hands = (Hands) interactionEvent.Source.Parent;
+            Hands hands = (Hands) interactionEvent.Source;
             Item PickupItem = interactionEvent.Target.GetComponent<VisibleContainer>().AttachedContainer.Container.StoredItems[0].Item;
             if (PickupItem != null)
             {

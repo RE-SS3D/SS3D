@@ -397,8 +397,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AttachedContainer: {fileID: 8312077444202497988}
-  Size: {x: 2, y: 2}
-  StartFilter: {fileID: 0}
+  Size: {x: 1, y: 1}
+  StartFilter: {fileID: 11400000, guid: 47ba41d97fc87d9469fa5be5b67bcbc2, type: 2}
 --- !u!114 &387266436717436548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -457,6 +457,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  StorageType: 0
+  StorageType: 1
   MaxDistance: 5
   viewContainerIcon: {fileID: 0}

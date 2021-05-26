@@ -11,7 +11,7 @@ namespace SS3D.Content.Furniture.Storage
     public enum ContainerType
     {
         Normal,
-        Implicit,
+        Pile,
         Hidden
     }
 
@@ -34,12 +34,13 @@ namespace SS3D.Content.Furniture.Storage
 
             switch (StorageType)
             {
+            // Normal Containers don't have a Take Interaction since their UI can be opened
                 case ContainerType.Normal:
                     interactions.Insert(0, storeInteraction);
-                    interactions.Insert(1, takeInteraction);
-                    interactions.Insert(2, view);
+                    interactions.Insert(1, view);
                     break;
-                case ContainerType.Implicit:
+            // Pile Containers don't have an UI, the only way to pick up items is taking one by one
+                case ContainerType.Pile:
                     interactions.Insert(0, storeInteraction);
                     interactions.Insert(1, takeInteraction);
                     break;

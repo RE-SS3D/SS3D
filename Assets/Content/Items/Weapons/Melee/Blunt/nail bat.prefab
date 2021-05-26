@@ -148,13 +148,14 @@ MonoBehaviour:
   ItemId: bat_baseball_nailed
   Name: Nailed Baseball Bat
   Volume: 12
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5499389425532640764}
   attachmentPoint: {fileID: 279639189266935790}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 08c4bae5b95cea146826e467131ec146, type: 2}
+  Size: {x: 1, y: 2}
 --- !u!114 &6891116257197748772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,6 +168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
 --- !u!1 &8265326972507528099

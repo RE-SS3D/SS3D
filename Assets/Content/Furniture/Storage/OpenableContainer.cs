@@ -11,7 +11,7 @@ namespace SS3D.Content.Furniture.Storage
     public class OpenableContainer : NetworkedOpenable
     {
         [HideInInspector] public ContainerType StorageType = ContainerType.Normal;
-        [SerializeField] private bool Implicit = false;
+        [SerializeField] private bool Pile = false;
         public bool OnlyStoreWhenOpen = false;
         public float MaxDistance = 5f;
 
@@ -20,9 +20,9 @@ namespace SS3D.Content.Furniture.Storage
         void OnValidate()
         {
             // Openable Containers can never be Hidden
-            if (Implicit)
+            if (Pile)
             {
-                StorageType = ContainerType.Implicit;
+                StorageType = ContainerType.Pile;
             } else
             {
                 StorageType = ContainerType.Normal;
@@ -42,11 +42,16 @@ namespace SS3D.Content.Furniture.Storage
         // Implicit or Normal the Store Interaction will always appear, but View only appears in Normal containers
             if (IsOpen() | !OnlyStoreWhenOpen)
             {
-                interactions.Insert(0, storeInteraction);
-                interactions.Insert(1, takeInteraction);
-                if (StorageType == ContainerType.Normal)
+                switch (StorageType)
                 {
-                    interactions.Insert(2, view);
+                    case ContainerType.Normal:
+                        interactions.Insert(0, storeInteraction);
+                        interactions.Insert(1, view);
+                        break;
+                    case ContainerType.Pile:
+                        interactions.Insert(0, storeInteraction);
+                        interactions.Insert(1, takeInteraction);
+                        break;
                 }
             }
 
