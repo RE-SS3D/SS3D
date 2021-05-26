@@ -11372,7 +11372,7 @@ PrefabInstance:
     - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
       propertyPath: maps.Array.data[1]
-      value: Main Station
+      value: MiniStation
       objectReference: {fileID: 0}
     - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
@@ -11387,7 +11387,7 @@ PrefabInstance:
     - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
       propertyPath: maps.Array.data[0]
-      value: EmptyMapScene
+      value: MainStation
       objectReference: {fileID: 0}
     - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
