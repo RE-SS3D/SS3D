@@ -48,7 +48,7 @@ We mostly use our twitter for annoucements and memes currently so definitely go 
 
 [<img src="Documents/Images/github.png" alt="github" width="150" align="left">](https://github.com/RE-SS3D/SS3D/projects)
 
-This GitHub repo hosts our [issues page](https://github.com/RE-SS3D/SS3D/issues), [project boards](https://github.com/RE-SS3D/SS3D/projects), [milestones](https://github.com/RE-SS3D/SS3D/milestones), and [wiki](https://github.com/RE-SS3D/SS3D/wiki).
+This GitHub repository hosts our [issues page](https://github.com/RE-SS3D/SS3D/issues) and [wiki page](https://github.com/RE-SS3D/SS3D/wiki). For more info on our issues you can check the [project boards](https://github.com/RE-SS3D/SS3D/projects) and [milestones pages](https://github.com/RE-SS3D/SS3D/milestones).
 
 [<img src="Documents/Images/trello.png" alt="Trello" width="150" align="left">](https://trello.com/ress3d)
 
@@ -70,4 +70,4 @@ Subscribestar is our other subscription-based donation platform. Has fewer featu
 
 [<img src="Documents/Images/crypto.png" alt="Crypto" width="150" align="left">](SpaceStation3D.crypto)
 
-"SpaceStation3D.crypto" is our crypto domain which currently routes BCH, BTC, ETH, & LTC payments. But [specific addresses can be found at the bottom of this page](https://github.com/RE-SS3D/SS3D/wiki/Related-Sites-&-Resources).
+"SpaceStation3D.crypto" is our crypto domain which currently routes BCH, BTC, ETH, & LTC payments. [Specific addresses can be found at the bottom of this page](https://github.com/RE-SS3D/SS3D/wiki/Related-Sites-&-Resources).
