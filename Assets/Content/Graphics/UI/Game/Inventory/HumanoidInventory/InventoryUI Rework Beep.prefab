@@ -2683,7 +2683,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.90588236}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.9019608}
   m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -5136,7 +5136,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.79607844}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.9019608}
   m_RaycastTarget: 1
   m_Maskable: 0
   m_OnCullStateChanged:
@@ -5172,7 +5172,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 0.62352943}
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 0.5019608}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 0.62352943}
     m_PressedColor: {r: 1, g: 1, b: 1, a: 0.62352943}
     m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
@@ -5883,7 +5883,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.79607844}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.9019608}
   m_RaycastTarget: 1
   m_Maskable: 0
   m_OnCullStateChanged:
@@ -5919,7 +5919,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 0.62352943}
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 0.5019608}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 0.62352943}
     m_PressedColor: {r: 1, g: 1, b: 1, a: 0.62352943}
     m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
@@ -7030,7 +7030,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.509434, g: 0.509434, b: 0.509434, a: 0.6509804}
   m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -9672,7 +9672,7 @@ MonoBehaviour:
   RightHandPrefab: {fileID: 7342732350409667438, guid: 20d96bcc3cfb87f4e8d9a9c7a47bcb3e,
     type: 3}
   HandsContainer: {fileID: 1920127762500907646}
-  SelectedColor: {r: 0.84313726, g: 1, b: 0.9738191, a: 1}
+  SelectedColor: {r: 0.56078434, g: 0.7607843, b: 0.98039216, a: 1}
 --- !u!1 &9076079116415572289
 GameObject:
   m_ObjectHideFlags: 0
