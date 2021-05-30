@@ -45,7 +45,6 @@ namespace SS3D.Content.Systems.Examine
 		private float decrement;
 		private float tolerance;
 		
-		
 		// Screen resolution
 		private int recordedScreenWidth;
 		private int recordedScreenHeight;
@@ -54,7 +53,6 @@ namespace SS3D.Content.Systems.Examine
 		private bool mouseOverUI;
 				
 		public void Start()
-		
 		{
 			cam = CameraManager.singleton.examineCamera;
 			tex = new Texture2D(1, 1);
@@ -65,6 +63,8 @@ namespace SS3D.Content.Systems.Examine
 		{
 			
 			// Don't bother with all of this work if the mouse is over the user interface.
+			// If it is over the interface, we should already have a reference to the object
+			// stored in currentExaminable.
 			if (mouseOverUI)
 			{
 				return;
@@ -112,6 +112,9 @@ namespace SS3D.Content.Systems.Examine
 			}
 		}
 		
+		
+		/// This function checks to see if the colour is 'close enough' to one of our recorded
+		/// colours. We can't just use Equals, because rounding errors can make it unreliable.
 		private bool matchesColour(Color colour1, Color colour2)
 		{
 			if (Math.Abs(colour1.r - colour2.r) > tolerance) return false;
@@ -122,9 +125,11 @@ namespace SS3D.Content.Systems.Examine
 		}
 		
 		
+		/// This is how the Examinator actually returns the Object.
 		public GameObject GetCurrentExaminable(){
 			return currentExaminable;
 		}
+		
 		
 		public void CalculateSelectedGameObject()
 		{
@@ -172,25 +177,7 @@ namespace SS3D.Content.Systems.Examine
 			AddMeshesToLists(gameObjects);
 		}
 			
-/*			
-		/// Returns if the GameObject is a composite Examinable object. Currently
-		/// only tiles return true. This function will need to be amended if there
-		/// is a need for non-Tiles to become composite Examinable objects.
-		public bool IsCompositeExaminable(GameObject target)
-		{
-			target = GetAncestor(target);
-			if (target.transform.parent == null)
-			{
-				return false;
-			}
-			if (target.transform.parent.gameObject.name == "TileMap")
-			{
-				return true;
-			}
-			return false;
-		}
-*/
-		
+		/// Amends the render texture to be the same size as the screen, so the coordinates are mapped correctly.
 		private void ResizeTexturesIfRequired(){
 			
 			// If textures don't currently exist, create them at the correct size.
@@ -242,16 +229,6 @@ namespace SS3D.Content.Systems.Examine
 			return descendant;
 		}
 		
-		/*
-		private void GetListOfMeshes(GameObject ancestor)
-		{			
-			colours.Push(new Color(rValue, gValue, bValue, 1.0f));
-			AddChildToLists(ancestor.transform);
-			
-			
-
-		}*/
-		
 		/// This method enables the camera and establishes our data structures.
 		private void EnableCamera(){
 			if (cam == null)
@@ -274,7 +251,6 @@ namespace SS3D.Content.Systems.Examine
 				bValue = 1.0f;
 				decrement = 0.05f;
 				tolerance = decrement / 4.0f;
-				//decrement = 0.2f;
 				
 				
 				// Record the screen resolution
