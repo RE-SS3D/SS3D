@@ -53,7 +53,7 @@ public class Microwave : InteractionTargetNetworkBehaviour
         light.enabled = false;
     }
 
-    public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+    public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
     {
         return new IInteraction[] {new SimpleInteraction
         {

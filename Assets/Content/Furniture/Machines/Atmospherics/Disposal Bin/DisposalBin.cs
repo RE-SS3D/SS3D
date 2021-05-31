@@ -95,7 +95,7 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
             }
         }
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = new List<IInteraction>();
             

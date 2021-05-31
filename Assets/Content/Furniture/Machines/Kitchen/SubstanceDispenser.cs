@@ -21,7 +21,7 @@ namespace SS3D.Content.Furniture.Generic
         /// How much should be dispensed
         /// </summary>
         public float Moles;
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             var registry = FindObjectOfType<SubstanceRegistry>();
             Substance substance = registry.FromId(Substance);
