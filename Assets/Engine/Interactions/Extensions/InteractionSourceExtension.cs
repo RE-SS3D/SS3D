@@ -1,4 +1,5 @@
-﻿using SS3D.Engine.Inventory.Extensions;
+﻿using SS3D.Content;
+using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
 
 namespace SS3D.Engine.Interactions.Extensions
@@ -59,9 +60,9 @@ namespace SS3D.Engine.Interactions.Extensions
             return source.GetComponentInTree<Hands>();
         }
 
-        public static Creature GetCreature(this IInteractionSource source)
+        public static Entity GetEntity(this IInteractionSource source)
         {
-            return source.GetRootSource().GetComponent<Creature>();
+            return source.GetRootSource().GetComponent<Entity>();
         }
     }    
 }

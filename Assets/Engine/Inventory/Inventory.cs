@@ -2,6 +2,7 @@ using System;
 using Mirror;
 using System.Collections.Generic;
 using System.Linq;
+using SS3D.Content;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
@@ -40,7 +41,7 @@ namespace SS3D.Engine.Inventory
             float time = Time.time;
             if (time > nextAccessCheck)
             {
-                var creature = GetComponent<Creature>();
+                var creature = GetComponent<Entity>();
                 for (var i = 0; i < openedContainers.Count; i++)
                 {
                     AttachedContainer attachedContainer = openedContainers[i];
@@ -185,7 +186,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
-            var creature = GetComponent<Creature>();
+            var creature = GetComponent<Entity>();
             if (creature == null || !creature.CanInteract(attachedContainer.gameObject))
             {
                 return;
@@ -199,7 +200,7 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         public void OpenContainer(AttachedContainer container)
         {
-            container.AddObserver(GetComponent<Creature>());
+            container.AddObserver(GetComponent<Entity>());
             openedContainers.Add(container);
             NetworkConnection client = connectionToClient;
             if (client != null)

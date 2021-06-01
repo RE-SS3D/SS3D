@@ -18,8 +18,11 @@ namespace SS3D.Engine.Inventory.Extensions
         public Inventory Inventory;
         public int SelectedHandIndex { get; private set; }
         public RangeLimit range = new RangeLimit(1.5f, 1);
+	// the origin of an x interaction that is performed is provided by this, we use it for range checks
         public Transform interactionOrigin;
 
+	// pickup icon that this hand uses when there's a pickup interaction
+	// TODO: When AssetData is on, we should update this to not use this
         public Sprite pickupIcon;
 
         /// <summary>

@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// This handles all the cameras in the game
 public class CameraManager : MonoBehaviour
 {
     public static CameraManager singleton { get; private set; }
 
-    public Camera lobbyCamera;
     public Camera playerCamera;
     public Camera examineCamera;
 

@@ -19,8 +19,10 @@ public class ServerLobbyUIHelper : NetworkBehaviour
 {
     public static ServerLobbyUIHelper singleton { get; private set; }
     
+    // the button we use to join a round
     [SerializeField] private Button embarkButton;
     
+    // Here we have the embarkText which just displays "embark" and the timer countdown.
     // Look, the only reason why there are two text objects on the embark part
     // is cause for some reason "RoundManager.ClientTimerUpdated -= SetTimerText();" doesn't work,
     // otherwise I would have done that.
@@ -30,6 +32,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
     [SerializeField] private Animator animator;
 
     // The admin panel, should be only accessible to admin users, for now used only for the host
+    // TODO: User permissions
     [SerializeField] private Button serverSettingsButton;
 
     private void Awake()
@@ -52,7 +55,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         
         // Updates the Embark button text to "Embark"
         RoundManager.ServerRoundStarted += ChangeEmbarkText;
-
+        // Updates the menu if the round ends, maybe we can change later to a final round end later
         RoundManager.ServerRoundEnded += ForceToggleOn;
         
         // Makes the button's function be CmdRequestEmbark and the UI fade out
@@ -62,7 +65,16 @@ public class ServerLobbyUIHelper : NetworkBehaviour
             Toggle(false);
         });
     }
-    
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && RoundManager.singleton.IsRoundStarted)
+        {
+            Toggle();
+        }
+    }
+
+    // Here we allow the player to access the server settings
     public void UnlockServerSettings() 
     {
         // TODO:
@@ -70,6 +82,8 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         serverSettingsButton.interactable = true;
     }
     
+    // Handles asking the server to spawn the player
+    // the "sender" param is handled by Mirror, no need to worry about it
     [Command(ignoreAuthority = true)]
     public void CmdRequestEmbark(NetworkConnectionToClient sender = null)
     {
@@ -77,6 +91,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         LoginNetworkManager.singleton.SpawnPlayerAfterRoundStart(sender);
     }  
 
+    // Updates the embark text status according to the round status (starting, started, stopped)
     public void ChangeEmbarkText()
     {
         // There's a timer UI so we deactivate it and make the embark appear
@@ -84,6 +99,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         //Debug.Log("Updating embark button");
         embarkText.gameObject.SetActive(true);
 
+	// and we wait until the map is loaded (locally) for the embark button to be unlocked
         StartCoroutine(WaitUntilMapLoaded());
     }
 
@@ -99,6 +115,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         embarkButton.interactable = true;
     }
 
+    // in the case we need to force the Lobby on the player, when the round ends for example
     private void ForceToggleOn()
     {
         // pain
@@ -112,6 +129,12 @@ public class ServerLobbyUIHelper : NetworkBehaviour
     {
         if (!animator.enabled) animator.enabled = true;
         animator.SetBool("Toggle", toggle);
+    }
+
+    private void Toggle()
+    {
+        bool state = animator.GetBool("Toggle");
+        Toggle(!state);
     }
 
     // Triggered when warmup is started

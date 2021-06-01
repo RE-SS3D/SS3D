@@ -383,6 +383,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HideItems: 0
   AttachItems: 1
+  AttachmentOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &6554092212881448881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -397,6 +398,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AttachedContainer: {fileID: 8312077444202497988}
   Size: {x: 1, y: 1}
+  StartFilter: {fileID: 11400000, guid: 47ba41d97fc87d9469fa5be5b67bcbc2, type: 2}
 --- !u!114 &387266436717436548
 MonoBehaviour:
   m_ObjectHideFlags: 0

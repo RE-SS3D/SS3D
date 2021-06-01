@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
+using SS3D.Content;
 using UnityEngine;
 
 namespace SS3D.Engine.Inventory
@@ -26,11 +27,11 @@ namespace SS3D.Engine.Inventory
         /// <summary>
         /// The creatures looking at this container
         /// </summary>
-        public HashSet<Creature> Observers = new HashSet<Creature>();
+        public HashSet<Entity> Observers = new HashSet<Entity>();
 
         private Container container;
 
-        public delegate void ObserverHandler(AttachedContainer container, Creature observer);
+        public delegate void ObserverHandler(AttachedContainer container, Entity observer);
         
         public event EventHandler<Item> ItemAttached;
         public event EventHandler<Item> ItemDetached;
@@ -72,7 +73,7 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="observer">The creature which observes</param>
         /// <returns>True if the creature was not already observing this container</returns>
-        public bool AddObserver(Creature observer)
+        public bool AddObserver(Entity observer)
         {
             bool newObserver = Observers.Add(observer);
             if (newObserver)
@@ -86,7 +87,7 @@ namespace SS3D.Engine.Inventory
         /// Removes an observer
         /// </summary>
         /// <param name="observer">The observer to remove</param>
-        public void RemoveObserver(Creature observer)
+        public void RemoveObserver(Entity observer)
         {
             Observers.Remove(observer);
         }
@@ -106,7 +107,7 @@ namespace SS3D.Engine.Inventory
             ItemDetached?.Invoke(this, e);
         }
         
-        protected virtual void OnNewObserver(Creature e)
+        protected virtual void OnNewObserver(Entity e)
         {
             NewObserver?.Invoke(this, e);
         }
