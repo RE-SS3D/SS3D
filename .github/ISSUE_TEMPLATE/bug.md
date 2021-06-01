@@ -34,8 +34,8 @@ assignees: ''
 
 ### Context
 
-<!-- How has this issue affected you? What are you trying to accomplish? -->
-
 <!-- What version of the game are you using? -->
 
 <!-- What operating system are you running? -->
+
+<!-- How has this issue affected you? What are you trying to accomplish? -->
