@@ -3,7 +3,7 @@
 This document outlines the guidelines for contributing to the RE:SS3D project.
 If you have any questions, ask a centcom member on our [Discord Server](https://discord.gg/Z3sPhyS).
 
-First, check out https://ss3d.space/contribute/, which has a breakdown of the different types of contributions as well as asset kits, guides, and todo boards for each.
+First, check out https://ss3d.space/contribute/, which has a breakdown of the different types of contributions as well as asset kits, guides, and to-do boards for each.
 
 The game itself is made in Unity and written in C#, check out our  [code (C#) style guide](C_SHARP.md). We use Mirror for networking and there is a helpful document explaining its use with Unity [here](https://mirror-networking.com/docs/).
 
