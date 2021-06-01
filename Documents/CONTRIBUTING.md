@@ -5,7 +5,7 @@ If you have any questions, ask a centcom member on our [Discord Server](https://
 
 First, check out https://ss3d.space/contribute/, which has a breakdown of the different types of contributions as well as asset kits, guides, and todo boards for each.
 
-The game itself is made in Unity and written in C#, check out our  [code (C#) style guide](C_SHARP.md). We use Mirror for networking and there is a helpful document explaining it's use with Unity [here](https://mirror-networking.com/docs/).
+The game itself is made in Unity and written in C#, check out our  [code (C#) style guide](C_SHARP.md). We use Mirror for networking and there is a helpful document explaining its use with Unity [here](https://mirror-networking.com/docs/).
 
 ## Setting Up The Project
 
@@ -36,7 +36,7 @@ To start contributing via GitHub, first you should fork this GitHub repository, 
 
 Over time your fork will become out-dated as the main project's repository continues to be added upon. GitHub has made a [pretty clear guide](https://help.github.com/articles/syncing-a-fork/) on how to sync your fork, to keep it up to date with the SS3D repository.
 
-### Reporting Bugs:
+### Game Testing & Reporting Bugs:
 
 Before reporting a bug, please check the [our issues](https://github.com/RE-SS3D/SS3D/issues) to see if the bug has already reported. If you are unfamiliar with issues, GitHub has a helpful guide [here](https://guides.github.com/features/issues/). Use the template when creating the issue, as the information it requests helps you help us help you more efficiently.
 

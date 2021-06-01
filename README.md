@@ -8,7 +8,7 @@ This is the latest official build of the RE:SS3D project. It currently works on 
 
 [<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
 
-This is the current state of the RE:SS3D project in a .zip file, inlcuding even the latest commit. You'll need to build the game in Unity on your own.
+This is the current state of the RE:SS3D project in a .zip file, including even the latest commit. You'll need to build the game in Unity on your own.
 
 ## INFO:
 
@@ -18,7 +18,7 @@ This is the current state of the RE:SS3D project in a .zip file, inlcuding even 
 
 [CONTRIBUTING.md](Documents/CONTRIBUTING.md) contains the information regarding technical contributions, including what version of Unity the project uses, how to set up and run the project, reporting bugs, pull requests, and styling code.
 
-[https://ss3d.space/contribute/](https://ss3d.space/contribute/) has a breakdown of the different contribution types (including art assets) with links to helpful guides and todo boards, making contributing art assets a lot easier for new contributors.
+[https://ss3d.space/contribute/](https://ss3d.space/contribute/) has a breakdown of the different contribution types (including art assets) with links to helpful guides and to-do boards, making contributing art assets a lot easier for new contributors.
 
 ## LICENSING:
 
@@ -30,7 +30,7 @@ This is the current state of the RE:SS3D project in a .zip file, inlcuding even 
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
-Discord is the primary communication for our devs and community. There's plenty of helpful people there capable of answering most of your questions, as well as WIP content.
+Discord is the primary communication for our devs and community. There are plenty of helpful people there capable of answering most of your questions, as well as WIP content.
 
 [<img src="Documents/Images/youtube.png" alt="YouTube" width="150" align="left">](https://www.youtube.com/channel/UCJT-bVqDOYfyxF3oxECceZg)
 
@@ -42,13 +42,13 @@ We also have a subreddit, where you will find similar discussion threads and pos
 
 [<img src="Documents/Images/Twitter.png" alt="Twitter" width="150" align="left">](https://twitter.com/SpaceStation3D)
 
-We mostly use our twitter for annoucements and memes currently so definitely go follow us if that's your'e thing.
+Currently our twitter is mostly used for announcements & memes but we will start using it more for the people that prefer it over reddit or discord.
 
 ## BOARDS:
 
 [<img src="Documents/Images/github.png" alt="github" width="150" align="left">](https://github.com/RE-SS3D/SS3D/projects)
 
-This GitHub repository hosts our [issues page](https://github.com/RE-SS3D/SS3D/issues) and [wiki page](https://github.com/RE-SS3D/SS3D/wiki). For more info on our issues you can check the [project boards](https://github.com/RE-SS3D/SS3D/projects) and [milestones pages](https://github.com/RE-SS3D/SS3D/milestones).
+This GitHub repository hosts our [issues page](https://github.com/RE-SS3D/SS3D/issues) and [wiki page](https://github.com/RE-SS3D/SS3D/wiki). For more info on our issues you can check the [project boards](https://github.com/RE-SS3D/SS3D/projects) and [milestone pages](https://github.com/RE-SS3D/SS3D/milestones).
 
 [<img src="Documents/Images/trello.png" alt="Trello" width="150" align="left">](https://trello.com/ress3d)
 
@@ -68,6 +68,6 @@ Patreon is our primary subscription-based donation platform with tiers (currentl
 
 Subscribestar is our other subscription-based donation platform. Has fewer features and isn't as popular as our PayPal.
 
-[<img src="Documents/Images/crypto.png" alt="Crypto" width="150" align="left">](SpaceStation3D.crypto)
+<img src="Documents/Images/crypto.png" alt="Crypto" width="150" align="left">
 
-"SpaceStation3D.crypto" is our crypto domain which currently routes BCH, BTC, ETH, & LTC payments. [Specific addresses can be found at the bottom of this page](https://github.com/RE-SS3D/SS3D/wiki/Related-Sites-&-Resources).
+"SpaceStation3D.crypto" is our crypto domain which currently routes BCH, BTC, ETH, & LTC payments. [Specific addresses can be found at the bottom of this page](https://github.com/RE-SS3D/SS3D/wiki/Sites-&-Resources).
