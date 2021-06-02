@@ -108,11 +108,11 @@ namespace SS3D.Engine.Interactions
         }
         
 
-        public virtual void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        public virtual void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
             foreach (var extension in GetComponents<IInteractionSourceExtension>())
             {
-                extension.CreateInteractions(targets, interactions);
+                extension.GenerateInteractionsFromSource(targets, interactions);
             }
         }
 

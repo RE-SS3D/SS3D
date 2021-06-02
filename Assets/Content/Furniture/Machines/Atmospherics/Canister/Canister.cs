@@ -54,7 +54,7 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics {
             //canisterUI.label.text = transform.name;
         }
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
 	    // TODO: Update the interaction names and remove the increase/decrease pressure
 	    // Create a custom interaction for opening the menu

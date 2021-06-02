@@ -2175,6 +2175,7 @@ MonoBehaviour:
   Displays:
   - {fileID: 6523730774157206108}
   Container: {fileID: 2588114674659529014}
+  Mirrored: 0
 --- !u!1 &2667178978926422381
 GameObject:
   m_ObjectHideFlags: 0
@@ -4067,6 +4068,7 @@ MonoBehaviour:
   Displays:
   - {fileID: 2248284492931446982}
   Container: {fileID: 3248296773709303684}
+  Mirrored: 1
 --- !u!1 &7165410278998248383
 GameObject:
   m_ObjectHideFlags: 0

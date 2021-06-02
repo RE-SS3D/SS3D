@@ -35,7 +35,10 @@ namespace SS3D.Engine.Inventory
 	    [Tooltip("a point we use to know how the item should be oriented when held in a hand")]
         public Transform attachmentPoint;
 
-	    [Tooltip("the bulk of the item, how heavy it is")]
+        [Tooltip("same point but for the left hand, in cases where it's needed")]
+        public Transform attachmentPointAlt;
+
+        [Tooltip("the bulk of the item, how heavy it is")]
         public BulkSize bulkSize = BulkSize.Medium;
 
 	    [Tooltip("traits are attributes we use for stuff like 'is this item food', 'is this item a robot's part")]
@@ -122,9 +125,9 @@ namespace SS3D.Engine.Inventory
         }
         
 	// this creates the base interactions for an item, in this case, the drop interaction
-        public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        public override void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            base.CreateInteractions(targets, interactions);
+            base.GenerateInteractionsFromSource(targets, interactions);
             DropInteraction dropInteraction = new DropInteraction();
             interactions.Add(new InteractionEntry(null, dropInteraction));
         }
@@ -248,22 +251,22 @@ namespace SS3D.Engine.Inventory
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            // Don't even have to check without attachment
-            if (attachmentPoint == null)
-            {
-                return;
-            }
-
             // Make sure gizmo only draws in prefab mode
             if (EditorApplication.isPlaying || PrefabStageUtility.GetCurrentPrefabStage() == null)
             {
                 return;
             }
 
+            Mesh handGuide = (Mesh)AssetDatabase.LoadAssetAtPath("Assets/Art/Models/Other/handgizmo.fbx", typeof(Mesh));
 
-            MeshFilter meshFilter = GetComponent<MeshFilter>();
-            if (meshFilter != null && meshFilter.sharedMesh != null)
+            // Don't even have to check without attachment
+            if (attachmentPoint == null)
             {
+                return;
+            }
+            else
+            {
+                Gizmos.color = new Color32(255, 120, 20, 170);
                 Quaternion localRotation = attachmentPoint.localRotation;
                 Vector3 eulerAngles = localRotation.eulerAngles;
                 Vector3 parentPosition = attachmentPoint.parent.position;
@@ -271,8 +274,25 @@ namespace SS3D.Engine.Inventory
                 // Draw a wire mesh of the rotated model
                 Vector3 rotatedPoint = RotatePointAround(parentPosition, position, eulerAngles);
                 rotatedPoint += new Vector3(0, position.z, position.y);
-                Gizmos.DrawWireMesh(meshFilter.sharedMesh,
-                    rotatedPoint, localRotation);
+                Gizmos.DrawWireMesh(handGuide, attachmentPoint.position, localRotation);
+            }
+
+            // Same for the Left Hand
+            if (attachmentPointAlt == null)
+            {
+                return;
+            }
+            else
+            {
+                Gizmos.color = new Color32(255, 120, 20, 170);
+                Quaternion localRotation = attachmentPointAlt.localRotation;
+                Vector3 eulerAngles = localRotation.eulerAngles;
+                Vector3 parentPosition = attachmentPointAlt.parent.position;
+                Vector3 position = attachmentPointAlt.localPosition;
+                // Draw a wire mesh of the rotated model
+                Vector3 rotatedPoint = RotatePointAround(parentPosition, position, eulerAngles);
+                rotatedPoint += new Vector3(0, position.z, position.y);
+                Gizmos.DrawWireMesh(handGuide, attachmentPointAlt.position, localRotation);
             }
         }
 
@@ -282,7 +302,7 @@ namespace SS3D.Engine.Inventory
         }
 
 #endif
-        public virtual IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public virtual IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             return new IInteraction[] { new PickupInteraction { icon = sprite } };
         }

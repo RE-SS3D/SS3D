@@ -341,12 +341,12 @@ namespace SS3D.Engine.Interactions
         {
             // Generate interactions on targets
             List<InteractionEntry> interactions = targets.SelectMany(t => 
-                t.GenerateInteractions(new InteractionEvent(source, t, @event.Point))
+                t.GenerateInteractionsFromTarget(new InteractionEvent(source, t, @event.Point))
                     .Select(i => new InteractionEntry(t, i))
             ).ToList();
             
             // Allow the source to add its own interactions
-            source.CreateInteractions(targets.ToArray(), interactions);
+            source.GenerateInteractionsFromSource(targets.ToArray(), interactions);
             
             // Filter interactions to possible ones
             return interactions.Where(i => i.Interaction.CanInteract(new InteractionEvent(source, i.Target, @event.Point))).ToList();

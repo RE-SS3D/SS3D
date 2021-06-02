@@ -49,8 +49,8 @@ MonoBehaviour:
   startOnHeadless: 1
   showDebugMessages: 0
   serverTickRate: 30
-  offlineScene: Assets/Content/Scenes/Main Menu.unity
-  onlineScene: Assets/Content/Scenes/Server Lobby.unity
+  offlineScene: Assets/Content/Scenes/MainMenu.unity
+  onlineScene: Assets/Content/Scenes/ServerLobby.unity
   transport: {fileID: 6976582009294150632}
   networkAddress: localhost
   maxConnections: 4
@@ -59,8 +59,8 @@ MonoBehaviour:
   authenticator: {fileID: 0}
   playerPrefab: {fileID: 289348138277843802, guid: 808fc3b770e18cf4a8fe9dbd48fa2444,
     type: 3}
-  autoCreatePlayer: 0
-  playerSpawnMethod: 0
+  autoCreatePlayer: 1
+  playerSpawnMethod: 1
   spawnPrefabs:
   - {fileID: 2153916105656836095, guid: 4f869bcb1ae6e4b45b121ee768dc357d, type: 3}
   - {fileID: 7113309295090581735, guid: e588e1504ef97444383402ca69ef72c1, type: 3}
@@ -106,9 +106,15 @@ MonoBehaviour:
   - {fileID: 5533951594911835035, guid: ca1dc9505ebfe1b49959d3cfa6aa4b01, type: 3}
   - {fileID: 5533951594911835035, guid: 6504a09c112fa4d478c3bce81801f878, type: 3}
   - {fileID: 5367923578081395378, guid: 425c09b347f9d3949b40163fd9aa6c30, type: 3}
+  - {fileID: 289348138277843802, guid: 808fc3b770e18cf4a8fe9dbd48fa2444, type: 3}
+  - {fileID: 2238145400471485591, guid: 5e5f88b17a7e2c54e8608347cf0a9a71, type: 3}
+  - {fileID: 5533951594911835035, guid: 09395ab15b931124c995d3d78e698779, type: 3}
+  - {fileID: 5533951594911835035, guid: f7511c589eca2124487cf90539caa2d6, type: 3}
+  - {fileID: 5533951594911835035, guid: 1ebe60f060386cf4fab8c77ae8e4c18a, type: 3}
+  - {fileID: 5533951594911835035, guid: 8ff6892069c99444a8a434dc5049822f, type: 3}
   warmupTime: 3
   loginServerAddress: http://35.198.114.92
-  playerDummyPrefab: {fileID: 5297952924634552147, guid: c42f46e927c4d02458b0b39466700928,
+  soulPrefab: {fileID: 2238145400471485591, guid: 5e5f88b17a7e2c54e8608347cf0a9a71,
     type: 3}
   loginManagerPrefab: {fileID: 757364905391698792, guid: 16d73a43abe25d14c8aacb4207acd152,
     type: 3}
