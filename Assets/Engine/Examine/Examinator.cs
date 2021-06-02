@@ -1,12 +1,11 @@
 ﻿using System.Text;
 using System.Collections;
 using Mirror;
-using SS3D.Engine.Examine;
 using SS3D.Engine.FOV;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace SS3D.Content.Systems.Examine
+namespace SS3D.Engine.Examine
 {
     /// <summary>
     /// Displays the examine ui

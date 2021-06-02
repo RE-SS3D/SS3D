@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using SS3D.Engine.Examine;
 using SS3D.Engine.Inventory;
 using SS3D.Engine.Inventory.UI;
 
 
-namespace SS3D.Content.Systems.Examine
+namespace SS3D.Engine.Examine
 {
     /// <summary>
     /// For composite GameObjects composed of multiple Examinable GameObjects, this script allows

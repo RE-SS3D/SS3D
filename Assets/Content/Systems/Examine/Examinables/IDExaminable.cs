@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 using SS3D.Engine.Examine;
 
 namespace SS3D.Content.Systems.Examine.Examinables
@@ -16,13 +17,12 @@ namespace SS3D.Content.Systems.Examine.Examinables
 			requirements = new ReqPermitExamine(gameObject);
 			requirements = new ReqMaxRange(requirements, MaxDistance);
 			requirements = new ReqObstacleCheck(requirements);
-			
+				
 			// Populate the actual ID details randomly
 			IdDetails = new DataIdentificationCard();
-			
-		}
-
+				
 		
+		}		
 
 		public IExamineRequirement GetRequirements()
 		{
