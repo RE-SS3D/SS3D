@@ -11,7 +11,7 @@ namespace SS3D.Engine.Interactions
         /// </summary>
         /// <param name="targets">The interaction targets of this interaction</param>
         /// <param name="interactions">The already present interactions</param>
-        void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions);
+        void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions);
         /// <summary>
         /// Checks if this source can interact with a certain target
         /// </summary>

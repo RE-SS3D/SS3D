@@ -94,9 +94,9 @@ namespace SS3D.Content.Items.Functional.Tools
             RpcTurnOn(!hotFlame.isEmitting);
         }
 
-        public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        public override void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            base.CreateInteractions(targets, interactions);
+            base.GenerateInteractionsFromSource(targets, interactions);
             interactions.Insert(0, new InteractionEntry(targets[0], new WelderConstructionInteraction
             {
                 TurfReinforceList = reinforceDict,
@@ -106,9 +106,9 @@ namespace SS3D.Content.Items.Functional.Tools
             }));
         }
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
-            List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
+            List<IInteraction> list = base.GenerateInteractionsFromTarget(interactionEvent).ToList();
             
             ToggleInteraction toggleInteraction = new ToggleInteraction 
             {

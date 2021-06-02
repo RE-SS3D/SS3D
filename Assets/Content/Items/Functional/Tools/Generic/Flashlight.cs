@@ -15,9 +15,9 @@ namespace SS3D.Content.Items.Functional.Tools
         public new Light light = null;
         public Sprite turnOnIcon;
         
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
-            List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
+            List<IInteraction> list = base.GenerateInteractionsFromTarget(interactionEvent).ToList();
             list.Add(new FlashlightInteraction{ icon = turnOnIcon });
             return list.ToArray();
         }

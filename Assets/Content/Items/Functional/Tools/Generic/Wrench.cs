@@ -20,9 +20,9 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 
         public Sprite constructIcon;
 
-        public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        public override void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            base.CreateInteractions(targets, interactions);
+            base.GenerateInteractionsFromSource(targets, interactions);
             interactions.Insert(0, new InteractionEntry(targets[0], new TableConstructionInteraction
             {       TableToConstruct = TableToConstruct, 
                 Delay = Delay, 

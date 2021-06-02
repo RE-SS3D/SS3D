@@ -96,9 +96,9 @@ namespace SS3D.Content.Items.Cosmetic
             audioSource.PlayOneShot(honkSound);
         }
         
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
-            List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
+            List<IInteraction> list = base.GenerateInteractionsFromTarget(interactionEvent).ToList();
             list.Add(new HonkInteraction{ icon = useIcon });
             return list.ToArray();
         }

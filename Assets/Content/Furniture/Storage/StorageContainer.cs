@@ -15,12 +15,12 @@ namespace SS3D.Content.Furniture.Storage
 
         [SerializeField] private Sprite viewContainerIcon;
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
 	    // The "open" state is changed via the object interaction
 	    // so we don't need to worry about that here, unless we can store stuff without needing it to open
 
-            List<IInteraction> interactions = base.GenerateInteractions(interactionEvent).ToList();
+            List<IInteraction> interactions = base.GenerateInteractionsFromTarget(interactionEvent).ToList();
             StoreInteraction storeInteraction = new StoreInteraction();
             ViewContainerInteraction view = new ViewContainerInteraction {MaxDistance = MaxDistance, icon = viewContainerIcon};
 
