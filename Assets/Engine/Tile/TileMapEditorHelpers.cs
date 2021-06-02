@@ -49,14 +49,42 @@ namespace Tile
             }
         }
 
+        public static void DeleteTileLayer(TileManager tileManager, int layerIndex, int x, int y)
+        {
+            if (tileManager.GetTile(x, y) == null)
+                return;
 
-        /**
-         * Sets the tile at the given position
-         * to the currently selected tile type.
-         * 
-         * Will create the tile if one does not exist
-         */
-        public static void SetTile(TileManager tileManager, TileDefinition tileDefinition, int x, int y)
+            // Save old definition
+            TileDefinition oldDefinition = tileManager.GetTile(x, y).Tile;
+            // Copy object to avoid dupplication between editor and tilemap
+            if (oldDefinition.fixtures != null)
+            {
+                FixturesContainer f = (FixturesContainer)oldDefinition.fixtures.Clone();
+                oldDefinition.fixtures = f;
+            }
+
+            // Existing tile found. We try to update the non-null items in the tiledefinition
+            List<TileBase> tileBases = GetTileItems(oldDefinition);
+            for (int i = 0; i < tileBases.ToArray().Length; i++)
+            {
+                if (tileBases[i] != null && i == layerIndex)
+                {
+                    oldDefinition = SetTileItem(oldDefinition, null, i);
+                }
+            }
+
+            Undo.RecordObject(tileManager.GetTile(x, y).gameObject, "Updated tile");
+            tileManager.EditorUpdateTile(x, y, oldDefinition);
+        }
+
+
+            /**
+             * Sets the tile at the given position
+             * to the currently selected tile type.
+             * 
+             * Will create the tile if one does not exist
+             */
+            public static void SetTile(TileManager tileManager, TileDefinition tileDefinition, int x, int y)
         {
             // Copy object to avoid dupplication between editor and tilemap
             if (tileDefinition.fixtures != null)
@@ -123,11 +151,6 @@ namespace Tile
                     SerializedProperty property = fixtureSerial.FindProperty("tileState");
                     property.FindPropertyRelative("rotation").intValue = (int)rotation;
                     fixtureSerial.ApplyModifiedProperties();
-
-                    //var stateNow = maintainer.TileState;
-                    
-                    //stateNow.rotation = rotation;
-                    //maintainer.SetTileState(stateNow);
 
                     // Refresh the subdata because it still has the old tilestate
                     tileObject.RefreshSubData();
