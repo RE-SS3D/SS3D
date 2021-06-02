@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using SS3D.Engine.Examine;
 
-namespace SS3D.Engine.Examine
+namespace SS3D.Content.Systems.Examine.Examinables
 {
     public class PosterExaminable : MonoBehaviour, IExaminable
     {

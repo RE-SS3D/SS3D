@@ -3,8 +3,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
+using SS3D.Engine.Examine;
 
-namespace SS3D.Engine.Examine
+namespace SS3D.Content.Systems.Examine.UI
 {
     public class UISimpleImage : AbstractExamineUIElement
     {

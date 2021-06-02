@@ -1,13 +1,10 @@
-﻿using SS3D.Engine.Inventory;
-using UnityEngine;
+﻿using UnityEngine;
+using SS3D.Engine.Examine;
 
-namespace SS3D.Engine.Examine
+namespace SS3D.Content.Systems.Examine.Examinables
 {
-    [RequireComponent(typeof(Item))]
-    public class ItemExaminable : MonoBehaviour, IExaminable
+    public class SimpleExaminable : MonoBehaviour, IExaminable
     {
-        private Item item;
-		private IExamineRequirement requirements;
         [TextArea(1, 15)]
 		[SerializeField]
         public string DisplayName;
@@ -16,26 +13,25 @@ namespace SS3D.Engine.Examine
 
         public float MaxDistance;
 		
-        public void Start()
-        {
-            item = GetComponent<Item>();
-			
+		private IExamineRequirement requirements;
+
+		public void Start()
+		{
 			// Populate requirements for this item to be examined.
 			requirements = new ReqPermitExamine(gameObject);
 			requirements = new ReqMaxRange(requirements, MaxDistance);
 			requirements = new ReqObstacleCheck(requirements);
-
-        }
+		}
 
 		public IExamineRequirement GetRequirements()
 		{
 			return requirements;
 		}
-		
+
 		public IExamineData GetData()
 		{
-			return new DataNameDescription(item.Name, Text);
-		}		
+			return new DataNameDescription(DisplayName, Text);
+		}
 		
     }
 }

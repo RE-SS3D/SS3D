@@ -2,8 +2,9 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
+using SS3D.Engine.Examine;
 
-namespace SS3D.Engine.Examine
+namespace SS3D.Content.Systems.Examine.UI
 {
     public class UISimpleText : AbstractExamineUIElement
     {

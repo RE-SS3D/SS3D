@@ -19,6 +19,13 @@ namespace SS3D.Engine.Examine
 		
 		public DataIdentificationCard()
 		{
+			
+			/* At the moment this script just selects one from half a dozen
+			   different people, so that we have something to test as we
+			   work on the interface. Later, it will be designed to take info
+			   from the players. */
+			
+			
 			Age = UnityEngine.Random.Range(18, 65);
 			DateTime expiry = DateTime.Today;
 			int daysToAdd = UnityEngine.Random.Range(0,72) * 5;
