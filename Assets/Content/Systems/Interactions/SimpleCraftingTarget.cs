@@ -22,7 +22,7 @@ namespace SS3D.Content.Systems.Interactions
         /// </summary>
         public SimpleCraftingInteraction.CraftingResult[] ResultingObjects;
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             return new IInteraction[] { new SimpleCraftingInteraction
             {

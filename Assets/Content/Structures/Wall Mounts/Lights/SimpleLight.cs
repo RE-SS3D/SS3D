@@ -21,7 +21,7 @@ public class SimpleLight : InteractionTargetNetworkBehaviour
         lights = GetComponentsInChildren<Light>();
     }
 
-    public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+    public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
     {
         var interaction = new SimpleInteraction
         {

@@ -106,7 +106,7 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
     }
     
     
-    public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+    public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
     {
         List<IInteraction> list = new List<IInteraction>();    
             list.Add(new ConsumeInteraction {icon = item.sprite, Verb = consumeVerb, LoadingBarPrefab = LoadingBarPrefab});
@@ -114,7 +114,7 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
         return list.ToArray();
     }
 
-    public void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+    public void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
     {
         interactions.Add(new InteractionEntry(targets[0], new ConsumeInteraction {icon = item.sprite, Verb = consumeVerb, LoadingBarPrefab = LoadingBarPrefab }));
     }

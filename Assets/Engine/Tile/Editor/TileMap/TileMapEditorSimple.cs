@@ -271,7 +271,10 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
 
                     dragHandler = new TileDragHandler(tileManager, currentDefinition, tilePosition);
                     if (deleteTiles)
-                        dragHandler.SetDelete();
+                    {
+                        dragHandler.DeleteTiles = true;
+                        dragHandler.SelectedTileLayerIndex = GetTileOffsetIndex();
+                    }
                 }
                 dragHandler.HandleDrag(tilePosition);
             }
@@ -293,7 +296,14 @@ namespace SS3D.Engine.Tiles.Editor.TileMap
                     lastPlacement = tilePosition;
                     if (deleteTiles)
                     {
-                        DeleteTile(tileManager, tilePosition.x, tilePosition.y);
+                        if (selectedTileLayer == TileVisibilityLayers.Plenum)
+                        {
+                            DeleteTile(tileManager, tilePosition.x, tilePosition.y);
+                        }
+                        else
+                        {
+                            DeleteTileLayer(tileManager, GetTileOffsetIndex(), tilePosition.x, tilePosition.y);
+                        }
                     }
                     else
                     {

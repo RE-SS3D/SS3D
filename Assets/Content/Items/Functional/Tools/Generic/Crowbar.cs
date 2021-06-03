@@ -24,9 +24,9 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 
         public Sprite constructIcon;
      
-        public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        public override void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            base.CreateInteractions(targets, interactions);
+            base.GenerateInteractionsFromSource(targets, interactions);
             var wallConstructionInteraction = new WallConstructionInteraction
             {
                 WallToConstruct = WallToConstruct,
