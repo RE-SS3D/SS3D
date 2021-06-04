@@ -56,9 +56,9 @@ public class EnergySword : Item, IToggleable
         RpcSetBlade(on);
     }
     
-    public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+    public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
     {
-        List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
+        List<IInteraction> list = base.GenerateInteractionsFromTarget(interactionEvent).ToList();
         list.Add(new ToggleInteraction
         {
             OnName = "Turn off",

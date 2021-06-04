@@ -15,7 +15,7 @@ namespace SS3D.Content.Furniture.Generic
 	// how many we have now
         public int NumberOfCups;
     
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             return new IInteraction[]
             {
