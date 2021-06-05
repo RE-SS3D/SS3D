@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 2648234972089214657}
   - component: {fileID: 1490884264863777539}
   m_Layer: 0
-  m_Name: Solar.Arm2
+  m_Name: SolarArm2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -102,7 +102,7 @@ SkinnedMeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1964373600517195364}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -137,7 +137,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -4573774430610817356, guid: f64bd5e4913a4354f994ed955bab566f, type: 3}
+  m_Mesh: {fileID: -4617679432711270999, guid: f64bd5e4913a4354f994ed955bab566f, type: 3}
   m_Bones:
   - {fileID: 4009225073212092772}
   - {fileID: 8041292272492661361}
@@ -160,7 +160,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8760096520307779465}
   m_Layer: 0
-  m_Name: Solar.Armature
+  m_Name: SolarArmature
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 585884711263655382}
   - component: {fileID: 8907344826559659366}
   m_Layer: 0
-  m_Name: Solar.Arm4
+  m_Name: SolarArm3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -251,7 +251,7 @@ SkinnedMeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2834555959827412325}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -286,7 +286,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -5460739454500284777, guid: f64bd5e4913a4354f994ed955bab566f, type: 3}
+  m_Mesh: {fileID: 242976916100292116, guid: f64bd5e4913a4354f994ed955bab566f, type: 3}
   m_Bones:
   - {fileID: 4009225073212092772}
   - {fileID: 8041292272492661361}
@@ -310,7 +310,7 @@ GameObject:
   - component: {fileID: 5649030526821530713}
   - component: {fileID: 868081427434463284}
   m_Layer: 0
-  m_Name: Solar.Arm1
+  m_Name: SolarArm1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -339,7 +339,7 @@ SkinnedMeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3375123858507050124}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -374,7 +374,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 7447676423307290777, guid: f64bd5e4913a4354f994ed955bab566f, type: 3}
+  m_Mesh: {fileID: -3260162460356277466, guid: f64bd5e4913a4354f994ed955bab566f, type: 3}
   m_Bones:
   - {fileID: 4009225073212092772}
   - {fileID: 8041292272492661361}
@@ -398,7 +398,7 @@ GameObject:
   - component: {fileID: 6228323950954340164}
   - component: {fileID: 281181565981278684}
   m_Layer: 0
-  m_Name: Solar.Arm3
+  m_Name: SolarArm4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -426,7 +426,7 @@ SkinnedMeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3817550172172801931}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -461,7 +461,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -9090352298189267096, guid: f64bd5e4913a4354f994ed955bab566f, type: 3}
+  m_Mesh: {fileID: 3091513227516506426, guid: f64bd5e4913a4354f994ed955bab566f, type: 3}
   m_Bones:
   - {fileID: 4009225073212092772}
   - {fileID: 8041292272492661361}
@@ -485,7 +485,7 @@ GameObject:
   - component: {fileID: 1435336300831309950}
   - component: {fileID: 5836211722808666597}
   m_Layer: 0
-  m_Name: Solar.Wire
+  m_Name: SolarWire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -513,7 +513,7 @@ SkinnedMeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4121957560377656999}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -548,7 +548,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 8186740125730827529, guid: f64bd5e4913a4354f994ed955bab566f, type: 3}
+  m_Mesh: {fileID: 5247671992796347153, guid: f64bd5e4913a4354f994ed955bab566f, type: 3}
   m_Bones:
   - {fileID: 4009225073212092772}
   - {fileID: 8041292272492661361}
@@ -572,7 +572,7 @@ GameObject:
   - component: {fileID: 16180915154186382}
   - component: {fileID: 5856063038140263027}
   m_Layer: 0
-  m_Name: Solar.Panel
+  m_Name: SolarPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -600,7 +600,7 @@ SkinnedMeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5795094417262174237}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -635,7 +635,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -5838677657793758646, guid: f64bd5e4913a4354f994ed955bab566f, type: 3}
+  m_Mesh: {fileID: 6801496783033904975, guid: f64bd5e4913a4354f994ed955bab566f, type: 3}
   m_Bones:
   - {fileID: 4009225073212092772}
   - {fileID: 8041292272492661361}
@@ -661,7 +661,7 @@ GameObject:
   - component: {fileID: 2635529883807067752}
   - component: {fileID: 5234343953018934327}
   m_Layer: 0
-  m_Name: Solar Panel
+  m_Name: SolarPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -801,7 +801,7 @@ GameObject:
   - component: {fileID: 5646383663933354299}
   - component: {fileID: 91631066740992353}
   m_Layer: 0
-  m_Name: Solar.Base
+  m_Name: SolarBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -832,7 +832,7 @@ SkinnedMeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8333646363878987670}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -867,7 +867,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -1767735713159859670, guid: f64bd5e4913a4354f994ed955bab566f, type: 3}
+  m_Mesh: {fileID: 5128943941849284821, guid: f64bd5e4913a4354f994ed955bab566f, type: 3}
   m_Bones:
   - {fileID: 4009225073212092772}
   - {fileID: 8041292272492661361}
