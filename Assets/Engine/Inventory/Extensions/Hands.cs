@@ -126,6 +126,20 @@ namespace SS3D.Engine.Inventory.Extensions
             }
         }
 
+        public void SetActiveHand(AttachedContainer selectedContainer)
+        {
+            if (selectedContainer == SelectedHand)
+            {
+                return;
+            }
+            else
+            {
+                SelectedHandIndex = HandContainers.ToList().IndexOf(selectedContainer);
+                HandChanged?.Invoke(SelectedHandIndex);
+                CmdSetActiveHand(SelectedHandIndex);
+            }         
+        }
+
         [Command]
         private void CmdDropHeldItem()
         {

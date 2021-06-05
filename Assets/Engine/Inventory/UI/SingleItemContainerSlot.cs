@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
-
+using SS3D.Engine.Inventory.Extensions;
 namespace SS3D.Engine.Inventory.UI
 {
     /// <summary>
@@ -71,8 +71,13 @@ namespace SS3D.Engine.Inventory.UI
         }
 
         public void OnPointerClick(PointerEventData eventData)
-        {
+        {      
             Inventory.ClientInteractWithSingleSlot(container);
+            
+            if(eventData.pointerPress.name == "HandRight(Clone)" || eventData.pointerPress.name == "HandLeft(Clone)")
+            {
+                Inventory.ActivateHand(container);  
+            }  
         }
     }
 }
