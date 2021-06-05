@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3434290027329248075}
   - component: {fileID: 5516212334802217798}
   m_Layer: 0
-  m_Name: Seed Processor Grinder
+  m_Name: SeedProcessorGrinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1582669220590547665}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.025, y: 0.8, z: 0}
+  m_LocalPosition: {x: -0.04, y: 0.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3374609316605189504}
@@ -39,7 +39,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1582669220590547665}
-  m_Mesh: {fileID: 2046405885005328683, guid: 6bcdd128340b0f14ba42672048dfdff0, type: 3}
+  m_Mesh: {fileID: 4380409416652610443, guid: 6bcdd128340b0f14ba42672048dfdff0, type: 3}
 --- !u!23 &5516212334802217798
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -90,13 +90,13 @@ GameObject:
   - component: {fileID: 3374609316605189504}
   - component: {fileID: 6020754099777497014}
   - component: {fileID: 50254961794947919}
-  - component: {fileID: 8708723450456251962}
   - component: {fileID: -774126658597833377}
   - component: {fileID: -9091612087525422286}
+  - component: {fileID: 2031896096572235386}
   - component: {fileID: 7848135095644858374}
   - component: {fileID: 8392549313795139085}
   m_Layer: 0
-  m_Name: Seed Extractor Old
+  m_Name: SeedProcessor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -109,7 +109,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1769453492926099347}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -124,7 +124,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1769453492926099347}
-  m_Mesh: {fileID: -8436707312584982133, guid: 6bcdd128340b0f14ba42672048dfdff0, type: 3}
+  m_Mesh: {fileID: -3710235329041868354, guid: 6bcdd128340b0f14ba42672048dfdff0, type: 3}
 --- !u!23 &50254961794947919
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -165,19 +165,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &8708723450456251962
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1769453492926099347}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.96253866, y: 1.3329221, z: 0.8836841}
-  m_Center: {x: 0.0034011304, y: 0.66081125, z: -0.0029085875}
 --- !u!114 &-774126658597833377
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,6 +199,20 @@ MonoBehaviour:
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
+--- !u!64 &2031896096572235386
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769453492926099347}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -3710235329041868354, guid: 6bcdd128340b0f14ba42672048dfdff0, type: 3}
 --- !u!114 &7848135095644858374
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,7 +226,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DisplayName: Seed Processor
-  Text: 
+  Text: Grinds plants to remove their seeds.
   MaxDistance: 0
 --- !u!114 &8392549313795139085
 MonoBehaviour:

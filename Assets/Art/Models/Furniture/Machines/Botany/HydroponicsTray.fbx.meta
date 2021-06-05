@@ -8,7 +8,32 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Hydrogel
-    second: {fileID: 2100000, guid: d4200162d183d4b4380ec26627333490, type: 2}
+    second: {fileID: 2100000, guid: 0dfcd2fea1adf10409cb067ed40da41b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Light Blue
+    second: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Light Green
+    second: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Light Orange
+    second: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Light Red
+    second: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Light Yellow
+    second: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -23,7 +48,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Palette05 Glass
-    second: {fileID: 2100000, guid: 0dfcd2fea1adf10409cb067ed40da41b, type: 2}
+    second: {fileID: 2100000, guid: 4156b958be0668e49b2e9f5120660e50, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
