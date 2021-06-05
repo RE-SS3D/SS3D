@@ -56,6 +56,11 @@ namespace SS3D.Engine.Inventory
             }
         }
 
+        public void ActivateHand(AttachedContainer container)
+        {
+            Hands.SetActiveHand(container);
+        }
+
         /// <summary>
         /// Interacting with a container that has one "slot"
         /// </summary>

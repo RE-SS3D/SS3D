@@ -73,6 +73,10 @@ namespace SS3D.Engine.Inventory.UI
         public void OnPointerClick(PointerEventData eventData)
         {
             Inventory.ClientInteractWithSingleSlot(container);
+            if (eventData.pointerPress.name == "HandRight(Clone)" || eventData.pointerPress.name == "HandLeft(Clone)")
+            {
+                Inventory.ActivateHand(container);
+            }
         }
     }
 }
