@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3262340787433004493}
   m_Layer: 0
-  m_Name: Ejection Point
+  m_Name: EjectionPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 32967740200445319}
   - component: {fileID: 9204918293919080062}
   m_Layer: 0
-  m_Name: Booze Vendor Maintenance Panel
+  m_Name: BoozeVendorMaintenancePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -154,7 +154,7 @@ GameObject:
   - component: {fileID: 1918001620574020781}
   - component: {fileID: 4848886018081697495}
   m_Layer: 0
-  m_Name: Booze Vendor Glass Broken
+  m_Name: BoozeVendorGlassBroken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -604,7 +604,7 @@ GameObject:
   - component: {fileID: 2463290690161719472}
   - component: {fileID: 2883166973879690658}
   m_Layer: 0
-  m_Name: Booze Vendor Glass
+  m_Name: BoozeVendorGlass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

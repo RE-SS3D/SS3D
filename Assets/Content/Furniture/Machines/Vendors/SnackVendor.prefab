@@ -20,7 +20,7 @@ GameObject:
   - component: {fileID: 4712994039043104552}
   - component: {fileID: -6561238566878129641}
   m_Layer: 0
-  m_Name: Snack Vendor
+  m_Name: SnackVendor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -326,7 +326,7 @@ GameObject:
   - component: {fileID: 8298576513118826924}
   - component: {fileID: 7626779997115961319}
   m_Layer: 0
-  m_Name: Snack Vendor Glass
+  m_Name: SnackVendorGlass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -432,7 +432,7 @@ GameObject:
   m_Component:
   - component: {fileID: 851482157669405636}
   m_Layer: 0
-  m_Name: Ejection Point
+  m_Name: EjectionPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -466,7 +466,7 @@ GameObject:
   - component: {fileID: 8541885739308001959}
   - component: {fileID: 667008033436914014}
   m_Layer: 0
-  m_Name: Snack Vendor Maintenance Panel
+  m_Name: SnackVendorMaintenancePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -576,7 +576,7 @@ GameObject:
   - component: {fileID: 8213794056520469200}
   - component: {fileID: 7548314372116007862}
   m_Layer: 0
-  m_Name: Snack Vendor Glass Broken
+  m_Name: SnackVendorGlassBroken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

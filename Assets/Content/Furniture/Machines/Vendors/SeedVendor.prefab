@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7184112540355837974}
   m_Layer: 0
-  m_Name: Ejection Point
+  m_Name: EjectionPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -340,7 +340,7 @@ GameObject:
   - component: {fileID: 5045467192024244155}
   - component: {fileID: 4165396700439340098}
   m_Layer: 0
-  m_Name: Seed Vendor Maintenance Panel
+  m_Name: SeedVendorMaintenancePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -450,7 +450,7 @@ GameObject:
   - component: {fileID: 2847288111738739633}
   - component: {fileID: 9053848788348386097}
   m_Layer: 0
-  m_Name: Seed Vendor Glass Broken
+  m_Name: SeedVendorGlassBroken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -560,7 +560,7 @@ GameObject:
   - component: {fileID: 8388211929849665801}
   - component: {fileID: 3691104099699021116}
   m_Layer: 0
-  m_Name: Seed Vendor Glass
+  m_Name: SeedVendorGlass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

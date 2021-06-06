@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3262340787433004493}
   m_Layer: 0
-  m_Name: Ejection Point
+  m_Name: EjectionPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 32967740200445319}
   - component: {fileID: 9204918293919080062}
   m_Layer: 0
-  m_Name: Tool Vendor Maintenance Panel
+  m_Name: ToolVendorMaintenancePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -160,7 +160,7 @@ GameObject:
   - component: {fileID: 8716617303496286320}
   - component: {fileID: -7178640359135565531}
   m_Layer: 0
-  m_Name: Tool Vendor
+  m_Name: ToolVendor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

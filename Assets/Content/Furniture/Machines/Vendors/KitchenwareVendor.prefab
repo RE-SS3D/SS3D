@@ -20,7 +20,7 @@ GameObject:
   - component: {fileID: 4712994039043104552}
   - component: {fileID: -1851576397446879768}
   m_Layer: 0
-  m_Name: Kitchenware Vendor
+  m_Name: KitchenwareVendor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -325,7 +325,7 @@ GameObject:
   - component: {fileID: 8298576513118826924}
   - component: {fileID: 7626779997115961319}
   m_Layer: 0
-  m_Name: Kitchenware Vendor Glass
+  m_Name: KitchenwareVendorGlass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -431,7 +431,7 @@ GameObject:
   m_Component:
   - component: {fileID: 851482157669405636}
   m_Layer: 0
-  m_Name: Ejection Point
+  m_Name: EjectionPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -465,7 +465,7 @@ GameObject:
   - component: {fileID: 8462327948860911296}
   - component: {fileID: 4071164763812251689}
   m_Layer: 0
-  m_Name: Kitchenware Vendor Glass Broken
+  m_Name: KitchenwareVendorGlassBroken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -575,7 +575,7 @@ GameObject:
   - component: {fileID: 8541885739308001959}
   - component: {fileID: 667008033436914014}
   m_Layer: 0
-  m_Name: Kitchenware Vendor Maintenance Panel
+  m_Name: KitchenwareVendorMaintenancePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

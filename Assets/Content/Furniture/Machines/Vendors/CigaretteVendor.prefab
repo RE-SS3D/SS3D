@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3262340787433004493}
   m_Layer: 0
-  m_Name: Ejection Point
+  m_Name: EjectionPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 32967740200445319}
   - component: {fileID: 9204918293919080062}
   m_Layer: 0
-  m_Name: Cigarette Vendor Maintenance Panel
+  m_Name: CigaretteVendorMaintenancePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -153,7 +153,7 @@ GameObject:
   - component: {fileID: 3436612527983747956}
   - component: {fileID: 6541211281956070803}
   m_Layer: 0
-  m_Name: Cigarette Vendor Glass Broken
+  m_Name: CigaretteVendorGlassBroken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -551,7 +551,7 @@ GameObject:
   - component: {fileID: 2463290690161719472}
   - component: {fileID: 2883166973879690658}
   m_Layer: 0
-  m_Name: Cigarette Vendor Glass
+  m_Name: CigaretteVendorGlass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

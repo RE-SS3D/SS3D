@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7184112540355837974}
   m_Layer: 0
-  m_Name: Ejection Point
+  m_Name: EjectionPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -50,7 +50,7 @@ GameObject:
   - component: {fileID: -2780369696669274638}
   - component: {fileID: 6692794325200270153}
   m_Layer: 0
-  m_Name: Soda Vendor
+  m_Name: SodaVendor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -350,7 +350,7 @@ GameObject:
   - component: {fileID: 5045467192024244155}
   - component: {fileID: 4165396700439340098}
   m_Layer: 0
-  m_Name: Soda Vendor Maintenance Panel
+  m_Name: SodaVendorMaintenancePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
