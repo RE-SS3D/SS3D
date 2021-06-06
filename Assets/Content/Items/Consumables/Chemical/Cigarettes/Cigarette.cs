@@ -119,9 +119,9 @@ namespace SS3D.Content.Items.Consumables
             RpcUpdateMesh();
         }
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
-            List<IInteraction> interactions = base.GenerateInteractions(interactionEvent).ToList();
+            List<IInteraction> interactions = base.GenerateInteractionsFromTarget(interactionEvent).ToList();
             interactions.Add(new IgniteInteraction() { extinguishIcon = extinguishIcon, igniteIcon = igniteIcon });
             return interactions.ToArray();
         }

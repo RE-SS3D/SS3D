@@ -170,7 +170,7 @@ InputManager:
     descriptiveName: Drop the item currently held in the active hand
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: g
+    positiveButton: q
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1
@@ -186,7 +186,7 @@ InputManager:
     descriptiveName: Toggles between running and walking
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: y
+    positiveButton: caps lock
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -492,7 +492,7 @@ InputManager:
     negativeButton: 
     positiveButton: 
     altNegativeButton: 
-    altPositiveButton: z
+    altPositiveButton: f
     gravity: 1000
     dead: 0.001
     sensitivity: 1000

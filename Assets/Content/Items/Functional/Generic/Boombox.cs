@@ -166,7 +166,7 @@ namespace SS3D.Content.Items.Cosmetic
             return radioOn;
         }
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = new List<IInteraction>(2)
             {

@@ -32,7 +32,7 @@ namespace SS3D.Content.Systems.Construction
             item = GetComponent<Item>();
         }
 
-        public void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        public void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
             interactions.Add(new InteractionEntry(targets.First(), new SimpleInteraction
             {

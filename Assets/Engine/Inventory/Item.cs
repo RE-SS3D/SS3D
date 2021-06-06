@@ -125,9 +125,9 @@ namespace SS3D.Engine.Inventory
         }
         
 	// this creates the base interactions for an item, in this case, the drop interaction
-        public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        public override void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            base.CreateInteractions(targets, interactions);
+            base.GenerateInteractionsFromSource(targets, interactions);
             DropInteraction dropInteraction = new DropInteraction();
             interactions.Add(new InteractionEntry(null, dropInteraction));
         }
@@ -302,7 +302,7 @@ namespace SS3D.Engine.Inventory
         }
 
 #endif
-        public virtual IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public virtual IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             return new IInteraction[] { new PickupInteraction { icon = sprite } };
         }

@@ -54,7 +54,7 @@ namespace SS3D.Content.Furniture.Machines.Vendors
             audioSource = GetComponent<AudioSource>();
         }
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             var interaction = new SimpleInteraction
             {

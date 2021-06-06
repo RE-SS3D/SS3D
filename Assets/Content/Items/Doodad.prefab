@@ -198,5 +198,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DisplayName: Doodad
-  Text: It's a doodad; a thingamajig.
+  Text: It's a doodad; a thingamajig. It's great for testing whatchamacallits.
   MaxDistance: 0

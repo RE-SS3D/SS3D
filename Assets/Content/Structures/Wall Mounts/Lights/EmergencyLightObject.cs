@@ -23,7 +23,7 @@ public class EmergencyLightObject : InteractionTargetNetworkBehaviour
     }
 
 
-    public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+    public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
     {
         var interaction = new SimpleInteraction
         {

@@ -287,7 +287,7 @@ namespace SS3D.Engine.Substances
             ContentsChanged?.Invoke(this);
         }
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             return new IInteraction[]
             {
