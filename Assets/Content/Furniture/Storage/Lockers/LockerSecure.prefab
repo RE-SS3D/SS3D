@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7156493490212423846}
   - component: {fileID: 4663871330398109238}
   m_Layer: 14
-  m_Name: Door
+  m_Name: LockerDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1187284634159131357}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.256905, y: 0.8597653, z: 0.273}
+  m_LocalPosition: {x: 0.256905, y: 0.8407, z: 0.2583}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 439414536271836042}
@@ -43,7 +43,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1187284634159131357}
-  m_Mesh: {fileID: -6910379896581155837, guid: cad7425ee1ffd5a4b9113888da1a9478, type: 3}
+  m_Mesh: {fileID: -8212642602513761415, guid: cad7425ee1ffd5a4b9113888da1a9478, type: 3}
 --- !u!23 &3491127253892038410
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 2132914308416373669}
   - component: {fileID: 2309828676942278108}
   m_Layer: 14
-  m_Name: Lock
+  m_Name: LockerDoorLock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -172,7 +172,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2518288170112121279}
-  m_Mesh: {fileID: -1059064142972889520, guid: cad7425ee1ffd5a4b9113888da1a9478, type: 3}
+  m_Mesh: {fileID: 4924070533510066077, guid: cad7425ee1ffd5a4b9113888da1a9478, type: 3}
 --- !u!23 &8593928708533880225
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -261,7 +261,7 @@ GameObject:
   - component: {fileID: 8460467522893431941}
   - component: {fileID: 5039700166277464281}
   m_Layer: 14
-  m_Name: Lock
+  m_Name: LockerLock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -288,7 +288,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2736350153294575479}
-  m_Mesh: {fileID: 2629911235476796473, guid: cad7425ee1ffd5a4b9113888da1a9478, type: 3}
+  m_Mesh: {fileID: 7712973793072509800, guid: cad7425ee1ffd5a4b9113888da1a9478, type: 3}
 --- !u!23 &8089250908804255039
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -399,7 +399,7 @@ GameObject:
   - component: {fileID: 1656061045202297066}
   - component: {fileID: -6522267390035620388}
   m_Layer: 0
-  m_Name: Locker Basic Secure
+  m_Name: LockerSecure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -462,7 +462,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2876708453869312076}
-  m_Mesh: {fileID: -6500672362408894970, guid: cad7425ee1ffd5a4b9113888da1a9478, type: 3}
+  m_Mesh: {fileID: 2414751425368093432, guid: cad7425ee1ffd5a4b9113888da1a9478, type: 3}
 --- !u!23 &2906516890889191275
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -612,6 +612,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AttachedContainer: {fileID: -8913688814251431353}
   Size: {x: 10, y: 10}
+  StartFilter: {fileID: 0}
 --- !u!114 &8628883032725803104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -668,7 +669,7 @@ GameObject:
   - component: {fileID: 2592951851105433910}
   - component: {fileID: 3795129234429139735}
   m_Layer: 14
-  m_Name: Light
+  m_Name: LockerLockLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -695,7 +696,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5007033570441933088}
-  m_Mesh: {fileID: 9081224907476080935, guid: cad7425ee1ffd5a4b9113888da1a9478, type: 3}
+  m_Mesh: {fileID: 6827783461729681203, guid: cad7425ee1ffd5a4b9113888da1a9478, type: 3}
 --- !u!23 &5670544077083442192
 MeshRenderer:
   m_ObjectHideFlags: 0

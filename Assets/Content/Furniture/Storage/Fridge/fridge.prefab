@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 4364131529940279445}
   - component: {fileID: -5508761035162611030}
   m_Layer: 0
-  m_Name: fridge
+  m_Name: Fridge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -172,7 +172,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.90727323, y: 1.7814867, z: 0.83085436}
-  m_Center: {x: 0.0003873706, y: 0.89431536, z: 0.06968558}
+  m_Center: {x: -0.0003873706, y: 0.89431536, z: -0.06968558}
 --- !u!114 &3494353215513587477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -249,6 +249,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AttachedContainer: {fileID: 3829014715871801907}
   Size: {x: 5, y: 3}
+  StartFilter: {fileID: 0}
 --- !u!114 &-5508761035162611030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,7 +279,7 @@ GameObject:
   - component: {fileID: 4285060363148910370}
   - component: {fileID: 5443252286308906427}
   m_Layer: 14
-  m_Name: Fridge Door
+  m_Name: FridgeDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -305,7 +306,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5240830354732226920}
-  m_Mesh: {fileID: -5021464522597332381, guid: 4ae592cb61721d04fbaeecd340cd8380, type: 3}
+  m_Mesh: {fileID: 4128563218347521063, guid: 4ae592cb61721d04fbaeecd340cd8380, type: 3}
 --- !u!23 &6889282342120757457
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -356,8 +357,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.91609585, y: 1.7028121, z: 0.18759532}
-  m_Center: {x: 0.44432867, y: 0.0014936328, z: 0.067083396}
+  m_Size: {x: 0.91609585, y: 1.7028121, z: 0.18759535}
+  m_Center: {x: 0.44432867, y: 0.0014936328, z: 0.06708368}
 --- !u!114 &4285060363148910370
 MonoBehaviour:
   m_ObjectHideFlags: 0
