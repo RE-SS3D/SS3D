@@ -148,12 +148,13 @@ MonoBehaviour:
   ItemId: wood_log
   Name: Wood Log
   Volume: 15
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 2845941013848160597}
   attachmentPoint: {fileID: 8030723869266182320}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 3
   traits: []
+  Size: {x: 1, y: 2}
 --- !u!114 &1821932604526625336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,6 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
 --- !u!114 &6236136810844361086
