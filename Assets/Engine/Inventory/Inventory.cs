@@ -56,11 +56,6 @@ namespace SS3D.Engine.Inventory
             }
         }
 
-        public void ActivateHand(AttachedContainer container)
-        {
-            Hands.SetActiveHand(container);
-        }
-
         /// <summary>
         /// Use it to switch between active hands.
         /// </summary>
