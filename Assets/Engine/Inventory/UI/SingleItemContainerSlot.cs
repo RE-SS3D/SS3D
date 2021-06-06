@@ -73,6 +73,12 @@ namespace SS3D.Engine.Inventory.UI
         public void OnPointerClick(PointerEventData eventData)
         {
             Inventory.ClientInteractWithSingleSlot(container);
+
+            // When receiving a click on one of the hands of the UI, change the current active hand with the one clicked.
+            if (eventData.pointerPress.name == "HandRight(Clone)" || eventData.pointerPress.name == "HandLeft(Clone)")
+            {
+                Inventory.ActivateHand(container);
+            }
         }
     }
 }
