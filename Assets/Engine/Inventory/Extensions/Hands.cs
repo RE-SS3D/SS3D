@@ -135,8 +135,16 @@ namespace SS3D.Engine.Inventory.Extensions
             else
             {
                 SelectedHandIndex = HandContainers.ToList().IndexOf(selectedContainer);
-                HandChanged?.Invoke(SelectedHandIndex);
-                CmdSetActiveHand(SelectedHandIndex);
+                if (SelectedHandIndex != -1)
+                {
+                    HandChanged?.Invoke(SelectedHandIndex);
+                    CmdSetActiveHand(SelectedHandIndex);
+                }
+                else
+                {
+                    Debug.LogError("selectedContainer is not in HandContainers.");
+                    return;
+                }
             }
         }
 
