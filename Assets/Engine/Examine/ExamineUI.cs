@@ -36,11 +36,11 @@ namespace SS3D.Engine.Examine
 			}
 		}
 		
-		private void Start()
+		public void Start()
 		{
-			foreach (AbstractExamineUIElement element in UIElements)
+			foreach (AbstractExamineUIElement UI in UIElements)
 			{
-				element.DisableElement();
+				UI.DisableElement();
 			}
 		}
 		

@@ -21,6 +21,7 @@ namespace SS3D.Content.Systems.Examine.UI
         public TMP_Text Expiry;
 		public Image Mugshot;
 
+		private RectTransform rectTransform;
         private string firstName;
         private string surname;
         private string age;
@@ -30,7 +31,13 @@ namespace SS3D.Content.Systems.Examine.UI
         private string gender;
         private string expiry;
 		private Sprite mugshot;
-		        
+		
+		public void Start()
+		{
+			rectTransform = GetComponent<RectTransform>();
+			Debug.Log("rectTransform.rect = " + rectTransform.rect);
+		}
+		
         public override void RefreshDisplay()
         {
             FirstName.text = firstName;
@@ -42,8 +49,8 @@ namespace SS3D.Content.Systems.Examine.UI
             Gender.text = gender;
             Expiry.text = expiry;
 			Mugshot.sprite = mugshot;
-			Panel.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
-
+			rectTransform = GetComponent<RectTransform>();
+			Panel.position = new Vector3(Input.mousePosition.x + 5f, Input.mousePosition.y + 5f, 0);
         }
 		
 		public override void LoadExamineData(IExamineData[] data)
