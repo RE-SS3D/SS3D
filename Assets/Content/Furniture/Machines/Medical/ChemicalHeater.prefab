@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 2135670720530425799}
   - component: {fileID: 1264308169152762784}
   - component: {fileID: 4331335641258426073}
-  - component: {fileID: 1867958269139114578}
+  - component: {fileID: 5738326546308400288}
   m_Layer: 0
-  m_Name: Chemical Container
+  m_Name: ChemicalHeaterDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3064894055610940026}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.237, y: 0.999, z: 0.002}
+  m_LocalPosition: {x: 0.177, y: 0.458, z: 0.2526}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 9000129320134025611}
@@ -40,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3064894055610940026}
-  m_Mesh: {fileID: 8651409975508130621, guid: 380bbcbeccf452742ab43640e6cc76b5, type: 3}
+  m_Mesh: {fileID: 851811667845585174, guid: ebd4adfdf1c07be478f68a9139e91670, type: 3}
 --- !u!23 &4331335641258426073
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -59,6 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
+  - {fileID: 2100000, guid: 0dfcd2fea1adf10409cb067ed40da41b, type: 2}
   - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -80,8 +81,8 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!136 &1867958269139114578
-CapsuleCollider:
+--- !u!65 &5738326546308400288
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -90,10 +91,9 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.13152248
-  m_Height: 0.56294054
-  m_Direction: 1
-  m_Center: {x: -0.00000011920929, y: 0.21009418, z: -0.00000011920929}
+  serializedVersion: 2
+  m_Size: {x: 0.3552265, y: 0.49994805, z: 0.057650767}
+  m_Center: {x: -0.17768009, y: -0.002801463, z: 0.0007292116}
 --- !u!1 &5385663273565442968
 GameObject:
   m_ObjectHideFlags: 0
@@ -105,12 +105,12 @@ GameObject:
   - component: {fileID: 9000129320134025611}
   - component: {fileID: 3405353443366935392}
   - component: {fileID: 2454878351961279712}
-  - component: {fileID: 2977536641940786079}
   - component: {fileID: 6585454789370932796}
+  - component: {fileID: 7246000501682530352}
   - component: {fileID: 1176681601152780847}
-  - component: {fileID: -7530345042427355198}
+  - component: {fileID: -815652890903664024}
   m_Layer: 0
-  m_Name: Chemical Dispenser
+  m_Name: ChemicalHeater
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -138,7 +138,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5385663273565442968}
-  m_Mesh: {fileID: -3177074283525186641, guid: 380bbcbeccf452742ab43640e6cc76b5, type: 3}
+  m_Mesh: {fileID: -275620629262151693, guid: ebd4adfdf1c07be478f68a9139e91670, type: 3}
 --- !u!23 &2454878351961279712
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -179,19 +179,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &2977536641940786079
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5385663273565442968}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.9861779, y: 1.0992208, z: 0.7520078}
-  m_Center: {x: 0.0032488108, y: 0.54961133, z: -0.0008254051}
 --- !u!54 &6585454789370932796
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -208,6 +195,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!65 &7246000501682530352
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5385663273565442968}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.5249388, y: 0.9102396, z: 0.53624606}
+  m_Center: {x: -0.0035426319, y: 0.45297605, z: -0.002758205}
 --- !u!114 &1176681601152780847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,10 +220,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Chemical Dispenser
+  DisplayName: Chemical Heater
   Text: 
   MaxDistance: 0
---- !u!114 &-7530345042427355198
+--- !u!114 &-815652890903664024
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

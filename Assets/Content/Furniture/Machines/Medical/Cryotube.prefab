@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4331335641258426073}
   - component: {fileID: 7741630587919765391}
   m_Layer: 0
-  m_Name: Cryotube.Base
+  m_Name: CryotubeBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43,7 +43,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3064894055610940026}
-  m_Mesh: {fileID: -3537948731001083504, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
+  m_Mesh: {fileID: -7765939715451239521, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
 --- !u!23 &4331335641258426073
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -97,7 +97,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -3537948731001083504, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
+  m_Mesh: {fileID: -7765939715451239521, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
 --- !u!1 &5385663273565442968
 GameObject:
   m_ObjectHideFlags: 0
@@ -116,7 +116,7 @@ GameObject:
   - component: {fileID: 1176681601152780847}
   - component: {fileID: 8959118759034439111}
   m_Layer: 0
-  m_Name: Cryotube - Blue
+  m_Name: Cryotube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -302,7 +302,7 @@ GameObject:
   - component: {fileID: 6602481749398371483}
   - component: {fileID: 5085958358066919364}
   m_Layer: 0
-  m_Name: Cryotube.Door
+  m_Name: CryotubeDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -329,7 +329,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5625392702527621547}
-  m_Mesh: {fileID: -1518938212194376191, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
+  m_Mesh: {fileID: -6705218397201916213, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
 --- !u!23 &5085958358066919364
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -378,10 +378,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1344086091236819040}
-  - component: {fileID: 8594528080645165144}
-  - component: {fileID: 7990539578614238798}
+  - component: {fileID: 2822172218792040885}
   m_Layer: 0
-  m_Name: Cryotube.Liquid
+  m_Name: CryotubeLiquid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -401,8 +400,8 @@ Transform:
   m_Father: {fileID: 2135670720530425799}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &8594528080645165144
-MeshRenderer:
+--- !u!137 &2822172218792040885
+SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -415,7 +414,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -440,14 +439,18 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!33 &7990539578614238798
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6432704430344066030}
-  m_Mesh: {fileID: 31224540767065549, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
+  serializedVersion: 2
+  m_Quality: 0
+  m_UpdateWhenOffscreen: 0
+  m_SkinnedMotionVectors: 1
+  m_Mesh: {fileID: 3090188475002519873, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
+  m_Bones: []
+  m_BlendShapeWeights: []
+  m_RootBone: {fileID: 0}
+  m_AABB:
+    m_Center: {x: -0.4999994, y: 1.6996186, z: -0.50000036}
+    m_Extent: {x: 0.58677983, y: 1.2445695, z: 0.58677983}
+  m_DirtyAABB: 0
 --- !u!1 &9199454391362990948
 GameObject:
   m_ObjectHideFlags: 0
@@ -461,7 +464,7 @@ GameObject:
   - component: {fileID: 1580909300231049782}
   - component: {fileID: 6196934709972925619}
   m_Layer: 0
-  m_Name: Cryotube.Glass
+  m_Name: CryotubeGlass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -489,7 +492,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9199454391362990948}
-  m_Mesh: {fileID: 4789040564987817927, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
+  m_Mesh: {fileID: 3653147570069490128, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
 --- !u!23 &1580909300231049782
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -555,7 +558,7 @@ GameObject:
   - component: {fileID: 3715207237239885114}
   - component: {fileID: 4103090370810360628}
   m_Layer: 0
-  m_Name: Cryotube.GlassBroken
+  m_Name: CryotubeGlassBroken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -582,7 +585,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9205250489425835359}
-  m_Mesh: {fileID: -7833772371582554770, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
+  m_Mesh: {fileID: 5096797266568273705, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
 --- !u!23 &4103090370810360628
 MeshRenderer:
   m_ObjectHideFlags: 0

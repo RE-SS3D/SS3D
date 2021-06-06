@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
-  m_Name: Sleeper Bed
+  m_Name: ChemicalDispenser
   m_EditorClassIdentifier: 
-  id: sleeper
-  genericType: machine
-  prefab: {fileID: 5385663273565442968, guid: 3ad3c5a88d0d54344b0999759ae3c0b3, type: 3}
+  id: ChemicalDispenser
+  genericType: Machine
+  prefab: {fileID: 5385663273565442968, guid: c7ee13d281e3785439b3f3be749f4410, type: 3}
