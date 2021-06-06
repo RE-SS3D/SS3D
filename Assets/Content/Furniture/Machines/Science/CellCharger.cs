@@ -12,9 +12,6 @@ public class CellCharger : NetworkBehaviour
 {
     // Visual container for the cell to be put in
     public AttachedContainer AttachedContainer;
-    
-    // Actual container
-    private StorageContainer storageContainer;
 
     // Current cell being recharged
     private Item powerCell;
