@@ -126,6 +126,11 @@ namespace SS3D.Engine.Inventory.Extensions
             }
         }
 
+        /// <summary>
+        /// Set the Active hand of the Player to be the AttachedContainer passed in parameter. 
+        /// Do nothing if the parameter is the already active parameter.
+        /// </summary>
+        /// <param name="selectedContainer">This AttachedContainer should only be a hand.</param>
         public void SetActiveHand(AttachedContainer selectedContainer)
         {
             if (selectedContainer == SelectedHand)
