@@ -139,18 +139,10 @@ namespace SS3D.Engine.Inventory.Extensions
             }
             else
             {
+                //TODO : handle the case where the AttachedContainer is not found. SelectedHandIndex would be equal to -1 in this case.
                 SelectedHandIndex = HandContainers.ToList().IndexOf(selectedContainer);
-                if (SelectedHandIndex != -1)
-                {
-                    HandChanged?.Invoke(SelectedHandIndex);
-                    CmdSetActiveHand(SelectedHandIndex);
-                }
-                else
-                {
-                    Debug.LogError("selectedContainer is not in HandContainers.");
-                    return;
-                }
-
+                HandChanged?.Invoke(SelectedHandIndex);
+                CmdSetActiveHand(SelectedHandIndex);
             }
         }
 
