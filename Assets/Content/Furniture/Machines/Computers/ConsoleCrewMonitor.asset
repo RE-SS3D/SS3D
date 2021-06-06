@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
-  m_Name: Console - Off
+  m_Name: ConsoleCrewMonitor
   m_EditorClassIdentifier: 
-  id: console_off
-  genericType: console
-  prefab: {fileID: 6477574049359786441, guid: 72e4f17792c1caa438fcdccc95fead39, type: 3}
+  id: ConsoleCrewMonitor
+  genericType: Console
+  prefab: {fileID: 6477574049359786441, guid: 2da7813a6f2688b40aec806ec41d1957, type: 3}

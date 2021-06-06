@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 8150064c965a4eb4d9513fa3a85ed3d1
+guid: c77a018f0160d084787ff3615e68ff63
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable: []
@@ -14,11 +14,6 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Palette05 Emission
     second: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Palette05 Glass
-    second: {fileID: 2100000, guid: 4156b958be0668e49b2e9f5120660e50, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
