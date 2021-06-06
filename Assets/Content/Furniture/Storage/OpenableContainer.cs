@@ -38,12 +38,12 @@ namespace SS3D.Content.Furniture.Storage
             }
         }
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
 	    // The "open" state is changed via the object interaction
 	    // so we don't need to worry about that here, unless we can store stuff without needing it to open
 
-            List<IInteraction> interactions = base.GenerateInteractions(interactionEvent).ToList();
+            List<IInteraction> interactions = base.GenerateInteractionsFromTarget(interactionEvent).ToList();
             StoreInteraction storeInteraction = new StoreInteraction();
             TakeInteraction takeInteraction = new TakeInteraction();
             ViewContainerInteraction view = new ViewContainerInteraction {MaxDistance = MaxDistance, icon = viewContainerIcon};
