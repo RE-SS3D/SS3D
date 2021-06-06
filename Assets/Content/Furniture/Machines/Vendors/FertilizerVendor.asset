@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
-  m_Name: Vendor - Seed
+  m_Name: FertilizerVendor
   m_EditorClassIdentifier: 
-  id: vendor_seed
-  genericType: vendor
-  prefab: {fileID: 2586569897008141548, guid: 3054ff7d7ca5b0f4b8b26d2cd1ba82d6, type: 3}
+  id: FertilizerVendor
+  genericType: Machine
+  prefab: {fileID: 2586569897008141548, guid: 68c25578aba7ba4448dde140bd06a57c, type: 3}

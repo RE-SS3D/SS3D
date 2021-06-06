@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
-  m_Name: Vendor - Cigarette
+  m_Name: KitchenVendor
   m_EditorClassIdentifier: 
-  id: vendor_cigarette
-  genericType: vendor
-  prefab: {fileID: 7319846706112917200, guid: 1bf0c4148eaa7a545a3d54711e21f4d1, type: 3}
+  id: KitchenVendor
+  genericType: Machine
+  prefab: {fileID: 1399091036532253168, guid: 46beee63181e0604db1c31679929b7c6, type: 3}

@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5690885613668309}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.282, y: 0.32, z: 0.282}
+  m_LocalPosition: {x: 0.139, y: 0.425, z: 0.282}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6038773036230548675}
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 32967740200445319}
   - component: {fileID: 9204918293919080062}
   m_Layer: 0
-  m_Name: Booze Vendor Maintenance Panel
+  m_Name: Cigarette Vendor Maintenance Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -87,7 +87,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1681409769638552638}
-  m_Mesh: {fileID: 4326186963384653240, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
+  m_Mesh: {fileID: 5470373294123493939, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
 --- !u!23 &32967740200445319
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -138,9 +138,9 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.027258039, y: 0.49845764, z: 0.26630652}
-  m_Center: {x: -0.39946, y: 0.34999436, z: 0.04245895}
---- !u!1 &6809638930720855837
+  m_Size: {x: 0.019597352, y: 0.40445772, z: 0.27796096}
+  m_Center: {x: -0.44891268, y: 0.44300956, z: 0.021287356}
+--- !u!1 &6209058330834610918
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -148,63 +148,46 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3651306534898347056}
-  - component: {fileID: 7593671952667354918}
-  - component: {fileID: 4446392850781254935}
-  - component: {fileID: 1918001620574020781}
-  - component: {fileID: 4848886018081697495}
+  - component: {fileID: 6280353383926828322}
+  - component: {fileID: 7055828895189131133}
+  - component: {fileID: 3436612527983747956}
+  - component: {fileID: 6541211281956070803}
   m_Layer: 0
-  m_Name: Booze Vendor Glass Broken
+  m_Name: Cigarette Vendor Glass Broken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!4 &3651306534898347056
+--- !u!4 &6280353383926828322
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6809638930720855837}
+  m_GameObject: {fileID: 6209058330834610918}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6038773036230548675}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7593671952667354918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6809638930720855837}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
---- !u!33 &4446392850781254935
+--- !u!33 &7055828895189131133
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6809638930720855837}
-  m_Mesh: {fileID: -3880431953435331100, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
---- !u!23 &1918001620574020781
+  m_GameObject: {fileID: 6209058330834610918}
+  m_Mesh: {fileID: -1341330531102309224, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
+--- !u!23 &3436612527983747956
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6809638930720855837}
+  m_GameObject: {fileID: 6209058330834610918}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 1
@@ -237,19 +220,19 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &4848886018081697495
+--- !u!65 &6541211281956070803
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6809638930720855837}
+  m_GameObject: {fileID: 6209058330834610918}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.31078434, y: 1.6368581, z: 0.00000032782555}
-  m_Center: {x: 0.097765714, y: 0.9238309, z: 0.32510096}
+  m_Size: {x: 0.45198485, y: 0.99670964, z: 0}
+  m_Center: {x: 0.13713144, y: 1.3846829, z: 0.3551318}
 --- !u!1 &7319846706112917200
 GameObject:
   m_ObjectHideFlags: 0
@@ -268,9 +251,9 @@ GameObject:
   - component: {fileID: 1650163529337778107}
   - component: {fileID: 5522326736482285483}
   - component: {fileID: 8716617303496286320}
-  - component: {fileID: -1754195731941909732}
+  - component: {fileID: 8775825468216933142}
   m_Layer: 0
-  m_Name: Booze Vendor
+  m_Name: CigaretteVendor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -289,7 +272,7 @@ Transform:
   m_Children:
   - {fileID: 5778174032221221414}
   - {fileID: 8615217185219957086}
-  - {fileID: 3651306534898347056}
+  - {fileID: 6280353383926828322}
   - {fileID: 3262340787433004493}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -317,7 +300,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7319846706112917200}
-  m_Mesh: {fileID: -7690628569393953844, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
+  m_Mesh: {fileID: 4216678471555173863, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
 --- !u!23 &7855612549886222477
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -337,7 +320,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
-  - {fileID: 2100000, guid: 007ddb364a635b248bf59eae2f77e1ae, type: 2}
+  - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -387,7 +370,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -7690628569393953844, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
+  m_Mesh: {fileID: 4216678471555173863, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
 --- !u!82 &9172286295011681933
 AudioSource:
   m_ObjectHideFlags: 0
@@ -499,47 +482,11 @@ MonoBehaviour:
   EjectionPoint: {fileID: 3262340787433004493}
   EjectionVelocity: {x: 0, y: 0, z: 0.7}
   stock:
-  - Prefab: {fileID: 6405106075082308508, guid: e2df779efe48f1e4c95de517a83e1c0f,
+  - Prefab: {fileID: 5533951594911835035, guid: 6504a09c112fa4d478c3bce81801f878,
       type: 3}
     Stock: 5
     Price: 0
-  - Prefab: {fileID: 6405106075082308508, guid: 8d887c7087aa2e0449182e8591232571,
-      type: 3}
-    Stock: 5
-    Price: 0
-  - Prefab: {fileID: 6405106075082308508, guid: 0782d83144d9abf4b851059f28615b6d,
-      type: 3}
-    Stock: 5
-    Price: 0
-  - Prefab: {fileID: 6405106075082308508, guid: 7ba3ddd7b58734b42a4f3ae8e82e39ca,
-      type: 3}
-    Stock: 5
-    Price: 0
-  - Prefab: {fileID: 6405106075082308508, guid: 6f8d1b5a8155bd54d803a11fe3693384,
-      type: 3}
-    Stock: 5
-    Price: 0
-  - Prefab: {fileID: 6405106075082308508, guid: d1799dfa998540d46a2f6d3a5946c1b5,
-      type: 3}
-    Stock: 5
-    Price: 0
-  - Prefab: {fileID: 6405106075082308508, guid: 3f3012dc64cf47d479ad729e725d8e57,
-      type: 3}
-    Stock: 5
-    Price: 0
-  - Prefab: {fileID: 6405106075082308508, guid: 0f588a422ef821a4b9b641ee24664a0c,
-      type: 3}
-    Stock: 5
-    Price: 0
-  - Prefab: {fileID: 6405106075082308508, guid: ade4248666e3d3e498287805001dc9c3,
-      type: 3}
-    Stock: 5
-    Price: 0
-  - Prefab: {fileID: 6405106075082308508, guid: 7a186f8b0e7e72a4bbe557d8eafc68c3,
-      type: 3}
-    Stock: 5
-    Price: 0
-  - Prefab: {fileID: 6405106075082308508, guid: 4e1f0718bcbab644ca12fcce7d185bcf,
+  - Prefab: {fileID: 5533951594911835035, guid: ca1dc9505ebfe1b49959d3cfa6aa4b01,
       type: 3}
     Stock: 5
     Price: 0
@@ -573,10 +520,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Booze-O-Mat
-  Text: Dispenses booze.
+  DisplayName: Poke N' Toke
+  Text: Dispenses smoking paraphernalia.
   MaxDistance: 0
---- !u!114 &-1754195731941909732
+--- !u!114 &8775825468216933142
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -604,7 +551,7 @@ GameObject:
   - component: {fileID: 2463290690161719472}
   - component: {fileID: 2883166973879690658}
   m_Layer: 0
-  m_Name: Booze Vendor Glass
+  m_Name: Cigarette Vendor Glass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -647,7 +594,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9139902570717850779}
-  m_Mesh: {fileID: -1438563341836454370, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
+  m_Mesh: {fileID: -1625571934104521869, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
 --- !u!23 &2463290690161719472
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -698,5 +645,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.4806728, y: 1.6368581, z: 0.00000035762787}
-  m_Center: {x: 0.18270995, y: 0.9238309, z: 0.325101}
+  m_Size: {x: 0.45198485, y: 0.99670964, z: 0}
+  m_Center: {x: 0.13713144, y: 1.3846829, z: 0.3551318}

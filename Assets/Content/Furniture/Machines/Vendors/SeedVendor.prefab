@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 225579879470091846}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0.15, y: 0.462, z: 0.2676}
+  m_LocalPosition: {x: 0.137, y: 0.446, z: 0.2676}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1566705410263836415}
@@ -50,7 +50,7 @@ GameObject:
   - component: {fileID: -2780369696669274638}
   - component: {fileID: -6602700670243344476}
   m_Layer: 0
-  m_Name: Seed Vendor
+  m_Name: SeedVendor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,7 +65,7 @@ Transform:
   m_GameObject: {fileID: 2586569897008141548}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 0.9, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5090183745046412784}
   - {fileID: 709635073206071889}
@@ -383,7 +383,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5847245816668003842}
-  m_Mesh: {fileID: 4615261637580706030, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
+  m_Mesh: {fileID: -1804045422133988041, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
 --- !u!23 &5045467192024244155
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -493,7 +493,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6727610259199641353}
-  m_Mesh: {fileID: 7554725740509870396, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
+  m_Mesh: {fileID: -4693757904312007310, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
 --- !u!23 &2847288111738739633
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -603,7 +603,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7586604775929209866}
-  m_Mesh: {fileID: 8387856276443136368, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
+  m_Mesh: {fileID: -3533908096124030187, guid: 4a1ca31a585ab464aa12dd6a2e915066, type: 3}
 --- !u!23 &8388211929849665801
 MeshRenderer:
   m_ObjectHideFlags: 0

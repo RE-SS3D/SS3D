@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
-  m_Name: Vendor - Fertilizer
+  m_Name: CigaretteVendor
   m_EditorClassIdentifier: 
-  id: vendor_fertilizer
-  genericType: vendor
-  prefab: {fileID: 2586569897008141548, guid: 68c25578aba7ba4448dde140bd06a57c, type: 3}
+  id: CigaretteVendor
+  genericType: Machine
+  prefab: {fileID: 7319846706112917200, guid: 1bf0c4148eaa7a545a3d54711e21f4d1, type: 3}
