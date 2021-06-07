@@ -275,14 +275,14 @@ GameObject:
   - component: {fileID: 4546630534243469778}
   - component: {fileID: 2799784227175584040}
   - component: {fileID: 4099879624315271291}
-  - component: {fileID: 6792938277122204052}
   - component: {fileID: 7600463449433580494}
+  - component: {fileID: 6792938277122204052}
   - component: {fileID: 1468054869162274489}
   - component: {fileID: 6922833338521329428}
   - component: {fileID: 8493215061523384573}
   - component: {fileID: -4932771894846862062}
   m_Layer: 0
-  m_Name: Crate
+  m_Name: CrateSecure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -432,24 +432,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.6092, y: 0.5958949, z: 0.87511265}
   m_Center: {x: 0, y: 0.2978271, z: 0}
---- !u!114 &6792938277122204052
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6595280268747972349}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
-  OnlyStoreWhenOpen: 1
-  MaxDistance: 1.5
-  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
 --- !u!114 &7600463449433580494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -465,6 +447,26 @@ MonoBehaviour:
   DisplayName: Crate
   Text: Stores stuff.
   MaxDistance: 0
+--- !u!114 &6792938277122204052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6595280268747972349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
+  StorageType: 0
+  Pile: 0
+  OnlyStoreWhenOpen: 1
+  MaxDistance: 1.5
+  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
 --- !u!114 &1468054869162274489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -493,7 +495,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AttachedContainer: {fileID: 1468054869162274489}
-  Size: {x: 8, y: 6}
+  Size: {x: 8, y: 4}
   StartFilter: {fileID: 0}
 --- !u!114 &8493215061523384573
 MonoBehaviour:
