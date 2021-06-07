@@ -10,6 +10,21 @@ namespace SS3D.Content.Furniture.Generic
     // Handles disposing water and water cups
     public class WaterCooler : InteractionTargetBehaviour, IExaminable
     {
+		
+		
+		private IExamineRequirement requirements;
+
+		public void Start()
+		{
+			// Populate requirements for this item to be examined.
+			requirements = new ReqPermitExamine(gameObject);
+			requirements = new ReqMaxRange(requirements, 2.0f);  // Cups remaining only visible from 2 metres.
+			requirements = new ReqObstacleCheck(requirements);			
+		}
+
+
+
+		
 	// water cup prefab
         public GameObject CupPrefab;
 	// how many we have now
@@ -41,20 +56,16 @@ namespace SS3D.Content.Furniture.Generic
             interactionEvent.Source.GetHands().Pickup(cup);
             NumberOfCups--;
         }
-
-        public bool CanExamine(GameObject examinator)
-        {
-            return true;
-        }
-
-        public string GetDescription(GameObject examinator)
-        {
-            return $"{NumberOfCups} cups remaining.";
-        }
 		
-        public virtual string GetName(GameObject examinator)
-        {
-            return "";
-        }		
+		public IExamineData GetData()
+		{
+			return new DataNameDescription("", $"{NumberOfCups} cups remaining.");
+		}
+		
+		public IExamineRequirement GetRequirements()
+		{
+			return requirements;
+		}
+		
     }
 }

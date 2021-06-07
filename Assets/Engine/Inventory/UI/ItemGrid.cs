@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using SS3D.Engine.Examine;
 
 namespace SS3D.Engine.Inventory.UI
 {
-    public class ItemGrid : InventoryDisplayElement, IPointerClickHandler, IDropHandler
+    public class ItemGrid : InventoryDisplayElement, IPointerClickHandler, IDropHandler, ISlotProvider
     {
         /// <summary>
         /// A prefab for each slot in this grid
@@ -226,5 +227,20 @@ namespace SS3D.Engine.Inventory.UI
             
             gridItems.Add(gridItem);
         }
+
+		public GameObject GetCurrentGameObjectInSlot()
+		{
+			Vector2Int slotPosition = GetSlotPosition(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+			Container container = AttachedContainer.Container;
+			if (container.ItemAt(slotPosition) == null)
+			{
+				return null;
+			}
+			else
+			{
+				return container.ItemAt(slotPosition).gameObject;
+			}
+		}
+		
     }
 }

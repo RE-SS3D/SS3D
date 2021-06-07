@@ -2,11 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using SS3D.Engine.Examine;
+using SS3D.Engine.Inventory;
+using SS3D.Engine.Inventory.UI;
 
 
-namespace SS3D.Content.Systems.Examine
+namespace SS3D.Engine.Examine
 {
     /// <summary>
     /// For composite GameObjects composed of multiple Examinable GameObjects, this script allows
@@ -30,7 +32,7 @@ namespace SS3D.Content.Systems.Examine
 		private Rect imageArea;
 		
 		// The hidden texture used to render our targeted meshes. Needs to have identical resolution to screen.
-		private RenderTexture rt;
+		public RenderTexture rt;
 		
 		// This is how the Examinator gets access to the actual Examinable
 		private GameObject currentExaminable;
@@ -40,19 +42,33 @@ namespace SS3D.Content.Systems.Examine
 		private float gValue;
 		private float bValue;
 		private float decrement;
+		private float tolerance;
 		
 		// Screen resolution
 		private int recordedScreenWidth;
 		private int recordedScreenHeight;
 				
+		// Indicate whether mouse is currently over the UI
+		private bool mouseOverUI;
+				
 		public void Start()
 		{
 			cam = CameraManager.singleton.examineCamera;
 			tex = new Texture2D(1, 1);
+			mouseOverUI = false;
 		}
 
 		public void OnPostRender()
 		{
+			
+			// Don't bother with all of this work if the mouse is over the user interface.
+			// If it is over the interface, we should already have a reference to the object
+			// stored in currentExaminable.
+			if (mouseOverUI)
+			{
+				return;
+			}
+			
 			// If the window size has changed, amend the RenderTexture correspondingly.
 			ResizeTexturesIfRequired();
 			
@@ -81,7 +97,8 @@ namespace SS3D.Content.Systems.Examine
 				// Check the unique colour of each Examinable, to see if it corresponds to the colour at the cursor. 
 				foreach (ExaminableColourAffiliation examinable in examinables)
 				{
-					if (point == examinable.GetColour())
+					//if (point == examinable.GetColour())
+					if (matchesColour(point, examinable.GetColour()))	
 					{
 						currentExaminable = examinable.GetExaminable();
 						hit = true;
@@ -91,31 +108,75 @@ namespace SS3D.Content.Systems.Examine
 			else
 			{
 				currentExaminable = null;
-			}										
+			}
 		}
 		
+		
+		/// This function checks to see if the colour is 'close enough' to one of our recorded
+		/// colours. We can't just use Equals, because rounding errors can make it unreliable.
+		private bool matchesColour(Color colour1, Color colour2)
+		{
+			if (Math.Abs(colour1.r - colour2.r) > tolerance) return false;
+			if (Math.Abs(colour1.g - colour2.g) > tolerance) return false;
+			if (Math.Abs(colour1.b - colour2.b) > tolerance) return false;
+			return true;
+			
+		}
+		
+		
+		/// This is how the Examinator actually returns the Object.
 		public GameObject GetCurrentExaminable(){
 			return currentExaminable;
 		}
 		
 		
-		/// Returns if the GameObject is a composite Examinable object. Currently
-		/// only tiles return true. This function will need to be amended if there
-		/// is a need for non-Tiles to become composite Examinable objects.
-		public bool IsCompositeExaminable(GameObject target)
+		public void CalculateSelectedGameObject()
 		{
-			target = GetAncestor(target);
-			if (target.transform.parent == null)
+			
+			// Identify if mouse is over the user interface, or over objects in the game world.
+			if (EventSystem.current.IsPointerOverGameObject())
 			{
-				return false;
+				
+				// The cursor is over the UI. If the UI is examinable, this will override objects in the game world.
+				mouseOverUI = true;
+				currentExaminable = null;
+
+				// Get a list of all the UI elements under the cursor
+				var pointerEventData = new PointerEventData(EventSystem.current) {position = Input.mousePosition};
+				List<RaycastResult> UIhits = new List<RaycastResult>();
+				EventSystem.current.RaycastAll(pointerEventData, UIhits);			
+				
+				// Get the UI to give us the GameObject that a slot is displaying.
+				foreach (var hit in UIhits)
+				{
+					ISlotProvider slot = hit.gameObject.GetComponent<ISlotProvider>();
+					if (slot != null)
+					{
+						currentExaminable = slot.GetCurrentGameObjectInSlot();
+					}
+				}
 			}
-			if (target.transform.parent.gameObject.name == "TileMap")
+			else
 			{
-				return true;
+				mouseOverUI = false;
 			}
-			return false;
+			
+            // Raycast to cursor position. Need to get all possible hits, because the initial hit may have gaps through which we can see other Examinables
+            Ray ray = cam.ScreenPointToRay(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+			RaycastHit[] hits = Physics.RaycastAll(ray, 200f);
+
+			// Convert the RaycastHits to GameObjects
+			GameObject[] gameObjects = new GameObject[hits.Length];
+			for (int i = 0; i < hits.Length; i++)
+			{
+				gameObjects[i] = hits[i].transform.gameObject;
+			}
+
+			// Store the meshes of these GameObjects in our data structure, so that they can be rendered off-screen later.
+			AddMeshesToLists(gameObjects);
 		}
-		
+			
+		/// Amends the render texture to be the same size as the screen, so the coordinates are mapped correctly.
 		private void ResizeTexturesIfRequired(){
 			
 			// If textures don't currently exist, create them at the correct size.
@@ -156,25 +217,16 @@ namespace SS3D.Content.Systems.Examine
 			}
 		}
 		
-		/// This method returns the root GameObject (or the Tile, if the TileMap is the root object)
+		/// This method returns the root GameObject 
 		private GameObject GetAncestor (GameObject descendant)
 		{
-			while (descendant.transform.parent != null && descendant.transform.parent.name != "TileMap")
+			// This statement is very bad - need to confirm standard GameObject hierarchy...
+			while (descendant.transform.parent != null && descendant.transform.parent.name != "TileMap" && descendant.transform.parent.name != "Objects" && descendant.transform.parent.name != "InventoryUI Rework Beep")
 			{
 				descendant = descendant.transform.parent.gameObject;
 			}
 			return descendant;
 		}
-		
-		/*
-		private void GetListOfMeshes(GameObject ancestor)
-		{			
-			colours.Push(new Color(rValue, gValue, bValue, 1.0f));
-			AddChildToLists(ancestor.transform);
-			
-			
-
-		}*/
 		
 		/// This method enables the camera and establishes our data structures.
 		private void EnableCamera(){
@@ -196,7 +248,9 @@ namespace SS3D.Content.Systems.Examine
 				rValue = 1.0f;
 				gValue = 1.0f;
 				bValue = 1.0f;
-				decrement = 0.2f;
+				decrement = 0.05f;
+				tolerance = decrement / 4.0f;
+				
 				
 				// Record the screen resolution
 				recordedScreenWidth = Screen.width;
@@ -221,12 +275,12 @@ namespace SS3D.Content.Systems.Examine
 			tiles = null;
 			colours = null;
 			
-			rt = null;
+			//rt = null;
 			currentExaminable = null;
 		}
 		
-		/// This method adds all of the objects targeted by the RaycastAll (within the
-		/// Examinator script) to the mesh and colour lists.
+		/// This method adds all of the objects targeted by the RaycastAll to the
+		/// mesh and colour lists.
 		public void AddMeshesToLists(GameObject[] allHitObjects)
 		{
 			GameObject ancestor;
@@ -268,6 +322,8 @@ namespace SS3D.Content.Systems.Examine
 			
 			// Determine whether the GameObject has a mesh or is Examinable
 			MeshFilter mf = child.gameObject.GetComponent<MeshFilter>();
+			SkinnedMeshRenderer smr = child.gameObject.GetComponent<SkinnedMeshRenderer>();
+			
 			IExaminable examinable = child.gameObject.GetComponent<IExaminable>();
 			
 			// If examinable, create a unique colour to affiliate the examinable with. All non-
@@ -283,6 +339,10 @@ namespace SS3D.Content.Systems.Examine
 			if (mf != null && child.gameObject.GetComponent<Renderer>().enabled)
 			{
 				meshes.Add(new MeshColourAffiliation(mf.mesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
+			}
+			if (smr != null && child.gameObject.GetComponent<Renderer>().enabled)
+			{
+				meshes.Add(new MeshColourAffiliation(smr.sharedMesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
 			}
 			
 			// Recursively call this method on each child
@@ -368,6 +428,8 @@ namespace SS3D.Content.Systems.Examine
 			{
 				return name;
 			}
+			
+			
 			
 		}
 	}
