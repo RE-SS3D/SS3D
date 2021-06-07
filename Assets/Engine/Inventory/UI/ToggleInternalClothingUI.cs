@@ -7,7 +7,7 @@ namespace SS3D.Engine.Inventory.UI
 	/// <summary>
 	/// Allows the Internal Clothing user interface to be collapsible by clicking a button.
 	/// </summary>
-	public class ClickExpandInternalClothing : MonoBehaviour
+	public class ToggleInternalClothingUI : MonoBehaviour
 	{
 		private Button ExpandButton;
 		private CanvasGroup InternalClothingCanvas;
@@ -19,8 +19,25 @@ namespace SS3D.Engine.Inventory.UI
 			ExpandButton = GetComponent<Button>();
 			ExpandButton.onClick.AddListener(TaskOnClick);
 		}
-		void TaskOnClick()
+
+        private void Update()
+        {
+			// Button to toggle the internal clothing UI
+			if (Input.GetButtonDown("Toggle Internal Clothing"))
+			{
+				Toggle();
+			}
+		}
+        void TaskOnClick()
 		{
+			Toggle();
+		}
+
+		/// <summary>
+		/// Toggle the Internal Clothing UI using transparency and turning on or off the ability to block ray casts.
+		/// </summary>
+		private void Toggle()
+        {
 			if (isShowing)
 			{
 				InternalClothingCanvas.alpha = 0f; //this makes everything transparent
