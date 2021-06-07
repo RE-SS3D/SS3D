@@ -3,13 +3,14 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
+using SS3D.Engine.Examine;
 
 namespace SS3D.Engine.Inventory.UI
 {
     /// <summary>
     /// A ui element to modify a container that contains one item
     /// </summary>
-    public class SingleItemContainerSlot : InventoryDisplayElement, IPointerClickHandler
+    public class SingleItemContainerSlot : InventoryDisplayElement, IPointerClickHandler, ISlotProvider
     {
         public ItemDisplay ItemDisplay;
         private AttachedContainer container;
@@ -80,5 +81,18 @@ namespace SS3D.Engine.Inventory.UI
                 Inventory.ActivateHand(container);
             }
         }
+		
+		public GameObject GetCurrentGameObjectInSlot()
+		{
+			if (ItemDisplay.Item == null)
+			{
+				return null;
+			}
+			else
+			{
+				return ItemDisplay.Item.gameObject;
+			}
+		}
+		
     }
 }

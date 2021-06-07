@@ -421,7 +421,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DisplayName: Goao
   Text: The naked man.
-  MaxDistance: 0
+  MaxDistance: 20
 --- !u!114 &340761490495231774
 MonoBehaviour:
   m_ObjectHideFlags: 0
