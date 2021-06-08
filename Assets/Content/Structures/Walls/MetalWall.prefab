@@ -246,7 +246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: Wall
   o: {fileID: -8050138293367285814, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  c: {fileID: -159380346028386340, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  u: {fileID: -159380346028386340, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   i: {fileID: -5423967933397593253, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   lNone: {fileID: 6412403187391292515, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   lSingle: {fileID: -2757302150092789893, guid: a8afca278d289ca469539bd9a57ce244,

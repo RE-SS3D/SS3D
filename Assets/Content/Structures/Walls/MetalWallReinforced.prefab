@@ -202,7 +202,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: Wall
   o: {fileID: 7680504983793102251, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  c: {fileID: -5232576218442233994, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+  u: {fileID: -5232576218442233994, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   i: {fileID: -3717823834887968953, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   lNone: {fileID: -7695084701698530544, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   lSingle: {fileID: 8708524644065605111, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
