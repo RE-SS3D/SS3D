@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -2157675422188738014}
   - component: {fileID: 881903823650237788}
   m_Layer: 0
-  m_Name: Wires - Orange
+  m_Name: WiresOrange
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58,7 +58,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2802364579275783218}
-  m_Mesh: {fileID: -4394019072383592508, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
+  m_Mesh: {fileID: -1598476620644171414, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
 --- !u!23 &-4998431523760016775
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -110,23 +110,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2aa412cb81ce0c342ad7243c25cebc9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: wire
-  o: {fileID: -4394019072383592508, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
-  c: {fileID: -7891255346037807196, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
-  cDiagonal: {fileID: -8777221697118423005, guid: 653d23c68a57e03498cd8519026c3404,
+  tileState:
+    blockedDirection: 0
+  type: Wire
+  o: {fileID: -1598476620644171414, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
+  c: {fileID: -8421857097573529612, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
+  cDiagonal: {fileID: -1377668871610633451, guid: 653d23c68a57e03498cd8519026c3404,
     type: 3}
-  i: {fileID: 7260480106888291070, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
-  iDiagonal: {fileID: 4063527966350237593, guid: 653d23c68a57e03498cd8519026c3404,
+  i: {fileID: -257402148403469336, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
+  iDiagonal: {fileID: -2774580170356854160, guid: 653d23c68a57e03498cd8519026c3404,
     type: 3}
-  u: {fileID: 1005267044030092733, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
-  l: {fileID: -3074372206008223740, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
-  lAcuteEast: {fileID: 560408613839836399, guid: 653d23c68a57e03498cd8519026c3404,
+  u: {fileID: -2539538700617390269, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
+  l: {fileID: 8147533308783488196, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
+  lAcuteEast: {fileID: -5655129442099221201, guid: 653d23c68a57e03498cd8519026c3404,
     type: 3}
-  lAcuteWest: {fileID: -3767209990811766071, guid: 653d23c68a57e03498cd8519026c3404,
+  lAcuteWest: {fileID: -8938517941871336898, guid: 653d23c68a57e03498cd8519026c3404,
     type: 3}
-  lObtuseEast: {fileID: -1306796367624035749, guid: 653d23c68a57e03498cd8519026c3404,
+  lObtuseEast: {fileID: -8200971016678664927, guid: 653d23c68a57e03498cd8519026c3404,
     type: 3}
-  lObtuseWest: {fileID: 6467068252889521098, guid: 653d23c68a57e03498cd8519026c3404,
+  lObtuseWest: {fileID: 7598577079685013406, guid: 653d23c68a57e03498cd8519026c3404,
     type: 3}
   t: {fileID: -301456795884455349, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
   xAll: {fileID: 3854844523750847447, guid: 653d23c68a57e03498cd8519026c3404, type: 3}

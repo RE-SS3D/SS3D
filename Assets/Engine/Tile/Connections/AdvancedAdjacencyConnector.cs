@@ -28,7 +28,7 @@ namespace SS3D.Engine.Tiles.Connections
         public Mesh o;
 
         [Tooltip("A mesh where north connects to same type")]
-        public Mesh c;
+        public Mesh u;
 
         [Tooltip("A mesh where north and south edges are connected")]
         public Mesh i;
@@ -125,9 +125,9 @@ namespace SS3D.Engine.Tiles.Connections
             {
                 mesh = o;
             }
-            else if (cardinalInfo.IsC())
+            else if (cardinalInfo.IsU())
             {
-                mesh = c;
+                mesh = u;
                 rotation = DirectionHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
 
                 if(opaque)

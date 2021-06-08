@@ -28,7 +28,7 @@ namespace SS3D.Engine.Tiles.Connections
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
         [Tooltip("A mesh where the north edge is connected")]
-        public Mesh c;
+        public Mesh u;
         [Tooltip("A mesh where the north & south edges are connected")]
         public Mesh i;
         [Tooltip("A mesh where the north & east edges are connected")]
@@ -94,9 +94,9 @@ namespace SS3D.Engine.Tiles.Connections
 
             if (cardinalInfo.IsO())
                 mesh = o;
-            else if (cardinalInfo.IsC())
+            else if (cardinalInfo.IsU())
             {
-                mesh = c;
+                mesh = u;
                 rotation = DirectionHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
             }
             else if (cardinalInfo.IsI())
