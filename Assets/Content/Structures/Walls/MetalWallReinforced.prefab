@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: -1603528896830197534}
   - component: {fileID: 181711760065846440}
   m_Layer: 0
-  m_Name: Wall - Metal Reinforced
+  m_Name: MetalWallReinforced
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -200,7 +200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa3fb3fb0fa47e54bad7580218ea1e05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: wall
+  type: Wall
   o: {fileID: 7680504983793102251, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   c: {fileID: -5232576218442233994, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   i: {fileID: -3717823834887968953, guid: a8afca278d289ca469539bd9a57ce244, type: 3}

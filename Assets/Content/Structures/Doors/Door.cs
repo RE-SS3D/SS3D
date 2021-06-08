@@ -99,7 +99,7 @@ namespace SS3D.Content.Structures.Fixtures
          */
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
-            bool isConnected = tile.turf && tile.turf.genericType == "wall";
+            bool isConnected = tile.turf && tile.turf.genericType == "Wall";
 
             return adjacents.UpdateDirection(direction, isConnected, true);
         }

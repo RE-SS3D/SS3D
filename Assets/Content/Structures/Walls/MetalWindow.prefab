@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3279047775113634582}
   - component: {fileID: -9092067648406139768}
   m_Layer: 0
-  m_Name: Window - Metal
+  m_Name: MetalWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -109,8 +109,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7b3e281d9432934888433dc5fed26a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: window_metal
-  genericType: wall
+  id: MetalWindow
+  genericType: Wall
   o: {fileID: 6123461726647820147, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   c: {fileID: -9220262315872972937, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   cBorder: {fileID: -5216405655518602434, guid: a8afca278d289ca469539bd9a57ce244,

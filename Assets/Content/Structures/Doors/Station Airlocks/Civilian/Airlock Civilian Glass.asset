@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
   m_Name: Airlock Civilian Glass
   m_EditorClassIdentifier: 
-  id: airlock_civilian_glass
-  genericType: wall
+  id: AirlockCivilianGlass
+  genericType: Wall
   prefab: {fileID: 1917799960222321674, guid: b876c19e1565c0343a613fa33b23713a, type: 3}

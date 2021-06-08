@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf642078cb62a58439a0a77557d0d098, type: 3}
   m_Name: Cables
   m_EditorClassIdentifier: 
-  id: cables
-  genericType: cable
+  id: Cables
+  genericType: Wire
   prefab: {fileID: 2802364579275783218, guid: 92d3eb280886ba74cb1e19f4e01669a7, type: 3}

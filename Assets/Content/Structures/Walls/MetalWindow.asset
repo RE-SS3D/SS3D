@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf642078cb62a58439a0a77557d0d098, type: 3}
-  m_Name: Wires - Green
+  m_Script: {fileID: 11500000, guid: f55f41c36d703aa4b9b6025fa003c12a, type: 3}
+  m_Name: MetalWindow
   m_EditorClassIdentifier: 
-  id: wires_green
-  genericType: wire
-  prefab: {fileID: 2802364579275783218, guid: 370739b7068119941b61a0c1474657e3, type: 3}
+  id: MetalWindow
+  genericType: Wall
+  prefab: {fileID: 3591147544166670882, guid: d5d073d01dd3c1f4cbe43fb3128c89e4, type: 3}
+  isWall: 1

@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bf642078cb62a58439a0a77557d0d098, type: 3}
-  m_Name: Wires - Blue
+  m_Name: WiresGreen
   m_EditorClassIdentifier: 
-  id: wires_blue
-  genericType: wire
-  prefab: {fileID: 2802364579275783218, guid: 2b932aed8c9bdb54da3d5a0274fe9927, type: 3}
+  id: WiresGreen
+  genericType: Wire
+  prefab: {fileID: 2802364579275783218, guid: 370739b7068119941b61a0c1474657e3, type: 3}

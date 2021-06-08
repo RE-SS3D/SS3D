@@ -147,7 +147,7 @@ GameObject:
   - component: {fileID: 8185897957132118111}
   - component: {fileID: -6476499872734153616}
   m_Layer: 0
-  m_Name: Wall - Metal
+  m_Name: MetalWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -244,7 +244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa3fb3fb0fa47e54bad7580218ea1e05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: wall
+  type: Wall
   o: {fileID: -8050138293367285814, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   c: {fileID: -159380346028386340, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
   i: {fileID: -5423967933397593253, guid: a8afca278d289ca469539bd9a57ce244, type: 3}

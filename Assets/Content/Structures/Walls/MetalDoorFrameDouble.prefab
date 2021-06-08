@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6264786200545646928}
   - component: {fileID: 8029526876768746931}
   m_Layer: 0
-  m_Name: Double Door Frame
+  m_Name: MetalDoorFrameDouble2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 617269498115647888}
   - component: {fileID: 4208882672615314469}
   m_Layer: 0
-  m_Name: Double Door Frame
+  m_Name: MetalDoorFrameDouble
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
