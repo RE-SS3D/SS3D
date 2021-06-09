@@ -229,9 +229,9 @@ GameObject:
   - component: {fileID: 2081909342595332650}
   - component: {fileID: 1358342656361913515}
   - component: {fileID: 2884915648782529247}
-  - component: {fileID: 5566088737813539549}
   - component: {fileID: -4852994001289131144}
   - component: {fileID: -1870075213136584881}
+  - component: {fileID: 5566088737813539549}
   - component: {fileID: -396234361631906964}
   - component: {fileID: 9161483684867981696}
   - component: {fileID: 419110437451335257}
@@ -329,25 +329,7 @@ MonoBehaviour:
   attachmentPointAlt: {fileID: 4606947075117889058}
   bulkSize: 3
   traits: []
-  Size: {x: 0, y: 0}
---- !u!114 &5566088737813539549
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533951594911835035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
-  OnlyStoreWhenOpen: 1
-  MaxDistance: 1.5
-  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
+  Size: {x: 5, y: 4}
 --- !u!114 &-4852994001289131144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -382,6 +364,26 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &5566088737813539549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
+  StorageType: 0
+  Pile: 0
+  OnlyStoreWhenOpen: 1
+  MaxDistance: 1.5
+  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
 --- !u!114 &-396234361631906964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428,8 +430,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AttachedContainer: {fileID: 9161483684867981696}
-  Size: {x: 5, y: 2}
-  StartFilter: {fileID: 0}
+  Size: {x: 4, y: 3}
+  StartFilter: {fileID: 11400000, guid: 5572ae1accf16524084603dcd0cb0559, type: 2}
 --- !u!114 &2029440566035240053
 MonoBehaviour:
   m_ObjectHideFlags: 0
