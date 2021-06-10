@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 495010723332035723}
   - component: {fileID: 946744180037249438}
   m_Layer: 0
-  m_Name: Mirror Broken
+  m_Name: MirrorBroken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39,7 +39,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3648840853805917807}
-  m_Mesh: {fileID: -8572343581330934911, guid: dd62c6828b0b8674eb71e06cfb97ac2a, type: 3}
+  m_Mesh: {fileID: 6764102069505294960, guid: dd62c6828b0b8674eb71e06cfb97ac2a, type: 3}
 --- !u!23 &946744180037249438
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -127,7 +127,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -3849098013122800504, guid: dd62c6828b0b8674eb71e06cfb97ac2a, type: 3}
+  m_Mesh: {fileID: -2723260613333405795, guid: dd62c6828b0b8674eb71e06cfb97ac2a, type: 3}
 --- !u!114 &-8007393211677902780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,7 +196,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5218468364695561986}
-  m_Mesh: {fileID: -3849098013122800504, guid: dd62c6828b0b8674eb71e06cfb97ac2a, type: 3}
+  m_Mesh: {fileID: -2723260613333405795, guid: dd62c6828b0b8674eb71e06cfb97ac2a, type: 3}
 --- !u!23 &352902799574202225
 MeshRenderer:
   m_ObjectHideFlags: 0

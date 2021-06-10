@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -8007393211677902780}
   - component: {fileID: 8660425757284403973}
   m_Layer: 0
-  m_Name: Air Alarm
+  m_Name: AirAlarm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5161561551087789900}
-  m_Mesh: {fileID: 1448935506382859696, guid: a934626ff4f5ee64fab3f50a302d7742, type: 3}
+  m_Mesh: {fileID: 1924002728020774525, guid: a934626ff4f5ee64fab3f50a302d7742, type: 3}
 --- !u!23 &303698793745990453
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -96,7 +96,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1448935506382859696, guid: a934626ff4f5ee64fab3f50a302d7742, type: 3}
+  m_Mesh: {fileID: 1924002728020774525, guid: a934626ff4f5ee64fab3f50a302d7742, type: 3}
 --- !u!114 &-8007393211677902780
 MonoBehaviour:
   m_ObjectHideFlags: 0

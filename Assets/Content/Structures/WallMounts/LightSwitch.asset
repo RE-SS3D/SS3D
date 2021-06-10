@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdc9e1c806bbcd2479ae0cacad3047f3, type: 3}
-  m_Name: Fire Alarm
+  m_Name: LightSwitch
   m_EditorClassIdentifier: 
-  id: fire_alarm
-  genericType: wallmount
-  prefab: {fileID: 5161561551087789900, guid: 2aaf868cd9115fe439fe3748f65b2d33, type: 3}
+  id: LightSwitch
+  genericType: WallMount
+  prefab: {fileID: 5161561551087789900, guid: 4aa3cc8361ce3e84192f80bd01d84c18, type: 3}

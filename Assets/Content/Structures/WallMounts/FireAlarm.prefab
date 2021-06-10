@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 3128734841785302988}
   - component: {fileID: 303698793745990453}
   - component: {fileID: 670817264003822935}
-  - component: {fileID: -6095458141271495469}
-  - component: {fileID: -6278803352720282365}
+  - component: {fileID: -3295813283748360902}
+  - component: {fileID: -6426233947207087033}
   m_Layer: 0
-  m_Name: Light Switch
+  m_Name: FireAlarm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5161561551087789900}
-  m_Mesh: {fileID: 1487968738229477103, guid: 7d85e13a8fcc9cb48974b63db94496f4, type: 3}
+  m_Mesh: {fileID: -7488728832552094012, guid: 5990cbad3b5c9dc4fa627857c4cb8718, type: 3}
 --- !u!23 &303698793745990453
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -96,8 +96,8 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1487968738229477103, guid: 7d85e13a8fcc9cb48974b63db94496f4, type: 3}
---- !u!114 &-6095458141271495469
+  m_Mesh: {fileID: -7488728832552094012, guid: 5990cbad3b5c9dc4fa627857c4cb8718, type: 3}
+--- !u!114 &-3295813283748360902
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -109,10 +109,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Light Switch
+  DisplayName: Fire Alarm
   Text: 
   MaxDistance: 0
---- !u!114 &-6278803352720282365
+--- !u!114 &-6426233947207087033
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

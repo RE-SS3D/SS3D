@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdc9e1c806bbcd2479ae0cacad3047f3, type: 3}
   m_Name: APC
   m_EditorClassIdentifier: 
-  id: apc
-  genericType: wallmount
+  id: APC
+  genericType: WallMount
   prefab: {fileID: 5161561551087789900, guid: 03cd9cb1d2fb2a5499ddf439a2aed57e, type: 3}
