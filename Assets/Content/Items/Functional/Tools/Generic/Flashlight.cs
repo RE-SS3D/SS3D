@@ -9,17 +9,41 @@ using SS3D.Engine.Inventory;
 namespace SS3D.Content.Items.Functional.Tools
 {
     // Simple flashlight
-    public class Flashlight : Item
+    public class Flashlight : Item, IToggleable
     {
         [SerializeField]
         public new Light light = null;
-        public Sprite turnOnIcon;
+        public Sprite toggleIcon;
         
+        public void Toggle()
+        {
+            light.enabled = !light.enabled;
+            RpcToggle(light.enabled);
+        }
+
+        public bool GetState()
+        {
+            return light.enabled;
+        }
+
+        [ClientRpc]
+        private void RpcToggle(bool lightEnabled) 
+        {
+            if (lightEnabled)
+            {
+                light.enabled = true; 
+            }
+            else
+            {
+                light.enabled = false;
+            }
+        }
+
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
-            List<IInteraction> list = base.GenerateInteractionsFromTarget(interactionEvent).ToList();
-            list.Add(new FlashlightInteraction{ icon = turnOnIcon });
-            return list.ToArray();
+            List<IInteraction> interactions = base.GenerateInteractionsFromTarget(interactionEvent).ToList();
+            interactions.Add(new ToggleInteraction{ IconOn = toggleIcon, IconOff = toggleIcon });
+            return interactions.ToArray();
         }
     }
 }
