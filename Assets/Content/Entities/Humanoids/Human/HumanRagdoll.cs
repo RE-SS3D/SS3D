@@ -34,7 +34,6 @@ namespace SS3D.Content.Creatures.Human
         // Will the ragdoll get up by itself?
         private bool isKnockedDown;
         private HumanoidMovementController movementController;
-        private CharacterController characterController;
 
         void Start()
         {
@@ -160,15 +159,19 @@ namespace SS3D.Content.Creatures.Human
                 }
             }
 
+            // Enable/disable the isTrigger state of the root collider so it doesn't overlapse with the colliders of the armature.
+            Collider humanRootCollider = GetComponent<Collider>();
+            humanRootCollider.isTrigger = enabled;
+
+            // For each collision box in the armature, enable/disable isTrigger.
+            // Doing so avoids overlapping with the collider at the root of the Human object.
+            foreach (Collider collider in ArmatureRoot.GetComponentsInChildren<Collider>())
+            {
+                collider.isTrigger = !enabled;
+            }
+
             // Enable/disable animator
             GetComponent<Animator>().enabled = !enabled;
-            
-            // Enable/disable character controller
-            characterController = characterController != null ? characterController : GetComponent<CharacterController>();
-            if (characterController != null)
-            {
-                characterController.enabled = !enabled;
-            }
             
             // Enable/disable movement controller
             if (movementController != null)

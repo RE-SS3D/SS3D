@@ -73,7 +73,6 @@ GameObject:
   - component: {fileID: 1403294807332798669}
   - component: {fileID: -5918456934534797284}
   - component: {fileID: 2898001805863503684}
-  - component: {fileID: -5804938744367538470}
   - component: {fileID: 6196629324959543869}
   - component: {fileID: -587293498524188288}
   - component: {fileID: 5407744306360123216}
@@ -91,6 +90,8 @@ GameObject:
   - component: {fileID: -8569418428762442770}
   - component: {fileID: 280135170638016455}
   - component: {fileID: 7985328355681489701}
+  - component: {fileID: 9076341938986001650}
+  - component: {fileID: 4372809320507257544}
   m_Layer: 0
   m_Name: Human
   m_TagString: Untagged
@@ -199,24 +200,6 @@ MonoBehaviour:
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
---- !u!143 &-5804938744367538470
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 289348138277843802}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Height: 1.61
-  m_Radius: 0.31
-  m_SlopeLimit: 0
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.81, z: 0}
 --- !u!114 &6196629324959543869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -402,10 +385,6 @@ MonoBehaviour:
   syncInterval: 0.1
   UiPrefab: {fileID: 2314586001921844144, guid: 154a0c29195b80444b97161cca7b2308,
     type: 3}
-  ObstacleMask:
-    serializedVersion: 2
-    m_Bits: 256
-  ViewRange: 25
   selector: {fileID: 0}
 --- !u!114 &1045010266948518310
 MonoBehaviour:
@@ -573,6 +552,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d4b90a59a774591b9e883c310c3935a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!54 &9076341938986001650
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  serializedVersion: 2
+  m_Mass: 80
+  m_Drag: 80
+  m_AngularDrag: 80
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
+--- !u!65 &4372809320507257544
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.60061264, y: 1.6547029, z: 1}
+  m_Center: {x: -0.011094093, y: 0.7934114, z: 0}
 --- !u!1 &290878266594310021
 GameObject:
   m_ObjectHideFlags: 0
