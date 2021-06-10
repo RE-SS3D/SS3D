@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -8569520201367197021}
   - component: {fileID: 5197661928588001910}
   m_Layer: 16
-  m_Name: Light Bulb Frame
+  m_Name: LightBulbFrame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -62,7 +62,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5781149837152051336}
-  m_Mesh: {fileID: -1400362788898184477, guid: c50b827f8ce281c428d83e4d145f3bbd, type: 3}
+  m_Mesh: {fileID: 4903941198649734527, guid: 3cfc1dadd690b174da7555719ef3e31f, type: 3}
 --- !u!23 &5189856687696335956
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -145,15 +145,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: light_frame_bulb
+  ItemId: LightBulbFrame
   Name: Light Bulb Frame
   Volume: 6
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5781149837152051336}
   attachmentPoint: {fileID: 2272768541673411226}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 1
   traits: []
+  Size: {x: 0, y: 0}
 --- !u!114 &-8569520201367197021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,6 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
 --- !u!114 &5197661928588001910
