@@ -67,10 +67,13 @@ namespace SS3D.Content.Systems.Player
                 {
                     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 10);
                 }
-                if (intendedMovement == Vector2.zero)
-                {
-                    absoluteMovement = Vector3.Lerp(absoluteMovement, Vector3.zero, Time.deltaTime * 5);
-                } 
+            }
+
+            // stops progressively the character movement.
+            if (intendedMovement == Vector2.zero)
+            {
+                Debug.Log("no intended movement");
+                absoluteMovement = Vector3.Lerp(absoluteMovement, Vector3.zero, Time.deltaTime * 5);
             }
             // Move the character
             rigidBody.MovePosition( transform.position + absoluteMovement * Time.deltaTime );
