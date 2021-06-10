@@ -13,7 +13,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Poster
-    second: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+    second: {fileID: 2100000, guid: de6ebe2a01be2c347b1f53c043549770, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
