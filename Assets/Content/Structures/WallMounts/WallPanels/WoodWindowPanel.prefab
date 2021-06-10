@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 8213111319263450463}
   - component: {fileID: 3128734841785302988}
   - component: {fileID: 303698793745990453}
-  - component: {fileID: 670817264003822935}
-  - component: {fileID: -6095458141271495469}
+  - component: {fileID: 8318624244568901268}
+  - component: {fileID: 806437374043062722}
   m_Layer: 0
-  m_Name: Wood Panel
+  m_Name: WoodWindowPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,7 +41,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5161561551087789900}
-  m_Mesh: {fileID: -5387135687193864537, guid: f0cf95f1bbba732479dd8d2da0843574, type: 3}
+  m_Mesh: {fileID: 2182540597588484529, guid: f0cf95f1bbba732479dd8d2da0843574, type: 3}
 --- !u!23 &303698793745990453
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -81,8 +81,8 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!64 &670817264003822935
-MeshCollider:
+--- !u!65 &8318624244568901268
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -91,11 +91,10 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -5387135687193864537, guid: f0cf95f1bbba732479dd8d2da0843574, type: 3}
---- !u!114 &-6095458141271495469
+  serializedVersion: 2
+  m_Size: {x: 1.488471, y: 1.4884706, z: 1.000001}
+  m_Center: {x: 0.5151, y: 1.1866719, z: 0.0000004172325}
+--- !u!114 &806437374043062722
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -104,11 +103,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 5161561551087789900}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Script: {fileID: 11500000, guid: dfddbe3c892bc5a4288e0711187f3463, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: 'Wood Panel
-
-'
-  Text: 
-  MaxDistance: 0
+  id: WoodWindowPanel
+  genericType: WallPanel
+  o: {fileID: 0}
+  u: {fileID: 0}
+  i: {fileID: 2182540597588484529, guid: f0cf95f1bbba732479dd8d2da0843574, type: 3}
+  iBorder: {fileID: -880449097231117027, guid: f0cf95f1bbba732479dd8d2da0843574, type: 3}
+  iAlone: {fileID: 0}
+  l: {fileID: 0}
+  t: {fileID: 0}
+  x: {fileID: 0}

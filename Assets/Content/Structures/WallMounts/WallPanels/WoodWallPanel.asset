@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdc9e1c806bbcd2479ae0cacad3047f3, type: 3}
-  m_Name: WoodPanel
+  m_Name: WoodWallPanel
   m_EditorClassIdentifier: 
-  id: WoodPanel
-  genericType: Wallmount
-  prefab: {fileID: 5161561551087789900, guid: 07aeb376970fa604982baff0d6c5e90c, type: 3}
+  id: WoodWallPanel
+  genericType: WallPanel
+  prefab: {fileID: 5161561551087789900, guid: ee2366a9dd4b41f43b2938ed32fa9065, type: 3}
