@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4876898310796429852}
   - component: {fileID: 211638627342979835}
   m_Layer: 0
-  m_Name: Light Tube Fixture
+  m_Name: LightTubeFixture
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -153,7 +153,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5181080420812569886}
-  m_Mesh: {fileID: -3267943543882550590, guid: 3cfc1dadd690b174da7555719ef3e31f, type: 3}
+  m_Mesh: {fileID: -1471447079290982368, guid: 3cfc1dadd690b174da7555719ef3e31f, type: 3}
 --- !u!23 &1268435986470628550
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -204,7 +204,7 @@ GameObject:
   - component: {fileID: 1392963606075358054}
   - component: {fileID: 143908130366993633}
   m_Layer: 0
-  m_Name: Point Light
+  m_Name: PointLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -297,7 +297,7 @@ GameObject:
   - component: {fileID: 7837693194892025663}
   - component: {fileID: 3379898336962652567}
   m_Layer: 0
-  m_Name: LightTubeFrame
+  m_Name: LightTubeFixture
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -326,7 +326,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6120488348938736664}
-  m_Mesh: {fileID: -7533809683099215755, guid: 3cfc1dadd690b174da7555719ef3e31f, type: 3}
+  m_Mesh: {fileID: 564069977195627962, guid: 3cfc1dadd690b174da7555719ef3e31f, type: 3}
 --- !u!23 &3379898336962652567
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -405,7 +405,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7040954797460454911}
-  m_Mesh: {fileID: 5470623773172587987, guid: 3cfc1dadd690b174da7555719ef3e31f, type: 3}
+  m_Mesh: {fileID: -3168735270006033855, guid: 3cfc1dadd690b174da7555719ef3e31f, type: 3}
 --- !u!23 &2566633483455685741
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -456,7 +456,7 @@ GameObject:
   - component: {fileID: 7597794757060508946}
   - component: {fileID: 3944670496295878177}
   m_Layer: 0
-  m_Name: Spot Light
+  m_Name: SpotLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
