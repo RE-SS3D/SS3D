@@ -61,7 +61,7 @@ GameObject:
   - component: {fileID: -8389530401997181573}
   - component: {fileID: -6696039690863873960}
   m_Layer: 0
-  m_Name: Airlock Classic
+  m_Name: ClassicAirlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -346,7 +346,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3667226139312871055}
-  m_Mesh: {fileID: 1727070910987270716, guid: 01049ce774e89f44b8c602e7b8de02f5, type: 3}
+  m_Mesh: {fileID: 1021878592748070089, guid: 01049ce774e89f44b8c602e7b8de02f5, type: 3}
 --- !u!23 &6888658955747330892
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -441,7 +441,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4077135388463034287}
-  m_Mesh: {fileID: 1933845659795009523, guid: 01049ce774e89f44b8c602e7b8de02f5, type: 3}
+  m_Mesh: {fileID: 5519402112487704196, guid: 01049ce774e89f44b8c602e7b8de02f5, type: 3}
 --- !u!23 &1518498339303418640
 MeshRenderer:
   m_ObjectHideFlags: 0
