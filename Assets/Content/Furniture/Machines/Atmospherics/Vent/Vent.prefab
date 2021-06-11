@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3092347979293745945}
   - component: {fileID: 8136077423948845529}
   m_Layer: 0
-  m_Name: Vent Fan
+  m_Name: VentFan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 45880962284446276}
-  m_Mesh: {fileID: -1398546873940562537, guid: d23a461ee9945884db81c671412cd707, type: 3}
+  m_Mesh: {fileID: -226446435696246503, guid: d23a461ee9945884db81c671412cd707, type: 3}
 --- !u!114 &3092347979293745945
 MonoBehaviour:
   m_ObjectHideFlags: 0

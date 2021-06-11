@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4164283902413096174}
   - component: {fileID: 3309572359951597859}
   m_Layer: 0
-  m_Name: Scrubber Fan
+  m_Name: ScrubberFan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 803445164596243578}
-  m_Mesh: {fileID: -8184442523837739133, guid: d23a461ee9945884db81c671412cd707, type: 3}
+  m_Mesh: {fileID: 3818068449701068006, guid: d23a461ee9945884db81c671412cd707, type: 3}
 --- !u!23 &4164283902413096174
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -144,7 +144,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9154955770433736351}
-  m_Mesh: {fileID: -1635215017453511893, guid: d23a461ee9945884db81c671412cd707, type: 3}
+  m_Mesh: {fileID: -2355902010559703096, guid: d23a461ee9945884db81c671412cd707, type: 3}
 --- !u!114 &5090598363769821286
 MonoBehaviour:
   m_ObjectHideFlags: 0
