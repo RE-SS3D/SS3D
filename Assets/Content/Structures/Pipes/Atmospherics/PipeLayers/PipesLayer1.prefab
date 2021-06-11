@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: -4998431523760016775}
   - component: {fileID: 4911816295908272955}
   - component: {fileID: 2183948917681095833}
-  - component: {fileID: 8044363620118605159}
+  - component: {fileID: -153587711557402241}
   m_Layer: 0
-  m_Name: Pipe - Under L3
+  m_Name: PipesLayer1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59,7 +59,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2802364579275783218}
-  m_Mesh: {fileID: -1270442899695108173, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  m_Mesh: {fileID: 6771834481066591091, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
 --- !u!23 &-4998431523760016775
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -111,20 +111,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb6b0f3a8d8ab5546a86ca29fd261934, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: pipe
-  o: {fileID: -1270442899695108173, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  cNorth: {fileID: -8972846756385387022, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  cSouth: {fileID: 5077126174283268024, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  i: {fileID: -566958556529048464, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  lNE: {fileID: 3396235766429983367, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  lNW: {fileID: -8050794985530161450, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  lSE: {fileID: -4959516695836454270, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  lSW: {fileID: -1242410407387950332, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  tNEW: {fileID: 3615688420471568901, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  tNSW: {fileID: 4969673752431747454, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  tNSE: {fileID: -8481026291894936516, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  tSWE: {fileID: -1285037104894735210, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  x: {fileID: 6081592904369253866, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  tileState:
+    blockedDirection: 0
+  type: Pipe
+  o: {fileID: 7889238612543364989, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  uNorth: {fileID: 1852977094255974773, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  uSouth: {fileID: -7138754020173107773, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  i: {fileID: 6771834481066591091, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  lNE: {fileID: 1452706557494696559, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  lNW: {fileID: -710663454644857736, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  lSE: {fileID: 2974487339661499261, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  lSW: {fileID: -8284340391569421606, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  tNEW: {fileID: -1565585996255746122, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  tNSW: {fileID: -4415080472327585715, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  tNSE: {fileID: -8084914691331622005, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  tSWE: {fileID: -7828955826838884863, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  x: {fileID: 5978052073093224489, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
 --- !u!114 &2183948917681095833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,9 +139,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fb7ede8181b28b4082944d5e44dd86e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  layer: 2
+  layer: 0
   volume: 1
---- !u!114 &8044363620118605159
+--- !u!114 &-153587711557402241
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
