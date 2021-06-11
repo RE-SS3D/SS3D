@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80f8bb38b94dd4744bf6ca44adbc7ac4, type: 3}
   m_Name: Catwalk
   m_EditorClassIdentifier: 
-  id: catwalk
-  genericType: lattice
+  id: Catwalk
+  genericType: Catwalk
   prefab: {fileID: 8178185248287418974, guid: a28267798293970468ab30803632a3f7, type: 3}
