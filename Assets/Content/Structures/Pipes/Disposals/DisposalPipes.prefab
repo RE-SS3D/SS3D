@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 346119420360410449}
   - component: {fileID: 6870894424856861174}
   m_Layer: 0
-  m_Name: Disposals Pipe
+  m_Name: DisposalPipes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59,7 +59,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2802364579275783218}
-  m_Mesh: {fileID: -2561920891920846264, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
+  m_Mesh: {fileID: -6725049071555871357, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
 --- !u!23 &-4998431523760016775
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -111,6 +111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fb7ede8181b28b4082944d5e44dd86e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layer: 0
   volume: 1
 --- !u!114 &346119420360410449
 MonoBehaviour:
@@ -124,13 +125,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 961b31fd1d838b9418d00d2675f3a9ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: disposals
+  type: Disposals
   o: {fileID: -2561920891920846264, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
-  c: {fileID: -2561920891920846264, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
-  i: {fileID: -2561920891920846264, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
-  l: {fileID: -548691322741330555, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
-  t: {fileID: 73842842073706688, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
-  x: {fileID: -6317827165641120141, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
+  u: {fileID: -4079771541821625575, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
+  i: {fileID: -6725049071555871357, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
+  l: {fileID: -7002929985465626668, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
+  t: {fileID: 7767200051770316982, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
+  x: {fileID: -7993494061914831054, guid: 8fa7941da6a6a8d4da717a97b11b2621, type: 3}
 --- !u!114 &6870894424856861174
 MonoBehaviour:
   m_ObjectHideFlags: 0
