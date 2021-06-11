@@ -506,6 +506,12 @@ namespace SS3D.Engine.Inventory
         /// <returns></returns>
         public bool CouldStoreItem(Item item)
         {
+            // Do not store if the item is the container itself
+            if (AttachedTo.GetComponent<Item>() == item)
+            {
+                return false;
+            }
+
             foreach (Filter filter in Filters)
             {
                 if (!filter.CanStore(item))

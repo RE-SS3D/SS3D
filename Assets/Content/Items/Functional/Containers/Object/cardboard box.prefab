@@ -186,9 +186,10 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8155353539727309456}
   attachmentPoint: {fileID: 3203922127485635406}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 3
   traits: []
-  Size: {x: 0, y: 0}
+  Size: {x: 5, y: 4}
 --- !u!114 &3937623309233931808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,6 +205,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
+  StorageType: 0
+  Pile: 0
   OnlyStoreWhenOpen: 0
   MaxDistance: 1.5
   viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
@@ -287,6 +290,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HideItems: 1
   AttachItems: 1
+  AttachmentOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &4236927728003344161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,4 +304,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AttachedContainer: {fileID: 9174613476979565480}
-  Size: {x: 4, y: 2}
+  Size: {x: 4, y: 3}
+  StartFilter: {fileID: 0}
