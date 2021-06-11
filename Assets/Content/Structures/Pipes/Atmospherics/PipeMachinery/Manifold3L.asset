@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4c19744d19c6b14409c8e0a535f90136, type: 3}
-  m_Name: 3LayerManifold
+  m_Name: Manifold3L
   m_EditorClassIdentifier: 
-  id: 3_layer_manifold
-  genericType: pipe
+  id: Manifold3Layer
+  genericType: Pipe
   prefab: {fileID: 6937106039017095358, guid: 38905c1e96f82d8408d029a917a46a0f, type: 3}

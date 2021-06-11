@@ -11,12 +11,13 @@ GameObject:
   - component: {fileID: 3181543451529469322}
   - component: {fileID: 4109803754476989557}
   - component: {fileID: 5090598363769821286}
-  - component: {fileID: 7352953387002501142}
+  - component: {fileID: 4975696013706449678}
   - component: {fileID: 1905454501847610042}
-  - component: {fileID: 8073165062296637939}
-  - component: {fileID: 5471106731314674915}
+  - component: {fileID: 3881144108050220983}
+  - component: {fileID: 9018827270936400976}
+  - component: {fileID: 438840707675595257}
   m_Layer: 0
-  m_Name: Volume Pump
+  m_Name: Mixer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43,7 +44,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9154955770433736351}
-  m_Mesh: {fileID: 3009118704118052570, guid: 2a30be4c78c286b4e89636ae631df4d0, type: 3}
+  m_Mesh: {fileID: 3174558451816191612, guid: 2a30be4c78c286b4e89636ae631df4d0, type: 3}
 --- !u!114 &5090598363769821286
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,7 +61,7 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
---- !u!137 &7352953387002501142
+--- !u!137 &4975696013706449678
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -78,8 +79,8 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -104,13 +105,13 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 3009118704118052570, guid: 2a30be4c78c286b4e89636ae631df4d0, type: 3}
+  m_Mesh: {fileID: 3174558451816191612, guid: 2a30be4c78c286b4e89636ae631df4d0, type: 3}
   m_Bones: []
   m_BlendShapeWeights: []
   m_RootBone: {fileID: 0}
   m_AABB:
-    m_Center: {x: 0, y: 0.07765278, z: 0}
-    m_Extent: {x: 0.12384682, y: 0.123846814, z: 0.5}
+    m_Center: {x: 0.044420704, y: -0.017433658, z: -0.000000029802322}
+    m_Extent: {x: 0.44934946, y: 0.10091439, z: 0.5}
   m_DirtyAABB: 0
 --- !u!114 &1905454501847610042
 MonoBehaviour:
@@ -124,11 +125,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 027089b94bcd58c4ab5753b5659f8e15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layer: 0
   pumpType: 1
   TargetPressure: 300
   CurrentVolumeSetting: 200
   pumpActive: 0
---- !u!64 &8073165062296637939
+--- !u!114 &3881144108050220983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154955770433736351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ed4201cf4b31b541b1f4a5e9502fb15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layer: 0
+  InputOneAmount: 50
+  MaxPressure: 4500
+  TargetPressure: 101
+  mixerActive: 0
+--- !u!64 &9018827270936400976
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -141,8 +160,8 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 3009118704118052570, guid: 2a30be4c78c286b4e89636ae631df4d0, type: 3}
---- !u!114 &5471106731314674915
+  m_Mesh: {fileID: 3174558451816191612, guid: 2a30be4c78c286b4e89636ae631df4d0, type: 3}
+--- !u!114 &438840707675595257
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -154,6 +173,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Atmospheric Volume Pump
+  DisplayName: Atmospheric Mixer
   Text: 
   MaxDistance: 0

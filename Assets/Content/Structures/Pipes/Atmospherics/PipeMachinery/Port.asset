@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d72368ce8da05a44864afc6112ce014, type: 3}
   m_Name: Port
   m_EditorClassIdentifier: 
-  id: port
-  genericType: pipe
+  id: Port
+  genericType: Pipe
   prefab: {fileID: 9154955770433736351, guid: f38c347f889c9774bb94ca79b41bec40, type: 3}
