@@ -236,7 +236,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2537282503192599750}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.1235, z: 0.031}
+  m_LocalPosition: {x: 0, y: 0.1231, z: -0.0306}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8833760637642068360}
@@ -249,7 +249,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2537282503192599750}
-  m_Mesh: {fileID: 2061023631735041207, guid: e66970372901e304ebeb92c048ac5b3e, type: 3}
+  m_Mesh: {fileID: -6622568707452985802, guid: e66970372901e304ebeb92c048ac5b3e, type: 3}
 --- !u!23 &3277233126840642769
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -403,7 +403,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4219294637901789455}
-  m_Mesh: {fileID: 511910390600859894, guid: e66970372901e304ebeb92c048ac5b3e, type: 3}
+  m_Mesh: {fileID: -2307915661591837373, guid: e66970372901e304ebeb92c048ac5b3e, type: 3}
 --- !u!23 &3091172478593560188
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -494,7 +494,7 @@ GameObject:
   - component: {fileID: 967319583440751856}
   - component: {fileID: 5383969629031452887}
   m_Layer: 16
-  m_Name: Cigarette Pack
+  m_Name: CigarettePack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -576,12 +576,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: cigarette_pack
+  ItemId: CigarettePack
   Name: Cigarette Pack
   Volume: 8
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5533951594911835035}
   attachmentPoint: {fileID: 6311512130502363032}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 1
   traits: []
   Size: {x: 0, y: 0}
@@ -600,6 +601,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
+  StorageType: 0
+  Pile: 0
   OnlyStoreWhenOpen: 1
   MaxDistance: 1.5
   viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
@@ -615,8 +618,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: A pack of smokes
-  Text: 
+  DisplayName: 
+  Text: A pack of smokes.
   MaxDistance: 0
 --- !u!114 &-396234361631906964
 MonoBehaviour:
@@ -683,6 +686,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HideItems: 1
   AttachItems: 1
+  AttachmentOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &5383969629031452887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -697,6 +701,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AttachedContainer: {fileID: 967319583440751856}
   Size: {x: 2, y: 2}
+  StartFilter: {fileID: 0}
 --- !u!1 &5782550245647892975
 GameObject:
   m_ObjectHideFlags: 0

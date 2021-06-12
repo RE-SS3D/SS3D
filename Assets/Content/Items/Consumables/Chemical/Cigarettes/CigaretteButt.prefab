@@ -13,12 +13,12 @@ GameObject:
   - component: {fileID: 4976036022878869300}
   - component: {fileID: -2914070775195737500}
   - component: {fileID: 2081909342595332650}
-  - component: {fileID: 591581168668269785}
+  - component: {fileID: 7644438578791626701}
   - component: {fileID: 2884915648782529247}
   - component: {fileID: -8822467730395627730}
   - component: {fileID: -396234361631906964}
   m_Layer: 16
-  m_Name: Joint Roach
+  m_Name: CigaretteButt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -62,7 +62,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5533951594911835035}
-  m_Mesh: {fileID: 3109220715845139672, guid: e66970372901e304ebeb92c048ac5b3e, type: 3}
+  m_Mesh: {fileID: 7077650181386913191, guid: e66970372901e304ebeb92c048ac5b3e, type: 3}
 --- !u!23 &-2914070775195737500
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -118,8 +118,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!64 &591581168668269785
-MeshCollider:
+--- !u!136 &7644438578791626701
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -128,10 +128,10 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 3109220715845139672, guid: e66970372901e304ebeb92c048ac5b3e, type: 3}
+  m_Radius: 0.011144964
+  m_Height: 0.06654894
+  m_Direction: 1
+  m_Center: {x: -0.00030338857, y: 0.0074415803, z: -0.00016107596}
 --- !u!114 &2884915648782529247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,16 +146,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: joint_butt
-  Name: Joint Roach
+  ItemId: CigaretteButt
+  Name: Cigarette Butt
   Volume: 0.25
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5533951594911835035}
   attachmentPoint: {fileID: 6311512130502363032}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 0
   traits:
   - {fileID: 11400000, guid: bd29c6eb593f72b429b4547781d59420, type: 2}
+  Size: {x: 0, y: 0}
 --- !u!114 &-8822467730395627730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,7 +169,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: A dirt, ashy cigarette butt.
+  DisplayName: 
+  Text: Dirty, ashy and unhygienic.
   MaxDistance: 0
 --- !u!114 &-396234361631906964
 MonoBehaviour:

@@ -118,7 +118,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4657023231077423496}
-  m_Mesh: {fileID: 5820987047988830844, guid: e66970372901e304ebeb92c048ac5b3e, type: 3}
+  m_Mesh: {fileID: -2396083933733958262, guid: e66970372901e304ebeb92c048ac5b3e, type: 3}
 --- !u!137 &1906948494907550583
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -258,12 +258,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: joint
-  Name: Join
+  ItemId: Joint
+  Name: Joint
   Volume: 0.5
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5533951594911835035}
   attachmentPoint: {fileID: 6311512130502363032}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 0
   traits:
   - {fileID: 11400000, guid: bd29c6eb593f72b429b4547781d59420, type: 2}
