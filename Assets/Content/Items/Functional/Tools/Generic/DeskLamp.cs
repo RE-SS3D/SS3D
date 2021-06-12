@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Mirror;
@@ -8,13 +8,13 @@ using SS3D.Engine.Inventory;
 
 namespace SS3D.Content.Items.Functional.Tools
 {
-    // Simple flashlight
-    public class Flashlight : Item, IToggleable
+    // Simple desklamp
+    public class DeskLamp : Item, IToggleable
     {
         [SerializeField]
         public new Light light = null;
         public Sprite toggleIcon;
-        
+
         public void Toggle()
         {
             light.enabled = !light.enabled;
