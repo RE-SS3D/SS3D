@@ -110,7 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: Table_Poker
   o: {fileID: 24074734363293705, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  c: {fileID: 816114919964496713, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  u: {fileID: -9005001895540637488, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   i: {fileID: 4166674255622024098, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   lNone: {fileID: 1626049959663255465, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   lSingle: {fileID: 2795500985105495790, guid: f860e5d60928a9a428e4e08ced949943, type: 3}

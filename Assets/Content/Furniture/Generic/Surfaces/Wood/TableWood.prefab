@@ -110,7 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: Table_Wood
   o: {fileID: 3156538240660671990, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  c: {fileID: -2687937469711316281, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  u: {fileID: -3792656056309247605, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   i: {fileID: -1245183064925702563, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   lNone: {fileID: 2309835651396831539, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   lSingle: {fileID: 4830973127718090430, guid: f860e5d60928a9a428e4e08ced949943, type: 3}

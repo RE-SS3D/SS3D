@@ -110,7 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: Table_Metal
   o: {fileID: 2322848670761334695, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-  c: {fileID: -3183772447497653497, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  u: {fileID: 7745281341925457866, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   i: {fileID: 2528759063624406942, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   lNone: {fileID: -3147055159611835921, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   lSingle: {fileID: 6772196638450847013, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
