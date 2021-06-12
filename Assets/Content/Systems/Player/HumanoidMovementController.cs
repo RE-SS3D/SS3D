@@ -12,12 +12,10 @@ namespace SS3D.Content.Systems.Player
     [RequireComponent(typeof(Animator))]
     public class HumanoidMovementController : NetworkBehaviour
     {
-        public const float ACCELERATION = 25f;
-
-        // The base speed at which the given character can move
+        // The max speed at which the given character can run
         [SyncVar] public float runSpeed = 5f;
 
-        // The base speed for the character when walking. To disable walkSpeed, set it to runSpeed
+        // The max speed for the character when walking. To disable walkSpeed, set it to runSpeed
         [SyncVar] public float walkSpeed = 2f;
 
         private Animator characterAnimator;
@@ -27,15 +25,16 @@ namespace SS3D.Content.Systems.Player
 
         // Current movement the player is making.
         private Vector2 currentMovement = new Vector2();
-        private Vector2 intendedMovement = new Vector2();
         public Vector3 absoluteMovement = new Vector3();
+
+        // Defines the magnitude of the force applied on the player, when moving or running.
+        [SerializeField] private float runningAccelerationFactor = 500f;
+        [SerializeField] private float walkingAccelerationFactor = 200f;
 
         private bool isWalking = false;
         //Required to detect if player is typing and stop accepting movement input
         private ChatRegister chatRegister;
 
-        [SerializeField]
-        private float heightOffGround = 0.1f;
         //Input directions from the player
         private float inputX = 0;
         private float inputY = 0;
@@ -53,8 +52,8 @@ namespace SS3D.Content.Systems.Player
         private void FixedUpdate()
         {
             // Smoothly transition to next intended movement
-            intendedMovement = new Vector2(inputX, inputY).normalized * (isWalking ? walkSpeed : runSpeed);
-            currentMovement = Vector2.MoveTowards(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 5f, 3) / 5));
+            currentMovement = new Vector2(inputX, inputY).normalized * (isWalking ? walkSpeed : runSpeed);
+          
             // Move the player
             if (currentMovement != Vector2.zero)
             {
@@ -63,20 +62,25 @@ namespace SS3D.Content.Systems.Player
                 currentMovement.y * Vector3.Cross(camera.transform.right, Vector3.up).normalized +
                 currentMovement.x * Vector3.Cross(Vector3.up, camera.transform.forward).normalized;
 
-                if (intendedMovement != Vector2.zero)
+                if (currentMovement != Vector2.zero)
                 {
                     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 10);
                 }
             }
-
-            // stops progressively the character movement.
-            if (intendedMovement == Vector2.zero)
+            else
             {
-                Debug.Log("no intended movement");
-                absoluteMovement = Vector3.Lerp(absoluteMovement, Vector3.zero, Time.deltaTime * 5);
+                absoluteMovement = Vector3.zero;
             }
-            // Move the character
-            rigidBody.MovePosition( transform.position + absoluteMovement * Time.deltaTime );
+
+            // Apply a force on the RigidBody until the desired speed is reached.
+            if (rigidBody.velocity.magnitude < walkSpeed && isWalking)
+            {
+                rigidBody.AddForce(absoluteMovement * walkingAccelerationFactor);
+            }
+            if (rigidBody.velocity.magnitude < runSpeed && !isWalking)
+            {
+                rigidBody.AddForce(absoluteMovement * runningAccelerationFactor);
+            }
         }
 
         void Update()
