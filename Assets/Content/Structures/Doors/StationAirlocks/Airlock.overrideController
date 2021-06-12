@@ -6,7 +6,7 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Single Airlock
+  m_Name: Airlock
   m_Controller: {fileID: 9100000, guid: 77f0d30d555c23240a80d7d85e9c2d6d, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: fb5397e119d05a345b4f5b2403b5f80d, type: 2}
