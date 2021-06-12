@@ -17,11 +17,11 @@ GameObject:
   - component: {fileID: 8117693927796619096}
   - component: {fileID: 6162823455628302933}
   - component: {fileID: 7628843760292732928}
-  - component: {fileID: -6214401771885218050}
-  - component: {fileID: 1354022823172251623}
-  - component: {fileID: 3208315790591029780}
+  - component: {fileID: 2679157374501732462}
+  - component: {fileID: -7120671818673578550}
+  - component: {fileID: -6173571324145430837}
   m_Layer: 16
-  m_Name: Tanguska Vodka
+  m_Name: AppleJuiceBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,7 +65,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6405106075082308508}
-  m_Mesh: {fileID: -1110270928937870939, guid: 60021098f2bdc054abc24e0d1cfab3fc, type: 3}
+  m_Mesh: {fileID: 2145808982379805160, guid: 40deaafc2f2e494489d04556618145e1, type: 3}
 --- !u!23 &4674547325470248768
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -113,7 +113,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6405106075082308508}
   serializedVersion: 2
-  m_Mass: 1.2
+  m_Mass: 0.75
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -134,7 +134,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -1110270928937870939, guid: 60021098f2bdc054abc24e0d1cfab3fc, type: 3}
+  m_Mesh: {fileID: 2145808982379805160, guid: 40deaafc2f2e494489d04556618145e1, type: 3}
 --- !u!114 &8117693927796619096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,15 +167,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: vodka_tanguska_triple_distilled
-  Name: Tanguska Triple Distilled
-  Volume: 16
-  container: {fileID: 0}
+  ItemId: AppleJuiceBox
+  Name: Apple Juice
+  Volume: 9
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 6405106075082308508}
   attachmentPoint: {fileID: 1680750711217523086}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits: []
+  Size: {x: 0, y: 0}
 --- !u!114 &7628843760292732928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,9 +189,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
---- !u!114 &-6214401771885218050
+--- !u!114 &2679157374501732462
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -202,13 +204,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Volume: 750
+  Volume: 300
   Temperature: 0
   Locked: 0
   substances:
-  - Substance: {fileID: 11400000, guid: 98e64ed0e1dd412439a42c237cd3e865, type: 2}
-    Moles: 19.74
---- !u!114 &1354022823172251623
+  - Substance: {fileID: 11400000, guid: 051216e4e5bce264385ffe2c70500d9f, type: 2}
+    Moles: 13.64
+--- !u!114 &-7120671818673578550
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -222,11 +224,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  content: {fileID: -6214401771885218050}
+  content: {fileID: 2679157374501732462}
   contentPerUse: 2
   trashPrefab: {fileID: 0}
   destroyObject: 0
-  audio: {fileID: 3208315790591029780}
+  audio: {fileID: -6173571324145430837}
   sounds:
   - {fileID: 8300000, guid: d218c16bb0edfd44293704a97a562e9e, type: 3}
   consumeVerb: drink
@@ -234,7 +236,7 @@ MonoBehaviour:
   LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
     type: 3}
   item: {fileID: 6162823455628302933}
---- !u!82 &3208315790591029780
+--- !u!82 &-6173571324145430837
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -353,10 +355,10 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7351586078410128835}
-  m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: 0, y: 0.0679, z: -0}
+  m_LocalRotation: {x: 0.5, y: -0.5, z: -0.5, w: 0.5}
+  m_LocalPosition: {x: 0, y: -0.015, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7978368438339684751}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 90}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: -90}
