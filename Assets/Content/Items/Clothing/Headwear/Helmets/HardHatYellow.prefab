@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 3618876846534526676}
   - component: {fileID: 8798808914283824592}
   - component: {fileID: -4580143928426730034}
+  - component: {fileID: 8502499662783524481}
   m_Layer: 0
   m_Name: HardHatYellow
   m_TagString: Untagged
@@ -181,7 +182,23 @@ MonoBehaviour:
   sprite: {fileID: 0}
   prefab: {fileID: 9042363417586770310}
   attachmentPoint: {fileID: 9025388285410682761}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: b292a9af05a4f7e4699ad287b1c401e9, type: 2}
   Size: {x: 0, y: 0}
+--- !u!114 &8502499662783524481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9042363417586770310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisplayName: 
+  Text: 
+  MaxDistance: 0
