@@ -115,8 +115,8 @@ MonoBehaviour:
     blockedDirection: 0
   type: Pipe
   o: {fileID: 7889238612543364989, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  uNorth: {fileID: 1852977094255974773, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  uSouth: {fileID: -7138754020173107773, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  uNorth: {fileID: -4913184590784469283, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  uSouth: {fileID: -8982356636661201101, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
   i: {fileID: 6771834481066591091, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
   lNE: {fileID: 1452706557494696559, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
   lNW: {fileID: -710663454644857736, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
