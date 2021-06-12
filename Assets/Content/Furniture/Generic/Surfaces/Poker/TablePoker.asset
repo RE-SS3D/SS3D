@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: TablePoker
   m_EditorClassIdentifier: 
   id: TablePoker
-  genericType: Table_Poker
+  genericType: TablePoker
   prefab: {fileID: 3879826479501069436, guid: ebddb1721dcbe36499e4d093e5a7ff09, type: 3}

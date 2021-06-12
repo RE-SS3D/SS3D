@@ -108,7 +108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa3fb3fb0fa47e54bad7580218ea1e05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: Table_Wood
+  type: TableWood
   o: {fileID: 3156538240660671990, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   u: {fileID: -3792656056309247605, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   i: {fileID: -1245183064925702563, guid: f860e5d60928a9a428e4e08ced949943, type: 3}

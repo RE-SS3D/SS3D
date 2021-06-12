@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: TableGlass
   m_EditorClassIdentifier: 
   id: TableGlass
-  genericType: Table_Glass
+  genericType: TableGlass
   prefab: {fileID: 2839728781945606427, guid: 4d48472d06930bd42a15897e6a1794ac, type: 3}

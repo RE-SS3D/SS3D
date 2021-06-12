@@ -108,7 +108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa3fb3fb0fa47e54bad7580218ea1e05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: Table_Poker
+  type: TablePoker
   o: {fileID: 24074734363293705, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   u: {fileID: -9005001895540637488, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
   i: {fileID: 4166674255622024098, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
