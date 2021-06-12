@@ -159,9 +159,11 @@ namespace SS3D.Content.Creatures.Human
                 }
             }
 
-            // Enable/disable the isTrigger state of the root collider so it doesn't overlapse with the colliders of the armature.
-            Collider humanRootCollider = GetComponent<Collider>();
-            humanRootCollider.isTrigger = enabled;
+            // Enable/disable the isTrigger state of the root colliders so it doesn't overlapse with the colliders of the armature.
+            foreach (Collider humanRootCollider in GetComponents<Collider>())
+            {
+                humanRootCollider.isTrigger = enabled;
+            }
 
             // For each collision box in the armature, enable/disable isTrigger.
             // Doing so avoids overlapping with the collider at the root of the Human object.
