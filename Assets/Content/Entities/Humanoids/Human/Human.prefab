@@ -92,6 +92,7 @@ GameObject:
   - component: {fileID: 7985328355681489701}
   - component: {fileID: 9076341938986001650}
   - component: {fileID: 4372809320507257544}
+  - component: {fileID: 9036849796767610973}
   m_Layer: 0
   m_Name: Human
   m_TagString: Untagged
@@ -561,7 +562,7 @@ Rigidbody:
   m_GameObject: {fileID: 289348138277843802}
   serializedVersion: 2
   m_Mass: 80
-  m_Drag: 0
+  m_Drag: 5
   m_AngularDrag: 0
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -579,8 +580,22 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.60061264, y: 1.5369194, z: 1}
-  m_Center: {x: -0.011094093, y: 0.85230315, z: 0}
+  m_Size: {x: 0.54685163, y: 1.5464989, z: 0.4211266}
+  m_Center: {x: 0.0054547787, y: 0.8475134, z: 0.03994596}
+--- !u!136 &9036849796767610973
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289348138277843802}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.21914148
+  m_Height: 0.47586358
+  m_Direction: 1
+  m_Center: {x: -0.0011844635, y: 0.22503638, z: 0}
 --- !u!1 &290878266594310021
 GameObject:
   m_ObjectHideFlags: 0
