@@ -51,7 +51,7 @@ namespace SS3D.Content.Systems.Player
 
         private void FixedUpdate()
         {
-            // Smoothly transition to next intended movement
+            // Current Movement vector, the magnitude depends if the Player is running or walking.
             currentMovement = new Vector2(inputX, inputY).normalized * (isWalking ? walkSpeed : runSpeed);
           
             // Move the player
