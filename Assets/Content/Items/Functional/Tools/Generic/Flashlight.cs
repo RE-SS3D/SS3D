@@ -14,10 +14,18 @@ namespace SS3D.Content.Items.Functional.Tools
         [SerializeField]
         public new Light light = null;
         public Sprite toggleIcon;
+        public Material bulbMaterialOn;
+        public Material bulbMaterialOff;
+
+        public GameObject bulbObject;
         
         public void Toggle()
         {
             light.enabled = !light.enabled;
+            
+            bulbObject.GetComponent<MeshRenderer>().sharedMaterial = (light.enabled ? 
+                bulbMaterialOn : bulbMaterialOff);
+
             RpcToggle(light.enabled);
         }
 
@@ -31,11 +39,13 @@ namespace SS3D.Content.Items.Functional.Tools
         {
             if (lightEnabled)
             {
-                light.enabled = true; 
+                light.enabled = true;
+                bulbObject.GetComponent<MeshRenderer>().sharedMaterial = bulbMaterialOn;
             }
             else
             {
                 light.enabled = false;
+                bulbObject.GetComponent<MeshRenderer>().sharedMaterial = bulbMaterialOff;
             }
         }
 

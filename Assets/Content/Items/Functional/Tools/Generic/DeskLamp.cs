@@ -14,10 +14,16 @@ namespace SS3D.Content.Items.Functional.Tools
         [SerializeField]
         public new Light light = null;
         public Sprite toggleIcon;
+        public Material materialOn;
+        public Material materialOff;
 
         public void Toggle()
         {
             light.enabled = !light.enabled;
+
+            this.prefab.GetComponent<MeshRenderer>().sharedMaterial = light.enabled ?
+                materialOn : materialOff;
+
             RpcToggle(light.enabled);
         }
 
@@ -32,10 +38,12 @@ namespace SS3D.Content.Items.Functional.Tools
             if (lightEnabled)
             {
                 light.enabled = true; 
+                this.prefab.GetComponent<MeshRenderer>().sharedMaterial = materialOn;
             }
             else
             {
                 light.enabled = false;
+                this.prefab.GetComponent<MeshRenderer>().sharedMaterial = materialOff;
             }
         }
 
