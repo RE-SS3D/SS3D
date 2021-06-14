@@ -17,12 +17,18 @@ namespace SS3D.Content.Items.Functional.Tools
         public Material materialOn;
         public Material materialOff;
 
+        private MeshRenderer meshRenderer;
+
+        public void Start()
+        {
+            meshRenderer = this.prefab.GetComponent<MeshRenderer>();
+            meshRenderer.material = light.enabled ? materialOn : materialOff;
+        }
+
         public void Toggle()
         {
             light.enabled = !light.enabled;
-
-            this.prefab.GetComponent<MeshRenderer>().sharedMaterial = light.enabled ?
-                materialOn : materialOff;
+            meshRenderer.material = light.enabled ? materialOn : materialOff;
 
             RpcToggle(light.enabled);
         }
@@ -35,16 +41,8 @@ namespace SS3D.Content.Items.Functional.Tools
         [ClientRpc]
         private void RpcToggle(bool lightEnabled) 
         {
-            if (lightEnabled)
-            {
-                light.enabled = true; 
-                this.prefab.GetComponent<MeshRenderer>().sharedMaterial = materialOn;
-            }
-            else
-            {
-                light.enabled = false;
-                this.prefab.GetComponent<MeshRenderer>().sharedMaterial = materialOff;
-            }
+            light.enabled = lightEnabled;
+            meshRenderer.material = light.enabled ? materialOn : materialOff;
         }
 
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)

@@ -18,13 +18,18 @@ namespace SS3D.Content.Items.Functional.Tools
         public Material bulbMaterialOff;
 
         public GameObject bulbObject;
+        private MeshRenderer meshRenderer;
+
+        public void Start() 
+        {
+            meshRenderer = bulbObject.GetComponent<MeshRenderer>();
+            meshRenderer.material = (light.enabled ? bulbMaterialOn : bulbMaterialOff);
+        }
         
         public void Toggle()
         {
             light.enabled = !light.enabled;
-            
-            bulbObject.GetComponent<MeshRenderer>().sharedMaterial = (light.enabled ? 
-                bulbMaterialOn : bulbMaterialOff);
+            meshRenderer.material = (light.enabled ? bulbMaterialOn : bulbMaterialOff);
 
             RpcToggle(light.enabled);
         }
@@ -37,16 +42,8 @@ namespace SS3D.Content.Items.Functional.Tools
         [ClientRpc]
         private void RpcToggle(bool lightEnabled) 
         {
-            if (lightEnabled)
-            {
-                light.enabled = true;
-                bulbObject.GetComponent<MeshRenderer>().sharedMaterial = bulbMaterialOn;
-            }
-            else
-            {
-                light.enabled = false;
-                bulbObject.GetComponent<MeshRenderer>().sharedMaterial = bulbMaterialOff;
-            }
+            light.enabled = lightEnabled;
+            meshRenderer.material = lightEnabled ? bulbMaterialOn : bulbMaterialOff;
         }
 
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
