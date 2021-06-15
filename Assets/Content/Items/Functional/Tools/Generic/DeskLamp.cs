@@ -14,10 +14,22 @@ namespace SS3D.Content.Items.Functional.Tools
         [SerializeField]
         public new Light light = null;
         public Sprite toggleIcon;
+        public Material materialOn;
+        public Material materialOff;
+
+        private MeshRenderer meshRenderer;
+
+        public void Start()
+        {
+            meshRenderer = this.prefab.GetComponent<MeshRenderer>();
+            meshRenderer.material = light.enabled ? materialOn : materialOff;
+        }
 
         public void Toggle()
         {
             light.enabled = !light.enabled;
+            meshRenderer.material = light.enabled ? materialOn : materialOff;
+
             RpcToggle(light.enabled);
         }
 
@@ -29,14 +41,8 @@ namespace SS3D.Content.Items.Functional.Tools
         [ClientRpc]
         private void RpcToggle(bool lightEnabled) 
         {
-            if (lightEnabled)
-            {
-                light.enabled = true; 
-            }
-            else
-            {
-                light.enabled = false;
-            }
+            light.enabled = lightEnabled;
+            meshRenderer.material = light.enabled ? materialOn : materialOff;
         }
 
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
