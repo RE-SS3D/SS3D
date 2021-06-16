@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f55f41c36d703aa4b9b6025fa003c12a, type: 3}
-  m_Name: TileGrayDark
+  m_Name: TileGreyDark
   m_EditorClassIdentifier: Assembly-CSharp:TileMap:Turf
-  id: TileGrayDark
+  id: TileGreyDark
   genericType: Tile
   prefab: {fileID: 5554428447677395221, guid: 6873d7cf62d6ebc42966423161b799f1, type: 3}
   isWall: 0

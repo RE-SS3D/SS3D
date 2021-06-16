@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4722452816941087978}
   - component: {fileID: 5843852423922428640}
   m_Layer: 0
-  m_Name: TileGrayDark
+  m_Name: TileGreyDark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -106,6 +106,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Dark Gray Floor Tile
+  DisplayName: Dark Grey Floor Tile
   Text: 
   MaxDistance: 0
