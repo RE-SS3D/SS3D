@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -7903885912747747283}
   - component: {fileID: -1352320728125532648}
   m_Layer: 16
-  m_Name: WhiteTile
+  m_Name: PlatingFloorTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -81,7 +81,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f03cdd50dec7bc242a2a5a6ca291d9d1, type: 2}
+  - {fileID: 2100000, guid: 11a544979af09ca4192afae76113cb55, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -145,8 +145,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: TileWhite
-  Name: White Tile
+  ItemId: FloorTilePlating
+  Name: Plating Floor Tile
   Volume: 15
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 7125681683583715523}
