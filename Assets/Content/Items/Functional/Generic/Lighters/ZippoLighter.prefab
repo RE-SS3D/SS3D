@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3933979113825684176}
   - component: {fileID: 3277233126840642769}
   m_Layer: 0
-  m_Name: Zippo Top
+  m_Name: ZippoTop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,7 +30,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8833760637642068360}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3933979113825684176
 MeshFilter:
@@ -39,7 +39,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2537282503192599750}
-  m_Mesh: {fileID: 4911059547847052949, guid: 50d7f98ca60f7c847a2cb5b9ab400145, type: 3}
+  m_Mesh: {fileID: -983349264191260732, guid: 50d7f98ca60f7c847a2cb5b9ab400145, type: 3}
 --- !u!23 &3277233126840642769
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -109,7 +109,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8833760637642068360}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8102871367691071827
 MeshFilter:
@@ -176,7 +176,7 @@ GameObject:
   - component: {fileID: -396234361631906964}
   - component: {fileID: -873706720358734130}
   m_Layer: 16
-  m_Name: Zippo Lighter
+  m_Name: ZippoLighter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -193,9 +193,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 6311512130502363032}
   - {fileID: 8589716264412980536}
   - {fileID: 8186896568802821264}
-  - {fileID: 6311512130502363032}
   - {fileID: 3037030990319387530}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -265,6 +265,7 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5533951594911835035}
   attachmentPoint: {fileID: 6311512130502363032}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 1
   traits: []
   Size: {x: 0, y: 0}
@@ -360,11 +361,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8066562249021099569}
   m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: 0, y: -0.035, z: -0}
+  m_LocalPosition: {x: 0, y: -0.035, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8833760637642068360}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 90}
 --- !u!1001 &7439927138961673302
 PrefabInstance:
