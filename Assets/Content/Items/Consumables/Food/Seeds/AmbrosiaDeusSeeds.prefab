@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 1432820004509804393}
   - component: {fileID: 3480391303794857083}
   m_Layer: 16
-  m_Name: Glowshroom Spores
+  m_Name: AmbrosiaDeusSeeds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -92,7 +92,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8479942524297268856}
-  m_Mesh: {fileID: 3533126265073508755, guid: b8ed0f1a9dd2ed34bbf11016f326015a, type: 3}
+  m_Mesh: {fileID: 6376386567847884198, guid: aee15cab4da95ce4ba0ad9f0783f809e, type: 3}
 --- !u!23 &7895400312362891940
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -111,8 +111,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
-  - {fileID: 2100000, guid: d4200162d183d4b4380ec26627333490, type: 2}
+  - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -160,8 +159,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.25725025, y: 0.027758779, z: 0.2393652}
-  m_Center: {x: -0.00000026077032, y: 0.01396623, z: -0.0008911267}
+  m_Size: {x: 0.20812489, y: 0.026206087, z: 0.34954715}
+  m_Center: {x: 0, y: 0.013155919, z: -0.000000007450581}
 --- !u!114 &8704318443750846385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -176,15 +175,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: spores_glowshroom
-  Name: Glowshroom Spore Print
+  ItemId: AmbrosiaDeusSeeds
+  Name: Ambrosia Deus Seed Packet
   Volume: 4
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8479942524297268856}
   attachmentPoint: {fileID: 4187913466076920938}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 0
   traits: []
+  Size: {x: 0, y: 0}
 --- !u!114 &1432820004509804393
 MonoBehaviour:
   m_ObjectHideFlags: 0
