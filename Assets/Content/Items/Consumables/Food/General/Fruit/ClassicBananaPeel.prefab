@@ -19,7 +19,7 @@ GameObject:
   - component: {fileID: 448349732004621884}
   - component: {fileID: 2949647390327175656}
   m_Layer: 16
-  m_Name: banana peel
+  m_Name: ClassicBananaPeel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63,7 +63,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5367923578081395378}
-  m_Mesh: {fileID: 3890010298973275403, guid: b8241e379b1a08947a48ca6dfc3c7d9c, type: 3}
+  m_Mesh: {fileID: -5868151199703249220, guid: e40e3f4ef919bad45a7c34e8bf6473eb, type: 3}
 --- !u!23 &6650144901923549122
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -116,7 +116,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 3890010298973275403, guid: b8241e379b1a08947a48ca6dfc3c7d9c, type: 3}
+  m_Mesh: {fileID: -5868151199703249220, guid: e40e3f4ef919bad45a7c34e8bf6473eb, type: 3}
 --- !u!54 &3233781620974244719
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -165,15 +165,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: banana_peel
+  ItemId: ClassicBananaPeel
   Name: Banana Peel
   Volume: 7
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5367923578081395378}
   attachmentPoint: {fileID: 7337104100445899176}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 1
   traits: []
+  Size: {x: 0, y: 0}
 --- !u!114 &448349732004621884
 MonoBehaviour:
   m_ObjectHideFlags: 0
