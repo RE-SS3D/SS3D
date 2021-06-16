@@ -20,7 +20,7 @@ GameObject:
   - component: {fileID: 2526091444427634931}
   - component: {fileID: 2724605981445550444}
   m_Layer: 16
-  m_Name: wood plank
+  m_Name: WoodPlank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64,7 +64,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4157460056844347020}
-  m_Mesh: {fileID: -1736622283181914040, guid: bbb97961d829cb6418bbb2a16bc73da9, type: 3}
+  m_Mesh: {fileID: -3481501719365375840, guid: bbb97961d829cb6418bbb2a16bc73da9, type: 3}
 --- !u!23 &2418034880949981776
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -131,8 +131,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.030290976, y: 0.87706923, z: 0.33453882}
-  m_Center: {x: 0.0045104716, y: 0.011236742, z: -0.003473796}
+  m_Size: {x: 0.33453897, y: 0.030290954, z: 0.87706923}
+  m_Center: {x: -0.0034737885, y: -0.004510472, z: -0.011236742}
 --- !u!114 &3807651273336194885
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,15 +147,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: wood_plank
+  ItemId: WoodPlank
   Name: Wood Plank
   Volume: 15
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 4157460056844347020}
   attachmentPoint: {fileID: 4043160333980428944}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 3
   traits: []
+  Size: {x: 0, y: 0}
 --- !u!114 &6811098404249235335
 MonoBehaviour:
   m_ObjectHideFlags: 0
