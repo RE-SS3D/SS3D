@@ -51,7 +51,7 @@ GameObject:
   - component: {fileID: 5331741331010615761}
   - component: {fileID: 2736423099677543994}
   m_Layer: 16
-  m_Name: dough_flat_strip
+  m_Name: DoughStrip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -95,7 +95,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8025821132411324115}
-  m_Mesh: {fileID: -1312670080612827256, guid: 63ecbe31bc18b3947b6f6e61af7095c8, type: 3}
+  m_Mesh: {fileID: 7588123761527892380, guid: 63ecbe31bc18b3947b6f6e61af7095c8, type: 3}
 --- !u!23 &8601215309269004815
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -148,7 +148,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -1312670080612827256, guid: 63ecbe31bc18b3947b6f6e61af7095c8, type: 3}
+  m_Mesh: {fileID: 7588123761527892380, guid: 63ecbe31bc18b3947b6f6e61af7095c8, type: 3}
 --- !u!54 &9102333268122751481
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -197,16 +197,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: dough_flat_strip
+  ItemId: DoughStrip
   Name: Dough Strip
   Volume: 3
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8025821132411324115}
   attachmentPoint: {fileID: 2364893500280042689}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
+  Size: {x: 0, y: 0}
 --- !u!114 &8724229121176618736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -219,6 +220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: A single strip of dough.
   MaxDistance: 0
 --- !u!114 &6195544209730703047
