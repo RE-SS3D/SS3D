@@ -110,6 +110,9 @@ MonoBehaviour:
   Size: {x: 0, y: 0}
   light: {fileID: 5674409998555339756}
   toggleIcon: {fileID: 21300000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
+  bulbMaterialOn: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  bulbMaterialOff: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+  bulbObject: {fileID: 5294707152616912772}
 --- !u!114 &-5120229352581138748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,7 +297,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
