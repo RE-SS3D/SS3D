@@ -42,10 +42,9 @@ GameObject:
   - component: {fileID: 3011894308048141432}
   - component: {fileID: 6935684457514274430}
   - component: {fileID: 2774170276901758112}
-  - component: {fileID: 5263515963163283776}
   - component: {fileID: 2176262813411891688}
   m_Layer: 16
-  m_Name: wires
+  m_Name: Wires
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -72,7 +71,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4905540878136422180}
-  m_Mesh: {fileID: 1623223817242378976, guid: 44486cbe083667a4bac2a0de812e0768, type: 3}
+  m_Mesh: {fileID: 919497419003506683, guid: 44486cbe083667a4bac2a0de812e0768, type: 3}
 --- !u!23 &6935684457514274430
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -128,20 +127,6 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
---- !u!64 &5263515963163283776
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4905540878136422180}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 1623223817242378976, guid: 44486cbe083667a4bac2a0de812e0768, type: 3}
 --- !u!114 &2176262813411891688
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,7 +170,7 @@ GameObject:
   - component: {fileID: 1571593285745743663}
   - component: {fileID: 1405522440386804809}
   m_Layer: 16
-  m_Name: Cell Charger
+  m_Name: CellCharger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -214,7 +199,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8232994725938073509}
-  m_Mesh: {fileID: -5838923602921746164, guid: 44486cbe083667a4bac2a0de812e0768, type: 3}
+  m_Mesh: {fileID: 3263452289671543417, guid: 44486cbe083667a4bac2a0de812e0768, type: 3}
 --- !u!23 &7673481864310831993
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -284,7 +269,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -5838923602921746164, guid: 44486cbe083667a4bac2a0de812e0768, type: 3}
+  m_Mesh: {fileID: 3263452289671543417, guid: 44486cbe083667a4bac2a0de812e0768, type: 3}
 --- !u!54 &8892865836290926695
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -366,7 +351,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Cell Charger
+  DisplayName: Power Cell Charger
   Text: 
   MaxDistance: 0
 --- !u!114 &8312077444202497988
