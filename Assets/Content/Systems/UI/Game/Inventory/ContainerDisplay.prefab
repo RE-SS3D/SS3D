@@ -389,6 +389,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Grid: {fileID: 176838956871534865}
+  containerName: {fileID: 337808250292447736}
 --- !u!222 &8355071219440756668
 CanvasRenderer:
   m_ObjectHideFlags: 0
