@@ -47,7 +47,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 661767972589904315}
-  m_Mesh: {fileID: 6135952294409806844, guid: 9a2187a082e184042b7bf3ce5e4f08a7, type: 3}
+  m_Mesh: {fileID: -8453263412596985212, guid: 9a2187a082e184042b7bf3ce5e4f08a7, type: 3}
 --- !u!23 &125084979742237068
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -147,15 +147,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: crayon_orange
+  ItemId: CrayonOrange
   Name: Orange Crayon
   Volume: 3
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 661767972589904315}
   attachmentPoint: {fileID: 3632166857035382902}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 0
   traits: []
+  Size: {x: 0, y: 0}
 --- !u!114 &9118885136997525560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,6 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
 --- !u!114 &-4309091573439704350

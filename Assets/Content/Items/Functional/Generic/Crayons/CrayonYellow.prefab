@@ -77,7 +77,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671789804437703988}
-  m_Mesh: {fileID: 7333605901159248532, guid: 9a2187a082e184042b7bf3ce5e4f08a7, type: 3}
+  m_Mesh: {fileID: -2010983405718693348, guid: 9a2187a082e184042b7bf3ce5e4f08a7, type: 3}
 --- !u!23 &9152808504564545050
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -177,15 +177,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: crayon_yellow
+  ItemId: CrayonYellow
   Name: Yellow Crayon
   Volume: 3
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3671789804437703988}
   attachmentPoint: {fileID: 8938250184657511514}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 0
   traits: []
+  Size: {x: 0, y: 0}
 --- !u!114 &7468793210762665201
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,6 +214,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
 --- !u!114 &-2773018317737842016

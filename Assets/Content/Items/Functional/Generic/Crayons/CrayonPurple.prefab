@@ -47,7 +47,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6421678819902797759}
-  m_Mesh: {fileID: -9023150763080157727, guid: 9a2187a082e184042b7bf3ce5e4f08a7, type: 3}
+  m_Mesh: {fileID: -6503865028638550879, guid: 9a2187a082e184042b7bf3ce5e4f08a7, type: 3}
 --- !u!23 &108270472977320902
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -147,15 +147,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: crayon_pruple
+  ItemId: CrayonPurple
   Name: Purple Crayon
   Volume: 3
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 6421678819902797759}
   attachmentPoint: {fileID: 8416262103701757898}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 0
   traits: []
+  Size: {x: 0, y: 0}
 --- !u!114 &645931460658309619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,6 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
 --- !u!114 &5582532087290830820
