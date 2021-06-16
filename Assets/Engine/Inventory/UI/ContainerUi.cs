@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
-using SS3D.Content.Systems.Examine.Examinables;
 
 namespace SS3D.Engine.Inventory.UI
 {
