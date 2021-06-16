@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
+using SS3D.Content.Systems.Examine.Examinables;
 
 namespace SS3D.Engine.Inventory.UI
 {
@@ -50,7 +51,7 @@ namespace SS3D.Engine.Inventory.UI
             // Set the text inside the containerUI to be the name of the container
             GameObject containerName = GameObject.Find("Container name");
             Text containerNameText = containerName.GetComponent<Text>(); 
-            containerNameText.text = attachedContainer.name; 
+            containerNameText.text = attachedContainer.GetComponentInParent<SimpleExaminable>().DisplayName; 
 
             // Position the text correctly inside the UI.
             Vector3[] v = new Vector3[4];
