@@ -10,7 +10,7 @@ using UnityEngine;
 namespace SS3D.Content.Items.Cosmetic
 {
     [RequireComponent(typeof(AudioSource))]
-    public class Bikehorn : Item
+    public class BikeHorn : Item
     {
         private class HonkInteraction : IInteraction
         {
@@ -34,7 +34,7 @@ namespace SS3D.Content.Items.Cosmetic
 
             public bool CanInteract(InteractionEvent interactionEvent)
             {
-                if (interactionEvent.Target is Bikehorn horn)
+                if (interactionEvent.Target is BikeHorn horn)
                 {
                     if (!InteractionExtensions.RangeCheck(interactionEvent))
                     {
@@ -48,7 +48,7 @@ namespace SS3D.Content.Items.Cosmetic
 
             public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
             {
-                if (interactionEvent.Target is Bikehorn horn)
+                if (interactionEvent.Target is BikeHorn horn)
                 {
                     horn.Honk();
                 }
