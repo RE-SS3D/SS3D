@@ -50,8 +50,18 @@ namespace SS3D.Engine.Inventory.UI
 
             // Set the text inside the containerUI to be the name of the container
             GameObject containerName = GameObject.Find("Container name");
-            Text containerNameText = containerName.GetComponent<Text>(); 
-            containerNameText.text = attachedContainer.GetComponentInParent<SimpleExaminable>().DisplayName; 
+            Text containerNameText = containerName.GetComponent<Text>();
+            SimpleExaminable simpleExaminable = attachedContainer.GetComponent<SimpleExaminable>();
+            ItemExaminable itemExaminable = attachedContainer.GetComponent<ItemExaminable>();
+            // Use the appropriate Examinable script, 
+            if(simpleExaminable)
+            {
+                containerNameText.text = attachedContainer.GetComponent<SimpleExaminable>().DisplayName;
+            }
+            else if (itemExaminable)
+            {
+                containerNameText.text = attachedContainer.GetComponent<ItemExaminable>().DisplayName;
+            }
 
             // Position the text correctly inside the UI.
             Vector3[] v = new Vector3[4];
