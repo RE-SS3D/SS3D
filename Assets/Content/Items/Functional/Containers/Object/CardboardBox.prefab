@@ -53,7 +53,7 @@ GameObject:
   - component: {fileID: 9174613476979565480}
   - component: {fileID: 4236927728003344161}
   m_Layer: 16
-  m_Name: cardboard box
+  m_Name: CardboardBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -97,7 +97,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8155353539727309456}
-  m_Mesh: {fileID: -5642218814356861393, guid: 2b6182a131a31a84c8de046aa3c18300, type: 3}
+  m_Mesh: {fileID: 2732559042180173810, guid: 2b6182a131a31a84c8de046aa3c18300, type: 3}
 --- !u!23 &7570960925364686412
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -180,7 +180,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: box_cardboard
+  ItemId: CardboardBox
   Name: Cardboard Box
   Volume: 55
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
