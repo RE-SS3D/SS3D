@@ -23,13 +23,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 716931857196434506}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.002, z: -0.0801}
+  m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
+  m_LocalPosition: {x: 0, y: -0.0036, z: 0.001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 93945561432043526}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 90}
 --- !u!1 &3969530706517246485
 GameObject:
   m_ObjectHideFlags: 0
@@ -47,8 +47,11 @@ GameObject:
   - component: {fileID: -2096131120537101781}
   - component: {fileID: 4211893044832035804}
   - component: {fileID: 1079151324591260441}
+  - component: {fileID: -2565055250822373788}
+  - component: {fileID: 3296860198860143425}
+  - component: {fileID: 4918683855648018327}
   m_Layer: 16
-  m_Name: Twinkie .33
+  m_Name: 4no raisins
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -92,7 +95,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3969530706517246485}
-  m_Mesh: {fileID: 6540901826841270212, guid: bb1c86e1909ea914d9eeb5d311eb2071, type: 3}
+  m_Mesh: {fileID: 8706662481805842659, guid: 333b27e31b095ae43891de9f68d68cd2, type: 3}
 --- !u!23 &3398613710840100553
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -143,8 +146,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.09304499, y: 0.084931225, z: 0.08957179}
-  m_Center: {x: -0.00031776354, y: 0.004425749, z: 0.0017624833}
+  m_Size: {x: 0.13662143, y: 0.19501211, z: 0.059939906}
+  m_Center: {x: 0.0018789619, y: 0.0031965375, z: -0.0004488062}
 --- !u!54 &2748903352563225919
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -153,7 +156,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3969530706517246485}
   serializedVersion: 2
-  m_Mass: 0.03
+  m_Mass: 0.06
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -193,16 +196,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: twinkie1/3
-  Name: Twinkie
-  Volume: 3
-  container: {fileID: 0}
+  ItemId: 4NoRaisins
+  Name: 4No Raisins
+  Volume: 5
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3969530706517246485}
   attachmentPoint: {fileID: 8693672357343424519}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 1
   traits:
   - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
+  Size: {x: 0, y: 0}
 --- !u!114 &1079151324591260441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -215,5 +219,147 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
+--- !u!114 &-2565055250822373788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3969530706517246485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d41435391f55af44bf8a254724a129a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  content: {fileID: 3296860198860143425}
+  contentPerUse: 2
+  trashPrefab: {fileID: 0}
+  destroyObject: 1
+  audio: {fileID: 4918683855648018327}
+  sounds:
+  - {fileID: 8300000, guid: dcb671bcc99906d49a3bbc0abbac071f, type: 3}
+  - {fileID: 8300000, guid: a24c00d8a1105b749a5bd770d80a3fc7, type: 3}
+  consumeVerb: eat
+  feedTime: 1
+  LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
+    type: 3}
+  item: {fileID: 4211893044832035804}
+--- !u!114 &3296860198860143425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3969530706517246485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Volume: 300
+  Temperature: 0
+  Locked: 0
+  substances:
+  - Substance: {fileID: 11400000, guid: 80d989d222d73b54bb0fdded2783af74, type: 2}
+    Moles: 1.5
+--- !u!82 &4918683855648018327
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3969530706517246485}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

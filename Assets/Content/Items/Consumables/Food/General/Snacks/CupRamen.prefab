@@ -23,13 +23,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 716931857196434506}
-  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.002, z: 0.001}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: -0.0242, z: 0.001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 93945561432043526}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &3969530706517246485
 GameObject:
   m_ObjectHideFlags: 0
@@ -42,16 +42,16 @@ GameObject:
   - component: {fileID: 5772065308349761132}
   - component: {fileID: 8941549900616600112}
   - component: {fileID: 3398613710840100553}
-  - component: {fileID: -2321550141522107793}
+  - component: {fileID: 2972670713508023241}
   - component: {fileID: 2748903352563225919}
   - component: {fileID: -2096131120537101781}
   - component: {fileID: 4211893044832035804}
   - component: {fileID: 1079151324591260441}
-  - component: {fileID: 6208101994002524489}
-  - component: {fileID: 943877375873949024}
-  - component: {fileID: 6704523476501461858}
+  - component: {fileID: -8245375839876018735}
+  - component: {fileID: 1076731294697049405}
+  - component: {fileID: 3600090017324841091}
   m_Layer: 16
-  m_Name: Donk Pocket
+  m_Name: CupRamen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -95,7 +95,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3969530706517246485}
-  m_Mesh: {fileID: 6023370689855359477, guid: 6fc3440aa8def934c8298cb232d5452b, type: 3}
+  m_Mesh: {fileID: 7516564176451376549, guid: 7ab11ec54ee44fc42b56d7d98ad51e21, type: 3}
 --- !u!23 &3398613710840100553
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -135,8 +135,8 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &-2321550141522107793
-BoxCollider:
+--- !u!64 &2972670713508023241
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -145,9 +145,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.13407764, y: 0.08387836, z: 0.27238357}
-  m_Center: {x: -0.000028073788, y: 0.004808139, z: -0.00014153868}
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 7516564176451376549, guid: 7ab11ec54ee44fc42b56d7d98ad51e21, type: 3}
 --- !u!54 &2748903352563225919
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -196,16 +197,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: donk_pocket
-  Name: Donk Pocket
+  ItemId: CupRamen
+  Name: Cup Ramen
   Volume: 7
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3969530706517246485}
   attachmentPoint: {fileID: 8693672357343424519}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 1
   traits:
   - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
+  Size: {x: 0, y: 0}
 --- !u!114 &1079151324591260441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,9 +220,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
---- !u!114 &6208101994002524489
+--- !u!114 &-8245375839876018735
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -234,11 +237,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  content: {fileID: 943877375873949024}
+  content: {fileID: 1076731294697049405}
   contentPerUse: 2
   trashPrefab: {fileID: 0}
   destroyObject: 1
-  audio: {fileID: 6704523476501461858}
+  audio: {fileID: 3600090017324841091}
   sounds:
   - {fileID: 8300000, guid: dcb671bcc99906d49a3bbc0abbac071f, type: 3}
   - {fileID: 8300000, guid: a24c00d8a1105b749a5bd770d80a3fc7, type: 3}
@@ -247,7 +250,7 @@ MonoBehaviour:
   LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
     type: 3}
   item: {fileID: 4211893044832035804}
---- !u!114 &943877375873949024
+--- !u!114 &1076731294697049405
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -265,7 +268,7 @@ MonoBehaviour:
   substances:
   - Substance: {fileID: 11400000, guid: 80d989d222d73b54bb0fdded2783af74, type: 2}
     Moles: 1.5
---- !u!82 &6704523476501461858
+--- !u!82 &3600090017324841091
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -51,7 +51,7 @@ GameObject:
   - component: {fileID: 5688882188462630418}
   - component: {fileID: 8805611969679259197}
   m_Layer: 16
-  m_Name: Meat Wheat
+  m_Name: MeatWheat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -95,7 +95,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8722317747974713380}
-  m_Mesh: {fileID: -1784717481194499049, guid: fd1ec273c39e2db46bcb04d2ddb78145, type: 3}
+  m_Mesh: {fileID: -5121169552435233040, guid: fd1ec273c39e2db46bcb04d2ddb78145, type: 3}
 --- !u!23 &8016222924898131284
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -148,7 +148,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -1784717481194499049, guid: fd1ec273c39e2db46bcb04d2ddb78145, type: 3}
+  m_Mesh: {fileID: -5121169552435233040, guid: fd1ec273c39e2db46bcb04d2ddb78145, type: 3}
 --- !u!54 &2275976470507102713
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -197,16 +197,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: meat_wheat
+  ItemId: MeatWheat
   Name: Meat Wheat
   Volume: 9
-  container: {fileID: 0}
   sprite: {fileID: 0}
   prefab: {fileID: 8722317747974713380}
   attachmentPoint: {fileID: 6244230459157494590}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
+  Size: {x: 0, y: 0}
 --- !u!114 &6143507213145409448
 MonoBehaviour:
   m_ObjectHideFlags: 0
