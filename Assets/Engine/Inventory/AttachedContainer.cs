@@ -4,6 +4,9 @@ using System.Linq;
 using Mirror;
 using SS3D.Content;
 using UnityEngine;
+using SS3D.Content.Systems.Examine.Examinables;
+using SS3D.Engine.Examine;
+
 
 namespace SS3D.Engine.Inventory
 {
@@ -45,6 +48,33 @@ namespace SS3D.Engine.Inventory
         {
             get => container;
             set => UpdateContainer(value);
+        }
+
+        /// <summary>
+        /// Return the name of the Object as defined by the Examine System. 
+        /// <remarks> If multiple classes implement the Interface IExaminable
+        /// and have an ExamineType equal to SIMPLE_TEXT, it returns the first name encountered. </remarks>
+        /// </summary>
+        public string GetName()
+        {
+            String Name;
+
+            //Gets all components on this object implementing the interface IExaminable
+            var iExaminables = GetComponents<IExaminable>();
+            //Go through each components until one has a ExamineType equal to SIMPLE_TEXT and is not an empty string, then returns the name linked to it.
+            foreach (IExaminable iExaminable in iExaminables)
+            {
+               if (iExaminable.GetData().GetExamineType() == ExamineType.SIMPLE_TEXT)
+                {
+                    DataNameDescription DataName = (DataNameDescription)(iExaminable.GetData());
+                    Name = DataName.GetName();
+                    if (Name != "")
+                    {
+                        return Name;
+                    }
+                }
+            }
+            return null;
         }
 
         public static AttachedContainer CreateEmpty(GameObject gameObject, Vector2Int size, IEnumerable<Filter> filters = null)
