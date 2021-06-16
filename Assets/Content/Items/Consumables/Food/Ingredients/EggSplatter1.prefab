@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4330448704306833335}
   - component: {fileID: 5431582348971710345}
   m_Layer: 16
-  m_Name: Egg Splatter 1 Shell c
+  m_Name: EggSplatter1ShellC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39,7 +39,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3846829901569295599}
-  m_Mesh: {fileID: 2995903276738716022, guid: 64c445332a5fa19479ac9a53c04cb8c8, type: 3}
+  m_Mesh: {fileID: -8320819903663405472, guid: 64c445332a5fa19479ac9a53c04cb8c8, type: 3}
 --- !u!23 &5431582348971710345
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 5583586157620204599}
   - component: {fileID: 6857499590730081236}
   m_Layer: 16
-  m_Name: Egg Splatter 1
+  m_Name: EggSplatter1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -176,13 +176,14 @@ MonoBehaviour:
   ItemId: egg_splatter
   Name: Egg Splatter
   Volume: 4
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 4196731054265338279}
   attachmentPoint: {fileID: 0}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 1
   traits:
   - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
+  Size: {x: 0, y: 0}
 --- !u!1 &6270124958724687780
 GameObject:
   m_ObjectHideFlags: 0
@@ -195,7 +196,7 @@ GameObject:
   - component: {fileID: 8480914603360771664}
   - component: {fileID: 1635961374080059202}
   m_Layer: 16
-  m_Name: Egg Splatter 1 Shell a
+  m_Name: EggSplatter1ShellA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -222,7 +223,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6270124958724687780}
-  m_Mesh: {fileID: 568918297377249299, guid: 64c445332a5fa19479ac9a53c04cb8c8, type: 3}
+  m_Mesh: {fileID: 5900672645447570805, guid: 64c445332a5fa19479ac9a53c04cb8c8, type: 3}
 --- !u!23 &1635961374080059202
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -274,7 +275,7 @@ GameObject:
   - component: {fileID: 2978457626589760306}
   - component: {fileID: 34926831629622498}
   m_Layer: 16
-  m_Name: Egg Splatter 1 Shell b
+  m_Name: EggSplatter1ShellB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -301,7 +302,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6885898023443993915}
-  m_Mesh: {fileID: -4476700764828283170, guid: 64c445332a5fa19479ac9a53c04cb8c8, type: 3}
+  m_Mesh: {fileID: 9090736864753805683, guid: 64c445332a5fa19479ac9a53c04cb8c8, type: 3}
 --- !u!23 &34926831629622498
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -353,7 +354,7 @@ GameObject:
   - component: {fileID: 627937672404751616}
   - component: {fileID: 2131688753546946140}
   m_Layer: 16
-  m_Name: Egg Splatter 1 Yolk
+  m_Name: EggSplatter1Yolk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -383,7 +384,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9029219339524657875}
-  m_Mesh: {fileID: -4513416402141893452, guid: 64c445332a5fa19479ac9a53c04cb8c8, type: 3}
+  m_Mesh: {fileID: 1753711854742144335, guid: 64c445332a5fa19479ac9a53c04cb8c8, type: 3}
 --- !u!23 &2131688753546946140
 MeshRenderer:
   m_ObjectHideFlags: 0

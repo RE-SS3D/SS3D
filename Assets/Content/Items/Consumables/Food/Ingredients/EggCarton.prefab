@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 3025467947942603621}
   - component: {fileID: 3507220386546009839}
   m_Layer: 16
-  m_Name: Egg Carton Bottom
+  m_Name: EggCartonBottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84,7 +84,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2405908616385026871}
-  m_Mesh: {fileID: 4786629140476095612, guid: 64c445332a5fa19479ac9a53c04cb8c8, type: 3}
+  m_Mesh: {fileID: -7405339543773149835, guid: 64c445332a5fa19479ac9a53c04cb8c8, type: 3}
 --- !u!23 &3025467947942603621
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -336,7 +336,7 @@ GameObject:
   - component: {fileID: 8589072317211894302}
   - component: {fileID: 2441490045753728382}
   m_Layer: 16
-  m_Name: Egg Carton
+  m_Name: EggCarton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -404,15 +404,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: egg_carton
+  ItemId: EggCarton
   Name: Egg Carton
   Volume: 15
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5699756661827582718}
   attachmentPoint: {fileID: 8603022403202917302}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 3
   traits: []
+  Size: {x: 0, y: 0}
 --- !u!114 &2441490045753728382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -425,6 +426,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
 --- !u!1 &5725990302085194185
@@ -564,7 +566,7 @@ GameObject:
   - component: {fileID: 6373851546254471814}
   - component: {fileID: 4031840422388847685}
   m_Layer: 16
-  m_Name: Egg Carton Top
+  m_Name: EggCartonTop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -591,7 +593,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7740652602659655149}
-  m_Mesh: {fileID: -9161163123608027734, guid: 64c445332a5fa19479ac9a53c04cb8c8, type: 3}
+  m_Mesh: {fileID: 7199928459199189267, guid: 64c445332a5fa19479ac9a53c04cb8c8, type: 3}
 --- !u!23 &6373851546254471814
 MeshRenderer:
   m_ObjectHideFlags: 0

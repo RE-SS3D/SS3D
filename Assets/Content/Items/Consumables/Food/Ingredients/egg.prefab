@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 7773441557286926091}
   - component: {fileID: -3469163017777797778}
   m_Layer: 16
-  m_Name: egg
+  m_Name: Egg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -132,16 +132,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: egg
+  ItemId: Egg
   Name: Egg
   Volume: 4
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 779687924883353726}
   attachmentPoint: {fileID: 4999762902382821996}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 1
   traits:
   - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
+  Size: {x: 0, y: 0}
 --- !u!114 &8446169822554776093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,6 +155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: Fragile, don't drop it!
   MaxDistance: 0
 --- !u!64 &7773441557286926091
