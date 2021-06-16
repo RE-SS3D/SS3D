@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 3546999150553349723}
   - component: {fileID: 4696884002918885688}
   m_Layer: 0
-  m_Name: large beaker
+  m_Name: LargeBeaker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35,6 +35,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 5747042748778270123}
   - {fileID: 7505678717344504723}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -226,16 +227,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: beaker_large
+  ItemId: LargeBeaker
   Name: Large Beaker
   Volume: 15
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 1532632409719204394}
   attachmentPoint: {fileID: 5747042748778270123}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: a86f8b10eacec4540a203b13004c2389, type: 2}
+  Size: {x: 0, y: 0}
 --- !u!114 &4696884002918885688
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -248,7 +250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Large Beaker
+  DisplayName: 
   Text: Holds 1000 ml.
   MaxDistance: 0
 --- !u!1 &4021811474598320139
@@ -263,7 +265,7 @@ GameObject:
   - component: {fileID: 1289527130843278320}
   - component: {fileID: 298183472727955909}
   m_Layer: 0
-  m_Name: LargeBeaker.Liquid
+  m_Name: Liquid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -281,7 +283,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7505678717344504723}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1289527130843278320
 MeshFilter:
@@ -290,7 +292,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4021811474598320139}
-  m_Mesh: {fileID: -4360947399434996741, guid: 946cc3dc74dfac9488127087b6c9eba2, type: 3}
+  m_Mesh: {fileID: 5946567125654825638, guid: 946cc3dc74dfac9488127087b6c9eba2, type: 3}
 --- !u!23 &298183472727955909
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -353,11 +355,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5104954642383855801}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0.70710677, y: -0, z: -0, w: 0.7071069}
   m_LocalPosition: {x: 0, y: 0.117, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 7505678717344504723}
+  m_Father: {fileID: 2530557719443052601}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &7854668405882091835
@@ -372,7 +374,7 @@ GameObject:
   - component: {fileID: 4629176379242093924}
   - component: {fileID: 3693337679892817023}
   m_Layer: 0
-  m_Name: LargeBeaker.Lid
+  m_Name: Lid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -390,7 +392,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7505678717344504723}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4629176379242093924
 MeshFilter:
@@ -399,7 +401,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7854668405882091835}
-  m_Mesh: {fileID: -6964759593425852570, guid: 946cc3dc74dfac9488127087b6c9eba2, type: 3}
+  m_Mesh: {fileID: -7337868943916188129, guid: 946cc3dc74dfac9488127087b6c9eba2, type: 3}
 --- !u!23 &3693337679892817023
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -468,11 +470,10 @@ Transform:
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 5747042748778270123}
   - {fileID: 8070120138524949723}
   - {fileID: 7229157555983638005}
   m_Father: {fileID: 2530557719443052601}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6692894116646048258
 MeshFilter:
@@ -481,7 +482,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8167963991679062311}
-  m_Mesh: {fileID: 9223285433639833473, guid: 946cc3dc74dfac9488127087b6c9eba2, type: 3}
+  m_Mesh: {fileID: 5437097369033779507, guid: 946cc3dc74dfac9488127087b6c9eba2, type: 3}
 --- !u!23 &5643062148299870269
 MeshRenderer:
   m_ObjectHideFlags: 0
