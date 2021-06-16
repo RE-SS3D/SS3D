@@ -4,7 +4,6 @@ using System.Linq;
 using Mirror;
 using SS3D.Content;
 using UnityEngine;
-using SS3D.Content.Systems.Examine.Examinables;
 using SS3D.Engine.Examine;
 
 
