@@ -87,8 +87,8 @@ SkinnedMeshRenderer:
   - 0
   m_RootBone: {fileID: 0}
   m_AABB:
-    m_Center: {x: 0.00060224906, y: 0.07778144, z: -0.21044722}
-    m_Extent: {x: 0.028356884, y: 0.18677121, z: 0.45248243}
+    m_Center: {x: 0.00060224906, y: 0.07778144, z: 0.2172884}
+    m_Extent: {x: 0.028356884, y: 0.18677121, z: 0.44519147}
   m_DirtyAABB: 0
 --- !u!114 &713694880497840531
 MonoBehaviour:
@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: laser_cannon
+  ItemId: LaserCannon
   Name: Laser Cannon
   Volume: 20
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}

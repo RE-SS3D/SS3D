@@ -83,8 +83,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.065460324, y: 0.27275616, z: 0.06617436}
-  m_Center: {x: 0.00020597875, y: 0.071308285, z: 0.024664931}
+  m_Size: {x: 0.065460324, y: 0.27133247, z: 0.06617436}
+  m_Center: {x: 0.00020597875, y: -0.002720043, z: 0.024664931}
 --- !u!114 &6685713788759461778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,7 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: energy_sword_blue
+  ItemId: EnergySwordBlue
   Name: Energy Sword
   Volume: 7
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
