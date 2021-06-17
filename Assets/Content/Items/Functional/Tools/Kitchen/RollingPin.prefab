@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &742329524854909756
+--- !u!1 &6566358016739717157
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,7 +8,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8869951128713715569}
+  - component: {fileID: 3059437936987833448}
   m_Layer: 0
   m_Name: Attachment
   m_TagString: Untagged
@@ -16,21 +16,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8869951128713715569
+--- !u!4 &3059437936987833448
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 742329524854909756}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.013, z: -0.344}
+  m_GameObject: {fileID: 6566358016739717157}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 212662597122105200}
+  m_Father: {fileID: 6025443116863210601}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &3794527162878356835
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!1 &7333537291608176250
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -38,43 +38,43 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 212662597122105200}
-  - component: {fileID: 6027007811845826842}
-  - component: {fileID: 9198744343412122950}
-  - component: {fileID: 3212201595462572479}
-  - component: {fileID: 2709008034070362697}
-  - component: {fileID: 816276794223698792}
-  - component: {fileID: 4165234907410255018}
-  - component: {fileID: 2923116068905593083}
+  - component: {fileID: 6025443116863210601}
+  - component: {fileID: 200710050772087299}
+  - component: {fileID: 3370286985539976799}
+  - component: {fileID: 9077325296372318886}
+  - component: {fileID: 8427782337936007504}
+  - component: {fileID: 4405847134303785852}
+  - component: {fileID: 7539245687581644723}
+  - component: {fileID: 604021277079963610}
   m_Layer: 16
-  m_Name: frying pan
+  m_Name: RollingPin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &212662597122105200
+--- !u!4 &6025443116863210601
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3794527162878356835}
+  m_GameObject: {fileID: 7333537291608176250}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 8869951128713715569}
+  - {fileID: 3059437936987833448}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6027007811845826842
+--- !u!114 &200710050772087299
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3794527162878356835}
+  m_GameObject: {fileID: 7333537291608176250}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
@@ -84,21 +84,21 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
---- !u!33 &9198744343412122950
+--- !u!33 &3370286985539976799
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3794527162878356835}
-  m_Mesh: {fileID: 7624135761655356884, guid: 293637b3aa1893c4bbca39eb995596db, type: 3}
---- !u!23 &3212201595462572479
+  m_GameObject: {fileID: 7333537291608176250}
+  m_Mesh: {fileID: 4312770149009254646, guid: 7f1ce22942348884dae3aafce394ee9c, type: 3}
+--- !u!23 &9077325296372318886
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3794527162878356835}
+  m_GameObject: {fileID: 7333537291608176250}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 1
@@ -131,15 +131,15 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!54 &2709008034070362697
+--- !u!54 &8427782337936007504
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3794527162878356835}
+  m_GameObject: {fileID: 7333537291608176250}
   serializedVersion: 2
-  m_Mass: 0.9
+  m_Mass: 1.8
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -147,27 +147,26 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!64 &816276794223698792
-MeshCollider:
+--- !u!65 &4405847134303785852
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3794527162878356835}
+  m_GameObject: {fileID: 7333537291608176250}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 7624135761655356884, guid: 293637b3aa1893c4bbca39eb995596db, type: 3}
---- !u!114 &4165234907410255018
+  serializedVersion: 2
+  m_Size: {x: 0.117173225, y: 0.64014214, z: 0.117173225}
+  m_Center: {x: -0.0000002104789, y: 0.26138428, z: 0.000000078231096}
+--- !u!114 &7539245687581644723
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3794527162878356835}
+  m_GameObject: {fileID: 7333537291608176250}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
@@ -175,27 +174,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: frying_pan
-  Name: Frying Pan
-  Volume: 9
-  container: {fileID: 0}
+  ItemId: RollingPin
+  Name: Rolling Pin
+  Volume: 10
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
-  prefab: {fileID: 3794527162878356835}
-  attachmentPoint: {fileID: 8869951128713715569}
+  prefab: {fileID: 7333537291608176250}
+  attachmentPoint: {fileID: 3059437936987833448}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 7f22e87f08452654f8f20ace0b1e0fa3, type: 2}
---- !u!114 &2923116068905593083
+  Size: {x: 0, y: 0}
+--- !u!114 &604021277079963610
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3794527162878356835}
+  m_GameObject: {fileID: 7333537291608176250}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: 
+  DisplayName: 
+  Text: Bonk.
   MaxDistance: 0
