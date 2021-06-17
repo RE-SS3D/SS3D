@@ -49,7 +49,7 @@ GameObject:
   - component: {fileID: 5255869551476044215}
   - component: {fileID: 2902236087434809221}
   m_Layer: 16
-  m_Name: soap
+  m_Name: Soap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77,7 +77,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9002315518600615791}
-  m_Mesh: {fileID: 6445843573247450007, guid: 816daa6053aa9cb4c83bd8bfad0e7ea8, type: 3}
+  m_Mesh: {fileID: 6917616166778119207, guid: 816daa6053aa9cb4c83bd8bfad0e7ea8, type: 3}
 --- !u!114 &1526402662451169415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -176,15 +176,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: soap
+  ItemId: SoapBlue
   Name: Soap
   Volume: 5
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 9002315518600615791}
   attachmentPoint: {fileID: 8474352757739705035}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 0
   traits: []
+  Size: {x: 0, y: 0}
 --- !u!114 &6608698360755572192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,6 +198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: Don't drop this while the clown is behind you!
   MaxDistance: 0
 --- !u!114 &5255869551476044215
@@ -213,6 +215,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  knockdownDuration: 3
+  knockdownPause: 1
 --- !u!114 &2902236087434809221
 MonoBehaviour:
   m_ObjectHideFlags: 0

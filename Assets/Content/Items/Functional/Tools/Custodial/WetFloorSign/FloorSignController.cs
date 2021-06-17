@@ -4,7 +4,7 @@ using SS3D.Content.Furniture;
 namespace SS3D.Content.Items.Cosmetic
 {
     // This needs some rework, not sure if I want that code on Update
-    public class FloorSignOpener : Openable
+    public class FloorSignController : Openable
     {
         private bool lastInContainer;
         private Item item;
