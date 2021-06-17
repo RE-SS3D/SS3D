@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 291072397}
   - component: {fileID: 291072398}
   m_Layer: 16
-  m_Name: Point Light
+  m_Name: PointLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -140,7 +140,7 @@ GameObject:
   - component: {fileID: -25655414377668572}
   - component: {fileID: -4235786043834150045}
   m_Layer: 16
-  m_Name: desk lamp
+  m_Name: TableLamp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -186,7 +186,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5021521585556056798}
-  m_Mesh: {fileID: -458811993458521797, guid: 2bb544022dbb334419969396af5f52f8, type: 3}
+  m_Mesh: {fileID: -3017006229975614685, guid: 2bb544022dbb334419969396af5f52f8, type: 3}
 --- !u!54 &6089022188761415156
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -256,7 +256,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -458811993458521797, guid: 2bb544022dbb334419969396af5f52f8, type: 3}
+  m_Mesh: {fileID: -3017006229975614685, guid: 2bb544022dbb334419969396af5f52f8, type: 3}
 --- !u!114 &6065577481189309108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -271,8 +271,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: lamp_desk_grey
-  Name: Desk Lamp
+  ItemId: TableLampGrey
+  Name: Table Lamp
   Volume: 15
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5021521585556056798}
@@ -329,7 +329,7 @@ GameObject:
   - component: {fileID: 1853126167531843962}
   - component: {fileID: 5157351164716868161}
   m_Layer: 0
-  m_Name: lamp light
+  m_Name: LampLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

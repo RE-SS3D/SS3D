@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -4618048464928120104}
   - component: {fileID: -1962062966072139446}
   m_Layer: 16
-  m_Name: welder
+  m_Name: Welder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -146,12 +146,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: welder
+  ItemId: Welder
   Name: Welder
   Volume: 8
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5447298468117708068}
   attachmentPoint: {fileID: 299501260641292086}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 7f22e87f08452654f8f20ace0b1e0fa3, type: 2}

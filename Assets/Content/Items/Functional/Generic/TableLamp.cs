@@ -8,8 +8,8 @@ using SS3D.Engine.Inventory;
 
 namespace SS3D.Content.Items.Functional.Tools
 {
-    // Simple desklamp
-    public class DeskLamp : Item, IToggleable
+    // Simple table lamp
+    public class TableLamp : Item, IToggleable
     {
         [SerializeField]
         public new Light light = null;
