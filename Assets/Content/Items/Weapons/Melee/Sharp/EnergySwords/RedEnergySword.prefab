@@ -13,11 +13,11 @@ GameObject:
   - component: {fileID: 1621254900413859771}
   - component: {fileID: 4990654379235175600}
   - component: {fileID: 6685713788759461778}
-  - component: {fileID: -3732643692984454001}
+  - component: {fileID: -2447690748091761972}
   - component: {fileID: 351750458048978072}
-  - component: {fileID: 111644857273378981}
+  - component: {fileID: 6200212019699599832}
   m_Layer: 16
-  m_Name: Energy Sword Blue
+  m_Name: RedEnergySword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,6 +34,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 8741594312887385892}
+  - {fileID: 2228408407297344825}
   - {fileID: 8404333355598822097}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -81,8 +83,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.065460324, y: 0.27275616, z: 0.06617436}
-  m_Center: {x: 0.00020597875, y: 0.071308285, z: 0.024664931}
+  m_Size: {x: 0.059569985, y: 0.26710308, z: 0.065375246}
+  m_Center: {x: 0.000000044703484, y: 0.07474089, z: 0.024671797}
 --- !u!114 &6685713788759461778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,22 +99,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: energy_sword_blue
+  ItemId: EnergySwordRed
   Name: Energy Sword
   Volume: 7
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 526728262711873681}
   attachmentPoint: {fileID: 8741594312887385892}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 08c4bae5b95cea146826e467131ec146, type: 2}
+  Size: {x: 0, y: 0}
   animator: {fileID: 351750458048978072}
-  audio: {fileID: 111644857273378981}
+  audio: {fileID: 6200212019699599832}
   soundOn: {fileID: 8300000, guid: 81842472797700d479c0ea5aef90fe57, type: 3}
   soundOff: {fileID: 8300000, guid: ae6a0d3a332b67f4d968b477273cea56, type: 3}
   turnOnIcon: {fileID: 21300000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
---- !u!114 &-3732643692984454001
+--- !u!114 &-2447690748091761972
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -124,6 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
 --- !u!95 &351750458048978072
@@ -145,7 +149,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!82 &111644857273378981
+--- !u!82 &6200212019699599832
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -265,12 +269,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2198113341863956492}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.441, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 8404333355598822097}
-  m_RootOrder: 2
+  m_Father: {fileID: 3536461814911951490}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!108 &6865098693849225335
 Light:
@@ -283,7 +287,7 @@ Light:
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
-  m_Color: {r: 0.31764707, g: 0.45490196, b: 0.654902, a: 1}
+  m_Color: {r: 0.7254902, g: 0.28627452, b: 0.28627452, a: 1}
   m_Intensity: 0
   m_Range: 1.83
   m_SpotAngle: 30
@@ -356,11 +360,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2379386255707363636}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0.06, z: 0.022}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 8404333355598822097}
+  m_Father: {fileID: 3536461814911951490}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &4492634748464924536
@@ -375,7 +379,7 @@ GameObject:
   - component: {fileID: 3908649061885166136}
   - component: {fileID: 6376344028956553202}
   m_Layer: 16
-  m_Name: Energy Sword
+  m_Name: EnergySword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -392,11 +396,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 8741594312887385892}
   - {fileID: 7492178598015881337}
-  - {fileID: 2228408407297344825}
   m_Father: {fileID: 3536461814911951490}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3908649061885166136
 MeshFilter:
@@ -405,7 +407,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4492634748464924536}
-  m_Mesh: {fileID: 2353215534228112979, guid: 326dfd546e5fbef42a8cf14c1b370763, type: 3}
+  m_Mesh: {fileID: -9170882196336339878, guid: 326dfd546e5fbef42a8cf14c1b370763, type: 3}
 --- !u!23 &6376344028956553202
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -457,7 +459,7 @@ GameObject:
   - component: {fileID: 1518940438225014788}
   - component: {fileID: 5624833176393052773}
   m_Layer: 16
-  m_Name: Energy Sword Beam
+  m_Name: EnergySwordBeam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -475,7 +477,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8404333355598822097}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1518940438225014788
 MeshFilter:
@@ -484,7 +486,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7317717302493712225}
-  m_Mesh: {fileID: -8367878107848321605, guid: 326dfd546e5fbef42a8cf14c1b370763, type: 3}
+  m_Mesh: {fileID: -7362958000181587364, guid: 326dfd546e5fbef42a8cf14c1b370763, type: 3}
 --- !u!137 &5624833176393052773
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -528,7 +530,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -8367878107848321605, guid: 326dfd546e5fbef42a8cf14c1b370763, type: 3}
+  m_Mesh: {fileID: -7362958000181587364, guid: 326dfd546e5fbef42a8cf14c1b370763, type: 3}
   m_Bones: []
   m_BlendShapeWeights:
   - 100
