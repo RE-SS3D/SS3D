@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 4801006223211920126}
   - component: {fileID: 2000458620479851620}
   m_Layer: 16
-  m_Name: Enforcer_Magazine
+  m_Name: Magazine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -111,8 +111,8 @@ SkinnedMeshRenderer:
   - 0
   m_RootBone: {fileID: 0}
   m_AABB:
-    m_Center: {x: 0, y: -0.012045119, z: -0.008431591}
-    m_Extent: {x: 0.2, y: 0.07352607, z: 0.051844873}
+    m_Center: {x: 0.000684686, y: -0.012045115, z: -0.008431591}
+    m_Extent: {x: 0.020610087, y: 0.07352607, z: 0.051844873}
   m_DirtyAABB: 0
 --- !u!64 &2000458620479851620
 MeshCollider:
@@ -127,7 +127,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 9021243220628152000, guid: f7b512c02c65cb34ea1198d58e59c1b5, type: 3}
+  m_Mesh: {fileID: -2046680981224900540, guid: f7b512c02c65cb34ea1198d58e59c1b5, type: 3}
 --- !u!1 &6623170874926679310
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,8 +215,8 @@ SkinnedMeshRenderer:
   - 0
   m_RootBone: {fileID: 0}
   m_AABB:
-    m_Center: {x: 0.00060224906, y: 0.03794211, z: 0.04697597}
-    m_Extent: {x: 0.028356884, y: 0.11628629, z: 0.1674782}
+    m_Center: {x: 0.00060224906, y: 0.035545677, z: 0.08976936}
+    m_Extent: {x: 0.028356884, y: 0.11594395, z: 0.16439709}
   m_DirtyAABB: 0
 --- !u!114 &6304729924848844888
 MonoBehaviour:
@@ -278,16 +278,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: enforcer
+  ItemId: Enforcer
   Name: Enforcer
   Volume: 8
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 6623170874926679310}
   attachmentPoint: {fileID: 6720109069971253264}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 2e79f6d135cc0004993a2261ace3d0d4, type: 2}
+  Size: {x: 0, y: 0}
 --- !u!114 &-921700840571372975
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,5 +301,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
