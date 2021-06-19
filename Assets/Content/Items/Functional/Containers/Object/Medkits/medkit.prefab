@@ -329,7 +329,7 @@ MonoBehaviour:
   attachmentPointAlt: {fileID: 4606947075117889058}
   bulkSize: 3
   traits: []
-  Size: {x: 5, y: 4}
+  Size: {x: 4, y: 3}
 --- !u!114 &-4852994001289131144
 MonoBehaviour:
   m_ObjectHideFlags: 0
