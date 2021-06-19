@@ -4,6 +4,8 @@ using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Inventory;
 using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
+using SS3D.Engine.Inventory.UI;
+using SS3D.Content.Furniture.Storage;
 
 namespace SS3D.Content.Systems.Interactions
 {
@@ -51,7 +53,7 @@ namespace SS3D.Content.Systems.Interactions
         {
             Hands hands = (Hands) interactionEvent.Source.Parent;
             interactionEvent.Target.GetComponent<AttachedContainer>().Container.AddItem(hands.ItemInHand);
-
+            CloseUIWhenStored(interactionEvent);
             return false;
         }
 
@@ -64,5 +66,28 @@ namespace SS3D.Content.Systems.Interactions
         {
             throw new System.NotImplementedException();
         }
+
+        /// <summary>
+        /// Checks if the UI of the stored item is opened, if it is, then close it. 
+        /// </summary>
+        private void CloseUIWhenStored(InteractionEvent interactionEvent)
+        {
+            if (interactionEvent.Source is Item)
+            {
+                Item item = interactionEvent.Source as Item;
+                GameObject gameObject = item.prefab; 
+                if (gameObject.GetComponent<OpenableContainer>() != null)
+                {
+                    ContainerUi[] UIs = GameObject.FindObjectsOfType<ContainerUi>(); //That's probably terrible
+                    foreach (ContainerUi UI in UIs)
+                    {
+                        if (UI.AttachedContainer == gameObject.GetComponent<AttachedContainer>())
+                        {
+                            UI.Close();
+                        }
+                    }
+                }
+            }
+        }      
     }
 }

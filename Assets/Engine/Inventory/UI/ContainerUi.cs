@@ -16,6 +16,7 @@ namespace SS3D.Engine.Inventory.UI
 
         public AttachedContainer AttachedContainer
         {
+            get => attachedContainer;
             set
             {
                 attachedContainer = value;
