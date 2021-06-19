@@ -223,7 +223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InteractionName: 
-  Substance: vodka
+  Substance: Vodka
   Moles: 0.43103448
 --- !u!114 &-1809232113325138168
 MonoBehaviour:

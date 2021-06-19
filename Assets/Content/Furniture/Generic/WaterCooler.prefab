@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InteractionName: Dispense
-  Substance: water
+  Substance: Water
   Moles: 5.555555
 --- !u!114 &9055692276633119394
 MonoBehaviour:

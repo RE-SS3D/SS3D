@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: JuiceTomato
   m_EditorClassIdentifier: 
-  Id: juice_tomato
+  Id: JuiceTomato
   Color: {r: 0.8113208, g: 0.3194361, b: 0.27171594, a: 0.9607843}
   MillilitersPerMole: 22
