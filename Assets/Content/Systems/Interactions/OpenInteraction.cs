@@ -20,7 +20,7 @@ namespace SS3D.Content.Systems.Interactions
 
         public string GetName(InteractionEvent interactionEvent)
         {
-            return ((IGameObjectProvider)interactionEvent.Target).GameObject.GetComponent<Animator>().GetBool(OpenId) ? "Open" : "Close";
+            return ((IGameObjectProvider)interactionEvent.Target).GameObject.GetComponent<Animator>().GetBool(OpenId) ? "Close" : "Open";
         }
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
