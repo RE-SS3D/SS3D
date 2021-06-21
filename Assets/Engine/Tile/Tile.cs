@@ -88,7 +88,7 @@ namespace SS3D.Engine.Tiles {
         {
             return (Direction)((int)rotation * 2);
         }
-        public static Direction ToParallelDirection(Rotation rotation)
+        public static Direction ToPerpendicularDirection(Rotation rotation)
         {
             return (Direction)(((int)rotation + 1 % 4) * 2);
         }

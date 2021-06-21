@@ -103,7 +103,7 @@ namespace SS3D.Content.Structures.Fixtures
                 int i = (int)direction / 2;
 
                 // Get the direction this applies to for the external world
-                Direction outsideDirection = DirectionHelper.Apply(RotationHelper.ToParallelDirection(TileState.rotation), direction);
+                Direction outsideDirection = DirectionHelper.Apply(RotationHelper.ToPerpendicularDirection(TileState.rotation), direction);
                 bool isPresent = adjacents.Adjacent(outsideDirection) == 1;
 
                 if (isPresent && wallCaps[i] == null) {
