@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: Locker
   genericType: Furniture
-  prefab: {fileID: 5599841925940684376, guid: 02fc5f12ab2897c49b2df843f364b6a1, type: 3}
+  prefab: {fileID: 2876708453869312076, guid: 02fc5f12ab2897c49b2df843f364b6a1, type: 3}
