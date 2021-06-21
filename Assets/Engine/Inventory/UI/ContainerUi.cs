@@ -1,6 +1,8 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
+
 
 namespace SS3D.Engine.Inventory.UI
 {
@@ -30,7 +32,6 @@ namespace SS3D.Engine.Inventory.UI
         public void Close()
         {
             Inventory.CmdContainerClose(attachedContainer);
-            Destroy(gameObject);
         }
 
         private void UpdateContainer(Container container)
@@ -55,6 +56,25 @@ namespace SS3D.Engine.Inventory.UI
             Vector3[] v = new Vector3[4];
             rect.GetLocalCorners(v); 
             containerName.transform.localPosition = v[1] + new Vector3(0.03f * width, -0.02f * height, 0);
+
+            if (attachedContainer.GetComponent<Item>() != null)
+            {
+                Item item = attachedContainer.GetComponent<Item>();
+                item.ItemContainerChanged += OnItemContainerChanged;
+            }
+        }
+
+        public void OnItemContainerChanged(Container oldContainer, Container newContainer)
+        {
+            if (oldContainer != null && newContainer != null)
+            {
+                //If the item is held in hand, the UI closes when the item is put inside another container
+                if (oldContainer.AttachedTo.IsAttachedToHands() && !(newContainer.AttachedTo.IsAttachedToHands()))
+                {
+                    Close();
+                    return;
+                }
+            }
         }
     }
 }

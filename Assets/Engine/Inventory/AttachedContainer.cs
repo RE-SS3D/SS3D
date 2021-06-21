@@ -126,6 +126,18 @@ namespace SS3D.Engine.Inventory
             return $"{name}({nameof(AttachedContainer)})[size: {container.Size}, items: {container.ItemCount}]";
         }
 
+        public string NameToString()
+        {
+            return $"{name}";
+        }
+
+        /// <summary>
+        /// Verify if this AttachedContainer is attached to a right or to a left hand
+        /// </summary>
+        public bool IsAttachedToHands()
+        {
+            return NameToString() == "hand_r" || NameToString() == "hand_l";
+        }
         protected virtual void OnItemAttached(Item e)
         {
             ItemAttached?.Invoke(this, e);
