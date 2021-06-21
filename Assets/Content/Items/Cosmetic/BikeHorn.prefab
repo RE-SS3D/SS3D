@@ -203,7 +203,7 @@ MonoBehaviour:
   bulkSize: 2
   traits: []
   Size: {x: 0, y: 0}
-  honkSound: {fileID: 0}
+  honkSound: {fileID: 8300000, guid: 8c8823796bbcb23438fcf68260070383, type: 3}
   useIcon: {fileID: 0}
 --- !u!114 &8862739616138227531
 MonoBehaviour:
