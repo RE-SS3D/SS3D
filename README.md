@@ -12,21 +12,23 @@ This is the current state of the RE:SS3D project in a .zip file, including even 
 
 ## INFO:
 
-<div style="float: right;">
-    <div>
-        <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
-            <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release">
-        </a>
-    </div>
-    <div>
-        <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
-            <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release">
-        </a>
-    </div>
-    <div>
-        <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
-            <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release">
-        </a>
+<div style="float: right">
+    <div style="position: fixed">
+        <div>
+            <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
+                <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release">
+            </a>
+        </div>
+        <div>
+            <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
+                <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release">
+            </a>
+        </div>
+        <div>
+            <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
+                <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release">
+            </a>
+        </div>
     </div>
 </div>
 
