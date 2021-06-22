@@ -12,6 +12,10 @@ This is the current state of the RE:SS3D project in a .zip file, including even 
 
 ## INFO:
 
+<div style="text-align: right"> | Syntax      | Description |
+| ----------- | ----------- |
+| Header      | Title       | </div>
+
 **[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
 
 ## CONTRIBUTING:
