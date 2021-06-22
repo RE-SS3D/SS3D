@@ -12,27 +12,25 @@ This is the current state of the RE:SS3D project in a .zip file, including even 
 
 ## INFO:
 
-<div style="float: right">
-    <div style="position: fixed">
-        <div>
-            <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
-                <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release">
-            </a>
-        </div>
-        <div>
-            <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
-                <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release">
-            </a>
-        </div>
-        <div>
-            <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
-                <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release">
-            </a>
-        </div>
+**[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
+
+<div align="right">
+    <div>
+        <a href="https://github.com/RE-SS3D/SS3D/issues">
+            <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest Release">
+        </a>
+    </div>
+    <div>
+        <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
+            <img src="https://img.shields.io/github/issues/RE-SS3D/SS3D" alt="Issues Open">
+        </a>
+    </div>
+    <div>
+        <a href="https://github.com/RE-SS3D/SS3D/issues?q=is%3Aissue+is%3Aclosed">
+            <img src="https://img.shields.io/github/issues-closed/RE-SS3D/SS3D" alt="Issues Closed">
+        </a>
     </div>
 </div>
-
-**[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
 
 ## CONTRIBUTING:
 
