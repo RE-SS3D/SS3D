@@ -14,16 +14,17 @@ This is the current state of the RE:SS3D project in a .zip file, including even 
 
 **[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
 
-</div align="right">
-    <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
-        <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" width="50">
-    </a>
-    <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
-        <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" width="150">
-    </a>
-    <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
-        <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" width="250">
-    </a>
+</div>
+    <div align="right">
+        <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
+            <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release">
+        </a>
+        <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
+            <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release">
+        </a>
+        <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
+            <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release">
+        </a>
 </div>
 
 ## CONTRIBUTING:
