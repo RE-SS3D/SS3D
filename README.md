@@ -12,7 +12,7 @@ This is the current state of the RE:SS3D project in a .zip file, including even 
 
 ## INFO:
 
-<div style="text-align: right"> [![Latest GitHub Release](https://img.shields.io/github/v/release/RE-SS3D/SS3D)](https://github.com/RE-SS3D/SS3D/releases/latest) </div>
+[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" width="150" align="left">](https://github.com/RE-SS3D/SS3D/releases/latest)
 
 **[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
 
