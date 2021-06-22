@@ -17,16 +17,14 @@ This is the current state of the RE:SS3D project in a .zip file, including even 
 </div>
     <div align="right">
         <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
-            <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" align="right">
+            <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" width="50" align="right">
         </a>
-        [<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
-        [<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" width="30" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
-        [<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" width="50" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
-        [<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" width="75" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
-        [<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" width="100" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
-        [<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" width="150" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
-        [<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" width="200" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
-        [<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" width="250" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest) 
+        <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
+            <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" width="150" align="right">
+        </a>
+        <a href="https://github.com/RE-SS3D/SS3D/releases/latest">
+            <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest GitHub Release" width="250" align="right">
+        </a>
 </div>
 
 ## CONTRIBUTING:
