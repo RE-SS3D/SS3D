@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
   m_Name: Biogenerator
   m_EditorClassIdentifier: 
-  id: biogenerator
-  genericType: furniture
+  id: Biogenerator
+  genericType: Machine
   prefab: {fileID: 1769453492926099347, guid: 9d688b1b7995f5846aca9597f2b27ee3, type: 3}

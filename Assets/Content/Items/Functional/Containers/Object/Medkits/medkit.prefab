@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2103335400371539285}
   - component: {fileID: 8738350563900843021}
   m_Layer: 16
-  m_Name: Medkit Back
+  m_Name: MedkitBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 7791039897351842816}
   - component: {fileID: 8702990020495146248}
   m_Layer: 16
-  m_Name: Medkit Front
+  m_Name: MedkitFront
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -237,7 +237,7 @@ GameObject:
   - component: {fileID: 419110437451335257}
   - component: {fileID: 2029440566035240053}
   m_Layer: 16
-  m_Name: medkit
+  m_Name: Medkit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -320,7 +320,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: medkit
+  ItemId: Medkit
   Name: Medkit
   Volume: 55
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
@@ -329,7 +329,7 @@ MonoBehaviour:
   attachmentPointAlt: {fileID: 4606947075117889058}
   bulkSize: 3
   traits: []
-  Size: {x: 5, y: 4}
+  Size: {x: 4, y: 3}
 --- !u!114 &-4852994001289131144
 MonoBehaviour:
   m_ObjectHideFlags: 0

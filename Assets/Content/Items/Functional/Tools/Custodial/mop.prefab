@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 8305323804518448030}
   - component: {fileID: -1950864518426958933}
   m_Layer: 16
-  m_Name: mop
+  m_Name: Mop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -176,7 +176,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: mop
+  ItemId: Mop
   Name: Mop
   Volume: 15
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}

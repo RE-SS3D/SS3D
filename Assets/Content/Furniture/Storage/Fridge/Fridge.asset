@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d14215af6993f44280475b2ae2470c6, type: 3}
   m_Name: Fridge
   m_EditorClassIdentifier: 
-  id: fridge
-  genericType: locker
+  id: Fridge
+  genericType: Furniture
   prefab: {fileID: 4214221335928705926, guid: 56a8c29cc9465b240a1fea110265619c, type: 3}
