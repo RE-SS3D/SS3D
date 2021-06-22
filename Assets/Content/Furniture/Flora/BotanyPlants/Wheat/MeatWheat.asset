@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: MeatWheat
   genericType: Plant
-  prefab: {fileID: 8975488781447701067, guid: cfb56847dc02e1a4a9c139d251958a60, type: 3}
+  prefab: {fileID: 8757431509704750092, guid: 0d422a47b06117b4eb317a821c57b927, type: 3}
