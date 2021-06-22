@@ -1,34 +1,33 @@
 ---
-name: Task
-about: This is a task to implement
-title: "Task Name"
-labels: ''
+name: Feature
+about: A feature to be implemented.
+title: "Feature Name"
+labels: 'Feature'
 assignees: ''
 
 ---
-<!-- Text within these arrows are notes for you and should be deleted. -->
+<!-- The note within these arrows are for you but can be deleted. -->
 
-### Summary
+## Summary
 
-<!-- Provide a general summary of the task here and in the title. -->
+<!-- Provide a general summary of the feature here and in the title. -->
 
-### Goal 
+## Goal 
 
-<!-- Is the task related to a problem? Describe the problem. -->
+<!-- Is the feature related to a problem? Describe the problem. -->
 
-<!-- Describe the goal of the task, what is it trying to achieve? -->
+<!-- Describe the goal of the feature, what is it trying to achieve? -->
 
 <!-- Describe alternatives you've considered. -->
 
-### Media
+## Media
 
 <!-- Any other context, art, pictures, concepts, etc. -->
 
-### Document
+## Document
 
-<!-- Is the task already designed? If so, link the document. -->
+<!-- Is the feature already designed? If so, link the document. -->
 
-### Dependencies
-<!-- List any tasks that need to be completed before this one. -->
+## Dependencies
 
-<!-- List any tasks that may be needed to validate this one. -->
+<!-- List any tasks that need to be designed or implemented before this one. -->

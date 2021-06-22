@@ -1,8 +1,8 @@
-<!-- Text within these arrows are notes for you and should be deleted. -->
+<!-- The note within these arrows are for you but can be deleted. -->
 
-### Summary
+## Summary
 
-<!-- Provide a general summary of the problem here and in the title. -->
+<!-- Provide a general summary of the change here and in the title. -->
 
 <!-- Follow with a more concise explanation of the change here. -->
 
@@ -14,22 +14,22 @@
 
 <!-- It may also be used in our monthly devblog. -->
 
-## Changes to Files (optional)
+## Changes to Files
 
-<!-- List any major asset/scene changes and why/how they were changed. -->
+<!-- List any major asset/script/scene changes and why/how they were changed. -->
 
 ## Technical Notes (optional)
 
 <!-- Provide a more technical description of the changes to help save the reviewers some time. -->
 
-## Known issues (optional)
+## Known issues
 
-<!-- List anything not working as intended, either because some other system is unfinished or due to being beyond the scope of this PR. -->
+<!-- List ANYTHING not working as intended, either part of the new change or a older system broken by the change. -->
 
-<!-- Any known bugs will likely require sorting out before the PR merges. -->
+<!-- Any known bugs will likely require sorting out before the PR is accepted. -->
 
 ## Fixes (optional)
 
 <!-- List any issues or other PRs connected to this one. -->
 
-<!-- If this PR closes another from your list, add "Closes" before the number (e.g. "Closes #123"). -->
+<!-- If this PR CLOSES any issues/PRs add "Closes" before the number (e.g. "Closes #123"). -->

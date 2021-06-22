@@ -1,41 +1,43 @@
 ---
 name: Bug
-about: This is a bug being reported
+about: Reporting a creepy crawly.
 title: "Bug Name"
-labels: 'bug'
+labels: 'Bug'
 assignees: ''
 
 ---
-<!-- Text within these arrows are notes for you and should be deleted. -->
+<!-- The note within these arrows are for you but can be deleted. -->
 
-### Summary
+## Summary
 
 <!-- Provide a general summary of the problem here and in the title. -->
 
-### Current Behavior
+## Current Behavior
 
-<!-- Give a concise explanation of the problem in more detail here. -->
+<!-- Give a concise explanation of the problem in more detail. -->
 
-### Steps to Reproduce
+## Steps to Reproduce
 
 <!-- Provide step by step instructions for reproducing the bug.-->
 
 <!-- Include photos or videos if possible to help troubleshooters. -->
 
-### Expected Behavior
+## Expected Behavior
 
 <!-- Explain what should be happening instead. -->
 
-### Possible Solution
+## Possible Solution
 
 <!-- Suggest any potential causes for the bug. -->
 
 <!-- Suggest any potential fixes for the bug. -->
 
-### Context
+## Context
 
 <!-- What version of the game are you using? -->
 
 <!-- What operating system are you running? -->
+
+<!-- What specific game settings were you running that may be relevent? -->
 
 <!-- How has this issue affected you? What are you trying to accomplish? -->
