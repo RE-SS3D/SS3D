@@ -82,6 +82,18 @@ namespace SS3D.Engine.Tiles {
         }
     }
 
+    public static class RotationHelper
+    {
+        public static Direction ToPrincipalDirection(Rotation rotation)
+        {
+            return (Direction)((int)rotation * 2);
+        }
+        public static Direction ToPerpendicularDirection(Rotation rotation)
+        {
+            return (Direction)(((int)rotation + 1 % 4) * 2);
+        }
+    }
+
     public enum TileLayers
     {
         Plenum,
