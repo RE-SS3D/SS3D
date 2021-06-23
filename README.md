@@ -1,4 +1,4 @@
-### ![SS3D](Documents/Images/RESPACESTATION3D.png) Welcome to the offical repository for "RE: Space Station 3D" the game! RE:SS3D is an open-source resurrection of the original SS3D project, which was an impressive demo attempting to give the infamous [<img src="https://img.shields.io/badge/Space%20Station-13-red?style=flat" alt="Space Station 13">](https://spacestation13.com/) an extra dimension.
+### ![SS3D](Documents/Images/RESPACESTATION3D.png) Welcome to the offical repository for "RE: Space Station 3D" the game! RE:SS3D is an open-source resurrection of the original SS3D project, which was an impressive demo attempting to give the infamous [<img src="https://img.shields.io/badge/Space%20Station-13-red?style=flat-square" alt="Space Station 13">](https://spacestation13.com/) an extra dimension.
 
 # DOWNLOADS:
 
@@ -12,11 +12,11 @@
 
 ## INFO:
 
-**[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki) - [Discussions](https://github.com/RE-SS3D/SS3D/discussions)**
+[<img src="https://img.shields.io/github/issues/RE-SS3D/SS3D&style=plastic" alt="Open Issues" align="right">](https://github.com/RE-SS3D/SS3D/releases)**[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
 
 ## CONTRIBUTING:
 
-[CONTRIBUTING.md](Documents/CONTRIBUTING.md) contains the information regarding technical contributions, including what version of Unity the project uses, how to set up and run the project, reporting bugs, pull requests, and styling code.
+[<img src="https://img.shields.io/discord/483813139633143808?label=Members&style=social&logo=discord" alt="Discord Members" align="right">](https://github.com/RE-SS3D/SS3D/issues)[CONTRIBUTING.md](Documents/CONTRIBUTING.md) contains the information regarding technical contributions, including what version of Unity the project uses, how to set up and run the project, reporting bugs, pull requests, and styling code.
 
 [https://ss3d.space/contribute/](https://ss3d.space/contribute/) has a breakdown of the different contribution types (including art assets) with links to helpful guides and to-do boards, making contributing art assets a lot easier for new contributors.
 
