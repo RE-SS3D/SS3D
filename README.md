@@ -34,7 +34,7 @@ This is the current state of the RE:SS3D project in a .zip file, including even 
 
 [<img src="Documents/Images/youtube.png" alt="YouTube" width="150" align="left">](https://www.youtube.com/channel/UCJT-bVqDOYfyxF3oxECceZg)
 
-<img src="https://img.shields.io/youtube/channel/subscribers/UCJT-bVqDOYfyxF3oxECceZg?style=social" alt="YouTube Subscribers" align="right"><img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D" alt="Repo Size" align="right">Our YouTube is where we upload many of our important videos including 3D animations, trailers, and gameplay clips of teasers/tests.
+<img src="https://img.shields.io/youtube/channel/subscribers/UCJT-bVqDOYfyxF3oxECceZg?style=social" alt="YouTube Subscribers" align="right">Our YouTube is where we upload many of our important videos including 3D animations, trailers, and gameplay clips of teasers/tests.
 
 [<img src="Documents/Images/reddit.png" alt="Reddit" width="150" align="left">](https://www.reddit.com/r/RESS3D/)
 
