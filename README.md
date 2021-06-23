@@ -4,11 +4,11 @@
 
 [<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
 
-<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=latest-release" alt="Latest Release" align="right">This is the latest official build of the RE:SS3D project. It currently works on Windows but needs testing on other operating systems still.<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=%23%20of%20downloads%20%28latest-release%29" alt="Latest Release Downloads" align="right">
+<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=latest-release" alt="Latest Release" align="right">This is the latest official build of the RE:SS3D project. It currently works on Windows but needs testing on other operating systems still.<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=downloads%20%28latest-release%29" alt="Latest Release Downloads" align="right">
 
 [<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
 
-This is the current state of the RE:SS3D project in a .zip file, including even the latest commit. You'll need to build the game in Unity on your own.<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=%23%20of%20downloads%20%28total%29" alt="Total Downloads" align="right">
+This is the current state of the RE:SS3D project in a .zip file, including even the latest commit. You'll need to build the game in Unity on your own.<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=downloads%20%28total%29" alt="Total Downloads" align="right">
 
 ## INFO:
 
