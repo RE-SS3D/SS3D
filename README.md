@@ -4,11 +4,11 @@
 
 [<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
 
-<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest Release" align="right">This is the latest official build of the RE:SS3D project. It currently works on Windows but needs testing on other operating systems still.<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total" alt="Latest Release Downloads" align="right">
+<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=latest-release" alt="Latest Release" align="right">This is the latest official build of the RE:SS3D project. It currently works on Windows but needs testing on other operating systems still.<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=%23%20of%20downloads%20%28latest-release%29" alt="Latest Release Downloads" align="right">
 
 [<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
 
-This is the current state of the RE:SS3D project in a .zip file, including even the latest commit. You'll need to build the game in Unity on your own.
+<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D" alt="Repo Size" align="right">This is the current state of the RE:SS3D project in a .zip file, including even the latest commit. You'll need to build the game in Unity on your own.<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=%23%20of%20downloads%20%28total%29" alt="Total Downloads" align="right">
 
 ## INFO:
 
@@ -30,19 +30,19 @@ This is the current state of the RE:SS3D project in a .zip file, including even 
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
-Discord is the primary communication for our devs and community. There are plenty of helpful people there capable of answering most of your questions, as well as WIP content.
+<img src="https://img.shields.io/discord/483813139633143808" alt="Discord Members" align="right">Discord is the primary communication for our devs and community. There are plenty of helpful people there capable of answering most of your questions, as well as WIP content.
 
 [<img src="Documents/Images/youtube.png" alt="YouTube" width="150" align="left">](https://www.youtube.com/channel/UCJT-bVqDOYfyxF3oxECceZg)
 
-Our YouTube is where we upload many of our important videos including 3D animations, trailers, and gameplay clips of teasers/tests.
+<img src="https://img.shields.io/youtube/channel/subscribers/UCJT-bVqDOYfyxF3oxECceZg?style=social" alt="YouTube Subscribers" align="right"><img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D" alt="Repo Size" align="right">Our YouTube is where we upload many of our important videos including 3D animations, trailers, and gameplay clips of teasers/tests.
 
 [<img src="Documents/Images/reddit.png" alt="Reddit" width="150" align="left">](https://www.reddit.com/r/RESS3D/)
 
-We also have a subreddit, where you will find similar discussion threads and posts showing off art & WIP content, although it is not as active as our Discord server.
+<img src="https://img.shields.io/reddit/subreddit-subscribers/RESS3D?style=social" alt="Reddit Followers" align="right">We also have a subreddit, where you will find similar discussion threads and posts showing off art & WIP content, although it is not as active as our Discord server.
 
 [<img src="Documents/Images/Twitter.png" alt="Twitter" width="150" align="left">](https://twitter.com/SpaceStation3D)
 
-Currently our twitter is mostly used for announcements & memes but we will start using it more for the people that prefer it over reddit or discord.
+<img src="https://img.shields.io/twitter/follow/SpaceStation3D?style=social" alt="Twitter Followers" align="right">Currently our twitter is mostly used for announcements & memes but we will start using it more for the people that prefer it over reddit or discord.
 
 ## BOARDS:
 
