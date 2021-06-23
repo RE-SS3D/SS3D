@@ -1,14 +1,14 @@
-### ![SS3D](Documents/Images/RESPACESTATION3D.png) Welcome to the offical repository for "RE: Space Station 3D" the game! RE:SS3D is an open-source resurrection of the original SS3D project, which was an impressive demo attempting to give the infamous [<img src="https://img.shields.io/badge/Space%20Station-13-red?style=flat" alt="Space Station 13">](https://spacestation13.com/) an extra dimension.
+### ![SS3D](Documents/Images/RESPACESTATION3D.png) Welcome to the offical repository for "RE: Space Station 3D" the game! RE:SS3D is an open-source resurrection of the original SS3D project, which was an impressive demo attempting to give the infamous [<img src="https://img.shields.io/badge/Space%20Station-13-red?style=plastic" alt="Space Station 13">](https://spacestation13.com/) an extra dimension.
 
 # DOWNLOADS:
 
 [<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
 
-[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=Latest-Release&style=plastic" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)The latest official build of RE:SS3D. Its working on Windows but needs testing on other OSs.[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=Downloads%20%28Latest-Release%29&style=plastic" alt="Latest Release Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
+[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=Latest-Release" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)The latest official build of RE:SS3D. Its working on Windows but needs testing on other OSs.[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=Downloads%20%28Latest-Release%29" alt="Latest Release Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
 
 [<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
 
-[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=Downloads%20%28Total%29&style=plastic" alt="Total Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases)The current state of RE:SS3D (every commit) in a .zip. You'll need to build the game in Unity still.[<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold&label=Repository%20Size&style=plastic" alt="Repo Size" align="right">](https://github.com/RE-SS3D/SS3D)
+[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=Downloads%20%28Total%29" alt="Total Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases)The current state of RE:SS3D (every commit) in a .zip. You'll need to build the game in Unity still.[<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold&label=Repository%20Size" alt="Repo Size" align="right">](https://github.com/RE-SS3D/SS3D)
 
 ## INFO:
 
