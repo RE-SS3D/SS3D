@@ -6,7 +6,7 @@ labels: 'Bug'
 assignees: ''
 
 ---
-<!-- The note within these arrows are for you but can be deleted. -->
+<!-- The notes within these arrows are for you but can be deleted. -->
 
 ## Summary
 

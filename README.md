@@ -1,4 +1,5 @@
-### ![SS3D](Documents/Images/RESPACESTATION3D.png) Welcome to the repository for the game, RE: Space Station 3D. RE:SS3D is a resurrection of the original SS3D project, which was an attempt to recreate [Space Station 13](https://spacestation13.com/) in 3D.
+### ![SS3D](Documents/Images/RESPACESTATION3D.png) Welcome to the RE:SpaceStation3D repository! RE:SS3D is a resurrection of the original SS3D project, which was a creative demo attempting to bring the infamous [Space Station 13](https://spacestation13.com/) to 3D.
+{: class="centred" }
 
 # DOWNLOADS:
 
@@ -22,9 +23,9 @@
 
 ## LICENSING:
 
-**This project and its code** fall under the **[MIT](Documents/LICENSE-CODE.md)** license.
+This project's **code** fall under the **[MIT](Documents/LICENSE-CODE.md)** license.
 
-**All asset contributions** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.md)** license.
+All **art assets** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.md)** license.
 
 ## COMMUNITY:
 

@@ -1,6 +1,6 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Discussion
+  - name: Discussions
     url: https://github.com/RE-SS3D/SS3D/discussions/categories/general
     about: General game discussions.
   - name: Ideas
