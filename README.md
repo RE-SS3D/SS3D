@@ -34,15 +34,15 @@
 
 [<img src="Documents/Images/youtube.png" alt="YouTube" width="150" align="left">](https://www.youtube.com/channel/UCJT-bVqDOYfyxF3oxECceZg)
 
-[<img src="https://img.shields.io/youtube/channel/subscribers/UCJT-bVqDOYfyxF3oxECceZg?label=SpaceStation3D&style=social" alt="YouTube Subscribers" align="right">](https://www.youtube.com/channel/UCJT-bVqDOYfyxF3oxECceZg)Our YouTube is where we upload many of our important videos including 3D animations, trailers, and gameplay clips of teasers/tests.
+[<img src="https://img.shields.io/youtube/channel/subscribers/UCJT-bVqDOYfyxF3oxECceZg?label=Subscribers&style=social" alt="YouTube Subscribers" align="right">](https://www.youtube.com/channel/UCJT-bVqDOYfyxF3oxECceZg)Our YouTube is where we upload many of our important videos including 3D animations, trailers, and gameplay clips of teasers/tests.
 
 [<img src="Documents/Images/reddit.png" alt="Reddit" width="150" align="left">](https://www.reddit.com/r/RESS3D/)
 
-[<img src="https://img.shields.io/reddit/subreddit-subscribers/RESS3D?label=r%2FRESS3D&style=social" alt="Reddit Followers" align="right">](https://www.reddit.com/r/RESS3D/)We also have a subreddit, where you will find similar discussions and content posts, although it is not as active as our Discord server.
+[<img src="https://img.shields.io/reddit/subreddit-subscribers/RESS3D?label=Subscribers&style=social" alt="Reddit Followers" align="right">](https://www.reddit.com/r/RESS3D/)We also have a subreddit, where you will find similar discussions and content posts, although it is not as active as our Discord server.
 
 [<img src="Documents/Images/Twitter.png" alt="Twitter" width="150" align="left">](https://twitter.com/SpaceStation3D)
 
-[<img src="https://img.shields.io/twitter/follow/SpaceStation3D?label=%40SpaceStation3D&style=social" alt="Twitter Followers" align="right">](https://twitter.com/SpaceStation3D)Currently our twitter is mostly used for announcements & memes but we will start using it more for other posts eventually.
+[<img src="https://img.shields.io/twitter/follow/SpaceStation3D?label=Followers&style=social" alt="Twitter Followers" align="right">](https://twitter.com/SpaceStation3D)Currently our twitter is mostly used for announcements & memes but we will start using it more for other posts eventually.
 
 ## BOARDS:
 
