@@ -1,4 +1,4 @@
-### ![SS3D](Documents/Images/RESPACESTATION3D.png) Welcome to the offical repository for "RE: Space Station 3D" the game! RE:SS3D is an open-source resurrection of the original SS3D project, which was an impressive demo attempting to give the infamous [<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=Latest-Release" alt="Space Station 13">](https://spacestation13.com/) an extra dimension.
+### ![SS3D](Documents/Images/RESPACESTATION3D.png) Welcome to the offical repository for "RE: Space Station 3D" the game! RE:SS3D is an open-source resurrection of the original SS3D project, which was an impressive demo attempting to give the infamous [<img src="https://img.shields.io/badge/Space%20Station-13-red?style=for-the-badge" alt="Space Station 13">](https://spacestation13.com/) an extra dimension.
 
 # DOWNLOADS:
 
