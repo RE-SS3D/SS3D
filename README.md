@@ -4,11 +4,11 @@
 
 [<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
 
-[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=Latest-Release" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)The latest official build of RE:SS3D. It currently works on Windows but still needs testing on other operating systems.[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=Downloads%20%28Latest-Release%29" alt="Latest Release Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
+[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=Latest-Release" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)The latest official build of RE:SS3D. Its working on Windows but needs testing on other OSs.[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=Downloads%20%28Latest-Release%29" alt="Latest Release Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
 
 [<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
 
-[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=Downloads%20%28Total%29" alt="Total Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases)The current state of RE:SS3D in a .zip, including the latest commit. You'll need to build the game in Unity on your own though.[<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold&label=Repository%20Size" alt="Repo Size" align="right">](https://github.com/RE-SS3D/SS3D)
+[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=Downloads%20%28Total%29" alt="Total Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases)The current state of RE:SS3D (every commit) in a .zip. You'll need to build the game in Unity on your own though.[<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold&label=Repository%20Size" alt="Repo Size" align="right">](https://github.com/RE-SS3D/SS3D)
 
 ## INFO:
 
