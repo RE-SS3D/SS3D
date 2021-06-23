@@ -4,19 +4,19 @@
 
 [<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
 
-[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=Latest-Release&style=plastic" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)The latest official build of RE:SS3D. Its working on Windows but needs testing on other OSs.[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=Downloads%20%28Latest-Release%29&style=plastic" alt="Latest Release Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
+[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=Latest-Release&style=plastic&color=9cf" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)The latest official build of RE:SS3D. Its working on Windows but needs testing on other OSs.[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=Downloads%20%28Latest-Release%29&style=plastic&color=blue" alt="Latest Release Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
 
 [<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
 
-[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=Downloads%20%28Total%29&style=plastic" alt="Total Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases)The current state of RE:SS3D (every commit) in a .zip. You'll need to build the game in Unity still.[<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold&label=Repository%20Size&style=plastic" alt="Repo Size" align="right">](https://github.com/RE-SS3D/SS3D)
+[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=Downloads%20%28Total%29&style=plastic&color=blue" alt="Total Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases)The current state of RE:SS3D (every commit) in a .zip. You'll need to build the game in Unity still.[<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold&label=Repository%20Size&style=plastic" alt="Repo Size" align="right">](https://github.com/RE-SS3D/SS3D)
 
 ## INFO:
 
-[<img src="https://img.shields.io/github/issues/RE-SS3D/SS3D&style=plastic" alt="Open Issues" align="right">](https://github.com/RE-SS3D/SS3D/releases)**[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
+[<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic" alt="GitHub Discussions" align="right">](https://github.com/CleverRaven/Cataclysm-DDA/discussions)**[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
 
 ## CONTRIBUTING:
 
-[<img src="https://img.shields.io/discord/483813139633143808?label=Members&style=social&logo=discord" alt="Discord Members" align="right">](https://github.com/RE-SS3D/SS3D/issues)[CONTRIBUTING.md](Documents/CONTRIBUTING.md) contains the information regarding technical contributions, including what version of Unity the project uses, how to set up and run the project, reporting bugs, pull requests, and styling code.
+[<img src="https://img.shields.io/discord/483813139633143808?label=Members&style=social&color=green&logo=discord" alt="Open Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues)[CONTRIBUTING.md](Documents/CONTRIBUTING.md) contains the information regarding technical contributions, including what version of Unity the project uses, how to set up and run the project, reporting bugs, pull requests, and styling code.
 
 [https://ss3d.space/contribute/](https://ss3d.space/contribute/) has a breakdown of the different contribution types (including art assets) with links to helpful guides and to-do boards, making contributing art assets a lot easier for new contributors.
 
