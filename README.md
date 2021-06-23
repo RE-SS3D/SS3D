@@ -14,7 +14,6 @@ This is the current state of the RE:SS3D project in a .zip file, including even 
 
 [<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/issues)
 
-
 [<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/issues)
 
 **[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
@@ -50,6 +49,10 @@ This is the current state of the RE:SS3D project in a .zip file, including even 
 **All asset contributions** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.md)** license.
 
 ## COMMUNITY:
+
+[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/issues)
+
+[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/issues)
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
