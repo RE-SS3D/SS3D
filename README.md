@@ -8,7 +8,7 @@
 
 [<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
 
-<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold" alt="Repo Size" align="right">The current state of RE:SS3D in a .zip file, including even the latest commit. You'll need to build the game in Unity on your own though.<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=downloads%20%28total%29" alt="Total Downloads" align="right">
+<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=downloads%20%28total%29" alt="Total Downloads" align="right"><img src="https://img.shields.io/github/repository-size/RE-SS3D/SS3D?color=gold" alt="Repository Size" align="right">The current state of RE:SS3D in a .zip file, including even the latest commit. You'll need to build the game in Unity on your own though.<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold" alt="Repo Size" align="right">
 
 ## INFO:
 
@@ -30,7 +30,7 @@
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
-<img src="https://img.shields.io/discord/483813139633143808?label=Discord&style=social" alt="Discord Members" align="right">Discord is the primary communication for our devs and community. You'll find a helpful community there and also some sneak peaks at WIP content.
+<img src=https://img.shields.io/discord/483813139633143808?label=SS3D%20Discord&style=social" alt="Discord Members" align="right">Discord is the primary communication for our devs and community. There you'll find helpful people, WIP sneak peaks, & community polls.
 
 [<img src="Documents/Images/youtube.png" alt="YouTube" width="150" align="left">](https://www.youtube.com/channel/UCJT-bVqDOYfyxF3oxECceZg)
 
