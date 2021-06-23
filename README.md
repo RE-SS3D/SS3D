@@ -30,7 +30,7 @@
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
-<img src="https://img.shields.io/discord/483813139633143808?label=Discord&style=social" alt="Discord Members" align="right">Discord is the primary communication for our devs and community. There are plenty of helpful people there capable of answering most of your questions, as well as WIP content.
+<img src="https://img.shields.io/discord/483813139633143808?label=Discord&style=social" alt="Discord Members" align="right">Discord is the primary communication for our devs and community. You'll find a helpful community there and also some sneak peaks at WIP content.
 
 [<img src="Documents/Images/youtube.png" alt="YouTube" width="150" align="left">](https://www.youtube.com/channel/UCJT-bVqDOYfyxF3oxECceZg)
 
@@ -38,11 +38,11 @@
 
 [<img src="Documents/Images/reddit.png" alt="Reddit" width="150" align="left">](https://www.reddit.com/r/RESS3D/)
 
-<img src="https://img.shields.io/reddit/subreddit-subscribers/RESS3D?label=r%2FRESS3D&style=social" alt="Reddit Followers" align="right">We also have a subreddit, where you will find similar discussion threads and posts showing off art & WIP content, although it is not as active as our Discord server.
+<img src="https://img.shields.io/reddit/subreddit-subscribers/RESS3D?label=r%2FRESS3D&style=social" alt="Reddit Followers" align="right">We also have a subreddit, where you will find similar discussions and content posts, although it is not as active as our Discord server.
 
 [<img src="Documents/Images/Twitter.png" alt="Twitter" width="150" align="left">](https://twitter.com/SpaceStation3D)
 
-<img src="https://img.shields.io/twitter/follow/SpaceStation3D?label=%40SpaceStation3D&style=social" alt="Twitter Followers" align="right">Currently our twitter is mostly used for announcements & memes but we will start using it more for the people that prefer it over reddit or discord.
+<img src="https://img.shields.io/twitter/follow/SpaceStation3D?label=%40SpaceStation3D&style=social" alt="Twitter Followers" align="right">Currently our twitter is mostly used for announcements & memes but we will start using it more for other posts eventually.
 
 ## BOARDS:
 
