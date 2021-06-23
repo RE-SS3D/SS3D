@@ -8,7 +8,7 @@
 
 [<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
 
-<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D" alt="Repo Size" align="right">The current state of RE:SS3D in a .zip file, including even the latest commit. You'll need to build the game in Unity on your own though.<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=downloads%20%28total%29" alt="Total Downloads" align="right">
+<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold" alt="Repo Size" align="right">The current state of RE:SS3D in a .zip file, including even the latest commit. You'll need to build the game in Unity on your own though.<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=downloads%20%28total%29" alt="Total Downloads" align="right">
 
 ## INFO:
 
