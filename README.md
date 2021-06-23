@@ -4,7 +4,9 @@
 
 [<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
 
-[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest Release" width="100" align="right">](https://github.com/cosmiccoincidence/SS3D/releases/latest) This is the latest official build of the RE:SS3D project. It currently works on Windows but needs testing on other operating systems still.
+<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest Release" width="100" align="right">
+This is the latest official build of the RE:SS3D project. It currently works on Windows but needs testing on other operating systems still. 
+<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total" alt="Latest Release Downloads" width="100" align="right">
 
 [<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
 
