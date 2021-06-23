@@ -18,7 +18,9 @@ This is the current state of the RE:SS3D project in a .zip file, including even 
 
 **[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
 
-<div align="right">
+## CONTRIBUTING:
+
+<div align="right" width="150">
     <div>
         <a href="https://github.com/RE-SS3D/SS3D/issues">
             <img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D" alt="Latest Release">
@@ -35,8 +37,6 @@ This is the current state of the RE:SS3D project in a .zip file, including even 
         </a>
     </div>
 </div>
-
-## CONTRIBUTING:
 
 [CONTRIBUTING.md](Documents/CONTRIBUTING.md) contains the information regarding technical contributions, including what version of Unity the project uses, how to set up and run the project, reporting bugs, pull requests, and styling code.
 
