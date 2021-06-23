@@ -30,7 +30,7 @@
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
-[<img src="https://img.shields.io/discord/483813139633143808?label=SS3D%20Discord&style=social" alt="Discord Members" align="right">](https://discord.gg/Z3sPhyS)Discord is the primary communication for our devs and community. There you'll find helpful people, WIP content, & community polls.
+[<img src="https://img.shields.io/discord/483813139633143808?label=Discord%20Members&style=social" alt="Discord Members" align="right">](https://discord.gg/Z3sPhyS)Discord is the primary communication for our devs and community. There you'll find helpful people, WIP content, & community polls.
 
 [<img src="Documents/Images/youtube.png" alt="YouTube" width="150" align="left">](https://www.youtube.com/channel/UCJT-bVqDOYfyxF3oxECceZg)
 
