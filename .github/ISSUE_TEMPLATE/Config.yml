@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discussions
+    url: https://github.com/RE-SS3D/SS3D/discussions/categories/general
+    about: General game discussions.
+  - name: Game Design
+    url: https://github.com/RE-SS3D/SS3D/discussions/categories/game-design
+    about: Discussions specifically about game design.
+  - name: Ideas
+    url: https://github.com/RE-SS3D/SS3D/discussions/categories/ideas-inspiration
+    about: Got an idea or inspiration for a game feature? Share it to see what others think.
+  - name: Q/A
+    url: https://github.com/RE-SS3D/SS3D/discussions/categories/q-a
+    about: Have a question related to the game? Feel free to ask and we'll answer.
