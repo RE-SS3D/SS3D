@@ -1,0 +1,8 @@
+.cs
+.meta
+.dll
+.asmdef
+.unity
+Assets/Libraries/
+Assets/Editor/
+Assets/AddressableAssetsData/
