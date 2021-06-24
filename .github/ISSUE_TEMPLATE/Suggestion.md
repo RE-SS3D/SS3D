@@ -2,7 +2,7 @@
 name: Suggestion
 about: Suggest a thing.
 title: "Suggestion Name"
-labels: 'Suggestion'
+labels: 'Type: Discussion (Suggestion)'
 assignees: ''
 
 ---

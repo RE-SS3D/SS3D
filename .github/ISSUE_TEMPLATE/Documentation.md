@@ -2,7 +2,7 @@
 name: Documentation
 about: Papers please.
 title: "Document Name"
-labels: 'Documentation'
+labels: 'Type: Documentation'
 assignees: ''
 
 ---
