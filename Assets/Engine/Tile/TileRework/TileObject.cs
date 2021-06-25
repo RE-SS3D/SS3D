@@ -68,11 +68,5 @@ namespace SS3D.Engine.TilesRework
                 placedSaveObject = placedObject.Save(),
             };
         }
-
-        public void Load(SaveObject saveObject)
-        {
-            // placedObject = saveObject.placedObject;
-            // placedObject = PlacedTileObject.Create( , )
-        }
     }
 }

@@ -112,16 +112,7 @@ namespace SS3D.Engine.TilesRework
 
         public Vector2Int GetXY(Vector3 worldPosition)
         {
-            /*
-            Vector2Int vector = new Vector2Int();
-            vector.x = Mathf.FloorToInt((worldPosition - originPosition).x / tileSize);
-            vector.y = Mathf.FloorToInt((worldPosition - originPosition).z / tileSize);
-
-            return vector;
-            */
-
-            return new Vector2Int((int)Math.Round(worldPosition.x - originPosition.x), (int)Math.Round(worldPosition.z - originPosition.z));
-            
+            return new Vector2Int((int)Math.Round(worldPosition.x - originPosition.x), (int)Math.Round(worldPosition.z - originPosition.z));            
         }
 
         public void SetTileObject(TileLayerType layer, int x, int y, TileObject value)
@@ -223,10 +214,6 @@ namespace SS3D.Engine.TilesRework
                 string objectName = tileObjectSaveObject.placedSaveObject.tileObjectSOName;
 
                 tileManager.SetTileObject(layer, objectName, GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y), tileObjectSaveObject.placedSaveObject.dir);
-
-
-                // TileObject tilemapObject = GetTileObject(layer, tileObjectSaveObject.x, tileObjectSaveObject.y);
-                // tilemapObject.Load(tileObjectSaveObject);
             }
         }
 
