@@ -22,6 +22,12 @@ public static class SaveSystem
         }
     }
 
+    public static string[] GetSaveFiles()
+    {
+        Init();
+        return Directory.GetFiles(SAVE_FOLDER);
+    }
+
     public static void Save(string fileName, string saveString, bool overwrite)
     {
         Init();

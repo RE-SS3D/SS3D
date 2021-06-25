@@ -19,6 +19,7 @@ namespace SS3D.Engine.TilesRework
 
         void Update()
         {
+            /*
             if (Input.GetKeyDown(KeyCode.G) && tileObjectSO != null)
             {
                 Vector3 mousePosition = GetMouseWorldPosition();
@@ -32,6 +33,7 @@ namespace SS3D.Engine.TilesRework
             {
                 tileManager.Load();
             }
+            */
         }
 
         private Vector3 GetMouseWorldPosition()

@@ -22,10 +22,16 @@ namespace SS3D.Engine.TilesRework
 
         public class SaveObject
         {
+            public string name;
+            public int width;
+            public int height;
+            public float tileSize;
+            public Vector3 originPosition;
             public TileObject.SaveObject[] tileObjectSaveObjectArray;
         }
 
         [SerializeField] private bool showDebug = true;
+        private string name;
         private int width;
         private int height;
         private float tileSize = 1f;
@@ -33,8 +39,9 @@ namespace SS3D.Engine.TilesRework
         private List<TileGrid> tileGridList;
         private TileManager tileManager;
 
-        public TileMap(int width, int height, float tileSize, Vector3 originPosition)
+        public TileMap(string name, int width, int height, float tileSize, Vector3 originPosition)
         {
+            this.name = name;
             this.width = width;
             this.height = height;
             this.tileSize = tileSize;
@@ -50,9 +57,8 @@ namespace SS3D.Engine.TilesRework
 
         private TileGrid CreateGrid(TileLayerType layer)
         {
-            TileGrid grid = new TileGrid();
+            TileGrid grid = new TileGrid { layer = layer };
 
-            grid.layer = layer;
             int gridSize = width * height;
 
             switch (layer)
@@ -103,6 +109,16 @@ namespace SS3D.Engine.TilesRework
         public float GetTileSize()
         {
             return tileSize;
+        }
+
+        public Vector3 GetOrigin()
+        {
+            return originPosition;
+        }
+
+        public string GetName()
+        {
+            return name;
         }
 
         public Vector3 GetWorldPosition(int x, int y)
@@ -180,7 +196,7 @@ namespace SS3D.Engine.TilesRework
             }
         }
 
-        public void Save()
+        public SaveObject Save()
         {
             List<TileObject.SaveObject> tileObjectSaveObjectList = new List<TileObject.SaveObject>();
 
@@ -199,21 +215,31 @@ namespace SS3D.Engine.TilesRework
                 }
             }
 
-            SaveObject saveObject = new SaveObject { tileObjectSaveObjectArray = tileObjectSaveObjectList.ToArray() };
+            SaveObject saveObject = new SaveObject {
+                tileObjectSaveObjectArray = tileObjectSaveObjectList.ToArray(),
+                height = height,
+                originPosition = originPosition,
+                tileSize = tileSize,
+                width = width,
+                name = name,
+            };
 
-            SaveSystem.SaveObject(saveObject);
+            // SaveSystem.SaveObject(saveObject);
+
+            return saveObject;
         }
 
-        public void Load()
+        public void Load(SaveObject saveObject)
         {
-            tileManager = TileManager.Instance;
-            SaveObject saveObject = SaveSystem.LoadMostRecentObject<SaveObject>();
+
+            // tileManager = TileManager.Instance;
+            // SaveObject saveObject = SaveSystem.LoadMostRecentObject<SaveObject>();
             foreach (TileObject.SaveObject tileObjectSaveObject in saveObject.tileObjectSaveObjectArray)
             {
                 TileLayerType layer = tileObjectSaveObject.layer;
                 string objectName = tileObjectSaveObject.placedSaveObject.tileObjectSOName;
 
-                tileManager.SetTileObject(layer, objectName, GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y), tileObjectSaveObject.placedSaveObject.dir);
+                tileManager.SetTileObject(this, layer, objectName, GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y), tileObjectSaveObject.placedSaveObject.dir);
             }
         }
 

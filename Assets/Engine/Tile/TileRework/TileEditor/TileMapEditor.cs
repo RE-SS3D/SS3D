@@ -23,6 +23,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMap
 
         private TileLayerType selectedLayer;
         private TileObjectSO selectedTileSO;
+        private bool enablePlacement = false;
 
         [MenuItem("RE:SS3D Editor Tools/TileMap Editor")]
         public static void ShowWindow()
@@ -67,13 +68,18 @@ namespace SS3D.Engine.TilesRework.Editor.TileMap
 
                 // Load & Save
                 EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("Load")) { }
-                if (GUILayout.Button("Save")) { }
+                if (GUILayout.Button("Load")) { tileManager.LoadAll(); }
+                if (GUILayout.Button("Save")) { tileManager.SaveAll(); }
 
                 EditorGUILayout.EndHorizontal();
 
                 // Resize grid
-                if (GUILayout.Button("Resize grid")) { }
+                EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button("New tilemap")) { }
+                if (GUILayout.Button("Delete tilemap")) { }
+                if (GUILayout.Button("Resize grid")) { /*tileManager.ResizeGrid(gridSizeX, gridSizeY) */; }
+
+                EditorGUILayout.EndHorizontal();
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
 
@@ -101,7 +107,22 @@ namespace SS3D.Engine.TilesRework.Editor.TileMap
 
         private void OnSceneGUI(SceneView sceneView)
         {
+            if (enablePlacement == false)
+                return;
 
+            /*
+            // Ensure the user can't use other scene controls whilst this one is active.
+            HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
+
+            // Convert mouse position to world position by finding point where y = 0.
+            Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+            Vector3 position = ray.origin - (ray.origin.y / ray.direction.y) * ray.direction;
+            Vector3 snappedPosition = tileManager.GetPositionClosestTo(position);
+
+            // Set ghost tile's position
+            selectionTile.transform.position = snappedPosition;
+            Vector2Int tilePosition = tileManager.GetIndexAt(snappedPosition);
+            */
         }
 
         private void ShowLayerVisibility()
