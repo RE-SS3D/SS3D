@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 5631860100232263154}
   - component: {fileID: -8080460482961284108}
   m_Layer: 16
-  m_Name: katana
+  m_Name: Katana
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -164,7 +164,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: katana
+  ItemId: Katana
   Name: Katana
   Volume: 18
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}

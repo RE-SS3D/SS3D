@@ -30,15 +30,15 @@ namespace SS3D.Engine.Tiles.Connections
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
         [Tooltip("A mesh where only 1 edge is connected, north by default")]
-        public Mesh c;
+        public Mesh u;
         [Tooltip("A mesh where only 1 corner is connected, NE by default")]
-        public Mesh cDiagonal;
+        public Mesh uDiagonal;
         [Tooltip("A mesh where 2 opposite edges are connected, north & south by default")]
         public Mesh i;
         [Tooltip("A mesh where 2 opposite corners are connected, NE & SW by default")]
         public Mesh iDiagonal;
         [Tooltip("A mesh where 2 adjacent corners are connected, NE & NW by default")]
-        public Mesh u;
+        public Mesh v;
         [Tooltip("A mesh where the north & east edges are connected")]
         public Mesh l;
         [Tooltip("A mesh where the north edge & NE corner are connected")]
@@ -49,12 +49,6 @@ namespace SS3D.Engine.Tiles.Connections
         public Mesh lObtuseEast;
         [Tooltip("A mesh where the north edge & SW corner are connected")]
         public Mesh lObtuseWest;
-        [Tooltip("A mesh where the north, east, and west edges are connected")]
-        public Mesh t;
-        [Tooltip("A mesh where all 4 edges are connected together")]
-        public Mesh xAll;
-        [Tooltip("A mesh where north connects to south and west connects to east overlapping connections")]
-        public Mesh xOpposite;
 
         /**
          * When a single adjacent turf is updated
@@ -115,9 +109,9 @@ namespace SS3D.Engine.Tiles.Connections
 
             if (cardinalInfo.IsO())
                 mesh = o;
-            else if (cardinalInfo.IsC())
+            else if (cardinalInfo.IsU())
             {
-                mesh = c;
+                mesh = u;
                 rotation = DirectionHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
             }
             else if (cardinalInfo.IsI())
@@ -125,18 +119,11 @@ namespace SS3D.Engine.Tiles.Connections
                 mesh = i;
                 rotation = OrientationHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
             }
-            else if (cardinalInfo.IsL())
+            else
             {
                 mesh = l;
                 rotation = DirectionHelper.AngleBetween(Direction.NorthEast, cardinalInfo.GetCornerDirection());
             }
-            else if (cardinalInfo.IsT())
-            {
-                mesh = t;
-                rotation = DirectionHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyNegative());
-            }
-            else // Must be X
-                mesh = xAll;
 
             if (filter == null)
                 filter = GetComponent<MeshFilter>();

@@ -22,7 +22,7 @@ namespace SS3D.Engine.Tiles.Connections
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
         [Tooltip("A mesh where the north edge is connected")]
-        public Mesh c;
+        public Mesh u;
         [Tooltip("A mesh where north & south edges are connected too the same type")]
         public Mesh i;
         [Tooltip("A mesh where north connects to same type (window), and south connects to the generic type (wall)")]
@@ -93,9 +93,9 @@ namespace SS3D.Engine.Tiles.Connections
             Mesh mesh;
             if (generalCardinals.IsO())
                 mesh = o;
-            else if (generalCardinals.IsC())
+            else if (generalCardinals.IsU())
             {
-                mesh = c;
+                mesh = u;
                 rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
             }
             else if (generalCardinals.IsI())
