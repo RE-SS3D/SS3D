@@ -19,6 +19,18 @@ namespace SS3D.Engine.TilesRework
             }
         }
 
+        public static int GetRotationAngle(Dir dir)
+        {
+            switch (dir)
+            {
+                default:
+                case Dir.Down: return 0;
+                case Dir.Left: return 90;
+                case Dir.Up: return 180;
+                case Dir.Right: return 270;
+            }
+        }
+
         public enum Dir
         {
             Down,
@@ -32,19 +44,6 @@ namespace SS3D.Engine.TilesRework
         public GameObject prefab;
         public int width;
         public int height;
-
-
-        public int GetRotationAngle(Dir dir)
-        {
-            switch (dir)
-            {
-                default:
-                case Dir.Down: return 0;
-                case Dir.Left: return 90;
-                case Dir.Up: return 180;
-                case Dir.Right: return 270;
-            }
-        }
 
         public Vector2Int GetRotationOffset(Dir dir)
         {

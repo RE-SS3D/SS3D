@@ -17,7 +17,7 @@ namespace SS3D.Engine.TilesRework
 
         public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, TileObjectSO.Dir dir, TileObjectSO tileObjectSO)
         {
-            GameObject placedGameObject = Instantiate(tileObjectSO.prefab, worldPosition, Quaternion.Euler(0, tileObjectSO.GetRotationAngle(dir), 0));
+            GameObject placedGameObject = Instantiate(tileObjectSO.prefab, worldPosition, Quaternion.Euler(0, TileObjectSO.GetRotationAngle(dir), 0));
 
             PlacedTileObject placedObject = placedGameObject.GetComponent<PlacedTileObject>();
             if (placedObject == null)

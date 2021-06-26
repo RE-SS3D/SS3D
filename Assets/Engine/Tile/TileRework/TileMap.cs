@@ -54,6 +54,8 @@ namespace SS3D.Engine.TilesRework
             {
                 DrawDebug();
             }
+
+            tileManager = TileManager.Instance;
         }
 
         private TileGrid CreateGrid(TileLayerType layer)
@@ -182,6 +184,12 @@ namespace SS3D.Engine.TilesRework
                 Mathf.Clamp(gridPosition.x, 0, width - 1),
                 Mathf.Clamp(gridPosition.y, 0, height - 1)
             );
+        }
+
+        public Vector3 GetClosestPosition(Vector3 worldPosition)
+        {
+            Vector2Int gridPosition = ValidateGridPosition(GetXY(worldPosition));
+            return GetWorldPosition(gridPosition.x, gridPosition.y);
         }
 
         public void TriggerGridObjectChanged(int x, int y)
