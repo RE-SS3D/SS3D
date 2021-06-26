@@ -146,6 +146,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             EditorGUILayout.Space();
 
             // Search bar
+            EditorGUI.BeginChangeCheck();
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Search:");
             searchString = EditorGUILayout.TextField(searchString);
@@ -155,6 +156,10 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             EditorGUILayout.PrefixLabel("Selected layer:");
             selectedLayer = (TileLayerType)EditorGUILayout.EnumPopup(selectedLayer);
             EditorGUILayout.EndHorizontal();
+            if (EditorGUI.EndChangeCheck())
+            {
+                RefreshSelectionGrid();
+            }
 
             enableVisualHelp = EditorGUILayout.Toggle("Enable visual help: ", enableVisualHelp);
 
@@ -173,7 +178,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
             // Selection grid
             scrollPositionSelection = EditorGUILayout.BeginScrollView(scrollPositionSelection);
-            UpdateSelectionGrid(selectedLayer, searchString);
+            UpdateSelectionGrid();
             EditorGUILayout.EndScrollView();
         }
 
@@ -306,12 +311,17 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             if (ghostObject != null)
                 DestroyGhost();
 
-            // ghostObject = new GameObject("Ghost object");
-            ghostObject = Instantiate(selectedObjectSO.prefab, Vector3.zero, Quaternion.identity);
+            if (selectedObjectSO == null)
+            {
+                ghostObject = new GameObject();
+            }
+            else
+            {
+                ghostObject = Instantiate(selectedObjectSO.prefab, Vector3.zero, Quaternion.identity);
+            }
             ghostObject.name = "Ghost object";
             ghostObject.tag = "EditorOnly";
             ghostObject.transform.SetParent(tileManager.transform);
-
             
             var meshes = ghostObject.GetComponentsInChildren<MeshRenderer>();
             foreach (var mesh in meshes)
@@ -366,22 +376,30 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             }
         }
 
-        private void UpdateSelectionGrid(TileLayerType layer, string search)
+        private void RefreshSelectionGrid()
         {
-            LoadAssetLayer(layer, search);
+            LoadAssetLayer(selectedLayer, searchString);
+            if (assetList.Count > assetIndex)
+            {
+                selectedObjectSO = assetList[assetIndex];
+                Debug.Log("new ghost");
+                CreateGhost();
+            }
+        }
 
+        private void UpdateSelectionGrid()
+        {
             GUIStyle style = new GUIStyle();
             style.imagePosition = ImagePosition.ImageAbove;
             style.contentOffset = new Vector2(10, 10);
             style.margin.bottom = 15;
             style.onNormal.background = Texture2D.grayTexture;
 
+            EditorGUI.BeginChangeCheck();
             assetIndex = GUILayout.SelectionGrid(assetIndex, assetIcons.ToArray(), 3, style);
-
-            if (assetList.Count > assetIndex)
+            if (EditorGUI.EndChangeCheck())
             {
-                selectedObjectSO = assetList[assetIndex];
-                CreateGhost();
+                RefreshSelectionGrid();
             }
         }
     }

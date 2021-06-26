@@ -51,10 +51,15 @@ namespace SS3D.Engine.TilesRework
             Awake();
         }
 
-        public void AddTileMap(string name, int width, int height, float tileSize, Vector3 origin)
+        public TileMap AddTileMap(string name, int width, int height, float tileSize, Vector3 origin)
         {
             TileMap map = new TileMap(name, width, height, tileSize, origin);
-            mapList.Add(map);
+            // mapList.Add(map);
+
+            GameObject mapObject = new GameObject(name);
+            mapObject.transform.SetParent(transform);
+
+            return map;
         }
 
         public void CreateEmptyMap()
@@ -62,16 +67,20 @@ namespace SS3D.Engine.TilesRework
             int emptyMapNumber = 1;
             foreach (TileMap map in mapList)
             {
-                if (map.GetName().Contains("Empty map"))
+                if (map.GetName() == "Empty map (" + emptyMapNumber + ")")
+                {
                     emptyMapNumber++;
+                }
             }
 
-            AddTileMap("Empty map (" + emptyMapNumber + ")", 1, 1, 1.0f, new Vector3{ x = 0, y = 0, z = 0 });
+            TileMap emptyMap = AddTileMap("Empty map (" + emptyMapNumber + ")", 1, 1, 1.0f, new Vector3{ x = 0, y = 0, z = 0 });
+            mapList.Add(emptyMap);
         }
 
         private void CreatDefaultMap()
         {
-            AddTileMap("Main map", 10, 10, 1f, new Vector3(0, 0, 0));
+            TileMap map = AddTileMap("Main map", 10, 10, 1f, new Vector3(0, 0, 0));
+            mapList.Add(map);
             SaveAll();
         }
 
@@ -117,9 +126,18 @@ namespace SS3D.Engine.TilesRework
                 Vector3 placedObjectWorldPosition = map.GetWorldPosition(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, 0, rotationOffset.y) * map.GetTileSize();
 
                 PlacedTileObject placedObject = PlacedTileObject.Create(placedObjectWorldPosition, placedObjectOrigin, dir, tileObjectSO);
-                placedObject.transform.SetParent(this.transform);
+                placedObject.transform.SetParent(transform);
 
-                foreach (Vector2Int gridPosition in gridPositionList)
+                for (int i = 0; i < transform.childCount; i++)
+                {
+                    Transform child = transform.GetChild(i);
+                    if (child.name == map.GetName())
+                    {
+                        placedObject.transform.SetParent(child);
+                        break;
+                    }
+                }
+                    foreach (Vector2Int gridPosition in gridPositionList)
                 {
                     map.GetTileObject(layer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject);
                 }
@@ -169,7 +187,7 @@ namespace SS3D.Engine.TilesRework
 
             foreach (SaveObject s in saveMapObject.saveObjectList)
             {
-                TileMap newMap = new TileMap(s.name, s.width, s.height, s.tileSize, s.originPosition);
+                TileMap newMap = AddTileMap(s.name, s.width, s.height, s.tileSize, s.originPosition);
                 newMap.Load(s);
                 mapList.Add(newMap);
             }
@@ -184,17 +202,28 @@ namespace SS3D.Engine.TilesRework
 
             SaveObject saveObject = map.Save();
 
-            // AddTileMap(name, xSize, ySize, map.GetTileSize(), origin);
-            TileMap newMap = new TileMap(name, xSize, ySize, map.GetTileSize(), origin);
+            TileMap newMap = AddTileMap(name, xSize, ySize, map.GetTileSize(), origin);
+            // TileMap newMap = new TileMap(name, xSize, ySize, map.GetTileSize(), origin);
             newMap.Load(saveObject);
 
             mapList.Insert(mapList.IndexOf(map), newMap);
             //mapList.Add(newMap);
-            mapList.Remove(map);
+            RemoveMap(map);
         }
 
         public void RemoveMap(TileMap map)
         {
+            map.Clear();
+
+            for (int i = transform.childCount - 1; i >= 0; --i)
+            {
+                Transform child = transform.GetChild(i);
+                if (child.name == map.GetName())
+                {
+                    DestroyImmediate(child.gameObject);
+                    break;
+                }
+            }
             mapList.Remove(map);
         }
 
@@ -203,6 +232,16 @@ namespace SS3D.Engine.TilesRework
             foreach (TileMap map in mapList)
             {
                 map.Clear();
+            }
+
+            for (int i = transform.childCount - 1; i >= 0; --i)
+            {
+                Transform child = transform.GetChild(i);
+#if UNITY_EDITOR
+                DestroyImmediate(child.gameObject);
+#else
+                Destroy(child.gameObject);
+#endif
             }
             mapList.Clear();
         }
