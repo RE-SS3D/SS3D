@@ -6,16 +6,18 @@ using Mirror;
 using UnityEngine.Assertions;
 
 // This handles the cell charger, responsable for exclusivery recharging batteries
-
-// THIS IS NOT NETWORKED
 public class CellCharger : NetworkBehaviour
 {
     // Visual container for the cell to be put in
     public AttachedContainer AttachedContainer;
-
-    // Current cell being recharged
-    private Item powerCell;
-    public MeshRenderer renderer;
+    public MeshRenderer wiresMeshRenderer;
+    [SerializeField]private Material emissiveMaterial;
+    [SerializeField]private Texture offEmissiveMask;
+    [SerializeField]private Texture lowEmissiveMask;
+    [SerializeField]private Texture midLowEmissiveMask;
+    [SerializeField]private Texture midHighEmissiveMask;
+    [SerializeField]private Texture highEmissiveMask;
+    private int emissionMap = Shader.PropertyToID("_EmissionMap");
 
     private void Start()
     {
@@ -23,9 +25,12 @@ public class CellCharger : NetworkBehaviour
 
         AttachedContainer.Container.ContentsChanged += (_, items, type) =>
         {
-            renderer.enabled = !AttachedContainer.Container.Empty;
+            wiresMeshRenderer.enabled = !AttachedContainer.Container.Empty;
+            if (AttachedContainer.Container.Empty)
+            {
+                emissiveMaterial.SetTexture(emissionMap, offEmissiveMask);
+            }
         };
-
         if (isServer)
         {
             StartCoroutine(StartCharge());
@@ -49,10 +54,29 @@ public class CellCharger : NetworkBehaviour
             IChargeable chargeable = item.GetComponent<IChargeable>();
             if (chargeable != null)
             {
-		// Effectively add charge
+                
                 chargeable.AddCharge(chargeable.GetChargeRate());
+                UpdateEmissiveMask(chargeable.GetPowerPercentage());
             }
-            
+        }
+    }
+    private void UpdateEmissiveMask(float powerPercentage) 
+    {
+        if (-1f <= powerPercentage && powerPercentage < .25f)
+        {
+            emissiveMaterial.SetTexture(emissionMap, lowEmissiveMask);       
+        }
+        else if (.25 <= powerPercentage && powerPercentage < .50f)
+        {
+            emissiveMaterial.SetTexture(emissionMap, midLowEmissiveMask);
+        }
+        else if (.50 <= powerPercentage && powerPercentage < .75f)
+        {
+            emissiveMaterial.SetTexture(emissionMap, midHighEmissiveMask);
+        }
+        else 
+        {
+            emissiveMaterial.SetTexture(emissionMap, highEmissiveMask);
         }
     }
 }
