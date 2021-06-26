@@ -219,7 +219,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
-  - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  - {fileID: 2100000, guid: 17c61c380b2d744468ac895bac628542, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -338,7 +338,13 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   AttachedContainer: {fileID: 8312077444202497988}
-  renderer: {fileID: 6935684457514274430}
+  wiresMeshRenderer: {fileID: 6935684457514274430}
+  emissiveMaterial: {fileID: 2100000, guid: 17c61c380b2d744468ac895bac628542, type: 2}
+  offEmissiveMask: {fileID: 2800000, guid: 0445f5662f4d8aa428752f9cd685ce8b, type: 3}
+  lowEmissiveMask: {fileID: 2800000, guid: 0873d288814aa09448d91df857e52268, type: 3}
+  midLowEmissiveMask: {fileID: 2800000, guid: 57c370e7749a1264084b4208d19e9547, type: 3}
+  midHighEmissiveMask: {fileID: 2800000, guid: 50219ae7ba7994744bd6b00ac2e74f09, type: 3}
+  highEmissiveMask: {fileID: 2800000, guid: 386863ed6e2b32e459ad0eca3cde2952, type: 3}
 --- !u!114 &1326119814106932438
 MonoBehaviour:
   m_ObjectHideFlags: 0
