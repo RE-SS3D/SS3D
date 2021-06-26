@@ -20,6 +20,7 @@ namespace SS3D.Engine.TilesRework
             public TileObject[] tileObjectsGrid;
         }
 
+        [Serializable]
         public class SaveObject
         {
             public string name;
@@ -119,6 +120,16 @@ namespace SS3D.Engine.TilesRework
         public string GetName()
         {
             return name;
+        }
+
+        public void SetName(string name)
+        {
+            this.name = name;
+        }
+
+        public void SetOrigin(Vector3 origin)
+        {
+            originPosition = origin;
         }
 
         public Vector3 GetWorldPosition(int x, int y)
@@ -231,9 +242,6 @@ namespace SS3D.Engine.TilesRework
 
         public void Load(SaveObject saveObject)
         {
-
-            // tileManager = TileManager.Instance;
-            // SaveObject saveObject = SaveSystem.LoadMostRecentObject<SaveObject>();
             foreach (TileObject.SaveObject tileObjectSaveObject in saveObject.tileObjectSaveObjectArray)
             {
                 TileLayerType layer = tileObjectSaveObject.layer;

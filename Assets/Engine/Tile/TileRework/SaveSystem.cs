@@ -25,7 +25,7 @@ public static class SaveSystem
     public static string[] GetSaveFiles()
     {
         Init();
-        return Directory.GetFiles(SAVE_FOLDER);
+        return Directory.GetFiles(SAVE_FOLDER, string.Format("*.{0}", SAVE_EXTENSION));
     }
 
     public static void Save(string fileName, string saveString, bool overwrite)

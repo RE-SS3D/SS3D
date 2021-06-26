@@ -1,0 +1,1 @@
+{"saveObjectList":[{"name":"Main map","width":10,"height":10,"tileSize":1.0,"originPosition":{"x":0.0,"y":0.0,"z":0.0},"tileObjectSaveObjectArray":[]}]}

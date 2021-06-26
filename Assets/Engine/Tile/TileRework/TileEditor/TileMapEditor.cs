@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace SS3D.Engine.TilesRework.Editor.TileMap
+namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 {
     public class TileMapEditor : EditorWindow
     {
+        private const int MAX_TILEMAP_SIZE = 500;
+
         private TileManager tileManager;
 
         private bool showGridOptions = false;
@@ -21,8 +23,13 @@ namespace SS3D.Engine.TilesRework.Editor.TileMap
         private List<GUIContent> assetIcons = new List<GUIContent>();
         private int assetIndex;
 
+        private string selectedName;
+        private Vector3 selectedOrigin;
+        private int selectedWidth;
+        private int selectedHeight;
+        private int selectedTileMapIndex = 0;
         private TileLayerType selectedLayer;
-        private TileObjectSO selectedTileSO;
+        private TileObjectSO selectedObjectSO;
         private bool enablePlacement = false;
 
         [MenuItem("RE:SS3D Editor Tools/TileMap Editor")]
@@ -47,6 +54,11 @@ namespace SS3D.Engine.TilesRework.Editor.TileMap
         {
             tileManager = TileManager.Instance;
 
+            if (tileManager == null)
+                EditorUtility.DisplayDialog("Missing TileManager", "No TileManager was found in the scene. Please add one.", "ok");
+
+            FillGridOptions(tileManager.GetTileMaps()[selectedTileMapIndex]);
+
             SceneView.duringSceneGui += OnSceneGUI;
         }
 
@@ -57,32 +69,62 @@ namespace SS3D.Engine.TilesRework.Editor.TileMap
 
         public void OnGUI()
         {
+            EditorGUI.BeginChangeCheck();
+            selectedTileMapIndex = EditorGUILayout.Popup("Active tilemap", selectedTileMapIndex, tileManager.GetTileMapNames());
+            if (EditorGUI.EndChangeCheck())
+            {
+                FillGridOptions(tileManager.GetTileMaps()[selectedTileMapIndex]);
+            }
+
+            EditorGUILayout.Space();
+
+            // Load & Save
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.Space();
+
+            if (GUILayout.Button("New"))
+            {
+                tileManager.CreateEmptyMap();
+                RefreshMapList();
+            }
+            if (GUILayout.Button("Delete"))
+            {
+                if (EditorUtility.DisplayDialog("Remove TileMap",
+                    "Are you sure that you want to remove '" + tileManager.GetTileMapNames()[selectedTileMapIndex] + "'?"
+                    , "Ok", "Cancel"))
+                {
+                    tileManager.RemoveMap(tileManager.GetTileMaps()[selectedTileMapIndex]);
+                    RefreshMapList();
+                }
+            }
+            if (GUILayout.Button("Load")) { tileManager.LoadAll(); }
+            if (GUILayout.Button("Save")) { tileManager.SaveAll(); }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space();
+
             showGridOptions = EditorGUILayout.BeginFoldoutHeaderGroup(showGridOptions, "Grid options");
             if (showGridOptions)
             {
+                EditorGUI.indentLevel++;
+                selectedName = EditorGUILayout.TextField("Name", selectedName);
+                selectedWidth = EditorGUILayout.IntSlider("Width", selectedWidth, 1, MAX_TILEMAP_SIZE);
+                selectedHeight = EditorGUILayout.IntSlider("Height", selectedHeight, 1, MAX_TILEMAP_SIZE);
+                selectedOrigin = EditorGUILayout.Vector3Field("Origin position", selectedOrigin);
+
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.PrefixLabel("Grid dimensions");
-                EditorGUILayout.PrefixLabel("10");
-                EditorGUILayout.PrefixLabel("10");
+                EditorGUILayout.Space();
+                if (GUILayout.Button("Apply"))
+                {
+                    ApplySettings();
+                }
+                if (GUILayout.Button("Reset")) { FillGridOptions(tileManager.GetTileMaps()[selectedTileMapIndex]);  }
                 EditorGUILayout.EndHorizontal();
 
-                // Load & Save
-                EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("Load")) { tileManager.LoadAll(); }
-                if (GUILayout.Button("Save")) { tileManager.SaveAll(); }
-
-                EditorGUILayout.EndHorizontal();
-
-                // Resize grid
-                EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("New tilemap")) { }
-                if (GUILayout.Button("Delete tilemap")) { }
-                if (GUILayout.Button("Resize grid")) { /*tileManager.ResizeGrid(gridSizeX, gridSizeY) */; }
-
-                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.Space();
+                EditorGUI.indentLevel--;
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
-
 
             // Change the visibility of different tilemap layers
             showVisibility = EditorGUILayout.BeginFoldoutHeaderGroup(showVisibility, "Visibility");
@@ -92,11 +134,37 @@ namespace SS3D.Engine.TilesRework.Editor.TileMap
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
 
+            EditorGUILayout.Space();
 
             // Search bar
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Search:");
             searchString = EditorGUILayout.TextField(searchString);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Selected layer");
+            selectedLayer = (TileLayerType)EditorGUILayout.EnumPopup(selectedLayer);
+            EditorGUILayout.EndHorizontal();
+
+            if (GUILayout.Button("Add"))
+            {
+                enablePlacement = true;
+                // deleteTiles = false;
+                if (currentTile == null)
+                {
+                    ResetTileObject();
+                }
+            }
+            if (GUILayout.Button("Delete"))
+            {
+                enablePlacement = true;
+                // deleteTiles = true;
+                if (currentTile == null)
+                {
+                    ResetTileObject();
+                }
+            }
             EditorGUILayout.EndHorizontal();
 
             // Selection grid
@@ -105,24 +173,58 @@ namespace SS3D.Engine.TilesRework.Editor.TileMap
             EditorGUILayout.EndScrollView();
         }
 
+        private void ApplySettings()
+        {
+            TileMap map = tileManager.GetTileMaps()[selectedTileMapIndex];
+            if (map.GetWidth() > selectedWidth || map.GetHeight() > selectedHeight)
+            {
+                if (!EditorUtility.DisplayDialog("TileMap resizing",
+            "The currently selected width and height are smaller than the grid size and you may loose stored objects." +
+            "\n\n" +
+            " Are you sure that you want to resize?"
+            , "Ok", "Cancel"))
+                {
+                    return;
+                }
+            }
+            tileManager.ChangeGrid(map, selectedName, selectedWidth, selectedHeight, selectedOrigin);
+        }
+
         private void OnSceneGUI(SceneView sceneView)
         {
             if (enablePlacement == false)
                 return;
 
-            /*
+            
             // Ensure the user can't use other scene controls whilst this one is active.
             HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
 
             // Convert mouse position to world position by finding point where y = 0.
             Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
             Vector3 position = ray.origin - (ray.origin.y / ray.direction.y) * ray.direction;
-            Vector3 snappedPosition = tileManager.GetPositionClosestTo(position);
+            Vector3 snappedPosition = ;
 
             // Set ghost tile's position
             selectionTile.transform.position = snappedPosition;
             Vector2Int tilePosition = tileManager.GetIndexAt(snappedPosition);
-            */
+            
+        }
+
+        private void RefreshMapList()
+        {
+            selectedTileMapIndex = tileManager.GetTileMaps().Count - 1;
+            if (selectedTileMapIndex >= 0)
+            {
+                FillGridOptions(tileManager.GetTileMaps()[selectedTileMapIndex]);
+            }
+        }
+
+        private void FillGridOptions(TileMap map)
+        {
+            selectedName = map.GetName();
+            selectedWidth = map.GetWidth();
+            selectedHeight = map.GetHeight();
+            selectedOrigin = map.GetOrigin();
         }
 
         private void ShowLayerVisibility()

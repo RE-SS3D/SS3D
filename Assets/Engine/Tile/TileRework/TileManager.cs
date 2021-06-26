@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,30 +8,88 @@ using static SS3D.Engine.TilesRework.TileMap;
 
 namespace SS3D.Engine.TilesRework
 {
+    [ExecuteAlways]
     public class TileManager : MonoBehaviour
     {
+        [Serializable]
+        public class SaveMapObject
+        {
+            public SaveObject[] saveObjectList;
+        }
+
+        private const string SAVE_FILENAME = "tilemaps";
         public static TileManager Instance { get; private set; }
         private static TileObjectSO[] tileObjectSOs;
+        private bool isInitalized;
 
         private List<TileMap> mapList;
 
         private void Awake()
         {
-            Instance = this;
-            mapList = new List<TileMap>();
-            tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
+            if (!isInitalized)
+            {
+                Instance = this;
+                mapList = new List<TileMap>();
+                tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
 
-            
-            int mapWidth = 10;
-            int mapHeight = 10;
+                LoadAll();
+                /*
+                int mapWidth = 10;
+                int mapHeight = 10;
 
-            AddTileMap("MainTileMap", mapWidth, mapHeight, 1f, new Vector3(0, 0, 0));
+                AddTileMap("MainTileMap", mapWidth, mapHeight, 1f, new Vector3(0, 0, 0));
+                */
+
+
+                isInitalized = true;
+            }
+        }
+
+        private void OnValidate()
+        {
+            isInitalized = false;
+            Awake();
         }
 
         public void AddTileMap(string name, int width, int height, float tileSize, Vector3 origin)
         {
             TileMap map = new TileMap(name, width, height, tileSize, origin);
             mapList.Add(map);
+        }
+
+        public void CreateEmptyMap()
+        {
+            int emptyMapNumber = 1;
+            foreach (TileMap map in mapList)
+            {
+                if (map.GetName().Contains("Empty map"))
+                    emptyMapNumber++;
+            }
+
+            AddTileMap("Empty map (" + emptyMapNumber + ")", 1, 1, 1.0f, new Vector3{ x = 0, y = 0, z = 0 });
+        }
+
+        private void CreatDefaultMap()
+        {
+            AddTileMap("Main map", 10, 10, 1f, new Vector3(0, 0, 0));
+            SaveAll();
+        }
+
+        public List<TileMap> GetTileMaps()
+        {
+            return mapList;
+        }
+
+        public string[] GetTileMapNames()
+        {
+            string[] names = new string[mapList.Count];
+
+            for (int i = 0; i < mapList.Count; i++)
+            {
+                names[i] = mapList[i].GetName();
+            }
+
+            return names;
         }
 
         public void SetTileObject(TileMap map, TileLayerType layer, TileObjectSO tileObjectSO, Vector3 position, TileObjectSO.Dir dir)
@@ -79,40 +138,64 @@ namespace SS3D.Engine.TilesRework
 
         public void SaveAll()
         {
+            List<SaveObject> saveObjectList = new List<SaveObject>();
+
             foreach (TileMap map in mapList)
             {
                 SaveObject saveObject = map.Save();
-                SaveSystem.SaveObject(saveObject.name, saveObject, true);
+                saveObjectList.Add(saveObject);
             }
+
+            SaveMapObject saveMapObject = new SaveMapObject
+            {
+                saveObjectList = saveObjectList.ToArray()
+            };
+
+            SaveSystem.SaveObject(SAVE_FILENAME, saveMapObject, true);
             Debug.Log("Tilemaps saved");
         }
 
         public void LoadAll()
         {
             ClearMaps();
+            SaveMapObject saveMapObject = SaveSystem.LoadObject<SaveMapObject>(SAVE_FILENAME);
 
-            string[] filePathNames = SaveSystem.GetSaveFiles();
-
-            foreach (string filePathName in filePathNames)
+            if (saveMapObject == null)
             {
-                string fileName = Path.GetFileNameWithoutExtension(filePathName);
-                SaveObject s = SaveSystem.LoadObject<SaveObject>(fileName);
+                Debug.Log("No saved maps found. Creating default one.");
+                CreatDefaultMap();
+                return;
+            }
 
+            foreach (SaveObject s in saveMapObject.saveObjectList)
+            {
                 TileMap newMap = new TileMap(s.name, s.width, s.height, s.tileSize, s.originPosition);
+                newMap.Load(s);
                 mapList.Add(newMap);
             }
 
             Debug.Log("Tilemaps loaded");
         }
 
-        public void ResizeGrid(TileMap map, int xSize, int ySize)
+        public void ChangeGrid(TileMap map, string name, int xSize, int ySize, Vector3 origin)
         {
             if (map.GetWidth() > xSize || map.GetHeight() > ySize)
                 Debug.LogWarning("Resizing the tilemap smaller than the original. You may lose stored objects!");
 
             SaveObject saveObject = map.Save();
 
-            AddTileMap(map.GetName(), xSize, ySize, map.GetTileSize(), map.GetOrigin());
+            // AddTileMap(name, xSize, ySize, map.GetTileSize(), origin);
+            TileMap newMap = new TileMap(name, xSize, ySize, map.GetTileSize(), origin);
+            newMap.Load(saveObject);
+
+            mapList.Insert(mapList.IndexOf(map), newMap);
+            //mapList.Add(newMap);
+            mapList.Remove(map);
+        }
+
+        public void RemoveMap(TileMap map)
+        {
+            mapList.Remove(map);
         }
 
         private void ClearMaps()
