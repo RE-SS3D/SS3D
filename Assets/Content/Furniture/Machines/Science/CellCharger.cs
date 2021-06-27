@@ -60,6 +60,9 @@ public class CellCharger : NetworkBehaviour
             }
         }
     }
+    // Chooses the appropriate emmissive mask texture for emissiveMaterial based on powerPercentage.
+    // The power is processed in .25 groups. (-1 to .25) (.25 to .50) (.50 to .75) (.75 to 1)
+    // The first group starts at -1 to ensure that the first light glows immediately
     private void UpdateEmissiveMask(float powerPercentage) 
     {
         if (-1f <= powerPercentage && powerPercentage < .25f)
