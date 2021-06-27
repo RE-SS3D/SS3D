@@ -1,31 +1,28 @@
 namespace Mirror
 {
-    // A sync object is an object that can synchronize it's state
-    // between server and client,  such as a SyncList
+    /// <summary>SyncObjects sync state between server and client. E.g. SyncLists.</summary>
     public interface SyncObject
     {
-        // true if there are changes since the last flush
+        /// <summary>True if there are changes since the last flush</summary>
         bool IsDirty { get; }
 
-        // Discard all the queued changes
+        /// <summary>Discard all the queued changes</summary>
         // Consider the object fully synchronized with clients
         void Flush();
 
-        // Write a full copy of the object
+        /// <summary>Write a full copy of the object</summary>
         void OnSerializeAll(NetworkWriter writer);
 
-        // Write the changes made to the object
+        /// <summary>Write the changes made to the object since last sync</summary>
         void OnSerializeDelta(NetworkWriter writer);
 
-        // deserialize all the data in the object
+        /// <summary>Reads a full copy of the object</summary>
         void OnDeserializeAll(NetworkReader reader);
 
-        // deserialize changes since last sync
+        /// <summary>Reads the changes made to the object since last sync</summary>
         void OnDeserializeDelta(NetworkReader reader);
 
-        /// <summary>
-        /// Resets the SyncObject so that it can be re-used
-        /// </summary>
+        /// <summary>Resets the SyncObject so that it can be re-used</summary>
         void Reset();
     }
 }

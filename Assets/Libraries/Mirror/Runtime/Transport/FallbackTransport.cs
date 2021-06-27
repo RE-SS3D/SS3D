@@ -2,12 +2,13 @@
 // example: to use Apathy if on Windows/Mac/Linux and fall back to Telepathy
 //          otherwise.
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Mirror
 {
-    [HelpURL("https://mirror-networking.com/docs/Transports/Fallback.html")]
+    [HelpURL("https://mirror-networking.gitbook.io/docs/transports/fallback-transport")]
+    [DisallowMultipleComponent]
+    [Obsolete("Fallback Transport will be retired. It was only needed for Apathy/Libuv. Use kcp or Telepathy instead, those run everywhere.")]
     public class FallbackTransport : Transport
     {
         public Transport[] transports;
@@ -21,10 +22,18 @@ namespace Mirror
             {
                 throw new Exception("FallbackTransport requires at least 1 underlying transport");
             }
-            InitClient();
-            InitServer();
             available = GetAvailableTransport();
             Debug.Log("FallbackTransport available: " + available.GetType());
+        }
+
+        void OnEnable()
+        {
+            available.enabled = true;
+        }
+
+        void OnDisable()
+        {
+            available.enabled = false;
         }
 
         // The client just uses the first transport available
@@ -45,21 +54,12 @@ namespace Mirror
             return available.Available();
         }
 
-        // clients always pick the first transport
-        void InitClient()
-        {
-            // wire all the base transports to our events
-            foreach (Transport transport in transports)
-            {
-                transport.OnClientConnected.AddListener(OnClientConnected.Invoke);
-                transport.OnClientDataReceived.AddListener(OnClientDataReceived.Invoke);
-                transport.OnClientError.AddListener(OnClientError.Invoke);
-                transport.OnClientDisconnected.AddListener(OnClientDisconnected.Invoke);
-            }
-        }
-
         public override void ClientConnect(string address)
         {
+            available.OnClientConnected = OnClientConnected;
+            available.OnClientDataReceived = OnClientDataReceived;
+            available.OnClientError = OnClientError;
+            available.OnClientDisconnected = OnClientDisconnected;
             available.ClientConnect(address);
         }
 
@@ -93,21 +93,9 @@ namespace Mirror
             available.ClientDisconnect();
         }
 
-        public override bool ClientSend(int channelId, ArraySegment<byte> segment)
+        public override void ClientSend(ArraySegment<byte> segment, int channelId)
         {
-            return available.ClientSend(channelId, segment);
-        }
-
-        void InitServer()
-        {
-            // wire all the base transports to our events
-            foreach (Transport transport in transports)
-            {
-                transport.OnServerConnected.AddListener(OnServerConnected.Invoke);
-                transport.OnServerDataReceived.AddListener(OnServerDataReceived.Invoke);
-                transport.OnServerError.AddListener(OnServerError.Invoke);
-                transport.OnServerDisconnected.AddListener(OnServerDisconnected.Invoke);
-            }
+            available.ClientSend(segment, channelId);
         }
 
         // right now this just returns the first available uri,
@@ -124,18 +112,22 @@ namespace Mirror
             return available.ServerGetClientAddress(connectionId);
         }
 
-        public override bool ServerDisconnect(int connectionId)
+        public override void ServerDisconnect(int connectionId)
         {
-            return available.ServerDisconnect(connectionId);
+            available.ServerDisconnect(connectionId);
         }
 
-        public override bool ServerSend(List<int> connectionIds, int channelId, ArraySegment<byte> segment)
+        public override void ServerSend(int connectionId, ArraySegment<byte> segment, int channelId)
         {
-            return available.ServerSend(connectionIds, channelId, segment);
+            available.ServerSend(connectionId, segment, channelId);
         }
 
         public override void ServerStart()
         {
+            available.OnServerConnected = OnServerConnected;
+            available.OnServerDataReceived = OnServerDataReceived;
+            available.OnServerError = OnServerError;
+            available.OnServerDisconnected = OnServerDisconnected;
             available.ServerStart();
         }
 
