@@ -13,6 +13,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
         private TileManager tileManager;
 
         private bool showGridOptions = false;
+        private bool showTileGrid = true;
         private bool showVisibility = false;
         private bool[] layerVisibilitySelection = new bool[TileHelper.GetTileLayers().Length];
 
@@ -31,6 +32,8 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
         private int selectedTileMapIndex = 0;
 
         // Placement settings
+        private bool madeChanges = false;
+        private Vector3 lastPlacement;
         private bool enableVisualHelp = true;
         private double lastPlacementTime;
         private bool deleteTiles = false;
@@ -63,21 +66,30 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             tileManager = TileManager.Instance;
 
             if (tileManager == null)
+            {
                 EditorUtility.DisplayDialog("Missing TileManager", "No TileManager was found in the scene. Please add one.", "ok");
-
+            }
             FillGridOptions(GetCurrentMap());
+            RefreshSelectionGrid();
+            SetTileVisibility(true);
 
             SceneView.duringSceneGui += OnSceneGUI;
         }
 
         public void OnDisable()
         {
+            if (madeChanges)
+                DisplaySaveWarning();
+
             DestroyGhost();
             SceneView.duringSceneGui -= OnSceneGUI;
         }
 
         public void OnGUI()
         {
+            if (tileManager == null)
+                tileManager = TileManager.Instance;
+
             EditorGUI.BeginChangeCheck();
             selectedTileMapIndex = EditorGUILayout.Popup("Active tilemap:", selectedTileMapIndex, tileManager.GetTileMapNames());
             if (EditorGUI.EndChangeCheck())
@@ -93,6 +105,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
             if (GUILayout.Button("New"))
             {
+                madeChanges = true;
                 tileManager.CreateEmptyMap();
                 RefreshMapList();
             }
@@ -102,12 +115,20 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
                     "Are you sure that you want to remove '" + tileManager.GetTileMapNames()[selectedTileMapIndex] + "'?"
                     , "Ok", "Cancel"))
                 {
+                    madeChanges = true;
                     tileManager.RemoveMap(GetCurrentMap());
                     RefreshMapList();
                 }
             }
-            if (GUILayout.Button("Load")) { tileManager.LoadAll(); }
-            if (GUILayout.Button("Save")) { tileManager.SaveAll(); }
+            if (GUILayout.Button("Load"))
+            {
+                tileManager.LoadAll();
+                if (madeChanges)
+                {
+                    DisplaySaveWarning();
+                }
+            }
+            if (GUILayout.Button("Save")) { tileManager.SaveAll(); madeChanges = false; }
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Space();
@@ -116,6 +137,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             if (showGridOptions)
             {
                 EditorGUI.indentLevel++;
+                showTileGrid = EditorGUILayout.Toggle("Display grid: ", showTileGrid);
                 selectedName = EditorGUILayout.TextField("Name:", selectedName);
                 selectedWidth = EditorGUILayout.IntSlider("Width:", selectedWidth, 1, MAX_TILEMAP_SIZE);
                 selectedHeight = EditorGUILayout.IntSlider("Height:", selectedHeight, 1, MAX_TILEMAP_SIZE);
@@ -196,14 +218,22 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
                     return;
                 }
             }
+            madeChanges = true;
             tileManager.ChangeGrid(map, selectedName, selectedWidth, selectedHeight, selectedOrigin);
         }
 
         private void OnSceneGUI(SceneView sceneView)
         {
+            if (showTileGrid)
+                DisplayGrid(GetCurrentMap());
+
             if (enablePlacement == false)
                 return;
 
+            sceneView.Focus();
+
+            if (ghostObject == null)
+                CreateGhost();
             // Ensure the user can't use other scene controls whilst this one is active.
             HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
 
@@ -213,10 +243,12 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             Vector3 snappedPosition = GetCurrentMap().GetClosestPosition(position);
 
             // Set ghost tile's position
+            ghostObject.SetActive(true);
             ghostObject.transform.position = snappedPosition;
 
             if (enableVisualHelp)
                 DisplayVisualHelp(snappedPosition);
+           
 
             if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.R)
             {
@@ -226,9 +258,12 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             }
 
             else if ((Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag) && Event.current.button == 0
-                && EditorApplication.timeSinceStartup - lastPlacementTime > 0.5)
+                && (EditorApplication.timeSinceStartup - lastPlacementTime > 0.5 
+                || lastPlacement != snappedPosition))
             {
+                madeChanges = true;
                 lastPlacementTime = EditorApplication.timeSinceStartup;
+                lastPlacement = snappedPosition;
                 tileManager.SetTileObject(GetCurrentMap(), selectedLayer, selectedObjectSO, snappedPosition, selectedDir);
             }
 
@@ -236,6 +271,15 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             {
                 enablePlacement = false;
                 DestroyGhost();
+            }
+        }
+
+        private void FocusScene()
+        {
+            if (SceneView.sceneViews.Count > 0)
+            {
+                SceneView sceneView = (SceneView)SceneView.sceneViews[0];
+                sceneView.Focus();
             }
         }
 
@@ -278,6 +322,24 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             Handles.DrawLines(lines);
         }
 
+        private void DisplayGrid(TileMap map)
+        {
+            Handles.color = Color.yellow;
+            Vector3 offset = new Vector3(0.5f, 0, 0.5f);
+
+            for (int x = 0; x < map.GetWidth(); x++)
+            {
+                for (int y = 0; y < map.GetHeight(); y++)
+                {
+                    Handles.DrawLine(map.GetWorldPosition(x, y) - offset, map.GetWorldPosition(x, y + 1) - offset);
+                    Handles.DrawLine(map.GetWorldPosition(x, y) - offset, map.GetWorldPosition(x + 1, y) - offset);
+                }
+            }
+
+            Handles.DrawLine(map.GetWorldPosition(0, map.GetHeight()) - offset, map.GetWorldPosition(map.GetWidth(), map.GetHeight()) - offset);
+            Handles.DrawLine(map.GetWorldPosition(map.GetWidth(), 0) - offset, map.GetWorldPosition(map.GetWidth(), map.GetHeight()) - offset);
+        }
+
         private void ShowLayerVisibility()
         {
             EditorGUI.indentLevel++;
@@ -296,10 +358,12 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             if (GUILayout.Button("Show All"))
             {
                 SetTileVisibility(true);
+                UpdateTileVisibility();
             }
             if (GUILayout.Button("Hide All"))
             {
                 SetTileVisibility(false);
+                UpdateTileVisibility();
             }
             EditorGUILayout.EndHorizontal();
 
@@ -328,7 +392,8 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             {
                 mesh.sharedMaterial.color = mesh.sharedMaterial.color * new Color(1.0f, 1.0f, 1.0f, 0.5f);
             }
-            
+
+            ghostObject.SetActive(false);
         }
 
         private void DestroyGhost()
@@ -336,17 +401,36 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             if (ghostObject != null)
             {
                 DestroyImmediate(ghostObject);
+                ghostObject = null;
             }
         }
 
         private void UpdateTileVisibility()
         {
-            
+            TileMap map = GetCurrentMap();
+            foreach (TileLayerType layer in TileHelper.GetTileLayers())
+            {
+                bool visible = layerVisibilitySelection[(int)layer];
+                for (int x = 0; x < map.GetWidth(); x++)
+                {
+                    for (int y = 0; y < map.GetHeight(); y++)
+                    {
+                        map.GetTileObject(layer, x, y).GetPlacedObject()?.gameObject.SetActive(visible);
+                    }
+                }
+                
+            }
         }
 
         private void SetTileVisibility(bool showAll)
         {
-
+            for (int i = 0; i < layerVisibilitySelection.Length; i++)
+            {
+                if (showAll)
+                    layerVisibilitySelection[i]= true;
+                else
+                    layerVisibilitySelection[i] = false;
+            }
         }
 
         private void LoadAssetLayer(TileLayerType layer, string assetName = "")
@@ -400,6 +484,16 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             if (EditorGUI.EndChangeCheck())
             {
                 RefreshSelectionGrid();
+            }
+        }
+
+        private void DisplaySaveWarning()
+        {
+            if (EditorUtility.DisplayDialog("Save TileMap",
+                    "Do you want to save changes?"
+                    , "Yes", "No"))
+            {
+                tileManager.SaveAll();
             }
         }
     }

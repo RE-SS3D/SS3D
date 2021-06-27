@@ -26,35 +26,29 @@ namespace SS3D.Engine.TilesRework
 
         private void Awake()
         {
-            if (!isInitalized)
-            {
-                Instance = this;
-                mapList = new List<TileMap>();
-                tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
+            Debug.Log("Awake called in tilemanager");
+            Instance = this;
+            mapList = new List<TileMap>();
+            tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
 
-                LoadAll();
-                /*
-                int mapWidth = 10;
-                int mapHeight = 10;
-
-                AddTileMap("MainTileMap", mapWidth, mapHeight, 1f, new Vector3(0, 0, 0));
-                */
-
-
-                isInitalized = true;
-            }
+            LoadAll();
+            isInitalized = true;
         }
 
+#if UNITY_EDITOR
         private void OnValidate()
         {
-            isInitalized = false;
-            Awake();
+            // Can't do most things in OnValidate, so wait a sec.
+            UnityEditor.EditorApplication.delayCall += () => {
+                if (this)
+                    Awake();
+            };
         }
+#endif
 
         public TileMap AddTileMap(string name, int width, int height, float tileSize, Vector3 origin)
         {
             TileMap map = new TileMap(name, width, height, tileSize, origin);
-            // mapList.Add(map);
 
             GameObject mapObject = new GameObject(name);
             mapObject.transform.SetParent(transform);
@@ -220,7 +214,7 @@ namespace SS3D.Engine.TilesRework
                 Transform child = transform.GetChild(i);
                 if (child.name == map.GetName())
                 {
-                    DestroyImmediate(child.gameObject);
+                    EditorAndRuntime.Destroy(child.gameObject);
                     break;
                 }
             }
@@ -237,11 +231,7 @@ namespace SS3D.Engine.TilesRework
             for (int i = transform.childCount - 1; i >= 0; --i)
             {
                 Transform child = transform.GetChild(i);
-#if UNITY_EDITOR
-                DestroyImmediate(child.gameObject);
-#else
-                Destroy(child.gameObject);
-#endif
+                EditorAndRuntime.Destroy(child.gameObject);
             }
             mapList.Clear();
         }

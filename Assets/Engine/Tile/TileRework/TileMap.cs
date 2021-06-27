@@ -31,7 +31,7 @@ namespace SS3D.Engine.TilesRework
             public TileObject.SaveObject[] tileObjectSaveObjectArray;
         }
 
-        [SerializeField] private bool showDebug = true;
+        [SerializeField] private bool showDebug = false;
         private string name;
         private int width;
         private int height;
