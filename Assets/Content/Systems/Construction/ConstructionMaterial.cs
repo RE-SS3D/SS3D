@@ -105,7 +105,7 @@ namespace SS3D.Content.Systems.Construction
             CmdConstruct(entry.transform.GetSiblingIndex());
         }
 
-        [Command(ignoreAuthority = true)]
+        [Command(requiresAuthority = false)]
         public void CmdConstruct(int index, NetworkConnectionToClient client = null)
         {
             // Check if sending player is holding 

@@ -84,7 +84,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
     
     // Handles asking the server to spawn the player
     // the "sender" param is handled by Mirror, no need to worry about it
-    [Command(ignoreAuthority = true)]
+    [Command(requiresAuthority = false)]
     public void CmdRequestEmbark(NetworkConnectionToClient sender = null)
     {
         // Spawns the player
