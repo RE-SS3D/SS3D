@@ -88,6 +88,12 @@ namespace Telepathy
         public Action<ArraySegment<byte>> OnData;
         public Action OnDisconnected;
 
+		// ************************************************************** //
+        // NOTE: For future updates of Mirror, be aware that this Action  //
+		// was inserted for SS3D, and is NOT part of Mirror's API.        //
+		// ************************************************************** //
+        public static event System.Action connectionFailed;
+
         // disconnect if send queue gets too big.
         // -> avoids ever growing queue memory if network is slower than input
         // -> disconnecting is great for load balancing. better to disconnect
@@ -158,6 +164,12 @@ namespace Telepathy
                 // add 'Disconnected' event to receive pipe so that the caller
                 // knows that the Connect failed. otherwise they will never know
                 state.receivePipe.Enqueue(0, EventType.Disconnected, default);
+				
+				// ************************************************************** //
+				// NOTE: For future updates of Mirror, be aware that this Action  //
+				// was inserted for SS3D, and is NOT part of Mirror's API.        //
+				// ************************************************************** //
+                connectionFailed?.Invoke();
             }
             catch (ThreadInterruptedException)
             {
