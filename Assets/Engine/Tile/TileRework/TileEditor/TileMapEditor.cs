@@ -40,7 +40,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
         private TileLayerType selectedLayer;
         private TileObjectSO selectedObjectSO;
         private bool enablePlacement = false;
-        private TileObjectSO.Dir selectedDir;
+        private Direction selectedDir = Direction.South;
         private GameObject ghostObject;
 
         [MenuItem("RE:SS3D Editor Tools/TileMap Editor")]
@@ -89,6 +89,8 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
                 DisplaySaveWarning();
 
             DestroyGhost();
+            tileManager.LoadAll();
+
             SceneView.duringSceneGui -= OnSceneGUI;
         }
 
@@ -268,8 +270,8 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.R)
             {
                 Debug.Log("R was pressed");
-                selectedDir = TileObjectSO.GetNextDir(selectedDir);
-                ghostObject.transform.rotation = Quaternion.Euler(0, TileObjectSO.GetRotationAngle(selectedDir), 0);
+                selectedDir = TileHelper.GetNextDir(selectedDir);
+                ghostObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(selectedDir), 0);
             }
 
             else if ((Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag) && Event.current.button == 0

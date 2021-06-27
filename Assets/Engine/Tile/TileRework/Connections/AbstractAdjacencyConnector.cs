@@ -5,18 +5,22 @@ using UnityEngine;
 namespace SS3D.Engine.TilesRework.Connections
 {
     [RequireComponent(typeof(MeshFilter))]
-    public class AbstractAdjacencyConnector : MonoBehaviour, IAdjacencyConnector
+    public abstract class AbstractAdjacencyConnector : MonoBehaviour, IAdjacencyConnector
     {
-        
+        protected AdjacencyBitmap adjacents = new AdjacencyBitmap();
+        protected AdjacencyBitmap blocked = new AdjacencyBitmap();
+        protected MeshFilter filter;
 
-        public void UpdateAll(PlacedTileObject[] neighbourObjects)
-        {
-            throw new System.NotImplementedException();
-        }
+        [Tooltip("Id that adjacent objects must be to count. If empty, any id is accepted")]
+        public string type;
 
-        public void UpdateSingle(TileObjectSO.Dir direction, PlacedTileObject placedObject)
-        {
-            throw new System.NotImplementedException();
-        }
+        public abstract void UpdateAll(PlacedTileObject[] neighbourObjects);
+
+        public abstract void UpdateSingle(Direction dir, PlacedTileObject placedObject);
+
+        protected abstract void UpdateMeshAndDirection();
+
+        public void Awake() => filter = GetComponent<MeshFilter>();
+        public void OnEnable() => UpdateMeshAndDirection();
     }
 }

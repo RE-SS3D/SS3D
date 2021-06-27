@@ -16,7 +16,7 @@ namespace SS3D.Engine.TilesRework.Connections
 
             public CardinalInfo(byte bitmap)
             {
-                north = Adjacent(bitmap, Direction.Up);
+                north = Adjacent(bitmap, Direction.North);
                 east = Adjacent(bitmap, Direction.East);
                 south = Adjacent(bitmap, Direction.South);
                 west = Adjacent(bitmap, Direction.West);
@@ -73,13 +73,16 @@ namespace SS3D.Engine.TilesRework.Connections
                 return south > 0 ? east > 0 ? Direction.SouthEast : Direction.SouthWest : west > 0 ? Direction.NorthWest : Direction.NorthEast;
             }
 
+            
             /**
              * Gets Vertical if north or south are connected, otherwise gets horizontal
              */
+            /*
             public Orientation GetFirstOrientation()
             {
                 return (Orientation)(east | west | (1 - (north | south)));
             }
+            */
         }
 
         /**

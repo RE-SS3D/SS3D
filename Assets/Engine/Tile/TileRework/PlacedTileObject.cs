@@ -14,12 +14,12 @@ namespace SS3D.Engine.TilesRework
         {
             public string tileObjectSOName;
             public Vector2Int origin;
-            public TileObjectSO.Dir dir;
+            public Direction dir;
         }
 
-        public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, TileObjectSO.Dir dir, TileObjectSO tileObjectSO)
+        public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSO tileObjectSO)
         {
-            GameObject placedGameObject = Instantiate(tileObjectSO.prefab, worldPosition, Quaternion.Euler(0, TileObjectSO.GetRotationAngle(dir), 0));
+            GameObject placedGameObject = Instantiate(tileObjectSO.prefab, worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
 
             PlacedTileObject placedObject = placedGameObject.GetComponent<PlacedTileObject>();
             if (placedObject == null)
@@ -34,9 +34,9 @@ namespace SS3D.Engine.TilesRework
 
         private TileObjectSO tileObjectSO;
         private Vector2Int origin;
-        private TileObjectSO.Dir dir;
+        private Direction dir;
 
-        private void Setup(TileObjectSO tileObjectSO, Vector2Int origin, TileObjectSO.Dir dir)
+        private void Setup(TileObjectSO tileObjectSO, Vector2Int origin, Direction dir)
         {
             this.tileObjectSO = tileObjectSO;
             this.origin = origin;

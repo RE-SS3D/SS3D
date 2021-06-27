@@ -7,64 +7,32 @@ namespace SS3D.Engine.TilesRework
     [CreateAssetMenu(fileName = "TileObjectSO", menuName = "TileMap/TileObjectSO", order = 0)]
     public class TileObjectSO : ScriptableObject
     {
-        public static Dir GetNextDir(Dir dir)
-        {
-            switch (dir)
-            {
-                default:
-                case Dir.Down: return Dir.Left;
-                case Dir.Left: return Dir.Up;
-                case Dir.Up: return Dir.Right;
-                case Dir.Right: return Dir.Down;
-            }
-        }
-
-        public static int GetRotationAngle(Dir dir)
-        {
-            switch (dir)
-            {
-                default:
-                case Dir.Down: return 0;
-                case Dir.Left: return 90;
-                case Dir.Up: return 180;
-                case Dir.Right: return 270;
-            }
-        }
-
-        public enum Dir
-        {
-            Down,
-            Left,
-            Up,
-            Right,
-        }
-
         public TileLayerType layerType;
         public string nameString;
         public GameObject prefab;
         public int width;
         public int height;
 
-        public Vector2Int GetRotationOffset(Dir dir)
+        public Vector2Int GetRotationOffset(Direction dir)
         {
             switch (dir)
             {
                 default:
-                case Dir.Down: return new Vector2Int(0, 0);
-                case Dir.Left: return new Vector2Int(0, width - 1);
-                case Dir.Up: return new Vector2Int(width - 1, height - 1);
-                case Dir.Right: return new Vector2Int(height - 1, 0);
+                case Direction.South: return new Vector2Int(0, 0);
+                case Direction.West: return new Vector2Int(0, width - 1);
+                case Direction.North: return new Vector2Int(width - 1, height - 1);
+                case Direction.East: return new Vector2Int(height - 1, 0);
             }
         }
 
-        public List<Vector2Int> GetGridPositionList(Vector2Int offset, Dir dir)
+        public List<Vector2Int> GetGridPositionList(Vector2Int offset, Direction dir)
         {
             List<Vector2Int> gridPositionList = new List<Vector2Int>();
             switch (dir)
             {
                 default:
-                case Dir.Down:
-                case Dir.Up:
+                case Direction.South:
+                case Direction.North:
                     for (int x = 0; x < width; x++)
                     {
                         for (int y = 0; y < height; y++)
@@ -73,8 +41,8 @@ namespace SS3D.Engine.TilesRework
                         }
                     }
                     break;
-                case Dir.Left:
-                case Dir.Right:
+                case Direction.West:
+                case Direction.East:
                     for (int x = 0; x < height; x++)
                     {
                         for (int y = 0; y < width; y++)

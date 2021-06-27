@@ -94,7 +94,7 @@ namespace SS3D.Engine.TilesRework
             return names;
         }
 
-        public void SetTileObject(TileMap map, TileLayerType layer, TileObjectSO tileObjectSO, Vector3 position, TileObjectSO.Dir dir)
+        public void SetTileObject(TileMap map, TileLayerType layer, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
             Vector2Int vector = map.GetXY(position);
 
@@ -141,7 +141,7 @@ namespace SS3D.Engine.TilesRework
             }
         }
 
-        public void SetTileObject(TileMap map, TileLayerType layer, string tileObjectSOName, Vector3 position, TileObjectSO.Dir dir)
+        public void SetTileObject(TileMap map, TileLayerType layer, string tileObjectSOName, Vector3 position, Direction dir)
         {
             TileObjectSO tileObjectSO = tileObjectSOs.FirstOrDefault(tileObject => tileObject.nameString == tileObjectSOName);
             SetTileObject(map, layer, tileObjectSO, position, dir);
