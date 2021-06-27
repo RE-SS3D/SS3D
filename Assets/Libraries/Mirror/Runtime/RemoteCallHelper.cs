@@ -32,6 +32,12 @@ namespace Mirror.RemoteCalls
     {
         static readonly Dictionary<int, Invoker> cmdHandlerDelegates = new Dictionary<int, Invoker>();
 
+        /// <summary>
+        /// The sender of the current network function.
+		/// currentSender is not part of Mirror. It has been added specifically for SS3D.
+        /// </summary>
+        public static NetworkConnection currentSender = null;
+
         internal static int GetMethodHash(Type invokeClass, string methodName)
         {
             // (invokeClass + ":" + cmdName).GetStableHashCode() would cause allocations.
@@ -120,8 +126,16 @@ namespace Mirror.RemoteCalls
         {
             if (GetInvokerForHash(cmdHash, invokeType, out Invoker invoker) && invoker.invokeClass.IsInstanceOfType(invokingType))
             {
+				
+				// currentSender is not part of Mirror. It has been added specifically for SS3D.
+				currentSender = senderConnection;
+
                 invoker.invokeFunction(invokingType, reader, senderConnection);
-                return true;
+
+                // currentSender is not part of Mirror. It has been added specifically for SS3D.
+				currentSender = null;
+
+				return true;
             }
             return false;
         }
