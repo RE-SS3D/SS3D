@@ -147,6 +147,19 @@ namespace SS3D.Engine.TilesRework
             SetTileObject(map, layer, tileObjectSO, position, dir);
         }
 
+        public void ClearTileObject(TileMap map, TileLayerType layer, Vector3 position)
+        {
+            Vector2Int vector = map.GetXY(position);
+            vector = map.ValidateGridPosition(vector);
+            PlacedTileObject placedObject = map.GetTileObject(layer, vector.x, vector.y).GetPlacedObject();
+
+            List<Vector2Int> gridPositionList = placedObject.GetGridPositionList();
+            foreach (Vector2Int gridPosition in gridPositionList)
+            {
+                map.GetTileObject(layer, gridPosition.x, gridPosition.y).ClearPlacedObject();
+            }
+        }
+
         public void SaveAll()
         {
             List<SaveObject> saveObjectList = new List<SaveObject>();

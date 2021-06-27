@@ -103,7 +103,6 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             {
                 FillGridOptions(GetCurrentMap());
             }
-           
 
             EditorGUILayout.Space();
 
@@ -252,7 +251,14 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             Vector3 snappedPosition = GetCurrentMap().GetClosestPosition(position);
 
             // Set ghost tile's position
-            ghostObject.SetActive(true);
+            if (!deleteTiles)
+            {
+                ghostObject.SetActive(true);
+            }
+            else
+            {
+                ghostObject.SetActive(false);
+            }
             ghostObject.transform.position = snappedPosition;
 
             if (enableVisualHelp)
@@ -273,7 +279,15 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
                 madeChanges = true;
                 lastPlacementTime = EditorApplication.timeSinceStartup;
                 lastPlacement = snappedPosition;
-                tileManager.SetTileObject(GetCurrentMap(), selectedLayer, selectedObjectSO, snappedPosition, selectedDir);
+                if (deleteTiles)
+                {
+                    tileManager.ClearTileObject(GetCurrentMap(), selectedLayer, snappedPosition);
+                }
+                else
+                {
+                    tileManager.SetTileObject(GetCurrentMap(), selectedLayer, selectedObjectSO, snappedPosition, selectedDir);
+
+                }
             }
 
             else if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)

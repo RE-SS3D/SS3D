@@ -20,6 +20,18 @@ namespace SS3D.Engine.TilesRework
         Overlays
     }
 
+    public enum Direction
+    {
+        North,
+        NorthEast,
+        East,
+        SouthEast,
+        South,
+        SouthWest,
+        West,
+        NorthWest,
+    }
+
     public static class TileHelper
     {
         public static TileLayerType[] GetTileLayers()

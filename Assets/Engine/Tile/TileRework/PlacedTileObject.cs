@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 namespace SS3D.Engine.TilesRework
 {
+    [RequireComponent(typeof(NetworkIdentity))]
     public class PlacedTileObject : MonoBehaviour
     {
         [Serializable]
