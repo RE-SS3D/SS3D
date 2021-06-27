@@ -31,7 +31,6 @@ namespace SS3D.Engine.TilesRework
             public TileObject.SaveObject[] tileObjectSaveObjectArray;
         }
 
-        [SerializeField] private bool showDebug = false;
         private string name;
         private int width;
         private int height;
@@ -49,12 +48,6 @@ namespace SS3D.Engine.TilesRework
             this.originPosition = originPosition;
 
             CreateAllGrids();
-
-            if (showDebug)
-            {
-                DrawDebug();
-            }
-
             tileManager = TileManager.Instance;
         }
 
@@ -243,8 +236,6 @@ namespace SS3D.Engine.TilesRework
                 name = name,
             };
 
-            // SaveSystem.SaveObject(saveObject);
-
             return saveObject;
         }
 
@@ -257,21 +248,6 @@ namespace SS3D.Engine.TilesRework
 
                 tileManager.SetTileObject(this, layer, objectName, GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y), tileObjectSaveObject.placedSaveObject.dir);
             }
-        }
-
-        private void DrawDebug()
-        {
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    Debug.DrawLine(GetWorldPosition(x, y) - new Vector3(0.5f, 0, 0.5f), GetWorldPosition(x, y + 1) - new Vector3(0.5f, 0, 0.5f), Color.white, 100f);
-                    Debug.DrawLine(GetWorldPosition(x, y) - new Vector3(0.5f, 0, 0.5f), GetWorldPosition(x + 1, y) - new Vector3(0.5f, 0, 0.5f), Color.white, 100f);
-
-                }
-            }
-            Debug.DrawLine(GetWorldPosition(0, height) - new Vector3(0.5f, 0, 0.5f), GetWorldPosition(width, height) - new Vector3(0.5f, 0, 0.5f), Color.white, 100f);
-            Debug.DrawLine(GetWorldPosition(width, 0) - new Vector3(0.5f, 0, 0.5f), GetWorldPosition(width, height) - new Vector3(0.5f, 0, 0.5f), Color.white, 100f);
         }
     }
 }

@@ -19,8 +19,14 @@ namespace SS3D.Engine.TilesRework
 
         private const string SAVE_FILENAME = "tilemaps";
         public static TileManager Instance { get; private set; }
+        private static bool isInitialized;
+        public static bool IsInitialized()
+        {
+            return isInitialized;
+        }
+
         private static TileObjectSO[] tileObjectSOs;
-        private bool isInitalized;
+        
 
         private List<TileMap> mapList;
 
@@ -32,7 +38,7 @@ namespace SS3D.Engine.TilesRework
             tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
 
             LoadAll();
-            isInitalized = true;
+            isInitialized = true;
         }
 
 #if UNITY_EDITOR
@@ -67,15 +73,8 @@ namespace SS3D.Engine.TilesRework
                 }
             }
 
-            TileMap emptyMap = AddTileMap("Empty map (" + emptyMapNumber + ")", 1, 1, 1.0f, new Vector3{ x = 0, y = 0, z = 0 });
+            TileMap emptyMap = AddTileMap("Empty map (" + emptyMapNumber + ")", 5, 5, 1.0f, new Vector3{ x = 0, y = 0, z = 0 });
             mapList.Add(emptyMap);
-        }
-
-        private void CreatDefaultMap()
-        {
-            TileMap map = AddTileMap("Main map", 10, 10, 1f, new Vector3(0, 0, 0));
-            mapList.Add(map);
-            SaveAll();
         }
 
         public List<TileMap> GetTileMaps()
@@ -175,7 +174,8 @@ namespace SS3D.Engine.TilesRework
             if (saveMapObject == null)
             {
                 Debug.Log("No saved maps found. Creating default one.");
-                CreatDefaultMap();
+                CreateEmptyMap();
+                SaveAll();
                 return;
             }
 

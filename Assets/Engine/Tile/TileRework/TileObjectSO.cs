@@ -51,9 +51,9 @@ namespace SS3D.Engine.TilesRework
             {
                 default:
                 case Dir.Down: return new Vector2Int(0, 0);
-                case Dir.Left: return new Vector2Int(0, width);
-                case Dir.Up: return new Vector2Int(width, height);
-                case Dir.Right: return new Vector2Int(height, 0);
+                case Dir.Left: return new Vector2Int(0, width - 1);
+                case Dir.Up: return new Vector2Int(width - 1, height - 1);
+                case Dir.Right: return new Vector2Int(height - 1, 0);
             }
         }
 

@@ -48,11 +48,7 @@ namespace SS3D.Engine.TilesRework
 
         public void DestroySelf()
         {
-#if UNITY_EDITOR
-            DestroyImmediate(gameObject);
-#else
-            Destroy(gameObject);
-#endif
+            EditorAndRuntime.Destroy(gameObject);
         }
 
         public override string ToString()

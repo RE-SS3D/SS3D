@@ -65,8 +65,15 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
         {
             tileManager = TileManager.Instance;
 
+
             if (tileManager == null)
             {
+                EditorApplication.delayCall += () => {
+                    if (TileManager.IsInitialized())
+                    {
+                        tileManager = TileManager.Instance;
+                    }
+                };
                 EditorUtility.DisplayDialog("Missing TileManager", "No TileManager was found in the scene. Please add one.", "ok");
             }
             FillGridOptions(GetCurrentMap());
@@ -96,40 +103,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             {
                 FillGridOptions(GetCurrentMap());
             }
-
-            EditorGUILayout.Space();
-
-            // Load & Save
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.Space();
-
-            if (GUILayout.Button("New"))
-            {
-                madeChanges = true;
-                tileManager.CreateEmptyMap();
-                RefreshMapList();
-            }
-            if (GUILayout.Button("Delete"))
-            {
-                if (EditorUtility.DisplayDialog("Remove TileMap",
-                    "Are you sure that you want to remove '" + tileManager.GetTileMapNames()[selectedTileMapIndex] + "'?"
-                    , "Ok", "Cancel"))
-                {
-                    madeChanges = true;
-                    tileManager.RemoveMap(GetCurrentMap());
-                    RefreshMapList();
-                }
-            }
-            if (GUILayout.Button("Load"))
-            {
-                tileManager.LoadAll();
-                if (madeChanges)
-                {
-                    DisplaySaveWarning();
-                }
-            }
-            if (GUILayout.Button("Save")) { tileManager.SaveAll(); madeChanges = false; }
-            EditorGUILayout.EndHorizontal();
+           
 
             EditorGUILayout.Space();
 
@@ -137,6 +111,41 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             if (showGridOptions)
             {
                 EditorGUI.indentLevel++;
+
+                // Load & Save
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.Space();
+
+                if (GUILayout.Button("New"))
+                {
+                    madeChanges = true;
+                    tileManager.CreateEmptyMap();
+                    RefreshMapList();
+                }
+                if (GUILayout.Button("Delete"))
+                {
+                    if (EditorUtility.DisplayDialog("Remove TileMap",
+                        "Are you sure that you want to remove '" + tileManager.GetTileMapNames()[selectedTileMapIndex] + "'?"
+                        , "Ok", "Cancel"))
+                    {
+                        madeChanges = true;
+                        tileManager.RemoveMap(GetCurrentMap());
+                        RefreshMapList();
+                    }
+                }
+                if (GUILayout.Button("Load"))
+                {
+                    tileManager.LoadAll();
+                    if (madeChanges)
+                    {
+                        DisplaySaveWarning();
+                    }
+                }
+                if (GUILayout.Button("Save")) { tileManager.SaveAll(); madeChanges = false; }
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.Space();
+
                 showTileGrid = EditorGUILayout.Toggle("Display grid: ", showTileGrid);
                 selectedName = EditorGUILayout.TextField("Name:", selectedName);
                 selectedWidth = EditorGUILayout.IntSlider("Width:", selectedWidth, 1, MAX_TILEMAP_SIZE);
