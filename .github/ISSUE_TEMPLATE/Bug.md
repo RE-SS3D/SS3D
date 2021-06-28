@@ -2,7 +2,7 @@
 name: Bug
 about: Reporting a creepy crawly.
 title: "Bug Name"
-labels: 'Type: Bug (Needs Confirmation)'
+labels: 'Type: Bug (Unconfirmed)'
 assignees: ''
 
 ---
