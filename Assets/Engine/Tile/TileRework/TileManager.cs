@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static SS3D.Engine.TilesRework.TileMap;
 
 namespace SS3D.Engine.TilesRework
@@ -17,7 +19,7 @@ namespace SS3D.Engine.TilesRework
             public SaveObject[] saveObjectList;
         }
 
-        private const string SAVE_FILENAME = "tilemaps";
+        
         public static TileManager Instance { get; private set; }
         private static bool isInitialized;
         public static bool IsInitialized()
@@ -26,19 +28,38 @@ namespace SS3D.Engine.TilesRework
         }
 
         private static TileObjectSO[] tileObjectSOs;
-        
+        private string saveFileName = "tilemaps";
 
         private List<TileMap> mapList;
 
-        private void Awake()
+        [ContextMenu("Initialize tilemap")]
+        private void Init()
         {
-            Debug.Log("Awake called in tilemanager");
             Instance = this;
             mapList = new List<TileMap>();
-            tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
+
+            Scene scene = SceneManager.GetActiveScene();
+            saveFileName = scene.name;
+
+            // We have to ensure that all objects used are loaded beforehand
+            string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(TileObjectSO)));
+
+            List<TileObjectSO> listTileObjectSO = new List<TileObjectSO>();
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
+                listTileObjectSO.Add(AssetDatabase.LoadAssetAtPath<TileObjectSO>(assetPath));
+            }
+            // tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
+            tileObjectSOs = listTileObjectSO.ToArray();
 
             LoadAll();
             isInitialized = true;
+        }
+
+        private void Awake()
+        {
+            Init();
         }
 
 #if UNITY_EDITOR
@@ -175,14 +196,19 @@ namespace SS3D.Engine.TilesRework
                 saveObjectList = saveObjectList.ToArray()
             };
 
-            SaveSystem.SaveObject(SAVE_FILENAME, saveMapObject, true);
+            SaveSystem.SaveObject(saveFileName, saveMapObject, true);
             Debug.Log("Tilemaps saved");
         }
 
         public void LoadAll()
         {
+            if (tileObjectSOs.Length == 0)
+            {
+                tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
+            }
+
             ClearMaps();
-            SaveMapObject saveMapObject = SaveSystem.LoadObject<SaveMapObject>(SAVE_FILENAME);
+            SaveMapObject saveMapObject = SaveSystem.LoadObject<SaveMapObject>(saveFileName);
 
             if (saveMapObject == null)
             {

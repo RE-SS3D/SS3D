@@ -68,19 +68,26 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
             if (tileManager == null)
             {
-                EditorApplication.delayCall += () => {
+                EditorApplication.delayCall += () =>
+                {
                     if (TileManager.IsInitialized())
                     {
                         tileManager = TileManager.Instance;
                     }
+                    else
+                    {
+                        EditorUtility.DisplayDialog("Missing TileManager", "No TileManager was found in the scene. Please add one.", "ok");
+                        Close();
+                    }
                 };
-                EditorUtility.DisplayDialog("Missing TileManager", "No TileManager was found in the scene. Please add one.", "ok");
             }
-            FillGridOptions(GetCurrentMap());
-            RefreshSelectionGrid();
-            SetTileVisibility(true);
-
-            SceneView.duringSceneGui += OnSceneGUI;
+            else
+            {
+                FillGridOptions(GetCurrentMap());
+                RefreshSelectionGrid();
+                SetTileVisibility(true);
+                SceneView.duringSceneGui += OnSceneGUI;
+            }
         }
 
         public void OnDisable()
@@ -89,7 +96,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
                 DisplaySaveWarning();
 
             DestroyGhost();
-            tileManager.LoadAll();
+            tileManager?.LoadAll();
 
             SceneView.duringSceneGui -= OnSceneGUI;
         }
@@ -97,7 +104,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
         public void OnGUI()
         {
             if (tileManager == null)
-                tileManager = TileManager.Instance;
+                return;
 
             EditorGUI.BeginChangeCheck();
             selectedTileMapIndex = EditorGUILayout.Popup("Active tilemap:", selectedTileMapIndex, tileManager.GetTileMapNames());
@@ -240,6 +247,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             if (enablePlacement == false)
                 return;
 
+            DrawPlaceUI();
             sceneView.Focus();
 
             if (ghostObject == null)
@@ -299,13 +307,25 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             }
         }
 
-        private void FocusScene()
+        private void DrawPlaceUI()
         {
-            if (SceneView.sceneViews.Count > 0)
-            {
-                SceneView sceneView = (SceneView)SceneView.sceneViews[0];
-                sceneView.Focus();
-            }
+            Handles.BeginGUI();
+
+            GUILayout.BeginArea(new Rect(20, 20, 240, 60));
+
+            var rect = EditorGUILayout.BeginVertical();
+
+            GUI.color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+            GUI.Box(rect, GUIContent.none);
+
+            GUI.color = Color.white;
+            GUILayout.Label("Left click to place an object");
+            GUILayout.Label("Press 'R' to rotate an object");
+            GUILayout.Label("Press Escape to leave placement mode");
+            
+            GUILayout.EndArea();
+
+            Handles.EndGUI();
         }
 
         private void RefreshMapList()
