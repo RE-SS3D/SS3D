@@ -50,6 +50,9 @@ namespace SS3D.Engine.Examine
 			// If there's no data, can't load anything.
 			if (data.Length == 0){return;}
 			
+			Debug.Log(data.Length);
+			Debug.Log(data[0]);
+			
 			// The highest Examinable listed in the target's Inspector will decide the UI to use.
 			ExamineType dataType = data[0].GetExamineType(); 
 			

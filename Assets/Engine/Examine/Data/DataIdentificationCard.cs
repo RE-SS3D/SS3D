@@ -17,120 +17,74 @@ namespace SS3D.Engine.Examine
 		
 		
 		
-		public DataIdentificationCard()
+		public DataIdentificationCard(string firstName, string surname, int age, string species, DateTime expiry, string title, int classifier, string gender, Sprite mugshot)
 		{
-			
-			/* At the moment this script just selects one from half a dozen
-			   different people, so that we have something to test as we
-			   work on the interface. Later, it will be designed to take info
-			   from the players. */
-			
-			
-			Age = UnityEngine.Random.Range(18, 65);
-			DateTime expiry = DateTime.Today;
-			int daysToAdd = UnityEngine.Random.Range(0,72) * 5;
-			Expiry = expiry.AddDays(daysToAdd);
-
-			int randomCharacter = UnityEngine.Random.Range(1,6);
-			switch (randomCharacter)
-			{
-				case 1:
-					FirstName = "Tippo";
-					Surname = "Felangus";
-					Species = "Human";
-					Title = "Chemist";
-					Gender = "Male";
-					Classifier = 4;
-					break;
-				case 2:
-					FirstName = "Reinard";
-					Surname = "Parker";
-					Species = "Human";
-					Title = "Roboticist";
-					Gender = "Male";
-					Classifier = 4;
-					break;
-				case 3:
-					FirstName = "Robert";
-					Surname = "Oppenheimer";
-					Species = "Human";
-					Title = "Research Director";
-					Gender = "Male";
-					Classifier = 2;
-					break;				
-				case 4:
-					FirstName = "William";
-					Surname = "Harshman";
-					Species = "Human";
-					Title = "Head of Security";
-					Gender = "Male";
-					Classifier = 2;
-					break;
-				case 5:
-					FirstName = "George";
-					Surname = "Melons";
-					Species = "Human";
-					Title = "Assistant";
-					Gender = "Male";
-					Classifier = 6;
-					break;
-				case 6:
-					FirstName = "Ruth";
-					Surname = "McVork";
-					Species = "Human";
-					Title = "Geneticist";
-					Gender = "Female";
-					Classifier = 4;
-					break;					
-			}
-			
+			FirstName = firstName;
+			Surname = surname;
+			Age = age;
+			Species = species;
+			Expiry = expiry;
+			Title = title;
+			Classifier = classifier;
+			Gender = gender;
+			Mugshot = mugshot;
 		}
 		
+		// Returns the character first name
         public string GetFirstName()
 		{
 			return FirstName;
 		}
 
+		// Returns the character surname
         public string GetSurname()
 		{
 			return Surname;
 		}
 		
+		// Returns the ID photo of the character
 		public Sprite GetMugshot()
 		{
 			return Mugshot;
 		}
 		
+		// Returns the character age
 		public int GetAge()
 		{
 			return Age;
 		}
 		
+		// Returns the species of the character
         public string GetSpecies()
 		{
 			return Species;
 		}
 
+		// Returns the expiry date of the ID card
         public DateTime GetExpiry()
 		{
 			return Expiry;
 		}
 
+		// Returns the character's job title
         public string GetTitle()
 		{
 			return Title;
 		}
 
+		// Returns the character classification in the station hierarchy
         public int GetClassifier()
 		{
 			return Classifier;
 		}		
 		
+		// Returns the character gender
         public string GetGender()
 		{
 			return Gender;
 		}		
 		
+		// Lets the Examine system know to treat this like an ID card. 
 		public ExamineType GetExamineType()
 		{
 			return ExamineType.IDENTIFICATION_CARD;
