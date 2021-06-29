@@ -61,6 +61,7 @@ namespace SS3D.Content.Systems.Examine.UI
 				currentExaminable = examineData as DataIdentificationCard;
 				if (currentExaminable != null)
 				{
+					gameObject.SetActive(true);
 					firstName = currentExaminable.GetFirstName();
 					surname = currentExaminable.GetSurname();
 					age = currentExaminable.GetAge().ToString();
