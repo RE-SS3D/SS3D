@@ -35,7 +35,6 @@ namespace SS3D.Content.Systems.Examine.UI
 		public void Start()
 		{
 			rectTransform = GetComponent<RectTransform>();
-			Debug.Log("rectTransform.rect = " + rectTransform.rect);
 		}
 		
         public override void RefreshDisplay()
@@ -62,6 +61,7 @@ namespace SS3D.Content.Systems.Examine.UI
 				currentExaminable = examineData as DataIdentificationCard;
 				if (currentExaminable != null)
 				{
+					gameObject.SetActive(true);
 					firstName = currentExaminable.GetFirstName();
 					surname = currentExaminable.GetSurname();
 					age = currentExaminable.GetAge().ToString();

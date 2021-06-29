@@ -36,6 +36,7 @@ namespace SS3D.Content.Systems.Examine.UI
 				currentExaminable = examineData as DataImage;
 				if (currentExaminable != null)
 				{
+					gameObject.SetActive(true);
 					displayCaption = "<size=16><b>" + currentExaminable.GetCaption() + "</b></size>";
 					displayImage = currentExaminable.GetImage();
 				}
