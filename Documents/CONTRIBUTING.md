@@ -100,4 +100,9 @@ To get a hold of the project, you need a git client. Git is the software that ma
 
 ### Naming Files and Folders:
 
-When (re)naming files and folders always do so using ['PascalCase'](https://techterms.com/definition/pascalcase) this makes naming consistant which helps with organization and clarity.
+When (re)naming files and folders always do so using ['PascalCase'](https://techterms.com/definition/pascalcase), this makes naming consistant which helps with organization and clarity.
+
+Ex. "LockerDoorAnimationController.file" would be correct,
+not "Locker Door Animation Controller.file",
+not "lockerdoor animation controller.file",
+not "AnimationController - LockerDoor.file".
