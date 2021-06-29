@@ -40,7 +40,8 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 		private DateTime Expiry;
 		private string Title;
 		private int Classifier;
-		private string Gender;				
+		private string Gender;
+		private string MugshotPath;
 		private Sprite Mugshot;
 		
 		public void Start()
@@ -182,15 +183,17 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 					Gender = "Male";
 					Classifier = 2;
 					Age = 50;
+					MugshotPath = "ID Mugshot 4";
 					break;				
 				case 8:
-					FirstName = "Kaitlyn";
+					FirstName = "Kody";
 					Surname = "Gill";
 					Species = "Human";
 					Title = "Station Engineer";
-					Gender = "Female";
+					Gender = "Male";
 					Classifier = 4;
 					Age = 26;
+					MugshotPath = "ID Mugshot 3";
 					break;
 				case 9:
 					FirstName = "Husain";
@@ -200,20 +203,22 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 					Gender = "Male";
 					Classifier = 4;
 					Age = 25;
+					MugshotPath = "ID Mugshot 2";
 					break;
 				case 10:
-					FirstName = "Laura";
+					FirstName = "Lachlan";
 					Surname = "Bowers";
 					Species = "Human";
 					Title = "Atmospheric Technician";
-					Gender = "Female";
+					Gender = "Male";
 					Classifier = 4;
 					Age = 31;
+					MugshotPath = "ID Mugshot 1";
 					break;								
 			}
 			
 			// Generate the details to be passed to the Examine system.
-			IdDetails = new DataIdentificationCard(FirstName, Surname, Age, Species, Expiry, Title, Classifier, Gender, Mugshot);				
+			IdDetails = new DataIdentificationCard(FirstName, Surname, Age, Species, Expiry, Title, Classifier, Gender, MugshotPath);				
 		}
 		
 	

@@ -14,10 +14,11 @@ namespace SS3D.Engine.Examine
 		private string Title;
 		private int Classifier;
 		private string Gender;
+		private string MugshotPath;
 		
 		
 		
-		public DataIdentificationCard(string firstName, string surname, int age, string species, DateTime expiry, string title, int classifier, string gender, Sprite mugshot)
+		public DataIdentificationCard(string firstName, string surname, int age, string species, DateTime expiry, string title, int classifier, string gender, string mugshotPath)
 		{
 			FirstName = firstName;
 			Surname = surname;
@@ -27,7 +28,8 @@ namespace SS3D.Engine.Examine
 			Title = title;
 			Classifier = classifier;
 			Gender = gender;
-			Mugshot = mugshot;
+			MugshotPath = mugshotPath;
+			Mugshot = Resources.Load<Sprite>(MugshotPath);
 		}
 		
 		// Returns the character first name
