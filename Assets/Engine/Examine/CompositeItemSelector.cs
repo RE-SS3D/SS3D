@@ -209,7 +209,7 @@ namespace SS3D.Engine.Examine
 					gValue = 1.0f;
 					rValue -= decrement;
 					if (rValue < 0.0f){
-						Debug.Log("CompositeItemSelector: Too many colours cycled through.");
+						Debug.LogError("CompositeItemSelector: Too many colours cycled through.");
 						DisableCamera();
 					}
 				}
@@ -340,7 +340,7 @@ namespace SS3D.Engine.Examine
 			{
 				meshes.Add(new MeshColourAffiliation(mf.mesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
 			}
-			if (smr != null && child.gameObject.GetComponent<Renderer>().enabled)
+			if (smr != null && smr.sharedMesh != null && child.gameObject.GetComponent<Renderer>().enabled)
 			{
 				meshes.Add(new MeshColourAffiliation(smr.sharedMesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
 			}
@@ -356,6 +356,7 @@ namespace SS3D.Engine.Examine
 			{
 				colours.Pop();
 			}
+			
 		}
 	
 		/// This class is used to link particular meshes to the colour used to represent them
