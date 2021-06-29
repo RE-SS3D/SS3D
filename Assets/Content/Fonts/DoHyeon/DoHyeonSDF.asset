@@ -111,7 +111,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-  m_Name: DoHyeon SDF
+  m_Name: DoHyeonSDF
   m_EditorClassIdentifier: 
   hashCode: 962429551
   material: {fileID: -200469330365712500}

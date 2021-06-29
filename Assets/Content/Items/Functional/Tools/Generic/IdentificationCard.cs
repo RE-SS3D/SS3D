@@ -103,13 +103,6 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 			}
 		}
 
-		// This two-argument hook method is called on the client. We don't need both arguments - call overloaded version.
-		//private void SyncIDCardDetails (RandomIDNumbers oldDetails, RandomIDNumbers newDetails)
-		//{
-		//	EnsureInit();
-		//	SyncIDCardDetails(newDetails);
-		//}	
-		
 		private void SyncIDCardDetails(int oldCharacter, int newCharacter)
 		{
 			EnsureInit();
@@ -183,7 +176,7 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 					Gender = "Male";
 					Classifier = 2;
 					Age = 50;
-					MugshotPath = "ID Mugshot 4";
+					MugshotPath = "IDMugshot4";
 					break;				
 				case 8:
 					FirstName = "Kody";
@@ -193,7 +186,7 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 					Gender = "Male";
 					Classifier = 4;
 					Age = 26;
-					MugshotPath = "ID Mugshot 3";
+					MugshotPath = "IDMugshot3";
 					break;
 				case 9:
 					FirstName = "Husain";
@@ -203,7 +196,7 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 					Gender = "Male";
 					Classifier = 4;
 					Age = 25;
-					MugshotPath = "ID Mugshot 2";
+					MugshotPath = "IDMugshot2";
 					break;
 				case 10:
 					FirstName = "Lachlan";
@@ -213,7 +206,7 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 					Gender = "Male";
 					Classifier = 4;
 					Age = 31;
-					MugshotPath = "ID Mugshot 1";
+					MugshotPath = "IDMugshot1";
 					break;								
 			}
 			
@@ -236,25 +229,5 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 		}
 	
     }
-	
-	/* At the moment this script just selects one from a few
-	   different people, so that we have something to test as we
-	   work on the interface. Later, it will be designed to take info
-	   from the actual players. */
-	public struct RandomIDNumbers
-	{
-		public int RandomCharacter { get; set; }
-		public int RandomAge { get; set; }
-		public int RandomExpiryOffset { get; set; }
-		
-		public RandomIDNumbers(int lowIndexInclusive, int highIndexInclusive)
-		{
-			RandomCharacter = UnityEngine.Random.Range(lowIndexInclusive, highIndexInclusive + 1);
-			RandomAge = UnityEngine.Random.Range(18, 65);
-			RandomExpiryOffset = UnityEngine.Random.Range(0,72) * 5;
-		}
-		
-	}
-	
 	
 }
