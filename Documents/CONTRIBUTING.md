@@ -97,3 +97,7 @@ To get a hold of the project, you need a git client. Git is the software that ma
 * Use the present imperative tense ("Add feature" not "Added feature", "Move cursor to..." not "Moves cursor to...").
 * Limit the first line to 72 characters or less.
 * Reference issues and pull requests liberally after the first line.
+
+### Naming Files and Folders:
+
+When (re)naming files and folders always do so using ['PascalCase'](https://techterms.com/definition/pascalcase) this makes naming consistant which helps with organization and clarity.
