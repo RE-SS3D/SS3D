@@ -46,7 +46,7 @@ using UnityEngine.SceneManagement;
         /**
          * Information about the login server sent to the client.
          */
-        public class LoginServerMessage : NetworkMessage
+        public struct LoginServerMessage : NetworkMessage
         {
             // If null, then no 
             public string serverAddress;
@@ -55,7 +55,7 @@ using UnityEngine.SceneManagement;
         /**
          * Information about the player's chosen character sent from client to server
          */
-        public class CharacterSelectMessage : NetworkMessage
+        public struct CharacterSelectMessage : NetworkMessage
         {
             public CharacterResponse character;
         }
@@ -225,7 +225,8 @@ using UnityEngine.SceneManagement;
                 Debug.LogWarning("The Login system does not support having a separate Online Scene yet!");
                 return;
             }
-            ClientScene.AddPlayer(conn);
+
+            base.OnClientConnect(conn);
         }
 
         /**
@@ -329,7 +330,7 @@ using UnityEngine.SceneManagement;
             yield return new WaitUntil(() => roundManager.IsRoundStarted);
 
             //Something has gone horribly wrong
-            if (characterSelection?.character == null) throw new Exception("Could not read character data");
+            if (characterSelection.character == null) throw new Exception("Could not read character data");
 
             // Spawn player based on their character choices
             Transform startPos = GetStartPosition();
