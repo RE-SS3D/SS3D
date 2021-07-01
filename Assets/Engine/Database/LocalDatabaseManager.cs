@@ -10,21 +10,25 @@ using Debug = UnityEngine.Debug;
 namespace SS3D.Engine.Database
 {
     /// <summary>
-    /// Handles the connection to the local database on the server.
+    /// <b>Handles the connection to the local database on the server.</b>
     ///
-    /// There's an explanation for the whole process to configure the database
+    /// <para>
+    ///     There's an explanation for the whole process to configure the database
     /// in the file "database.sql", read it and then come back to this.
+    /// </para>
     ///
+    /// <para>
     /// This connects to the database and executes SQL queries,
     /// they should all be serverside.
+    /// </para>
     /// </summary>
-    public class DatabaseConnectionManager : NetworkBehaviour
+    public class LocalDatabaseManager : NetworkBehaviour
     {
-        // Our DatabaseConnectionManager should be a singleton,
-        // if you don't know what it is, its basically
-        // making sure there is only one of its kind
-        // and that we can easily find him via code
-        public static DatabaseConnectionManager singleton { get; private set; }
+        // Our LocalDatabaseManager is a singleton,
+        // if you don't know what it is:
+        // A singleton makes sure that the class has only one instance so everytime 
+        // we do LocalDatabaseManager.singleton, we are getting the same guy
+        public static LocalDatabaseManager singleton { get; private set; }
 
         // database ip
         [SerializeField] private string serverURL;
@@ -39,7 +43,7 @@ namespace SS3D.Engine.Database
 
         // full connection string
         private string connectionString;
-        // this is needed for the MySQL framework, no need to understand,it is our connection to the database
+        // this is needed for the MySQL framework, no need to understand, it is our connection to the database
         public MySqlConnection conn;
 
         // Configures the singleton
@@ -55,17 +59,21 @@ namespace SS3D.Engine.Database
             }
         }
 
-        // At start we try to connect with the database
-        // will throw a message if something goes wrong
+        [Server]
         private void Start()
         {
+            // try to connect with the database
+            // will throw a message if something goes wrong
             Connect();
         }
         
-        // Handles the database connection
+        /// <summary>
+        ///  Server-side method that handles the database connection
+        /// </summary>
+        /// <returns>returns the connectionState</returns>
         [Server]
         [ContextMenu("Connect")]
-        public void Connect()
+        public ConnectionState Connect()
         {
             // this creates the connection string to make the connection to the database with all the info we need
             string connection =
@@ -86,8 +94,11 @@ namespace SS3D.Engine.Database
             GetDatabaseState(conn);
         }
 
-        // This checks the connection to the database
-        // we try to connect for a few seconds
+        /// <summary>
+        /// Checks the database state
+        /// </summary>
+        /// <param name="conn">SQL connection</param>
+        /// <returns>SQL connection state</returns>
         public ConnectionState GetDatabaseState(MySqlConnection conn)
         {
             ConnectionState state = conn.State;
@@ -124,8 +135,12 @@ namespace SS3D.Engine.Database
             // wait until we are not connecting
             yield return new WaitUntil(delegate { return state != ConnectionState.Connecting; });
         }
-
-        // handles any query execution
+        
+        /// <summary>
+        /// Server-side method that excecutes a SQL query
+        /// </summary>
+        /// <param name="sql">SQL Query</param>
+        /// <returns></returns>
         [Server]
         public void ExecuteQuery(string sql)
         {
@@ -137,16 +152,18 @@ namespace SS3D.Engine.Database
             if (state == ConnectionState.Closed || state == ConnectionState.Broken)
             {
                 // if we are disconnected from the database we try connecting again
+                // TODO: Not being able to connect after x tries check
                 Connect();
             }
             
-            // sets up the query for the MySQL framework
+            // sets up the query for the MySQL library
             MySqlCommand cmd = new MySqlCommand(sql, conn);
 
-            // executes the query and handles the result
+            // executes the query and gets the result
             object result = cmd.ExecuteScalar();
 
-            // if theres a result we debug it, or just comment it out. we should have a log for this eventually
+            // if theres a result we debug it, or just comment it out.
+            // TODO: Improve logging feature
             if (result != null)
                 Debug.Log(cmd.ExecuteScalar().ToString());
         }

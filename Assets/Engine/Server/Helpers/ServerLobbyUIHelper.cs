@@ -99,7 +99,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         //Debug.Log("Updating embark button");
         embarkText.gameObject.SetActive(true);
 
-	// and we wait until the map is loaded (locally) for the embark button to be unlocked
+	    // and we wait until the map is loaded (locally) for the embark button to be unlocked
         StartCoroutine(WaitUntilMapLoaded());
     }
 

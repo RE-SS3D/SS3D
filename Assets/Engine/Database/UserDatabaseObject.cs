@@ -4,20 +4,27 @@ using UnityEngine;
 namespace SS3D.Engine.Database
 {
     /// <summary>
-    /// Handles user database operations.
+    /// <para>
+    /// <b>Handles user database operations.</b>
+    /// </para>
     ///
+    /// <para>
     /// This should be used to register users into your server,
     /// when a new user joins, the database should know about it.
+    /// </para>
     ///
-    /// This uses the DatabaseConnectionManager that is server-side to handle
-    /// sql queries.
-    /// 
-    /// CKEY:
-    ///     The client key should be unique, it will possibly eventually be
+    /// <para>
+    /// This uses the LocalDatabaseManager, which is a server-side class to handle
+    /// local server's sql queries.
+    /// </para>
+    ///
+    /// <param name="CKEY">
+    ///         A client key that is unique to each user, it will possibly eventually be
     ///     passed by our Hub, we don't know how yet, but that's how it should work,
-    ///     once that is going, we will have out own database with that user's character data
+    ///     once that is going, we will have own database with that user's character data
     ///     so characters can be transported from server to server.
-    ///     Also important for bans and admin permissions.
+    ///     Also important for bans and admin permissions, yada yada yada.
+    /// </param>
     /// </summary>
     public class UserDatabaseObject : NetworkBehaviour
     {
@@ -26,7 +33,7 @@ namespace SS3D.Engine.Database
 
         private void Start()
         {
-            // this updates at start cause we  start this when we connect, so we check if this user was here once or not
+            // Tells the server this CKEY has joined it
             UpdateCkey();
         }
         
@@ -34,23 +41,33 @@ namespace SS3D.Engine.Database
         [ContextMenu("Update CKey")]
         public void UpdateCkey()
         {
+            //TODO: find a better way to get the player CKEY
+            
             // this is just a test, we have to have a way to work on the localCkey, probably with the Hub
+            // because this is very unsecure
             ckey = LoginNetworkManager.singleton.localCkey;
-            // and we assign it to the local player manager which is just handy stuff
+            
+            // we assign it to the local player manager which is just handy stuff
             LocalPlayerManager.singleton.ckey = ckey;
         }
 
         [Command(ignoreAuthority = true)]
         [ContextMenu("Save user")]
-        public void CmdSaveUser(string ckey)
+        public void CmdSaveUser(string ckey, NetworkConnectionToClient sender = null)
         {
-            DatabaseConnectionManager database = DatabaseConnectionManager.singleton;
-
+            LocalDatabaseManager database = LocalDatabaseManager.singleton;
+            
+            // SQL query that inserts the CKEY in the database, as its a primary key it only inserts the first time
             string sql = "INSERT INTO registeredUsers(ckey) VALUES ('" + ckey + "')";
 
             database.ExecuteQuery(sql);
         }
 
+        /// <summary>
+        /// Saves user's ckey in the local database
+        /// </summary>
+        /// <returns></returns>
+        [Client]
         public void SaveUser()
         {
             CmdSaveUser(ckey);

@@ -4,30 +4,49 @@ using UnityEngine;
 namespace SS3D.Engine.Database
 {
     /// <summary>
-    /// Database object for the character data
+    /// <para>
+    /// <b>Database object for the character data</b>
+    /// </para>
     /// 
+    /// <para>
     /// This should contain and manage:
-    ///     selected character index, the current selected character's name,
+    ///         Selected character index, the current selected character's name,
     ///     the character job preferences, the character antag preferences and
     ///     the Database SQL commands that we use to save them.
+    /// </para>
     ///
+    /// <para>
     /// How:
-    ///     Once we have a decent database configuration we will be able
+    ///         Once we have a decent database configuration we will be able
     ///     to have proper character saving, with many characters for a player
     ///     to be able to save and load.
-    /// 
+    /// </para>
+    ///
+    /// <para>
     /// Important for the database:
-    ///     Each character should have his own job preferences, this is not
+    ///         Each character should have his own job preferences, this is not
     ///     included in BYOND's SS13 (I think) but I think its important
     ///     to have.
+    ///         Also having global job preferences could be nice for those who
+    ///     don't care.
+    /// </para>
+    ///
+    /// <param name="selectedCharacterIndex">Selected character's index, useful for the database and in-game menus.</param>
+    /// <param name="characterData">Manages the character's job and antagonist preferences, aswell as for
+    /// clothing, skin color, gender, hair yada yada. Everything related to character options.
+    /// </param>
+    /// <para>
+    /// Developer note:
+    ///     Entire JSONS are possible to send via database, so maybe try that for the preferences
+    /// </para>
     /// </summary>
     public class CharacterDatabaseObject : NetworkBehaviour
     {
         // Character name
         public string name;
-        // TODO: Job preferences
-        // TODO: Selected characeter index 
-        //int selectedCharacterIndex = 0;
+        // TODO: Job preferences and character stuff in a characterData class
+        // TODO: Selected character index 
+        // int selectedCharacterIndex = 0;
         
         // Save character in the local database
         // [Server]
@@ -42,9 +61,9 @@ namespace SS3D.Engine.Database
         // Send the save operation to the Server
         // TODO: Make this work
         [Command(ignoreAuthority = true)]
-        public void CmdSaveCharacterData()
+        public void CmdSaveCharacterData(NetworkConnectionToClient sender = null)
         {
-            DatabaseConnectionManager database = DatabaseConnectionManager.singleton;
+            LocalDatabaseManager database = LocalDatabaseManager.singleton;
             string ckey = LocalPlayerManager.singleton.ckey;
             
             // SQL Querry to save a character
@@ -61,9 +80,9 @@ namespace SS3D.Engine.Database
         
         [Command(ignoreAuthority = true)]
         [ContextMenu("Get Character Data")]
-        public void CmdGetCharacterData()
+        public void CmdGetCharacterData(NetworkConnectionToClient sender = null)
         {
-            DatabaseConnectionManager database = DatabaseConnectionManager.singleton;
+            LocalDatabaseManager database = LocalDatabaseManager.singleton;
             string ckey = LocalPlayerManager.singleton.ckey;
             
             // SQL Querry to select all the character data from that CKEY, I should make a "selected character index" though
