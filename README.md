@@ -10,7 +10,7 @@
 
 [<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=Downloads%20%28Total%29&style=plastic&color=blue" alt="Total Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases)The current state of RE:SS3D (every commit) in a .zip. You'll need to build the game in Unity still.[<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold&label=Repository%20Size&logo=github&style=plastic" alt="Repo Size" align="right">](https://github.com/RE-SS3D/SS3D)
 
-**Note: RE:SS3D is currently still in a 'pre-alpha' phase as we do some redesigning, documenting, core system work, and basic system implementation. During this early phase there are many systems, content, or even interactions. What you see in our current project is just the beginning to something much, much greater.**
+*Note: RE:SS3D is currently still in a 'pre-alpha' phase as we do some redesigning, documenting, core system work, and basic system implementation. During this early phase there are not many systems, content, or even interactions. What you see in the current project is just the beginning to something much, much greater.*
 
 ## INFO:
 
