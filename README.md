@@ -4,11 +4,13 @@
 
 [<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
 
-[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=Latest-Release&style=plastic&color=9cf" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)The latest official build of RE:SS3D. Its working on Windows but needs testing on other OSs.[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=Downloads%20%28Latest-Release%29&style=plastic&color=blue" alt="Latest Release Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
+[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=Latest-Release&style=plastic&color=9cf" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)The latest official build of RE:SS3D. It's working on Windows but needs testing on other OSs.[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=Downloads%20%28Latest-Release%29&style=plastic&color=blue" alt="Latest Release Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
 
 [<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
 
 [<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=Downloads%20%28Total%29&style=plastic&color=blue" alt="Total Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases)The current state of RE:SS3D (every commit) in a .zip. You'll need to build the game in Unity still.[<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold&label=Repository%20Size&logo=github&style=plastic" alt="Repo Size" align="right">](https://github.com/RE-SS3D/SS3D)
+
+**Note: RE:SS3D is currently still in a 'pre-alpha' phase as we do some redesigning, documenting, core system work, and basic system implementation. During this early phase there are many systems, content, or even interactions. What you see in our current project is just the beginning to something much, much greater.**
 
 ## INFO:
 
@@ -22,7 +24,7 @@
 
 ## LICENSING:
 
-This project's **code** fall under the **[MIT](Documents/LICENSE-CODE.md)** license.
+This project's **code** falls under the **[MIT](Documents/LICENSE-CODE.md)** license.
 
 All **art assets** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.md)** license.
 
