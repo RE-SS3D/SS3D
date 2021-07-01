@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discussions
+    url: https://github.com/RE-SS3D/SS3D/discussions/categories/general
+    about: Join our GitHub discussions on topics like game-design, announcements, ideas/inspiration, Q&A, etc.

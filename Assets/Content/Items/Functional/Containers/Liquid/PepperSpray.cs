@@ -116,9 +116,9 @@ namespace SS3D.Content.Items.Functional.Weapons
             justSprayed = true;
         }
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
-            List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
+            List<IInteraction> list = base.GenerateInteractionsFromTarget(interactionEvent).ToList();
             list.Add(new SprayInteraction { icon = useIcon });
             return list.ToArray();
         }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Mirror;
+using SS3D.Content;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -18,7 +19,7 @@ namespace SS3D.Engine.Inventory
         public AttachedContainer AttachedContainer;
 
         private float lastObserverCheck;
-        private List<Creature> currentObservers;
+        private List<Entity> currentObservers;
 
         public void Start()
         {
@@ -28,7 +29,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
-            currentObservers = new List<Creature>();
+            currentObservers = new List<Entity>();
             if (AttachedContainer == null)
             {
                 AttachedContainer = GetComponent<AttachedContainer>();
@@ -44,7 +45,7 @@ namespace SS3D.Engine.Inventory
                 {
                     if (connection != null && connection.identity != null)
                     {
-                        var creature = connection.identity.GetComponent<Creature>();
+                        var creature = connection.identity.GetComponent<Entity>();
                         if (creature == null)
                         {
                             continue;

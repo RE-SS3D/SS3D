@@ -7,13 +7,6 @@ using UnityEngine;
 
 namespace SS3D.Engine.Tiles.State
 {
-    [Serializable]
-    public struct FixtureState
-    {
-        // Can be extended with other info like construction state
-        public Rotation rotation;
-    }
-
     [ExecuteAlways]
     public class FixtureStateMaintainer : TileStateMaintainer<FixtureState>
     {

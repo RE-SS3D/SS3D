@@ -18,7 +18,7 @@ namespace SS3D.Content.Furniture
 	// This defines the icon that will be shown in the interaction menu
         [SerializeField] private Sprite openInteractionIcon;
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
 	    // Here we generate the interactions when we are not holding the item
             OpenInteraction openInteraction = new OpenInteraction();

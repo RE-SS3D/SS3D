@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using SS3D.Engine.Examine;
 
 namespace SS3D.Engine.Inventory.UI
 {
@@ -24,6 +25,7 @@ namespace SS3D.Engine.Inventory.UI
         private Vector3 startMousePosition;
         private Vector3 startPosition;
         private Image slotImage;
+
 
         public Item Item
         {
@@ -110,5 +112,6 @@ namespace SS3D.Engine.Inventory.UI
             imageColor.a = ItemImage.sprite != null ? 255 : 0;
             ItemImage.color = imageColor;
         }
+
     }
 }

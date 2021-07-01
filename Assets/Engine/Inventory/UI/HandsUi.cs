@@ -54,6 +54,7 @@ namespace SS3D.Engine.Inventory.UI
             {
                 defaultColor = buttonColors.normalColor;
                 buttonColors.normalColor = SelectedColor;
+                buttonColors.highlightedColor = SelectedColor; // The selected hand keeps the same color, highlighted or not.
             }
             else
             {

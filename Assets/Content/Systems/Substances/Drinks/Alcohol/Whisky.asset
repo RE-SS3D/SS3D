@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Whisky
   m_EditorClassIdentifier: 
-  Id: whisky
+  Id: Whisky
   Color: {r: 0.764151, g: 0.67276406, b: 0.40730688, a: 0.6666667}
   MillilitersPerMole: 38

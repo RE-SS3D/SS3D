@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f55f41c36d703aa4b9b6025fa003c12a, type: 3}
   m_Name: Girder
   m_EditorClassIdentifier: Assembly-CSharp:TileMap:Turf
-  id: girder
-  genericType: wall
-  isWall: 0
+  id: Girder
+  genericType: Wall
   prefab: {fileID: 5989834269598487349, guid: 60695978170ac0c48af8fd7ac2c0a43c, type: 3}
+  isWall: 0

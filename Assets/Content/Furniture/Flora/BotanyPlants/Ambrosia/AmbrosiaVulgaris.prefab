@@ -1,0 +1,216 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &8145268220007352415
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 476084878915063804, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: DisplayName
+      value: Ambrosia Vulgaris Plant
+      objectReference: {fileID: 0}
+    - target: {fileID: 919204735071513671, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Name
+      value: AmbrosiaVulgarisStage3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1926618790220488794, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 606386749050564997, guid: aee15cab4da95ce4ba0ad9f0783f809e,
+        type: 3}
+    - target: {fileID: 2016959238421990081, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Name
+      value: AmbrosiaVulgarisDead
+      objectReference: {fileID: 0}
+    - target: {fileID: 2082145038464559114, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -2402016054836146925, guid: aee15cab4da95ce4ba0ad9f0783f809e,
+        type: 3}
+    - target: {fileID: 2222431389804530743, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -5803518787371509985, guid: aee15cab4da95ce4ba0ad9f0783f809e,
+        type: 3}
+    - target: {fileID: 2341819107395351538, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: DisplayName
+      value: Ambrosia Vulgaris Plant
+      objectReference: {fileID: 0}
+    - target: {fileID: 2539566301774975884, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -5803518787371509985, guid: aee15cab4da95ce4ba0ad9f0783f809e,
+        type: 3}
+    - target: {fileID: 2908185540786701765, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 606386749050564997, guid: aee15cab4da95ce4ba0ad9f0783f809e,
+        type: 3}
+    - target: {fileID: 3039690824821772447, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Name
+      value: AmbrosiaVulgarisStage2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3229375004894634780, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -2402016054836146925, guid: aee15cab4da95ce4ba0ad9f0783f809e,
+        type: 3}
+    - target: {fileID: 3668540335574591901, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4057164598348415073, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Name
+      value: AmbrosiaVulgarisStage4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4178325882714149674, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4471911967999452634, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -4522554890425958871, guid: aee15cab4da95ce4ba0ad9f0783f809e,
+        type: 3}
+    - target: {fileID: 4945680574026566842, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -4522554890425958871, guid: aee15cab4da95ce4ba0ad9f0783f809e,
+        type: 3}
+    - target: {fileID: 5333824203985152137, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -7222388701977358693, guid: aee15cab4da95ce4ba0ad9f0783f809e,
+        type: 3}
+    - target: {fileID: 5510851181092273877, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -7222388701977358693, guid: aee15cab4da95ce4ba0ad9f0783f809e,
+        type: 3}
+    - target: {fileID: 5752218603018864159, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5752218603018864159, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5752218603018864159, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5752218603018864159, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5752218603018864159, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5752218603018864159, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5752218603018864159, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5752218603018864159, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5752218603018864159, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5752218603018864159, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5752218603018864159, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6016695413567440125, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6132828385691192782, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Name
+      value: AmbrosiaVulgarisStage1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6192444273247375133, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6265483523201362960, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: DisplayName
+      value: Ambrosia Vulgaris Plant
+      objectReference: {fileID: 0}
+    - target: {fileID: 6511772022259664036, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: DisplayName
+      value: Ambrosia Vulgaris Plant
+      objectReference: {fileID: 0}
+    - target: {fileID: 7655033026907760786, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: DisplayName
+      value: Ambrosia Vulgaris Plant
+      objectReference: {fileID: 0}
+    - target: {fileID: 7842115812951011959, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291172420604987522, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: DisplayName
+      value: Ambrosia Vulgaris Plant
+      objectReference: {fileID: 0}
+    - target: {fileID: 8757431509704750092, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Name
+      value: AmbrosiaVulgaris
+      objectReference: {fileID: 0}
+    - target: {fileID: 8824788415378046448, guid: a3b9e8374f0fbde40a17fecc85059d5a,
+        type: 3}
+      propertyPath: m_Name
+      value: AmbrosiaVulgarisHarvest
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a3b9e8374f0fbde40a17fecc85059d5a, type: 3}

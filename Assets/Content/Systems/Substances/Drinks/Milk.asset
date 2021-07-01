@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Milk
   m_EditorClassIdentifier: 
-  Id: milk
+  Id: Milk
   Color: {r: 0.9056604, g: 0.9056604, b: 0.86721253, a: 0.98039216}
   MillilitersPerMole: 37

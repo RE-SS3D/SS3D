@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Cognac
   m_EditorClassIdentifier: 
-  Id: cognac
+  Id: Cognac
   Color: {r: 0.8301887, g: 0.6156158, b: 0.30153078, a: 0.6862745}
   MillilitersPerMole: 38

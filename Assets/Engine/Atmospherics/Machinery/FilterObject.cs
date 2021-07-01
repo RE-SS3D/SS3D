@@ -110,7 +110,7 @@ namespace SS3D.Engine.Atmospherics
 
 
 
-        public IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             return new IInteraction[]
             {
