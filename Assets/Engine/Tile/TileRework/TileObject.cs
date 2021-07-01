@@ -16,13 +16,13 @@ namespace SS3D.Engine.TilesRework
             public PlacedTileObject.SaveObject placedSaveObject;
         }
 
-        private TileMap map;
+        private TileChunk map;
         private TileLayerType layer;
         private int x;
         private int y;
         public PlacedTileObject placedObject;
 
-        public TileObject(TileMap map, TileLayerType layer, int x, int y)
+        public TileObject(TileChunk map, TileLayerType layer, int x, int y)
         {
             this.map = map;
             this.layer = layer;

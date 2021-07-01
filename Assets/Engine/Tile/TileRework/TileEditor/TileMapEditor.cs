@@ -223,7 +223,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
         private void ApplySettings()
         {
-            TileMap map = tileManager.GetTileMaps()[selectedTileMapIndex];
+            TileChunk map = tileManager.GetTileMaps()[selectedTileMapIndex];
             if (map.GetWidth() > selectedWidth || map.GetHeight() > selectedHeight)
             {
                 if (!EditorUtility.DisplayDialog("TileMap resizing",
@@ -337,12 +337,12 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             }
         }
 
-        private TileMap GetCurrentMap()
+        private TileChunk GetCurrentMap()
         {
             return tileManager.GetTileMaps()[selectedTileMapIndex];
         }
 
-        private void FillGridOptions(TileMap map)
+        private void FillGridOptions(TileChunk map)
         {
             selectedName = map.GetName();
             selectedWidth = map.GetWidth();
@@ -367,7 +367,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             Handles.DrawLines(lines);
         }
 
-        private void DisplayGrid(TileMap map)
+        private void DisplayGrid(TileChunk map)
         {
             Handles.color = Color.yellow;
             Vector3 offset = new Vector3(0.5f, 0, 0.5f);
@@ -452,7 +452,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
         private void UpdateTileVisibility()
         {
-            TileMap map = GetCurrentMap();
+            TileChunk map = GetCurrentMap();
             foreach (TileLayerType layer in TileHelper.GetTileLayers())
             {
                 bool visible = layerVisibilitySelection[(int)layer];

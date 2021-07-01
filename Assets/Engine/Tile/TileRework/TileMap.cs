@@ -5,249 +5,176 @@ using UnityEngine;
 
 namespace SS3D.Engine.TilesRework
 {
-    public class TileMap
+    public class TileMap : MonoBehaviour
     {
-        public event EventHandler<OnGridObjectChangedEventArgs> OnGridObjectChanged;
-        public class OnGridObjectChangedEventArgs : EventArgs
-        {
-            public int x;
-            public int y;
-        }
-
-        public struct TileGrid
-        {
-            public TileLayerType layer;
-            public TileObject[] tileObjectsGrid;
-        }
-
         [Serializable]
         public class SaveObject
         {
-            public string name;
-            public int width;
-            public int height;
-            public float tileSize;
-            public Vector3 originPosition;
-            public TileObject.SaveObject[] tileObjectSaveObjectArray;
+            public string mapName;
+            public TileChunk.SaveObject[] saveObjectList;
         }
 
-        private string name;
-        private int width;
-        private int height;
-        private float tileSize = 1f;
-        private Vector3 originPosition;
-        private List<TileGrid> tileGridList;
+        private const int CHUNK_SIZE = 16;
+        private const float TILE_SIZE = 1.0f;
+
+        private Dictionary<ulong, TileChunk> chunks;
+        private string mapName;
         private TileManager tileManager;
 
-        public TileMap(string name, int width, int height, float tileSize, Vector3 originPosition)
+        void Awake()
         {
-            this.name = name;
-            this.width = width;
-            this.height = height;
-            this.tileSize = tileSize;
-            this.originPosition = originPosition;
+            chunks = new Dictionary<ulong, TileChunk>();
+        }
 
-            CreateAllGrids();
+        public static TileMap Create(string name)
+        {
+            GameObject mapObject = new GameObject(name);
+
+            TileMap map = mapObject.AddComponent<TileMap>();
+            map.Setup(name);
+
+            return map;
+        }
+
+        private void Setup(string name)
+        {
             tileManager = TileManager.Instance;
-        }
-
-        private TileGrid CreateGrid(TileLayerType layer)
-        {
-            TileGrid grid = new TileGrid { layer = layer };
-
-            int gridSize = width * height;
-
-            switch (layer)
-            {
-                case TileLayerType.Pipes:
-                case TileLayerType.Overlays:
-                    gridSize *= 3;
-                    break;
-                case TileLayerType.HighWall:
-                case TileLayerType.LowWall:
-                    gridSize *= 4;
-                    break;
-            }
-
-            grid.tileObjectsGrid = new TileObject[gridSize];
-
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    grid.tileObjectsGrid[y * width + x] = new TileObject(this, layer, x, y);
-                }
-            }
-
-            return grid;
-        }
-
-        private void CreateAllGrids()
-        {
-            tileGridList = new List<TileGrid>();
-
-            foreach (TileLayerType layer in TileHelper.GetTileLayers())
-            {
-                tileGridList.Add(CreateGrid(layer));
-            }
-        }
-
-        public int GetWidth()
-        {
-            return width;
-        }
-
-        public int GetHeight()
-        {
-            return height;
-        }
-
-        public float GetTileSize()
-        {
-            return tileSize;
-        }
-
-        public Vector3 GetOrigin()
-        {
-            return originPosition;
+            this.name = name;
         }
 
         public string GetName()
         {
-            return name;
+            return mapName;
         }
 
-        public void SetName(string name)
+        private TileChunk CreateChunk(ulong chunkKey, Vector3 origin)
         {
-            this.name = name;
-        }
-
-        public void SetOrigin(Vector3 origin)
-        {
-            originPosition = origin;
-        }
-
-        public Vector3 GetWorldPosition(int x, int y)
-        {
-            return new Vector3(x, 0, y) * tileSize + originPosition;
-        }
-
-        public Vector2Int GetXY(Vector3 worldPosition)
-        {
-            return new Vector2Int((int)Math.Round(worldPosition.x - originPosition.x), (int)Math.Round(worldPosition.z - originPosition.z));            
-        }
-
-        public void SetTileObject(TileLayerType layer, int x, int y, TileObject value)
-        {
-            if (x >= 0 && y >= 0 && x < width && y < height)
-            {
-                tileGridList[(int)layer].tileObjectsGrid[y * width + x] = value;
-                TriggerGridObjectChanged(x, y);
-            }
-        }
-
-        public void SetTileObject(TileLayerType layer, Vector3 worldPosition, TileObject value)
-        {
-            Vector2Int vector = GetXY(worldPosition);
-            SetTileObject(layer, vector.x, vector.y, value);
-        }
-
-        public TileObject GetTileObject(TileLayerType layer, int x, int y)
-        {
-            if (x >= 0 && y >= 0 && x < width && y < height)
-            {
-                return tileGridList[(int)layer].tileObjectsGrid[y * width + x];
-            }
-            else
-            {
-                return default;
-            }
-        }
-
-        public TileObject GetTileObject(TileLayerType layer, Vector3 worldPosition)
-        {
-            Vector2Int vector = new Vector2Int();
-            vector = GetXY(worldPosition);
-            return GetTileObject(layer, vector.x, vector.y);
-        }
-
-        public Vector2Int ValidateGridPosition(Vector2Int gridPosition)
-        {
-            return new Vector2Int(
-                Mathf.Clamp(gridPosition.x, 0, width - 1),
-                Mathf.Clamp(gridPosition.y, 0, height - 1)
-            );
-        }
-
-        public Vector3 GetClosestPosition(Vector3 worldPosition)
-        {
-            Vector2Int gridPosition = ValidateGridPosition(GetXY(worldPosition));
-            return GetWorldPosition(gridPosition.x, gridPosition.y);
-        }
-
-        public void TriggerGridObjectChanged(int x, int y)
-        {
-            OnGridObjectChanged?.Invoke(this, new OnGridObjectChangedEventArgs { x = x, y = y });
+            TileChunk chunk = new TileChunk(chunkKey, CHUNK_SIZE, CHUNK_SIZE, TILE_SIZE, origin);
+            return chunk;
         }
 
         public void Clear()
         {
-            foreach (TileLayerType layer in TileHelper.GetTileLayers())
+            foreach (TileChunk chunk in chunks.Values)
             {
-                for (int x = 0; x < width; x++)
+                chunk.Clear();
+            }
+        }
+
+        private ulong GetKey(int chunkX, int chunkY)
+        {
+            return ((ulong)chunkX << 32) + (ulong)chunkY;
+        }
+
+        private ulong GetKey(Vector3 worldPosition)
+        {
+            int x = (int)Math.Floor(worldPosition.x / CHUNK_SIZE);
+            int y = (int)Math.Floor(worldPosition.z / CHUNK_SIZE);
+
+            return (GetKey(x, y));
+        }
+
+        private TileChunk GetChunk(Vector3 worldPosition)
+        {
+            ulong key = GetKey(worldPosition);
+
+            // Create a new chunk if there is none
+            if (chunks[key] == null)
+            {
+                int x = (int)(key & 0xffff);
+                int y = (int)(key >> 32);
+
+                Vector3 origin = new Vector3 {x = x, z = y};
+                chunks[key] = CreateChunk(key, origin);
+            }
+
+            return chunks[key];
+        }
+
+        public void SetTileObject(TileLayerType layer, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        {
+            // Get the right chunk
+            TileChunk chunk = GetChunk(position);
+            Vector2Int vector = chunk.GetXY(position);
+
+            Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
+            placedObjectOrigin = chunk.ValidateGridPosition(placedObjectOrigin);
+
+            // Test Can Build
+            List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
+            bool canBuild = true;
+            foreach (Vector2Int gridPosition in gridPositionList)
+            {
+                if (!chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).IsEmpty())
                 {
-                    for (int y = 0; y < height; y++)
-                    {
-                        TileObject tileObject = GetTileObject(layer, x, y);
-                        if (!tileObject.IsEmpty())
-                        {
-                            tileObject.ClearPlacedObject();
-                        }
-                    }
+                    canBuild = false;
+                    break;
                 }
+            }
+
+            if (canBuild)
+            {
+                Vector2Int rotationOffset = tileObjectSO.GetRotationOffset(dir);
+                Vector3 placedObjectWorldPosition = chunk.GetWorldPosition(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, 0, rotationOffset.y) * chunk.GetTileSize();
+
+                PlacedTileObject placedObject = PlacedTileObject.Create(placedObjectWorldPosition, placedObjectOrigin, dir, tileObjectSO);
+                placedObject.transform.SetParent(transform);
+
+                foreach (Vector2Int gridPosition in gridPositionList)
+                {
+                    chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject);
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Cannot build here");
+            }
+        }
+
+        public void ClearTileObject(TileLayerType layer, Vector3 position)
+        {
+            TileChunk chunk = GetChunk(position);
+
+            Vector2Int vector = chunk.GetXY(position);
+            vector = chunk.ValidateGridPosition(vector);
+            PlacedTileObject placedObject = chunk.GetTileObject(layer, vector.x, vector.y).GetPlacedObject();
+
+            List<Vector2Int> gridPositionList = placedObject.GetGridPositionList();
+            foreach (Vector2Int gridPosition in gridPositionList)
+            {
+                chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).ClearPlacedObject();
             }
         }
 
         public SaveObject Save()
         {
-            List<TileObject.SaveObject> tileObjectSaveObjectList = new List<TileObject.SaveObject>();
+            List<TileChunk.SaveObject> chunkObjectSaveList = new List<TileChunk.SaveObject>();
 
-            foreach (TileLayerType layer in TileHelper.GetTileLayers())
+            foreach (TileChunk chunk in chunks.Values)
             {
-                for (int x = 0; x < width; x++)
-                {
-                    for (int y = 0; y < height; y++)
-                    {
-                        TileObject tileObject = GetTileObject(layer, x, y);
-                        if (!tileObject.IsEmpty())
-                        {
-                            tileObjectSaveObjectList.Add(tileObject.Save());
-                        }
-                    }
-                }
+                chunkObjectSaveList.Add(chunk.Save());
             }
 
-            SaveObject saveObject = new SaveObject {
-                tileObjectSaveObjectArray = tileObjectSaveObjectList.ToArray(),
-                height = height,
-                originPosition = originPosition,
-                tileSize = tileSize,
-                width = width,
-                name = name,
+            return new SaveObject
+            {
+                mapName = mapName,
+                saveObjectList = chunkObjectSaveList.ToArray(),
             };
-
-            return saveObject;
         }
 
+        
         public void Load(SaveObject saveObject)
         {
-            foreach (TileObject.SaveObject tileObjectSaveObject in saveObject.tileObjectSaveObjectArray)
+            /*
+            foreach (TileChunk.SaveObject tileObjectSaveObject in saveObject.saveObjectList)
             {
                 TileLayerType layer = tileObjectSaveObject.layer;
                 string objectName = tileObjectSaveObject.placedSaveObject.tileObjectSOName;
 
-                tileManager.SetTileObject(this, layer, objectName, GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y), tileObjectSaveObject.placedSaveObject.dir);
+                SetTileObject(layer, objectName, GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y), tileObjectSaveObject.placedSaveObject.dir);
             }
+            */
         }
+        
     }
 }
