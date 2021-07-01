@@ -10,9 +10,8 @@ namespace SS3D.Engine.Database
     /// 
     /// <para>
     /// This should contain and manage:
-    ///         Selected character index, the current selected character's name,
-    ///     the character job preferences, the character antag preferences and
-    ///     the Database SQL commands that we use to save them.
+    ///         Selected character index, the character preferences
+    ///         and the Database SQL commands that we use to save them.
     /// </para>
     ///
     /// <para>
@@ -42,11 +41,8 @@ namespace SS3D.Engine.Database
     /// </summary>
     public class CharacterDatabaseObject : NetworkBehaviour
     {
-        // Character name
-        public string name;
         // TODO: Job preferences and character stuff in a characterData class
-        // TODO: Selected character index 
-        // int selectedCharacterIndex = 0;
+        int selectedCharacterIndex = 0;
         
         // Save character in the local database
         // [Server]
@@ -67,13 +63,7 @@ namespace SS3D.Engine.Database
             string ckey = LocalPlayerManager.singleton.ckey;
             
             // SQL Querry to save a character
-            string sql = "INSERT INTO CharacterData(ckey, name)" +
-                         " VALUES " +
-                         "('" + 
-                         ckey + 
-                         "', '" +
-                         name +
-                         "')";
+            string sql = $"INSERT INTO CharacterData(ckey, index) VALUES ('{ckey}', '{name}')";
             
             database.ExecuteQuery(sql);
         }

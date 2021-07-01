@@ -3,7 +3,6 @@ using System.Data;
 using Mirror;
 using UnityEngine;
 
-using MySql;
 using MySql.Data.MySqlClient;
 using Debug = UnityEngine.Debug;
 
@@ -44,7 +43,7 @@ namespace SS3D.Engine.Database
         // full connection string
         private string connectionString;
         // this is needed for the MySQL framework, no need to understand, it is our connection to the database
-        public MySqlConnection conn;
+        private MySqlConnection conn;
 
         // Configures the singleton
         private void Awake()
@@ -70,7 +69,7 @@ namespace SS3D.Engine.Database
         /// <summary>
         ///  Server-side method that handles the database connection
         /// </summary>
-        /// <returns>returns the connectionState</returns>
+        /// <returns>returns the connection state</returns>
         [Server]
         [ContextMenu("Connect")]
         public ConnectionState Connect()
@@ -89,9 +88,8 @@ namespace SS3D.Engine.Database
             conn = new MySqlConnection(connection);
             // actually connects
             conn.Open();
-            
             // checks if we are connected
-            GetDatabaseState(conn);
+            return GetDatabaseState(conn);
         }
 
         /// <summary>
