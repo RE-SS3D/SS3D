@@ -75,7 +75,19 @@ namespace SS3D
             RpcInvokeMapLoaded();
 
             SceneManager.LoadSceneAsync(selectedMap, LoadSceneMode.Additive);
+            
+            // creates a message for the clients that tell them to load the selected scene
+            SceneMessage msg = new SceneMessage
+            {
+                sceneName = selectedMap,
+                sceneOperation = SceneOperation.LoadAdditive
+            };
+
+            // sends said message to all clients
+            NetworkServer.SendToAll(msg);
+
             StartCoroutine(SetActiveScene(selectedMap));
+
 
             TileManager.tileManagerLoaded += UnlockRoundStart;
         }
@@ -87,24 +99,13 @@ namespace SS3D
             mapLoaded?.Invoke();
         }
 
-	// Unlock round start when the map is loaded, also sends the client the scene to load for some reason
-	// I'll move it to another place
-	// TODO: move the scene message to LoadMapScene()
+	// Unlock round start when the map is loaded
         public void UnlockRoundStart()
         {
 	    // UI stuff
             loadSceneButtonText.text = "scene loaded";
             startRoundButton.interactable = true;
 
-	    // creates a message for the clients that tell them to load the selected scene
-            SceneMessage msg = new SceneMessage
-            {
-                sceneName = selectedMap,
-                sceneOperation = SceneOperation.LoadAdditive
-            };
-
-	    // sends said message to all clients
-            NetworkServer.SendToAll(msg);
         }
 
 	// Updates map list in the dropdown using the map list
