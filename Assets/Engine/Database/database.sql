@@ -38,8 +38,9 @@ CREATE TABLE IF NOT EXISTS registeredUsers(
 # Note: JSON to save multiple stuff in one register
 CREATE TABLE IF NOT EXISTS characterData (
     idCharacterData  INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    ckey VARCHAR(60) NOT NULL	,
+    ckey VARCHAR(60) NOT NULL,
 	name VARCHAR(200),
+	sex VARCHAR(20),
     jobPreferences JSON,
     
     FOREIGN KEY (ckey)

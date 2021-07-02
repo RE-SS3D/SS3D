@@ -6,6 +6,7 @@ using SS3D.Engine.Server.Login.Networking;
 using SS3D.Engine.Server.Round;
     
     using System.Net;
+using SS3D.Engine.Database;
 using Telepathy;
 using UnityEngine.SceneManagement;
     using UnityEngine.UI;
@@ -258,13 +259,19 @@ using UnityEngine.SceneManagement;
          */
         public override void OnServerAddPlayer(NetworkConnection conn)
         {
+            LocalDatabaseManager database = LocalDatabaseManager.singleton;
+
             Debug.Log("OnServerAddPlayer");
 
-            GameObject soul = Instantiate(soulPrefab);
+            GameObject soulInstance = Instantiate(soulPrefab);
             
-            NetworkServer.AddPlayerForConnection(conn, soul);
-            //GameObject player = Instantiate(playerDummyPrefab);
-            //NetworkServer.AddPlayerForConnection(conn, player);
+            NetworkServer.AddPlayerForConnection(conn, soulInstance);
+
+            Soul soul = soulInstance.GetComponent<Soul>();
+            database.userDatabaseObject.SaveUser(localCkey);
+            database.characterDatabaseObject.GetAllCharacterData();
+            
+            
         }
 
         /**

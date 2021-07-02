@@ -1,5 +1,6 @@
 ﻿using Mirror;
 using UnityEngine;
+#pragma warning disable 414
 
 namespace SS3D.Engine.Database
 {
@@ -42,35 +43,35 @@ namespace SS3D.Engine.Database
     public class CharacterDatabaseObject : NetworkBehaviour
     {
         // TODO: Job preferences and character stuff in a characterData class
-        int selectedCharacterIndex = 0;
+        public int selectedCharacterIndex = 0;
+        public CharacterData characterData;
         
-        // Save character in the local database
-        // [Server]
-        [ContextMenu("Save character")]
-        public void Save()
-        {
-            // TODO: Try getting data, if there's none, Save it otherwise, update it
-            
-            // Put the save stuff here idiot youre running it locally thats why its not working
-        }
-
-        // Send the save operation to the Server
-        // TODO: Make this work
+        /// <summary>
+        /// <b>Saves the data from the user's game into the server's local database</b>
+        /// </summary>
+        /// <param name="sender">connection that asked this Command, Mirror handles it for you</param>
         [Command(ignoreAuthority = true)]
         public void CmdSaveCharacterData(NetworkConnectionToClient sender = null)
         {
             LocalDatabaseManager database = LocalDatabaseManager.singleton;
             string ckey = LocalPlayerManager.singleton.ckey;
             
-            // SQL Querry to save a character
+            // SQL Query to save a character
             string sql = $"INSERT INTO CharacterData(ckey, index) VALUES ('{ckey}', '{name}')";
             
             database.ExecuteQuery(sql);
         }
         
-        [Command(ignoreAuthority = true)]
+        /// <summary>
+        /// <b>Gets all the character data for that user from the local database</b>
+        /// <para>
+        /// Processes the data from a SQL query into the a CharacterData list
+        /// </para>
+        /// </summary>
+        /// <returns>all of user's character data</returns>
+        [Server]
         [ContextMenu("Get Character Data")]
-        public void CmdGetCharacterData(NetworkConnectionToClient sender = null)
+        public object GetAllCharacterData()
         {
             LocalDatabaseManager database = LocalDatabaseManager.singleton;
             string ckey = LocalPlayerManager.singleton.ckey;
@@ -79,7 +80,9 @@ namespace SS3D.Engine.Database
             // TODO: Update this to put a selected character id
             string sql = "SELECT * FROM CharacterData WHERE ckey = '" + ckey + "'";
 
-            database.ExecuteQuery(sql);
+            CharacterData[] characterData = null;
+            var result = database.ExecuteQuery(sql);
+            return result;
         }
     }
 }

@@ -37,6 +37,9 @@ namespace SS3D.Engine.Database
             UpdateCkey();
         }
         
+        /// <summary>
+        /// Updates the CKEY of the user on the LocalPlayerManager
+        /// </summary>
         [Client]
         [ContextMenu("Update CKey")]
         public void UpdateCkey()
@@ -50,10 +53,14 @@ namespace SS3D.Engine.Database
             // we assign it to the local player manager which is just handy stuff
             LocalPlayerManager.singleton.ckey = ckey;
         }
-
-        [Command(ignoreAuthority = true)]
+        
+        /// <summary>
+        /// Saves user's ckey in the local database
+        /// </summary>
+        /// <returns></returns>
+        [Server]
         [ContextMenu("Save user")]
-        public void CmdSaveUser(string ckey, NetworkConnectionToClient sender = null)
+        public void SaveUser(string ckey, NetworkConnectionToClient sender = null)
         {
             LocalDatabaseManager database = LocalDatabaseManager.singleton;
             
@@ -61,16 +68,6 @@ namespace SS3D.Engine.Database
             string sql = "INSERT INTO registeredUsers(ckey) VALUES ('" + ckey + "')";
 
             database.ExecuteQuery(sql);
-        }
-
-        /// <summary>
-        /// Saves user's ckey in the local database
-        /// </summary>
-        /// <returns></returns>
-        [Client]
-        public void SaveUser()
-        {
-            CmdSaveUser(ckey);
         }
     }
 }

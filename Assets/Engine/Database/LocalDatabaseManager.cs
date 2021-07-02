@@ -23,7 +23,7 @@ namespace SS3D.Engine.Database
     /// </summary>
     public class LocalDatabaseManager : NetworkBehaviour
     {
-        // Our LocalDatabaseManager is a singleton,
+        // LocalDatabaseManager is a singleton,
         // if you don't know what it is:
         // A singleton makes sure that the class has only one instance so everytime 
         // we do LocalDatabaseManager.singleton, we are getting the same guy
@@ -45,6 +45,11 @@ namespace SS3D.Engine.Database
         // this is needed for the MySQL framework, no need to understand, it is our connection to the database
         private MySqlConnection conn;
 
+        // User manager for the database
+        public UserDatabaseObject userDatabaseObject;
+        // Character data manager for the database
+        public CharacterDatabaseObject characterDatabaseObject;
+        
         // Configures the singleton
         private void Awake()
         {
@@ -127,7 +132,10 @@ namespace SS3D.Engine.Database
             return state;
         }
 
-        // Coroutine to help GetConnectionState()
+        /// <summary>
+        /// <b>Coroutine to help GetConnectionState()</b>
+        /// </summary>
+        /// <param name="state">current database's connection state</param>
         public IEnumerator WaitUntilConnected(ConnectionState state)
         {
             // wait until we are not connecting
@@ -135,12 +143,12 @@ namespace SS3D.Engine.Database
         }
         
         /// <summary>
-        /// Server-side method that excecutes a SQL query
+        /// <b>Server-side method that executes a SQL query in the local database</b>
         /// </summary>
         /// <param name="sql">SQL Query</param>
-        /// <returns></returns>
+        /// <returns>Query result</returns>
         [Server]
-        public void ExecuteQuery(string sql)
+        public object ExecuteQuery(string sql)
         {
             // we get the connection state to not try using a database that is offline
             ConnectionState state = GetDatabaseState(conn);
@@ -163,7 +171,9 @@ namespace SS3D.Engine.Database
             // if theres a result we debug it, or just comment it out.
             // TODO: Improve logging feature
             if (result != null)
-                Debug.Log(cmd.ExecuteScalar().ToString());
+                return result;
+
+            return null;
         }
 
     }
