@@ -21,17 +21,17 @@ namespace SS3D.Engine.TilesRework
         }
 
         [Serializable]
-        public class SaveObject
+        public class ChunkSaveObject
         {
-            public ulong chunkKey;
+            public Vector2Int chunkKey;
             public int width;
             public int height;
             public float tileSize;
             public Vector3 originPosition;
-            public TileObject.SaveObject[] tileObjectSaveObjectArray;
+            public TileObject.TileSaveObject[] tileObjectSaveObjectArray;
         }
 
-        private ulong chunkKey;
+        private Vector2Int chunkKey;
         private int width;
         private int height;
         private float tileSize = 1f;
@@ -39,7 +39,7 @@ namespace SS3D.Engine.TilesRework
         private List<TileGrid> tileGridList;
         private TileManager tileManager;
 
-        public TileChunk(ulong chunkKey, int width, int height, float tileSize, Vector3 originPosition)
+        public TileChunk(Vector2Int chunkKey, int width, int height, float tileSize, Vector3 originPosition)
         {
             this.chunkKey = chunkKey;
             this.width = width;
@@ -112,15 +112,10 @@ namespace SS3D.Engine.TilesRework
             return originPosition;
         }
 
-        public ulong GetKey()
+        public Vector2Int GetKey()
         {
             return chunkKey;
         }
-
-        //public void SetOrigin(Vector3 origin)
-        //{
-        //    originPosition = origin;
-        //}
 
         public Vector3 GetWorldPosition(int x, int y)
         {
@@ -129,7 +124,18 @@ namespace SS3D.Engine.TilesRework
 
         public Vector2Int GetXY(Vector3 worldPosition)
         {
-            return new Vector2Int((int)Math.Round(worldPosition.x - originPosition.x), (int)Math.Round(worldPosition.z - originPosition.z));            
+            return new Vector2Int((int)Math.Round(worldPosition.x - originPosition.x), (int)Math.Round(worldPosition.z - originPosition.z));
+        }
+
+        public void SetEnabled(TileLayerType layer, bool enabled)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                   GetTileObject(layer, x, y).GetPlacedObject()?.gameObject.SetActive(enabled);
+                }
+            }
         }
 
         public void SetTileObject(TileLayerType layer, int x, int y, TileObject value)
@@ -166,20 +172,6 @@ namespace SS3D.Engine.TilesRework
             return GetTileObject(layer, vector.x, vector.y);
         }
 
-        public Vector2Int ValidateGridPosition(Vector2Int gridPosition)
-        {
-            return new Vector2Int(
-                Mathf.Clamp(gridPosition.x, 0, width - 1),
-                Mathf.Clamp(gridPosition.y, 0, height - 1)
-            );
-        }
-
-        public Vector3 GetClosestPosition(Vector3 worldPosition)
-        {
-            Vector2Int gridPosition = ValidateGridPosition(GetXY(worldPosition));
-            return GetWorldPosition(gridPosition.x, gridPosition.y);
-        }
-
         public void TriggerGridObjectChanged(int x, int y)
         {
             OnGridObjectChanged?.Invoke(this, new OnGridObjectChangedEventArgs { x = x, y = y });
@@ -203,9 +195,9 @@ namespace SS3D.Engine.TilesRework
             }
         }
 
-        public SaveObject Save()
+        public ChunkSaveObject Save()
         {
-            List<TileObject.SaveObject> tileObjectSaveObjectList = new List<TileObject.SaveObject>();
+            List<TileObject.TileSaveObject> tileObjectSaveObjectList = new List<TileObject.TileSaveObject>();
 
             foreach (TileLayerType layer in TileHelper.GetTileLayers())
             {
@@ -222,7 +214,7 @@ namespace SS3D.Engine.TilesRework
                 }
             }
 
-            SaveObject saveObject = new SaveObject {
+            ChunkSaveObject saveObject = new ChunkSaveObject {
                 tileObjectSaveObjectArray = tileObjectSaveObjectList.ToArray(),
                 height = height,
                 originPosition = originPosition,
@@ -232,17 +224,6 @@ namespace SS3D.Engine.TilesRework
             };
 
             return saveObject;
-        }
-
-        public void Load(SaveObject saveObject)
-        {
-            foreach (TileObject.SaveObject tileObjectSaveObject in saveObject.tileObjectSaveObjectArray)
-            {
-                TileLayerType layer = tileObjectSaveObject.layer;
-                string objectName = tileObjectSaveObject.placedSaveObject.tileObjectSOName;
-
-                tileManager.SetTileObject(this, layer, objectName, GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y), tileObjectSaveObject.placedSaveObject.dir);
-            }
         }
     }
 }

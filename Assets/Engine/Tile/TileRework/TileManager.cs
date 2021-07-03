@@ -14,9 +14,9 @@ namespace SS3D.Engine.TilesRework
     public class TileManager : MonoBehaviour
     {
         [Serializable]
-        public class SaveMapObject
+        public class ManagerSaveObject
         {
-            public SaveObject[] saveObjectList;
+            public MapSaveObject[] saveObjectList;
         }
         
         public static TileManager Instance { get; private set; }
@@ -31,7 +31,7 @@ namespace SS3D.Engine.TilesRework
 
         private List<TileMap> mapList;
 
-        [ContextMenu("Initialize tilemap")]
+        [ContextMenu("Initialize TileMap")]
         private void Init()
         {
             Instance = this;
@@ -49,7 +49,6 @@ namespace SS3D.Engine.TilesRework
                 string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
                 listTileObjectSO.Add(AssetDatabase.LoadAssetAtPath<TileObjectSO>(assetPath));
             }
-            // tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
             tileObjectSOs = listTileObjectSO.ToArray();
 
             LoadAll();
@@ -130,15 +129,15 @@ namespace SS3D.Engine.TilesRework
 
         public void SaveAll()
         {
-            List<SaveObject> saveObjectList = new List<SaveObject>();
+            List<MapSaveObject> saveObjectList = new List<MapSaveObject>();
 
             foreach (TileMap map in mapList)
             {
-                SaveObject saveObject = map.Save();
+                MapSaveObject saveObject = map.Save();
                 saveObjectList.Add(saveObject);
             }
 
-            SaveMapObject saveMapObject = new SaveMapObject
+            ManagerSaveObject saveMapObject = new ManagerSaveObject
             {
                 saveObjectList = saveObjectList.ToArray()
             };
@@ -154,8 +153,8 @@ namespace SS3D.Engine.TilesRework
                 tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
             }
 
-            ClearMaps();
-            SaveMapObject saveMapObject = SaveSystem.LoadObject<SaveMapObject>(saveFileName);
+            DestroyMaps();
+            ManagerSaveObject saveMapObject = SaveSystem.LoadObject<ManagerSaveObject>(saveFileName);
 
             if (saveMapObject == null)
             {
@@ -165,35 +164,15 @@ namespace SS3D.Engine.TilesRework
                 return;
             }
 
-            foreach (SaveObject s in saveMapObject.saveObjectList)
+            foreach (MapSaveObject s in saveMapObject.saveObjectList)
             {
                 TileMap newMap = AddTileMap(s.mapName);
-
-                // TileMap newMap = AddTileMap(s.name, s.width, s.height, s.tileSize, s.originPosition);
                 newMap.Load(s);
                 mapList.Add(newMap);
             }
 
             Debug.Log("Tilemaps loaded");
         }
-
-        /*
-        public void ChangeGrid(TileChunk map, string name, int xSize, int ySize, Vector3 origin)
-        {
-            if (map.GetWidth() > xSize || map.GetHeight() > ySize)
-                Debug.LogWarning("Resizing the tilemap smaller than the original. You may lose stored objects!");
-
-            SaveObject saveObject = map.Save();
-
-            TileChunk newMap = AddTileMap(name, xSize, ySize, map.GetTileSize(), origin);
-            // TileMap newMap = new TileMap(name, xSize, ySize, map.GetTileSize(), origin);
-            newMap.Load(saveObject);
-
-            chunkList.Insert(chunkList.IndexOf(map), newMap);
-            //mapList.Add(newMap);
-            RemoveMap(map);
-        }
-        */
 
         public void RemoveMap(TileMap map)
         {
@@ -203,12 +182,27 @@ namespace SS3D.Engine.TilesRework
             mapList.Remove(map);
         }
 
-        private void ClearMaps()
+        private void DestroyMaps()
         {
             foreach (TileMap map in mapList)
             {
                 map.Clear();
             }
+
+            for (int i = transform.childCount - 1; i >= 0; --i)
+            {
+                EditorAndRuntime.Destroy(transform.GetChild(i).gameObject);
+            }
+
+            mapList.Clear();
+        }
+
+        [ContextMenu("Reset tilemap")]
+        private void Reset()
+        {
+            DestroyMaps();
+            CreateEmptyMap();
+            SaveAll();  
         }
     }
 }

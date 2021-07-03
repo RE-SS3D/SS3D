@@ -10,7 +10,7 @@ namespace SS3D.Engine.TilesRework
     public class PlacedTileObject : MonoBehaviour
     {
         [Serializable]
-        public class SaveObject
+        public class PlacedSaveObject
         {
             public string tileObjectSOName;
             public Vector2Int origin;
@@ -58,9 +58,9 @@ namespace SS3D.Engine.TilesRework
             return tileObjectSO.nameString;
         }
 
-        public SaveObject Save()
+        public PlacedSaveObject Save()
         {
-            return new SaveObject
+            return new PlacedSaveObject
             {
                 tileObjectSOName = tileObjectSO.nameString,
                 origin = origin,

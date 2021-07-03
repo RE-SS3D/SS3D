@@ -62,6 +62,20 @@ namespace SS3D.Engine.TilesRework
                 case Direction.East: return 270;
             }
         }
-    }
 
+        public static Vector3 GetWorldPosition(int x, int y, float tileSize, Vector3 originPosition)
+        {
+            return new Vector3(x, 0, y) * tileSize + originPosition;
+        }
+
+        public static Vector2Int GetXY(Vector3 worldPosition, Vector3 originPosition)
+        {
+            return new Vector2Int((int)Math.Round(worldPosition.x - originPosition.x), (int)Math.Round(worldPosition.z - originPosition.z));
+        }
+
+        public static Vector3 GetClosestPosition(Vector3 worldPosition)
+        {
+            return new Vector3(Mathf.Round(worldPosition.x), 0, Mathf.Round(worldPosition.z));
+        }
+    }
 }

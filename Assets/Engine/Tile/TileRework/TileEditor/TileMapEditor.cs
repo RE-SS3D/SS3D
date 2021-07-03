@@ -12,11 +12,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
         private TileManager tileManager;
 
-        private bool showGridOptions = false;
-        private bool showTileGrid = true;
-        private bool showVisibility = false;
-        private bool[] layerVisibilitySelection = new bool[TileHelper.GetTileLayers().Length];
-
+        // Selection grid
         private string searchString = "";
         private Vector2 scrollPositionTile;
         private Vector2 scrollPositionSelection;
@@ -26,10 +22,11 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
         // Grid settings
         private string selectedName;
-        private Vector3 selectedOrigin;
-        private int selectedWidth;
-        private int selectedHeight;
         private int selectedTileMapIndex = 0;
+        private bool showGridOptions = false;
+        private bool showTileGrid = true;
+        private bool showVisibility = false;
+        private bool[] layerVisibilitySelection = new bool[TileHelper.GetTileLayers().Length];
 
         // Placement settings
         private bool madeChanges = false;
@@ -83,6 +80,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             }
             else
             {
+                RefreshMapList();
                 FillGridOptions(GetCurrentMap());
                 RefreshSelectionGrid();
                 SetTileVisibility(true);
@@ -143,22 +141,24 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
                 }
                 if (GUILayout.Button("Load"))
                 {
-                    tileManager.LoadAll();
                     if (madeChanges)
                     {
                         DisplaySaveWarning();
+                        madeChanges = false;
                     }
+                    tileManager.LoadAll();
+                    RefreshMapList();
                 }
                 if (GUILayout.Button("Save")) { tileManager.SaveAll(); madeChanges = false; }
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.Space();
 
-                showTileGrid = EditorGUILayout.Toggle("Display grid: ", showTileGrid);
+                EditorGUILayout.BeginVertical();
+                showTileGrid = EditorGUILayout.Toggle("Display chunks: ", showTileGrid);
                 selectedName = EditorGUILayout.TextField("Name:", selectedName);
-                selectedWidth = EditorGUILayout.IntSlider("Width:", selectedWidth, 1, MAX_TILEMAP_SIZE);
-                selectedHeight = EditorGUILayout.IntSlider("Height:", selectedHeight, 1, MAX_TILEMAP_SIZE);
-                selectedOrigin = EditorGUILayout.Vector3Field("Origin position:", selectedOrigin);
+                EditorGUILayout.LabelField("Number of chunks: " + GetCurrentMap().ChunkCount);
+                EditorGUILayout.EndVertical();
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.Space();
@@ -223,20 +223,11 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
         private void ApplySettings()
         {
-            TileChunk map = tileManager.GetTileMaps()[selectedTileMapIndex];
-            if (map.GetWidth() > selectedWidth || map.GetHeight() > selectedHeight)
-            {
-                if (!EditorUtility.DisplayDialog("TileMap resizing",
-            "The currently selected width and height are smaller than the grid size and you may loose stored objects." +
-            "\n\n" +
-            " Are you sure that you want to resize?"
-            , "Ok", "Cancel"))
-                {
-                    return;
-                }
-            }
+            TileMap map = tileManager.GetTileMaps()[selectedTileMapIndex];
+            map.SetName(selectedName);
             madeChanges = true;
-            tileManager.ChangeGrid(map, selectedName, selectedWidth, selectedHeight, selectedOrigin);
+            
+            // tileManager.ChangeGrid(map, selectedName, selectedWidth, selectedHeight, selectedOrigin);
         }
 
         private void OnSceneGUI(SceneView sceneView)
@@ -258,7 +249,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             // Convert mouse position to world position by finding point where y = 0.
             Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
             Vector3 position = ray.origin - (ray.origin.y / ray.direction.y) * ray.direction;
-            Vector3 snappedPosition = GetCurrentMap().GetClosestPosition(position);
+            Vector3 snappedPosition = TileHelper.GetClosestPosition(position);
 
             // Set ghost tile's position
             if (!deleteTiles)
@@ -337,17 +328,14 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             }
         }
 
-        private TileChunk GetCurrentMap()
+        private TileMap GetCurrentMap()
         {
             return tileManager.GetTileMaps()[selectedTileMapIndex];
         }
 
-        private void FillGridOptions(TileChunk map)
+        private void FillGridOptions(TileMap map)
         {
             selectedName = map.GetName();
-            selectedWidth = map.GetWidth();
-            selectedHeight = map.GetHeight();
-            selectedOrigin = map.GetOrigin();
         }
 
         private void DisplayVisualHelp(Vector3 cell)
@@ -367,22 +355,19 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             Handles.DrawLines(lines);
         }
 
-        private void DisplayGrid(TileChunk map)
+        private void DisplayGrid(TileMap map)
         {
             Handles.color = Color.yellow;
             Vector3 offset = new Vector3(0.5f, 0, 0.5f);
 
-            for (int x = 0; x < map.GetWidth(); x++)
+            TileChunk[] chunks = map.GetChunks();
+            foreach (var chunk in chunks)
             {
-                for (int y = 0; y < map.GetHeight(); y++)
-                {
-                    Handles.DrawLine(map.GetWorldPosition(x, y) - offset, map.GetWorldPosition(x, y + 1) - offset);
-                    Handles.DrawLine(map.GetWorldPosition(x, y) - offset, map.GetWorldPosition(x + 1, y) - offset);
-                }
+                Handles.DrawLine(chunk.GetOrigin() - offset, chunk.GetOrigin() + new Vector3(TileMap.CHUNK_SIZE, 0, 0) - offset);
+                Handles.DrawLine(chunk.GetOrigin() - offset, chunk.GetOrigin() + new Vector3(0, 0, TileMap.CHUNK_SIZE) - offset);
+                Handles.DrawLine(chunk.GetOrigin() - offset + new Vector3(TileMap.CHUNK_SIZE, 0, 0), chunk.GetOrigin() + new Vector3(TileMap.CHUNK_SIZE, 0, TileMap.CHUNK_SIZE) - offset);
+                Handles.DrawLine(chunk.GetOrigin() - offset + new Vector3(0, 0, TileMap.CHUNK_SIZE), chunk.GetOrigin() + new Vector3(TileMap.CHUNK_SIZE, 0, TileMap.CHUNK_SIZE) - offset);
             }
-
-            Handles.DrawLine(map.GetWorldPosition(0, map.GetHeight()) - offset, map.GetWorldPosition(map.GetWidth(), map.GetHeight()) - offset);
-            Handles.DrawLine(map.GetWorldPosition(map.GetWidth(), 0) - offset, map.GetWorldPosition(map.GetWidth(), map.GetHeight()) - offset);
         }
 
         private void ShowLayerVisibility()
@@ -452,18 +437,11 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
         private void UpdateTileVisibility()
         {
-            TileChunk map = GetCurrentMap();
+            TileMap map = GetCurrentMap();
             foreach (TileLayerType layer in TileHelper.GetTileLayers())
             {
                 bool visible = layerVisibilitySelection[(int)layer];
-                for (int x = 0; x < map.GetWidth(); x++)
-                {
-                    for (int y = 0; y < map.GetHeight(); y++)
-                    {
-                        map.GetTileObject(layer, x, y).GetPlacedObject()?.gameObject.SetActive(visible);
-                    }
-                }
-                
+                map.SetEnabled(layer, visible);
             }
         }
 

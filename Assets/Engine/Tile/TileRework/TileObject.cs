@@ -8,12 +8,12 @@ namespace SS3D.Engine.TilesRework
     public class TileObject
     {
         [Serializable]
-        public class SaveObject
+        public class TileSaveObject
         {
             public TileLayerType layer;
             public int x;
             public int y;
-            public PlacedTileObject.SaveObject placedSaveObject;
+            public PlacedTileObject.PlacedSaveObject placedSaveObject;
         }
 
         private TileChunk map;
@@ -58,9 +58,9 @@ namespace SS3D.Engine.TilesRework
             return placedObject == null;
         }
 
-        public SaveObject Save()
+        public TileSaveObject Save()
         {
-            return new SaveObject
+            return new TileSaveObject
             {
                 layer = layer,
                 x = x,
