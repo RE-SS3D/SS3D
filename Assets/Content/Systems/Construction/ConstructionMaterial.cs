@@ -30,6 +30,29 @@ namespace SS3D.Content.Systems.Construction
         private void Start()
         {
             item = GetComponent<Item>();
+            item.ItemContainerChanged += OnItemContainerChanged;
+        }
+
+        public void OnItemContainerChanged(Container oldContainer, Container newContainer)
+        {
+            if(constructionMenu != null)
+            { 
+                //If the item is put outside of a container, we close the construction menu.
+                if (newContainer == null)
+                {  
+                    constructionMenu.Close();
+                    return;
+                }
+                if (oldContainer != null && newContainer != null)
+                {
+                    //If the item was held in hand, the construction menu closes when the item isn't held anymore
+                    if (oldContainer.AttachedTo.IsAttachedToHands() && ! (newContainer.AttachedTo.IsAttachedToHands()))
+                    { 
+                        constructionMenu.Close();
+                        return;
+                    }
+                }
+            }    
         }
 
         public void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)

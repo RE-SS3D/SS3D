@@ -51,6 +51,9 @@ namespace SS3D.Engine.Inventory
         private Container container;
         private FrozenItem frozenItem;
 
+        public delegate void ItemMovedHandler(Container oldContainer, Container newContainerr);
+        public event ItemMovedHandler ItemContainerChanged;
+
         public Sprite InventorySprite
         {
             get
@@ -334,15 +337,24 @@ namespace SS3D.Engine.Inventory
             {
                 return;
             }
-            
+            OnItemContainerChanged(container, newContainer);
             container?.RemoveItem(this);
-            
+
             if (!alreadyAdded && newContainer != null)
             {
                 newContainer.AddItem(this);
             }
+            container = newContainer;    
+        }
 
-            container = newContainer;
+        /// <summary>
+        /// Called everytime this item container changes.
+        /// </summary>
+        /// <param name="oldContainer"> the old container of the item</param>
+        /// <param name="newContainer"> the new container of the item</param>
+        protected virtual void OnItemContainerChanged(Container oldContainer, Container newContainer) 
+        {
+            ItemContainerChanged?.Invoke(oldContainer, newContainer);      
         }
 
         /// <summary>
