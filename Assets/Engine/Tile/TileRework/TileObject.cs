@@ -67,11 +67,14 @@ namespace SS3D.Engine.TilesRework
 
         public TileSaveObject Save()
         {
-            List<PlacedTileObject.PlacedSaveObject> placedSaveObjects = new List<PlacedTileObject.PlacedSaveObject>();
+            PlacedTileObject.PlacedSaveObject[] placedSaveObjects = new PlacedTileObject.PlacedSaveObject[placedObjects.Length];
             for (int i = 0; i < placedObjects.Length; i++)
             {
+                /*
                 if (!IsEmpty(i))
                     placedSaveObjects.Add(placedObjects[i].Save());
+                */
+                placedSaveObjects[i] = placedObjects[i]?.Save();
             }
 
             return new TileSaveObject
@@ -79,7 +82,7 @@ namespace SS3D.Engine.TilesRework
                 layer = layer,
                 x = x,
                 y = y,
-                placedSaveObjects = placedSaveObjects.ToArray(),
+                placedSaveObjects = placedSaveObjects,
             };
         }
     }

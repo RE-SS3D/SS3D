@@ -8,6 +8,8 @@ namespace SS3D.Engine.TilesRework
     public class TileObjectSO : ScriptableObject
     {
         public TileLayer layerType;
+
+        [Tooltip("A name for the object. Make sure it is unique.")]
         public string nameString;
         public GameObject prefab;
         public int width = 1;

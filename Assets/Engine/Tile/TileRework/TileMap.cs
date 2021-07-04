@@ -253,9 +253,11 @@ namespace SS3D.Engine.TilesRework
                     for (int subLayerIndex = 0; subLayerIndex < TileHelper.GetSubLayerSize(layer); subLayerIndex++)
                     {
                         string objectName = tileObjectSaveObject.placedSaveObjects[subLayerIndex].tileObjectSOName;
-
-                        tileManager.SetTileObject(this, layer, subLayerIndex, objectName, TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition)
-                            , tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
+                        if (!objectName.Equals(""))
+                        {
+                            tileManager.SetTileObject(this, layer, subLayerIndex, objectName, TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition)
+                                , tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
+                        }
                     }
                 }
             }

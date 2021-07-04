@@ -34,30 +34,39 @@ namespace SS3D.Engine.TilesRework
         [ContextMenu("Reinitialize")]
         private void Init()
         {
-            Instance = this;
-            mapList = new List<TileMap>();
-
-            Scene scene = SceneManager.GetActiveScene();
-            saveFileName = scene.name;
-
-            // We have to ensure that all objects used are loaded beforehand
-            string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(TileObjectSO)));
-
-            List<TileObjectSO> listTileObjectSO = new List<TileObjectSO>();
-            for (int i = 0; i < guids.Length; i++)
+            if (!isInitialized)
             {
-                string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
-                listTileObjectSO.Add(AssetDatabase.LoadAssetAtPath<TileObjectSO>(assetPath));
-            }
-            tileObjectSOs = listTileObjectSO.ToArray();
+                Instance = this;
+                mapList = new List<TileMap>();
 
-            LoadAll();
-            isInitialized = true;
+                Scene scene = SceneLoaderManager.singleton.GetSelectedScene();
+                saveFileName = scene.name;
+
+#if UNITY_EDITOR
+                // We have to ensure that all objects used are loaded beforehand
+                string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(TileObjectSO)));
+
+                List<TileObjectSO> listTileObjectSO = new List<TileObjectSO>();
+                for (int i = 0; i < guids.Length; i++)
+                {
+                    string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
+                    listTileObjectSO.Add(AssetDatabase.LoadAssetAtPath<TileObjectSO>(assetPath));
+                }
+                tileObjectSOs = listTileObjectSO.ToArray();
+#else
+            tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
+#endif
+
+                LoadAll();
+                UpdateAllAdjacencies();
+                isInitialized = true;
+            }
         }
 
         private void Awake()
         {
             Init();
+            UpdateAllAdjacencies();
         }
 
 #if UNITY_EDITOR
@@ -200,15 +209,17 @@ namespace SS3D.Engine.TilesRework
         [ContextMenu("Reset")]
         private void Reset()
         {
+#if UNITY_EDITOR
             if (EditorUtility.DisplayDialog("Resetting TileMap",
                         "Are you sure that you want to reset? This will DESTROY the currently saved map"
                         , "Ok", "Cancel"))
             {
-
-                DestroyMaps();
-                CreateEmptyMap();
-                SaveAll();
+                return;
             }
+#endif
+            DestroyMaps();
+            CreateEmptyMap();
+            SaveAll();
         }
 
         [ContextMenu("Force adjacency update")]
