@@ -30,6 +30,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
         // Placement settings
         private bool madeChanges = false;
+        private bool overwriteAllowed = false;
         private Vector3 lastPlacement;
         private bool enableVisualHelp = true;
         private double lastPlacementTime;
@@ -202,6 +203,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             }
 
             enableVisualHelp = EditorGUILayout.Toggle("Enable visual help: ", enableVisualHelp);
+            overwriteAllowed = EditorGUILayout.Toggle("Allow overwrite: ", overwriteAllowed);
 
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Add"))
@@ -284,6 +286,10 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
                 }
                 else
                 {
+                    if (overwriteAllowed)
+                    {
+                        tileManager.ClearTileObject(GetCurrentMap(), selectedLayer, GetSubLayerIndex(), snappedPosition);
+                    }
                     tileManager.SetTileObject(GetCurrentMap(), selectedLayer, GetSubLayerIndex(), selectedObjectSO, snappedPosition, selectedDir);
                 }
             }
