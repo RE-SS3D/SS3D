@@ -77,12 +77,11 @@ namespace SS3D.Engine.TilesRework.Connections
             /**
              * Gets Vertical if north or south are connected, otherwise gets horizontal
              */
-            /*
+            
             public Orientation GetFirstOrientation()
             {
                 return (Orientation)(east | west | (1 - (north | south)));
             }
-            */
         }
 
         /**

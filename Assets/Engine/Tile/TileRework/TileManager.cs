@@ -200,9 +200,24 @@ namespace SS3D.Engine.TilesRework
         [ContextMenu("Reset")]
         private void Reset()
         {
-            DestroyMaps();
-            CreateEmptyMap();
-            SaveAll();  
+            if (EditorUtility.DisplayDialog("Resetting TileMap",
+                        "Are you sure that you want to reset? This will DESTROY the currently saved map"
+                        , "Ok", "Cancel"))
+            {
+
+                DestroyMaps();
+                CreateEmptyMap();
+                SaveAll();
+            }
+        }
+
+        [ContextMenu("Force adjacency update")]
+        private void UpdateAllAdjacencies()
+        {
+            foreach (TileMap map in mapList)
+            {
+                map.UpdateAllAdjacencies();
+            }
         }
     }
 }

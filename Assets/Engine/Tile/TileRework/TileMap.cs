@@ -139,6 +139,7 @@ namespace SS3D.Engine.TilesRework
                 foreach (Vector2Int gridPosition in gridPositionList)
                 {
                     chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject, subLayerIndex);
+                    UpdateAdjacencies(layer, position);
                 }
             }
             else
@@ -160,6 +161,66 @@ namespace SS3D.Engine.TilesRework
                 foreach (Vector2Int gridPosition in gridPositionList)
                 {
                     chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).ClearPlacedObject(subLayerIndex);
+                    UpdateAdjacencies(layer, position);
+                }
+            }
+        }
+
+        public TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
+        {
+            TileChunk chunk = GetChunk(worldPosition);
+            return chunk.GetTileObject(layer, worldPosition);
+        }
+
+        public void UpdateAdjacencies(TileLayer layer, Vector3 worldPosition)
+        {
+            var adjacentObjects = new PlacedTileObject[8];
+            TileObject currentTileObject = GetTileObject(layer, worldPosition);
+
+            // Find the neighbours in each direction
+            for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
+            {
+                var vector = TileHelper.ToCardinalVector(direction);
+                TileObject neighbour = GetTileObject(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2));
+
+                adjacentObjects[(int)direction] = neighbour.GetPlacedObject(0);
+                neighbour.GetPlacedObject(0)?.UpdateSingleAdjacency(TileHelper.GetOpposite(direction), currentTileObject.GetPlacedObject(0));
+            }
+
+            currentTileObject.GetPlacedObject(0)?.UpdateAllAdjacencies(adjacentObjects);
+        }
+
+        public void UpdateAllAdjacencies()
+        {
+            var adjacentObjects = new PlacedTileObject[8];
+
+            // Loop through every single tile object...
+            foreach (TileChunk chunk in chunks.Values)
+            {
+                foreach (TileLayer layer in TileHelper.GetTileLayers())
+                {
+                    for (int x = 0; x < chunk.GetWidth(); x++)
+                    {
+                        for (int y = 0; y < chunk.GetHeight(); y++)
+                        {
+                            // Make sure that there is an placed object and that we have an adjacency connector
+                            TileObject tileObject = chunk.GetTileObject(layer, x, y);
+                            if (!tileObject.IsEmpty(0) && tileObject.GetPlacedObject(0).HasAdjacencyConnector())
+                            {
+                                // Find the neighbours in each direction
+                                Vector3 currentPosition = chunk.GetWorldPosition(x, y);
+                                for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
+                                {
+                                    var vector = TileHelper.ToCardinalVector(direction);
+                                    TileObject neighbour = GetTileObject(layer, currentPosition + new Vector3(vector.Item1, 0, vector.Item2));
+
+                                    adjacentObjects[(int)direction] = neighbour.GetPlacedObject(0);
+                                }
+
+                                tileObject.GetPlacedObject(0).UpdateAllAdjacencies(adjacentObjects);
+                            }
+                        }
+                    }
                 }
             }
         }

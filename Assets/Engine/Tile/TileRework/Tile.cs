@@ -34,6 +34,12 @@ namespace SS3D.Engine.TilesRework
         NorthWest = 7,
     }
 
+    public enum Orientation
+    {
+        Vertical = 0, // North-South
+        Horizontal = 1 // East-West
+    }
+
     public static class TileHelper
     {
         public static TileLayer[] GetTileLayers()
@@ -77,6 +83,29 @@ namespace SS3D.Engine.TilesRework
                 case Direction.North: return 180;
                 case Direction.East: return 270;
             }
+        }
+
+        public static float AngleBetween(Direction from, Direction to)
+        {
+            return ((int)to - (int)from) * 45.0f;
+        }
+
+        public static float AngleBetween(Orientation from, Orientation to)
+        {
+            return ((int)to - (int)from) * 90.0f;
+        }
+
+        public static Tuple<int, int> ToCardinalVector(Direction direction)
+        {
+            return new Tuple<int, int>(
+                (direction > Direction.North && direction < Direction.South) ? 1 : (direction > Direction.South) ? -1 : 0,
+                (direction > Direction.East && direction < Direction.West) ? -1 : (direction == Direction.East || direction == Direction.West) ? 0 : 1
+            );
+        }
+
+        public static Direction GetOpposite(Direction direction)
+        {
+            return (Direction)(((int)direction + 4) % 8);
         }
 
         public static Vector3 GetWorldPosition(int x, int y, float tileSize, Vector3 originPosition)

@@ -22,33 +22,71 @@ namespace SS3D.Engine.TilesRework.Connections
         [Tooltip("A mesh where all edges are connected")]
         public Mesh x;
 
-        [Header("Advanced Meshes")]
-        [Tooltip("A mesh where all edges are connected, no corners")]
-        public Mesh xNone;
-        [Tooltip("A mesh where all edges are connected, SW is a corner")]
-        public Mesh xSingle;
-        [Tooltip("A mesh where all edges are connected, SW & SW are corners")]
-        public Mesh xSide;
-        [Tooltip("A mesh where all edges are connected, NW & SE are corners")]
-        public Mesh xOpposite;
-        [Tooltip("A mesh where all edges are connected, all but NE are corners")]
-        public Mesh xTriple;
-        [Tooltip("A mesh where all edges are connected, all corners")]
-        public Mesh xQuad;
-
         public override void UpdateAll(PlacedTileObject[] neighbourObjects)
         {
-            throw new System.NotImplementedException();
+            bool changed = false;
+            for (int i = 0; i < neighbourObjects.Length; i++)
+            {
+                changed |= UpdateSingleConnection((Direction)i, neighbourObjects[i]);
+            }
+
+            if (changed)
+                UpdateMeshAndDirection();
         }
 
         public override void UpdateSingle(Direction dir, PlacedTileObject placedObject)
         {
-            throw new System.NotImplementedException();
+            if (UpdateSingleConnection(dir, placedObject))
+            {
+                UpdateMeshAndDirection();
+            }
+        }
+
+        private bool UpdateSingleConnection(Direction dir, PlacedTileObject placedObject)
+        {
+            bool isConnected = (placedObject && placedObject.HasAdjacencyConnector());
+            return adjacents.UpdateDirection(dir, isConnected, true);
         }
 
         protected override void UpdateMeshAndDirection()
         {
-            throw new System.NotImplementedException();
+            // Count number of connections along cardinal (which is all that we use atm)
+            var cardinalInfo = adjacents.GetCardinalInfo();
+
+            // Determine rotation and mesh specially for every single case.
+            float rotation = 0.0f;
+            Mesh mesh;
+
+            if (cardinalInfo.IsO())
+                mesh = o;
+            else if (cardinalInfo.IsC())
+            {
+                mesh = c;
+                rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
+            }
+            else if (cardinalInfo.IsI())
+            {
+                mesh = i;
+                rotation = TileHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
+            }
+            else if (cardinalInfo.IsL())
+            {
+                mesh = l;
+                rotation = TileHelper.AngleBetween(Direction.NorthEast, cardinalInfo.GetCornerDirection());
+            }
+            else if (cardinalInfo.IsT())
+            {
+                mesh = t;
+                rotation = TileHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyNegative());
+            }
+            else // Must be X
+                mesh = x;
+
+            if (filter == null)
+                filter = GetComponent<MeshFilter>();
+
+            filter.mesh = mesh;
+            transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, rotation, transform.localRotation.eulerAngles.z);
         }
     }
 }
