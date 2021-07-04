@@ -2,7 +2,7 @@
 name: Feature
 about: A feature to be implemented.
 title: "Feature Name"
-labels: 'Type: Feature (New)'
+labels: 'Type: Feature (Addition)'
 assignees: ''
 
 ---
