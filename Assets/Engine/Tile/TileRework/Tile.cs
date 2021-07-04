@@ -7,29 +7,31 @@ namespace SS3D.Engine.TilesRework
 {
     public enum TileLayer
     {
-        Plenum,
-        Atmos,
-        Turf,
-        Wire,
-        Disposal,
-        Pipes,
-        HighWall,
-        LowWall,
-        FurnitureBase,
-        FurnitureTop,
-        Overlays
+        Plenum = 0,
+        Atmos = 1,
+        Turf = 2,
+        Wire = 3,
+        Disposal = 4,
+        PipeLeft = 5,
+        PipeMiddle = 6,
+        PipeRight = 7,
+        HighWall = 8,
+        LowWall = 9,
+        FurnitureBase = 10,
+        FurnitureTop = 11,
+        Overlay = 12
     }
 
     public enum Direction
     {
-        North,
-        NorthEast,
-        East,
-        SouthEast,
-        South,
-        SouthWest,
-        West,
-        NorthWest,
+        North = 0,
+        NorthEast = 1,
+        East = 2,
+        SouthEast = 3,
+        South = 4,
+        SouthWest = 5,
+        West = 6,
+        NorthWest = 7,
     }
 
     public static class TileHelper
@@ -37,6 +39,20 @@ namespace SS3D.Engine.TilesRework
         public static TileLayer[] GetTileLayers()
         {
             return (TileLayer[])Enum.GetValues(typeof(TileLayer));
+        }
+
+        public static int GetSubLayerSize(TileLayer layer)
+        {
+            switch(layer)
+            {
+                case TileLayer.HighWall:
+                case TileLayer.LowWall:
+                    return 4;
+                case TileLayer.Overlay:
+                    return 3;
+                default:
+                    return 1;
+            }
         }
 
         public static Direction GetNextDir(Direction dir)

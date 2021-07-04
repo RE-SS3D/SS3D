@@ -197,6 +197,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             EditorGUILayout.EndHorizontal();
             if (EditorGUI.EndChangeCheck())
             {
+                // DisplaySublayers();
                 RefreshSelectionGrid();
             }
 
@@ -226,8 +227,6 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             TileMap map = tileManager.GetTileMaps()[selectedTileMapIndex];
             map.SetName(selectedName);
             madeChanges = true;
-            
-            // tileManager.ChangeGrid(map, selectedName, selectedWidth, selectedHeight, selectedOrigin);
         }
 
         private void OnSceneGUI(SceneView sceneView)
@@ -268,7 +267,6 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
             if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.R)
             {
-                Debug.Log("R was pressed");
                 selectedDir = TileHelper.GetNextDir(selectedDir);
                 ghostObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(selectedDir), 0);
             }
@@ -282,12 +280,11 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
                 lastPlacement = snappedPosition;
                 if (deleteTiles)
                 {
-                    tileManager.ClearTileObject(GetCurrentMap(), selectedLayer, snappedPosition);
+                    tileManager.ClearTileObject(GetCurrentMap(), selectedLayer, GetSubLayerIndex(), snappedPosition);
                 }
                 else
                 {
-                    tileManager.SetTileObject(GetCurrentMap(), selectedLayer, selectedObjectSO, snappedPosition, selectedDir);
-
+                    tileManager.SetTileObject(GetCurrentMap(), selectedLayer, GetSubLayerIndex(), selectedObjectSO, snappedPosition, selectedDir);
                 }
             }
 
@@ -297,6 +294,36 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
                 DestroyGhost();
             }
         }
+
+        private int GetSubLayerIndex()
+        {
+            switch (selectedLayer)
+            {
+                default:
+                    return 0;
+                // Use the direction enum as an offset for the sub layer
+                case TileLayer.HighWall:
+                case TileLayer.LowWall:
+                    return ((int)selectedDir / 2);
+            }
+        }
+
+
+        /*
+        private void DisplaySubLayers()
+        {
+            switch (selectedLayer)
+            {
+                case TileLayer.Pipes:
+                case TileL
+
+            }
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Selected sub-layer:");
+            selectedLayer = (TileLayer)EditorGUILayout.EnumPopup(selectedLayer);
+            EditorGUILayout.EndHorizontal();
+        }
+        */
 
         private void DrawPlaceUI()
         {

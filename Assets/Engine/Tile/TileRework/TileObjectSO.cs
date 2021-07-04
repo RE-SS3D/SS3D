@@ -10,8 +10,8 @@ namespace SS3D.Engine.TilesRework
         public TileLayer layerType;
         public string nameString;
         public GameObject prefab;
-        public int width;
-        public int height;
+        public int width = 1;
+        public int height = 1;
 
         public Vector2Int GetRotationOffset(Direction dir)
         {

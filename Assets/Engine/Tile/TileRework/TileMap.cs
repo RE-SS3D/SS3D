@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -110,7 +109,7 @@ namespace SS3D.Engine.TilesRework
             return chunks.Values.ToArray();
         }
 
-        public void SetTileObject(TileLayer layer, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public void SetTileObject(TileLayer layer, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
             // Get the right chunk
             TileChunk chunk = GetChunk(position);
@@ -122,7 +121,7 @@ namespace SS3D.Engine.TilesRework
             bool canBuild = true;
             foreach (Vector2Int gridPosition in gridPositionList)
             {
-                if (!chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).IsEmpty())
+                if (!chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).IsEmpty(subLayerIndex))
                 {
                     canBuild = false;
                     break;
@@ -139,7 +138,7 @@ namespace SS3D.Engine.TilesRework
 
                 foreach (Vector2Int gridPosition in gridPositionList)
                 {
-                    chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject);
+                    chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject, subLayerIndex);
                 }
             }
             else
@@ -148,19 +147,19 @@ namespace SS3D.Engine.TilesRework
             }
         }
 
-        public void ClearTileObject(TileLayer layer, Vector3 position)
+        public void ClearTileObject(TileLayer layer, int subLayerIndex, Vector3 position)
         {
             TileChunk chunk = GetChunk(position);
 
             Vector2Int vector = chunk.GetXY(position);
-            PlacedTileObject placedObject = chunk.GetTileObject(layer, vector.x, vector.y).GetPlacedObject();
+            PlacedTileObject placedObject = chunk.GetTileObject(layer, vector.x, vector.y).GetPlacedObject(subLayerIndex);
 
             if (placedObject != null)
             {
                 List<Vector2Int> gridPositionList = placedObject.GetGridPositionList();
                 foreach (Vector2Int gridPosition in gridPositionList)
                 {
-                    chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).ClearPlacedObject();
+                    chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).ClearPlacedObject(subLayerIndex);
                 }
             }
         }
@@ -190,10 +189,13 @@ namespace SS3D.Engine.TilesRework
                 foreach (var tileObjectSaveObject in chunk.tileObjectSaveObjectArray)
                 {
                     TileLayer layer = tileObjectSaveObject.layer;
-                    string objectName = tileObjectSaveObject.placedSaveObject.tileObjectSOName;
+                    for (int subLayerIndex = 0; subLayerIndex < TileHelper.GetSubLayerSize(layer); subLayerIndex++)
+                    {
+                        string objectName = tileObjectSaveObject.placedSaveObjects[subLayerIndex].tileObjectSOName;
 
-                    tileManager.SetTileObject(this, layer, objectName, TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize , chunk.originPosition)
-                        , tileObjectSaveObject.placedSaveObject.dir);
+                        tileManager.SetTileObject(this, layer, subLayerIndex, objectName, TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition)
+                            , tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
+                    }
                 }
             }
         }

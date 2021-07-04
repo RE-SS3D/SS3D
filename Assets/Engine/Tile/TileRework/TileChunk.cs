@@ -56,29 +56,15 @@ namespace SS3D.Engine.TilesRework
             TileGrid grid = new TileGrid { layer = layer };
 
             int gridSize = width * height;
-            int subLayerMultiplier = 1;
+            grid.tileObjectsGrid = new TileObject[gridSize];
 
-            switch (layer)
-            {
-                case TileLayer.Pipes:
-                case TileLayer.Overlays:
-                    subLayerMultiplier = 3;
-                    break;
-                case TileLayer.HighWall:
-                case TileLayer.LowWall:
-                    subLayerMultiplier = 4;
-                    break;
-            }
+            int subLayerSize = TileHelper.GetSubLayerSize(layer);
 
-            grid.tileObjectsGrid = new TileObject[gridSize * subLayerMultiplier];
-            for (int i = 0; i < subLayerMultiplier; i++)
+            for (int x = 0; x < width; x++)
             {
-                for (int x = 0; x < width; x++)
+                for (int y = 0; y < height; y++)
                 {
-                    for (int y = 0; y < height; y++)
-                    {
-                        grid.tileObjectsGrid[y * width + x + (gridSize * i)] = new TileObject(this, layer, x, y);
-                    }
+                    grid.tileObjectsGrid[y * width + x] = new TileObject(this, layer, x, y, subLayerSize);
                 }
             }
 
@@ -136,33 +122,34 @@ namespace SS3D.Engine.TilesRework
             {
                 for (int y = 0; y < height; y++)
                 {
-                   GetTileObject(layer, x, y).GetPlacedObject()?.gameObject.SetActive(enabled);
+                    for (int i = 0; i < TileHelper.GetSubLayerSize(layer); i++)
+                    {
+                        GetTileObject(layer, x, y).GetPlacedObject(i)?.gameObject.SetActive(enabled);
+                    }
                 }
             }
         }
 
-        public void SetTileObject(TileLayer layer, int subLayerIndex, int x, int y, TileObject value)
+        public void SetTileObject(TileLayer layer, int x, int y, TileObject value)
         {
             if (x >= 0 && y >= 0 && x < width && y < height)
             {
-                int subLayerOffset = width * height * subLayerIndex;
-                tileGridList[(int)layer].tileObjectsGrid[y * width + x + subLayerOffset] = value;
+                tileGridList[(int)layer].tileObjectsGrid[y * width + x] = value;
                 TriggerGridObjectChanged(x, y);
             }
         }
 
-        public void SetTileObject(TileLayer layer, int subLayerIndex, Vector3 worldPosition, TileObject value)
+        public void SetTileObject(TileLayer layer, Vector3 worldPosition, TileObject value)
         {
             Vector2Int vector = GetXY(worldPosition);
-            SetTileObject(layer, subLayerIndex, vector.x, vector.y, value);
+            SetTileObject(layer, vector.x, vector.y, value);
         }
 
-        public TileObject GetTileObject(TileLayer layer, int subLayerIndex, int x, int y)
+        public TileObject GetTileObject(TileLayer layer, int x, int y)
         {
             if (x >= 0 && y >= 0 && x < width && y < height)
             {
-                int subLayerOffset = width * height * subLayerIndex;
-                return tileGridList[(int)layer].tileObjectsGrid[y * width + x + subLayerOffset];
+                return tileGridList[(int)layer].tileObjectsGrid[y * width + x];
             }
             else
             {
@@ -170,11 +157,11 @@ namespace SS3D.Engine.TilesRework
             }
         }
 
-        public TileObject GetTileObject(TileLayer layer, int subLayerIndex, Vector3 worldPosition)
+        public TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
         {
             Vector2Int vector = new Vector2Int();
             vector = GetXY(worldPosition);
-            return GetTileObject(layer, subLayerIndex, vector.x, vector.y);
+            return GetTileObject(layer, vector.x, vector.y);
         }
 
         public void TriggerGridObjectChanged(int x, int y)
@@ -191,9 +178,12 @@ namespace SS3D.Engine.TilesRework
                     for (int y = 0; y < height; y++)
                     {
                         TileObject tileObject = GetTileObject(layer, x, y);
-                        if (!tileObject.IsEmpty())
+                        for (int i = 0; i < TileHelper.GetSubLayerSize(layer); i++)
                         {
-                            tileObject.ClearPlacedObject();
+                            if (!tileObject.IsEmpty(i))
+                            {
+                                tileObject.ClearPlacedObject(i);
+                            }
                         }
                     }
                 }
@@ -211,7 +201,7 @@ namespace SS3D.Engine.TilesRework
                     for (int y = 0; y < height; y++)
                     {
                         TileObject tileObject = GetTileObject(layer, x, y);
-                        if (!tileObject.IsEmpty())
+                        if (!tileObject.IsCompletelyEmpty())
                         {
                             tileObjectSaveObjectList.Add(tileObject.Save());
                         }
