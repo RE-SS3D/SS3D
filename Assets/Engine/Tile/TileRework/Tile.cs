@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SS3D.Engine.TilesRework
 {
-    public enum TileLayerType
+    public enum TileLayer
     {
         Plenum,
         Atmos,
@@ -34,9 +34,9 @@ namespace SS3D.Engine.TilesRework
 
     public static class TileHelper
     {
-        public static TileLayerType[] GetTileLayers()
+        public static TileLayer[] GetTileLayers()
         {
-            return (TileLayerType[])Enum.GetValues(typeof(TileLayerType));
+            return (TileLayer[])Enum.GetValues(typeof(TileLayer));
         }
 
         public static Direction GetNextDir(Direction dir)

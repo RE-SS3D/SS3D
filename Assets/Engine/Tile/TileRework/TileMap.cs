@@ -53,7 +53,7 @@ namespace SS3D.Engine.TilesRework
             gameObject.name = name;
         }
 
-        public void SetEnabled(TileLayerType layer, bool enabled)
+        public void SetEnabled(TileLayer layer, bool enabled)
         {
             foreach (TileChunk chunk in chunks.Values)
             {
@@ -110,15 +110,11 @@ namespace SS3D.Engine.TilesRework
             return chunks.Values.ToArray();
         }
 
-        public void SetTileObject(TileLayerType layer, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public void SetTileObject(TileLayer layer, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
             // Get the right chunk
             TileChunk chunk = GetChunk(position);
             Vector2Int vector = chunk.GetXY(position);
-
-            // Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
-            // placedObjectOrigin = chunk.ValidateGridPosition(placedObjectOrigin);
-
             Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
 
             // Test Can Build
@@ -152,12 +148,11 @@ namespace SS3D.Engine.TilesRework
             }
         }
 
-        public void ClearTileObject(TileLayerType layer, Vector3 position)
+        public void ClearTileObject(TileLayer layer, Vector3 position)
         {
             TileChunk chunk = GetChunk(position);
 
             Vector2Int vector = chunk.GetXY(position);
-            // vector = chunk.ValidateGridPosition(vector);
             PlacedTileObject placedObject = chunk.GetTileObject(layer, vector.x, vector.y).GetPlacedObject();
 
             if (placedObject != null)
@@ -194,7 +189,7 @@ namespace SS3D.Engine.TilesRework
                 // Loop through every tile object in chunk
                 foreach (var tileObjectSaveObject in chunk.tileObjectSaveObjectArray)
                 {
-                    TileLayerType layer = tileObjectSaveObject.layer;
+                    TileLayer layer = tileObjectSaveObject.layer;
                     string objectName = tileObjectSaveObject.placedSaveObject.tileObjectSOName;
 
                     tileManager.SetTileObject(this, layer, objectName, TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize , chunk.originPosition)

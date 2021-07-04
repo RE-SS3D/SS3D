@@ -10,19 +10,19 @@ namespace SS3D.Engine.TilesRework
         [Serializable]
         public class TileSaveObject
         {
-            public TileLayerType layer;
+            public TileLayer layer;
             public int x;
             public int y;
             public PlacedTileObject.PlacedSaveObject placedSaveObject;
         }
 
         private TileChunk map;
-        private TileLayerType layer;
+        private TileLayer layer;
         private int x;
         private int y;
         public PlacedTileObject placedObject;
 
-        public TileObject(TileChunk map, TileLayerType layer, int x, int y)
+        public TileObject(TileChunk map, TileLayer layer, int x, int y)
         {
             this.map = map;
             this.layer = layer;

@@ -16,7 +16,7 @@ namespace SS3D.Engine.TilesRework
 
         public struct TileGrid
         {
-            public TileLayerType layer;
+            public TileLayer layer;
             public TileObject[] tileObjectsGrid;
         }
 
@@ -51,31 +51,34 @@ namespace SS3D.Engine.TilesRework
             tileManager = TileManager.Instance;
         }
 
-        private TileGrid CreateGrid(TileLayerType layer)
+        private TileGrid CreateGrid(TileLayer layer)
         {
             TileGrid grid = new TileGrid { layer = layer };
 
             int gridSize = width * height;
+            int subLayerMultiplier = 1;
 
             switch (layer)
             {
-                case TileLayerType.Pipes:
-                case TileLayerType.Overlays:
-                    gridSize *= 3;
+                case TileLayer.Pipes:
+                case TileLayer.Overlays:
+                    subLayerMultiplier = 3;
                     break;
-                case TileLayerType.HighWall:
-                case TileLayerType.LowWall:
-                    gridSize *= 4;
+                case TileLayer.HighWall:
+                case TileLayer.LowWall:
+                    subLayerMultiplier = 4;
                     break;
             }
 
-            grid.tileObjectsGrid = new TileObject[gridSize];
-
-            for (int x = 0; x < width; x++)
+            grid.tileObjectsGrid = new TileObject[gridSize * subLayerMultiplier];
+            for (int i = 0; i < subLayerMultiplier; i++)
             {
-                for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
                 {
-                    grid.tileObjectsGrid[y * width + x] = new TileObject(this, layer, x, y);
+                    for (int y = 0; y < height; y++)
+                    {
+                        grid.tileObjectsGrid[y * width + x + (gridSize * i)] = new TileObject(this, layer, x, y);
+                    }
                 }
             }
 
@@ -86,7 +89,7 @@ namespace SS3D.Engine.TilesRework
         {
             tileGridList = new List<TileGrid>();
 
-            foreach (TileLayerType layer in TileHelper.GetTileLayers())
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
                 tileGridList.Add(CreateGrid(layer));
             }
@@ -127,7 +130,7 @@ namespace SS3D.Engine.TilesRework
             return new Vector2Int((int)Math.Round(worldPosition.x - originPosition.x), (int)Math.Round(worldPosition.z - originPosition.z));
         }
 
-        public void SetEnabled(TileLayerType layer, bool enabled)
+        public void SetEnabled(TileLayer layer, bool enabled)
         {
             for (int x = 0; x < width; x++)
             {
@@ -138,26 +141,28 @@ namespace SS3D.Engine.TilesRework
             }
         }
 
-        public void SetTileObject(TileLayerType layer, int x, int y, TileObject value)
+        public void SetTileObject(TileLayer layer, int subLayerIndex, int x, int y, TileObject value)
         {
             if (x >= 0 && y >= 0 && x < width && y < height)
             {
-                tileGridList[(int)layer].tileObjectsGrid[y * width + x] = value;
+                int subLayerOffset = width * height * subLayerIndex;
+                tileGridList[(int)layer].tileObjectsGrid[y * width + x + subLayerOffset] = value;
                 TriggerGridObjectChanged(x, y);
             }
         }
 
-        public void SetTileObject(TileLayerType layer, Vector3 worldPosition, TileObject value)
+        public void SetTileObject(TileLayer layer, int subLayerIndex, Vector3 worldPosition, TileObject value)
         {
             Vector2Int vector = GetXY(worldPosition);
-            SetTileObject(layer, vector.x, vector.y, value);
+            SetTileObject(layer, subLayerIndex, vector.x, vector.y, value);
         }
 
-        public TileObject GetTileObject(TileLayerType layer, int x, int y)
+        public TileObject GetTileObject(TileLayer layer, int subLayerIndex, int x, int y)
         {
             if (x >= 0 && y >= 0 && x < width && y < height)
             {
-                return tileGridList[(int)layer].tileObjectsGrid[y * width + x];
+                int subLayerOffset = width * height * subLayerIndex;
+                return tileGridList[(int)layer].tileObjectsGrid[y * width + x + subLayerOffset];
             }
             else
             {
@@ -165,11 +170,11 @@ namespace SS3D.Engine.TilesRework
             }
         }
 
-        public TileObject GetTileObject(TileLayerType layer, Vector3 worldPosition)
+        public TileObject GetTileObject(TileLayer layer, int subLayerIndex, Vector3 worldPosition)
         {
             Vector2Int vector = new Vector2Int();
             vector = GetXY(worldPosition);
-            return GetTileObject(layer, vector.x, vector.y);
+            return GetTileObject(layer, subLayerIndex, vector.x, vector.y);
         }
 
         public void TriggerGridObjectChanged(int x, int y)
@@ -179,7 +184,7 @@ namespace SS3D.Engine.TilesRework
 
         public void Clear()
         {
-            foreach (TileLayerType layer in TileHelper.GetTileLayers())
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
                 for (int x = 0; x < width; x++)
                 {
@@ -199,7 +204,7 @@ namespace SS3D.Engine.TilesRework
         {
             List<TileObject.TileSaveObject> tileObjectSaveObjectList = new List<TileObject.TileSaveObject>();
 
-            foreach (TileLayerType layer in TileHelper.GetTileLayers())
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
                 for (int x = 0; x < width; x++)
                 {

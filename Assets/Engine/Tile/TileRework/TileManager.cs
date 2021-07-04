@@ -31,7 +31,7 @@ namespace SS3D.Engine.TilesRework
 
         private List<TileMap> mapList;
 
-        [ContextMenu("Initialize TileMap")]
+        [ContextMenu("Reinitialize")]
         private void Init()
         {
             Instance = this;
@@ -111,18 +111,18 @@ namespace SS3D.Engine.TilesRework
             return names;
         }
 
-        public void SetTileObject(TileMap map, TileLayerType layer, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public void SetTileObject(TileMap map, TileLayer layer, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
             map.SetTileObject(layer, tileObjectSO, position, dir);
         }
 
-        public void SetTileObject(TileMap map, TileLayerType layer, string tileObjectSOName, Vector3 position, Direction dir)
+        public void SetTileObject(TileMap map, TileLayer layer, string tileObjectSOName, Vector3 position, Direction dir)
         {
             TileObjectSO tileObjectSO = tileObjectSOs.FirstOrDefault(tileObject => tileObject.nameString == tileObjectSOName);
             SetTileObject(map, layer, tileObjectSO, position, dir);
         }
 
-        public void ClearTileObject(TileMap map, TileLayerType layer, Vector3 position)
+        public void ClearTileObject(TileMap map, TileLayer layer, Vector3 position)
         {
             map.ClearTileObject(layer, position);
         }
@@ -197,7 +197,7 @@ namespace SS3D.Engine.TilesRework
             mapList.Clear();
         }
 
-        [ContextMenu("Reset tilemap")]
+        [ContextMenu("Reset")]
         private void Reset()
         {
             DestroyMaps();

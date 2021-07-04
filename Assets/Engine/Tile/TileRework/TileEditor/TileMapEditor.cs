@@ -34,7 +34,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
         private bool enableVisualHelp = true;
         private double lastPlacementTime;
         private bool deleteTiles = false;
-        private TileLayerType selectedLayer;
+        private TileLayer selectedLayer;
         private TileObjectSO selectedObjectSO;
         private bool enablePlacement = false;
         private Direction selectedDir = Direction.South;
@@ -193,7 +193,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Selected layer:");
-            selectedLayer = (TileLayerType)EditorGUILayout.EnumPopup(selectedLayer);
+            selectedLayer = (TileLayer)EditorGUILayout.EnumPopup(selectedLayer);
             EditorGUILayout.EndHorizontal();
             if (EditorGUI.EndChangeCheck())
             {
@@ -374,7 +374,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
         {
             EditorGUI.indentLevel++;
             // Draw for each layer in the tilemap
-            foreach (TileLayerType layer in TileHelper.GetTileLayers())
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
                 int i = (int)layer;
                 if (layerVisibilitySelection[i] = EditorGUILayout.Toggle(layer.ToString(), layerVisibilitySelection[i]))
@@ -438,7 +438,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
         private void UpdateTileVisibility()
         {
             TileMap map = GetCurrentMap();
-            foreach (TileLayerType layer in TileHelper.GetTileLayers())
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
                 bool visible = layerVisibilitySelection[(int)layer];
                 map.SetEnabled(layer, visible);
@@ -456,7 +456,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             }
         }
 
-        private void LoadAssetLayer(TileLayerType layer, string assetName = "")
+        private void LoadAssetLayer(TileLayer layer, string assetName = "")
         {
             assetList.Clear();
             assetIcons.Clear();
@@ -489,7 +489,6 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             if (assetList.Count > assetIndex)
             {
                 selectedObjectSO = assetList[assetIndex];
-                Debug.Log("new ghost");
                 CreateGhost();
             }
         }

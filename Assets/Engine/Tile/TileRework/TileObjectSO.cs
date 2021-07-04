@@ -7,7 +7,7 @@ namespace SS3D.Engine.TilesRework
     [CreateAssetMenu(fileName = "TileObjectSO", menuName = "TileMap/TileObjectSO", order = 0)]
     public class TileObjectSO : ScriptableObject
     {
-        public TileLayerType layerType;
+        public TileLayer layerType;
         public string nameString;
         public GameObject prefab;
         public int width;
