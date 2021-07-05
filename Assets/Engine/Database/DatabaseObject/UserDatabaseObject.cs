@@ -31,29 +31,6 @@ namespace SS3D.Engine.Database
         // unique key to users, ckey stands for client key
         public string ckey;
 
-        private void Start()
-        {
-            // Tells the server this CKEY has joined it
-            UpdateCkey();
-        }
-        
-        /// <summary>
-        /// Updates the CKEY of the user on the LocalPlayerManager
-        /// </summary>
-        [Client]
-        [ContextMenu("Update CKey")]
-        public void UpdateCkey()
-        {
-            //TODO: find a better way to get the player CKEY
-            
-            // this is just a test, we have to have a way to work on the localCkey, probably with the Hub
-            // because this is very unsecure
-            ckey = LoginNetworkManager.singleton.localCkey;
-            
-            // we assign it to the local player manager which is just handy stuff
-            LocalPlayerManager.singleton.ckey = ckey;
-        }
-        
         /// <summary>
         /// Saves user's ckey in the local database
         /// </summary>
@@ -65,7 +42,7 @@ namespace SS3D.Engine.Database
             LocalDatabaseManager database = LocalDatabaseManager.singleton;
             
             // SQL query that inserts the CKEY in the database, as its a primary key it only inserts the first time
-            string sql = "INSERT INTO registeredUsers(ckey) VALUES ('" + ckey + "')";
+            string sql = $"INSERT INTO registeredUsers(ckey) VALUES ('{ckey}')";
 
             database.ExecuteQuery(sql);
         }

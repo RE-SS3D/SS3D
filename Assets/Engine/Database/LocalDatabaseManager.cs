@@ -9,7 +9,7 @@ using Debug = UnityEngine.Debug;
 namespace SS3D.Engine.Database
 {
     /// <summary>
-    /// <b>Handles the connection to the local database on the server.</b>
+    /// <b>Server-side manager that handles the connection to the local database on the server.</b>
     ///
     /// <para>
     ///     There's an explanation for the whole process to configure the database

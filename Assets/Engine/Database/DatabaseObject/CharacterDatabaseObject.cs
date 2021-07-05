@@ -68,7 +68,7 @@ namespace SS3D.Engine.Database
         /// Processes the data from a SQL query into the a CharacterData list
         /// </para>
         /// </summary>
-        /// <returns>all of user's character data</returns>
+        /// <returns>All of user's character data</returns>
         [Server]
         [ContextMenu("Get Character Data")]
         public object GetAllCharacterData()
@@ -76,12 +76,15 @@ namespace SS3D.Engine.Database
             LocalDatabaseManager database = LocalDatabaseManager.singleton;
             string ckey = LocalPlayerManager.singleton.ckey;
             
-            // SQL Querry to select all the character data from that CKEY, I should make a "selected character index" though
+            // SQL Query to select all the character data from that CKEY, I should make a "selected character index" though
             // TODO: Update this to put a selected character id
-            string sql = "SELECT * FROM CharacterData WHERE ckey = '" + ckey + "'";
+            string sql = $"SELECT * FROM CharacterData WHERE ckey = '{ckey}'";
 
             CharacterData[] characterData = null;
             var result = database.ExecuteQuery(sql);
+            
+            Debug.Log(result);
+            Debug.Log(result.ToString());
             return result;
         }
     }
