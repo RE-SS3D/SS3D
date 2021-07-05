@@ -4,6 +4,7 @@ using Mirror;
 using UnityEngine;
 
 using MySql.Data.MySqlClient;
+using SS3D.Engine.Database.Objects;
 using Debug = UnityEngine.Debug;
 
 namespace SS3D.Engine.Database

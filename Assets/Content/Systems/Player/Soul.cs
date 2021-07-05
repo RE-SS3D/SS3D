@@ -21,7 +21,7 @@ using UnityEngine.SocialPlatforms;
 /// 
 /// </summary>
 public class Soul : NetworkBehaviour
-{
+{   
     public CharacterData[] characterData;
     [SyncVar] public string ckey;
     private void Start()

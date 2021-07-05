@@ -2,7 +2,7 @@
 using UnityEngine;
 #pragma warning disable 414
 
-namespace SS3D.Engine.Database
+namespace SS3D.Engine.Database.Objects
 {
     /// <summary>
     /// <para>
@@ -63,7 +63,9 @@ namespace SS3D.Engine.Database
         }
         
         /// <summary>
-        /// <b>Gets all the character data for that user from the local database</b>
+        /// <b>
+        /// Gets all the character data for that user from the local database
+        /// </b>
         /// <para>
         /// Processes the data from a SQL query into the a CharacterData list
         /// </para>
