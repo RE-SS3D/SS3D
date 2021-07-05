@@ -95,7 +95,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
                 DisplaySaveWarning();
 
             DestroyGhost();
-            tileManager?.LoadAll();
+            tileManager?.LoadAll(false);
 
             SceneView.duringSceneGui -= OnSceneGUI;
         }
@@ -147,7 +147,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
                         DisplaySaveWarning();
                         madeChanges = false;
                     }
-                    tileManager.LoadAll();
+                    tileManager.LoadAll(false);
                     RefreshMapList();
                 }
                 if (GUILayout.Button("Save")) { tileManager.SaveAll(); madeChanges = false; }
@@ -314,23 +314,6 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             }
         }
 
-
-        /*
-        private void DisplaySubLayers()
-        {
-            switch (selectedLayer)
-            {
-                case TileLayer.Pipes:
-                case TileL
-
-            }
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("Selected sub-layer:");
-            selectedLayer = (TileLayer)EditorGUILayout.EnumPopup(selectedLayer);
-            EditorGUILayout.EndHorizontal();
-        }
-        */
-
         private void DrawPlaceUI()
         {
             Handles.BeginGUI();
@@ -450,11 +433,13 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             ghostObject.tag = "EditorOnly";
             ghostObject.transform.SetParent(tileManager.transform);
             
+            /*
             var meshes = ghostObject.GetComponentsInChildren<MeshRenderer>();
             foreach (var mesh in meshes)
             {
                 mesh.sharedMaterial.color = mesh.sharedMaterial.color * new Color(1.0f, 1.0f, 1.0f, 0.5f);
             }
+            */
 
             ghostObject.SetActive(false);
         }

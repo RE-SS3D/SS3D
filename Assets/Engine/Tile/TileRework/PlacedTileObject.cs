@@ -38,7 +38,7 @@ namespace SS3D.Engine.TilesRework
         private Direction dir;
         private IAdjacencyConnector adjacencyConnector;
 
-        private void Setup(TileObjectSO tileObjectSO, Vector2Int origin, Direction dir)
+        public void Setup(TileObjectSO tileObjectSO, Vector2Int origin, Direction dir)
         {
             this.tileObjectSO = tileObjectSO;
             this.origin = origin;

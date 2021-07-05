@@ -33,7 +33,7 @@ namespace SS3D.Engine.TilesRework
             return map;
         }
 
-        private void Setup(string name)
+        public void Setup(string name)
         {
             chunks = new Dictionary<Vector2Int, TileChunk>();
             tileManager = TileManager.Instance;
@@ -111,6 +111,8 @@ namespace SS3D.Engine.TilesRework
 
         public void SetTileObject(TileLayer layer, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
+            GameObject layerObject = GetOrCreateLayerObject(layer);
+
             // Get the right chunk
             TileChunk chunk = GetChunk(position);
             Vector2Int vector = chunk.GetXY(position);
@@ -134,7 +136,7 @@ namespace SS3D.Engine.TilesRework
                 Vector3 placedObjectWorldPosition = chunk.GetWorldPosition(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, 0, rotationOffset.y) * chunk.GetTileSize();
 
                 PlacedTileObject placedObject = PlacedTileObject.Create(placedObjectWorldPosition, placedObjectOrigin, dir, tileObjectSO);
-                placedObject.transform.SetParent(transform);
+                placedObject.transform.SetParent(layerObject.transform);
 
                 foreach (Vector2Int gridPosition in gridPositionList)
                 {
@@ -145,6 +147,30 @@ namespace SS3D.Engine.TilesRework
             else
             {
                 Debug.LogWarning("Cannot build here");
+            }
+        }
+
+        public void LoadTileObject(TileLayer layer, int subLayerIndex, TileObjectSO tileObjectSO, PlacedTileObject placedObject, Vector3 position, Direction dir)
+        {
+            GameObject layerObject = GetOrCreateLayerObject(layer);
+
+            // Get the right chunk
+            TileChunk chunk = GetChunk(position);
+            Vector2Int vector = chunk.GetXY(position);
+            Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
+
+            // Test Can Build
+            List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
+
+            Vector2Int rotationOffset = tileObjectSO.GetRotationOffset(dir);
+            Vector3 placedObjectWorldPosition = chunk.GetWorldPosition(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, 0, rotationOffset.y) * chunk.GetTileSize();
+
+            placedObject.Setup(tileObjectSO, placedObjectOrigin, dir);
+            placedObject.transform.SetParent(layerObject.transform);
+
+            foreach (Vector2Int gridPosition in gridPositionList)
+            {
+                chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject, subLayerIndex);
             }
         }
 
@@ -241,7 +267,7 @@ namespace SS3D.Engine.TilesRework
             };
         }
         
-        public void Load(MapSaveObject saveObject)
+        public void Load(MapSaveObject saveObject, bool softLoad)
         {
             // Loop through every chunk in map
             foreach (var chunk in saveObject.saveObjectList)
@@ -255,12 +281,49 @@ namespace SS3D.Engine.TilesRework
                         string objectName = tileObjectSaveObject.placedSaveObjects[subLayerIndex].tileObjectSOName;
                         if (!objectName.Equals(""))
                         {
-                            tileManager.SetTileObject(this, layer, subLayerIndex, objectName, TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition)
-                                , tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
+                            if (softLoad)
+                            {
+                                TileObjectSO tileObjectSO = tileManager.GetTileObjectSO(objectName);
+
+                                // Find the object and set it up again...
+                                Vector3 position = TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition);
+                                PlacedTileObject placedTileObject = FindChild(position).GetComponent<PlacedTileObject>();
+                                LoadTileObject(layer, subLayerIndex, tileObjectSO, placedTileObject, position, tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
+                            }
+                            else
+                            {
+                                tileManager.SetTileObject(this, layer, subLayerIndex, objectName, TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition)
+                                    , tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
+                            }
                         }
                     }
                 }
             }
+        }
+
+        private GameObject FindChild(Vector3 position)
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                var child = transform.GetChild(i);
+                if (child.position == position)
+                    return child.gameObject;
+            }
+
+            return null;
+        }
+
+        private GameObject GetOrCreateLayerObject(TileLayer layer)
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                if (transform.GetChild(i).name == layer.ToString())
+                    return transform.GetChild(i).gameObject;
+            }
+
+            GameObject layerObject = new GameObject(layer.ToString());
+            layerObject.transform.SetParent(transform);
+            return layerObject;
         }
     }
 }

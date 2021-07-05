@@ -31,7 +31,6 @@ namespace SS3D.Engine.TilesRework
 
         private List<TileMap> mapList;
 
-        [ContextMenu("Reinitialize")]
         private void Init()
         {
             if (!isInitialized)
@@ -39,7 +38,8 @@ namespace SS3D.Engine.TilesRework
                 Instance = this;
                 mapList = new List<TileMap>();
 
-                Scene scene = SceneLoaderManager.singleton.GetSelectedScene();
+                // Scene scene = SceneLoaderManager.singleton.GetSelectedScene();
+                Scene scene = SceneManager.GetActiveScene();
                 saveFileName = scene.name;
 
 #if UNITY_EDITOR
@@ -56,8 +56,8 @@ namespace SS3D.Engine.TilesRework
 #else
             tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
 #endif
-
-                LoadAll();
+                Reinitialize();
+                // LoadAll();
                 UpdateAllAdjacencies();
                 isInitialized = true;
             }
@@ -65,7 +65,9 @@ namespace SS3D.Engine.TilesRework
 
         private void Awake()
         {
+            tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
             Init();
+            Reinitialize();
             UpdateAllAdjacencies();
         }
 
@@ -75,7 +77,12 @@ namespace SS3D.Engine.TilesRework
             // Can't do most things in OnValidate, so wait a sec.
             UnityEditor.EditorApplication.delayCall += () => {
                 if (this)
-                    Awake();
+                {
+                    isInitialized = false;
+                    Init();
+                    Reinitialize();
+                    UpdateAllAdjacencies();
+                }
             };
         }
 #endif
@@ -127,13 +134,17 @@ namespace SS3D.Engine.TilesRework
 
         public void SetTileObject(TileMap map, TileLayer layer, int subLayerIndex, string tileObjectSOName, Vector3 position, Direction dir)
         {
-            TileObjectSO tileObjectSO = tileObjectSOs.FirstOrDefault(tileObject => tileObject.nameString == tileObjectSOName);
-            SetTileObject(map, layer, subLayerIndex, tileObjectSO, position, dir);
+            SetTileObject(map, layer, subLayerIndex, GetTileObjectSO(tileObjectSOName), position, dir);
         }
 
         public void ClearTileObject(TileMap map, TileLayer layer, int subLayerIndex, Vector3 position)
         {
             map.ClearTileObject(layer, subLayerIndex, position);
+        }
+
+        public TileObjectSO GetTileObjectSO(string tileObjectSOName)
+        {
+            return tileObjectSOs.FirstOrDefault(tileObject => tileObject.nameString == tileObjectSOName);
         }
 
         public void SaveAll()
@@ -155,14 +166,21 @@ namespace SS3D.Engine.TilesRework
             Debug.Log("Tilemaps saved");
         }
 
-        public void LoadAll()
+        [ContextMenu("Load")]
+        public void Load() => LoadAll(false);
+
+        public void LoadAll(bool softLoad)
         {
-            if (tileObjectSOs.Length == 0)
+            if (tileObjectSOs == null)
             {
                 tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
             }
 
-            DestroyMaps();
+            if (softLoad)
+                mapList.Clear();
+            else
+                DestroyMaps();
+
             ManagerSaveObject saveMapObject = SaveSystem.LoadObject<ManagerSaveObject>(saveFileName);
 
             if (saveMapObject == null)
@@ -175,9 +193,34 @@ namespace SS3D.Engine.TilesRework
 
             foreach (MapSaveObject s in saveMapObject.saveObjectList)
             {
-                TileMap newMap = AddTileMap(s.mapName);
-                newMap.Load(s);
-                mapList.Add(newMap);
+                TileMap map = null;
+                if (softLoad)
+                {
+                    bool found = false;
+                    for (int i = 0; i < transform.childCount; i++)
+                    {
+                        var child = transform.GetChild(i);
+                        if (child.name == s.mapName)
+                        {
+                            map = child.GetComponent<TileMap>();
+                            found = true;
+                        }
+                    }
+                    if (!found)
+                    {
+                        Debug.LogWarning("Map was not found when reinitializing: " + s.mapName);
+                        continue;
+                    }
+
+                    map.Setup(s.mapName);
+                    map.Load(s, true);
+                }
+                else
+                {
+                    map = AddTileMap(s.mapName);
+                    map.Load(s, false);
+                }
+                mapList.Add(map);
             }
 
             Debug.Log("Tilemaps loaded");
@@ -220,6 +263,15 @@ namespace SS3D.Engine.TilesRework
             DestroyMaps();
             CreateEmptyMap();
             SaveAll();
+        }
+
+        /// <summary>
+        /// Reinitialize the map without destroying/creating gameobjects
+        /// </summary>
+        [ContextMenu("Reinitialize")]
+        private void Reinitialize()
+        {
+            LoadAll(true);
         }
 
         [ContextMenu("Force adjacency update")]
