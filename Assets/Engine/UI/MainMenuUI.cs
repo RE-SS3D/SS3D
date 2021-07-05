@@ -18,15 +18,15 @@ namespace SS3D.UI
     {
         public TMP_InputField ipAddressInputField;
 
-	// are we connecting to a server
+        // are we connecting to a server
         private bool connecting;
         private Animator animator;
 
-	// UI references
+        // UI references
         [SerializeField] private Button joinButton;
         [SerializeField] private TMP_Text joinButtonText;
         [SerializeField] private TMP_Text errorMessageText;
-        
+
         private int toggleAnimatorID;
 
         private void Start()
@@ -38,7 +38,7 @@ namespace SS3D.UI
         {
             animator = GetComponent<Animator>();
             toggleAnimatorID = Animator.StringToHash("Toggle");
-           
+
         }
 
         public void OnJoinButtonPressed()
@@ -49,18 +49,18 @@ namespace SS3D.UI
             joinButtonText.alignment = TextAlignmentOptions.Left;
             connecting = true;
             StartCoroutine(ChangeJoinText());
-            
+
             if (animator.GetBool("ToggleError"))
                 animator.SetBool("ToggleError", false);
 
         }
 
-	// When we click join, this is called
+        // When we click join, this is called
         public IEnumerator ChangeJoinText()
         {
             joinButton.interactable = false;
-	    // while we connect we have to display something
-	    // for the user to know he is in fact connecting
+            // while we connect we have to display something
+            // for the user to know he is in fact connecting
             while (connecting)
             {
                 joinButtonText.text = "joining.";
@@ -70,6 +70,7 @@ namespace SS3D.UI
                 joinButtonText.text = "joining...";
                 yield return new WaitForSeconds(.2f);
             }
+
             joinButton.interactable = true;
             joinButtonText.alignment = TextAlignmentOptions.Midline;
             joinButtonText.text = "join";
@@ -81,9 +82,10 @@ namespace SS3D.UI
 
             animator?.SetTrigger(toggleAnimatorID);
         }
-        
+
         public void OnClientFailConnection()
         {
+            // we have to use this UnityMainThread class to make sure we get no errors
             UnityMainThread.wkr.AddJob(delegate
             {
                 connecting = false;
@@ -91,11 +93,11 @@ namespace SS3D.UI
 
                 errorMessageText.text = "Connection to the server failed";
             });
-            
+
         }
-	
-	// This handles getting the IP address from the input field
-	// it needs to be transformed in a Uri in order for us to send it to the NetworkManager
+
+        // This handles getting the IP address from the input field
+        // it needs to be transformed in a Uri in order for us to send it to the NetworkManager
         private Uri TryParseIpAddress()
         {
             UriBuilder uriBuilder = new UriBuilder();

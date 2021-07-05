@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This class is useful when you have a specific error when using
+/// UI and calling methods via events
+/// </summary>
 internal class UnityMainThread : MonoBehaviour
 {
     internal static UnityMainThread wkr;

@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace SS3D.Content.Systems.Player
 {
+    /// <summary>
+    /// Handles instantiating UI for the player
+    /// </summary>
     [RequireComponent(typeof(Engine.Inventory.Inventory))]
     public class InitUI : NetworkBehaviour
     {
