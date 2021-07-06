@@ -64,31 +64,55 @@ namespace SS3D
             LoadMapList();
         }
 
-	// Here we load the selected map
+	    // Here we load the selected map
+        [Server]
         public void LoadMapScene()
         {
-            if (IsSelectedMapLoaded()) return;
 
+            // Entry validation
+            if (string.IsNullOrEmpty(selectedMap))
+            {
+                Debug.LogWarning("LoadMapScene: empty scene name. Aborting.");
+                return;
+            }
+
+            if (IsSelectedMapLoaded())
+            {
+                Debug.LogWarning("LoadMapScene: scene " + selectedMap + " is already loaded. Aborting.");
+                return;
+            }
+
+            // UI changes. mapLoaded event causes animators to fire.
             loadSceneButtonText.text = "loading...";
-            
             mapLoaded?.Invoke();
             RpcInvokeMapLoaded();
 
-            SceneManager.LoadSceneAsync(selectedMap, LoadSceneMode.Additive);
-            
-            // creates a message for the clients that tell them to load the selected scene
-            SceneMessage msg = new SceneMessage
+            Debug.Log("LoadMapScene: " + selectedMap);
+            NetworkServer.SetAllClientsNotReady();
+
+            // Let server prepare for scene change. We will set the networkSceneName in OnServerChangeScene.
+            LoginNetworkManager.singleton.OnServerChangeScene(selectedMap);
+
+            // Suspend the server's transport while changing scenes
+            // It will be re-enabled in FinishLoadScene.
+            Transport.activeTransport.enabled = false;
+
+            LoginNetworkManager.loadingSceneAsync = SceneManager.LoadSceneAsync(selectedMap, LoadSceneMode.Additive);
+
+            // ServerChangeScene can be called when stopping the server
+            // when this happens the server is not active so does not need to tell clients about the change
+            if (NetworkServer.active)
             {
-                sceneName = selectedMap,
-                sceneOperation = SceneOperation.LoadAdditive
-            };
+                // notify all clients about the new scene
+                NetworkServer.SendToAll(new SceneMessage { sceneName = selectedMap, sceneOperation = SceneOperation.LoadAdditive });
+            }
 
-            // sends said message to all clients
-            NetworkServer.SendToAll(msg);
+            //startPositionIndex = 0;
+            //startPositions.Clear();
 
-            StartCoroutine(SetActiveScene(selectedMap));
+            //StartCoroutine(SetActiveScene(selectedMap));
 
-
+            // Once TileManager has done its validation, unlock the Round Start button.
             TileManager.tileManagerLoaded += UnlockRoundStart;
         }
 

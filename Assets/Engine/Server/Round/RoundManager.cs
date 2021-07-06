@@ -164,20 +164,25 @@ namespace SS3D.Engine.Server.Round
         {
             while (timerSeconds > 0)
             {
-                UpdateClock(GetTimerTextSeconds());
+                // Clock should only be updated by the server.
+                if (isServer) UpdateClock(GetTimerTextSeconds());
+
                 Debug.Log("Round start timer:" + timerSeconds);
                 timerSeconds--;
                 yield return new WaitForSeconds(1);
             }
 
-            StartRound();
+            // Round should only be started by the server.
+            if (isServer) StartRound();
         }
 
         private IEnumerator Tick()
         {
             while (started)
             {
-                UpdateClock(GetTimerTextSeconds());
+                // Clock should only be updated by the server.
+                if (isServer) UpdateClock(GetTimerTextSeconds());
+
                 timerSeconds++;
                 yield return new WaitForSeconds(1);
             }

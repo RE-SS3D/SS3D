@@ -379,8 +379,10 @@ using UnityEngine.SceneManagement;
 
         public override void OnServerChangeScene(string newSceneName)
         {
+            // Set the networkSceneName in here as well, because SceneLoaderManager cannot access it directly.
+            networkSceneName = newSceneName;
+
             base.OnServerChangeScene(newSceneName);
-            
             UpdateLoadingScreen(true);
         }
         

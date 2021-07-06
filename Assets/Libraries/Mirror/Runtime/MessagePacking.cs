@@ -108,6 +108,12 @@ namespace Mirror
                 NetworkDiagnostics.OnReceive(message, channelId, endPos - startPos);
             }
 
+            // ***** SS3D specific *****
+            // The below section of code has been added since our last Mirror update. 
+            // It is disconnecting our client when particular RPC's are recieved. I
+            // have temporarily disabled it to allow networking to continue, but we
+            // will need to identify and correct the root cause sooner or later.
+
             // user handler exception should not stop the whole server
             try
             {
@@ -117,7 +123,7 @@ namespace Mirror
             catch (Exception e)
             {
                 Debug.LogError($"Exception in MessageHandler: {e.GetType().Name} {e.Message}\n{e.StackTrace}");
-                conn.Disconnect();
+                //conn.Disconnect(); Prevented disconnecting in order to diagnose fault
             }
         };
     }
