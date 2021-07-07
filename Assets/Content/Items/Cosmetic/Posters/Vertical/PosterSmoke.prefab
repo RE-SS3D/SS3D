@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -5592192018938336367}
   - component: {fileID: 551910288528299170}
   m_Layer: 16
-  m_Name: Poster SMOKE
+  m_Name: PosterSmoke
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

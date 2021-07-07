@@ -239,7 +239,7 @@ GameObject:
   - component: {fileID: 9034279038847792517}
   - component: {fileID: -5622362491041830292}
   m_Layer: 16
-  m_Name: Flashbang
+  m_Name: flashbang
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

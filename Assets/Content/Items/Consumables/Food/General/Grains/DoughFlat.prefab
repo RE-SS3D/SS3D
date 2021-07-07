@@ -267,9 +267,7 @@ MonoBehaviour:
   Volume: 600
   Temperature: 0
   Locked: 0
-  substances:
-  - Substance: {fileID: 11400000, guid: 80d989d222d73b54bb0fdded2783af74, type: 2}
-    Moles: 3
+  substances: []
 --- !u!114 &5602736186390864255
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -285,19 +283,7 @@ MonoBehaviour:
   Name: Slice
   ItemId: knife_kitchen
   Consume: 0
-  ResultingObjects:
-  - Prefab: {fileID: 8025821132411324115, guid: 82018d13b985aaf4a9e389170d41e55a,
-      type: 3}
-    Position: {x: 0.1, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0}
-  - Prefab: {fileID: 8025821132411324115, guid: 82018d13b985aaf4a9e389170d41e55a,
-      type: 3}
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0}
-  - Prefab: {fileID: 8025821132411324115, guid: 82018d13b985aaf4a9e389170d41e55a,
-      type: 3}
-    Position: {x: -0.1, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0}
+  ResultingObjects: []
 --- !u!114 &4543423368307729912
 MonoBehaviour:
   m_ObjectHideFlags: 0

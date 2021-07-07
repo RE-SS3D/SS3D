@@ -49,7 +49,7 @@ GameObject:
   - component: {fileID: -7916679988573165787}
   - component: {fileID: -1515805523943370819}
   m_Layer: 16
-  m_Name: PepperSpray
+  m_Name: pepperspray
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

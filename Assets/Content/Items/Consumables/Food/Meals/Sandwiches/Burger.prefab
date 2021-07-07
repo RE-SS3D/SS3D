@@ -487,8 +487,8 @@ GameObject:
   - component: {fileID: -2125000103491059414}
   - component: {fileID: -1264511703301651573}
   - component: {fileID: -3446352185899483227}
-  m_Layer: 0
-  m_Name: Burgerr
+  m_Layer: 16
+  m_Name: Burger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

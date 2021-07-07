@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 551910288528299170}
   - component: {fileID: -2703636542821691408}
   m_Layer: 16
-  m_Name: Poster ARF
+  m_Name: PosterArf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

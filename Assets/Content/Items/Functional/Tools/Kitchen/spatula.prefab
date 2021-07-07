@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 4165234907410255018}
   - component: {fileID: 2923116068905593083}
   m_Layer: 16
-  m_Name: Spatula
+  m_Name: spatula
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

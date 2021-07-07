@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 8438264071298373175}
   - component: {fileID: 1522704663804917393}
   - component: {fileID: -161041330142452396}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: CrayonRed
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 4312769202901945740}
   - component: {fileID: 551910288528299170}
   m_Layer: 16
-  m_Name: Poster PUFF
+  m_Name: PosterPuff
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

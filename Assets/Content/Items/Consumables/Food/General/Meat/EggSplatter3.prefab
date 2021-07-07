@@ -172,7 +172,7 @@ GameObject:
   - component: {fileID: 3604042376955205846}
   - component: {fileID: 3859890729114167007}
   - component: {fileID: -5436964563822406000}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: EggSplatter3
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7655823677557125898}
   - component: {fileID: 8249568266877858068}
   m_Layer: 16
-  m_Name: Lighter Light
+  m_Name: LighterLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

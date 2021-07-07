@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -4056028608551665480}
   - component: {fileID: 551910288528299170}
   m_Layer: 16
-  m_Name: Poster GREYTIDE
+  m_Name: PosterGreytide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

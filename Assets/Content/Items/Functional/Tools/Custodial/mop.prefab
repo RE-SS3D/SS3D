@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 8305323804518448030}
   - component: {fileID: -1950864518426958933}
   m_Layer: 16
-  m_Name: Mop
+  m_Name: mop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 8219551198752222676}
   - component: {fileID: 1743976565842853461}
   m_Layer: 16
-  m_Name: Radio
+  m_Name: StationBouncedRadio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

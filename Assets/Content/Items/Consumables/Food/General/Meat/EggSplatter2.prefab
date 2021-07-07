@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4011692018174370272}
   - component: {fileID: 6046919814449506760}
   - component: {fileID: 6128361959763408253}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: EggSplatter2
   m_TagString: Untagged
   m_Icon: {fileID: 0}

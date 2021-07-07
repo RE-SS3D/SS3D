@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 4297170552346276969}
   - component: {fileID: 2931438746872202070}
   - component: {fileID: 2166353221684048071}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Doodad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -181,6 +181,7 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 4211937047174720197}
   attachmentPoint: {fileID: 7158166286147809824}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 08c4bae5b95cea146826e467131ec146, type: 2}

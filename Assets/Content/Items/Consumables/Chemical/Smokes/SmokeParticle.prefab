@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4772663361534770530}
   - component: {fileID: 3569333773990191219}
   - component: {fileID: 1458300908610427474}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: SmokeParticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}

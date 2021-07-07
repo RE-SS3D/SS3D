@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -2694217595753394109}
   - component: {fileID: 551910288528299170}
   m_Layer: 16
-  m_Name: Poster FUN POLICE
+  m_Name: PosterFunPolice
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

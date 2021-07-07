@@ -51,7 +51,7 @@ GameObject:
   - component: {fileID: 3296860198860143425}
   - component: {fileID: 4918683855648018327}
   m_Layer: 16
-  m_Name: 4no raisins
+  m_Name: 4NoRaisins
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -264,9 +264,7 @@ MonoBehaviour:
   Volume: 300
   Temperature: 0
   Locked: 0
-  substances:
-  - Substance: {fileID: 11400000, guid: 80d989d222d73b54bb0fdded2783af74, type: 2}
-    Moles: 1.5
+  substances: []
 --- !u!82 &4918683855648018327
 AudioSource:
   m_ObjectHideFlags: 0

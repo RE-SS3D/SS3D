@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -1714994739446903727}
   - component: {fileID: 551910288528299170}
   m_Layer: 16
-  m_Name: Poster SPACE_R
+  m_Name: PosterSpaceR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
