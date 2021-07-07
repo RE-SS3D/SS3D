@@ -337,6 +337,9 @@ MonoBehaviour:
     m_Bits: 1115955
   menuPrefab: {fileID: 6380575431912782132, guid: 69782ec738cf5ad40809cf5f548be89a,
     type: 3}
+  owner: {fileID: 0}
+  useOutlineSystem: 1
+  selectedObject: {fileID: 0}
 --- !u!114 &666907628477534858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -402,10 +405,6 @@ MonoBehaviour:
   syncInterval: 0.1
   UiPrefab: {fileID: 2314586001921844144, guid: 154a0c29195b80444b97161cca7b2308,
     type: 3}
-  ObstacleMask:
-    serializedVersion: 2
-    m_Bits: 256
-  ViewRange: 25
   selector: {fileID: 0}
 --- !u!114 &1045010266948518310
 MonoBehaviour:

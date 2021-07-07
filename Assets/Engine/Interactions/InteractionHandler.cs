@@ -32,6 +32,8 @@ namespace SS3D.Engine.Interactions
         // the player camera
         private Camera camera;
 
+        // controls if the outline system will be triggered by this
+        public bool useOutlineSystem = true;
         // current selected object by this interactor
         public GameObject selectedObject;
         
@@ -50,7 +52,10 @@ namespace SS3D.Engine.Interactions
             }
 
             var ray = camera.ScreenPointToRay(Input.mousePosition);
-            HandleInteractionTargetOutline(ray);
+            
+            // Outline system
+            if (useOutlineSystem)
+                HandleInteractionTargetOutline(ray);
             
             if (Input.GetButtonDown("Click"))
             {
@@ -323,37 +328,47 @@ namespace SS3D.Engine.Interactions
                 GameObject target = hit.collider.gameObject;
                 Renderer renderer = target.GetComponentInChildren<Renderer>();
 
+                // If the new object we select is not in the Item layer
                 if (target.layer != 16)
                 {
+                    // if we have a selected object we remove the outline from the one we are currently selecting
                     if (selectedObject != null)
                     {
                         selectedObject.GetComponentInChildren<Outline>()?.RemoveMaterials();
                         selectedObject = null;
                     }
-
                     return;
                 }
                 
+                // if there is no renderer in the new selected object we return
                 if (renderer == null)
                 {
                     return; 
                 }
 
+                // if there's no current selected object
                 if (selectedObject == null)
                 {
+                    // new selected object is out selected
                     selectedObject = target;
                     Outline outline = target.GetComponentInChildren<Outline>();
+                    
+                    // if the selected object doesn't have an outline we add it
                     if (outline == null)
                     {
                         outline = renderer.gameObject.AddComponent<Outline>();
                     }
                     
+                    // TODO: Proper options for the items
+                    outline.OutlineColor = Color.yellow;
                     outline.OutlineWidth = 6;
                     outline.AddMaterials();
                 }
 
-                if (selectedObject != target)
+                // in case the new selected object is not the current object
+                if (selectedObject != target) 
                 {
+                    // try to get the Outline and remove materials
                     selectedObject?.GetComponentInChildren<Outline>()?.RemoveMaterials();
 
                     Outline outline = target.GetComponentInChildren<Outline>();
@@ -364,6 +379,7 @@ namespace SS3D.Engine.Interactions
 
                     selectedObject = target;
             
+                    outline.OutlineColor = Color.yellow;
                     outline.OutlineWidth = 6;
                     outline.AddMaterials();
                 }
