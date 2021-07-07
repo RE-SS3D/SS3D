@@ -264,9 +264,7 @@ MonoBehaviour:
   Volume: 300
   Temperature: 0
   Locked: 0
-  substances:
-  - Substance: {fileID: 11400000, guid: 80d989d222d73b54bb0fdded2783af74, type: 2}
-    Moles: 1.5
+  substances: []
 --- !u!82 &6704523476501461858
 AudioSource:
   m_ObjectHideFlags: 0

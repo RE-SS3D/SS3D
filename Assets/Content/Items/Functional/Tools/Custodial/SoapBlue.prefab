@@ -49,7 +49,7 @@ GameObject:
   - component: {fileID: 5255869551476044215}
   - component: {fileID: 2902236087434809221}
   m_Layer: 16
-  m_Name: Soap
+  m_Name: SoapBlue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

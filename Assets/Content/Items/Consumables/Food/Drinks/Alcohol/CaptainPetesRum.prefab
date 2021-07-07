@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: -4521603759085816547}
   - component: {fileID: -8023195135660676867}
   m_Layer: 16
-  m_Name: CaptainPete'sRum
+  m_Name: CaptainPetesRum
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

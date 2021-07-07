@@ -585,6 +585,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Welder_Flame
       objectReference: {fileID: 0}
+    - target: {fileID: 1283739246749043963, guid: 343a4faa62cef4c46904b8d006b0ff41,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1706455991636438100, guid: 343a4faa62cef4c46904b8d006b0ff41,
         type: 3}
       propertyPath: playOnAwake

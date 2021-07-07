@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 8941365086230428367}
   - component: {fileID: 5529589300323152802}
   m_Layer: 16
-  m_Name: Light Bulb Broken
+  m_Name: LightBulbBroken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

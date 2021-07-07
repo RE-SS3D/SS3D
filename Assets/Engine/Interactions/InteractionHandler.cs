@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
+using SS3D.Content;
 using SS3D.Engine.Inventory;
 using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
@@ -14,7 +15,9 @@ namespace SS3D.Engine.Interactions
      */
     public class InteractionHandler : NetworkBehaviour
     {
-        /// <summary>Mask for physics to use when finding targets</summary>
+        /// <summary>
+        /// mask for physics to use when finding targets
+        /// </summary>
         [SerializeField]
         [Tooltip("Mask for physics to use when finding targets")]
         private LayerMask selectionMask = 0;
@@ -23,11 +26,19 @@ namespace SS3D.Engine.Interactions
         [SerializeField]
         private GameObject menuPrefab = null;
 
+        // The owner of the interactor
+        public Entity owner;
+        
+        // the player camera
         private Camera camera;
 
+        // current selected object by this interactor
+        public GameObject selectedObject;
+        
         private void Start()
         {
             camera = CameraManager.singleton.playerCamera;
+            owner = GetComponent<Entity>();
         }
 
         public void Update()
@@ -38,6 +49,9 @@ namespace SS3D.Engine.Interactions
                 return;
             }
 
+            var ray = camera.ScreenPointToRay(Input.mousePosition);
+            HandleInteractionTargetOutline(ray);
+            
             if (Input.GetButtonDown("Click"))
             {
                 if (activeMenu != null)
@@ -47,7 +61,7 @@ namespace SS3D.Engine.Interactions
                 }
 
                 // Run the most prioritised action
-                var ray = camera.ScreenPointToRay(Input.mousePosition);
+                ray = camera.ScreenPointToRay(Input.mousePosition);
                 var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
 
                 if (viableInteractions.Count > 0)
@@ -63,22 +77,10 @@ namespace SS3D.Engine.Interactions
                 {
                     Destroy(activeMenu.gameObject);
                 }
-
-                if (Input.GetButton("Alternate"))
-                {
-                    Hands hands = GetComponent<Hands>();
-                    if (hands != null )
-                    {
-                        Item item = hands.ItemInHand;
-                        if (item != null)
-                        {
-                            InteractInHand(item.gameObject, gameObject, true);
-                        }
-                    }
-                }
+                
                 else
                 {
-                    var ray = camera.ScreenPointToRay(Input.mousePosition);
+                    ray = camera.ScreenPointToRay(Input.mousePosition);
                     var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
                     if (viableInteractions.Select(x => x.Interaction).ToList().Count > 0)
                     {
@@ -307,6 +309,65 @@ namespace SS3D.Engine.Interactions
             interactionEvent = new InteractionEvent(source, targets[0], point);
 
             return GetInteractionsFromTargets(source, targets, interactionEvent);
+        }
+
+        /// <summary>
+        /// Uses the interaction handler to apply and remove the QuickOutline's outline on interactables
+        /// </summary>
+        /// <param name="ray">ray used to find the current renderer and change its materials</param>
+        private void HandleInteractionTargetOutline(Ray ray)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                GameObject target = hit.collider.gameObject;
+                Renderer renderer = target.GetComponentInChildren<Renderer>();
+
+                if (target.layer != 16)
+                {
+                    if (selectedObject != null)
+                    {
+                        selectedObject.GetComponentInChildren<Outline>()?.RemoveMaterials();
+                        selectedObject = null;
+                    }
+
+                    return;
+                }
+                
+                if (renderer == null)
+                {
+                    return; 
+                }
+
+                if (selectedObject == null)
+                {
+                    selectedObject = target;
+                    Outline outline = target.GetComponentInChildren<Outline>();
+                    if (outline == null)
+                    {
+                        outline = renderer.gameObject.AddComponent<Outline>();
+                    }
+                    
+                    outline.OutlineWidth = 6;
+                    outline.AddMaterials();
+                }
+
+                if (selectedObject != target)
+                {
+                    selectedObject?.GetComponentInChildren<Outline>()?.RemoveMaterials();
+
+                    Outline outline = target.GetComponentInChildren<Outline>();
+                    if (outline == null)
+                    {
+                        outline = renderer.gameObject.AddComponent<Outline>();
+                    }
+
+                    selectedObject = target;
+            
+                    outline.OutlineWidth = 6;
+                    outline.AddMaterials();
+                }
+            }
         }
 
         /// <summary>

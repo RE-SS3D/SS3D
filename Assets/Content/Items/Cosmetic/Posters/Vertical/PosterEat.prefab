@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 1815150869777220316}
   - component: {fileID: 551910288528299170}
   m_Layer: 16
-  m_Name: Poster EAT
+  m_Name: PosterEat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

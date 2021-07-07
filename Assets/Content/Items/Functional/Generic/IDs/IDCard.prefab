@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 1635039912336507498}
   - component: {fileID: 694464564134526503}
   m_Layer: 16
-  m_Name: ID Card
+  m_Name: IDCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -204,7 +204,6 @@ MonoBehaviour:
   traits:
   - {fileID: 11400000, guid: b32782ff01546ec4eb853a3bdb04bf39, type: 2}
   Size: {x: 0, y: 0}
-  MaxDistance: 2
 --- !u!114 &694464564134526503
 MonoBehaviour:
   m_ObjectHideFlags: 0

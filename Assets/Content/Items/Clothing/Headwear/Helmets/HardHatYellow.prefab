@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 8798808914283824592}
   - component: {fileID: -4580143928426730034}
   - component: {fileID: 8502499662783524481}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: HardHatYellow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

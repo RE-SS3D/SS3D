@@ -51,7 +51,7 @@ GameObject:
   - component: {fileID: -4641667771450322447}
   - component: {fileID: 5100085244689216503}
   m_Layer: 16
-  m_Name: Omelette
+  m_Name: omelette
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

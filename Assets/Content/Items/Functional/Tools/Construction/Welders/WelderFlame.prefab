@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 8139841989293663705}
   - component: {fileID: 1706455991636438100}
   - component: {fileID: 4145863534149978574}
-  m_Layer: 0
-  m_Name: Welder_Flame
+  m_Layer: 16
+  m_Name: WelderFlame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

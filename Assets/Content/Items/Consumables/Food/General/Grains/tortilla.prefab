@@ -51,7 +51,7 @@ GameObject:
   - component: {fileID: 1195661807417070721}
   - component: {fileID: 2222207985291738341}
   m_Layer: 16
-  m_Name: Tortilla
+  m_Name: tortilla
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -265,9 +265,7 @@ MonoBehaviour:
   Volume: 500
   Temperature: 0
   Locked: 0
-  substances:
-  - Substance: {fileID: 11400000, guid: 80d989d222d73b54bb0fdded2783af74, type: 2}
-    Moles: 2.5
+  substances: []
 --- !u!82 &2222207985291738341
 AudioSource:
   m_ObjectHideFlags: 0

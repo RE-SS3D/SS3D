@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 3147814205253256376}
   - component: {fileID: -579363025205613476}
   m_Layer: 16
-  m_Name: Laser Cannon
+  m_Name: LaserCannon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

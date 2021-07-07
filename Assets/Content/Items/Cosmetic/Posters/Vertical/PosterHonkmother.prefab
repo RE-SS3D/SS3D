@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -7675063511184662393}
   - component: {fileID: 551910288528299170}
   m_Layer: 16
-  m_Name: Poster HONKMOTHER
+  m_Name: PosterHonkmother
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
