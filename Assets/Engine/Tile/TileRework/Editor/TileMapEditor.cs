@@ -92,10 +92,12 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
         public void OnDisable()
         {
             if (madeChanges)
+            {
                 DisplaySaveWarning();
+                tileManager?.LoadAll(false);
+            }   
 
             DestroyGhost();
-            tileManager?.LoadAll(false);
 
             SceneView.duringSceneGui -= OnSceneGUI;
         }

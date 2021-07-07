@@ -54,7 +54,7 @@ namespace SS3D.Engine.TilesRework
                 }
                 tileObjectSOs = listTileObjectSO.ToArray();
 #else
-            tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
+                tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
 #endif
                 Reinitialize();
                 // LoadAll();
@@ -65,10 +65,11 @@ namespace SS3D.Engine.TilesRework
 
         private void Awake()
         {
-            tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
+            isInitialized = false;
+            // tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
             Init();
-            Reinitialize();
-            UpdateAllAdjacencies();
+            // Reinitialize();
+            // UpdateAllAdjacencies();
         }
 
 #if UNITY_EDITOR
@@ -80,8 +81,8 @@ namespace SS3D.Engine.TilesRework
                 {
                     isInitialized = false;
                     Init();
-                    Reinitialize();
-                    UpdateAllAdjacencies();
+                    // Reinitialize();
+                    // UpdateAllAdjacencies();
                 }
             };
         }
@@ -214,16 +215,18 @@ namespace SS3D.Engine.TilesRework
 
                     map.Setup(s.mapName);
                     map.Load(s, true);
+                    Debug.Log("Tilemaps soft loaded");
                 }
                 else
                 {
                     map = AddTileMap(s.mapName);
                     map.Load(s, false);
+                    Debug.Log("Tilemaps loaded from save");
                 }
                 mapList.Add(map);
             }
 
-            Debug.Log("Tilemaps loaded");
+            
         }
 
         public void RemoveMap(TileMap map)
@@ -250,19 +253,18 @@ namespace SS3D.Engine.TilesRework
         }
 
         [ContextMenu("Reset")]
-        private void Reset()
+        private void ResetTileManager()
         {
 #if UNITY_EDITOR
             if (EditorUtility.DisplayDialog("Resetting TileMap",
                         "Are you sure that you want to reset? This will DESTROY the currently saved map"
                         , "Ok", "Cancel"))
             {
-                return;
+                DestroyMaps();
+                CreateEmptyMap();
+                SaveAll();
             }
 #endif
-            DestroyMaps();
-            CreateEmptyMap();
-            SaveAll();
         }
 
         /// <summary>

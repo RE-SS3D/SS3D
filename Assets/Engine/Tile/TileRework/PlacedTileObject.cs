@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using SS3D.Engine.TilesRework.Connections;
+using UnityEditor;
 
 namespace SS3D.Engine.TilesRework
 {
@@ -20,7 +21,29 @@ namespace SS3D.Engine.TilesRework
 
         public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSO tileObjectSO)
         {
-            GameObject placedGameObject = Instantiate(tileObjectSO.prefab, worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
+            // GameObject placedGameObject = Instantiate(tileObjectSO.prefab, worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
+
+            GameObject placedGameObject = EditorAndRuntime.InstantiatePrefab(tileObjectSO.prefab);
+
+            // Undo.RecordObject(placedGameObject.transform, "Change rotation");
+            // placedGameObject.transform.position = worldPosition;
+            // placedGameObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0);
+            placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
+
+
+            // Alternative name is required for walls as they can occupy the same tile
+            if (tileObjectSO.layerType == TileLayer.HighWall || tileObjectSO.layerType == TileLayer.LowWall)
+                placedGameObject.name += "_" + TileHelper.GetDirectionIndex(dir);
+
+
+            // EditorUtility.SetDirty(placedGameObject.transform);
+            // PrefabUtility.RecordPrefabInstancePropertyModifications(placedGameObject.transform);
+
+            /*
+            var so = new SerializedObject(placedGameObject.transform);
+            so.FindProperty("m_LocalRotation").quaternionValue = Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0);
+            so.ApplyModifiedProperties();
+            */
 
             PlacedTileObject placedObject = placedGameObject.GetComponent<PlacedTileObject>();
             if (placedObject == null)
@@ -84,6 +107,12 @@ namespace SS3D.Engine.TilesRework
         public void UpdateSingleAdjacency(Direction dir, PlacedTileObject placedNeighbour)
         {
             adjacencyConnector?.UpdateSingle(dir, placedNeighbour);
+        }
+
+        [ContextMenu("Force rotate")]
+        private void ForceRotate()
+        {
+            transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0);
         }
     }
 }

@@ -108,6 +108,11 @@ namespace SS3D.Engine.TilesRework
             return (Direction)(((int)direction + 4) % 8);
         }
 
+        public static int GetDirectionIndex(Direction dir)
+        {
+            return (int)dir / 2;
+        }
+
         public static Vector3 GetWorldPosition(int x, int y, float tileSize, Vector3 originPosition)
         {
             return new Vector3(x, 0, y) * tileSize + originPosition;

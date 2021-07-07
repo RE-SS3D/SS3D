@@ -287,7 +287,13 @@ namespace SS3D.Engine.TilesRework
 
                                 // Find the object and set it up again...
                                 Vector3 position = TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition);
-                                PlacedTileObject placedTileObject = FindChild(position).GetComponent<PlacedTileObject>();
+                                PlacedTileObject placedTileObject = FindChild(layer, subLayerIndex, position).GetComponent<PlacedTileObject>();
+
+                                if (!placedTileObject)
+                                {
+                                    Debug.LogWarning("Child was not found when reinitializing: " + objectName);
+                                }
+
                                 LoadTileObject(layer, subLayerIndex, tileObjectSO, placedTileObject, position, tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
                             }
                             else
@@ -301,13 +307,25 @@ namespace SS3D.Engine.TilesRework
             }
         }
 
-        private GameObject FindChild(Vector3 position)
+        private GameObject FindChild(TileLayer layer, int subLayerIndex, Vector3 position)
         {
-            for (int i = 0; i < transform.childCount; i++)
+            Transform layerObjectTransform = GetOrCreateLayerObject(layer).transform;
+
+            // For walls, multiple object can exist at the same location. 
+            // So use the naming convention to determine at which rotation it is placed
+            bool sameTile = (layer == TileLayer.LowWall || layer == TileLayer.HighWall);
+
+            for (int i = 0; i < layerObjectTransform.childCount; i++)
             {
-                var child = transform.GetChild(i);
+                var child = layerObjectTransform.GetChild(i);
                 if (child.position == position)
+                {
+                    if (sameTile && !child.name.Contains("_" + subLayerIndex))
+                        continue;
+
                     return child.gameObject;
+                }
+                    
             }
 
             return null;
