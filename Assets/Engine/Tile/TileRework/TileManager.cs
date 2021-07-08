@@ -38,8 +38,11 @@ namespace SS3D.Engine.TilesRework
                 Instance = this;
                 mapList = new List<TileMap>();
 
-                // Scene scene = SceneLoaderManager.singleton.GetSelectedScene();
-                Scene scene = SceneManager.GetActiveScene();
+                Scene scene;
+                if (SceneLoaderManager.singleton)
+                    scene = SceneLoaderManager.singleton.GetSelectedScene();
+                else
+                    scene = SceneManager.GetActiveScene();
                 saveFileName = scene.name;
 
 #if UNITY_EDITOR
@@ -54,8 +57,18 @@ namespace SS3D.Engine.TilesRework
                 }
                 tileObjectSOs = listTileObjectSO.ToArray();
 #else
+                Resources.LoadAll<TileObjectSO>("");
                 tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
 #endif
+
+
+                Debug.Log("Number of assets found: " + tileObjectSOs.Length);
+                foreach (TileObjectSO so in tileObjectSOs)
+                {
+                    Debug.Log("Asset: " + so.nameString);
+                }
+
+
                 Reinitialize();
                 // LoadAll();
                 UpdateAllAdjacencies();
@@ -145,7 +158,10 @@ namespace SS3D.Engine.TilesRework
 
         public TileObjectSO GetTileObjectSO(string tileObjectSOName)
         {
-            return tileObjectSOs.FirstOrDefault(tileObject => tileObject.nameString == tileObjectSOName);
+            TileObjectSO tileObjectSO = tileObjectSOs.FirstOrDefault(tileObject => tileObject.nameString == tileObjectSOName);
+            if (tileObjectSO == null)
+                Debug.LogError("TileObjectSO was not found: " + tileObjectSOName);
+            return tileObjectSO;
         }
 
         public void SaveAll()

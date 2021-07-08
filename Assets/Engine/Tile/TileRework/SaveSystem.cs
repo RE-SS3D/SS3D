@@ -7,7 +7,7 @@ public static class SaveSystem
 {
     private const string SAVE_EXTENSION = "txt";
 
-    private static readonly string SAVE_FOLDER = Application.dataPath + "/Saves/";
+    private static readonly string SAVE_FOLDER = Application.streamingAssetsPath + "/Saves/";
     private static bool isInit = false;
 
     public static void Init()

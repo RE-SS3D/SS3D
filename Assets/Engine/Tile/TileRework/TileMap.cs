@@ -194,7 +194,6 @@ namespace SS3D.Engine.TilesRework
             Vector2Int vector = chunk.GetXY(position);
             Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
 
-            // Test Can Build
             List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
 
             Vector2Int rotationOffset = tileObjectSO.GetRotationOffset(dir);
@@ -205,7 +204,17 @@ namespace SS3D.Engine.TilesRework
 
             foreach (Vector2Int gridPosition in gridPositionList)
             {
-                chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject, subLayerIndex);
+                if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
+                {
+                    // We got a chunk edge case in which a multi tile object is outside of the chunk
+                    Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
+                    TileChunk nextChunk = GetChunk(offEdgeObjectPosition);
+                    nextChunk.GetTileObject(layer, offEdgeObjectPosition).SetPlacedObject(placedObject, subLayerIndex);
+                }
+                else
+                {
+                    chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject, subLayerIndex);
+                }
             }
         }
 
