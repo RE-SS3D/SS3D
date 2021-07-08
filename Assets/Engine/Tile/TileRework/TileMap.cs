@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace SS3D.Engine.TilesRework
@@ -120,13 +121,37 @@ namespace SS3D.Engine.TilesRework
 
             // Test Can Build
             List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
+
+            /*
+            foreach (Vector2Int gridPosition in gridPositionList)
+            {
+                Vector3 worldPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
+                GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                cube.transform.position = worldPosition;
+            }
+            */
+
             bool canBuild = true;
             foreach (Vector2Int gridPosition in gridPositionList)
             {
-                if (!chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).IsEmpty(subLayerIndex))
+                if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
                 {
-                    canBuild = false;
-                    break;
+                    // We got a chunk edge case in which a multi tile object is outside of the chunk
+                    Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
+                    TileChunk nextChunk = GetChunk(offEdgeObjectPosition);
+                    if (!nextChunk.GetTileObject(layer, offEdgeObjectPosition).IsEmpty(subLayerIndex))
+                    {
+                        canBuild = false;
+                        break;
+                    }
+                }
+                else
+                {
+                    if (!chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).IsEmpty(subLayerIndex))
+                    {
+                        canBuild = false;
+                        break;
+                    }
                 }
             }
 
@@ -140,7 +165,17 @@ namespace SS3D.Engine.TilesRework
 
                 foreach (Vector2Int gridPosition in gridPositionList)
                 {
-                    chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject, subLayerIndex);
+                    if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
+                    {
+                        // We got a chunk edge case in which a multi tile object is outside of the chunk
+                        Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
+                        TileChunk nextChunk = GetChunk(offEdgeObjectPosition);
+                        nextChunk.GetTileObject(layer, offEdgeObjectPosition).SetPlacedObject(placedObject, subLayerIndex);
+                    }
+                    else
+                    {
+                        chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject, subLayerIndex);
+                    }
                     UpdateAdjacencies(layer, position);
                 }
             }
@@ -186,8 +221,18 @@ namespace SS3D.Engine.TilesRework
                 List<Vector2Int> gridPositionList = placedObject.GetGridPositionList();
                 foreach (Vector2Int gridPosition in gridPositionList)
                 {
-                    chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).ClearPlacedObject(subLayerIndex);
-                    UpdateAdjacencies(layer, position);
+                    if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
+                    {
+                        // We got a chunk edge case in which a multi tile object is outside of the chunk
+                        Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
+                        TileChunk nextChunk = GetChunk(offEdgeObjectPosition);
+                        nextChunk.GetTileObject(layer, offEdgeObjectPosition).SetPlacedObject(placedObject, subLayerIndex);
+                    }
+                    else
+                    {
+                        chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).ClearPlacedObject(subLayerIndex);
+                        UpdateAdjacencies(layer, position);
+                    }
                 }
             }
         }

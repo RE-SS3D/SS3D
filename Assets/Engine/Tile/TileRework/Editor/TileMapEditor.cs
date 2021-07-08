@@ -330,6 +330,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             GUI.color = Color.white;
             GUILayout.Label("Left click to place an object");
             GUILayout.Label("Press 'R' to rotate an object");
+            GUILayout.Label("Current rotation: " + selectedDir.ToString());
             GUILayout.Label("Press Escape to leave placement mode");
             
             GUILayout.EndArea();
@@ -497,7 +498,14 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
                 {
                     continue;
                 }
-                Texture2D texture = AssetPreview.GetAssetPreview(asset.prefab);
+
+                Texture2D texture;
+                do
+                {
+                    texture = AssetPreview.GetAssetPreview(asset.prefab);
+                } while (AssetPreview.IsLoadingAssetPreviews());
+
+
                 assetIcons.Add(new GUIContent(asset.name, texture));
                 assetList.Add(asset);
             }

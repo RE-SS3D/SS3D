@@ -39,7 +39,9 @@ namespace SS3D.Engine.TilesRework
 
         public void ClearPlacedObject(int subLayerIndex)
         {
-            placedObjects[subLayerIndex]?.DestroySelf();
+            if (placedObjects[subLayerIndex] != null)
+                placedObjects[subLayerIndex].DestroySelf();
+
             placedObjects[subLayerIndex] = null;
             map.TriggerGridObjectChanged(x, y);
         }
@@ -74,6 +76,14 @@ namespace SS3D.Engine.TilesRework
                 if (!IsEmpty(i))
                     placedSaveObjects.Add(placedObjects[i].Save());
                 */
+
+                // If we have a multi tile object, save only the instance where the origin is
+                if (placedObjects[i]?.GetGridPositionList().Count > 1)
+                {
+                    if (placedObjects[i].Save().origin != new Vector2Int(x, y))
+                        continue;
+                }
+
                 placedSaveObjects[i] = placedObjects[i]?.Save();
             }
 
