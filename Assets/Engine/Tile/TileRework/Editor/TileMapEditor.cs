@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEditor;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
         private List<TileObjectSO> assetList = new List<TileObjectSO>();
         private List<GUIContent> assetIcons = new List<GUIContent>();
         private int assetIndex;
+        private bool loadingTextures = false;
 
         // Grid settings
         private string selectedName;
@@ -83,7 +85,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             {
                 RefreshMapList();
                 FillGridOptions(GetCurrentMap());
-                RefreshSelectionGrid();
+                RefreshSelectionGrid(true);
                 SetTileVisibility(true);
                 SceneView.duringSceneGui += OnSceneGUI;
             }
@@ -201,7 +203,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             if (EditorGUI.EndChangeCheck())
             {
                 // DisplaySublayers();
-                RefreshSelectionGrid();
+                RefreshSelectionGrid(true);
             }
 
             enableVisualHelp = EditorGUILayout.Toggle("Enable visual help: ", enableVisualHelp);
@@ -435,15 +437,6 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             ghostObject.name = "Ghost object";
             ghostObject.tag = "EditorOnly";
             ghostObject.transform.SetParent(tileManager.transform);
-            
-            /*
-            var meshes = ghostObject.GetComponentsInChildren<MeshRenderer>();
-            foreach (var mesh in meshes)
-            {
-                mesh.sharedMaterial.color = mesh.sharedMaterial.color * new Color(1.0f, 1.0f, 1.0f, 0.5f);
-            }
-            */
-
             ghostObject.SetActive(false);
         }
 
@@ -479,8 +472,11 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
         private void LoadAssetLayer(TileLayer layer, string assetName = "")
         {
+            AssetPreview.SetPreviewTextureCacheSize(200);
             assetList.Clear();
             assetIcons.Clear();
+            loadingTextures = true;
+
             string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(TileObjectSO)));
 
             for (int i = 0; i < guids.Length; i++)
@@ -500,10 +496,12 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
                 }
 
                 Texture2D texture;
+
                 do
                 {
                     texture = AssetPreview.GetAssetPreview(asset.prefab);
-                } while (AssetPreview.IsLoadingAssetPreviews());
+                    // Thread.Sleep(5);
+                } while (texture == null);
 
 
                 assetIcons.Add(new GUIContent(asset.name, texture));
@@ -511,9 +509,13 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             }
         }
 
-        private void RefreshSelectionGrid()
+        private void RefreshSelectionGrid(bool updateAssets)
         {
-            LoadAssetLayer(selectedLayer, searchString);
+            Focus();
+
+            if (updateAssets)
+                LoadAssetLayer(selectedLayer, searchString);
+
             if (assetList.Count > assetIndex)
             {
                 selectedObjectSO = assetList[assetIndex];
@@ -523,6 +525,12 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
         private void UpdateSelectionGrid()
         {
+            if (loadingTextures && !AssetPreview.IsLoadingAssetPreviews())
+            {
+                RefreshSelectionGrid(true);
+                loadingTextures = false;
+            }
+
             GUIStyle style = new GUIStyle();
             style.imagePosition = ImagePosition.ImageAbove;
             style.contentOffset = new Vector2(10, 10);
@@ -533,7 +541,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             assetIndex = GUILayout.SelectionGrid(assetIndex, assetIcons.ToArray(), 3, style);
             if (EditorGUI.EndChangeCheck())
             {
-                RefreshSelectionGrid();
+                RefreshSelectionGrid(false);
             }
         }
 

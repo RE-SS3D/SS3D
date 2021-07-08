@@ -61,14 +61,6 @@ namespace SS3D.Engine.TilesRework
                 tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
 #endif
 
-
-                Debug.Log("Number of assets found: " + tileObjectSOs.Length);
-                foreach (TileObjectSO so in tileObjectSOs)
-                {
-                    Debug.Log("Asset: " + so.nameString);
-                }
-
-
                 Reinitialize();
                 // LoadAll();
                 UpdateAllAdjacencies();
