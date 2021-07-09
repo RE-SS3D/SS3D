@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Pipe - Under L3
   m_EditorClassIdentifier: 
-  layerType: 6
+  layerType: 7
   nameString: pipe_under_3
+  genericType: 
   prefab: {fileID: 2802364579275783218, guid: 34bbc793ade346e45b1d2f357d86011f, type: 3}
   width: 1
   height: 1
