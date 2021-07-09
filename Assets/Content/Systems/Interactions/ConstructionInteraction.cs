@@ -22,7 +22,7 @@ namespace SS3D.Content.Systems.Interactions
         /// <summary>
         /// The target tile of this construction
         /// </summary>
-        protected TileObject TargetTile { get; private set; }
+        protected PlacedTileObject TargetPlacedObject { get; private set; }
 
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
@@ -33,13 +33,17 @@ namespace SS3D.Content.Systems.Interactions
         
             if (interactionEvent.Target is IGameObjectProvider targetBehaviour)
             {
+                /*
                 // Get target tile
+                TargetTile = TileManager.Instance.CanBuild()
                 TargetTile = targetBehaviour.GameObject.GetComponentInParent<TileObject>();
                 if (TargetTile == null)
                 {
                     return false;
                 }
             
+                */
+
                 // Ready if no obstacles
                 if (ObstacleMask == 0)
                 {
@@ -47,7 +51,7 @@ namespace SS3D.Content.Systems.Interactions
                 }
 
                 // Check for obstacle
-                Vector3 center = TargetTile.gameObject.transform.position;
+                Vector3 center = TargetPlacedObject.gameObject.transform.position;
                 bool obstacle = Physics.CheckBox(center, BuildDimensions / 2, Quaternion.identity, ObstacleMask, QueryTriggerInteraction.Ignore);
                 return !obstacle;
             }

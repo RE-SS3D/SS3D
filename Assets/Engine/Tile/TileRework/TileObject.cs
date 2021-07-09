@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SS3D.Engine.TilesRework
+namespace SS3D.Engine.Tiles
 {
     public class TileObject
     {
@@ -72,11 +72,6 @@ namespace SS3D.Engine.TilesRework
             PlacedTileObject.PlacedSaveObject[] placedSaveObjects = new PlacedTileObject.PlacedSaveObject[placedObjects.Length];
             for (int i = 0; i < placedObjects.Length; i++)
             {
-                /*
-                if (!IsEmpty(i))
-                    placedSaveObjects.Add(placedObjects[i].Save());
-                */
-
                 // If we have a multi tile object, save only the instance where the origin is
                 if (placedObjects[i]?.GetGridPositionList().Count > 1)
                 {

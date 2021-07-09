@@ -6,9 +6,9 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static SS3D.Engine.TilesRework.TileMap;
+using static SS3D.Engine.Tiles.TileMap;
 
-namespace SS3D.Engine.TilesRework
+namespace SS3D.Engine.Tiles
 {
     [ExecuteAlways]
     public class TileManager : MonoBehaviour
@@ -20,11 +20,8 @@ namespace SS3D.Engine.TilesRework
         }
         
         public static TileManager Instance { get; private set; }
-        private static bool isInitialized;
-        public static bool IsInitialized()
-        {
-            return isInitialized;
-        }
+        public bool IsInitialized { get; private set; }
+        public static event System.Action TileManagerLoaded;
 
         private static TileObjectSO[] tileObjectSOs;
         private string saveFileName = "tilemaps";
@@ -33,7 +30,7 @@ namespace SS3D.Engine.TilesRework
 
         private void Init()
         {
-            if (!isInitialized)
+            if (!IsInitialized)
             {
                 Instance = this;
                 mapList = new List<TileMap>();
@@ -64,13 +61,15 @@ namespace SS3D.Engine.TilesRework
                 Reinitialize();
                 // LoadAll();
                 UpdateAllAdjacencies();
-                isInitialized = true;
+                IsInitialized = true;
+
+                TileManagerLoaded?.Invoke();
             }
         }
 
         private void Awake()
         {
-            isInitialized = false;
+            IsInitialized = false;
             // tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
             Init();
             // Reinitialize();
@@ -84,7 +83,7 @@ namespace SS3D.Engine.TilesRework
             UnityEditor.EditorApplication.delayCall += () => {
                 if (this)
                 {
-                    isInitialized = false;
+                    IsInitialized = false;
                     Init();
                     // Reinitialize();
                     // UpdateAllAdjacencies();
@@ -133,9 +132,35 @@ namespace SS3D.Engine.TilesRework
             return names;
         }
 
+        private TileMap GetMainMap()
+        {
+            foreach (TileMap existingMap in mapList)
+            {
+                if (existingMap.IsMain)
+                    return existingMap;
+            }
+
+            Debug.LogError("No tilemap was set as main");
+            return null;
+        }
+
+        public void SetMainMap(TileMap map)
+        {
+            foreach (TileMap existingMap in mapList)
+            {
+                existingMap.IsMain = false;
+            }
+            map.IsMain = true;
+        }
+
         public void SetTileObject(TileMap map, TileLayer layer, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
             map.SetTileObject(layer, subLayerIndex, tileObjectSO, position, dir);
+        }
+
+        public void SetTileObject(TileLayer layer, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        {
+            GetMainMap().SetTileObject(layer, 0, tileObjectSO, position, dir);
         }
 
         public void SetTileObject(TileMap map, TileLayer layer, int subLayerIndex, string tileObjectSOName, Vector3 position, Direction dir)
@@ -143,9 +168,24 @@ namespace SS3D.Engine.TilesRework
             SetTileObject(map, layer, subLayerIndex, GetTileObjectSO(tileObjectSOName), position, dir);
         }
 
+        public bool CanBuild(TileMap map, TileLayer layer, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        {
+            return map.CanBuild(layer, subLayerIndex, tileObjectSO, position, dir);
+        }
+
+        public bool CanBuild(TileLayer layer, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        {
+            return CanBuild(GetMainMap(), layer, 0, tileObjectSO, position, dir);
+        }
+
         public void ClearTileObject(TileMap map, TileLayer layer, int subLayerIndex, Vector3 position)
         {
             map.ClearTileObject(layer, subLayerIndex, position);
+        }
+
+        public void ClearTileObject(TileLayer layer, Vector3 position)
+        {
+            ClearTileObject(GetMainMap(), layer, 0, position);
         }
 
         public TileObjectSO GetTileObjectSO(string tileObjectSOName)
@@ -196,6 +236,7 @@ namespace SS3D.Engine.TilesRework
             {
                 Debug.Log("No saved maps found. Creating default one.");
                 CreateEmptyMap();
+                mapList[mapList.Count - 1].IsMain = true;
                 SaveAll();
                 return;
             }

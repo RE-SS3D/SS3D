@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using SS3D.Engine.Tiles;
+using System;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEditor;
 using UnityEngine;
 
-namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
+namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 {
     public class TileMapEditor : EditorWindow
     {
@@ -24,6 +23,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
 
         // Grid settings
         private string selectedName;
+        private bool isMainMap;
         private int selectedTileMapIndex = 0;
         private bool showGridOptions = false;
         private bool showTileGrid = true;
@@ -70,7 +70,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             {
                 EditorApplication.delayCall += () =>
                 {
-                    if (TileManager.IsInitialized())
+                    if (TileManager.Instance.IsInitialized)
                     {
                         tileManager = TileManager.Instance;
                     }
@@ -162,6 +162,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
                 EditorGUILayout.BeginVertical();
                 showTileGrid = EditorGUILayout.Toggle("Display chunks: ", showTileGrid);
                 selectedName = EditorGUILayout.TextField("Name:", selectedName);
+                isMainMap = EditorGUILayout.Toggle("Is main map: ", isMainMap);
                 EditorGUILayout.LabelField("Number of chunks: " + GetCurrentMap().ChunkCount);
                 EditorGUILayout.EndVertical();
 
@@ -202,7 +203,6 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
             EditorGUILayout.EndHorizontal();
             if (EditorGUI.EndChangeCheck())
             {
-                // DisplaySublayers();
                 RefreshSelectionGrid(true);
             }
 
@@ -232,6 +232,8 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
         {
             TileMap map = tileManager.GetTileMaps()[selectedTileMapIndex];
             map.SetName(selectedName);
+            map.IsMain = isMainMap;
+
             madeChanges = true;
         }
 
@@ -357,6 +359,7 @@ namespace SS3D.Engine.TilesRework.Editor.TileMapEditor
         private void FillGridOptions(TileMap map)
         {
             selectedName = map.GetName();
+            isMainMap = map.IsMain;
         }
 
         private void DisplayVisualHelp(Vector3 cell)

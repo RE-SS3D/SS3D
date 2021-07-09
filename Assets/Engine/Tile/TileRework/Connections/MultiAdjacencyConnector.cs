@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SS3D.Engine.TilesRework.Connections
+namespace SS3D.Engine.Tiles.Connections
 {
     public class MultiAdjacencyConnector : AbstractAdjacencyConnector
     {

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SS3D.Engine.TilesRework
+namespace SS3D.Engine.Tiles
 {
     public enum TileLayer
     {
@@ -72,6 +72,12 @@ namespace SS3D.Engine.TilesRework
                 case Direction.East: return Direction.South;
             }
         }
+
+        public static Direction Apply(Direction first, Direction second)
+        {
+            return (Direction)(((int)first + (int)second + 8) % 8);
+        }
+
 
         public static int GetRotationAngle(Direction dir)
         {

@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace SS3D.Engine.TilesRework
+namespace SS3D.Engine.Tiles
 {
     public class TileMap : MonoBehaviour
     {
@@ -12,6 +12,7 @@ namespace SS3D.Engine.TilesRework
         public class MapSaveObject
         {
             public string mapName;
+            public bool isMain;
             public TileChunk.ChunkSaveObject[] saveObjectList;
         }
 
@@ -20,6 +21,7 @@ namespace SS3D.Engine.TilesRework
 
         private Dictionary<Vector2Int, TileChunk> chunks;
         public int ChunkCount { get => chunks.Count; }
+        public bool IsMain { get; set; }
 
         private string mapName;
         private TileManager tileManager;
@@ -110,10 +112,8 @@ namespace SS3D.Engine.TilesRework
             return chunks.Values.ToArray();
         }
 
-        public void SetTileObject(TileLayer layer, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public bool CanBuild(TileLayer layer, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
-            GameObject layerObject = GetOrCreateLayerObject(layer);
-
             // Get the right chunk
             TileChunk chunk = GetChunk(position);
             Vector2Int vector = chunk.GetXY(position);
@@ -121,15 +121,6 @@ namespace SS3D.Engine.TilesRework
 
             // Test Can Build
             List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
-
-            /*
-            foreach (Vector2Int gridPosition in gridPositionList)
-            {
-                Vector3 worldPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
-                GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                cube.transform.position = worldPosition;
-            }
-            */
 
             bool canBuild = true;
             foreach (Vector2Int gridPosition in gridPositionList)
@@ -155,7 +146,22 @@ namespace SS3D.Engine.TilesRework
                 }
             }
 
-            if (canBuild)
+            return canBuild;
+        }
+
+        public void SetTileObject(TileLayer layer, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        {
+            GameObject layerObject = GetOrCreateLayerObject(layer);
+
+            // Get the right chunk
+            TileChunk chunk = GetChunk(position);
+            Vector2Int vector = chunk.GetXY(position);
+            Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
+
+            // Test Can Build
+            List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
+
+            if (CanBuild(layer, subLayerIndex, tileObjectSO, position, dir))
             {
                 Vector2Int rotationOffset = tileObjectSO.GetRotationOffset(dir);
                 Vector3 placedObjectWorldPosition = chunk.GetWorldPosition(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, 0, rotationOffset.y) * chunk.GetTileSize();
@@ -317,12 +323,15 @@ namespace SS3D.Engine.TilesRework
             return new MapSaveObject
             {
                 mapName = mapName,
+                isMain = IsMain,
                 saveObjectList = chunkObjectSaveList.ToArray(),
             };
         }
         
         public void Load(MapSaveObject saveObject, bool softLoad)
         {
+            IsMain = saveObject.isMain;
+
             // Loop through every chunk in map
             foreach (var chunk in saveObject.saveObjectList)
             {
