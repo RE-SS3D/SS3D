@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 2
   nameString: floor_bar
+  genericType: floor
   prefab: {fileID: 6767447678079105841, guid: 75680e6a1df5ff547bdb5b8f116f766b, type: 3}
   width: 1
   height: 1

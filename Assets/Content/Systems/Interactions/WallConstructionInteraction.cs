@@ -48,7 +48,8 @@ namespace SS3D.Content.Systems.Interactions
                 tileManager.ClearTileObject(TileLayer.Turf, targetPlacedObject.transform.position);
             }
             else // Construct
-                tileManager.SetTileObject(TileLayer.Turf, WallToConstruct, targetPlacedObject.transform.position, Direction.South);
+                tileManager.SetTileObject(WallToConstruct, targetPlacedObject.transform.position, Direction.South);
+
         }
     }
 }

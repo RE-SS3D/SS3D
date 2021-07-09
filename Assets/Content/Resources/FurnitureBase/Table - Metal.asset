@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 10
   nameString: table_metal
+  genericType: table
   prefab: {fileID: 8036950609662249464, guid: 6caa99f8281726e40a793826d5c047db, type: 3}
   width: 1
   height: 1

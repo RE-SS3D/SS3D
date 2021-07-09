@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 2
   nameString: floor_dirt2
+  genericType: floor
   prefab: {fileID: 6767447678079105841, guid: 95ae84ac095094a47b60b475d1b9c649, type: 3}
   width: 1
   height: 1

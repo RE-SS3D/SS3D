@@ -61,7 +61,7 @@ public class TurfConstructionInteraction : ConstructionInteraction
         Object.FindObjectOfType<TileManager>().UpdateTile(tileObject.transform.position, tile);
         */
 
-        TileManager.Instance.SetTileObject(ObjectToConstruct.layerType, ObjectToConstruct, tileObject.transform.position, Direction.South);
+        TileManager.Instance.SetTileObject(ObjectToConstruct, tileObject.transform.position, Direction.South);
     }
     
 }

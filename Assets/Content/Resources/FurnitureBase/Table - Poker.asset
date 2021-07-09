@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 10
   nameString: table_poker
+  genericType: table
   prefab: {fileID: 3879826479501069436, guid: ebddb1721dcbe36499e4d093e5a7ff09, type: 3}
   width: 1
   height: 1

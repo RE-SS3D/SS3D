@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 10
   nameString: table_wood
+  genericType: table
   prefab: {fileID: 3879826479501069436, guid: 5e8a02c5ce0073644ac01bdb55d72a70, type: 3}
   width: 1
   height: 1

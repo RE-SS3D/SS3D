@@ -112,17 +112,21 @@ namespace SS3D.Engine.Tiles
             return chunks.Values.ToArray();
         }
 
-        public bool CanBuild(TileLayer layer, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public bool CanBuild(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
             // Get the right chunk
             TileChunk chunk = GetChunk(position);
             Vector2Int vector = chunk.GetXY(position);
             Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
+            TileLayer layer = tileObjectSO.layerType;
 
             // Test Can Build
             List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
 
             bool canBuild = true;
+
+            canBuild = TileRestrictions.CanBuild(this, position, subLayerIndex, tileObjectSO, dir);
+
             foreach (Vector2Int gridPosition in gridPositionList)
             {
                 if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
@@ -149,8 +153,9 @@ namespace SS3D.Engine.Tiles
             return canBuild;
         }
 
-        public void SetTileObject(TileLayer layer, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public void SetTileObject(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
+            TileLayer layer = tileObjectSO.layerType;
             GameObject layerObject = GetOrCreateLayerObject(layer);
 
             // Get the right chunk
@@ -161,7 +166,7 @@ namespace SS3D.Engine.Tiles
             // Test Can Build
             List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
 
-            if (CanBuild(layer, subLayerIndex, tileObjectSO, position, dir))
+            if (CanBuild(subLayerIndex, tileObjectSO, position, dir))
             {
                 Vector2Int rotationOffset = tileObjectSO.GetRotationOffset(dir);
                 Vector3 placedObjectWorldPosition = chunk.GetWorldPosition(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, 0, rotationOffset.y) * chunk.GetTileSize();
@@ -191,8 +196,9 @@ namespace SS3D.Engine.Tiles
             }
         }
 
-        public void LoadTileObject(TileLayer layer, int subLayerIndex, TileObjectSO tileObjectSO, PlacedTileObject placedObject, Vector3 position, Direction dir)
+        public void LoadTileObject(int subLayerIndex, TileObjectSO tileObjectSO, PlacedTileObject placedObject, Vector3 position, Direction dir)
         {
+            TileLayer layer = tileObjectSO.layerType;
             GameObject layerObject = GetOrCreateLayerObject(layer);
 
             // Get the right chunk
@@ -295,20 +301,28 @@ namespace SS3D.Engine.Tiles
                             {
                                 // Find the neighbours in each direction
                                 Vector3 currentPosition = chunk.GetWorldPosition(x, y);
-                                for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
-                                {
-                                    var vector = TileHelper.ToCardinalVector(direction);
-                                    TileObject neighbour = GetTileObject(layer, currentPosition + new Vector3(vector.Item1, 0, vector.Item2));
-
-                                    adjacentObjects[(int)direction] = neighbour.GetPlacedObject(0);
-                                }
-
+                                adjacentObjects = GetNeighbourObjects(layer, 0, currentPosition);
                                 tileObject.GetPlacedObject(0).UpdateAllAdjacencies(adjacentObjects);
                             }
                         }
                     }
                 }
             }
+        }
+
+        public PlacedTileObject[] GetNeighbourObjects(TileLayer layer, int subLayerIndex, Vector3 position)
+        {
+            var adjacentObjects = new PlacedTileObject[8];
+
+            for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
+            {
+                var vector = TileHelper.ToCardinalVector(direction);
+                TileObject neighbour = GetTileObject(layer, position + new Vector3(vector.Item1, 0, vector.Item2));
+
+                adjacentObjects[(int)direction] = neighbour.GetPlacedObject(subLayerIndex);
+            }
+
+            return adjacentObjects;
         }
 
         public MapSaveObject Save()
@@ -357,11 +371,11 @@ namespace SS3D.Engine.Tiles
                                     Debug.LogWarning("Child was not found when reinitializing: " + objectName);
                                 }
 
-                                LoadTileObject(layer, subLayerIndex, tileObjectSO, placedTileObject, position, tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
+                                LoadTileObject(subLayerIndex, tileObjectSO, placedTileObject, position, tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
                             }
                             else
                             {
-                                tileManager.SetTileObject(this, layer, subLayerIndex, objectName, TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition)
+                                tileManager.SetTileObject(this, subLayerIndex, objectName, TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition)
                                     , tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
                             }
                         }

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 2
   nameString: wall_metal_reinforced
+  genericType: wall
   prefab: {fileID: 3591147544166670882, guid: d11a68992658b7741bd28ffdf04165ba, type: 3}
   width: 1
   height: 1

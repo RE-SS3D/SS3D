@@ -153,29 +153,35 @@ namespace SS3D.Engine.Tiles
             map.IsMain = true;
         }
 
-        public void SetTileObject(TileMap map, TileLayer layer, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public void SetTileObject(TileMap map, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
-            map.SetTileObject(layer, subLayerIndex, tileObjectSO, position, dir);
+            map.SetTileObject(subLayerIndex, tileObjectSO, position, dir);
         }
 
-        public void SetTileObject(TileLayer layer, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public void SetTileObject(TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
-            GetMainMap().SetTileObject(layer, 0, tileObjectSO, position, dir);
+            GetMainMap().SetTileObject(0, tileObjectSO, position, dir);
         }
 
-        public void SetTileObject(TileMap map, TileLayer layer, int subLayerIndex, string tileObjectSOName, Vector3 position, Direction dir)
+        public void SetTileObject(string tileObjectSOName, Vector3 position, Direction dir)
         {
-            SetTileObject(map, layer, subLayerIndex, GetTileObjectSO(tileObjectSOName), position, dir);
+
+            SetTileObject(GetTileObjectSO(tileObjectSOName), position, dir);
         }
 
-        public bool CanBuild(TileMap map, TileLayer layer, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public void SetTileObject(TileMap map, int subLayerIndex, string tileObjectSOName, Vector3 position, Direction dir)
         {
-            return map.CanBuild(layer, subLayerIndex, tileObjectSO, position, dir);
+            SetTileObject(map, subLayerIndex, GetTileObjectSO(tileObjectSOName), position, dir);
         }
 
-        public bool CanBuild(TileLayer layer, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public bool CanBuild(TileMap map, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
-            return CanBuild(GetMainMap(), layer, 0, tileObjectSO, position, dir);
+            return map.CanBuild(subLayerIndex, tileObjectSO, position, dir);
+        }
+
+        public bool CanBuild(TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        {
+            return CanBuild(GetMainMap(), 0, tileObjectSO, position, dir);
         }
 
         public void ClearTileObject(TileMap map, TileLayer layer, int subLayerIndex, Vector3 position)

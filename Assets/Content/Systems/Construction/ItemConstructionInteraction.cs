@@ -42,6 +42,6 @@ public class ItemConstructionInteraction : ConstructionInteraction
     protected override void StartDelayed(InteractionEvent interactionEvent)
     {
         var tileObject = interactionEvent.Target.GetComponent<PlacedTileObject>();
-        TileManager.Instance.SetTileObject(ObjectToConstruct.layerType, ObjectToConstruct, tileObject.transform.position, Direction.South);
+        TileManager.Instance.SetTileObject(ObjectToConstruct, tileObject.transform.position, Direction.South);
     }
 }

@@ -40,7 +40,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
         private TileLayer selectedLayer;
         private TileObjectSO selectedObjectSO;
         private bool enablePlacement = false;
-        private Direction selectedDir = Direction.South;
+        private Direction selectedDir = Direction.North;
         private GameObject ghostObject;
 
         [MenuItem("RE:SS3D Editor Tools/TileMap Editor")]
@@ -296,7 +296,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
                     {
                         tileManager.ClearTileObject(GetCurrentMap(), selectedLayer, GetSubLayerIndex(), snappedPosition);
                     }
-                    tileManager.SetTileObject(GetCurrentMap(), selectedLayer, GetSubLayerIndex(), selectedObjectSO, snappedPosition, selectedDir);
+                    tileManager.SetTileObject(GetCurrentMap(), GetSubLayerIndex(), selectedObjectSO, snappedPosition, selectedDir);
                 }
             }
 

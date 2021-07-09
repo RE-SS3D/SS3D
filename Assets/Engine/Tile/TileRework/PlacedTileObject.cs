@@ -21,7 +21,6 @@ namespace SS3D.Engine.Tiles
 
         public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSO tileObjectSO)
         {
-
             GameObject placedGameObject = EditorAndRuntime.InstantiatePrefab(tileObjectSO.prefab);
             placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
 
@@ -97,6 +96,11 @@ namespace SS3D.Engine.Tiles
         public string GetGenericType()
         {
             return tileObjectSO.genericType;
+        }
+
+        public string GetName()
+        {
+            return tileObjectSO.nameString;
         }
 
         public Direction GetDirection()

@@ -84,10 +84,10 @@ namespace SS3D.Engine.Tiles
             switch (dir)
             {
                 default:
-                case Direction.South: return 0;
-                case Direction.West: return 90;
-                case Direction.North: return 180;
-                case Direction.East: return 270;
+                case Direction.South: return 180;
+                case Direction.West: return 270;
+                case Direction.North: return 0;
+                case Direction.East: return 90;
             }
         }
 
