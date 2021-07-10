@@ -144,8 +144,9 @@ GameObject:
   - component: {fileID: 5423264426121296638}
   - component: {fileID: 6696866361892651655}
   - component: {fileID: 7033236083530598125}
-  - component: {fileID: 8185897957132118111}
   - component: {fileID: -6476499872734153616}
+  - component: {fileID: -2900075557854325373}
+  - component: {fileID: 777035639718684825}
   m_Layer: 0
   m_Name: Wall - Metal
   m_TagString: Untagged
@@ -232,45 +233,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.0000002, y: 2, z: 1}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &8185897957132118111
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3591147544166670882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa3fb3fb0fa47e54bad7580218ea1e05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: wall
-  o: {fileID: -8050138293367285814, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  c: {fileID: -159380346028386340, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  i: {fileID: -5423967933397593253, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  lNone: {fileID: 6412403187391292515, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  lSingle: {fileID: -2757302150092789893, guid: a8afca278d289ca469539bd9a57ce244,
-    type: 3}
-  tNone: {fileID: -7546154164909391445, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  tSingleRight: {fileID: -2285599654229159487, guid: a8afca278d289ca469539bd9a57ce244,
-    type: 3}
-  tSingleLeft: {fileID: -5076707612101147003, guid: a8afca278d289ca469539bd9a57ce244,
-    type: 3}
-  tDouble: {fileID: -1821287450601521166, guid: a8afca278d289ca469539bd9a57ce244,
-    type: 3}
-  xNone: {fileID: -8912386263623776928, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  xSingle: {fileID: 5656058118171281264, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  xSide: {fileID: -8842539562393953767, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  xOpposite: {fileID: 1548499320123691497, guid: a8afca278d289ca469539bd9a57ce244,
-    type: 3}
-  xTriple: {fileID: 5122350351688920931, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  xQuad: {fileID: -117202291178237978, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  viewObstacles:
-  - {fileID: 3334414246056966601}
-  - {fileID: 1361261120174024331}
-  - {fileID: 7790124558541205835}
-  - {fileID: 1437294527526757322}
-  opaque: 1
 --- !u!114 &-6476499872734153616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,6 +248,75 @@ MonoBehaviour:
   DisplayName: Wall
   Text: 
   MaxDistance: 0
+--- !u!114 &-2900075557854325373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
+--- !u!114 &777035639718684825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d4c17829cf718f419146d93c0826f22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: wall
+  selectedAdjacencyType: 1
+  simpleAdjacency:
+    o: {fileID: 0}
+    c: {fileID: 0}
+    i: {fileID: 0}
+    l: {fileID: 0}
+    t: {fileID: 0}
+    x: {fileID: 0}
+  advancedAdjacency:
+    o: {fileID: -8050138293367285814, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+    u: {fileID: -159380346028386340, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+    i: {fileID: -5423967933397593253, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+    lNone: {fileID: 6412403187391292515, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+    lSingle: {fileID: -2757302150092789893, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    tNone: {fileID: -7546154164909391445, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    tSingleRight: {fileID: -2285599654229159487, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    tSingleLeft: {fileID: -5076707612101147003, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    tDouble: {fileID: -1821287450601521166, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    xNone: {fileID: -8912386263623776928, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    xSingle: {fileID: 5656058118171281264, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    xSide: {fileID: -8842539562393953767, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    xOpposite: {fileID: 1548499320123691497, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    xTriple: {fileID: 5122350351688920931, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    xQuad: {fileID: -117202291178237978, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+    viewObstacles:
+    - {fileID: 3334414246056966601}
+    - {fileID: 1361261120174024331}
+    - {fileID: 7790124558541205835}
+    - {fileID: 1437294527526757322}
+    opaque: 1
 --- !u!1 &7790124558541205835
 GameObject:
   m_ObjectHideFlags: 0

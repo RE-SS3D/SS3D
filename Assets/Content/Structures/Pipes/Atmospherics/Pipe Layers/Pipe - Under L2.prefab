@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: -7727686409064562107}
   - component: {fileID: -1074477776341974781}
   - component: {fileID: -4998431523760016775}
-  - component: {fileID: 840758331285195934}
   - component: {fileID: 3397851465445616214}
   - component: {fileID: 7512257876715568575}
+  - component: {fileID: 3640034249009501997}
   m_Layer: 0
   m_Name: Pipe - Under L2
   m_TagString: Untagged
@@ -99,25 +99,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &840758331285195934
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2802364579275783218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bcfd41198721b643afa8e75d961b121, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: pipe
-  o: {fileID: 5882597219669001650, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  c: {fileID: 3090384627601280118, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  i: {fileID: -6963385616814883513, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  l: {fileID: 7943096746527384260, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  t: {fileID: 84720490027873088, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  x: {fileID: 1498090187169546123, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
 --- !u!114 &3397851465445616214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,3 +128,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 1
   volume: 1
+--- !u!114 &3640034249009501997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d4c17829cf718f419146d93c0826f22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: pipe
+  selectedAdjacencyType: 0
+  simpleAdjacency:
+    o: {fileID: 5882597219669001650, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    c: {fileID: 3090384627601280118, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    i: {fileID: -6963385616814883513, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    l: {fileID: 7943096746527384260, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    t: {fileID: 84720490027873088, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    x: {fileID: 1498090187169546123, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  advancedAdjacency:
+    o: {fileID: 0}
+    u: {fileID: 0}
+    i: {fileID: 0}
+    lNone: {fileID: 0}
+    lSingle: {fileID: 0}
+    tNone: {fileID: 0}
+    tSingleRight: {fileID: 0}
+    tSingleLeft: {fileID: 0}
+    tDouble: {fileID: 0}
+    xNone: {fileID: 0}
+    xSingle: {fileID: 0}
+    xSide: {fileID: 0}
+    xOpposite: {fileID: 0}
+    xTriple: {fileID: 0}
+    xQuad: {fileID: 0}
+    viewObstacles: []
+    opaque: 0
