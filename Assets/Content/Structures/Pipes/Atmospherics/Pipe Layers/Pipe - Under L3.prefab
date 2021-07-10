@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: -7727686409064562107}
   - component: {fileID: -1074477776341974781}
   - component: {fileID: -4998431523760016775}
-  - component: {fileID: 4911816295908272955}
   - component: {fileID: 2183948917681095833}
   - component: {fileID: 8044363620118605159}
+  - component: {fileID: 8219894404576516640}
   m_Layer: 0
   m_Name: Pipe - Under L3
   m_TagString: Untagged
@@ -99,32 +99,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &4911816295908272955
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2802364579275783218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb6b0f3a8d8ab5546a86ca29fd261934, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: pipe
-  o: {fileID: -1270442899695108173, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  cNorth: {fileID: -8972846756385387022, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  cSouth: {fileID: 5077126174283268024, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  i: {fileID: -566958556529048464, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  lNE: {fileID: 3396235766429983367, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  lNW: {fileID: -8050794985530161450, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  lSE: {fileID: -4959516695836454270, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  lSW: {fileID: -1242410407387950332, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  tNEW: {fileID: 3615688420471568901, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  tNSW: {fileID: 4969673752431747454, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  tNSE: {fileID: -8481026291894936516, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  tSWE: {fileID: -1285037104894735210, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  x: {fileID: 6081592904369253866, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
 --- !u!114 &2183948917681095833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,3 +128,58 @@ MonoBehaviour:
   DisplayName: Atmospheric Pipe
   Text: 
   MaxDistance: 0
+--- !u!114 &8219894404576516640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d4c17829cf718f419146d93c0826f22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: pipe
+  selectedAdjacencyType: 2
+  simpleAdjacency:
+    o: {fileID: 0}
+    c: {fileID: 0}
+    i: {fileID: 0}
+    l: {fileID: 0}
+    t: {fileID: 0}
+    x: {fileID: 0}
+  advancedAdjacency:
+    o: {fileID: 0}
+    u: {fileID: 0}
+    i: {fileID: 0}
+    lNone: {fileID: 0}
+    lSingle: {fileID: 0}
+    tNone: {fileID: 0}
+    tSingleRight: {fileID: 0}
+    tSingleLeft: {fileID: 0}
+    tDouble: {fileID: 0}
+    xNone: {fileID: 0}
+    xSingle: {fileID: 0}
+    xSide: {fileID: 0}
+    xOpposite: {fileID: 0}
+    xTriple: {fileID: 0}
+    xQuad: {fileID: 0}
+    viewObstacles: []
+    opaque: 0
+  offsetAdjacency:
+    o: {fileID: -1270442899695108173, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    cNorth: {fileID: -8972846756385387022, guid: 013a2e526b13e1849b628bdc478f9c03,
+      type: 3}
+    cSouth: {fileID: 5077126174283268024, guid: 013a2e526b13e1849b628bdc478f9c03,
+      type: 3}
+    i: {fileID: -566958556529048464, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    lNE: {fileID: 3396235766429983367, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    lNW: {fileID: -8050794985530161450, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    lSE: {fileID: -4959516695836454270, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    lSW: {fileID: -1242410407387950332, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    tNEW: {fileID: 3615688420471568901, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    tNSW: {fileID: 4969673752431747454, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    tNSE: {fileID: -8481026291894936516, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    tSWE: {fileID: -1285037104894735210, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    x: {fileID: 6081592904369253866, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}

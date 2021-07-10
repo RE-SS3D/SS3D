@@ -7,8 +7,9 @@ namespace SS3D.Engine.Tiles.Connections
     public class MultiAdjacencyConnector : AbstractAdjacencyConnector
     {
         public AdjacencyType selectedAdjacencyType;
-        [SerializeField] private SimpleAdjacency simpleAdjacency;
-        [SerializeField] private AdvancedAdjacency advancedAdjacency;
+        [SerializeField] private SimpleConnector simpleAdjacency;
+        [SerializeField] private AdvancedConnector advancedAdjacency;
+        [SerializeField] private OffsetConnector offsetAdjacency;
 
         public override void UpdateAll(PlacedTileObject[] neighbourObjects)
         {
@@ -46,6 +47,9 @@ namespace SS3D.Engine.Tiles.Connections
                     break;
                 case AdjacencyType.Advanced:
                     info = advancedAdjacency.GetMeshAndDirection(adjacents);
+                    break;
+                case AdjacencyType.Offset:
+                    info = offsetAdjacency.GetMeshAndDirection(adjacents);
                     break;
             }
             
