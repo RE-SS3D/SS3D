@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using SS3D.Content;
 using SS3D.Engine.Server.Gamemode;
 using TMPro;
 using UnityEngine;
@@ -60,7 +61,7 @@ namespace SS3D.Engine.Server.Round
         // PLAYER MANAGEMENT
 
         // players that have joined the round
-        public List<Creature> roundPlayers;
+        public List<Entity> roundPlayers;
         
         // do we want the round to end when there's a nuclear explosion
         public bool endOnNuclearExplosion;
@@ -77,11 +78,11 @@ namespace SS3D.Engine.Server.Round
         {
             if (state)
             {
-                roundPlayers.Add(LoginNetworkManager.singleton.GetSoul(sender).GetComponent<Creature>());
+                roundPlayers.Add(LoginNetworkManager.singleton.GetSoul(sender).GetComponent<Entity>());
             }
             else
             {
-                roundPlayers.Remove(LoginNetworkManager.singleton.GetSoul(sender).GetComponent<Creature>());
+                roundPlayers.Remove(LoginNetworkManager.singleton.GetSoul(sender).GetComponent<Entity>());
             }
         }
         
@@ -140,6 +141,10 @@ namespace SS3D.Engine.Server.Round
 
             Debug.Log("Round Started");
             ServerRoundStarted?.Invoke();
+
+            // handles setting up the gamemode and objectives
+            GamemodeManager.singleton.InitiateGamemode();
+            
             RpcStartRound();
         }
 

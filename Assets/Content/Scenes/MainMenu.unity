@@ -302,6 +302,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.size
+      value: 51
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.data[50]
+      value: 
+      objectReference: {fileID: 663577658416813456, guid: 908972f0badbb2d4e9b6e8bf8e6cd8ac,
+        type: 3}
     - target: {fileID: 6976582009294150638, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}
       propertyPath: m_Name

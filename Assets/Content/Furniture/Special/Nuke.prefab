@@ -54,7 +54,7 @@ MonoBehaviour:
   currentTimerSeconds: 0
   countdownActive: 0
   activated: 0
-  beepSound: {fileID: 0}
+  beepSound: {fileID: 8300000, guid: cfad3521f3d0e8e4da8757edf37e9888, type: 3}
   explosionSound: {fileID: 0}
   audioSource: {fileID: 3123375046729798660}
   canDefuse: 0

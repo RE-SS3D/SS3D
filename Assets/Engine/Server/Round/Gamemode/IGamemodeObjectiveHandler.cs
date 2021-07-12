@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using SS3D.Content;
+using UnityEngine;
 
 namespace SS3D.Engine.Server.Round
 {
@@ -9,7 +10,8 @@ namespace SS3D.Engine.Server.Round
     public interface IGamemodeObjectiveHandler
     {
         bool ValidateObjectiveCompletion();
-        GameObject TryToAssignObjectiveOwner();
-        GameObject ForceAssignObjectiveOwner();
+        Entity TryToAssignObjectiveOwner(Entity owner);
+        Entity ForceAssignObjectiveOwner(Entity owner);
+        void UpdateCompletionStatus(Entity entity, bool state);
     }
 }

@@ -18,39 +18,65 @@ namespace SS3D.Content.Furniture.Special
     /// </summary>
     public class Nuke : InteractionTargetNetworkBehaviour
     {
-        // time it takes to explosion from the activation
+        /// <summary>
+        /// time it takes to explosion from the activation
+        /// </summary>
         public int explosionDelay = 10;
 
-        // current time to explosion
+        /// <summary>
+        /// current time to explosion
+        /// </summary>
         public int currentTimerSeconds;
         
-        // is the countdown activated
+        /// <summary>
+        /// is the countdown activated
+        /// </summary>
         public bool countdownActive;
         
-        // is the nuke going to explode?
+        /// <summary>
+        /// is the nuke going to explode?
+        /// </summary>
         public bool activated;
 
-        // sound that makes when the nuke beeps
+        /// <summary>
+        /// sound that makes when the nuke beeps
+        /// </summary>
         public AudioClip beepSound;
 
-        // sound that makes when the nuk
+        /// <summary>
+        /// sound that makes when the nu
+        /// </summary>
         public AudioClip explosionSound;
 
-        // component that plays audio
+        /// <summary>
+        /// component that plays audio
+        /// </summary>
         public AudioSource audioSource;
 
-        // could we still save the station
+        /// <summary>
+        /// could we still save the station
+        /// </summary>
         public bool canDefuse;
 
-        // temporary shit until we have AssetData
+        /// <summary>
+        /// temporary shit until we have AssetData
+        /// </summary>
         public Sprite interactionIcon;
 
-        // the prefab for the timer UI that will appear above the nuke
+        /// <summary>
+        /// the prefab for the timer UI that will appear above the nuke
+        /// </summary>
         public GameObject timerPrefab;
         // timer text
         public TMP_Text timerText;
-        
-        // Activates the nuke explosion sequence
+
+        /// <summary>
+        /// Thrown when the nuke state is changed
+        /// </summary>
+        public static event System.Action<Entity, bool> NukeStateChanged; 
+        /// <summary>
+        ///  Activates the nuke explosion sequence
+        /// </summary>
         [Server]
         public void StartDetonationSequence()
         {
@@ -73,25 +99,9 @@ namespace SS3D.Content.Furniture.Special
         [Server]
         private IEnumerator NukeActivationCountdown()
         {
-            if (timerText == null)
-            {
-                // spawns the timer
-                GameObject timerInstance = Instantiate(timerPrefab, gameObject.transform);
-                // offset it because the Nuke's origin(pivot) is on the base because its a fixture
-                timerInstance.transform.localPosition = new Vector3(0, 1.7f, 0);
-                timerText = timerInstance.GetComponentInChildren<TMP_Text>();
-            }
-
             while (currentTimerSeconds > 0 && countdownActive)
             {
-                // plays the beeping sound each second
-                //audioSource.PlayOneShot(beepSound);
-                // then plays it in the client
                 RpcNukeCountdownTick();
-
-                // updates the timer UI
-                timerText.text = currentTimerSeconds.ToString();
-                Debug.Log(" Nuclear detonation countdown: " + currentTimerSeconds);
                 currentTimerSeconds--;
 
                 // waits 1 second
@@ -103,7 +113,7 @@ namespace SS3D.Content.Furniture.Special
                 Boom();
 
             // Ends the round if the it should end on nuclear explosions
-            // TODO: A distance check from the station so we can throw nukes in the space without 
+            // TODO: A distance check from the station so we can throw nukes in the space 
             // TODO: without exploding everything, I should say this should be really really far
             RoundManager roundManager = RoundManager.singleton;
 
@@ -111,12 +121,9 @@ namespace SS3D.Content.Furniture.Special
                 roundManager.CmdEndRound();
         }
 
-        // Handles the nuclear explosion countdown in the client
         [ClientRpc]
         public void RpcNukeCountdownTick()
         {
-            if (isServer) return;
-            
             // handles the timer UI
             if (timerText == null)
             {
@@ -132,7 +139,7 @@ namespace SS3D.Content.Furniture.Special
             Debug.Log("Nuclear detonation countdown: " + currentTimerSeconds);
 
             //if (currentTimerSeconds > 0)
-            //audioSource.PlayOneShot(beepSound);
+            audioSource.PlayOneShot(beepSound);
         }
 
         // Handle the explosion on the server
@@ -153,7 +160,7 @@ namespace SS3D.Content.Furniture.Special
             //audioSource.PlayOneShot(explosionSound);
         }
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = new List<IInteraction>();
             
@@ -190,7 +197,8 @@ namespace SS3D.Content.Furniture.Special
                 if (interactionEvent.Target is Nuke nuke)
                 {
                     // Activates the nuke explosion sequence
-
+                    Nuke.NukeStateChanged.Invoke(interactionEvent.Source.GetEntity(), nuke.activated);
+                    Debug.Log("Nuke activated!!");
                     //TODO: Implement simple code validation
                     nuke.CmdStartDetonationSequence();
                     return true;

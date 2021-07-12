@@ -9,10 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 919d74ae0227414584f5af07d6768a04, type: 3}
-  m_Name: NuclearOperation
+  m_Script: {fileID: 11500000, guid: 31b0fa0ec2dd475e8b9ed84b5c52b63b, type: 3}
+  m_Name: NukeActivationGamemodeObjective
   m_EditorClassIdentifier: 
-  possibleObjectives:
-  - {fileID: 11400000, guid: 4f89532844d1dd145b7083e3f14b78a1, type: 2}
-  assignedObjectives: []
-  endRoundStatsPrefab: {fileID: 0}
+  owner: {fileID: 0}
+  completed: 0

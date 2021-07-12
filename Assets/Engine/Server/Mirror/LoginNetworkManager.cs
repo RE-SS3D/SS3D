@@ -102,7 +102,6 @@ using UnityEngine.SceneManagement;
             InitializeSingleton();
         }
 
-        [Command(ignoreAuthority = true)]
         public Soul GetSoul(NetworkConnectionToClient sender)
         {
             foreach (Soul soul in souls)
