@@ -24,6 +24,7 @@ namespace SS3D
         public static event System.Action mapLoaded;
 
         // Select map that will be loaded or is loaded
+        [Scene]
         [SerializeField] [SyncVar] private String selectedMap;
 
 	// All the maps that are possible to be loaded
@@ -77,7 +78,7 @@ namespace SS3D
             SceneManager.LoadSceneAsync(selectedMap, LoadSceneMode.Additive);
             StartCoroutine(SetActiveScene(selectedMap));
 
-            TileManager.tileManagerLoaded += UnlockRoundStart;
+            TileManager.TileManagerLoaded += UnlockRoundStart;
         }
 
         [ClientRpc]

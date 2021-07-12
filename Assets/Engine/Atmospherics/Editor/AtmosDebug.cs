@@ -32,19 +32,24 @@ namespace SS3D.Engine.Atmospherics
 
         public void OnEnable()
         {
+            /*
             // Get Tile manager and Atmos manager
             tileManager = FindObjectOfType<TileManager>();
             atmosManager = tileManager.GetComponent<AtmosManager>();
+            */
         }
 
         public void OnDisable()
         {
+            /*
             atmosManager.drawDebug = false;
             atmosManager.isAddingGas = false;
+            */
         }
 
         public void OnGUI()
         {
+            /*
             if (tileManager == null)
             {
                 tileManager = FindObjectOfType<TileManager>();
@@ -105,8 +110,10 @@ namespace SS3D.Engine.Atmospherics
             atmosManager.showOnlySelectedPipes = showOnlySelectedPipeLayer;
 
             // HandleUtility.Repaint();
+            */
         }
 
+        /*
         private TileManager tileManager;
         private AtmosManager atmosManager;
 
@@ -123,5 +130,6 @@ namespace SS3D.Engine.Atmospherics
         private AtmosManager.ViewType drawView;
         private AtmosGasses gassSelection;
         private PipeLayer selectedPipeLayer;
+        */
     }
 }

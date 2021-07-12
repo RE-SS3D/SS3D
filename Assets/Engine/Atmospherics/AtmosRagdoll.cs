@@ -34,7 +34,7 @@ namespace SS3D.Engine.Atmospherics
             ragdoll = GetComponent<HumanRagdoll>();
             tileManager = FindObjectOfType<TileManager>();
             Assert.IsNotNull(tileManager);
-            origin = tileManager.Origin;
+            // origin = tileManager.Origin;
         }
 
         void Update()
@@ -55,13 +55,13 @@ namespace SS3D.Engine.Atmospherics
                 {
                     lastX = x;
                     lastY = y;
-                    atmosObject = tileManager.GetTile((int) (x - origin.x), (int) (y - origin.z))?.atmos;
+                    // atmosObject = tileManager.GetTile((int) (x - origin.x), (int) (y - origin.z))?.atmos;
                 }
 
                 // Check velocity
                 if (atmosObject != null)
                 {
-                    ApplyVelocity(atmosObject.GetVelocity());
+                    // ApplyVelocity(atmosObject.GetVelocity());
                 }
             }
         }

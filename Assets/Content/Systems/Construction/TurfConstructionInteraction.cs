@@ -6,12 +6,14 @@ using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Tiles;
 using UnityEngine;
 
+
 public class TurfConstructionInteraction : ConstructionInteraction
 {
+    
     /// <summary>
     /// The turf to construct
     /// </summary>
-    public Turf Turf;
+    public TileObjectSO ObjectToConstruct;
     /// <summary>
     /// If the turf can be constructed if there already is a turf
     /// </summary>
@@ -23,7 +25,7 @@ public class TurfConstructionInteraction : ConstructionInteraction
 
     public override string GetName(InteractionEvent interactionEvent)
     {
-        return "Construct turf";
+        return "Construct " + ObjectToConstruct.nameString;
     }
 
     public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
@@ -33,11 +35,15 @@ public class TurfConstructionInteraction : ConstructionInteraction
 
     public override bool CanInteract(InteractionEvent interactionEvent)
     {
-        var tileObject = interactionEvent.Target.GetComponent<TileObject>();
-        TileDefinition tile = tileObject.Tile;
-        Turf existingTurf = tile.turf;
 
-        if (existingTurf && (!ConstructIfTurf || existingTurf.isWall && !ConstructIfWall))
+        var placedObject = interactionEvent.Target.GetComponent<PlacedTileObject>();
+
+        /*
+        TileDefinition tile = placedObject.Tile;
+        Turf existingTurf = tile.turf;
+        */
+
+        if (placedObject)
         {
             return false;
         }
@@ -47,9 +53,15 @@ public class TurfConstructionInteraction : ConstructionInteraction
 
     protected override void StartDelayed(InteractionEvent interactionEvent)
     {
-        var tileObject = interactionEvent.Target.GetComponent<TileObject>();
+        var tileObject = interactionEvent.Target.GetComponent<PlacedTileObject>();
+
+        /*
         TileDefinition tile = tileObject.Tile;
-        tile.turf = Turf;
+        tile.turf = ObjectToConstruct;
         Object.FindObjectOfType<TileManager>().UpdateTile(tileObject.transform.position, tile);
+        */
+
+        TileManager.Instance.SetTileObject(ObjectToConstruct, tileObject.transform.position, Direction.South);
     }
+    
 }

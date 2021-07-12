@@ -14,7 +14,7 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
         public GameObject LoadingBarPrefab;
 
 	// nope
-        public FurnitureFloorFixture TableToConstruct;
+        public TileObjectSO ObjectToConstruct;
         public float Delay;
         public LayerMask ObstacleMask;
 
@@ -23,8 +23,8 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
         public override void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
             base.GenerateInteractionsFromSource(targets, interactions);
-            interactions.Insert(0, new InteractionEntry(targets[0], new TableConstructionInteraction
-            {       TableToConstruct = TableToConstruct, 
+            interactions.Insert(0, new InteractionEntry(targets[0], new ItemConstructionInteraction
+            {       ObjectToConstruct = ObjectToConstruct, 
                 Delay = Delay, 
                 LoadingBarPrefab = LoadingBarPrefab,
                 icon = constructIcon,

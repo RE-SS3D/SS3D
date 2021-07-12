@@ -108,7 +108,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
         yield return new WaitUntil(
             delegate
             {
-                return TileManager.singleton.IsEnabled();
+                return TileManager.Instance.IsInitialized;
             }
         );
         

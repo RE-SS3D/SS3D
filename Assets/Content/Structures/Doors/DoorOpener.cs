@@ -30,7 +30,10 @@ namespace SS3D.Content.Structures.Fixtures
         [SerializeField] private AudioClip closeSound = null;
         [SerializeField] private LayerMask doorTriggerLayers = -1;
         
+
         private bool openState; // Server and Client
+
+
         private int playersInTrigger; // Server Only
         private Coroutine closeTimer; // Server Only
 
@@ -75,13 +78,17 @@ namespace SS3D.Content.Structures.Fixtures
             // if (isClientOnly)
             //     OnSetDoorState(openState);
 
+            /*
             TileObject tile = this.GetComponentInParent<TileObject>();
             tile.atmos?.SetBlocked(true);
+            */
         }
     
         public void OnTriggerEnter(Collider other)
         {
-            if ((1 << other.gameObject.layer & doorTriggerLayers) == 0 || !TileManager.IsOnServer(gameObject)) return;
+            // if ((1 << other.gameObject.layer & doorTriggerLayers) == 0 || !TileManager.IsOnServer(gameObject)) return;
+            if ((1 << other.gameObject.layer & doorTriggerLayers) == 0) return;
+
 
             if (playersInTrigger == 0)
             {
@@ -99,7 +106,8 @@ namespace SS3D.Content.Structures.Fixtures
 
         public void OnTriggerExit(Collider other)
         {
-            if ((1 << other.gameObject.layer & doorTriggerLayers) == 0 || !TileManager.IsOnServer(gameObject)) return;
+            // if ((1 << other.gameObject.layer & doorTriggerLayers) == 0 || !TileManager.IsOnServer(gameObject)) return;
+            if ((1 << other.gameObject.layer & doorTriggerLayers) == 0) return;
 
             if (playersInTrigger == 1)
             {
@@ -112,10 +120,12 @@ namespace SS3D.Content.Structures.Fixtures
 
         private void CommunicateDoorState(bool open)
         {
+            /*
             transform.root.gameObject.GetComponent<TileServerManager>().SetDoorOpen(transform.parent.gameObject, open);
 
             TileObject tile = this.GetComponentInParent<TileObject>();
             tile.atmos.SetBlocked(!open);
+            */
         }
 
         private IEnumerator RunCloseEventually(float time)

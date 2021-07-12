@@ -21,6 +21,8 @@ namespace SS3D.Content.Items.Cosmetic
         private AudioSource audioSource;
 
 	// is it playing music
+
+        [SyncVar]
         public bool radioOn;
         public int currentMusic;
 

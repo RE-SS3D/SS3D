@@ -15,8 +15,7 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 
 	// nope
 	// should be removed later once we rework construction
-        public Turf WallToConstruct;
-        public Turf FloorToConstruct;
+        public TileObjectSO WallToConstruct;
 
 	// Delay to create/destroy stuff
         public float Delay;
@@ -30,7 +29,6 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
             var wallConstructionInteraction = new WallConstructionInteraction
             {
                 WallToConstruct = WallToConstruct,
-                FloorToConstruct = FloorToConstruct,
                 Delay = Delay,
                 LoadingBarPrefab = LoadingBarPrefab,
                 icon = constructIcon,

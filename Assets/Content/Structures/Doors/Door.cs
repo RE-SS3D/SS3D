@@ -3,25 +3,16 @@ using System;
 using UnityEditor;
 using SS3D.Engine.Tiles;
 using SS3D.Engine.Tiles.Connections;
-using SS3D.Engine.Tiles.State;
 
 namespace SS3D.Content.Structures.Fixtures
 {
-    /**
-     * Door script handles opening and closing of door, as well as door related parephenalia.
-     * Also does door things.
-     * I haven't slept.
-     */
-    [ExecuteAlways]
-    public class Door : FixtureStateMaintainer, AdjacencyConnector
+    public class Door : MonoBehaviour, IAdjacencyConnector
     {
         public enum DoorType
         {
             Single,
             Double
         };
-
-        public int LayerIndex { get; set; }
 
         /** <summary>Based on peculiarities of the model, the appropriate position of the wall cap</summary> */
         private const float WALL_CAP_DISTANCE_FROM_CENTRE = 1.0f;
@@ -33,64 +24,60 @@ namespace SS3D.Content.Structures.Fixtures
         [SerializeField]
         private DoorType doorType;
 
+        private Direction doorDirection;
+
         private void OnEnable()
         {
             // Note: 'Should' already be validated by the point the game starts.
             // So the only purpose is when loading map from scene to correctly load children.
             ValidateChildren();
+
+            doorDirection = GetComponent<PlacedTileObject>().GetDirection();
         }
 
-        /**
-         * When a single adjacent turf is updated
-         */
-        public void UpdateSingle(Direction direction, TileDefinition tile)
+        public void UpdateSingle(Direction direction, PlacedTileObject placedObject)
         {
-            if (UpdateSingleConnection(direction, tile))
+            if (UpdateSingleConnection(direction, placedObject))
                 UpdateWallCaps();
         }
 
-        /**
-         * When all (or a significant number) of adjacent turfs update.
-         * Turfs are ordered by direction, i.e. North, NorthEast, East ... NorthWest
-         */
-        public void UpdateAll(TileDefinition[] tiles)
+        public void UpdateAll(PlacedTileObject[] neighbourObjects)
         {
             bool changed = false;
-            for (int i = 0; i < tiles.Length; i++) {
-                changed |= UpdateSingleConnection((Direction)i, tiles[i]);
+            for (int i = 0; i < neighbourObjects.Length; i++)
+            {
+                changed |= UpdateSingleConnection((Direction)i, neighbourObjects[i]);
             }
 
             if (changed)
                 UpdateWallCaps();
         }
 
-        protected override void OnStateUpdate(FixtureState prevState = new FixtureState())
-        {
-            base.OnStateUpdate(prevState);
-            UpdateWallCaps();
-        }
-
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            EditorApplication.delayCall += () => {
-                if (this) {
-                    OnStateUpdate();
-                    ValidateChildren();
-                }
-            };
-        }
-#endif
-
         /**
          * Adjusts the connections value based on the given new tile.
          * Returns whether value changed.
          */
-        private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
+        private bool UpdateSingleConnection(Direction direction, PlacedTileObject placedObject)
         {
-            bool isConnected = tile.turf && tile.turf.genericType == "Wall";
+            bool isConnected = (placedObject && placedObject.HasAdjacencyConnector() && placedObject.GetGenericType() == "wall");
 
             return adjacents.UpdateDirection(direction, isConnected, true);
+        }
+
+        private void CreateWallCaps(bool isPresent, Direction direction)
+        {
+            int capIndex = TileHelper.GetDirectionIndex(direction);
+            if (isPresent && wallCaps[capIndex] == null)
+            {
+                
+                wallCaps[capIndex] = SpawnWallCap(direction);
+                wallCaps[capIndex].name = $"WallCap{capIndex}";
+            }
+            else if (!isPresent && wallCaps[capIndex] != null)
+            {
+                EditorAndRuntime.Destroy(wallCaps[capIndex]);
+                wallCaps[capIndex] = null;
+            }
         }
 
         private void UpdateWallCaps()
@@ -98,23 +85,12 @@ namespace SS3D.Content.Structures.Fixtures
             if (wallCapPrefab == null)
                 return;
 
-            // Go through each direction and ensure the wallcap is present.
-            for (Direction direction = Direction.North; direction < Direction.NorthWest; direction += 2) {
-                int i = (int)direction / 2;
 
-                // Get the direction this applies to for the external world
-                Direction outsideDirection = DirectionHelper.Apply(RotationHelper.ToPerpendicularDirection(TileState.rotation), direction);
-                bool isPresent = adjacents.Adjacent(outsideDirection) == 1;
+            bool isPresent = adjacents.Adjacent(doorDirection) == 1;
+            CreateWallCaps(isPresent, doorDirection);
 
-                if (isPresent && wallCaps[i] == null) {
-                    wallCaps[i] = SpawnWallCap(direction);
-                    wallCaps[i].name = $"WallCap{i}";
-                }
-                else if (!isPresent && wallCaps[i] != null) {
-                    EditorAndRuntime.Destroy(wallCaps[i]);
-                    wallCaps[i] = null;
-                }
-            }
+            isPresent = adjacents.Adjacent(TileHelper.GetOpposite(doorDirection)) == 1;
+            CreateWallCaps(isPresent, TileHelper.GetOpposite(doorDirection));
         }
 
         private void ValidateChildren()
@@ -146,8 +122,8 @@ namespace SS3D.Content.Structures.Fixtures
         {
             var wallCap = EditorAndRuntime.InstantiatePrefab(wallCapPrefab, transform);
 
-            var cardinal = DirectionHelper.ToCardinalVector(DirectionHelper.Apply(Direction.East, direction));
-            var rotation = DirectionHelper.AngleBetween(Direction.East, direction);
+            var cardinal = TileHelper.ToCardinalVector(TileHelper.Apply(Direction.East, direction));
+            var rotation = TileHelper.AngleBetween(Direction.East, direction);
 
             wallCap.transform.localRotation = Quaternion.Euler(0, rotation, 0);
             wallCap.transform.localPosition = new Vector3(cardinal.Item1 * WALL_CAP_DISTANCE_FROM_CENTRE, 0, cardinal.Item2 * WALL_CAP_DISTANCE_FROM_CENTRE);

@@ -12,7 +12,7 @@ public class LoadingSceneUIHelper : MonoBehaviour
     private void Awake()
     {
         SceneLoaderManager.mapLoaded += SetAnimatorTrue;
-        TileManager.tileManagerLoaded += SetAnimatorFalse;
+        TileManager.TileManagerLoaded += SetAnimatorFalse;
     }
 
 	public void SetAnimatorTrue()
@@ -28,7 +28,7 @@ public class LoadingSceneUIHelper : MonoBehaviour
 	public void OnDestroy()
 	{
         SceneLoaderManager.mapLoaded -= SetAnimatorTrue;
-        TileManager.tileManagerLoaded -= SetAnimatorFalse;		
+        TileManager.TileManagerLoaded -= SetAnimatorFalse;		
 	}
 
     public void Toggle(bool state)

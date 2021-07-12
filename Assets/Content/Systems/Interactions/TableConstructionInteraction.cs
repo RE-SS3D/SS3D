@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
 {
+    /*
     public class TableConstructionInteraction : ConstructionInteraction
     {
         public FurnitureFloorFixture TableToConstruct { get; set; }
@@ -27,7 +28,7 @@ namespace SS3D.Content.Systems.Interactions
                 return false;
             }
 
-            return TargetTile.Tile.turf?.isWall != true;
+            return TargetPlacedObject.Tile.turf?.isWall != true;
         }
 
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
@@ -66,4 +67,5 @@ namespace SS3D.Content.Systems.Interactions
             tileManager.UpdateTile(targetTile.transform.position, tile);
         }
     }
+    */
 }

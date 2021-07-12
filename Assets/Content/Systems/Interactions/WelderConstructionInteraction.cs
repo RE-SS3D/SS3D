@@ -7,9 +7,11 @@ using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
 {
+    /*
     public class WelderConstructionInteraction : DelayedInteraction
     {
-        public Dictionary<Turf, Turf> TurfReinforceList { get; set; }
+        
+        public Dictionary<TileObjectSO, TileObjectSO> TurfReinforceList { get; set; }
 
         public override string GetName(InteractionEvent interactionEvent)
         {
@@ -84,4 +86,5 @@ namespace SS3D.Content.Systems.Interactions
             tileManager.UpdateTile(target.transform.position, tile);
         }
     }
+    */
 }

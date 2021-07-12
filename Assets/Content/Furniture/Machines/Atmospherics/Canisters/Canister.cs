@@ -41,7 +41,7 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics {
 
         private void Start()
         {
-            currentAtmosObject = transform.GetComponentInParent<TileObject>().atmos;
+            // currentAtmosObject = transform.GetComponentInParent<TileObject>().atmos;
            
             // Big TODO: work on the UI panel because it's weird
             
@@ -105,7 +105,7 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics {
             if (currentAtmosObject != null && content - valvePressure > 0 && valvePressure > 0 && valveOpen)
             {
 		// we add gas into the AtmosObject
-                currentAtmosObject.AddGas(gas, valvePressure);
+                // currentAtmosObject.AddGas(gas, valvePressure);
 
                 //canisterUI.releasePressure.text = valvePressure.ToString();
                 //canisterUI.pressure.text = content.ToString();
