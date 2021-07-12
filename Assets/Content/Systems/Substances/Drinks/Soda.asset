@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Soda
   m_EditorClassIdentifier: 
-  Id: soda
+  Id: Soda
   Color: {r: 0.5377358, g: 0.18009079, b: 0.18009079, a: 0.7254902}
   MillilitersPerMole: 33.5

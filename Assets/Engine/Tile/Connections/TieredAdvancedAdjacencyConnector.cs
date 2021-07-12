@@ -25,9 +25,9 @@ namespace SS3D.Engine.Tiles.Connections
         public Mesh o;
 
         [Tooltip("A mesh where north connects to the same type")]
-        public Mesh c;
+        public Mesh u;
         [Tooltip("A mesh where north connects to the generic type")]
-        public Mesh cBorder;
+        public Mesh uBorder;
 
         [Tooltip("A mesh where north and south edges are connected to the same type")]
         public Mesh i;
@@ -134,16 +134,16 @@ namespace SS3D.Engine.Tiles.Connections
             {
                 mesh = o;
             }
-            else if (generalCardinals.IsC())
+            else if (generalCardinals.IsU())
             {
                 if (specificCardinals.numConnections == 1)
                 {
-                    mesh = c;
+                    mesh = u;
                     rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
                 }
                 else
                 {
-                    mesh = cBorder;
+                    mesh = uBorder;
                     rotation = DirectionHelper.AngleBetween(Direction.North, generalCardinals.GetOnlyPositive());
                 }
             }

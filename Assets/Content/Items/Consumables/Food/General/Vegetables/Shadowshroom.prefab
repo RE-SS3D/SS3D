@@ -95,7 +95,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8722317747974713380}
-  m_Mesh: {fileID: -3067318759466505011, guid: b8ed0f1a9dd2ed34bbf11016f326015a, type: 3}
+  m_Mesh: {fileID: -403518452345240961, guid: b8ed0f1a9dd2ed34bbf11016f326015a, type: 3}
 --- !u!23 &8016222924898131284
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -148,7 +148,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -3067318759466505011, guid: b8ed0f1a9dd2ed34bbf11016f326015a, type: 3}
+  m_Mesh: {fileID: -403518452345240961, guid: b8ed0f1a9dd2ed34bbf11016f326015a, type: 3}
 --- !u!54 &2275976470507102713
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -197,16 +197,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: shadowshroom
+  ItemId: Shadowshroom
   Name: Shadowshroom
   Volume: 8
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8722317747974713380}
   attachmentPoint: {fileID: 6244230459157494590}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
+  Size: {x: 0, y: 0}
 --- !u!114 &6143507213145409448
 MonoBehaviour:
   m_ObjectHideFlags: 0

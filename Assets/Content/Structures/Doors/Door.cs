@@ -7,22 +7,13 @@ using SS3D.Engine.Tiles.State;
 
 namespace SS3D.Content.Structures.Fixtures
 {
-    // I'd like this to be internal, but if i make it anything but public
-    // then OnStateUpdate complains
-    [Serializable]
-    public struct DoorState
-    {
-        // TODO: Construction phase
-        public Orientation orientation;
-    }
-
     /**
      * Door script handles opening and closing of door, as well as door related parephenalia.
      * Also does door things.
      * I haven't slept.
      */
     [ExecuteAlways]
-    public class Door : TileStateMaintainer<DoorState>, AdjacencyConnector
+    public class Door : FixtureStateMaintainer, AdjacencyConnector
     {
         public enum DoorType
         {
@@ -73,11 +64,9 @@ namespace SS3D.Content.Structures.Fixtures
                 UpdateWallCaps();
         }
 
-        protected override void OnStateUpdate(DoorState prevState = new DoorState())
+        protected override void OnStateUpdate(FixtureState prevState = new FixtureState())
         {
-            float rotation = OrientationHelper.AngleBetween(Orientation.Horizontal, TileState.orientation);
-            transform.localRotation = Quaternion.Euler(0, rotation, 0);
-
+            base.OnStateUpdate(prevState);
             UpdateWallCaps();
         }
 
@@ -99,7 +88,7 @@ namespace SS3D.Content.Structures.Fixtures
          */
         private bool UpdateSingleConnection(Direction direction, TileDefinition tile)
         {
-            bool isConnected = tile.turf && tile.turf.genericType == "wall";
+            bool isConnected = tile.turf && tile.turf.genericType == "Wall";
 
             return adjacents.UpdateDirection(direction, isConnected, true);
         }
@@ -114,7 +103,7 @@ namespace SS3D.Content.Structures.Fixtures
                 int i = (int)direction / 2;
 
                 // Get the direction this applies to for the external world
-                Direction outsideDirection = DirectionHelper.Apply(OrientationHelper.ToPrincipalDirection(TileState.orientation), direction);
+                Direction outsideDirection = DirectionHelper.Apply(RotationHelper.ToPerpendicularDirection(TileState.rotation), direction);
                 bool isPresent = adjacents.Adjacent(outsideDirection) == 1;
 
                 if (isPresent && wallCaps[i] == null) {

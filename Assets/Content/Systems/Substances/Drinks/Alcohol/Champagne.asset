@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Champagne
   m_EditorClassIdentifier: 
-  Id: champagne
+  Id: Champagne
   Color: {r: 0.828215, g: 0.8301887, b: 0.71662515, a: 0.19607843}
   MillilitersPerMole: 35

@@ -197,16 +197,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: watermelon
-  Name: Watemelon
+  ItemId: Watermelon
+  Name: Watermelon
   Volume: 35
-  container: {fileID: 0}
   sprite: {fileID: 0}
   prefab: {fileID: 8722317747974713380}
   attachmentPoint: {fileID: 6244230459157494590}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
+  Size: {x: 0, y: 0}
 --- !u!114 &6143507213145409448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -219,7 +220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Watermelon
+  DisplayName: 
   Text: 
   MaxDistance: 0
 --- !u!114 &3512292834628846155

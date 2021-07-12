@@ -20,6 +20,7 @@ public class MainLobbyButtonHelper : MonoBehaviour
     {
         networkManager = LoginNetworkManager.singleton;
         player = LocalPlayerManager.singleton;
+		Debug.Log("player.name = " + player.name);
     }
 
     public void Quit()
@@ -35,10 +36,17 @@ public class MainLobbyButtonHelper : MonoBehaviour
 
     public void Disconnect()
     {
-        NetworkIdentity identity = player.networkConnection.identity;
-        if (identity.isServer)
+		// A client apparently doesn't know it's own connectionId, so we will use that
+		// as a proxy to determine whether we are the client or the server.
+		NetworkConnection connection = player.networkConnection;
+
+        if (connection != null)
+		{
             networkManager.StopHost();
-        if (identity.isClient)
+        }
+		else
+		{
             networkManager.StopClient();
+		}
     }
 }

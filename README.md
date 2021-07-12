@@ -1,48 +1,50 @@
-### ![SS3D](Documents/Images/RESPACESTATION3D.png) Welcome to the repository for the game, RE: Space Station 3D. RE:SS3D is a resurrection of the original SS3D project, which was an attempt to recreate [Space Station 13](https://spacestation13.com/) in 3D.
+### ![SS3D](Documents/Images/RESPACESTATION3D.png) Welcome to the offical repository for "RE: Space Station 3D" the game! RE:SS3D is an open-source resurrection of the original SS3D project, which was an impressive demo attempting to give the infamous [<img src="https://img.shields.io/badge/Space%20Station-13-red?style=flat-square" alt="Space Station 13">](https://spacestation13.com/) an extra dimension.
 
 # DOWNLOADS:
 
 [<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
 
-This is the latest official build of the RE:SS3D project. It currently works on Windows but needs testing on other operating systems still.
+[<img src="https://img.shields.io/github/v/release/RE-SS3D/SS3D?label=Latest-Release&style=plastic&color=9cf" alt="Latest Release" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)The latest official build of RE:SS3D. It's working on Windows but needs testing on other OSs.[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/latest/total?label=Downloads%20%28Latest-Release%29&style=plastic&color=blue" alt="Latest Release Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases/latest)
 
 [<img src="Documents/Images/currentproject.png" alt="Current Project" width="150" align="left">](https://github.com/RE-SS3D/SS3D/archive/master.zip)
 
-This is the current state of the RE:SS3D project in a .zip file, including even the latest commit. You'll need to build the game in Unity on your own.
+[<img src="https://img.shields.io/github/downloads/RE-SS3D/SS3D/total?label=Downloads%20%28Total%29&style=plastic&color=blue" alt="Total Downloads" align="right">](https://github.com/RE-SS3D/SS3D/releases)The current state of RE:SS3D (every commit) in a .zip. You'll need to build the game in Unity still.[<img src="https://img.shields.io/github/repo-size/RE-SS3D/SS3D?color=gold&label=Repository%20Size&logo=github&style=plastic" alt="Repo Size" align="right">](https://github.com/RE-SS3D/SS3D)
+
+*Note: RE:SS3D is currently still in a 'pre-alpha' phase as we do some redesigning, documenting, core system work, and basic system implementation. During this early phase there are not many systems, content, or even interactions. What you see in the current project is just the beginning to something much, much greater.*
 
 ## INFO:
 
-**[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
+[<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)**[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
 
 ## CONTRIBUTING:
 
-[CONTRIBUTING.md](Documents/CONTRIBUTING.md) contains the information regarding technical contributions, including what version of Unity the project uses, how to set up and run the project, reporting bugs, pull requests, and styling code.
+[<img src="https://img.shields.io/github/issues-raw/RE-SS3D/SS3D?color=green&label=Issues%20%28Open%29&logo=github&style=plastic" alt="Open Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues)[CONTRIBUTING.md](Documents/CONTRIBUTING.md) contains information regarding technical contributions, including Unity version, setting up the project, styling code, and using github.[<img src="https://img.shields.io/github/issues-closed-raw/RE-SS3D/SS3D?color=red&label=Issues%20%28Closed%29&logo=github&style=plastic" alt="Closed Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues?q=is%3Aissue+is%3Aclosed)
 
-[https://ss3d.space/contribute/](https://ss3d.space/contribute/) has a breakdown of the different contribution types (including art assets) with links to helpful guides and to-do boards, making contributing art assets a lot easier for new contributors.
+[<img src="https://img.shields.io/github/issues-pr-raw/RE-SS3D/SS3D?color=green&label=Pull%20Requests%20%28Open%29&logo=github&style=plastic" alt="Open Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls)[https://ss3d.space/contribute/](https://ss3d.space/contribute/) breaks down the contribution types (including art assets) with links to helpful guides and to-do boards.[<img src="https://img.shields.io/github/issues-pr-closed-raw/RE-SS3D/SS3D?color=red&label=Pull%20Requests%20%28Closed%29&logo=github&style=plastic" alt="Closed Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls?q=is%3Apr+is%3Aclosed)
 
 ## LICENSING:
 
-**This project and its code** fall under the **[MIT](Documents/LICENSE-CODE.md)** license.
+This project's **code** falls under the **[MIT](Documents/LICENSE-CODE.md)** license.
 
-**All asset contributions** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.md)** license.
+All **art assets** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.md)** license.
 
 ## COMMUNITY:
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
-Discord is the primary communication for our devs and community. There are plenty of helpful people there capable of answering most of your questions, as well as WIP content.
+[<img src="https://img.shields.io/discord/483813139633143808?label=Members&style=social&logo=discord" alt="Discord Members" align="right">](https://discord.gg/Z3sPhyS)Discord is the primary communication for our devs and community. There you'll find helpful people, WIP content, & community polls.
 
 [<img src="Documents/Images/youtube.png" alt="YouTube" width="150" align="left">](https://www.youtube.com/channel/UCJT-bVqDOYfyxF3oxECceZg)
 
-Our YouTube is where we upload many of our important videos including 3D animations, trailers, and gameplay clips of teasers/tests.
+[<img src="https://img.shields.io/youtube/channel/subscribers/UCJT-bVqDOYfyxF3oxECceZg?label=Subscribers&style=social" alt="YouTube Subscribers" align="right">](https://www.youtube.com/channel/UCJT-bVqDOYfyxF3oxECceZg)Our YouTube is where we upload many of our important videos including 3D animations, trailers, and gameplay clips of teasers/tests.
 
 [<img src="Documents/Images/reddit.png" alt="Reddit" width="150" align="left">](https://www.reddit.com/r/RESS3D/)
 
-We also have a subreddit, where you will find similar discussion threads and posts showing off art & WIP content, although it is not as active as our Discord server.
+[<img src="https://img.shields.io/reddit/subreddit-subscribers/RESS3D?label=Subscribers&style=social" alt="Reddit Followers" align="right">](https://www.reddit.com/r/RESS3D/)We also have a subreddit, where you will find similar discussions and content posts, although it is not as active as our Discord server.
 
 [<img src="Documents/Images/Twitter.png" alt="Twitter" width="150" align="left">](https://twitter.com/SpaceStation3D)
 
-Currently our twitter is mostly used for announcements & memes but we will start using it more for the people that prefer it over reddit or discord.
+[<img src="https://img.shields.io/twitter/follow/SpaceStation3D?label=Followers&style=social" alt="Twitter Followers" align="right">](https://twitter.com/SpaceStation3D)Currently our twitter is mostly used for announcements & memes but we will start using it more for other posts eventually.
 
 ## BOARDS:
 
