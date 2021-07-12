@@ -1,6 +1,7 @@
 ﻿using SS3D.Engine.Tiles;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEditor;
 using UnityEngine;
 
@@ -499,13 +500,15 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
                 }
 
                 Texture2D texture;
+                texture = AssetPreview.GetAssetPreview(asset.prefab);
 
+                /*
                 do
                 {
                     texture = AssetPreview.GetAssetPreview(asset.prefab);
-                    // Thread.Sleep(5);
+                    Thread.Sleep(5);
                 } while (texture == null);
-
+                */
 
                 assetIcons.Add(new GUIContent(asset.name, texture));
                 assetList.Add(asset);
