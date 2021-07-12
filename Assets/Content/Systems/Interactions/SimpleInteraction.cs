@@ -40,7 +40,7 @@ namespace SS3D.Content.Systems.Interactions
             return icon;
         }
 
-        public bool CanInteract(InteractionEvent interactionEvent)
+        public virtual bool CanInteract(InteractionEvent interactionEvent)
         {
             if (RangeCheck && !InteractionExtensions.RangeCheck(interactionEvent))
             {
@@ -49,20 +49,20 @@ namespace SS3D.Content.Systems.Interactions
             return CanInteractCallback.Invoke(interactionEvent);
         }
 
-        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Interact.Invoke(interactionEvent, reference);
             return false;
         }
 
-        public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
+        public virtual bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
-        public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
+        public virtual void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            throw new NotImplementedException();
+            return;
         }
     }
 }

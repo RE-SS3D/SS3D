@@ -3,17 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// This handles all the cameras in the game
-public class CameraManager : MonoBehaviour
+namespace SS3D.Engine
 {
-    public static CameraManager singleton { get; private set; }
-
-    public Camera playerCamera;
-    public Camera examineCamera;
-
-    private void Awake()
+    // This handles all the cameras in the game
+    public class CameraManager : MonoBehaviour
     {
-        if (singleton != null) Destroy(gameObject);
-        singleton = this;
+        public static CameraManager singleton { get; private set; }
+
+        public UnityEngine.Camera playerCamera;
+        public UnityEngine.Camera examineCamera;
+
+        private void Awake()
+        {
+            if (singleton != null) Destroy(gameObject);
+            singleton = this;
+        }
     }
 }

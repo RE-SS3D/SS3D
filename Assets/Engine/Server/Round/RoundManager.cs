@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using Mirror;
+using SS3D.Content;
+using SS3D.Engine.Server.Gamemode;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -17,22 +20,51 @@ namespace SS3D.Engine.Server.Round
     {
         public static RoundManager singleton { get; private set; }
 
-        private bool warmingUp;
-        [SerializeField] private int warmupTimeSeconds = 5;
-        [SerializeField] private int roundTimeSeconds = 300;
-        private Coroutine warmupCoroutine;     
+        // manager that handles the current round's gamemode
+        public GamemodeManager gamemodeManager;
+        // WARMUP
         
+        // is it starting up?
+        private bool warmingUp;
+        // how much time we will wait until the round starts
+        [SerializeField] private int warmupTimeSeconds = 5;
+        // how much time the round will last, hopefully we can disable this
+        [SerializeField] private int roundTimeSeconds = 300;
+        // the coroutine that handles the warmup time
+        private Coroutine warmupCoroutine;
+        
+        // END ROUND
+        
+        // how much time takes for the round to end after we called the EndRound function
+        // its useful for the  stats stuff and the good 'ol end of the round killin' we all love
+        public int endRoundDelay = 5;
+        // keeps track of the seconds to end the round
+        public int currentEndRoundDelay = 0;
+        
+        // TIMER
+        
+        // how much time the round is on for
         private int timerSeconds = 0;
+        // has the round started
         private bool started = false;
+        // the coroutine that counts how much time has passed since round start
         private Coroutine tickCoroutine;
 
+        // EVENTS
         public static event System.Action ServerWarmupStarted;
         public static event System.Action ServerRoundStarted;
         public static event System.Action ServerRoundRestarted;
+        public static event System.Action ServerRoundEnded;
+        // we fire this to update client's clocks with the round time
         public static event System.Action<int> ClientTimerUpdated;
 
-        public static event System.Action ServerRoundEnded; 
+        // PLAYER MANAGEMENT
 
+        // players that have joined the round
+        public List<Entity> roundPlayers;
+        
+        // do we want the round to end when there's a nuclear explosion
+        public bool endOnNuclearExplosion;
         public bool IsRoundStarted => started;
         public bool IsOnWarmup => warmingUp;
 
@@ -40,7 +72,21 @@ namespace SS3D.Engine.Server.Round
         {
             InitializeSingleton();
         }
+            
+        [Command(ignoreAuthority = true)]
+        private void CmdSetPlayerReadyState(bool state, NetworkConnectionToClient sender = null)
+        {
+            if (state)
+            {
+                roundPlayers.Add(LoginNetworkManager.singleton.GetSoul(sender).GetComponent<Entity>());
+            }
+            else
+            {
+                roundPlayers.Remove(LoginNetworkManager.singleton.GetSoul(sender).GetComponent<Entity>());
+            }
+        }
         
+        // WARMUP - START - END
         public void StartWarmup()
         {
             gameObject.SetActive(true);
@@ -56,7 +102,7 @@ namespace SS3D.Engine.Server.Round
             ServerWarmupStarted?.Invoke();
             RpcStartWarmup();
         }
-
+        
         [ClientRpc]
         private void RpcStartWarmup()
         {
@@ -74,6 +120,14 @@ namespace SS3D.Engine.Server.Round
             ServerWarmupStarted?.Invoke();
         }
 
+        // Asks the server to start the round
+        [Command(ignoreAuthority = true)]
+        public void CmdStartRound(NetworkConnectionToClient sender = null)
+        {
+            StartWarmup(); 
+        }
+        
+        [Server]
         [ContextMenu("Start Round")]
         public void StartRound()
         {
@@ -87,6 +141,10 @@ namespace SS3D.Engine.Server.Round
 
             Debug.Log("Round Started");
             ServerRoundStarted?.Invoke();
+
+            // handles setting up the gamemode and objectives
+            GamemodeManager.singleton.InitiateGamemode();
+            
             RpcStartRound();
         }
 
@@ -107,7 +165,37 @@ namespace SS3D.Engine.Server.Round
             ServerRoundStarted?.Invoke();
         }
 
+        [Command(ignoreAuthority = true)]
+        public void CmdEndRound(NetworkConnectionToClient sender = null)
+        {
+            EndRound();
+        }
+
+        // TODO: Timer to actually end the round
+        // TODO: Stats
+        [Server]
         public void EndRound()
+        {
+            // Spawn the stats screen
+            currentEndRoundDelay = endRoundDelay;
+            // Set up the timer
+            StartCoroutine(EndRoundDelay());
+        }
+
+        private IEnumerator EndRoundDelay()
+        {
+            while (currentEndRoundDelay > 0)
+            {
+                currentEndRoundDelay--;
+                yield return new WaitForSeconds(1);
+            }
+
+            // Ends the round for real
+            EndRoundImmediate();
+        }
+        
+        [Server]
+        public void EndRoundImmediate()
         {
             if (!isServer) return;
 
