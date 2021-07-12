@@ -85,6 +85,12 @@ namespace SS3D.Engine.Inventory
         public void Awake()
         {
             sprite = null;
+
+            // Add a warning if an item is not on the Item layer (layer 16).
+            if (gameObject.layer != 16)
+            {
+                Debug.LogWarning("Item " + Name + " is on layer " + gameObject.layer);
+            }
         }
         
         [ContextMenu("Create Icon")]

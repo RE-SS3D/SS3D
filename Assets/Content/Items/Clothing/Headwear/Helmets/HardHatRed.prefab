@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9025388285410682761}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 8798808914283824592}
   - component: {fileID: -4580143928426730034}
   - component: {fileID: 7335096185251245236}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: HardHatRed
   m_TagString: Untagged
   m_Icon: {fileID: 0}

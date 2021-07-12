@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 6909165344461321721}
   - component: {fileID: 618684551706682383}
   - component: {fileID: -2469115493504090853}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: CrayonBlue
   m_TagString: Untagged
   m_Icon: {fileID: 0}

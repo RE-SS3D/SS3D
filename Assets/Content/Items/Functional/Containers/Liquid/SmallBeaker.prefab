@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5446891181622401204}
   - component: {fileID: 52698324414787720}
   - component: {fileID: 8353910763633493503}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Liquid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: -7777233483341371724}
   - component: {fileID: -6476219540935553843}
   - component: {fileID: 5848840416633041717}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: SmallBeaker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -344,7 +344,7 @@ GameObject:
   - component: {fileID: 1975986242269109576}
   - component: {fileID: 4110601857047447259}
   - component: {fileID: 7434090838526271371}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: SmallBeaker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -425,7 +425,7 @@ GameObject:
   - component: {fileID: 6908608555846075562}
   - component: {fileID: 4887438136146529181}
   - component: {fileID: 6015916186729498228}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Lid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -502,7 +502,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8833359133489883299}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Attachment
   m_TagString: Untagged
   m_Icon: {fileID: 0}

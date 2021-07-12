@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 1941643679813000012}
   - component: {fileID: -2469115493504090853}
   - component: {fileID: 4659898452993661522}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: BluespacePowerCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
