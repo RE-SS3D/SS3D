@@ -19,6 +19,8 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
         private Vector2 scrollPositionSelection;
         private List<TileObjectSO> assetList = new List<TileObjectSO>();
         private List<GUIContent> assetIcons = new List<GUIContent>();
+        private List<TileObjectSO> assetDisplayList = new List<TileObjectSO>();
+        private List<GUIContent> assetDisplayIcons = new List<GUIContent>();
         private int assetIndex;
         private bool loadingTextures = false;
 
@@ -84,6 +86,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             }
             else
             {
+                LoadAllAssetLayers();
                 RefreshMapList();
                 FillGridOptions(GetCurrentMap());
                 RefreshSelectionGrid(true);
@@ -430,7 +433,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             if (ghostObject != null)
                 DestroyGhost();
 
-            if (selectedObjectSO == null)
+            if (selectedObjectSO == null || selectedObjectSO.prefab == null)
             {
                 ghostObject = new GameObject();
             }
@@ -474,9 +477,30 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             }
         }
 
+        private void LoadAllAssetLayers()
+        {
+            AssetPreview.SetPreviewTextureCacheSize(400);
+            assetList.Clear();
+            assetIcons.Clear();
+
+            string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(TileObjectSO)));
+
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
+                TileObjectSO asset = AssetDatabase.LoadAssetAtPath<TileObjectSO>(assetPath);
+
+                Texture2D texture;
+                texture = AssetPreview.GetAssetPreview(asset.prefab);
+
+                assetIcons.Add(new GUIContent(asset.name, texture));
+                assetList.Add(asset);
+            }
+        }
+
         private void LoadAssetLayer(TileLayer layer, string assetName = "")
         {
-            AssetPreview.SetPreviewTextureCacheSize(200);
+            /*
             assetList.Clear();
             assetIcons.Clear();
             loadingTextures = true;
@@ -502,16 +526,36 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
                 Texture2D texture;
                 texture = AssetPreview.GetAssetPreview(asset.prefab);
 
-                /*
                 do
                 {
                     texture = AssetPreview.GetAssetPreview(asset.prefab);
                     Thread.Sleep(5);
                 } while (texture == null);
-                */
 
                 assetIcons.Add(new GUIContent(asset.name, texture));
                 assetList.Add(asset);
+            }
+
+            */
+
+            assetDisplayList.Clear();
+            assetDisplayIcons.Clear();
+
+            for (int i = 0; i < assetList.Count; i++)
+            {
+                if (assetList[i].layerType != layer)
+                {
+                    continue;
+                }
+
+                // Case insensitive search for name
+                if (assetName != "" && !assetList[i].name.ToUpper().Contains(assetName.ToUpper()))
+                {
+                    continue;
+                }
+
+                assetDisplayIcons.Add(assetIcons[i]);
+                assetDisplayList.Add(assetList[i]);
             }
         }
 
@@ -522,9 +566,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             if (updateAssets)
                 LoadAssetLayer(selectedLayer, searchString);
 
-            if (assetList.Count > assetIndex)
+            if (assetDisplayList.Count > assetIndex)
             {
-                selectedObjectSO = assetList[assetIndex];
+                selectedObjectSO = assetDisplayList[assetIndex];
                 CreateGhost();
             }
         }
@@ -544,7 +588,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             style.onNormal.background = Texture2D.grayTexture;
 
             EditorGUI.BeginChangeCheck();
-            assetIndex = GUILayout.SelectionGrid(assetIndex, assetIcons.ToArray(), 3, style);
+            assetIndex = GUILayout.SelectionGrid(assetIndex, assetDisplayIcons.ToArray(), 3, style);
             if (EditorGUI.EndChangeCheck())
             {
                 RefreshSelectionGrid(false);

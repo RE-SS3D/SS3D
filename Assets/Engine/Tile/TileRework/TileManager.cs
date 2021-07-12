@@ -58,7 +58,7 @@ namespace SS3D.Engine.Tiles
                 tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
 #endif
 
-                Reinitialize();
+                LoadAll(true);
                 // LoadAll();
                 UpdateAllAdjacencies();
                 IsInitialized = true;
@@ -328,7 +328,8 @@ namespace SS3D.Engine.Tiles
         [ContextMenu("Reinitialize")]
         private void Reinitialize()
         {
-            LoadAll(true);
+            IsInitialized = false;
+            Init();
         }
 
         [ContextMenu("Force adjacency update")]

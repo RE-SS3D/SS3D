@@ -364,11 +364,12 @@ namespace SS3D.Engine.Tiles
 
                                 // Find the object and set it up again...
                                 Vector3 position = TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition);
-                                PlacedTileObject placedTileObject = FindChild(layer, subLayerIndex, position).GetComponent<PlacedTileObject>();
+                                PlacedTileObject placedTileObject = FindChild(layer, subLayerIndex, position)?.GetComponent<PlacedTileObject>();
 
                                 if (!placedTileObject)
                                 {
                                     Debug.LogWarning("Child was not found when reinitializing: " + objectName);
+                                    continue;
                                 }
 
                                 LoadTileObject(subLayerIndex, tileObjectSO, placedTileObject, position, tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
