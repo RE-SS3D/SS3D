@@ -25,7 +25,7 @@ namespace SS3D.Content.Systems.Substances
         public AnimationCurve ScaleX;
         public AnimationCurve ScaleY;
         public AnimationCurve ScaleZ;
-        private MeshRenderer meshRenderer;
+        private Renderer meshRenderer;
 
         // wobble shader stuff
         Vector3 lastPos;
@@ -44,7 +44,7 @@ namespace SS3D.Content.Systems.Substances
 
         private void Start()
         {
-            meshRenderer = DisplayObject.GetComponent<MeshRenderer>();
+            meshRenderer = DisplayObject.GetComponent<Renderer>();
             if (isServer)
             {
                 Container.ContentsChanged += container => UpdateDisplay();

@@ -65,7 +65,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6405106075082308508}
-  m_Mesh: {fileID: 779111611535756853, guid: 40deaafc2f2e494489d04556618145e1, type: 3}
+  m_Mesh: {fileID: 3371799226304767270, guid: 40deaafc2f2e494489d04556618145e1, type: 3}
 --- !u!23 &4674547325470248768
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -118,7 +118,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 779111611535756853, guid: 40deaafc2f2e494489d04556618145e1, type: 3}
+  m_Mesh: {fileID: 3371799226304767270, guid: 40deaafc2f2e494489d04556618145e1, type: 3}
 --- !u!54 &5319604551343680694
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -167,15 +167,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: milk
+  ItemId: Milk
   Name: Milk
   Volume: 10
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 6405106075082308508}
   attachmentPoint: {fileID: 1680750711217523086}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits: []
+  Size: {x: 0, y: 0}
 --- !u!114 &7628843760292732928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,6 +189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
 --- !u!114 &8032169772387072461

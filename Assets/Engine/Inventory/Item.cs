@@ -257,7 +257,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
-            Mesh handGuide = (Mesh)AssetDatabase.LoadAssetAtPath("Assets/Art/Models/Other/handgizmo.fbx", typeof(Mesh));
+            Mesh handGuide = (Mesh)AssetDatabase.LoadAssetAtPath("Assets/Art/Models/Other/HoldGizmo.fbx", typeof(Mesh));
 
             // Don't even have to check without attachment
             if (attachmentPoint == null)

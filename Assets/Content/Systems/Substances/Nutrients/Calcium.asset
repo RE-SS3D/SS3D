@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Calcium
   m_EditorClassIdentifier: 
-  Id: calcium
+  Id: Calcium
   Color: {r: 1, g: 1, b: 1, a: 1}
   MillilitersPerMole: 1

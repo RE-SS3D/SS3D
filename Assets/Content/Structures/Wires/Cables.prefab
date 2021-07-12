@@ -59,7 +59,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2802364579275783218}
-  m_Mesh: {fileID: -679329047418097435, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+  m_Mesh: {fileID: -8711453034529356013, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
 --- !u!23 &-4998431523760016775
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -111,6 +111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fb7ede8181b28b4082944d5e44dd86e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layer: 0
   volume: 1
 --- !u!114 &346119420360410449
 MonoBehaviour:
@@ -124,13 +125,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 961b31fd1d838b9418d00d2675f3a9ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: cable
-  o: {fileID: -679329047418097435, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-  c: {fileID: -4403951118889893994, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-  i: {fileID: 6962330169804267351, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-  l: {fileID: 6774450340924162456, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-  t: {fileID: 5669457327597319449, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-  x: {fileID: 3877080433169946520, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+  type: Wire
+  o: {fileID: -8711453034529356013, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+  u: {fileID: -1590738978952025886, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+  i: {fileID: -2043613833257120371, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+  l: {fileID: -9081922812702010850, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+  t: {fileID: -5358326586770029455, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+  x: {fileID: -8228826546953468662, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
 --- !u!114 &-6127819692382853065
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -26,8 +26,6 @@ namespace SS3D.Engine.Examine
         private Quaternion lastCameraRotation;
 		public CompositeItemSelector selector;
         private GameObject currentTarget;
-		private bool currentTargetIsComposite;
-
 
         private void Start()
         {
@@ -46,7 +44,6 @@ namespace SS3D.Engine.Examine
             
         }
 
-
 		/// This checks whether the Examine button is pressed, and (if so) whether
 		/// the cursor has moved significantly since last check. If it has, it will
 		/// recalculate what it is looking at.
@@ -63,7 +60,6 @@ namespace SS3D.Engine.Examine
                 Vector2 position = new Vector2(mousePosition.x, mousePosition.y);
                 Vector3 cameraPos = camera.transform.position;
                 Quaternion rotation = camera.transform.rotation;
-
                 if (Vector2.Distance(position, lastMousePosition) > 1 ||
                     Vector3.Distance(cameraPos, lastCameraPosition) > 0.05 ||
                     Quaternion.Angle(rotation, lastCameraRotation) > 0.1)
@@ -90,7 +86,6 @@ namespace SS3D.Engine.Examine
 		/// item is after the rendering has been completed.
         private void CalculateExamine()
         {
-
             if (camera == null)
             {
                 return;

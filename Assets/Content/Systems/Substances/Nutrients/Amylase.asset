@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Amylase
   m_EditorClassIdentifier: 
-  Id: amylase
+  Id: Amylase
   Color: {r: 0.9019608, g: 0.6784314, b: 0.3254902, a: 1}
   MillilitersPerMole: 1

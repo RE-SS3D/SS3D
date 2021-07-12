@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Ale
   m_EditorClassIdentifier: 
-  Id: ale
+  Id: Ale
   Color: {r: 0.6132076, g: 0.3959623, b: 0, a: 0.98039216}
   MillilitersPerMole: 50
