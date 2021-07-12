@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 7
   nameString: pipe_under_3
-  genericType: 
+  genericType: pipe
   prefab: {fileID: 2802364579275783218, guid: 34bbc793ade346e45b1d2f357d86011f, type: 3}
   width: 1
   height: 1
