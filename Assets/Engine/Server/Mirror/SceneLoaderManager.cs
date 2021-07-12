@@ -61,7 +61,15 @@ namespace SS3D
             };
 
             startRoundButton.onClick.AddListener(delegate { HandleRoundButton(); });
-            LoadMapList();
+        }
+
+        private void Start()
+        {
+            // Run LoadMapList() to populate the map list on the server.
+            if (isServer)
+            {
+                LoadMapList();
+            }
         }
 
 	// Here we load the selected map
@@ -108,9 +116,11 @@ namespace SS3D
         }
 
 	// Updates map list in the dropdown using the map list
-	// TODO: Update the map list via Server
         public void LoadMapList()
         {
+            // Prevent map list from loading on clients.
+            if (!isServer) return;
+
             List<TMP_Dropdown.OptionData> mapList = new List<TMP_Dropdown.OptionData>();
 
             foreach (string map in maps)
@@ -122,14 +132,6 @@ namespace SS3D
             mapSelectionDropdown.options = mapList;
             selectedMap = mapList[0].text;
             
-            RpcLoadMapList(maps);
-        }
-
-        [ClientRpc]
-        private void RpcLoadMapList(string[] mapList)
-        {
-            maps = mapList;
-            selectedMap = mapList[0];
         }
 
         public bool IsSelectedMapLoaded()
