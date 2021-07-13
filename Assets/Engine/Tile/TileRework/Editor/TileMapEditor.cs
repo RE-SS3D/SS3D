@@ -250,7 +250,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
                 return;
 
             DrawPlaceUI();
-            sceneView.Focus();
 
             if (ghostObject == null)
                 CreateGhost();
@@ -368,6 +367,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
         private void DisplayVisualHelp(Vector3 cell)
         {
+            if (!selectedObjectSO)
+                return;
+
             // Vertices of our square
             Vector3 cube_1 = cell + new Vector3(.5f, 0f, .5f);
             Vector3 cube_2 = cell + new Vector3(.5f, 0f, -.5f);
@@ -377,8 +379,11 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             // Rendering
             if (deleteTiles)
                 Handles.color = Color.red;
+            else if (!deleteTiles && !tileManager.CanBuild(selectedObjectSO, cell, selectedDir))
+                Handles.color = Color.yellow;
             else
                 Handles.color = Color.green;
+
             Vector3[] lines = { cube_1, cube_2, cube_2, cube_3, cube_3, cube_4, cube_4, cube_1 };
             Handles.DrawLines(lines);
         }

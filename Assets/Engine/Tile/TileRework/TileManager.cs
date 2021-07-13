@@ -317,6 +317,7 @@ namespace SS3D.Engine.Tiles
             {
                 DestroyMaps();
                 CreateEmptyMap();
+                mapList[mapList.Count - 1].IsMain = true;
                 SaveAll();
             }
 #endif

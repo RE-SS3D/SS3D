@@ -92,7 +92,7 @@ namespace SS3D.Engine.Tiles
             return (GetKey(x, y));
         }
 
-        private TileChunk GetChunk(Vector3 worldPosition)
+        private TileChunk GetOrCreateChunk(Vector3 worldPosition)
         {
             Vector2Int key = GetKey(worldPosition);
             TileChunk chunk;
@@ -115,7 +115,7 @@ namespace SS3D.Engine.Tiles
         public bool CanBuild(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
             // Get the right chunk
-            TileChunk chunk = GetChunk(position);
+            TileChunk chunk = GetOrCreateChunk(position);
             Vector2Int vector = chunk.GetXY(position);
             Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
             TileLayer layer = tileObjectSO.layerType;
@@ -133,7 +133,7 @@ namespace SS3D.Engine.Tiles
                 {
                     // We got a chunk edge case in which a multi tile object is outside of the chunk
                     Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
-                    TileChunk nextChunk = GetChunk(offEdgeObjectPosition);
+                    TileChunk nextChunk = GetOrCreateChunk(offEdgeObjectPosition);
                     if (!nextChunk.GetTileObject(layer, offEdgeObjectPosition).IsEmpty(subLayerIndex))
                     {
                         canBuild = false;
@@ -159,7 +159,7 @@ namespace SS3D.Engine.Tiles
             GameObject layerObject = GetOrCreateLayerObject(layer);
 
             // Get the right chunk
-            TileChunk chunk = GetChunk(position);
+            TileChunk chunk = GetOrCreateChunk(position);
             Vector2Int vector = chunk.GetXY(position);
             Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
 
@@ -180,7 +180,7 @@ namespace SS3D.Engine.Tiles
                     {
                         // We got a chunk edge case in which a multi tile object is outside of the chunk
                         Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
-                        TileChunk nextChunk = GetChunk(offEdgeObjectPosition);
+                        TileChunk nextChunk = GetOrCreateChunk(offEdgeObjectPosition);
                         nextChunk.GetTileObject(layer, offEdgeObjectPosition).SetPlacedObject(placedObject, subLayerIndex);
                     }
                     else
@@ -202,7 +202,7 @@ namespace SS3D.Engine.Tiles
             GameObject layerObject = GetOrCreateLayerObject(layer);
 
             // Get the right chunk
-            TileChunk chunk = GetChunk(position);
+            TileChunk chunk = GetOrCreateChunk(position);
             Vector2Int vector = chunk.GetXY(position);
             Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
 
@@ -220,7 +220,7 @@ namespace SS3D.Engine.Tiles
                 {
                     // We got a chunk edge case in which a multi tile object is outside of the chunk
                     Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
-                    TileChunk nextChunk = GetChunk(offEdgeObjectPosition);
+                    TileChunk nextChunk = GetOrCreateChunk(offEdgeObjectPosition);
                     nextChunk.GetTileObject(layer, offEdgeObjectPosition).SetPlacedObject(placedObject, subLayerIndex);
                 }
                 else
@@ -232,7 +232,7 @@ namespace SS3D.Engine.Tiles
 
         public void ClearTileObject(TileLayer layer, int subLayerIndex, Vector3 position)
         {
-            TileChunk chunk = GetChunk(position);
+            TileChunk chunk = GetOrCreateChunk(position);
 
             Vector2Int vector = chunk.GetXY(position);
             PlacedTileObject placedObject = chunk.GetTileObject(layer, vector.x, vector.y).GetPlacedObject(subLayerIndex);
@@ -246,7 +246,7 @@ namespace SS3D.Engine.Tiles
                     {
                         // We got a chunk edge case in which a multi tile object is outside of the chunk
                         Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
-                        TileChunk nextChunk = GetChunk(offEdgeObjectPosition);
+                        TileChunk nextChunk = GetOrCreateChunk(offEdgeObjectPosition);
                         nextChunk.GetTileObject(layer, offEdgeObjectPosition).SetPlacedObject(placedObject, subLayerIndex);
                     }
                     else
@@ -260,7 +260,7 @@ namespace SS3D.Engine.Tiles
 
         public TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
         {
-            TileChunk chunk = GetChunk(worldPosition);
+            TileChunk chunk = GetOrCreateChunk(worldPosition);
             return chunk.GetTileObject(layer, worldPosition);
         }
 
