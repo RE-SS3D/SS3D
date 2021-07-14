@@ -107,5 +107,10 @@ namespace SS3D.Engine.Tiles
         {
             return dir;
         }
+
+        public TileLayer GetLayer()
+        {
+            return tileObjectSO.layerType;
+        }
     }
 }

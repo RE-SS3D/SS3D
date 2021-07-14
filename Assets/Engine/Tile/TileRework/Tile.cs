@@ -78,6 +78,10 @@ namespace SS3D.Engine.Tiles
             return (Direction)(((int)first + (int)second + 8) % 8);
         }
 
+        public static Direction ToPerpendicularDirection(Direction dir)
+        {
+            return (Direction)(((int)dir + 1 % 4) * 2);
+        }
 
         public static int GetRotationAngle(Direction dir)
         {

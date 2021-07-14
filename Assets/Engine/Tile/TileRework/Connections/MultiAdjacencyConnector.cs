@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +11,9 @@ namespace SS3D.Engine.Tiles.Connections
         [SerializeField] private SimpleConnector simpleAdjacency;
         [SerializeField] private AdvancedConnector advancedAdjacency;
         [SerializeField] private OffsetConnector offsetAdjacency;
+
+        [HideInInspector]
+        public byte blockedDirections;
 
         public override void UpdateAll(PlacedTileObject[] neighbourObjects)
         {
@@ -34,7 +38,15 @@ namespace SS3D.Engine.Tiles.Connections
         private bool UpdateSingleConnection(Direction dir, PlacedTileObject placedObject)
         {
             bool isConnected = (placedObject && placedObject.HasAdjacencyConnector() && (placedObject.GetGenericType() == type || type == null));
+
+            isConnected &= (AdjacencyBitmap.Adjacent(blockedDirections, dir) == 0);
+
             return adjacents.UpdateDirection(dir, isConnected, true);
+        }
+
+        public void SetBlockedDirection(Direction dir, bool value)
+        {
+            AdjacencyBitmap.SetDirection(blockedDirections, dir, value);
         }
 
         protected override void UpdateMeshAndDirection()
