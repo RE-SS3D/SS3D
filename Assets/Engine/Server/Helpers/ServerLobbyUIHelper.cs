@@ -6,6 +6,7 @@ using SS3D.Engine.Server.Round;
 using SS3D.Engine.Tiles;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using UnityEngine.Events;
 using UnityEngine.Networking.Types;
 using UnityEngine.UI;
@@ -35,10 +36,14 @@ public class ServerLobbyUIHelper : NetworkBehaviour
     // TODO: User permissions
     [SerializeField] private Button serverSettingsButton;
 
+    public Button readyButton;
+    public TMP_Text readyText;
+    public bool ready = false;
+
     private void Awake()
     {
         // Here begins the disaster 
-
+        
         if (singleton != null && singleton != this)
         {
             Destroy(gameObject);
@@ -48,21 +53,25 @@ public class ServerLobbyUIHelper : NetworkBehaviour
             singleton = this;
         }
 
+        ready = false;
         // ClientTimerUpdated sets up the "string text" of SetTimerText,
         // that event is called on the RoundManager when the timer is running (Countdown and Round time)
         RoundManager.ClientTimerUpdated += SetTimerText;
         RoundManager.ServerWarmupStarted += EnableTimer;
         
         // Updates the Embark button text to "Embark"
-        RoundManager.ServerRoundStarted += ChangeEmbarkText;
+        RoundManager.ServerRoundStarted += UpdateEmbarkText;
         // Updates the menu if the round ends, maybe we can change later to a final round end later
-        RoundManager.ServerRoundEnded += ForceToggleOn;
+        RoundManager.ServerRoundEnded += ForceMenuUiToggleOn;
+
+        // updates ready state
+        readyButton.onClick.AddListener(OnReadyButtonClicked);
         
         // Makes the button's function be CmdRequestEmbark and the UI fade out
         embarkButton.onClick.AddListener(delegate
         {
             CmdRequestEmbark();
-            Toggle(false);
+            ToggleMenuUI(false);
         });
     }
 
@@ -70,7 +79,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) && RoundManager.singleton.IsRoundStarted)
         {
-            Toggle();
+            ToggleMenuUI();
         }
     }
 
@@ -89,17 +98,41 @@ public class ServerLobbyUIHelper : NetworkBehaviour
     {
         // Spawns the player
         LoginNetworkManager.singleton.SpawnPlayerAfterRoundStart(sender);
-    }  
+    }
+
+    public void OnReadyButtonClicked()
+    {
+        ready = !ready;
+
+        if (ready)
+        {
+            readyButton.image.color = MaterialChanger.GetColor(MaterialChanger.Palette01.red);
+            readyText.text = "not ready";
+        }
+
+        if (!ready)
+        {
+            readyButton.image.color = MaterialChanger.GetColor(MaterialChanger.Palette01.green);
+            readyText.text = "ready";
+        }
+        RoundManager.singleton.CmdSetPlayerReadyState(ready);
+    }
 
     // Updates the embark text status according to the round status (starting, started, stopped)
-    public void ChangeEmbarkText()
+    public void UpdateEmbarkText()
     {
+        // turn off ready button
+        readyButton.gameObject.SetActive(false);
+        
         // There's a timer UI so we deactivate it and make the embark appear
         timer.gameObject.SetActive(false);
         //Debug.Log("Updating embark button");
+        
         embarkText.gameObject.SetActive(true);
-
-	// and we wait until the map is loaded (locally) for the embark button to be unlocked
+        embarkButton.interactable = !ready;
+        
+        if (ready) { ToggleMenuUI(false); }
+        // and we wait until the map is loaded (locally) for the embark button to be unlocked
         StartCoroutine(WaitUntilMapLoaded());
     }
 
@@ -111,38 +144,40 @@ public class ServerLobbyUIHelper : NetworkBehaviour
                 return TileManager.singleton.IsEnabled();
             }
         );
-        
-        embarkButton.interactable = true;
     }
 
     // in the case we need to force the Lobby on the player, when the round ends for example
-    private void ForceToggleOn()
+    private void ForceMenuUiToggleOn()
     {
         // pain
-        Toggle(true);
+        ToggleMenuUI(true);
         timer.gameObject.SetActive(false);
         embarkText.gameObject.SetActive(true);
+        
+        // turn off ready button
+        readyButton.gameObject.SetActive(false);
         embarkButton.interactable = false;
     }
     
-    private void Toggle(bool toggle)
+    private void ToggleMenuUI(bool toggle)
     {
         if (!animator.enabled) animator.enabled = true;
         animator.SetBool("Toggle", toggle);
     }
 
-    private void Toggle()
+    private void ToggleMenuUI()
     {
         bool state = animator.GetBool("Toggle");
-        Toggle(!state);
+        ToggleMenuUI(!state);
     }
 
     // Triggered when warmup is started
     private void EnableTimer()
     {
-            timer.gameObject.SetActive(true);
-            embarkText.gameObject.SetActive(false);
+        timer.gameObject.SetActive(true);
+        embarkText.gameObject.SetActive(false);
     }
+
     private void SetTimerText(int time)
     {
         timer.text = time.ToString();
@@ -152,7 +187,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
     {
         RoundManager.ClientTimerUpdated -= SetTimerText;
         RoundManager.ServerWarmupStarted -= EnableTimer;
-        RoundManager.ServerRoundStarted -= ChangeEmbarkText;
-        RoundManager.ServerRoundEnded -= ForceToggleOn;
+        RoundManager.ServerRoundStarted -= UpdateEmbarkText;
+        RoundManager.ServerRoundEnded -= ForceMenuUiToggleOn;
     }
 }

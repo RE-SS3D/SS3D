@@ -7,6 +7,7 @@ using SS3D.Engine.Server.Login.Networking;
 using SS3D.Engine.Server.Round;
     
     using System.Net;
+using SS3D.Content;
 using Telepathy;
 using UnityEngine.SceneManagement;
     using UnityEngine.UI;
@@ -334,13 +335,15 @@ using UnityEngine.SceneManagement;
 
             if (NetworkClient.connection.identity != null)
             {
-                NetworkServer.DestroyPlayerForConnection(conn);
+                // no need to destroy the soul
+                //NetworkServer.DestroyPlayerForConnection(conn);
             }
             //Destroy dummy player
             //NetworkServer.DestroyPlayerForConnection(conn);
             
             //Spawn actual player
-            NetworkServer.AddPlayerForConnection(conn, player);   
+            NetworkServer.AddPlayerForConnection(conn, player);
+            RoundManager.singleton.roundPlayers.Add(player.GetComponent<Entity>());
         }
         
         public IEnumerator SpawnPlayerAfterRoundStart(NetworkConnection conn, CharacterSelectMessage characterSelection)

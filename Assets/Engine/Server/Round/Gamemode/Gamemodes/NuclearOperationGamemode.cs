@@ -10,14 +10,15 @@ namespace SS3D.Engine.Server.Gamemode
     {
         public GameObject endRoundStatsPrefab;
         
-        public new void Setup()
+        public override void Setup()
         {
+            Debug.Log("gamemode setup being called");
             foreach (Entity player in RoundManager.singleton.roundPlayers)
             {
                 NukeActivationGamemodeObjective objective = new NukeActivationGamemodeObjective();
                 objective.owner = player;
                 objective.completed = false;
-                
+                assignedObjectives[assignedObjectives.Length] = objective;
                 Debug.Log("Nuke objective added to: " + objective.owner);
             }
         }

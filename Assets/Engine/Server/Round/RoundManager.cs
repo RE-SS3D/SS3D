@@ -60,6 +60,8 @@ namespace SS3D.Engine.Server.Round
 
         // PLAYER MANAGEMENT
 
+        // players that have the ready state when the round started
+        public List<Soul> readyPlayers;
         // players that have joined the round
         public List<Entity> roundPlayers;
         
@@ -74,15 +76,17 @@ namespace SS3D.Engine.Server.Round
         }
             
         [Command(ignoreAuthority = true)]
-        private void CmdSetPlayerReadyState(bool state, NetworkConnectionToClient sender = null)
+        public void CmdSetPlayerReadyState(bool state, NetworkConnectionToClient sender = null)
         {
             if (state)
             {
-                roundPlayers.Add(LoginNetworkManager.singleton.GetSoul(sender).GetComponent<Entity>());
+                readyPlayers.Add(LoginNetworkManager.singleton.GetSoul(sender));
+                Debug.Log("player added to ready state " + sender.address);
             }
             else
             {
-                roundPlayers.Remove(LoginNetworkManager.singleton.GetSoul(sender).GetComponent<Entity>());
+                readyPlayers.Remove(LoginNetworkManager.singleton.GetSoul(sender));
+                Debug.Log("player removed from ready state " + sender.address);
             }
         }
         
@@ -141,13 +145,22 @@ namespace SS3D.Engine.Server.Round
 
             Debug.Log("Round Started");
             ServerRoundStarted?.Invoke();
-
+            
+            SpawnReadyPlayers();
+            
             // handles setting up the gamemode and objectives
             GamemodeManager.singleton.InitiateGamemode();
             
             RpcStartRound();
         }
 
+        public void SpawnReadyPlayers()
+        {
+            foreach (Soul soul in readyPlayers)
+            {
+                LoginNetworkManager.singleton.SpawnPlayerAfterRoundStart(soul.connectionToClient);
+            }
+        }
         [ClientRpc]
         public void RpcStartRound()
         {

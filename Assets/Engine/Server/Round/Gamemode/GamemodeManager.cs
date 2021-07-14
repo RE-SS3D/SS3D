@@ -23,9 +23,11 @@ namespace SS3D.Engine.Server.Gamemode
         // called to setup the gamemode at the start of the round
         public void InitiateGamemode()
         {
+            Debug.Log("Initializing gamemode");
             if (gamemode == null)
                 gamemode = possibleGamemodes[0];
             
+            Debug.Log("calling gamemode.setup");
             gamemode.Setup();
         }
 
