@@ -1,14 +1,16 @@
-﻿using System.Collections;
+﻿using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Engine.Tiles.Connections
 {
     [RequireComponent(typeof(MeshFilter))]
-    public abstract class AbstractAdjacencyConnector : MonoBehaviour, IAdjacencyConnector
+    public abstract class AbstractAdjacencyConnector : NetworkBehaviour, IAdjacencyConnector
     {
+        [HideInInspector][SyncVar]
+        public byte blockedDirections;
         protected AdjacencyBitmap adjacents = new AdjacencyBitmap();
-        protected AdjacencyBitmap blocked = new AdjacencyBitmap();
         protected MeshFilter filter;
 
         [Tooltip("Id that adjacent objects must be to count. If empty, any id is accepted")]

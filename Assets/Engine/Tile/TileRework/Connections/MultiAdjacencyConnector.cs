@@ -12,9 +12,6 @@ namespace SS3D.Engine.Tiles.Connections
         [SerializeField] private AdvancedConnector advancedAdjacency;
         [SerializeField] private OffsetConnector offsetAdjacency;
 
-        [HideInInspector]
-        public byte blockedDirections;
-
         public override void UpdateAll(PlacedTileObject[] neighbourObjects)
         {
             bool changed = false;
