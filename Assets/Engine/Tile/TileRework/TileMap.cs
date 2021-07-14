@@ -109,7 +109,7 @@ namespace SS3D.Engine.Tiles
 
         public TileChunk[] GetChunks()
         {
-            return chunks.Values.ToArray();
+            return chunks?.Values.ToArray();
         }
 
         public bool CanBuild(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
@@ -350,6 +350,8 @@ namespace SS3D.Engine.Tiles
         
         public void Load(MapSaveObject saveObject, bool softLoad)
         {
+            if (!tileManager) tileManager = FindObjectOfType<TileManager>();
+
             IsMain = saveObject.isMain;
 
             // Loop through every chunk in map

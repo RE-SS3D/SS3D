@@ -66,14 +66,14 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
         public void OnEnable()
         {
-            tileManager = TileManager.Instance;
+            tileManager = FindObjectOfType<TileManager>();
 
 
             if (tileManager == null)
             {
                 EditorApplication.delayCall += () =>
                 {
-                    if (TileManager.Instance.IsInitialized)
+                    if (TileManager.Instance && TileManager.Instance.IsInitialized)
                     {
                         tileManager = TileManager.Instance;
                     }
@@ -243,6 +243,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
         private void OnSceneGUI(SceneView sceneView)
         {
+            if (!tileManager || !tileManager.IsInitialized)
+                return;
+
             if (showTileGrid)
                 DisplayGrid(GetCurrentMap());
 

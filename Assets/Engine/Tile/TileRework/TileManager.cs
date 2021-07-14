@@ -18,8 +18,10 @@ namespace SS3D.Engine.Tiles
         {
             public MapSaveObject[] saveObjectList;
         }
-        
-        public static TileManager Instance { get; private set; }
+
+        private static TileManager _instance;
+        public static TileManager Instance { get { return _instance; } }
+
         public bool IsInitialized { get; private set; }
         public static event System.Action TileManagerLoaded;
 
@@ -32,7 +34,6 @@ namespace SS3D.Engine.Tiles
         {
             if (!IsInitialized)
             {
-                Instance = this;
                 mapList = new List<TileMap>();
 
                 Scene scene;
@@ -59,7 +60,6 @@ namespace SS3D.Engine.Tiles
 #endif
 
                 LoadAll(true);
-                // LoadAll();
                 UpdateAllAdjacencies();
                 IsInitialized = true;
 
@@ -69,26 +69,31 @@ namespace SS3D.Engine.Tiles
 
         private void Awake()
         {
-            IsInitialized = false;
-            // tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
-            Init();
-            // Reinitialize();
-            // UpdateAllAdjacencies();
+            if (_instance != null && _instance != this)
+            {
+                Debug.LogWarning("Duplicate TileManager found. Deleting the last instance");
+                EditorAndRuntime.Destroy(gameObject);
+            }
+            else
+            {
+                _instance = this;
+                IsInitialized = false;
+                Init();
+            }
         }
 
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            // Can't do most things in OnValidate, so wait a sec.
-            UnityEditor.EditorApplication.delayCall += () => {
-                if (this)
-                {
-                    IsInitialized = false;
-                    Init();
-                    // Reinitialize();
-                    // UpdateAllAdjacencies();
-                }
-            };
+            if (_instance != null && _instance != this)
+            {
+                Debug.LogWarning("Duplicate TileManager found on OnValidate().");
+            }
+            else
+            {
+                _instance = this;
+                Reinitialize();
+            }
         }
 #endif
 
@@ -327,7 +332,7 @@ namespace SS3D.Engine.Tiles
         /// Reinitialize the map without destroying/creating gameobjects
         /// </summary>
         [ContextMenu("Reinitialize")]
-        private void Reinitialize()
+        public void Reinitialize()
         {
             IsInitialized = false;
             Init();
