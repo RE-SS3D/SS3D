@@ -239,6 +239,12 @@ namespace SS3D.Engine.Tiles
 
             if (placedObject != null)
             {
+                // Destroy any objects that are on top
+                foreach (var topPlacedObject in TileRestrictions.GetToBeDestroyedObjects(this, layer, position))
+                {
+                    topPlacedObject.ClearAllPlacedObjects();
+                }
+
                 List<Vector2Int> gridPositionList = placedObject.GetGridPositionList();
                 foreach (Vector2Int gridPosition in gridPositionList)
                 {

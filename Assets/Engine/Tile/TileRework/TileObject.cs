@@ -46,9 +46,22 @@ namespace SS3D.Engine.Tiles
             map.TriggerGridObjectChanged(x, y);
         }
 
+        public void ClearAllPlacedObjects()
+        {
+            foreach (PlacedTileObject placedObject in placedObjects)
+                placedObject?.DestroySelf();
+
+            map.TriggerGridObjectChanged(x, y);
+        }
+
         public PlacedTileObject GetPlacedObject(int subLayerIndex)
         {
             return placedObjects[subLayerIndex];
+        }
+
+        public PlacedTileObject[] GetAllPlacedObjects()
+        {
+            return placedObjects;
         }
 
         public bool IsEmpty(int subLayerIndex)
