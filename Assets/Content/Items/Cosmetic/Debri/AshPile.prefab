@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DisplayName: 
-  Text: Burnt remains of... somthing...
+  Text: Burnt remains of... something...
   MaxDistance: 0
 --- !u!114 &1645595486595483908
 MonoBehaviour:
