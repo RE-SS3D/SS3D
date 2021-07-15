@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8414326144691496247}
   - component: {fileID: 495010723332035723}
   - component: {fileID: 946744180037249438}
+  - component: {fileID: 391189235340657216}
   m_Layer: 0
   m_Name: BarStoolBttom
   m_TagString: Untagged
@@ -79,6 +80,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!136 &391189235340657216
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3648840853805917807}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.11930084
+  m_Height: 0.3951856
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.1349243, z: 0}
 --- !u!1 &5161561551087789900
 GameObject:
   m_ObjectHideFlags: 0
@@ -89,11 +104,10 @@ GameObject:
   m_Component:
   - component: {fileID: 8213111319263450463}
   - component: {fileID: 3059472895816432833}
-  - component: {fileID: 670817264003822935}
   - component: {fileID: -8007393211677902780}
   - component: {fileID: -3453679615323309297}
   m_Layer: 0
-  m_Name: BarStool2
+  m_Name: BarStool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -131,20 +145,6 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
---- !u!64 &670817264003822935
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5161561551087789900}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -94231238977880164, guid: 50aa06d449df400489fb0675c030f508, type: 3}
 --- !u!114 &-8007393211677902780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,7 +183,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 254666270778612133}
-  - component: {fileID: 8671510269173779519}
+  - component: {fileID: 7653303779560991819}
+  - component: {fileID: 2604879563519723591}
+  - component: {fileID: 1547358510754560828}
   m_Layer: 0
   m_Name: BarStool
   m_TagString: Untagged
@@ -205,8 +207,16 @@ Transform:
   m_Father: {fileID: 8213111319263450463}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!137 &8671510269173779519
-SkinnedMeshRenderer:
+--- !u!33 &7653303779560991819
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5218468364695561986}
+  m_Mesh: {fileID: -94231238977880164, guid: 50aa06d449df400489fb0675c030f508, type: 3}
+--- !u!23 &2604879563519723591
+MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -219,7 +229,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -244,15 +254,17 @@ SkinnedMeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  serializedVersion: 2
-  m_Quality: 0
-  m_UpdateWhenOffscreen: 0
-  m_SkinnedMotionVectors: 1
+--- !u!64 &1547358510754560828
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5218468364695561986}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
   m_Mesh: {fileID: -94231238977880164, guid: 50aa06d449df400489fb0675c030f508, type: 3}
-  m_Bones: []
-  m_BlendShapeWeights: []
-  m_RootBone: {fileID: 0}
-  m_AABB:
-    m_Center: {x: 0.010543302, y: 0.4890518, z: -0.1630926}
-    m_Extent: {x: 0.26160455, y: 0.49727133, z: 0.41007435}
-  m_DirtyAABB: 0
