@@ -33,16 +33,14 @@ namespace SS3D.Content.Systems.Interactions
         
             if (interactionEvent.Target is IGameObjectProvider targetBehaviour)
             {
-                /*
+
                 // Get target tile
-                TargetTile = TileManager.Instance.CanBuild()
-                TargetTile = targetBehaviour.GameObject.GetComponentInParent<TileObject>();
-                if (TargetTile == null)
+                // TargetTile = TileManager.Instance.CanBuild()
+                TargetPlacedObject = targetBehaviour.GameObject.GetComponentInParent<PlacedTileObject>();
+                if (TargetPlacedObject == null)
                 {
                     return false;
                 }
-            
-                */
 
                 // Ready if no obstacles
                 if (ObstacleMask == 0)

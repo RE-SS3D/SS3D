@@ -104,7 +104,7 @@ namespace SS3D.Engine.Tiles.Connections
             return (bitmap >> (int)direction) & 0x1;
         }
 
-        public byte Connections { get; private set; } = 0;
+        public byte Connections { get; set; } = 0;
 
         /**
          * Updates the given bitmap using SetDirection, and returns whether the

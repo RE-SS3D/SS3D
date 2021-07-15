@@ -21,9 +21,9 @@ namespace SS3D.Engine.Tiles
 
         public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSO tileObjectSO)
         {
+
             GameObject placedGameObject = EditorAndRuntime.InstantiatePrefab(tileObjectSO.prefab);
             placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
-
 
             // Alternative name is required for walls as they can occupy the same tile
             if (tileObjectSO.layerType == TileLayer.HighWall || tileObjectSO.layerType == TileLayer.LowWall)
@@ -37,6 +37,12 @@ namespace SS3D.Engine.Tiles
 
             placedObject.Setup(tileObjectSO, origin, dir);
 
+            if (NetworkServer.active)
+            {
+                // if (!ClientScene.prefabs.ContainsValue(placedGameObject))
+                //    ClientScene.RegisterPrefab(placedGameObject);
+                NetworkServer.Spawn(placedGameObject);
+            }
             return placedObject;
         }
 

@@ -62,6 +62,38 @@ namespace SS3D.Engine.Tiles.Connections
                     break;
             }
             
+            if (filter == null)
+                filter = GetComponent<MeshFilter>();
+
+            filter.mesh = info.mesh;
+            transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, info.rotation, transform.localRotation.eulerAngles.z);
+            
+            
+            if (isServer)
+                RpcUpdateMeshAndDirection(adjacents.Connections);
+            
+        }
+
+        [ClientRpc]
+        protected void RpcUpdateMeshAndDirection(byte adjacentByte)
+        {
+            // Rebuild the bitmap as Mirror can only handle basic types as parameter
+            MeshDirectionInfo info = new MeshDirectionInfo();
+            AdjacencyBitmap adjacencyBitmap = new AdjacencyBitmap();
+            adjacencyBitmap.Connections = adjacentByte;
+
+            switch (selectedAdjacencyType)
+            {
+                case AdjacencyType.Simple:
+                    info = simpleAdjacency.GetMeshAndDirection(adjacencyBitmap);
+                    break;
+                case AdjacencyType.Advanced:
+                    info = advancedAdjacency.GetMeshAndDirection(adjacencyBitmap);
+                    break;
+                case AdjacencyType.Offset:
+                    info = offsetAdjacency.GetMeshAndDirection(adjacencyBitmap);
+                    break;
+            }
 
             if (filter == null)
                 filter = GetComponent<MeshFilter>();
