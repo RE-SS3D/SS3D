@@ -74,16 +74,6 @@ namespace SS3D.Engine.Tiles
         {
             List<TileObject> toBeDestroyedList = new List<TileObject>();
 
-            TileObject tileObject = map.GetTileObject(layer, position);
-            toBeDestroyedList.AddRange(GetDependantObjects(map, layer, position));
-
-            return toBeDestroyedList;
-        }
-
-        private static List<TileObject> GetDependantObjects(TileMap map, TileLayer layer, Vector3 position)
-        {
-            List<TileObject> dependantList = new List<TileObject>();
-
             // Remove everything when the plenum is missing
             if (layer == TileLayer.Plenum)
             {
@@ -92,19 +82,18 @@ namespace SS3D.Engine.Tiles
                     if (layerToCheck == TileLayer.Plenum)
                         continue;
 
-                    dependantList.Add(map.GetTileObject(layerToCheck, position));
+                    toBeDestroyedList.Add(map.GetTileObject(layerToCheck, position));
                 }
             }
 
             // Remove any wall fixtures when the turf is missing
             else if (layer == TileLayer.Turf)
             {
-                dependantList.Add(map.GetTileObject(TileLayer.HighWall, position));
-                dependantList.Add(map.GetTileObject(TileLayer.LowWall, position));
+                toBeDestroyedList.Add(map.GetTileObject(TileLayer.HighWall, position));
+                toBeDestroyedList.Add(map.GetTileObject(TileLayer.LowWall, position));
             }
 
-            return dependantList;
+            return toBeDestroyedList;
         }
     }
-    
 }
