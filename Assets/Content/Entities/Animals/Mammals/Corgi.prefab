@@ -1283,9 +1283,10 @@ GameObject:
   m_Component:
   - component: {fileID: 6627928422801053593}
   - component: {fileID: 1496625315116405185}
+  - component: {fileID: 901849949230438595}
   - component: {fileID: 4345301749275640112}
   m_Layer: 0
-  m_Name: corgi
+  m_Name: Ccorgi
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1321,6 +1322,21 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -3867007958098232889, guid: 05bc0cd21bcfd8c418e9855d54972f7f, type: 3}
+--- !u!114 &901849949230438595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7899445757232768394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisplayName: Corgi
+  Text: Look at these legs! So cute!
+  MaxDistance: 0
 --- !u!114 &4345301749275640112
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1333,6 +1349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4706a8bb1f7943e43873549fa0b6ce14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ViewRange: 10
 --- !u!1 &8027909562908164662
 GameObject:
   m_ObjectHideFlags: 0
