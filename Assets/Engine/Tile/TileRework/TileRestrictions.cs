@@ -31,6 +31,23 @@ namespace SS3D.Engine.Tiles
                 if (!CanBuildWallAttachment(map, position, tileObjectSO, dir))
                     return false;
 
+            // No furniture inside walls
+            if (placedLayer == TileLayer.FurnitureBase || placedLayer == TileLayer.FurnitureTop ||
+                placedLayer == TileLayer.Overlay)
+            {
+                TileObject wallObject = map.GetTileObject(TileLayer.Turf, position);
+                if (!wallObject.IsCompletelyEmpty() && wallObject.GetPlacedObject(0).GetGenericType().Contains("wall"))
+                    return false;
+            }
+
+            // No walls on furniture
+            if (placedLayer == TileLayer.Turf && tileObjectSO.genericType.Contains("wall") &&
+                (!tileObjects[(int)TileLayer.FurnitureBase].IsCompletelyEmpty() ||
+                 !tileObjects[(int)TileLayer.FurnitureTop].IsCompletelyEmpty() ||
+                 !tileObjects[(int)TileLayer.Overlay].IsCompletelyEmpty()))
+                return false;
+
+
             return true;
         }
 
