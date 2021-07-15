@@ -116,6 +116,26 @@ namespace SS3D.Engine.Tiles
             return new Vector2Int((int)Math.Round(worldPosition.x - originPosition.x), (int)Math.Round(worldPosition.z - originPosition.z));
         }
 
+        public bool IsEmpty()
+        {
+            bool empty = true;
+
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    for (int y = 0; y < height; y++)
+                    {
+                        TileObject tileObject = GetTileObject(layer, x, y);
+                        if (!tileObject.IsCompletelyEmpty())
+                            empty = false;
+                    }
+                }
+            }
+
+            return empty;
+        }
+
         public void SetEnabled(TileLayer layer, bool enabled)
         {
             for (int x = 0; x < width; x++)

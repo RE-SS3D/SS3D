@@ -184,11 +184,6 @@ namespace SS3D.Engine.Tiles
             return map.CanBuild(subLayerIndex, tileObjectSO, position, dir);
         }
 
-        public bool CanBuild(TileObjectSO tileObjectSO, Vector3 position, Direction dir)
-        {
-            return CanBuild(GetMainMap(), 0, tileObjectSO, position, dir);
-        }
-
         public void ClearTileObject(TileMap map, TileLayer layer, int subLayerIndex, Vector3 position)
         {
             map.ClearTileObject(layer, subLayerIndex, position);

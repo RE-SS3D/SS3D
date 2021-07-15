@@ -112,6 +112,12 @@ namespace SS3D.Engine.Tiles
             return chunks?.Values.ToArray();
         }
 
+        private void DeleteIfEmpty(TileChunk chunk)
+        {
+            if (chunk.IsEmpty())
+                chunks.Remove(GetKey(chunk.GetOrigin()));
+        }
+
         public bool CanBuild(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
             // Get the right chunk
@@ -139,6 +145,7 @@ namespace SS3D.Engine.Tiles
                         canBuild = false;
                         break;
                     }
+                    DeleteIfEmpty(nextChunk);
                 }
                 else
                 {
@@ -149,6 +156,8 @@ namespace SS3D.Engine.Tiles
                     }
                 }
             }
+
+            DeleteIfEmpty(chunk);
 
             return canBuild;
         }
@@ -168,6 +177,9 @@ namespace SS3D.Engine.Tiles
 
             if (CanBuild(subLayerIndex, tileObjectSO, position, dir))
             {
+                // Get the chunk again as it may be deleted in CanBuild()
+                chunk = GetOrCreateChunk(position);
+
                 Vector2Int rotationOffset = tileObjectSO.GetRotationOffset(dir);
                 Vector3 placedObjectWorldPosition = chunk.GetWorldPosition(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, 0, rotationOffset.y) * chunk.GetTileSize();
 
@@ -262,6 +274,8 @@ namespace SS3D.Engine.Tiles
                     }
                 }
             }
+
+            DeleteIfEmpty(chunk);
         }
 
         public TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
