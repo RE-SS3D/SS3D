@@ -11,13 +11,10 @@ public class CellCharger : NetworkBehaviour
     // Visual container for the cell to be put in
     public AttachedContainer AttachedContainer;
     public MeshRenderer wiresMeshRenderer;
-    [SerializeField]private Material emissiveMaterial;
-    [SerializeField]private Texture offEmissiveMask;
-    [SerializeField]private Texture lowEmissiveMask;
-    [SerializeField]private Texture midLowEmissiveMask;
-    [SerializeField]private Texture midHighEmissiveMask;
-    [SerializeField]private Texture highEmissiveMask;
-    private int emissionMap = Shader.PropertyToID("_EmissionMap");
+    [SerializeField]private BlinkingLight redLight;
+    [SerializeField]private BlinkingLight orangeLight;
+    [SerializeField]private BlinkingLight yellowLight;
+    [SerializeField]private BlinkingLight greenLight;
 
     private void Start()
     {
@@ -25,10 +22,12 @@ public class CellCharger : NetworkBehaviour
 
         AttachedContainer.Container.ContentsChanged += (_, items, type) =>
         {
-            wiresMeshRenderer.enabled = !AttachedContainer.Container.Empty;
+            // Power cell does not attach to match wires
+            // wiresMeshRenderer.enabled = !AttachedContainer.Container.Empty; 
             if (AttachedContainer.Container.Empty)
             {
-                emissiveMaterial.SetTexture(emissionMap, offEmissiveMask);
+                // Cell Charger is empty
+                TurnOffLights();
             }
         };
         if (isServer)
@@ -54,32 +53,52 @@ public class CellCharger : NetworkBehaviour
             IChargeable chargeable = item.GetComponent<IChargeable>();
             if (chargeable != null)
             {
-                
                 chargeable.AddCharge(chargeable.GetChargeRate());
-                UpdateEmissiveMask(chargeable.GetPowerPercentage());
+                UpdateLights(chargeable.GetPowerPercentage());
             }
         }
     }
-    // Chooses the appropriate emmissive mask texture for emissiveMaterial based on powerPercentage.
-    // The power is processed in .25 groups. (-1 to .25) (.25 to .50) (.50 to .75) (.75 to 1)
-    // The first group starts at -1 to ensure that the first light glows immediately
-    private void UpdateEmissiveMask(float powerPercentage) 
+    
+    /// <summary>
+    /// Turn off all lights
+    /// </summary>
+    private void TurnOffLights() 
     {
-        if (-1f <= powerPercentage && powerPercentage < .25f)
+        redLight.TurnLightOff();
+        orangeLight.TurnLightOff();
+        yellowLight.TurnLightOff();
+        greenLight.TurnLightOff();
+    }
+
+    /// <summary>
+    /// Turns on lights based on powerPercentage.
+    /// Power groups are (0 - .25), (.25 - .50), (.50 - .75), (.75 - 1) 
+    /// </summary>
+    /// <param name="powerPercentage">Value between 0 - 1</param>
+    private void UpdateLights(float powerPercentage) 
+    {
+        if (0 <= powerPercentage && powerPercentage < .25f) // power @ 25%
         {
-            emissiveMaterial.SetTexture(emissionMap, lowEmissiveMask);       
+            redLight.MakeLightBlink();
         }
-        else if (.25 <= powerPercentage && powerPercentage < .50f)
+        else if (.25f <= powerPercentage && powerPercentage < .50f) // power @ 50%
         {
-            emissiveMaterial.SetTexture(emissionMap, midLowEmissiveMask);
+            redLight.MakeLightStayOn();
+            orangeLight.MakeLightBlink();
         }
-        else if (.50 <= powerPercentage && powerPercentage < .75f)
+        else if (.50f <= powerPercentage && powerPercentage < .75f) // power @ 75%
         {
-            emissiveMaterial.SetTexture(emissionMap, midHighEmissiveMask);
+            orangeLight.MakeLightStayOn();
+            yellowLight.MakeLightBlink();
         }
-        else 
+        else if  (.75f <= powerPercentage && powerPercentage < 1f)
         {
-            emissiveMaterial.SetTexture(emissionMap, highEmissiveMask);
+            yellowLight.MakeLightStayOn();
+            greenLight.MakeLightBlink();
+        }
+        else if (1f <= powerPercentage)
+        {
+            greenLight.MakeLightStayOn();
         }
     }
 }
