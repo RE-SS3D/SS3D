@@ -336,9 +336,9 @@ namespace SS3D.Engine.Examine
 			}
 			
 			// If mesh exists, record the colour affiliation of it 
-			if (mf != null && child.gameObject.GetComponent<Renderer>().enabled)
+			if (mf != null && mf.sharedMesh != null && child.gameObject.GetComponent<Renderer>().enabled)
 			{
-				meshes.Add(new MeshColourAffiliation(mf.mesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
+				meshes.Add(new MeshColourAffiliation(mf.sharedMesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
 			}
 			if (smr != null && smr.sharedMesh != null && child.gameObject.GetComponent<Renderer>().enabled)
 			{
