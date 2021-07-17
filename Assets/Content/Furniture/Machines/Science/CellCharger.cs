@@ -38,6 +38,7 @@ public class CellCharger : NetworkBehaviour
 
     IEnumerator StartCharge()
     {
+        Recharge(); // turns on the lights as soon as the powercell is attached
         while (true)
         {
             yield return new WaitForSeconds(2f);
@@ -88,16 +89,22 @@ public class CellCharger : NetworkBehaviour
         }
         else if (.50f <= powerPercentage && powerPercentage < .75f) // power @ 75%
         {
+            redLight.MakeLightStayOn();
             orangeLight.MakeLightStayOn();
             yellowLight.MakeLightBlink();
         }
         else if  (.75f <= powerPercentage && powerPercentage < 1f)
         {
+            redLight.MakeLightStayOn();
+            orangeLight.MakeLightStayOn();
             yellowLight.MakeLightStayOn();
             greenLight.MakeLightBlink();
         }
         else if (1f <= powerPercentage)
         {
+            redLight.MakeLightStayOn();
+            orangeLight.MakeLightStayOn();
+            yellowLight.MakeLightStayOn();
             greenLight.MakeLightStayOn();
         }
     }
