@@ -85,11 +85,13 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
                             // Apply the changes
                             serializedNeighbourConnector.ApplyModifiedProperties();
+                            adjacencyNeighbour.UpdateBlockedFromEditor();
                             adjacencyNeighbour.UpdateSingle(TileHelper.GetOpposite((Direction)i), placedObject);
                         }
                     }
 
                     // Set their adjacency connector
+                    connector.UpdateBlockedFromEditor();
                     placedObject.UpdateAllAdjacencies(neighbourObjects);
                 }
             }

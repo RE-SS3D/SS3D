@@ -171,7 +171,6 @@ GameObject:
   - component: {fileID: 3402371599227754438}
   - component: {fileID: 2586358896294450200}
   - component: {fileID: 5107901468329445811}
-  - component: {fileID: -7537729059557374700}
   - component: {fileID: -8171471200217724328}
   m_Layer: 0
   m_Name: Plenum
@@ -256,25 +255,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.0000011, y: 1.0556489, z: 0.9999999}
   m_Center: {x: 0, y: -0.54184026, z: 0}
---- !u!114 &-7537729059557374700
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8028539322119499722}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 961b31fd1d838b9418d00d2675f3a9ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: Plenum
-  o: {fileID: -1186837388861869702, guid: ef8223c105f87464c938b1d51958e5d9, type: 3}
-  u: {fileID: 8670779871488701567, guid: ef8223c105f87464c938b1d51958e5d9, type: 3}
-  i: {fileID: 2136686312440598757, guid: ef8223c105f87464c938b1d51958e5d9, type: 3}
-  l: {fileID: 1519232011123154604, guid: ef8223c105f87464c938b1d51958e5d9, type: 3}
-  t: {fileID: -5342183311838053004, guid: ef8223c105f87464c938b1d51958e5d9, type: 3}
-  x: {fileID: -4788375331945994191, guid: ef8223c105f87464c938b1d51958e5d9, type: 3}
 --- !u!114 &-8171471200217724328
 MonoBehaviour:
   m_ObjectHideFlags: 0

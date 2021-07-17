@@ -67,6 +67,12 @@ namespace SS3D.Engine.Tiles
             }
         }
 
+        private void OnEnable()
+        {
+            IsInitialized = false;
+            Init();
+        }
+
         private void Awake()
         {
             if (_instance != null && _instance != this)
@@ -77,8 +83,6 @@ namespace SS3D.Engine.Tiles
             else
             {
                 _instance = this;
-                IsInitialized = false;
-                Init();
             }
         }
 
@@ -92,7 +96,11 @@ namespace SS3D.Engine.Tiles
             else
             {
                 _instance = this;
-                Reinitialize();
+                UnityEditor.EditorApplication.delayCall += () => {
+                    if (this)
+                        Reinitialize();
+                };
+                
             }
         }
 #endif
