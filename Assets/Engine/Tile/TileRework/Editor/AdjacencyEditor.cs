@@ -5,7 +5,9 @@ using UnityEngine;
 
 namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 {
-
+    /// <summary>
+    /// Custom editor used for setting blocked connections.
+    /// </summary>
     [CustomEditor(typeof(MultiAdjacencyConnector))]
     public class AdjacencyEditor : UnityEditor.Editor
     {
@@ -16,6 +18,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
         {
             DrawDefaultInspector();
 
+            // Serialize the object as this is the prefered way to change objects in the editor
             MultiAdjacencyConnector connector = (MultiAdjacencyConnector)target;
             SerializedObject serializedConnector = new SerializedObject(connector);
             SerializedProperty property = serializedConnector.FindProperty("blockedDirections");

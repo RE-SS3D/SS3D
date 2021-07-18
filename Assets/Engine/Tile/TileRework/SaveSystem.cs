@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+/// <summary>
+/// Class for the saving and loading of serialized objects. Uses Generics and can be adapted for any serializable object.
+/// </summary>
 public static class SaveSystem
 {
     private const string SAVE_EXTENSION = "txt";
@@ -64,8 +67,10 @@ public static class SaveSystem
     {
         Init();
         DirectoryInfo directoryInfo = new DirectoryInfo(SAVE_FOLDER);
+
         // Get all save files
         FileInfo[] saveFiles = directoryInfo.GetFiles("*." + SAVE_EXTENSION);
+
         // Cycle through all save files and identify the most recent one
         FileInfo mostRecentFile = null;
         foreach (FileInfo fileInfo in saveFiles)

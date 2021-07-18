@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace SS3D.Engine.Tiles.Connections
 {
+    /// <summary>
+    /// Adjacency type used for objects that do not require complex connections.
+    /// </summary>
     [Serializable]
     public struct SimpleConnector
     {

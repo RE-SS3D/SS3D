@@ -5,8 +5,17 @@ using UnityEngine;
 
 namespace SS3D.Engine.Tiles
 {
+    /// <summary>
+    /// Chunk class used for grouping together TileObjects.
+    /// 
+    /// One dimensional arrays are used for 2 dimensional grids that can be addressed via [y * width + x]
+    /// 
+    /// </summary>
     public class TileChunk
     {
+        /// <summary>
+        /// Event that is triggered when a TileObject changes.
+        /// </summary>
         public event EventHandler<OnGridObjectChangedEventArgs> OnGridObjectChanged;
         public class OnGridObjectChangedEventArgs : EventArgs
         {
@@ -14,12 +23,18 @@ namespace SS3D.Engine.Tiles
             public int y;
         }
 
+        /// <summary>
+        /// Grid for grouping TileObjects per layer. Can be used for walking through objects on the same layer fast.
+        /// </summary>
         public struct TileGrid
         {
             public TileLayer layer;
             public TileObject[] tileObjectsGrid;
         }
 
+        /// <summary>
+        /// SaveObject used by chunks.
+        /// </summary>
         [Serializable]
         public class ChunkSaveObject
         {
@@ -31,7 +46,11 @@ namespace SS3D.Engine.Tiles
             public TileObject.TileSaveObject[] tileObjectSaveObjectArray;
         }
 
+        /// <summary>
+        /// Unique key for each chunk
+        /// </summary>
         private Vector2Int chunkKey;
+
         private int width;
         private int height;
         private float tileSize = 1f;
@@ -51,6 +70,11 @@ namespace SS3D.Engine.Tiles
             tileManager = TileManager.Instance;
         }
 
+        /// <summary>
+        /// Create a new empty grid for a given layer.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
         private TileGrid CreateGrid(TileLayer layer)
         {
             TileGrid grid = new TileGrid { layer = layer };
@@ -71,6 +95,9 @@ namespace SS3D.Engine.Tiles
             return grid;
         }
 
+        /// <summary>
+        /// Create empty grids for all layers.
+        /// </summary>
         private void CreateAllGrids()
         {
             tileGridList = new List<TileGrid>();
@@ -106,16 +133,31 @@ namespace SS3D.Engine.Tiles
             return chunkKey;
         }
 
+        /// <summary>
+        /// Returns the worldposition for a given x and y offset.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public Vector3 GetWorldPosition(int x, int y)
         {
             return new Vector3(x, 0, y) * tileSize + originPosition;
         }
 
+        /// <summary>
+        /// Returns the x and y offset for a given chunk position.
+        /// </summary>
+        /// <param name="worldPosition"></param>
+        /// <returns></returns>
         public Vector2Int GetXY(Vector3 worldPosition)
         {
             return new Vector2Int((int)Math.Round(worldPosition.x - originPosition.x), (int)Math.Round(worldPosition.z - originPosition.z));
         }
 
+        /// <summary>
+        /// Determines if all layers in the chunk are completely empty.
+        /// </summary>
+        /// <returns></returns>
         public bool IsEmpty()
         {
             bool empty = true;
@@ -136,6 +178,11 @@ namespace SS3D.Engine.Tiles
             return empty;
         }
 
+        /// <summary>
+        /// Sets all gameobjects for a given layer to either enabled or disabled.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="enabled"></param>
         public void SetEnabled(TileLayer layer, bool enabled)
         {
             for (int x = 0; x < width; x++)
@@ -150,6 +197,13 @@ namespace SS3D.Engine.Tiles
             }
         }
 
+        /// <summary>
+        /// Sets a TileObject value for a given x and y.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="value"></param>
         public void SetTileObject(TileLayer layer, int x, int y, TileObject value)
         {
             if (x >= 0 && y >= 0 && x < width && y < height)
@@ -159,12 +213,25 @@ namespace SS3D.Engine.Tiles
             }
         }
 
+        /// <summary>
+        /// Sets a TileObject value for a given worldposition.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="worldPosition"></param>
+        /// <param name="value"></param>
         public void SetTileObject(TileLayer layer, Vector3 worldPosition, TileObject value)
         {
             Vector2Int vector = GetXY(worldPosition);
             SetTileObject(layer, vector.x, vector.y, value);
         }
 
+        /// <summary>
+        /// Gets a TileObject value for a given x and y.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public TileObject GetTileObject(TileLayer layer, int x, int y)
         {
             if (x >= 0 && y >= 0 && x < width && y < height)
@@ -177,6 +244,12 @@ namespace SS3D.Engine.Tiles
             }
         }
 
+        /// <summary>
+        /// Gets a TileObject value for a given worldposition.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="worldPosition"></param>
+        /// <returns></returns>
         public TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
         {
             Vector2Int vector = new Vector2Int();
@@ -189,6 +262,9 @@ namespace SS3D.Engine.Tiles
             OnGridObjectChanged?.Invoke(this, new OnGridObjectChangedEventArgs { x = x, y = y });
         }
 
+        /// <summary>
+        /// Clears the entire chunk of any PlacedTileObject.
+        /// </summary>
         public void Clear()
         {
             foreach (TileLayer layer in TileHelper.GetTileLayers())
@@ -210,6 +286,10 @@ namespace SS3D.Engine.Tiles
             }
         }
 
+        /// <summary>
+        /// Saves all the TileObjects in the chunk.
+        /// </summary>
+        /// <returns></returns>
         public ChunkSaveObject Save()
         {
             List<TileObject.TileSaveObject> tileObjectSaveObjectList = new List<TileObject.TileSaveObject>();

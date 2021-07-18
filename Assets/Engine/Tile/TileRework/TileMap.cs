@@ -6,8 +6,14 @@ using UnityEngine;
 
 namespace SS3D.Engine.Tiles
 {
+    /// <summary>
+    /// Class used for storing and modifying a tile map.
+    /// </summary>
     public class TileMap : MonoBehaviour
     {
+        /// <summary>
+        /// Save object used for reconstructing a tilemap.
+        /// </summary>
         [Serializable]
         public class MapSaveObject
         {
@@ -16,7 +22,14 @@ namespace SS3D.Engine.Tiles
             public TileChunk.ChunkSaveObject[] saveObjectList;
         }
 
+        /// <summary>
+        /// Number of TileObjects that should go in a chunk. 16 x 16
+        /// </summary>
         public const int CHUNK_SIZE = 16;
+
+        /// <summary>
+        /// The size of each tile.
+        /// </summary>
         private const float TILE_SIZE = 1.0f;
 
         private Dictionary<Vector2Int, TileChunk> chunks;
@@ -26,6 +39,11 @@ namespace SS3D.Engine.Tiles
         private string mapName;
         private TileManager tileManager;
 
+        /// <summary>
+        /// Creates a new TileMap.
+        /// </summary>
+        /// <param name="name">Name of the map</param>
+        /// <returns></returns>
         public static TileMap Create(string name)
         {
             GameObject mapObject = new GameObject(name);
@@ -36,6 +54,10 @@ namespace SS3D.Engine.Tiles
             return map;
         }
 
+        /// <summary>
+        /// Initialize the new map.
+        /// </summary>
+        /// <param name="name"></param>
         public void Setup(string name)
         {
             chunks = new Dictionary<Vector2Int, TileChunk>();
@@ -55,6 +77,11 @@ namespace SS3D.Engine.Tiles
             gameObject.name = name;
         }
 
+        /// <summary>
+        /// Set all objects either enabled or disabled for a layer.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="enabled"></param>
         public void SetEnabled(TileLayer layer, bool enabled)
         {
             foreach (TileChunk chunk in chunks.Values)
@@ -63,12 +90,21 @@ namespace SS3D.Engine.Tiles
             }
         }
 
+        /// <summary>
+        /// Create a new chunk.
+        /// </summary>
+        /// <param name="chunkKey">Unique key to use</param>
+        /// <param name="origin">Origin position of the chunk</param>
+        /// <returns></returns>
         private TileChunk CreateChunk(Vector2Int chunkKey, Vector3 origin)
         {
             TileChunk chunk = new TileChunk(chunkKey, CHUNK_SIZE, CHUNK_SIZE, TILE_SIZE, origin);
             return chunk;
         }
 
+        /// <summary>
+        /// Clears the entire map.
+        /// </summary>
         public void Clear()
         {
             foreach (TileChunk chunk in chunks.Values)
@@ -79,11 +115,22 @@ namespace SS3D.Engine.Tiles
             chunks.Clear();
         }
 
+        /// <summary>
+        /// Returns the chunk key to used based on an X and Y offset.
+        /// </summary>
+        /// <param name="chunkX"></param>
+        /// <param name="chunkY"></param>
+        /// <returns></returns>
         private Vector2Int GetKey(int chunkX, int chunkY)
         {
             return new Vector2Int(chunkX, chunkY);
         }
 
+        /// <summary>
+        /// Returns the chunk key to be used based on a world position.
+        /// </summary>
+        /// <param name="worldPosition"></param>
+        /// <returns></returns>
         private Vector2Int GetKey(Vector3 worldPosition)
         {
             int x = (int)Math.Floor(worldPosition.x / CHUNK_SIZE);
@@ -92,6 +139,11 @@ namespace SS3D.Engine.Tiles
             return (GetKey(x, y));
         }
 
+        /// <summary>
+        /// Returns chunk based the world position. Will create a new chunk if it doesn't exist.
+        /// </summary>
+        /// <param name="worldPosition"></param>
+        /// <returns></returns>
         private TileChunk GetOrCreateChunk(Vector3 worldPosition)
         {
             Vector2Int key = GetKey(worldPosition);
@@ -112,12 +164,24 @@ namespace SS3D.Engine.Tiles
             return chunks?.Values.ToArray();
         }
 
+        /// <summary>
+        /// Deletes a chunk if all TileObjects do not have a PlacedTileObject.
+        /// </summary>
+        /// <param name="chunk"></param>
         private void DeleteIfEmpty(TileChunk chunk)
         {
             if (chunk.IsEmpty())
                 chunks.Remove(GetKey(chunk.GetOrigin()));
         }
 
+        /// <summary>
+        /// Returns whether the specified object can be successfully build for a given position and direction.
+        /// </summary>
+        /// <param name="subLayerIndex">Sub layer the object should go. Usually zero</param>
+        /// <param name="tileObjectSO">Object to place</param>
+        /// <param name="position">World position to place the object</param>
+        /// <param name="dir">Direction the object is facing</param>
+        /// <returns></returns>
         public bool CanBuild(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
             // Get the right chunk
@@ -126,15 +190,15 @@ namespace SS3D.Engine.Tiles
             Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
             TileLayer layer = tileObjectSO.layerType;
 
-            // Test Can Build
             List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
 
             bool canBuild = true;
-
-            canBuild = TileRestrictions.CanBuild(this, position, subLayerIndex, tileObjectSO, dir);
-
             foreach (Vector2Int gridPosition in gridPositionList)
             {
+                // Verify if we are allowed to build for this grid position
+                Vector3 checkWorldPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
+                canBuild &= TileRestrictions.CanBuild(this, checkWorldPosition, subLayerIndex, tileObjectSO, dir);
+
                 if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
                 {
                     // We got a chunk edge case in which a multi tile object is outside of the chunk
@@ -162,6 +226,13 @@ namespace SS3D.Engine.Tiles
             return canBuild;
         }
 
+        /// <summary>
+        /// Sets a specified TileObject on the map.
+        /// </summary>
+        /// <param name="subLayerIndex">Sub layer the object should go. Usually zero</param>
+        /// <param name="tileObjectSO">Object to place</param>
+        /// <param name="position">World position to place the object</param>
+        /// <param name="dir">Direction the object is facing</param>
         public void SetTileObject(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
             TileLayer layer = tileObjectSO.layerType;
@@ -208,6 +279,14 @@ namespace SS3D.Engine.Tiles
             }
         }
 
+        /// <summary>
+        /// Sets a PlacedTileObject on the map based on a known object, position and direction. Used for reconstructing the map structure from a save file.
+        /// </summary>
+        /// <param name="subLayerIndex"></param>
+        /// <param name="tileObjectSO"></param>
+        /// <param name="placedObject"></param>
+        /// <param name="position"></param>
+        /// <param name="dir"></param>
         public void LoadTileObject(int subLayerIndex, TileObjectSO tileObjectSO, PlacedTileObject placedObject, Vector3 position, Direction dir)
         {
             TileLayer layer = tileObjectSO.layerType;
@@ -242,6 +321,12 @@ namespace SS3D.Engine.Tiles
             }
         }
 
+        /// <summary>
+        /// Clear a PlacedTileObject at a given world position and layer.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="subLayerIndex"></param>
+        /// <param name="position"></param>
         public void ClearTileObject(TileLayer layer, int subLayerIndex, Vector3 position)
         {
             TileChunk chunk = GetOrCreateChunk(position);
@@ -265,7 +350,6 @@ namespace SS3D.Engine.Tiles
                         // We got a chunk edge case in which a multi tile object is outside of the chunk
                         Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
                         TileChunk nextChunk = GetOrCreateChunk(offEdgeObjectPosition);
-                        // nextChunk.GetTileObject(layer, offEdgeObjectPosition).SetPlacedObject(placedObject, subLayerIndex);
                         nextChunk.GetTileObject(layer, offEdgeObjectPosition).ClearPlacedObject(subLayerIndex);
                     }
                     else
@@ -280,6 +364,12 @@ namespace SS3D.Engine.Tiles
             DeleteIfEmpty(chunk);
         }
 
+        /// <summary>
+        /// Returns a TileObject at a given layer and world position.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="worldPosition"></param>
+        /// <returns></returns>
         public TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
         {
             TileChunk chunk = GetOrCreateChunk(worldPosition);
@@ -304,6 +394,9 @@ namespace SS3D.Engine.Tiles
             currentTileObject.GetPlacedObject(0)?.UpdateAllAdjacencies(adjacentObjects);
         }
 
+        /// <summary>
+        /// Updates all objects that contain an AdjacencyConnector. Will loop through the entire map, so use this sparingly. 
+        /// </summary>
         public void UpdateAllAdjacencies()
         {
             var adjacentObjects = new PlacedTileObject[8];
@@ -332,6 +425,13 @@ namespace SS3D.Engine.Tiles
             }
         }
 
+        /// <summary>
+        /// Retrieves neighbouring objects for a given position and layer.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="subLayerIndex"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
         public PlacedTileObject[] GetNeighbourObjects(TileLayer layer, int subLayerIndex, Vector3 position)
         {
             var adjacentObjects = new PlacedTileObject[8];
@@ -347,6 +447,10 @@ namespace SS3D.Engine.Tiles
             return adjacentObjects;
         }
 
+        /// <summary>
+        /// Returns a new SaveObject for storing the entire map.
+        /// </summary>
+        /// <returns></returns>
         public MapSaveObject Save()
         {
             List<TileChunk.ChunkSaveObject> chunkObjectSaveList = new List<TileChunk.ChunkSaveObject>();
@@ -364,6 +468,12 @@ namespace SS3D.Engine.Tiles
             };
         }
         
+        /// <summary>
+        /// Loads a given map from a save object. The softload parameter determines if saved objects should be
+        /// new created, or only reinitalized.
+        /// </summary>
+        /// <param name="saveObject"></param>
+        /// <param name="softLoad"></param>
         public void Load(MapSaveObject saveObject, bool softLoad)
         {
             if (!tileManager) tileManager = FindObjectOfType<TileManager>();
@@ -409,6 +519,13 @@ namespace SS3D.Engine.Tiles
             }
         }
 
+        /// <summary>
+        /// Finds a PlacedTileObject for a given layer and position. Is used during softloading to retrieve the matching gameobject.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="subLayerIndex"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
         private GameObject FindChild(TileLayer layer, int subLayerIndex, Vector3 position)
         {
             Transform layerObjectTransform = GetOrCreateLayerObject(layer).transform;
@@ -433,6 +550,11 @@ namespace SS3D.Engine.Tiles
             return null;
         }
 
+        /// <summary>
+        /// Get or creates an empty gameobject that used to storing that layer's PlacedTileObjects.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
         private GameObject GetOrCreateLayerObject(TileLayer layer)
         {
             for (int i = 0; i < transform.childCount; i++)

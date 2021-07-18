@@ -8,9 +8,15 @@ using UnityEditor;
 
 namespace SS3D.Engine.Tiles
 {
+    /// <summary>
+    /// Class that is attached to every GameObject placed on the TileMap. 
+    /// </summary>
     [RequireComponent(typeof(NetworkIdentity))]
     public class PlacedTileObject : MonoBehaviour
     {
+        /// <summary>
+        /// SaveObject that contains all information required to reconstruct the object.
+        /// </summary>
         [Serializable]
         public class PlacedSaveObject
         {
@@ -19,6 +25,14 @@ namespace SS3D.Engine.Tiles
             public Direction dir;
         }
 
+        /// <summary>
+        /// Creates a new PlacedTileObject from a TileObjectSO at a given position and direction. Uses NetworkServer.Spawn() if a server is running.
+        /// </summary>
+        /// <param name="worldPosition"></param>
+        /// <param name="origin"></param>
+        /// <param name="dir"></param>
+        /// <param name="tileObjectSO"></param>
+        /// <returns></returns>
         public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSO tileObjectSO)
         {
 
@@ -39,8 +53,8 @@ namespace SS3D.Engine.Tiles
 
             if (NetworkServer.active)
             {
-                // if (!ClientScene.prefabs.ContainsValue(placedGameObject))
-                //    ClientScene.RegisterPrefab(placedGameObject);
+                if (!ClientScene.prefabs.ContainsValue(placedGameObject))
+                    Debug.LogWarning("Prefab was not found in the Spawnable list. Please add it.");
                 NetworkServer.Spawn(placedGameObject);
             }
             return placedObject;
@@ -51,6 +65,12 @@ namespace SS3D.Engine.Tiles
         private Direction dir;
         private IAdjacencyConnector adjacencyConnector;
 
+        /// <summary>
+        /// Set up a new PlacedTileObject.
+        /// </summary>
+        /// <param name="tileObjectSO"></param>
+        /// <param name="origin"></param>
+        /// <param name="dir"></param>
         public void Setup(TileObjectSO tileObjectSO, Vector2Int origin, Direction dir)
         {
             this.tileObjectSO = tileObjectSO;
@@ -59,11 +79,18 @@ namespace SS3D.Engine.Tiles
             adjacencyConnector = GetComponent<IAdjacencyConnector>();
         }
 
+        /// <summary>
+        /// Returns a list of all grids positions that object occupies.
+        /// </summary>
+        /// <returns></returns>
         public List<Vector2Int> GetGridPositionList()
         {
             return tileObjectSO.GetGridPositionList(origin, dir);
         }
 
+        /// <summary>
+        /// Destroys itself.
+        /// </summary>
         public void DestroySelf()
         {
             adjacencyConnector?.CleanAdjacencies();
@@ -75,6 +102,10 @@ namespace SS3D.Engine.Tiles
             return tileObjectSO.nameString;
         }
 
+        /// <summary>
+        /// Returns a new SaveObject for use in saving/loading.
+        /// </summary>
+        /// <returns></returns>
         public PlacedSaveObject Save()
         {
             return new PlacedSaveObject
@@ -85,16 +116,29 @@ namespace SS3D.Engine.Tiles
             };
         }
 
+        /// <summary>
+        /// Returns if an adjacency connector is present.
+        /// </summary>
+        /// <returns></returns>
         public bool HasAdjacencyConnector()
         {
             return adjacencyConnector != null;
         }
 
+        /// <summary>
+        /// Sends an update to the adjacency connector for all neighbouring objects.
+        /// </summary>
+        /// <param name="placedObjects"></param>
         public void UpdateAllAdjacencies(PlacedTileObject[] placedObjects)
         {
             adjacencyConnector?.UpdateAll(placedObjects);
         }
 
+        /// <summary>
+        /// Sends an update to the adjacency connector one neigbouring object.
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <param name="placedNeighbour"></param>
         public void UpdateSingleAdjacency(Direction dir, PlacedTileObject placedNeighbour)
         {
             adjacencyConnector?.UpdateSingle(dir, placedNeighbour);

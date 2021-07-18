@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace SS3D.Engine.Tiles.Connections
 {
+    /// <summary>
+    /// Bitmap used for calculating and storing adjacencies.
+    /// </summary>
     public class AdjacencyBitmap
     {
         public struct CardinalInfo

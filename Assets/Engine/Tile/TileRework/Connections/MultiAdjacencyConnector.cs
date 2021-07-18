@@ -5,24 +5,47 @@ using UnityEngine;
 
 namespace SS3D.Engine.Tiles.Connections
 {
+    /// <summary>
+    /// Main adjacency connector class that should fulfill the majority of the use cases. This class ensures that similar objects will have their meshes seamlessly connect to each other.
+    /// </summary>
     public class MultiAdjacencyConnector : NetworkBehaviour, IAdjacencyConnector
     {
+        /// <summary>
+        /// Determines which adjacency type should be used.
+        /// </summary>
         public AdjacencyType selectedAdjacencyType;
+
+        /// <summary>
+        /// A type that specifies to which objects to connect to. Must be set if cross connect is used.
+        /// </summary>
         [Tooltip("Id that adjacent objects must be to count. If empty, any id is accepted")]
         public string type;
 
+        /// <summary>
+        /// Bool that determines if objects on different layers are allowed to connect to each other.
+        /// </summary>
+        [Tooltip("Bool that determines if objects on different layers are allowed to connect to each other.")]
         public bool CrossConnectAllowed;
 
         [SerializeField] private SimpleConnector simpleAdjacency;
         [SerializeField] private AdvancedConnector advancedAdjacency;
         [SerializeField] private OffsetConnector offsetAdjacency;
 
+        /// <summary>
+        /// Keeps track of adjacenc connections. Do not directly modify! Use the sync functions instead.
+        /// </summary>
         [SyncVar(hook = nameof(SyncAdjacentConnections))]
         private byte adjacentConnections;
 
+        /// <summary>
+        /// Keeps track of blocked connections. Do not directly modify! Use the sync functions instead.
+        /// </summary>
         [SyncVar(hook = nameof(SyncBlockedConnections))]
         private byte blockedConnections;
 
+        /// <summary>
+        /// As syncvars cannot be directly modified. This field is used by the AdjacencyEditor.
+        /// </summary>
         [HideInInspector]
         public byte blockedDirections;
         public byte BlockedConnections => blockedConnections;
@@ -38,6 +61,9 @@ namespace SS3D.Engine.Tiles.Connections
 
         public void OnEnable() => UpdateMeshAndDirection();
 
+        /// <summary>
+        /// Ensures that the object is properly initialized.
+        /// </summary>
         private void EnsureInit()
         {
             if (adjacents == null)
@@ -47,6 +73,11 @@ namespace SS3D.Engine.Tiles.Connections
                 filter = GetComponent<MeshFilter>();
         }
 
+        /// <summary>
+        /// Syncs adjacent connections with clients. Use this function to modify the attribute.
+        /// </summary>
+        /// <param name="oldConnections"></param>
+        /// <param name="newConnections"></param>
         private void SyncAdjacentConnections(byte oldConnections, byte newConnections)
         {
             EnsureInit();
@@ -55,6 +86,11 @@ namespace SS3D.Engine.Tiles.Connections
             UpdateMeshAndDirection();
         }
 
+        /// <summary>
+        /// Syncs blocked connections with clients. Use this function to modify the attribute.
+        /// </summary>
+        /// <param name="oldConnections"></param>
+        /// <param name="newConnections"></param>
         private void SyncBlockedConnections(byte oldConnections, byte newConnections)
         {
             EnsureInit();
@@ -62,6 +98,9 @@ namespace SS3D.Engine.Tiles.Connections
             UpdateMeshAndDirection();
         }
 
+        /// <summary>
+        /// Used for syncing late joiners.
+        /// </summary>
         public override void OnStartClient()
         {
             EnsureInit();
@@ -70,6 +109,10 @@ namespace SS3D.Engine.Tiles.Connections
             base.OnStartClient();
         }
 
+        /// <summary>
+        /// Updates the object based on the given neighbours. If cross connect is used, it will determine it's own neighbours.
+        /// </summary>
+        /// <param name="neighbourObjects"></param>
         public void UpdateAll(PlacedTileObject[] neighbourObjects)
         {
             if (CrossConnectAllowed)
@@ -88,6 +131,12 @@ namespace SS3D.Engine.Tiles.Connections
             }
         }
 
+        /// <summary>
+        /// Summerizes all layers together for a given direction to see if a connection can be made. Only used for cross connect.
+        /// Needs to know it's own layer to see if the value can be set to null.
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <param name="ownLayer"></param>
         private void UpdateAllOnDirection(Direction dir, TileLayer ownLayer)
         {
             TileMap map = GetComponentInParent<TileMap>();
@@ -109,6 +158,10 @@ namespace SS3D.Engine.Tiles.Connections
                 UpdateMeshAndDirection();
         }
 
+        /// <summary>
+        /// Goes through all directions for a given layer.
+        /// </summary>
+        /// <param name="neighbourObjects"></param>
         public void UpdateAllOnLayer(PlacedTileObject[] neighbourObjects)
         {
             bool changed = false;
@@ -121,6 +174,11 @@ namespace SS3D.Engine.Tiles.Connections
                 UpdateMeshAndDirection();
         }
 
+        /// <summary>
+        /// Update a single direction. Updates meshes if changed.
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <param name="placedObject"></param>
         public void UpdateSingle(Direction dir, PlacedTileObject placedObject)
         {
             if (UpdateSingleConnection(dir, placedObject))
@@ -129,6 +187,12 @@ namespace SS3D.Engine.Tiles.Connections
             }
         }
 
+        /// <summary>
+        /// Update a single direction.
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <param name="placedObject"></param>
+        /// <returns></returns>
         private bool UpdateSingleConnection(Direction dir, PlacedTileObject placedObject)
         {
             // For some reason called before OnAwake()
@@ -154,6 +218,11 @@ namespace SS3D.Engine.Tiles.Connections
             return isUpdated;
         }
 
+        /// <summary>
+        /// Sets a given direction blocked. This means that it will no longer be allowed to connect on that direction.
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <param name="value"></param>
         public void SetBlockedDirection(Direction dir, bool value)
         {
             byte result = AdjacencyBitmap.SetDirection(blockedConnections, dir, value);
@@ -161,11 +230,17 @@ namespace SS3D.Engine.Tiles.Connections
             SyncBlockedConnections(blockedConnections, result);
         }
 
+        /// <summary>
+        /// Forces on an update of blocked connections. Editor only.
+        /// </summary>
         public void UpdateBlockedFromEditor()
         {
             SyncBlockedConnections(blockedConnections, blockedDirections);
         }
 
+        /// <summary>
+        /// Updates the meshes and direction based on the used Adjacency type.
+        /// </summary>
         private void UpdateMeshAndDirection()
         {
             MeshDirectionInfo info = new MeshDirectionInfo();
@@ -188,46 +263,10 @@ namespace SS3D.Engine.Tiles.Connections
             filter.mesh = info.mesh;
 
             transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, info.rotation, transform.localRotation.eulerAngles.z);
-
-            /*
-            if (isServer)
-                RpcUpdateMeshAndDirection(adjacents.Connections);
-            */
         }
 
         public void CleanAdjacencies()
         {
-            
         }
-
-        /*
-        [ClientRpc]
-        protected void RpcUpdateMeshAndDirection(byte adjacentByte)
-        {
-            // Rebuild the bitmap as Mirror can only handle basic types as parameter
-            MeshDirectionInfo info = new MeshDirectionInfo();
-            AdjacencyBitmap adjacencyBitmap = new AdjacencyBitmap();
-            adjacencyBitmap.Connections = adjacentByte;
-
-            switch (selectedAdjacencyType)
-            {
-                case AdjacencyType.Simple:
-                    info = simpleAdjacency.GetMeshAndDirection(adjacencyBitmap);
-                    break;
-                case AdjacencyType.Advanced:
-                    info = advancedAdjacency.GetMeshAndDirection(adjacencyBitmap);
-                    break;
-                case AdjacencyType.Offset:
-                    info = offsetAdjacency.GetMeshAndDirection(adjacencyBitmap);
-                    break;
-            }
-
-            if (filter == null)
-                filter = GetComponent<MeshFilter>();
-
-            filter.mesh = info.mesh;
-            transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, info.rotation, transform.localRotation.eulerAngles.z);
-        }
-        */
     }
 }

@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace SS3D.Engine.Tiles
 {
+    /// <summary>
+    /// Enum that defines every layer that should be present on each tile.
+    /// </summary>
     public enum TileLayer
     {
         Plenum = 0,
@@ -22,6 +25,9 @@ namespace SS3D.Engine.Tiles
         Overlay = 12
     }
 
+    /// <summary>
+    /// Enum for each direction.
+    /// </summary>
     public enum Direction
     {
         North = 0,

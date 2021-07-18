@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace SS3D.Engine.Tiles.Connections
 {
+    /// <summary>
+    /// Adjacency type used for objects that are not centred on a tile. Examples that use this are pipes (not the middle layer)
+    /// </summary>
     [Serializable]
     public struct OffsetConnector
     {

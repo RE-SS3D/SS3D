@@ -5,6 +5,9 @@ using System.Threading;
 using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// This is the main editor for changing the tilemap.
+/// </summary>
 namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 {
     public class TileMapEditor : EditorWindow
@@ -233,6 +236,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             EditorGUILayout.EndScrollView();
         }
 
+        /// <summary>
+        /// Apply any changes to the name or set if it is the main map
+        /// </summary>
         private void ApplySettings()
         {
             TileMap map = tileManager.GetTileMaps()[selectedTileMapIndex];
@@ -315,6 +321,11 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             }
         }
 
+        /// <summary>
+        /// Determines which sublayer should be used based on the currently selected rotation. 
+        /// Only applies to walls for now.
+        /// </summary>
+        /// <returns>Sublayer index to use</returns>
         private int GetSubLayerIndex()
         {
             switch (selectedLayer)
@@ -328,6 +339,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             }
         }
 
+        /// <summary>
+        /// Draw a small UI explaining which buttons can be used in the editor.
+        /// </summary>
         private void DrawPlaceUI()
         {
             Handles.BeginGUI();
@@ -350,6 +364,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             Handles.EndGUI();
         }
 
+        /// <summary>
+        /// Refreshes which maps are available and fills the grid options.
+        /// </summary>
         private void RefreshMapList()
         {
             selectedTileMapIndex = tileManager.GetTileMaps().Count - 1;
@@ -370,16 +387,14 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             isMainMap = map.IsMain;
         }
 
+        /// <summary>
+        /// Draws a visual help. Colors changes whether you are able to build or are deleting tiles.
+        /// </summary>
+        /// <param name="cell">Position to draw</param>
         private void DisplayVisualHelp(Vector3 cell)
         {
             if (!selectedObjectSO)
                 return;
-
-            // Vertices of our square
-            Vector3 cube_1 = cell + new Vector3(.5f, 0f, .5f);
-            Vector3 cube_2 = cell + new Vector3(.5f, 0f, -.5f);
-            Vector3 cube_3 = cell + new Vector3(-.5f, 0f, -.5f);
-            Vector3 cube_4 = cell + new Vector3(-.5f, 0f, .5f);
 
             // Rendering
             if (deleteTiles)
@@ -389,10 +404,26 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             else
                 Handles.color = Color.green;
 
-            Vector3[] lines = { cube_1, cube_2, cube_2, cube_3, cube_3, cube_4, cube_4, cube_1 };
-            Handles.DrawLines(lines);
+            var positionList = selectedObjectSO.GetGridPositionList(Vector2Int.zero, selectedDir);
+
+            foreach (var position in positionList)
+            {
+                Vector3 cellPosition = cell + new Vector3(position.x, 0, position.y);
+                // Vertices of our square
+                Vector3 cube_1 = cellPosition + new Vector3(.5f, 0f, .5f);
+                Vector3 cube_2 = cellPosition + new Vector3(.5f, 0f, -.5f);
+                Vector3 cube_3 = cellPosition + new Vector3(-.5f, 0f, -.5f);
+                Vector3 cube_4 = cellPosition + new Vector3(-.5f, 0f, .5f);
+
+                Vector3[] lines = { cube_1, cube_2, cube_2, cube_3, cube_3, cube_4, cube_4, cube_1 };
+                Handles.DrawLines(lines);
+            }
         }
 
+        /// <summary>
+        /// Draws the edges of chunks.
+        /// </summary>
+        /// <param name="map">Map to get chunks from</param>
         private void DisplayGrid(TileMap map)
         {
             Handles.color = Color.yellow;
@@ -408,6 +439,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             }
         }
 
+        /// <summary>
+        /// Editor GUI elements for changing the visibility of tile layers.
+        /// </summary>
         private void ShowLayerVisibility()
         {
             EditorGUI.indentLevel++;
@@ -438,6 +472,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             EditorGUI.indentLevel--;
         }
 
+        /// <summary>
+        /// Create a ghost object. A temporary object to display the selected tile object.
+        /// </summary>
         private void CreateGhost()
         {
             if (ghostObject != null)
@@ -457,6 +494,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             ghostObject.SetActive(false);
         }
 
+        /// <summary>
+        /// Destroys the ghost...
+        /// </summary>
         private void DestroyGhost()
         {
             if (ghostObject != null)
@@ -466,6 +506,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             }
         }
 
+        /// <summary>
+        /// Updates the tilemap gameobjects based on the selected visibility.
+        /// </summary>
         private void UpdateTileVisibility()
         {
             TileMap map = GetCurrentMap();
@@ -476,6 +519,10 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             }
         }
 
+        /// <summary>
+        /// Sets all layers to either enabled or disabled.
+        /// </summary>
+        /// <param name="showAll">Enable all layers</param>
         private void SetTileVisibility(bool showAll)
         {
             for (int i = 0; i < layerVisibilitySelection.Length; i++)
@@ -487,6 +534,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             }
         }
 
+        /// <summary>
+        /// Loads all TileObjectSO objects and generates an icon for use in the selection grid.
+        /// </summary>
         private void LoadAllAssetLayers()
         {
             AssetPreview.SetPreviewTextureCacheSize(400);
@@ -508,6 +558,11 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             }
         }
 
+        /// <summary>
+        /// Load all TileObjectSO for a specific layer.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="assetName"></param>
         private void LoadAssetLayer(TileLayer layer, string assetName = "")
         {
             assetDisplayList.Clear();
@@ -531,6 +586,10 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             }
         }
 
+        /// <summary>
+        /// Refreshes the selection grid.
+        /// </summary>
+        /// <param name="updateAssets"></param>
         private void RefreshSelectionGrid(bool updateAssets)
         {
             Focus();
@@ -545,6 +604,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             }
         }
 
+        /// <summary>
+        /// Updates and displays the selection grid used for selecting which object to place.
+        /// </summary>
         private void UpdateSelectionGrid()
         {
             if (loadingTextures && !AssetPreview.IsLoadingAssetPreviews())
@@ -567,6 +629,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             }
         }
 
+        /// <summary>
+        /// Displays a save warning in case the user made a change and didn't save.
+        /// </summary>
         private void DisplaySaveWarning()
         {
             if (EditorUtility.DisplayDialog("Save TileMap",

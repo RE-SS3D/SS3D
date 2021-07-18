@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 10
   nameString: cryotube
+  genericType: 
   prefab: {fileID: 5385663273565442968, guid: 45c0962e1369a3344b180f109a766f6d, type: 3}
-  width: 1
-  height: 1
+  width: 2
+  height: 2
