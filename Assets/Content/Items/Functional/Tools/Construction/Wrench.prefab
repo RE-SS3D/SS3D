@@ -188,7 +188,8 @@ MonoBehaviour:
   Size: {x: 0, y: 0}
   LoadingBarPrefab: {fileID: 1998198171871307260, guid: 58d68fcd6d5f2c5458ad32de2270df37,
     type: 3}
-  ObjectToConstruct: {fileID: 0}
+  ObjectToConstruct: {fileID: 11400000, guid: 2b24371a83892be499b8c9bbeebb4af2, type: 2}
+  ObjectDirection: 0
   Delay: 1
   ObstacleMask:
     serializedVersion: 2

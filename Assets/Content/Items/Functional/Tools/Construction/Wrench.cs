@@ -15,6 +15,7 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 
 	// nope
         public TileObjectSO ObjectToConstruct;
+        public Direction ObjectDirection;
         public float Delay;
         public LayerMask ObstacleMask;
 
@@ -28,7 +29,8 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
                 Delay = Delay, 
                 LoadingBarPrefab = LoadingBarPrefab,
                 icon = constructIcon,
-                ObstacleMask = ObstacleMask
+                ObstacleMask = ObstacleMask,
+                ObjectDirection = ObjectDirection
             }));
         }
     }
