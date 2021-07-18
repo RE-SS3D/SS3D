@@ -192,6 +192,14 @@ namespace SS3D.Engine.Tiles
             return map.CanBuild(subLayerIndex, tileObjectSO, position, dir);
         }
 
+        public bool CanBuild(TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        {
+            if (tileObjectSO.layerType == TileLayer.HighWall || tileObjectSO.layerType == TileLayer.LowWall)
+                Debug.LogError("Simplified function CanBuild() is used. Do not use this function with layers where a sub index is required!");
+
+            return CanBuild(GetMainMap(), 0, tileObjectSO, position, dir);
+        }
+
         public void ClearTileObject(TileMap map, TileLayer layer, int subLayerIndex, Vector3 position)
         {
             map.ClearTileObject(layer, subLayerIndex, position);

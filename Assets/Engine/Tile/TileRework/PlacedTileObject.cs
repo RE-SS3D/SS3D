@@ -66,6 +66,7 @@ namespace SS3D.Engine.Tiles
 
         public void DestroySelf()
         {
+            adjacencyConnector?.CleanAdjacencies();
             EditorAndRuntime.Destroy(gameObject);
         }
 

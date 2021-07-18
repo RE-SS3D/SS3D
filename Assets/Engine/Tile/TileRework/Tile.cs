@@ -85,14 +85,7 @@ namespace SS3D.Engine.Tiles
 
         public static int GetRotationAngle(Direction dir)
         {
-            switch (dir)
-            {
-                default:
-                case Direction.South: return 180;
-                case Direction.West: return 270;
-                case Direction.North: return 0;
-                case Direction.East: return 90;
-            }
+            return (int)dir * 45;
         }
 
         public static float AngleBetween(Direction from, Direction to)
@@ -103,6 +96,11 @@ namespace SS3D.Engine.Tiles
         public static float AngleBetween(Orientation from, Orientation to)
         {
             return ((int)to - (int)from) * 90.0f;
+        }
+
+        public static Direction GetRelativeDirection(Direction to, Direction from)
+        {
+            return (Direction)((((int)to - (int)from) + 8) % 8);
         }
 
         public static Tuple<int, int> ToCardinalVector(Direction direction)

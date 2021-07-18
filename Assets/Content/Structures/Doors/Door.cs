@@ -25,6 +25,7 @@ namespace SS3D.Content.Structures.Fixtures
         private DoorType doorType;
 
         private Direction doorDirection;
+        private TileMap map;
 
         private void OnEnable()
         {
@@ -35,6 +36,18 @@ namespace SS3D.Content.Structures.Fixtures
             doorDirection = GetComponent<PlacedTileObject>().GetDirection();
         }
 
+        public void CleanAdjacencies()
+        {
+            if (!map)
+                map = GetComponentInParent<TileMap>();
+
+            var neighbourObjects = map.GetNeighbourObjects(TileLayer.Turf, 0, transform.position);
+            for (int i = 0; i < neighbourObjects.Length; i++)
+            {
+                neighbourObjects[i]?.UpdateSingleAdjacency(TileHelper.GetOpposite((Direction)i), null);
+            }
+        }
+
         public void UpdateSingle(Direction direction, PlacedTileObject placedObject)
         {
             if (UpdateSingleConnection(direction, placedObject))
@@ -43,14 +56,28 @@ namespace SS3D.Content.Structures.Fixtures
 
         public void UpdateAll(PlacedTileObject[] neighbourObjects)
         {
+            // Because we are on a Furniture layer and walls are on the Turf. Discard furniture neighbours and get the turf neighbours.
+            if (!map)
+                map = GetComponentInParent<TileMap>();
+
+            neighbourObjects = map.GetNeighbourObjects(TileLayer.Turf, 0, transform.position);
+            PlacedTileObject currentObject = GetComponent<PlacedTileObject>();
+
             bool changed = false;
             for (int i = 0; i < neighbourObjects.Length; i++)
             {
-                changed |= UpdateSingleConnection((Direction)i, neighbourObjects[i]);
+                bool updatedSingle = false;
+                updatedSingle = UpdateSingleConnection((Direction)i, neighbourObjects[i]);
+                if (updatedSingle && neighbourObjects[i])
+                    neighbourObjects[i].UpdateSingleAdjacency(TileHelper.GetOpposite((Direction)i), currentObject);
+
+                changed |= updatedSingle;
             }
 
             if (changed)
+            {
                 UpdateWallCaps();
+            }
         }
 
         /**
@@ -85,12 +112,15 @@ namespace SS3D.Content.Structures.Fixtures
             if (wallCapPrefab == null)
                 return;
 
+            // Door may have rotated in the editor
+            doorDirection = GetComponent<PlacedTileObject>().GetDirection();
+            Direction outFacing = TileHelper.GetNextDir(doorDirection);
+                
+            bool isPresent = adjacents.Adjacent(outFacing) == 1;
+            CreateWallCaps(isPresent, outFacing);
 
-            bool isPresent = adjacents.Adjacent(doorDirection) == 1;
-            CreateWallCaps(isPresent, doorDirection);
-
-            isPresent = adjacents.Adjacent(TileHelper.GetOpposite(doorDirection)) == 1;
-            CreateWallCaps(isPresent, TileHelper.GetOpposite(doorDirection));
+            isPresent = adjacents.Adjacent(TileHelper.GetOpposite(outFacing)) == 1;
+            CreateWallCaps(isPresent, TileHelper.GetOpposite(outFacing));
         }
 
         private void ValidateChildren()
@@ -122,8 +152,10 @@ namespace SS3D.Content.Structures.Fixtures
         {
             var wallCap = EditorAndRuntime.InstantiatePrefab(wallCapPrefab, transform);
 
-            var cardinal = TileHelper.ToCardinalVector(TileHelper.Apply(Direction.East, direction));
-            var rotation = TileHelper.AngleBetween(Direction.East, direction);
+            Direction cardinalDirectionInput = TileHelper.GetRelativeDirection(direction, doorDirection);
+            var cardinal = TileHelper.ToCardinalVector(cardinalDirectionInput);
+            var rotation = TileHelper.AngleBetween(direction, doorDirection);
+
 
             wallCap.transform.localRotation = Quaternion.Euler(0, rotation, 0);
             wallCap.transform.localPosition = new Vector3(cardinal.Item1 * WALL_CAP_DISTANCE_FROM_CENTRE, 0, cardinal.Item2 * WALL_CAP_DISTANCE_FROM_CENTRE);

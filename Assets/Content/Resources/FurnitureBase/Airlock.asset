@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Airlock
   m_EditorClassIdentifier: 
-  layerType: 10
+  layerType: 2
   nameString: airlock
+  genericType: wall
   prefab: {fileID: 1917799960222321674, guid: 8a78eb8d1c4b8874bada82a70bb176b0, type: 3}
   width: 1
   height: 1

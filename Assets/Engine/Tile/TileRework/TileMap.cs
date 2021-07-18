@@ -265,13 +265,15 @@ namespace SS3D.Engine.Tiles
                         // We got a chunk edge case in which a multi tile object is outside of the chunk
                         Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
                         TileChunk nextChunk = GetOrCreateChunk(offEdgeObjectPosition);
-                        nextChunk.GetTileObject(layer, offEdgeObjectPosition).SetPlacedObject(placedObject, subLayerIndex);
+                        // nextChunk.GetTileObject(layer, offEdgeObjectPosition).SetPlacedObject(placedObject, subLayerIndex);
+                        nextChunk.GetTileObject(layer, offEdgeObjectPosition).ClearPlacedObject(subLayerIndex);
                     }
                     else
                     {
                         chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).ClearPlacedObject(subLayerIndex);
-                        UpdateAdjacencies(layer, position);
                     }
+
+                    UpdateAdjacencies(layer, position);
                 }
             }
 

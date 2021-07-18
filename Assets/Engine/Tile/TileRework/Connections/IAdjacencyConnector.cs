@@ -8,5 +8,6 @@ namespace SS3D.Engine.Tiles.Connections
     {
         void UpdateSingle(Direction direction, PlacedTileObject placedObject);
         void UpdateAll(PlacedTileObject[] neighbourObjects);
+        void CleanAdjacencies();
     }
 }

@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Airlock Maintenance Glass
   m_EditorClassIdentifier: 
-  layerType: 10
+  layerType: 2
   nameString: airlock_maintenace_glass
+  genericType: wall
   prefab: {fileID: 1917799960222321674, guid: 435449d4ca1f3a44196fa8a29e3c2659, type: 3}
   width: 1
   height: 1

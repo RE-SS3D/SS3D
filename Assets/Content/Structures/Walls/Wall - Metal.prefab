@@ -276,8 +276,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d4c17829cf718f419146d93c0826f22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: wall
+  syncMode: 0
+  syncInterval: 0.1
   selectedAdjacencyType: 1
+  type: wall
+  CrossConnectAllowed: 1
   simpleAdjacency:
     o: {fileID: 0}
     c: {fileID: 0}
@@ -317,6 +320,21 @@ MonoBehaviour:
     - {fileID: 7790124558541205835}
     - {fileID: 1437294527526757322}
     opaque: 1
+  offsetAdjacency:
+    o: {fileID: 0}
+    cNorth: {fileID: 0}
+    cSouth: {fileID: 0}
+    i: {fileID: 0}
+    lNE: {fileID: 0}
+    lNW: {fileID: 0}
+    lSE: {fileID: 0}
+    lSW: {fileID: 0}
+    tNEW: {fileID: 0}
+    tNSW: {fileID: 0}
+    tNSE: {fileID: 0}
+    tSWE: {fileID: 0}
+    x: {fileID: 0}
+  blockedDirections: 0
 --- !u!1 &7790124558541205835
 GameObject:
   m_ObjectHideFlags: 0

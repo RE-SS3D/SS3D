@@ -11,6 +11,8 @@ namespace SS3D.Engine.Tiles.Connections
         [Tooltip("Id that adjacent objects must be to count. If empty, any id is accepted")]
         public string type;
 
+        public bool CrossConnectAllowed;
+
         [SerializeField] private SimpleConnector simpleAdjacency;
         [SerializeField] private AdvancedConnector advancedAdjacency;
         [SerializeField] private OffsetConnector offsetAdjacency;
@@ -21,6 +23,7 @@ namespace SS3D.Engine.Tiles.Connections
         [SyncVar(hook = nameof(SyncBlockedConnections))]
         private byte blockedConnections;
 
+        [HideInInspector]
         public byte blockedDirections;
         public byte BlockedConnections => blockedConnections;
 
@@ -37,8 +40,6 @@ namespace SS3D.Engine.Tiles.Connections
 
         private void EnsureInit()
         {
-            // SyncBlockedConnections(blockedConnections, blockedDirections);
-
             if (adjacents == null)
                 adjacents = new AdjacencyBitmap();
 
@@ -71,6 +72,45 @@ namespace SS3D.Engine.Tiles.Connections
 
         public void UpdateAll(PlacedTileObject[] neighbourObjects)
         {
+            if (CrossConnectAllowed)
+            {
+                // Hacky way to find which layer the tileObjectSO is
+                TileLayer layer = GetComponent<PlacedTileObject>().GetLayer();
+
+                for (int i = 0; i < neighbourObjects.Length; i++)
+                {
+                    UpdateAllOnDirection((Direction)i, layer);
+                }
+            }
+            else
+            {
+                UpdateAllOnLayer(neighbourObjects);
+            }
+        }
+
+        private void UpdateAllOnDirection(Direction dir, TileLayer ownLayer)
+        {
+            TileMap map = GetComponentInParent<TileMap>();
+
+            bool changed = false;
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            {
+                // Get the neighbour for a given direction
+                var vector = TileHelper.ToCardinalVector(dir);
+                TileObject neighbour = map.GetTileObject(layer, transform.position + new Vector3(vector.Item1, 0, vector.Item2));
+
+                if ((neighbour.GetPlacedObject(0) && neighbour.GetPlacedObject(0).HasAdjacencyConnector()) || layer == ownLayer)
+                {
+                    changed |= UpdateSingleConnection(dir, neighbour.GetPlacedObject(0));
+                }
+            }
+
+            if (changed)
+                UpdateMeshAndDirection();
+        }
+
+        public void UpdateAllOnLayer(PlacedTileObject[] neighbourObjects)
+        {
             bool changed = false;
             for (int i = 0; i < neighbourObjects.Length; i++)
             {
@@ -95,10 +135,19 @@ namespace SS3D.Engine.Tiles.Connections
             EnsureInit();
             UpdateBlockedFromEditor();
 
-            bool isConnected = (placedObject && placedObject.HasAdjacencyConnector() && (placedObject.GetGenericType() == type || type == null));
+            bool isConnected = false;
+            if (placedObject)
+            {
+                isConnected = (placedObject && placedObject.HasAdjacencyConnector());
 
-            isConnected &= (AdjacencyBitmap.Adjacent(blockedConnections, dir) == 0);
+                // If cross connect is allowed, we only allow it to connect when the object type matches the connector type
+                if (CrossConnectAllowed)
+                    isConnected &= (placedObject.GetGenericType() == type && type != "");
+                else
+                    isConnected &= (placedObject.GetGenericType() == type || type == null);
 
+                isConnected &= (AdjacencyBitmap.Adjacent(blockedConnections, dir) == 0);
+            }
             bool isUpdated = adjacents.UpdateDirection(dir, isConnected, true);
             SyncAdjacentConnections(adjacents.Connections, adjacents.Connections);
 
@@ -144,6 +193,11 @@ namespace SS3D.Engine.Tiles.Connections
             if (isServer)
                 RpcUpdateMeshAndDirection(adjacents.Connections);
             */
+        }
+
+        public void CleanAdjacencies()
+        {
+            
         }
 
         /*

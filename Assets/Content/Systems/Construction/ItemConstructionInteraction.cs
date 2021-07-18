@@ -9,7 +9,7 @@ using UnityEngine;
 public class ItemConstructionInteraction : ConstructionInteraction
 {
     public TileObjectSO ObjectToConstruct;
-
+    public Direction ObjectDirection;
 
     public override string GetName(InteractionEvent interactionEvent)
     {
@@ -31,9 +31,9 @@ public class ItemConstructionInteraction : ConstructionInteraction
         Turf existingTurf = tile.turf;
         */
 
-        if (placedObject)
+        if (TileManager.Instance.CanBuild(ObjectToConstruct, placedObject.transform.position, ObjectDirection))
         {
-            return false;
+            return true;
         }
 
         return base.CanInteract(interactionEvent);
@@ -42,6 +42,6 @@ public class ItemConstructionInteraction : ConstructionInteraction
     protected override void StartDelayed(InteractionEvent interactionEvent)
     {
         var tileObject = interactionEvent.Target.GetComponent<PlacedTileObject>();
-        TileManager.Instance.SetTileObject(ObjectToConstruct, tileObject.transform.position, Direction.South);
+        TileManager.Instance.SetTileObject(ObjectToConstruct, tileObject.transform.position, ObjectDirection);
     }
 }

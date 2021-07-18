@@ -64,10 +64,11 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             GetWindow(typeof(TileMapEditor)).Show();
         }
 
+
         public void OnEnable()
         {
             tileManager = FindObjectOfType<TileManager>();
-
+            selectedDir = Direction.North;
 
             if (tileManager == null)
             {
@@ -308,6 +309,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
             else if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
             {
+                selectedDir = Direction.North;
                 enablePlacement = false;
                 DestroyGhost();
             }
@@ -508,44 +510,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
         private void LoadAssetLayer(TileLayer layer, string assetName = "")
         {
-            /*
-            assetList.Clear();
-            assetIcons.Clear();
-            loadingTextures = true;
-
-            string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(TileObjectSO)));
-
-            for (int i = 0; i < guids.Length; i++)
-            {
-                string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
-                TileObjectSO asset = AssetDatabase.LoadAssetAtPath<TileObjectSO>(assetPath);
-
-                if (asset.layerType != layer)
-                {
-                    continue;
-                }
-
-                // Case insensitive search for name
-                if (assetName != "" && !asset.name.ToUpper().Contains(assetName.ToUpper()))
-                {
-                    continue;
-                }
-
-                Texture2D texture;
-                texture = AssetPreview.GetAssetPreview(asset.prefab);
-
-                do
-                {
-                    texture = AssetPreview.GetAssetPreview(asset.prefab);
-                    Thread.Sleep(5);
-                } while (texture == null);
-
-                assetIcons.Add(new GUIContent(asset.name, texture));
-                assetList.Add(asset);
-            }
-
-            */
-
             assetDisplayList.Clear();
             assetDisplayIcons.Clear();
 
