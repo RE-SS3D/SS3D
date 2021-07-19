@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 6447688627046315522}
   - component: {fileID: 8555046361633480991}
   - component: {fileID: -8781191928576697897}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: CrayonBlack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
