@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 3128734841785302988}
   - component: {fileID: 303698793745990453}
   - component: {fileID: 8318624244568901268}
-  - component: {fileID: 806437374043062722}
   m_Layer: 0
   m_Name: MetalWallPanel
   m_TagString: Untagged
@@ -94,25 +93,3 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.488471, y: 1.4884706, z: 1.000001}
   m_Center: {x: 0.5151, y: 1.1866719, z: 0.0000004172325}
---- !u!114 &806437374043062722
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5161561551087789900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfddbe3c892bc5a4288e0711187f3463, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  id: MetalWallPanel
-  genericType: WallPanel
-  o: {fileID: 4840507353604998881, guid: 1c76f458512494d47bce109a113899c2, type: 3}
-  u: {fileID: -3823711503931013869, guid: 1c76f458512494d47bce109a113899c2, type: 3}
-  i: {fileID: 1851828223699960410, guid: 1c76f458512494d47bce109a113899c2, type: 3}
-  iBorder: {fileID: 0}
-  iAlone: {fileID: 0}
-  l: {fileID: -8349422677610897332, guid: 1c76f458512494d47bce109a113899c2, type: 3}
-  t: {fileID: 4543629560487723470, guid: 1c76f458512494d47bce109a113899c2, type: 3}
-  x: {fileID: 0}

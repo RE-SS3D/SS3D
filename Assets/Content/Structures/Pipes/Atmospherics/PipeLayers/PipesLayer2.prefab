@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: -7727686409064562107}
   - component: {fileID: -1074477776341974781}
   - component: {fileID: -4998431523760016775}
-  - component: {fileID: 840758331285195934}
   - component: {fileID: 3397851465445616214}
   - component: {fileID: 7512257876715568575}
   m_Layer: 0
@@ -99,27 +98,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &840758331285195934
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2802364579275783218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bcfd41198721b643afa8e75d961b121, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    blockedDirection: 0
-  type: Pipe
-  o: {fileID: 5882597219669001650, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  u: {fileID: 6806338772768397739, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  i: {fileID: 7036212505407254772, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  l: {fileID: -5256883499956230631, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  t: {fileID: 5050685859000262806, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  x: {fileID: -1235811834921956882, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
 --- !u!114 &3397851465445616214
 MonoBehaviour:
   m_ObjectHideFlags: 0

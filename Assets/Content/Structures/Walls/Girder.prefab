@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 3005367019165699049}
   - component: {fileID: 4469390917034111888}
   - component: {fileID: 3201441509120621224}
-  - component: {fileID: 813293171637191157}
   - component: {fileID: -1448244782923316114}
   m_Layer: 0
   m_Name: Girder
@@ -96,41 +95,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.0000005, y: 2, z: 1}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &813293171637191157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5989834269598487349}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa3fb3fb0fa47e54bad7580218ea1e05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: Wall
-  o: {fileID: 385345290797681245, guid: 03c3e129d07535044a2f9c9cf7c7f302, type: 3}
-  u: {fileID: -3278320197232973555, guid: 03c3e129d07535044a2f9c9cf7c7f302, type: 3}
-  i: {fileID: -3195543624642495682, guid: 03c3e129d07535044a2f9c9cf7c7f302, type: 3}
-  lNone: {fileID: -5467990226511321414, guid: 03c3e129d07535044a2f9c9cf7c7f302, type: 3}
-  lSingle: {fileID: -3638940818353010317, guid: 03c3e129d07535044a2f9c9cf7c7f302,
-    type: 3}
-  tNone: {fileID: 5521928601309250560, guid: 03c3e129d07535044a2f9c9cf7c7f302, type: 3}
-  tSingleRight: {fileID: 8986407772925131505, guid: 03c3e129d07535044a2f9c9cf7c7f302,
-    type: 3}
-  tSingleLeft: {fileID: -7228786497561304111, guid: 03c3e129d07535044a2f9c9cf7c7f302,
-    type: 3}
-  tDouble: {fileID: -8948778645473294229, guid: 03c3e129d07535044a2f9c9cf7c7f302,
-    type: 3}
-  xNone: {fileID: -6425672276766122224, guid: 03c3e129d07535044a2f9c9cf7c7f302, type: 3}
-  xSingle: {fileID: 7313262180137397640, guid: 03c3e129d07535044a2f9c9cf7c7f302, type: 3}
-  xSide: {fileID: 8575919406868912351, guid: 03c3e129d07535044a2f9c9cf7c7f302, type: 3}
-  xOpposite: {fileID: 839937421265913782, guid: 03c3e129d07535044a2f9c9cf7c7f302,
-    type: 3}
-  xTriple: {fileID: 4455026382791503974, guid: 03c3e129d07535044a2f9c9cf7c7f302, type: 3}
-  xQuad: {fileID: 1350280301288453169, guid: 03c3e129d07535044a2f9c9cf7c7f302, type: 3}
-  viewObstacles: []
-  opaque: 0
 --- !u!114 &-1448244782923316114
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -191,7 +191,6 @@ GameObject:
   - component: {fileID: 1594027951419558492}
   - component: {fileID: 5702311699610938402}
   - component: {fileID: -2250944765177032769}
-  - component: {fileID: -2692035492001157909}
   m_Layer: 0
   m_Name: AirlockCivilian
   m_TagString: Untagged
@@ -239,8 +238,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 159a9ad506a2d794d80a59383b84ac83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
   wallCapPrefab: {fileID: 5532353597398885135, guid: 1257cb58aa84aeb48a09c63963a02e38,
     type: 3}
   doorType: 0
@@ -437,20 +434,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &-2692035492001157909
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1917799960222321674}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
 --- !u!1 &4803013556368833953
 GameObject:
   m_ObjectHideFlags: 0

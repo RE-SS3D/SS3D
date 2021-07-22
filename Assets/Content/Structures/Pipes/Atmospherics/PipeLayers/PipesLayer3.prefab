@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: -7727686409064562107}
   - component: {fileID: -1074477776341974781}
   - component: {fileID: -4998431523760016775}
-  - component: {fileID: 4911816295908272955}
   - component: {fileID: 2183948917681095833}
   - component: {fileID: 8044363620118605159}
   m_Layer: 0
@@ -99,34 +98,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &4911816295908272955
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2802364579275783218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb6b0f3a8d8ab5546a86ca29fd261934, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    blockedDirection: 0
-  type: Pipe
-  o: {fileID: -1270442899695108173, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  uNorth: {fileID: 3280808188743794696, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  uSouth: {fileID: -3806360359158251138, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  i: {fileID: -1444037753683383277, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  lNE: {fileID: 4857098003923351258, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  lNW: {fileID: -7474402538799832598, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  lSE: {fileID: -5765311014171972663, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  lSW: {fileID: -2676322450833060381, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  tNEW: {fileID: -599376364307708729, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  tNSW: {fileID: -1086356526325406277, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  tNSE: {fileID: -7630757551065068057, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  tSWE: {fileID: 35210991009650323, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  x: {fileID: 8288866924156647885, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
 --- !u!114 &2183948917681095833
 MonoBehaviour:
   m_ObjectHideFlags: 0
