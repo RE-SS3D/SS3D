@@ -4,6 +4,7 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using SS3D.Engine.Inventory.UI;
 
 namespace SS3D.Engine.Chat
 {
@@ -35,6 +36,8 @@ namespace SS3D.Engine.Chat
 
             AddTab(tabData);
             LoadChannelSelector(tabData);
+
+            GetComponentInChildren<ToggleChat>().Init(GetComponentInChildren<CanvasGroup>());
         }
 
         private void LoadChannelSelector(ChatTabData tabData)
