@@ -93,7 +93,8 @@ namespace SS3D.Engine.Tiles
         /// </summary>
         public void DestroySelf()
         {
-            adjacencyConnector?.CleanAdjacencies();
+            if (adjacencyConnector != null)
+                adjacencyConnector.CleanAdjacencies();
             EditorAndRuntime.Destroy(gameObject);
         }
 
@@ -131,7 +132,8 @@ namespace SS3D.Engine.Tiles
         /// <param name="placedObjects"></param>
         public void UpdateAllAdjacencies(PlacedTileObject[] placedObjects)
         {
-            adjacencyConnector?.UpdateAll(placedObjects);
+            if (adjacencyConnector != null)
+                adjacencyConnector.UpdateAll(placedObjects);
         }
 
         /// <summary>
@@ -141,7 +143,8 @@ namespace SS3D.Engine.Tiles
         /// <param name="placedNeighbour"></param>
         public void UpdateSingleAdjacency(Direction dir, PlacedTileObject placedNeighbour)
         {
-            adjacencyConnector?.UpdateSingle(dir, placedNeighbour);
+            if (adjacencyConnector != null)
+                adjacencyConnector.UpdateSingle(dir, placedNeighbour);
         }
 
         public string GetGenericType()

@@ -66,6 +66,9 @@ namespace SS3D.Engine.Tiles.Connections
         /// </summary>
         private void EnsureInit()
         {
+            if (!this)
+                return;
+
             if (adjacents == null)
                 adjacents = new AdjacencyBitmap();
 
@@ -181,6 +184,9 @@ namespace SS3D.Engine.Tiles.Connections
         /// <param name="placedObject"></param>
         public void UpdateSingle(Direction dir, PlacedTileObject placedObject)
         {
+            if (!this)
+                return;
+
             if (UpdateSingleConnection(dir, placedObject))
             {
                 UpdateMeshAndDirection();
@@ -267,6 +273,13 @@ namespace SS3D.Engine.Tiles.Connections
 
         public void CleanAdjacencies()
         {
+            TileMap map = GetComponentInParent<TileMap>();
+
+            var neighbourObjects = map.GetNeighbourObjects(GetComponent<PlacedTileObject>().GetLayer(), 0, transform.position);
+            for (int i = 0; i < neighbourObjects.Length; i++)
+            {
+                neighbourObjects[i]?.UpdateSingleAdjacency(TileHelper.GetOpposite((Direction)i), null);
+            }
         }
     }
 }

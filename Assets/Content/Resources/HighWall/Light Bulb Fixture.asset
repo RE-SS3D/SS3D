@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 8
   nameString: light_bulb_mount
-  prefab: {fileID: 8824907131049981641, guid: 381aedea77473f647947008e96e00f35, type: 3}
+  genericType: 
+  prefab: {fileID: 8824907131049981641, guid: 31f4ed4647b63ed49a8f4ad1d0c5c99a, type: 3}
   width: 1
   height: 1
