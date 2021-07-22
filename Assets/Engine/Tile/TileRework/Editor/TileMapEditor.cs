@@ -37,6 +37,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
         private bool[] layerVisibilitySelection = new bool[TileHelper.GetTileLayers().Length];
 
         // Placement settings
+        private TileDragHandler dragHandler = null;
         private bool madeChanges = false;
         private bool overwriteAllowed = false;
         private Vector3 lastPlacement;
@@ -166,27 +167,33 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.Space();
-
-                EditorGUILayout.BeginVertical();
-                showTileGrid = EditorGUILayout.Toggle("Display chunks: ", showTileGrid);
-                selectedName = EditorGUILayout.TextField("Name:", selectedName);
-                isMainMap = EditorGUILayout.Toggle("Is main map: ", isMainMap);
-                EditorGUILayout.LabelField("Number of chunks: " + GetCurrentMap().ChunkCount);
-                EditorGUILayout.EndVertical();
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.Space();
-                if (GUILayout.Button("Apply"))
+                if (tileManager.GetTileMaps().Count > 0)
                 {
-                    ApplySettings();
-                }
-                if (GUILayout.Button("Reset")) { FillGridOptions(GetCurrentMap());  }
-                EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.BeginVertical();
+                    showTileGrid = EditorGUILayout.Toggle("Display chunks: ", showTileGrid);
+                    selectedName = EditorGUILayout.TextField("Name:", selectedName);
+                    isMainMap = EditorGUILayout.Toggle("Is main map: ", isMainMap);
+                    EditorGUILayout.LabelField("Number of chunks: " + GetCurrentMap().ChunkCount);
+                    EditorGUILayout.EndVertical();
 
-                EditorGUILayout.Space();
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.Space();
+                    if (GUILayout.Button("Apply"))
+                    {
+                        ApplySettings();
+                    }
+                    if (GUILayout.Button("Reset")) { FillGridOptions(GetCurrentMap()); }
+                    EditorGUILayout.EndHorizontal();
+
+                    EditorGUILayout.Space();
+                }
                 EditorGUI.indentLevel--;
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
+
+            // Return if no map is selected
+            if (tileManager.GetTileMaps().Count == 0)
+                return;
 
             // Change the visibility of different tilemap layers
             showVisibility = EditorGUILayout.BeginFoldoutHeaderGroup(showVisibility, "Visibility");
@@ -250,7 +257,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
         private void OnSceneGUI(SceneView sceneView)
         {
-            if (!tileManager || !tileManager.IsInitialized)
+            if (!tileManager || !tileManager.IsInitialized || tileManager.GetTileMaps().Count == 0)
                 return;
 
             if (showTileGrid)
@@ -284,12 +291,54 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
             if (enableVisualHelp)
                 DisplayVisualHelp(snappedPosition);
-           
+
+            if (dragHandler != null)
+            {
+                foreach (GameObject gameObject in dragHandler.GetDragTiles())
+                {
+                    DisplayVisualHelp(gameObject.transform.position);
+                }
+            }
 
             if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.R)
             {
                 selectedDir = TileHelper.GetNextDir(selectedDir);
                 ghostObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(selectedDir), 0);
+            }
+
+            // Dragging handle - hold shift and drag mouse to paint area
+            else if ((Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag) && Event.current.shift && Event.current.button == 0)
+            {
+                Vector3Int dragPosition = new Vector3Int(Mathf.RoundToInt(snappedPosition.x), Mathf.RoundToInt(snappedPosition.z), 0);
+                if (dragHandler == null)
+                {
+                    if (selectedObjectSO.GetGridPositionList(Vector2Int.zero, selectedDir).Count > 1)
+                    {
+                        Debug.LogWarning("Drag handler is not supported with multi-tile objects.");
+                        return;
+                    }
+
+                    DestroyGhost();
+                    
+                    dragHandler = new TileDragHandler(tileManager, this, GetCurrentMap(), GetSubLayerIndex(), selectedObjectSO, selectedDir, dragPosition);
+                    dragHandler.SelectedLayer = selectedLayer;
+                    dragHandler.AllowOverwrite = overwriteAllowed;
+
+                    if (deleteTiles)
+                    {
+                        dragHandler.DeleteTiles = true;
+                    }
+                }
+                dragHandler.HandleDrag(dragPosition);
+            }
+            else if ((Event.current.type == EventType.MouseUp && Event.current.button == 0) && dragHandler != null)
+            {
+                madeChanges = true;
+                dragHandler.EndDrag();
+                dragHandler = null;
+
+                // Reshow the normal tile selector
+                CreateGhost();
             }
 
             else if ((Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag) && Event.current.button == 0
@@ -426,7 +475,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
         /// <param name="map">Map to get chunks from</param>
         private void DisplayGrid(TileMap map)
         {
-            Handles.color = Color.yellow;
+            Handles.color = Color.cyan;
             Vector3 offset = new Vector3(0.5f, 0, 0.5f);
 
             TileChunk[] chunks = map.GetChunks();

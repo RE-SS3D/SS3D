@@ -182,7 +182,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="position">World position to place the object</param>
         /// <param name="dir">Direction the object is facing</param>
         /// <returns></returns>
-        public bool CanBuild(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public bool CanBuild(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir, bool checkRestrictions)
         {
             // Get the right chunk
             TileChunk chunk = GetOrCreateChunk(position);
@@ -197,7 +197,9 @@ namespace SS3D.Engine.Tiles
             {
                 // Verify if we are allowed to build for this grid position
                 Vector3 checkWorldPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
-                canBuild &= TileRestrictions.CanBuild(this, checkWorldPosition, subLayerIndex, tileObjectSO, dir);
+
+                if (checkRestrictions)
+                    canBuild &= TileRestrictions.CanBuild(this, checkWorldPosition, subLayerIndex, tileObjectSO, dir);
 
                 if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
                 {
@@ -232,7 +234,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="subLayerIndex">Sub layer the object should go. Usually zero</param>
         /// <param name="tileObjectSO">Object to place</param>
         /// <param name="position">World position to place the object</param>
-        /// <param name="dir">Direction the object is facing</param>
+        /// <param name="dir">Direction the object is facing</param
         public void SetTileObject(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
             TileLayer layer = tileObjectSO.layerType;
@@ -246,7 +248,7 @@ namespace SS3D.Engine.Tiles
             // Test Can Build
             List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
 
-            if (CanBuild(subLayerIndex, tileObjectSO, position, dir))
+            if (CanBuild(subLayerIndex, tileObjectSO, position, dir, true))
             {
                 // Get the chunk again as it may be deleted in CanBuild()
                 chunk = GetOrCreateChunk(position);

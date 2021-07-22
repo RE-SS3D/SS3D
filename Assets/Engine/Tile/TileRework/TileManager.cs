@@ -214,7 +214,8 @@ namespace SS3D.Engine.Tiles
         /// <param name="dir"></param>
         public void SetTileObject(TileMap map, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
-            map.SetTileObject(subLayerIndex, tileObjectSO, position, dir);
+            if (CanBuild(map, subLayerIndex, tileObjectSO, position, dir))
+                map.SetTileObject(subLayerIndex, tileObjectSO, position, dir);
         }
 
         /// <summary>
@@ -265,9 +266,23 @@ namespace SS3D.Engine.Tiles
         /// <param name="position"></param>
         /// <param name="dir"></param>
         /// <returns></returns>
-        public bool CanBuild(TileMap map, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public bool CanBuild(TileMap selectedMap, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
-            return map.CanBuild(subLayerIndex, tileObjectSO, position, dir);
+            bool canBuild = true;
+            foreach (TileMap map in mapList)
+            {
+                if (map == selectedMap)
+                {
+                    // Check for tile restrictions as well.
+                    canBuild &= map.CanBuild(subLayerIndex, tileObjectSO, position, dir, true);
+                }
+                else
+                {
+                    // Only check if the tile is occupied. Otherwise we cannot build furniture for example.
+                    canBuild &= map.CanBuild(subLayerIndex, tileObjectSO, position, dir, false);
+                }
+            }
+            return canBuild;
         }
 
         /// <summary>
