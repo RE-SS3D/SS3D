@@ -370,7 +370,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -158.5, y: 34.61}
+  m_AnchoredPosition: {x: -114, y: 34.61}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &800349441454879920
@@ -2056,7 +2056,7 @@ MonoBehaviour:
     type: 3}
   optionContainer: {fileID: 259773888143952910}
   chatChannels: {fileID: 11400000, guid: f7e904ef16adea74c9689e8d0b84422d, type: 2}
-  chatWindow: {fileID: 0}
+  chatWindow: {fileID: 7861828484222706393}
 --- !u!1 &5157966980159957079
 GameObject:
   m_ObjectHideFlags: 0
@@ -3041,8 +3041,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5578169003587566749}
   m_HandleRect: {fileID: 5578169003587566748}
   m_Direction: 2
-  m_Value: 0.00000039397835
-  m_Size: 0.5778055
+  m_Value: 0.00000019698922
+  m_Size: 0.5778056
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
