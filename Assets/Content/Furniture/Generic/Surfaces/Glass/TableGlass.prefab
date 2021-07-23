@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 2885897057548802505}
   - component: {fileID: 8860121059280945640}
   - component: {fileID: -9066456429091602957}
+  - component: {fileID: -1038780159996061800}
+  - component: {fileID: -8583457081764910316}
   m_Layer: 0
   m_Name: TableGlass
   m_TagString: Untagged
@@ -110,3 +112,87 @@ MonoBehaviour:
   DisplayName: Glass Table
   Text: 
   MaxDistance: 0
+--- !u!114 &-1038780159996061800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2839728781945606427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
+--- !u!114 &-8583457081764910316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2839728781945606427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d4c17829cf718f419146d93c0826f22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  selectedAdjacencyType: 1
+  type: table
+  CrossConnectAllowed: 0
+  simpleAdjacency:
+    o: {fileID: 0}
+    c: {fileID: 0}
+    i: {fileID: 0}
+    l: {fileID: 0}
+    t: {fileID: 0}
+    x: {fileID: 0}
+  advancedAdjacency:
+    o: {fileID: -6474879442438147634, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+    u: {fileID: -7482589699367499308, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+    i: {fileID: -2157360573737795375, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+    lNone: {fileID: -9218815689037758219, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    lSingle: {fileID: 5792205659789282660, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    tNone: {fileID: -7743254500183085581, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    tSingleRight: {fileID: 7586772652465350641, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    tSingleLeft: {fileID: -7474841098566485520, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    tDouble: {fileID: -4864732567356238751, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    xNone: {fileID: -6085528617014218902, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    xSingle: {fileID: 2281259568970764498, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    xSide: {fileID: -1858236571859294194, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    xOpposite: {fileID: -7499845758377986718, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    xTriple: {fileID: -827742640193887413, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    xQuad: {fileID: 2518676867277241252, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+    viewObstacles: []
+    opaque: 0
+  offsetAdjacency:
+    o: {fileID: 0}
+    cNorth: {fileID: 0}
+    cSouth: {fileID: 0}
+    i: {fileID: 0}
+    lNE: {fileID: 0}
+    lNW: {fileID: 0}
+    lSE: {fileID: 0}
+    lSW: {fileID: 0}
+    tNEW: {fileID: 0}
+    tNSW: {fileID: 0}
+    tNSE: {fileID: 0}
+    tSWE: {fileID: 0}
+    x: {fileID: 0}
+  blockedDirections: 0

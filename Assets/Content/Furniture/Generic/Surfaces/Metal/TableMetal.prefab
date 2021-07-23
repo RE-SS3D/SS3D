@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 6984099654956712234}
   - component: {fileID: 3608857327747406091}
   - component: {fileID: 4978950379207847613}
+  - component: {fileID: -2535380303791209004}
+  - component: {fileID: -7245858325371128762}
   m_Layer: 0
   m_Name: TableMetal
   m_TagString: Untagged
@@ -110,6 +112,89 @@ MonoBehaviour:
   DisplayName: Metal Table
   Text: 
   MaxDistance: 0
+--- !u!114 &-2535380303791209004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8036950609662249464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
+--- !u!114 &-7245858325371128762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8036950609662249464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d4c17829cf718f419146d93c0826f22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  selectedAdjacencyType: 1
+  type: table
+  CrossConnectAllowed: 0
+  simpleAdjacency:
+    o: {fileID: 0}
+    c: {fileID: 0}
+    i: {fileID: 0}
+    l: {fileID: 0}
+    t: {fileID: 0}
+    x: {fileID: 0}
+  advancedAdjacency:
+    o: {fileID: 2322848670761334695, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+    u: {fileID: 7745281341925457866, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+    i: {fileID: 2528759063624406942, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+    lNone: {fileID: -3147055159611835921, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    lSingle: {fileID: 6772196638450847013, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    tNone: {fileID: 1321078938811735782, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+    tSingleRight: {fileID: -4281538616729302783, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    tSingleLeft: {fileID: 4149459232411989835, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    tDouble: {fileID: 8373393617121163240, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    xNone: {fileID: 2093934115067227924, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+    xSingle: {fileID: 2136301112500897677, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    xSide: {fileID: -5854263339068436191, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    xOpposite: {fileID: 1420634745428322101, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    xTriple: {fileID: 1928062334942078183, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    xQuad: {fileID: -6775380624637099578, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    viewObstacles: []
+    opaque: 0
+  offsetAdjacency:
+    o: {fileID: 0}
+    cNorth: {fileID: 0}
+    cSouth: {fileID: 0}
+    i: {fileID: 0}
+    lNE: {fileID: 0}
+    lNW: {fileID: 0}
+    lSE: {fileID: 0}
+    lSW: {fileID: 0}
+    tNEW: {fileID: 0}
+    tNSW: {fileID: 0}
+    tNSE: {fileID: 0}
+    tSWE: {fileID: 0}
+    x: {fileID: 0}
+  blockedDirections: 0
 --- !u!1001 &5077701558365432987
 PrefabInstance:
   m_ObjectHideFlags: 0
