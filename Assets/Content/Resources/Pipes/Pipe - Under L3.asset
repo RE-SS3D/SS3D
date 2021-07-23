@@ -15,6 +15,6 @@ MonoBehaviour:
   layerType: 7
   nameString: pipe_under_3
   genericType: pipe
-  prefab: {fileID: 2802364579275783218, guid: 34bbc793ade346e45b1d2f357d86011f, type: 3}
+  prefab: {fileID: 2802364579275783218, guid: adc07a7f0fee8304691f45a201509b13, type: 3}
   width: 1
   height: 1

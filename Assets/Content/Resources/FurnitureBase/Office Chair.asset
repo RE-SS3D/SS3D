@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 10
   nameString: chair_office
-  prefab: {fileID: 8099526704187622814, guid: d4fbc40fa2baa954790867dc3a386f68, type: 3}
+  genericType: 
+  prefab: {fileID: 5161561551087789900, guid: 7a895b269e3f67241af148d25331f5af, type: 3}
   width: 1
   height: 1

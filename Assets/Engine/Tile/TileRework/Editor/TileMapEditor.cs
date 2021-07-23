@@ -71,6 +71,8 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
         public void OnEnable()
         {
+            // Initialize variables
+            loadingTextures = true;
             tileManager = FindObjectOfType<TileManager>();
             selectedDir = Direction.North;
 
@@ -117,6 +119,13 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
         {
             if (tileManager == null)
                 return;
+
+            // Loading icons is async so we have to reload the icon list when that is done
+            if (loadingTextures && !AssetPreview.IsLoadingAssetPreviews())
+            {
+                loadingTextures = false;
+                LoadAllAssetLayers();
+            }
 
             EditorGUI.BeginChangeCheck();
             selectedTileMapIndex = EditorGUILayout.Popup("Active tilemap:", selectedTileMapIndex, tileManager.GetTileMapNames());
@@ -382,8 +391,8 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
                 default:
                     return 0;
                 // Use the direction enum as an offset for the sub layer
-                case TileLayer.HighWall:
-                case TileLayer.LowWall:
+                case TileLayer.HighWallMount:
+                case TileLayer.LowWallMount:
                     return ((int)selectedDir / 2);
             }
         }
@@ -605,6 +614,8 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
                 assetIcons.Add(new GUIContent(asset.name, texture));
                 assetList.Add(asset);
             }
+
+            
         }
 
         /// <summary>

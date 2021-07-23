@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -4998431523760016775}
   - component: {fileID: 2183948917681095833}
   - component: {fileID: -153587711557402241}
+  - component: {fileID: 5148248426539759254}
   m_Layer: 0
   m_Name: PipesLayer1
   m_TagString: Untagged
@@ -127,3 +128,62 @@ MonoBehaviour:
   DisplayName: Atmospheric Pipe
   Text: 
   MaxDistance: 0
+--- !u!114 &5148248426539759254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d4c17829cf718f419146d93c0826f22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  selectedAdjacencyType: 2
+  type: pipe
+  CrossConnectAllowed: 0
+  simpleAdjacency:
+    o: {fileID: 0}
+    c: {fileID: 0}
+    i: {fileID: 0}
+    l: {fileID: 0}
+    t: {fileID: 0}
+    x: {fileID: 0}
+  advancedAdjacency:
+    o: {fileID: 0}
+    u: {fileID: 0}
+    i: {fileID: 0}
+    lNone: {fileID: 0}
+    lSingle: {fileID: 0}
+    tNone: {fileID: 0}
+    tSingleRight: {fileID: 0}
+    tSingleLeft: {fileID: 0}
+    tDouble: {fileID: 0}
+    xNone: {fileID: 0}
+    xSingle: {fileID: 0}
+    xSide: {fileID: 0}
+    xOpposite: {fileID: 0}
+    xTriple: {fileID: 0}
+    xQuad: {fileID: 0}
+    viewObstacles: []
+    opaque: 0
+  offsetAdjacency:
+    o: {fileID: 6771834481066591091, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    cNorth: {fileID: -4913184590784469283, guid: 013a2e526b13e1849b628bdc478f9c03,
+      type: 3}
+    cSouth: {fileID: -8982356636661201101, guid: 013a2e526b13e1849b628bdc478f9c03,
+      type: 3}
+    i: {fileID: 6771834481066591091, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    lNE: {fileID: 2974487339661499261, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    lNW: {fileID: -710663454644857736, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    lSE: {fileID: 1452706557494696559, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    lSW: {fileID: -8284340391569421606, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    tNEW: {fileID: -4415080472327585715, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    tNSW: {fileID: -7828955826838884863, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    tNSE: {fileID: -1565585996255746122, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    tSWE: {fileID: -8084914691331622005, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    x: {fileID: 5978052073093224489, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  blockedDirections: 0

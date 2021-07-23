@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: Locker Basic
+  m_Name: Overlay - Blue
   m_EditorClassIdentifier: 
-  layerType: 10
-  nameString: locker_basic
+  layerType: 12
+  nameString: floor_overlay_blue
   genericType: 
-  prefab: {fileID: 2876708453869312076, guid: 02fc5f12ab2897c49b2df843f364b6a1, type: 3}
+  prefab: {fileID: 6767447678079105841, guid: 821d0946be816bb42a0eed24631d57ee, type: 3}
   width: 1
   height: 1

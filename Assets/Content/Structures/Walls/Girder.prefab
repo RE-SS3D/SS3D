@@ -143,8 +143,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   selectedAdjacencyType: 1
-  type: 
-  CrossConnectAllowed: 0
+  type: wall
+  CrossConnectAllowed: 1
   simpleAdjacency:
     o: {fileID: 0}
     c: {fileID: 0}

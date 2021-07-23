@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 10
   nameString: chair_plastic_white
-  prefab: {fileID: 3429521441155049302, guid: f6a056a10f41a7f4ab7efea8db7d8d51, type: 3}
+  genericType: 
+  prefab: {fileID: 5161561551087789900, guid: 4a1bd08646e8e1f4a861960d9b7485f8, type: 3}
   width: 1
   height: 1

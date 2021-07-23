@@ -226,7 +226,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="dir"></param>
         public void SetTileObject(TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
-            if (tileObjectSO.layerType == TileLayer.HighWall || tileObjectSO.layerType == TileLayer.LowWall)
+            if (tileObjectSO.layerType == TileLayer.HighWallMount || tileObjectSO.layerType == TileLayer.LowWallMount)
                 Debug.LogError("Simplified function SetTileObject() is used. Do not use this function with layers where a sub index is required!");
 
             GetMainMap().SetTileObject(0, tileObjectSO, position, dir);
@@ -294,7 +294,7 @@ namespace SS3D.Engine.Tiles
         /// <returns></returns>
         public bool CanBuild(TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
-            if (tileObjectSO.layerType == TileLayer.HighWall || tileObjectSO.layerType == TileLayer.LowWall)
+            if (tileObjectSO.layerType == TileLayer.HighWallMount || tileObjectSO.layerType == TileLayer.LowWallMount)
                 Debug.LogError("Simplified function CanBuild() is used. Do not use this function with layers where a sub index is required!");
 
             return CanBuild(GetMainMap(), 0, tileObjectSO, position, dir);
@@ -319,7 +319,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="position"></param>
         public void ClearTileObject(TileLayer layer, Vector3 position)
         {
-            if (layer == TileLayer.HighWall || layer == TileLayer.LowWall)
+            if (layer == TileLayer.HighWallMount || layer == TileLayer.LowWallMount)
                 Debug.LogError("Simplified function CanBuild() is used. Do not use this function with layers where a sub index is required!");
 
             ClearTileObject(GetMainMap(), layer, 0, position);

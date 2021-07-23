@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 2
   nameString: girder
+  genericType: wall
   prefab: {fileID: 5989834269598487349, guid: 60695978170ac0c48af8fd7ac2c0a43c, type: 3}
   width: 1
   height: 1

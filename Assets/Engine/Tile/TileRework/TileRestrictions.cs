@@ -35,10 +35,10 @@ namespace SS3D.Engine.Tiles
 
             // No wall mounts on non-walls
             if (tileObjects[(int)TileLayer.Turf].IsCompletelyEmpty() &&
-                (placedLayer == TileLayer.LowWall || placedLayer == TileLayer.HighWall))
+                (placedLayer == TileLayer.LowWallMount || placedLayer == TileLayer.HighWallMount))
                 return false;
 
-            if (placedLayer == TileLayer.LowWall || placedLayer == TileLayer.HighWall)
+            if (placedLayer == TileLayer.LowWallMount || placedLayer == TileLayer.HighWallMount)
                 if (!CanBuildWallAttachment(map, position, tileObjectSO, dir))
                     return false;
 
@@ -78,7 +78,7 @@ namespace SS3D.Engine.Tiles
                 return false;
 
             // No low wall mounts on windows
-            if (wallObject.GetPlacedObject(0).GetName().Contains("window") && wallAttachment.layerType == TileLayer.LowWall)
+            if (wallObject.GetPlacedObject(0).GetName().Contains("window") && wallAttachment.layerType == TileLayer.LowWallMount)
                 return false;
 
             // Cannot build wall mount if it collides with the next wall
@@ -115,8 +115,8 @@ namespace SS3D.Engine.Tiles
             // Remove any wall fixtures when the turf is missing
             else if (layer == TileLayer.Turf)
             {
-                toBeDestroyedList.Add(map.GetTileObject(TileLayer.HighWall, position));
-                toBeDestroyedList.Add(map.GetTileObject(TileLayer.LowWall, position));
+                toBeDestroyedList.Add(map.GetTileObject(TileLayer.HighWallMount, position));
+                toBeDestroyedList.Add(map.GetTileObject(TileLayer.LowWallMount, position));
             }
 
             // Remove furniture top is furniture base is missing

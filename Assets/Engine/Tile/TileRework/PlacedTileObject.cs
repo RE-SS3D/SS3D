@@ -40,7 +40,7 @@ namespace SS3D.Engine.Tiles
             placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
 
             // Alternative name is required for walls as they can occupy the same tile
-            if (tileObjectSO.layerType == TileLayer.HighWall || tileObjectSO.layerType == TileLayer.LowWall)
+            if (tileObjectSO.layerType == TileLayer.HighWallMount || tileObjectSO.layerType == TileLayer.LowWallMount)
                 placedGameObject.name += "_" + TileHelper.GetDirectionIndex(dir);
 
             PlacedTileObject placedObject = placedGameObject.GetComponent<PlacedTileObject>();

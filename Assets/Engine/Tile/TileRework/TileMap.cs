@@ -534,7 +534,7 @@ namespace SS3D.Engine.Tiles
 
             // For walls, multiple object can exist at the same location. 
             // So use the naming convention to determine at which rotation it is placed
-            bool sameTile = (layer == TileLayer.LowWall || layer == TileLayer.HighWall);
+            bool sameTile = (layer == TileLayer.LowWallMount || layer == TileLayer.HighWallMount);
 
             for (int i = 0; i < layerObjectTransform.childCount; i++)
             {

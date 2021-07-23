@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 10
   nameString: seed_processor
-  prefab: {fileID: 1769453492926099347, guid: 6422beebe0503cc44a031284a3c5f59a, type: 3}
+  genericType: 
+  prefab: {fileID: 1769453492926099347, guid: bdae8561aaacce54285279973cff135d, type: 3}
   width: 1
   height: 1

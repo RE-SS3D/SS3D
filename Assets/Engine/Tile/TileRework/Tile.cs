@@ -18,8 +18,8 @@ namespace SS3D.Engine.Tiles
         PipeLeft = 5,
         PipeMiddle = 6,
         PipeRight = 7,
-        HighWall = 8,
-        LowWall = 9,
+        HighWallMount = 8,
+        LowWallMount = 9,
         FurnitureBase = 10,
         FurnitureTop = 11,
         Overlay = 12
@@ -57,8 +57,8 @@ namespace SS3D.Engine.Tiles
         {
             switch(layer)
             {
-                case TileLayer.HighWall:
-                case TileLayer.LowWall:
+                case TileLayer.HighWallMount:
+                case TileLayer.LowWallMount:
                     return 4;
                 case TileLayer.Overlay:
                     return 3;
