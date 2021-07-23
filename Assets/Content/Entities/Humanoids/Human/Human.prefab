@@ -290,7 +290,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 289348138277843802}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0556901c8047ec9c6e4283a9f1f7c8, type: 3}
   m_Name: 
@@ -402,10 +402,6 @@ MonoBehaviour:
   syncInterval: 0.1
   UiPrefab: {fileID: 2314586001921844144, guid: 154a0c29195b80444b97161cca7b2308,
     type: 3}
-  ObstacleMask:
-    serializedVersion: 2
-    m_Bits: 256
-  ViewRange: 25
   selector: {fileID: 0}
 --- !u!114 &1045010266948518310
 MonoBehaviour:
