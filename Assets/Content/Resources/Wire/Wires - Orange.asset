@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 3
   nameString: wires_orange
+  genericType: wire
   prefab: {fileID: 2802364579275783218, guid: 998af0a1729ef9649ae6cd1bb3f50b51, type: 3}
   width: 1
   height: 1
