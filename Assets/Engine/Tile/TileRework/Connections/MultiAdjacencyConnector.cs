@@ -277,7 +277,7 @@ namespace SS3D.Engine.Tiles.Connections
         }
 
         /// <summary>
-        /// Clean up all existing adjecencies when this object is removed. Gets messy really fast when cross connect is involved...
+        /// Clean up all existing adjacencies when this object is removed. Gets messy really fast when cross connect is involved...
         /// </summary>
         public void CleanAdjacencies()
         {

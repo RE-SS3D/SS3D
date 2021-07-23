@@ -102,6 +102,9 @@ namespace SS3D.Content.Structures.Fixtures
         {
             // Door can have rotated in the time between
             doorDirection = GetComponent<PlacedTileObject>().GetDirection();
+            if (map == null)
+                return;
+                // map = GetComponentInParent<TileMap>();
 
             var neighbourObjects = map.GetNeighbourObjects(TileLayer.Turf, 0, transform.position);
             Direction opposite = TileHelper.GetOpposite(doorDirection);

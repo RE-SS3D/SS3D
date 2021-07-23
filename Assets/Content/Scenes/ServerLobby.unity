@@ -9472,6 +9472,7 @@ MonoBehaviour:
   cam: {fileID: 4722498698952168811}
   singleColourMaterial: {fileID: 2100000, guid: 95867334491c7b247866b990bc1698b6,
     type: 2}
+  rt: {fileID: 0}
 --- !u!1 &1364040791138817693
 GameObject:
   m_ObjectHideFlags: 0
@@ -11352,7 +11353,7 @@ PrefabInstance:
     - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
       propertyPath: maps.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
@@ -11387,7 +11388,7 @@ PrefabInstance:
     - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
       propertyPath: maps.Array.data[0]
-      value: MainStation
+      value: MiniStation
       objectReference: {fileID: 0}
     - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
@@ -11414,6 +11415,11 @@ PrefabInstance:
       propertyPath: startRoundImage
       value: 
       objectReference: {fileID: 8302026816678043824}
+    - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
+        type: 3}
+      propertyPath: maps.Array.data[2]
+      value: EmptyStation
+      objectReference: {fileID: 0}
     - target: {fileID: 4457496469010000567, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
       propertyPath: lobbyCamera
