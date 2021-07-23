@@ -41,6 +41,8 @@ namespace SS3D.Content.Structures.Fixtures
             if (!map)
                 map = GetComponentInParent<TileMap>();
 
+            SetPerpendicularBlocked(false);
+
             var neighbourObjects = map.GetNeighbourObjects(TileLayer.Turf, 0, transform.position);
             for (int i = 0; i < neighbourObjects.Length; i++)
             {
@@ -50,6 +52,7 @@ namespace SS3D.Content.Structures.Fixtures
 
         public void UpdateSingle(Direction direction, PlacedTileObject placedObject)
         {
+
             if (UpdateSingleConnection(direction, placedObject))
                 UpdateWallCaps();
         }
@@ -86,9 +89,37 @@ namespace SS3D.Content.Structures.Fixtures
          */
         private bool UpdateSingleConnection(Direction direction, PlacedTileObject placedObject)
         {
+            SetPerpendicularBlocked(true);
             bool isConnected = (placedObject && placedObject.HasAdjacencyConnector() && placedObject.GetGenericType() == "wall");
 
             return adjacents.UpdateDirection(direction, isConnected, true);
+        }
+
+        /// <summary>
+        /// Walls will try to connect to us. Block or unblock that connects if we are not facing the wall
+        /// </summary>
+        private void SetPerpendicularBlocked(bool isBlocked)
+        {
+            // Door can have rotated in the time between
+            doorDirection = GetComponent<PlacedTileObject>().GetDirection();
+
+            var neighbourObjects = map.GetNeighbourObjects(TileLayer.Turf, 0, transform.position);
+            Direction opposite = TileHelper.GetOpposite(doorDirection);
+
+            MultiAdjacencyConnector wallConnector = null;
+            if (neighbourObjects[(int)doorDirection] != null)
+                wallConnector = neighbourObjects[(int)doorDirection].GetComponent<MultiAdjacencyConnector>();
+
+            if (wallConnector)
+                wallConnector.SetBlockedDirection(opposite, isBlocked);
+
+            // Opposite side of door
+            wallConnector = null;
+            if (neighbourObjects[(int)opposite] != null)
+                wallConnector = neighbourObjects[(int)opposite].GetComponent<MultiAdjacencyConnector>();
+
+            if (wallConnector)
+                wallConnector.SetBlockedDirection(doorDirection, isBlocked);
         }
 
         private void CreateWallCaps(bool isPresent, Direction direction)

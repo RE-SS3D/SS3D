@@ -21,7 +21,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             // Serialize the object as this is the prefered way to change objects in the editor
             MultiAdjacencyConnector connector = (MultiAdjacencyConnector)target;
             SerializedObject serializedConnector = new SerializedObject(connector);
-            SerializedProperty property = serializedConnector.FindProperty("blockedDirections");
+            SerializedProperty property = serializedConnector.FindProperty("EditorblockedConnections");
             blocked = ParseBitmap((byte)property.intValue);
 
 
@@ -81,7 +81,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
                             // Serialize their object
                             SerializedObject serializedNeighbourConnector = new SerializedObject(adjacencyNeighbour);
                             serializedNeighbourConnector.Update();
-                            SerializedProperty neighbourProperty = serializedNeighbourConnector.FindProperty("blockedDirections");
+                            SerializedProperty neighbourProperty = serializedNeighbourConnector.FindProperty("EditorblockedConnections");
 
                             // Set their opposite side blocked
                             neighbourProperty.intValue = AdjacencyBitmap.SetDirection((byte)neighbourProperty.intValue, TileHelper.GetOpposite((Direction)i), blocked[i]);

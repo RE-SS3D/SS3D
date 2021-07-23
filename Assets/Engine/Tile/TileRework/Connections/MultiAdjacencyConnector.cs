@@ -47,7 +47,7 @@ namespace SS3D.Engine.Tiles.Connections
         /// As syncvars cannot be directly modified. This field is used by the AdjacencyEditor.
         /// </summary>
         [HideInInspector]
-        public byte blockedDirections;
+        public byte EditorblockedConnections;
         public byte BlockedConnections => blockedConnections;
 
         private AdjacencyBitmap adjacents;
@@ -108,7 +108,7 @@ namespace SS3D.Engine.Tiles.Connections
         {
             EnsureInit();
             SyncAdjacentConnections(adjacentConnections, adjacentConnections);
-            SyncBlockedConnections(blockedConnections, blockedDirections);
+            SyncBlockedConnections(blockedConnections, EditorblockedConnections);
             base.OnStartClient();
         }
 
@@ -154,6 +154,9 @@ namespace SS3D.Engine.Tiles.Connections
                 if ((neighbour.GetPlacedObject(0) && neighbour.GetPlacedObject(0).HasAdjacencyConnector()) || layer == ownLayer)
                 {
                     changed |= UpdateSingleConnection(dir, neighbour.GetPlacedObject(0));
+
+                    // Update our neighbour as well
+                    neighbour.GetPlacedObject(0)?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), GetComponent<PlacedTileObject>());
                 }
             }
 
@@ -232,8 +235,10 @@ namespace SS3D.Engine.Tiles.Connections
         public void SetBlockedDirection(Direction dir, bool value)
         {
             byte result = AdjacencyBitmap.SetDirection(blockedConnections, dir, value);
-            blockedDirections = BlockedConnections;
             SyncBlockedConnections(blockedConnections, result);
+            EditorblockedConnections = BlockedConnections;
+            adjacents.UpdateDirection(dir, !value, true);
+            UpdateMeshAndDirection();
         }
 
         /// <summary>
@@ -241,7 +246,7 @@ namespace SS3D.Engine.Tiles.Connections
         /// </summary>
         public void UpdateBlockedFromEditor()
         {
-            SyncBlockedConnections(blockedConnections, blockedDirections);
+            SyncBlockedConnections(blockedConnections, EditorblockedConnections);
         }
 
         /// <summary>
@@ -271,6 +276,9 @@ namespace SS3D.Engine.Tiles.Connections
             transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, info.rotation, transform.localRotation.eulerAngles.z);
         }
 
+        /// <summary>
+        /// Clean up all existing adjecencies when this object is removed. Gets messy really fast when cross connect is involved...
+        /// </summary>
         public void CleanAdjacencies()
         {
             TileMap map = GetComponentInParent<TileMap>();
@@ -279,6 +287,24 @@ namespace SS3D.Engine.Tiles.Connections
             for (int i = 0; i < neighbourObjects.Length; i++)
             {
                 neighbourObjects[i]?.UpdateSingleAdjacency(TileHelper.GetOpposite((Direction)i), null);
+            }
+
+            if (CrossConnectAllowed)
+            {
+                foreach (TileLayer layer in TileHelper.GetTileLayers())
+                {
+                    for (int i = 0; i < neighbourObjects.Length; i++)
+                    {
+                        // Get the neighbour for a given direction
+                        var vector = TileHelper.ToCardinalVector((Direction)i);
+                        TileObject neighbour = map.GetTileObject(layer, transform.position + new Vector3(vector.Item1, 0, vector.Item2));
+
+                        if ((neighbour.GetPlacedObject(0) && neighbour.GetPlacedObject(0).HasAdjacencyConnector()))
+                        {
+                            neighbour.GetPlacedObject(0).UpdateSingleAdjacency(TileHelper.GetOpposite((Direction)i), null);
+                        }
+                    }
+                }
             }
         }
     }
