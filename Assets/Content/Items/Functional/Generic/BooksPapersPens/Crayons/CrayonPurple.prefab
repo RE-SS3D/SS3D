@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 645931460658309619}
   - component: {fileID: -9120210531902757451}
   - component: {fileID: 5582532087290830820}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: CrayonPurple
   m_TagString: Untagged
   m_Icon: {fileID: 0}
