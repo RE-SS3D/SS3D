@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerType: 0
   nameString: plenum
+  genericType: plenum
   prefab: {fileID: 8028539322119499722, guid: 3b33b5cf16a677a4e85a110679cde32a, type: 3}
   width: 1
   height: 1

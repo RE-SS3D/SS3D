@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7514870336629038223}
   - component: {fileID: -6754659111865001399}
   - component: {fileID: -7708927809877160889}
+  - component: {fileID: 7550083641595086523}
   m_Layer: 0
   m_Name: Table - Wood
   m_TagString: Untagged
@@ -123,8 +124,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d4c17829cf718f419146d93c0826f22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: table
+  syncMode: 0
+  syncInterval: 0.1
   selectedAdjacencyType: 1
+  type: table
+  CrossConnectAllowed: 0
   simpleAdjacency:
     o: {fileID: 0}
     c: {fileID: 0}
@@ -173,6 +177,23 @@ MonoBehaviour:
     tNSE: {fileID: 0}
     tSWE: {fileID: 0}
     x: {fileID: 0}
+  EditorblockedConnections: 0
+--- !u!114 &7550083641595086523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3879826479501069436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
 --- !u!1001 &6293662703714347641
 PrefabInstance:
   m_ObjectHideFlags: 0
