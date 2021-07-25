@@ -487,6 +487,11 @@ PrefabInstance:
       propertyPath: playOnAwake
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4068288819870881742, guid: 7fc08e70e0552eb4da30f809aadf8666,
+        type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9146105795711067569, guid: 7fc08e70e0552eb4da30f809aadf8666,
         type: 3}
       propertyPath: m_Name
