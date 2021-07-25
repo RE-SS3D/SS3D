@@ -21,7 +21,7 @@ public class BlinkingLight : MonoBehaviour
     [SerializeField] private Material emissiveMaterial;
 
     [Header("Blink Settings")]
-    [Tooltip("How often should a blink occur in seconds.")]
+    [Tooltip("Seconds between blinks.")]
     [SerializeField] private float blinkPeriod = 1f;
     [Tooltip("How long should the light stay on when blinking. Must be less than blink period.")]
     [SerializeField] private float blinkLength = .5f;
