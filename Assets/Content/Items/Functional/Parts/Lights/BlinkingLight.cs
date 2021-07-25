@@ -26,7 +26,7 @@ public class BlinkingLight : MonoBehaviour
     [Tooltip("How long should the light stay on when blinking. Must be less than blink period.")]
     [SerializeField] private float blinkLength = .5f;
     
-    void Awake() 
+    void Start() 
     {
         lightMesh = GetComponent<MeshRenderer>();
         TurnLightOff();
