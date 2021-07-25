@@ -107,7 +107,11 @@ namespace SS3D.Engine.Tiles
         /// </summary>
         public void Clear()
         {
-            foreach (TileChunk chunk in chunks.Values)
+            // Number of chunks can be modified during deletion, so create a copy
+            List<TileChunk> tempChunkList = new List<TileChunk>();
+            tempChunkList.AddRange(chunks.Values);
+
+            foreach (TileChunk chunk in tempChunkList)
             {
                 chunk.Clear();
             }
@@ -403,8 +407,12 @@ namespace SS3D.Engine.Tiles
         {
             var adjacentObjects = new PlacedTileObject[8];
 
+            // Chunks dictionary can be modified in the time between...
+            List<TileChunk> tempChunkList = new List<TileChunk>();
+            tempChunkList.AddRange(chunks.Values);
+
             // Loop through every single tile object...
-            foreach (TileChunk chunk in chunks.Values)
+            foreach (TileChunk chunk in tempChunkList)
             {
                 foreach (TileLayer layer in TileHelper.GetTileLayers())
                 {
