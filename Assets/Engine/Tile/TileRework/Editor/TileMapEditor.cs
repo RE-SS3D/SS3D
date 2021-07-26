@@ -381,7 +381,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
         /// <summary>
         /// Determines which sublayer should be used based on the currently selected rotation. 
-        /// Only applies to walls for now.
+        /// Only applies to walls and overlaysfor now.
         /// </summary>
         /// <returns>Sublayer index to use</returns>
         private int GetSubLayerIndex()
@@ -393,6 +393,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
                 // Use the direction enum as an offset for the sub layer
                 case TileLayer.HighWallMount:
                 case TileLayer.LowWallMount:
+                case TileLayer.Overlay:
                     return ((int)selectedDir / 2);
             }
         }
@@ -544,7 +545,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             }
             else
             {
-                ghostObject = Instantiate(selectedObjectSO.prefab, Vector3.zero, Quaternion.identity);
+                ghostObject = Instantiate(selectedObjectSO.prefab, Vector3.zero, Quaternion.Euler(0, TileHelper.GetRotationAngle(selectedDir), 0));
             }
             ghostObject.name = "Ghost object";
             ghostObject.tag = "EditorOnly";
