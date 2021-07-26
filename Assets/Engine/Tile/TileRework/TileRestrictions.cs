@@ -4,11 +4,27 @@ using UnityEngine;
 
 namespace SS3D.Engine.Tiles
 {
+   
+
     /// <summary>
     /// Class used for setting certain restrictions when building objects on the tilemap. For example, most objects cannot be build if a plenum is missing.
     /// </summary>
     public static class TileRestrictions
     {
+        /// <summary>
+        /// Enum used for which restrictions should be applied to CanBuild.
+        /// 
+        /// - Everything:   Restrictions + tile occupancy are checked
+        /// - Restrictions: Restrictions are checked
+        /// - None:         Tile occupancy is checked
+        /// </summary>
+        public enum CheckRestrictions
+        {
+            Everything,
+            None,
+            OnlyRestrictions,
+        }
+
         /// <summary>
         /// Main function for verifying if a tileObjectSO can be placed at a given location.
         /// </summary>

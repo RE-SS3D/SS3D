@@ -458,7 +458,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             // Rendering
             if (deleteTiles)
                 Handles.color = Color.red;
-            else if (!deleteTiles && !tileManager.CanBuild(GetCurrentMap(), GetSubLayerIndex(), selectedObjectSO, cell, selectedDir))
+            else if (!deleteTiles && !tileManager.CanBuild(GetCurrentMap(), GetSubLayerIndex(), selectedObjectSO, cell, selectedDir, overwriteAllowed))
                 Handles.color = Color.yellow;
             else
                 Handles.color = Color.green;

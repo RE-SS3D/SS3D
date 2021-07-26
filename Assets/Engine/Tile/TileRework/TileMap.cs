@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using static SS3D.Engine.Tiles.TileRestrictions;
 
 namespace SS3D.Engine.Tiles
 {
@@ -186,7 +187,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="position">World position to place the object</param>
         /// <param name="dir">Direction the object is facing</param>
         /// <returns></returns>
-        public bool CanBuild(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir, bool checkRestrictions)
+        public bool CanBuild(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir, CheckRestrictions checkRestrictions)
         {
             // Get the right chunk
             TileChunk chunk = GetOrCreateChunk(position);
@@ -202,8 +203,13 @@ namespace SS3D.Engine.Tiles
                 // Verify if we are allowed to build for this grid position
                 Vector3 checkWorldPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
 
-                if (checkRestrictions)
+                if (checkRestrictions == CheckRestrictions.Everything)
                     canBuild &= TileRestrictions.CanBuild(this, checkWorldPosition, subLayerIndex, tileObjectSO, dir);
+                else if (checkRestrictions == CheckRestrictions.OnlyRestrictions)
+                {
+                    canBuild &= TileRestrictions.CanBuild(this, checkWorldPosition, subLayerIndex, tileObjectSO, dir);
+                    continue;
+                }
 
                 if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
                 {
@@ -252,7 +258,7 @@ namespace SS3D.Engine.Tiles
             // Test Can Build
             List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
 
-            if (CanBuild(subLayerIndex, tileObjectSO, position, dir, true))
+            if (CanBuild(subLayerIndex, tileObjectSO, position, dir, CheckRestrictions.Everything))
             {
                 // Get the chunk again as it may be deleted in CanBuild()
                 chunk = GetOrCreateChunk(position);

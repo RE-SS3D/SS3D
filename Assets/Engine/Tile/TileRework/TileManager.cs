@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static SS3D.Engine.Tiles.TileMap;
+using static SS3D.Engine.Tiles.TileRestrictions;
 
 namespace SS3D.Engine.Tiles
 {
@@ -214,7 +215,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="dir"></param>
         public void SetTileObject(TileMap map, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
-            if (CanBuild(map, subLayerIndex, tileObjectSO, position, dir))
+            if (CanBuild(map, subLayerIndex, tileObjectSO, position, dir, false))
                 map.SetTileObject(subLayerIndex, tileObjectSO, position, dir);
         }
 
@@ -266,20 +267,28 @@ namespace SS3D.Engine.Tiles
         /// <param name="position"></param>
         /// <param name="dir"></param>
         /// <returns></returns>
-        public bool CanBuild(TileMap selectedMap, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public bool CanBuild(TileMap selectedMap, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir, bool overrideAllowed)
         {
             bool canBuild = true;
             foreach (TileMap map in mapList)
             {
                 if (map == selectedMap)
                 {
-                    // Check for tile restrictions as well.
-                    canBuild &= map.CanBuild(subLayerIndex, tileObjectSO, position, dir, true);
+                    if (overrideAllowed)
+                    {
+                        // Do not check if the tile is occupied. Only apply tile restrictions.
+                        canBuild &= map.CanBuild(subLayerIndex, tileObjectSO, position, dir, CheckRestrictions.OnlyRestrictions);
+                    }
+                    else
+                    {
+                        // Check for tile restrictions as well.
+                        canBuild &= map.CanBuild(subLayerIndex, tileObjectSO, position, dir, CheckRestrictions.Everything);
+                    }
                 }
                 else
                 {
                     // Only check if the tile is occupied. Otherwise we cannot build furniture for example.
-                    canBuild &= map.CanBuild(subLayerIndex, tileObjectSO, position, dir, false);
+                    canBuild &= map.CanBuild(subLayerIndex, tileObjectSO, position, dir, CheckRestrictions.None);
                 }
             }
             return canBuild;
@@ -297,7 +306,7 @@ namespace SS3D.Engine.Tiles
             if (tileObjectSO.layerType == TileLayer.HighWallMount || tileObjectSO.layerType == TileLayer.LowWallMount)
                 Debug.LogError("Simplified function CanBuild() is used. Do not use this function with layers where a sub index is required!");
 
-            return CanBuild(GetMainMap(), 0, tileObjectSO, position, dir);
+            return CanBuild(GetMainMap(), 0, tileObjectSO, position, dir, false);
         }
 
         /// <summary>
