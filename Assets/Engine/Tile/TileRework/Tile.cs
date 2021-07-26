@@ -59,9 +59,8 @@ namespace SS3D.Engine.Tiles
             {
                 case TileLayer.HighWallMount:
                 case TileLayer.LowWallMount:
-                    return 4;
                 case TileLayer.Overlay:
-                    return 3;
+                    return 4;
                 default:
                     return 1;
             }
