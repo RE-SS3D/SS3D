@@ -18,8 +18,8 @@ GameObject:
   - component: {fileID: -6716584860060542677}
   - component: {fileID: -2469115493504090853}
   - component: {fileID: 4659898452993661522}
-  m_Layer: 0
-  m_Name: HighPower Cell
+  m_Layer: 16
+  m_Name: HighPowerCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

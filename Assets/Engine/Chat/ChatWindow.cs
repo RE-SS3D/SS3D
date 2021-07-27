@@ -4,6 +4,7 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using SS3D.Engine.Inventory.UI;
 
 namespace SS3D.Engine.Chat
 {
