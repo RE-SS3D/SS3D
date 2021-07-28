@@ -6,6 +6,7 @@ TagManager:
   tags:
   - MainCanvas
   - PlayerCamera
+  - ChatWindow
   layers:
   - Default
   - TransparentFX
