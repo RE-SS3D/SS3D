@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7314347351231916574}
   - component: {fileID: 7314347351231916575}
   m_Layer: 5
-  m_Name: ForwardKey
+  m_Name: BindingButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -196,8 +196,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: w
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0d8da653bf6ebc640b69676085b38b91, type: 2}
-  m_sharedMaterial: {fileID: -5479874421949242954, guid: 0d8da653bf6ebc640b69676085b38b91,
+  m_fontAsset: {fileID: 11400000, guid: e702f646c9d9d8f4bbf78f3442a7f3b2, type: 2}
+  m_sharedMaterial: {fileID: -200469330365712500, guid: e702f646c9d9d8f4bbf78f3442a7f3b2,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -222,8 +222,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 9
-  m_fontSizeBase: 9
+  m_fontSize: 11
+  m_fontSizeBase: 11
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8822401507964767621}
   - component: {fileID: 8822401507964767620}
   m_Layer: 5
-  m_Name: Forward
+  m_Name: KeyTitle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -107,10 +107,10 @@ RectTransform:
   m_Father: {fileID: 8822401507964767643}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 181.13754, y: 15}
+  m_SizeDelta: {x: 0, y: 15}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &8822401509258220665
 CanvasRenderer:
@@ -141,8 +141,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: forward
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0d8da653bf6ebc640b69676085b38b91, type: 2}
-  m_sharedMaterial: {fileID: -5479874421949242954, guid: 0d8da653bf6ebc640b69676085b38b91,
+  m_fontAsset: {fileID: 11400000, guid: e702f646c9d9d8f4bbf78f3442a7f3b2, type: 2}
+  m_sharedMaterial: {fileID: -200469330365712500, guid: e702f646c9d9d8f4bbf78f3442a7f3b2,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -167,8 +167,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 9
-  m_fontSizeBase: 9
+  m_fontSize: 11
+  m_fontSizeBase: 11
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
