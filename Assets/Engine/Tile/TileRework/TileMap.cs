@@ -549,19 +549,20 @@ namespace SS3D.Engine.Tiles
 
             // For walls, multiple object can exist at the same location. 
             // So use the naming convention to determine at which rotation it is placed
-            bool sameTile = (layer == TileLayer.LowWallMount || layer == TileLayer.HighWallMount);
+            bool sameTile = TileHelper.ContainsSubLayers(layer);
 
             for (int i = 0; i < layerObjectTransform.childCount; i++)
             {
                 var child = layerObjectTransform.GetChild(i);
-                if (child.position == position)
+
+                // There can be small offsets in height for some objects like overlays, so use only X and Z
+                if (child.position.x == position.x && child.position.z == position.z)
                 {
                     if (sameTile && !child.name.Contains("_" + subLayerIndex))
                         continue;
 
                     return child.gameObject;
                 }
-                    
             }
 
             return null;

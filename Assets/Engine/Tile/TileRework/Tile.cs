@@ -53,6 +53,19 @@ namespace SS3D.Engine.Tiles
             return (TileLayer[])Enum.GetValues(typeof(TileLayer));
         }
 
+        public static bool ContainsSubLayers(TileLayer layer)
+        {
+            switch (layer)
+            {
+                case TileLayer.HighWallMount:
+                case TileLayer.LowWallMount:
+                case TileLayer.Overlay:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public static int GetSubLayerSize(TileLayer layer)
         {
             switch(layer)
