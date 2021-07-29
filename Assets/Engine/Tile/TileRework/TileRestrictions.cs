@@ -46,7 +46,7 @@ namespace SS3D.Engine.Tiles
             }
 
             // Cannot build anything unless a plenum is placed
-            if (placedLayer != TileLayer.Plenum && tileObjects[(int)TileLayer.Plenum].IsCompletelyEmpty())
+            if (placedLayer != TileLayer.Plenum && !CanBuildOnPlenum(map, position, tileObjectSO, dir))
                 return false;
 
             // No wall mounts on non-walls
@@ -100,6 +100,34 @@ namespace SS3D.Engine.Tiles
             // Cannot build wall mount if it collides with the next wall
             PlacedTileObject[] adjacentObjects = map.GetNeighbourObjects(TileLayer.Turf, 0, position);
             if (adjacentObjects[(int)dir] && adjacentObjects[(int)dir].GetGenericType().Contains("wall"))
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks whether an object can be build on top of a certain plenum
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="position"></param>
+        /// <param name="plenumAttachment"></param>
+        /// <param name="dir"></param>
+        /// <returns></returns>
+        private static bool CanBuildOnPlenum(TileMap map, Vector3 position, TileObjectSO plenumAttachment, Direction dir)
+        {
+            TileObject plenumObject = map.GetTileObject(TileLayer.Plenum, position);
+
+            // No plenum means we cannot build anything on top
+            if (plenumObject.IsCompletelyEmpty())
+                return false;
+
+            // Only allow wires and machines on catwalks
+            if (plenumObject.GetPlacedObject(0).name.Contains("Catwalk") && (plenumAttachment.layerType != TileLayer.Wire &&
+                plenumAttachment.layerType != TileLayer.FurnitureBase))
+                return false;
+
+            // Can only build on a Plenum and not Catwalks or Lattices
+            if (!plenumObject.GetPlacedObject(0).name.Contains("Plenum") && !plenumObject.GetPlacedObject(0).name.Contains("Catwalk"))
                 return false;
 
             return true;
