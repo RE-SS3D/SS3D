@@ -264,7 +264,8 @@ namespace SS3D.Engine.Tiles
                 chunk = GetOrCreateChunk(position);
 
                 Vector2Int rotationOffset = tileObjectSO.GetRotationOffset(dir);
-                Vector3 placedObjectWorldPosition = chunk.GetWorldPosition(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, 0, rotationOffset.y) * chunk.GetTileSize();
+                Vector3 placedObjectWorldPosition = chunk.GetWorldPosition(placedObjectOrigin.x, placedObjectOrigin.y) + 
+                    tileObjectSO.prefab.transform.position + new Vector3(rotationOffset.x, 0, rotationOffset.y) * chunk.GetTileSize();
 
                 PlacedTileObject placedObject = PlacedTileObject.Create(placedObjectWorldPosition, placedObjectOrigin, dir, tileObjectSO);
                 placedObject.transform.SetParent(layerObject.transform);
