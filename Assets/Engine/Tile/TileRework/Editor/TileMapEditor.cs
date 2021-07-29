@@ -120,11 +120,15 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             if (tileManager == null)
                 return;
 
+            if (loadingTextures)
+                LoadAllAssetLayers();
+
             // Loading icons is async so we have to reload the icon list when that is done
-            if (loadingTextures && !AssetPreview.IsLoadingAssetPreviews())
+            if (loadingTextures && assetIcons.Count > 0 && !AssetPreview.IsLoadingAssetPreviews())
             {
                 loadingTextures = false;
                 LoadAllAssetLayers();
+                RefreshSelectionGrid(true);
             }
 
             EditorGUI.BeginChangeCheck();
@@ -670,12 +674,6 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
         /// </summary>
         private void UpdateSelectionGrid()
         {
-            if (loadingTextures && !AssetPreview.IsLoadingAssetPreviews())
-            {
-                RefreshSelectionGrid(true);
-                loadingTextures = false;
-            }
-
             GUIStyle style = new GUIStyle();
             style.imagePosition = ImagePosition.ImageAbove;
             style.contentOffset = new Vector2(10, 10);
