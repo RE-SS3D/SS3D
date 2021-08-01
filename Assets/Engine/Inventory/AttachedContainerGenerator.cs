@@ -13,6 +13,13 @@ namespace SS3D.Engine.Inventory
         public Vector2Int Size;
         public Filter StartFilter;
 
+        public void initialize(AttachedContainer AttachedContainer, Vector2Int Size, Filter StartFilter = null)
+        {
+            this.AttachedContainer = AttachedContainer;
+            this.Size = Size;
+            this.StartFilter = StartFilter;
+        }
+
         public void Start()
         {
             Assert.IsNotNull(AttachedContainer);

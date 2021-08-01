@@ -161,13 +161,9 @@ GameObject:
   - component: {fileID: 2966014633834705271}
   - component: {fileID: 2529038803880116840}
   - component: {fileID: 3374379410763890910}
-  - component: {fileID: 5221039376922892593}
   - component: {fileID: -6844367781294634566}
-  - component: {fileID: 5822460732533629667}
-  - component: {fileID: 3217298178607216875}
-  - component: {fileID: 8997186957474188380}
-  - component: {fileID: 9196474351462153229}
   - component: {fileID: -6408327110579811135}
+  - component: {fileID: 205025267558616109}
   m_Layer: 0
   m_Name: Locker Basic
   m_TagString: Untagged
@@ -320,24 +316,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.63288033, y: 1.7198707, z: 0.55178964}
   m_Center: {x: 0.000000044703484, y: 0.8598699, z: 0.0024448484}
---- !u!114 &5221039376922892593
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5599841925940684376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
-  OnlyStoreWhenOpen: 1
-  MaxDistance: 1.5
-  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
 --- !u!114 &-6844367781294634566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,63 +331,6 @@ MonoBehaviour:
   DisplayName: Locker
   Text: Stores stuff.
   MaxDistance: 0
---- !u!114 &5822460732533629667
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5599841925940684376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HideItems: 1
-  AttachItems: 1
-  AttachmentOffset: {x: 0, y: 0.5, z: 0}
---- !u!114 &3217298178607216875
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5599841925940684376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AttachedContainer: {fileID: 5822460732533629667}
-  Size: {x: 10, y: 10}
---- !u!114 &8997186957474188380
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5599841925940684376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2119b201c85e4ba2896540c7243a4b1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
---- !u!114 &9196474351462153229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5599841925940684376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CheckObserversInterval: 1
-  AttachedContainer: {fileID: 0}
 --- !u!114 &-6408327110579811135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -424,6 +345,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileState:
     rotation: 0
+--- !u!114 &205025267558616109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5599841925940684376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31ac19517329dd04b9429d741ec2f9c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isOpenable: 0
+  addedContainer: 1
+  containerType: 0
+  Size: {x: 10, y: 10}
 --- !u!1 &5758059360733024292
 GameObject:
   m_ObjectHideFlags: 0
