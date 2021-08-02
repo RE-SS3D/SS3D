@@ -632,7 +632,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton
+      value: CloseClothingBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -722,7 +722,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (5)
+      value: ZoomOutKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -1289,7 +1289,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (4)
+      value: ToggleWalkBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -1511,7 +1511,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (2)
+      value: LeftBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -1641,7 +1641,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (3)
+      value: RotateDownAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -1740,7 +1740,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (1)
+      value: DropKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -2086,7 +2086,7 @@ PrefabInstance:
     - target: {fileID: 617423959457335454, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
       propertyPath: m_Name
-      value: GroupTitle
+      value: BlankGroupTitle
       objectReference: {fileID: 0}
     - target: {fileID: 617423959457335457, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
@@ -2377,7 +2377,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (1)
+      value: SwapKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -2617,7 +2617,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (3)
+      value: AltActionAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -2699,7 +2699,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (3)
+      value: RightKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -3196,7 +3196,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (6)
+      value: ToggleRotationBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -3221,7 +3221,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (5)
+      value: RadialKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -3511,7 +3511,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (1)
+      value: RotateRightKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -3751,7 +3751,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (5)
+      value: ZoomOutAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -4184,7 +4184,7 @@ PrefabInstance:
     - target: {fileID: 617423959457335454, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
       propertyPath: m_Name
-      value: GroupTitle
+      value: UIGroupTitle
       objectReference: {fileID: 0}
     - target: {fileID: 617423959457335457, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
@@ -4424,7 +4424,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (2)
+      value: RotateUpBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -4550,7 +4550,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (2)
+      value: RotateUpKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -5161,7 +5161,7 @@ PrefabInstance:
     - target: {fileID: 617423959457335454, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
       propertyPath: m_Name
-      value: GroupTitle
+      value: MovementGroupTitle
       objectReference: {fileID: 0}
     - target: {fileID: 617423959457335457, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
@@ -5734,7 +5734,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (6)
+      value: ToggleRotationAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -5759,7 +5759,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle
+      value: ActivateKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -6600,7 +6600,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton
+      value: ForwardBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -6730,7 +6730,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (3)
+      value: RightBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -6885,7 +6885,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (4)
+      value: ToggleWalkKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -7280,7 +7280,7 @@ PrefabInstance:
     - target: {fileID: 617423959457335454, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
       propertyPath: m_Name
-      value: GroupTitle
+      value: BlankGroupTitle
       objectReference: {fileID: 0}
     - target: {fileID: 617423959457335457, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
@@ -7781,7 +7781,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle
+      value: CloseClothingKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -7934,7 +7934,7 @@ PrefabInstance:
     - target: {fileID: 617423959457335454, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
       propertyPath: m_Name
-      value: GroupTitle (1)
+      value: BindingGroupTitle
       objectReference: {fileID: 0}
     - target: {fileID: 617423959457335457, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
@@ -8367,7 +8367,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton
+      value: ActivateBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -8392,7 +8392,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (6)
+      value: ToggleRotationKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -8527,7 +8527,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (3)
+      value: RotateDownKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -8842,7 +8842,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton
+      value: RotateLeftAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -8972,7 +8972,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton
+      value: ActivateAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -8997,7 +8997,7 @@ PrefabInstance:
     - target: {fileID: 617423959457335454, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
       propertyPath: m_Name
-      value: GroupTitle
+      value: BlankGroupTitle
       objectReference: {fileID: 0}
     - target: {fileID: 617423959457335457, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
@@ -9227,7 +9227,7 @@ PrefabInstance:
     - target: {fileID: 617423959457335454, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
       propertyPath: m_Name
-      value: GroupTitle
+      value: BlankGroupTitle
       objectReference: {fileID: 0}
     - target: {fileID: 617423959457335457, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
@@ -9393,7 +9393,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (1)
+      value: BackwardKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -9684,7 +9684,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (1)
+      value: DropAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -10043,7 +10043,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (5)
+      value: RadialAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -10173,7 +10173,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (2)
+      value: ExamineAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -10607,7 +10607,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (2)
+      value: ExamineBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -11864,7 +11864,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (4)
+      value: ZoomInBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -12214,7 +12214,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (2)
+      value: LeftKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -12557,7 +12557,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (3)
+      value: AltActionKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -12994,7 +12994,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (1)
+      value: SwapKeyBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -13254,7 +13254,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (2)
+      value: RotateUpAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -13611,7 +13611,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (3)
+      value: RightAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -13636,7 +13636,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (4)
+      value: PickupKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -14036,7 +14036,7 @@ PrefabInstance:
     - target: {fileID: 617423959457335454, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
       propertyPath: m_Name
-      value: GroupTitle
+      value: InteractionGroupTitle
       objectReference: {fileID: 0}
     - target: {fileID: 617423959457335457, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
@@ -14813,7 +14813,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton
+      value: ForwardAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -14838,7 +14838,7 @@ PrefabInstance:
     - target: {fileID: 617423959457335454, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
       propertyPath: m_Name
-      value: GroupTitle
+      value: BlankGroupTitle
       objectReference: {fileID: 0}
     - target: {fileID: 617423959457335457, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
@@ -15073,7 +15073,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (1)
+      value: BackwardAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -15098,7 +15098,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (2)
+      value: ExamineKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -15516,7 +15516,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (1)
+      value: RotateRightBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -15646,7 +15646,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (4)
+      value: PickupBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -15838,7 +15838,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (5)
+      value: ZoomOutBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -15955,7 +15955,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (4)
+      value: ZoomInKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -16445,7 +16445,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (1)
+      value: BackwardBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -16575,7 +16575,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (3)
+      value: AltActionBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -16673,7 +16673,7 @@ PrefabInstance:
     - target: {fileID: 617423959457335454, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
       propertyPath: m_Name
-      value: GroupTitle
+      value: BlankGroupTitle
       objectReference: {fileID: 0}
     - target: {fileID: 617423959457335457, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
@@ -17072,7 +17072,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle
+      value: ForwardKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -17442,7 +17442,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (5)
+      value: RadialBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -17778,7 +17778,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (1)
+      value: DropBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -17970,7 +17970,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (2)
+      value: LobbyBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -18070,7 +18070,7 @@ PrefabInstance:
     - target: {fileID: 617423959457335454, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
       propertyPath: m_Name
-      value: GroupTitle
+      value: CameraGroupTitle
       objectReference: {fileID: 0}
     - target: {fileID: 617423959457335457, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
@@ -18310,7 +18310,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (4)
+      value: ToggleWalkAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -18899,7 +18899,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton
+      value: RotateLeftBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -19741,7 +19741,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (4)
+      value: ZoomInAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -19868,7 +19868,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle (2)
+      value: LobbyKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -20280,7 +20280,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton
+      value: CloseClothingAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -20593,7 +20593,7 @@ PrefabInstance:
     - target: {fileID: 617423959457335454, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
       propertyPath: m_Name
-      value: GroupTitle (1)
+      value: AltBindingGroupTitle
       objectReference: {fileID: 0}
     - target: {fileID: 617423959457335457, guid: f6a4f7b6eaa6f384e9df72b53809ef63,
         type: 3}
@@ -20728,7 +20728,7 @@ PrefabInstance:
     - target: {fileID: 8822401507964767642, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_Name
-      value: KeyTitle
+      value: RotateLeftKeyTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8822401507964767643, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
@@ -21102,7 +21102,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (3)
+      value: RotateDownBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -21383,7 +21383,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (2)
+      value: LeftAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -21513,7 +21513,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (2)
+      value: LobbyAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -21643,7 +21643,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (1)
+      value: SwapKeyAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -21871,7 +21871,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (4)
+      value: PickupAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
@@ -22001,7 +22001,7 @@ PrefabInstance:
     - target: {fileID: 7314347351231916569, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
       propertyPath: m_Name
-      value: BindingButton (1)
+      value: RotateRightAltBindingButton
       objectReference: {fileID: 0}
     - target: {fileID: 7314347351645212579, guid: 94ce56ab947924b47ad7549f6ce3a524,
         type: 3}
