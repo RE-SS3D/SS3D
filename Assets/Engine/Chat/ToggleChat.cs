@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace SS3D.Engine.Inventory.UI
 {
@@ -9,7 +9,7 @@ namespace SS3D.Engine.Inventory.UI
 	/// </summary>
 	public class ToggleChat : MonoBehaviour
 	{
-		private CanvasGroup ChatCanvas;
+		private List<CanvasGroup> ChatCanvas;
 		private bool isShowing = true;
 		private Button ExpandButton;
 
@@ -28,12 +28,7 @@ namespace SS3D.Engine.Inventory.UI
 			}*/
 		}
 
-		public void Init(CanvasGroup canvasGroup)
-        {
-			ChatCanvas = canvasGroup;
-        }
-
-        public void TaskOnClick()
+		public void TaskOnClick()
 		{
 			Toggle();
 		}
@@ -43,15 +38,27 @@ namespace SS3D.Engine.Inventory.UI
 		/// </summary>
 		private void Toggle()
         {
+			ChatCanvas = new List<CanvasGroup>();
+			foreach (GameObject chatWindow in GameObject.FindGameObjectsWithTag("ChatWindow"))
+			{
+				ChatCanvas.Add(chatWindow.GetComponentInChildren<CanvasGroup>());
+			}
+
 			if (isShowing)
 			{
-				ChatCanvas.alpha = 0f; //this makes everything transparent
-				ChatCanvas.blocksRaycasts = false; //this prevents the UI element to receive input events
+				foreach (CanvasGroup chat in ChatCanvas)
+				{
+					chat.alpha = 0f; //this makes everything transparent
+					chat.blocksRaycasts = false; //this prevents the UI element to receive input events
+				}
 			}
 			else
 			{
-				ChatCanvas.alpha = 1f; //this makes it visible again
-				ChatCanvas.blocksRaycasts = true; //this allows the UI to receive inputs again.
+				foreach (CanvasGroup chat in ChatCanvas)
+				{
+					chat.alpha = 1f; //this makes everything transparent
+					chat.blocksRaycasts = true; //this prevents the UI element to receive input events
+				}
 			}
 			isShowing = !isShowing;
 		}
