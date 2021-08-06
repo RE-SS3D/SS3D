@@ -4,6 +4,7 @@ using UnityEngine;
 using SS3D.Engine.Server.Login.Data;
 using SS3D.Engine.Server.Login.Networking;
 using SS3D.Engine.Server.Round;
+using SS3D;
     
     using System.Net;
 using Telepathy;
@@ -237,12 +238,51 @@ using UnityEngine.SceneManagement;
         {
             Debug.Log("OnServerAddPlayer");
 
-            GameObject soul = Instantiate(soulPrefab);
-            
-            NetworkServer.AddPlayerForConnection(conn, soul);
-            //GameObject player = Instantiate(playerDummyPrefab);
-            //NetworkServer.AddPlayerForConnection(conn, player);
+            if (!SceneLoaderManager.singleton.CommencedLoadingMap)
+            {
+                // There is no map loaded. This is the default condition.
+                GameObject soul = Instantiate(soulPrefab);
+                NetworkServer.AddPlayerForConnection(conn, soul);
+                //GameObject player = Instantiate(playerDummyPrefab);
+                //NetworkServer.AddPlayerForConnection(conn, player);
+            }
+            else
+            {
+                // A map has already been loaded when the client joins.
+                StartCoroutine(OnServerAddPlayerDelayed(conn));
+            }
         }
+
+        private IEnumerator OnServerAddPlayerDelayed(NetworkConnection conn)
+        {
+            // Wait until the server has loaded the scene itself.
+            while (!SceneLoaderManager.singleton.IsSelectedMapLoaded())
+                yield return null;
+
+            // Let the client know that the server has loaded the map.
+            SceneLoaderManager.singleton.TargetInvokeMapLoaded(conn);
+
+            // Wait for that to go through
+            yield return new WaitForEndOfFrame();
+
+            // Send client message to load the scene.
+            conn.Send(SceneLoaderManager.singleton.GenerateSceneMessage());
+
+            // Wait for that to go through
+            yield return new WaitForEndOfFrame();
+
+            // Now make the soul.
+            GameObject soul = Instantiate(soulPrefab);
+            NetworkServer.AddPlayerForConnection(conn, soul);
+
+            // Wait for that to go through
+            yield return new WaitForEndOfFrame();
+
+            // Let the client know that the server has loaded the map.
+            SceneLoaderManager.singleton.TargetSetActiveScene(conn);
+        }
+
+
 
         /**
          * The client receives the message informing them of the Login Server,

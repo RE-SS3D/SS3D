@@ -42,6 +42,8 @@ namespace SS3D
 	// the dropdown that should be with the possible maps
         [SerializeField] private TMP_Dropdown mapSelectionDropdown;
 
+        public bool CommencedLoadingMap { get; private set; }
+
         private void Awake()
         {
             if (singleton != null && singleton != this)
@@ -75,8 +77,10 @@ namespace SS3D
 	// Here we load the selected map
         public void LoadMapScene()
         {
-            if (IsSelectedMapLoaded()) return;
+            // Only allow the administrator to click this button once!
+            if (CommencedLoadingMap) return;
 
+            CommencedLoadingMap = true;
             loadSceneButtonText.text = "loading...";
             
             mapLoaded?.Invoke();
@@ -95,6 +99,13 @@ namespace SS3D
             mapLoaded?.Invoke();
         }
 
+        [TargetRpc]
+        public void TargetInvokeMapLoaded(NetworkConnection conn)
+        {
+            if (isServer) return;
+            mapLoaded?.Invoke();
+        }
+
 	// Unlock round start when the map is loaded, also sends the client the scene to load for some reason
 	// I'll move it to another place
 	// TODO: move the scene message to LoadMapScene()
@@ -105,14 +116,20 @@ namespace SS3D
             startRoundButton.interactable = true;
 
 	    // creates a message for the clients that tell them to load the selected scene
+            SceneMessage msg = GenerateSceneMessage();
+
+	    // sends said message to all clients
+            NetworkServer.SendToAll(msg);
+        }
+
+        public SceneMessage GenerateSceneMessage()
+        {
             SceneMessage msg = new SceneMessage
             {
                 sceneName = selectedMap,
                 sceneOperation = SceneOperation.LoadAdditive
             };
-
-	    // sends said message to all clients
-            NetworkServer.SendToAll(msg);
+            return msg;
         }
 
 	// Updates map list in the dropdown using the map list
@@ -222,6 +239,21 @@ namespace SS3D
             {
                 SceneManager.SetActiveScene(GetSelectedScene());
                 Debug.Log("New active scene set " + SceneManager.GetActiveScene().name);
+            }
+        }
+
+        [TargetRpc]
+        public void TargetSetActiveScene(NetworkConnection conn)
+        {
+            if (isServer) return;
+
+            Debug.Log("Setting new active scene: " + selectedMap);
+            SceneManager.SetActiveScene(GetSelectedScene());
+            Debug.Log("New active scene set " + SceneManager.GetActiveScene().name);
+
+            if (RoundManager.singleton.IsRoundStarted)
+            {
+                ServerLobbyUIHelper.singleton.ChangeEmbarkText();
             }
         }
 
