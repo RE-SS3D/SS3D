@@ -75,13 +75,27 @@ namespace SS3D.Engine.Examine
 			
 			// If the window size has changed, amend the RenderTexture correspondingly.
 			ResizeTexturesIfRequired();
-			
+
 			// Render all of our meshes to the invisible RenderTexture
+			SkinnedMeshRenderer smr;
+			Mesh bakedMesh = new Mesh();
 			foreach (MeshColourAffiliation mesh in meshes)
 			{
 				singleColourMaterial.SetVector("colour", mesh.GetColour());
 				singleColourMaterial.SetPass(0);
-				UnityEngine.Graphics.DrawMeshNow(mesh.GetMesh(), mesh.GetTransform().position, mesh.GetTransform().rotation);
+
+				smr = mesh.GetSkinnedMeshRenderer();
+				if (smr == null)
+                {
+					UnityEngine.Graphics.DrawMeshNow(mesh.GetMesh(), mesh.GetTransform().position, mesh.GetTransform().rotation);
+				}
+				else
+                {
+					smr.forceMatrixRecalculationPerRender = true;
+					smr.BakeMesh(bakedMesh);
+					UnityEngine.Graphics.DrawMeshNow(bakedMesh, mesh.GetTransform().position, smr.transform.rotation);
+					smr.forceMatrixRecalculationPerRender = false;
+				}
 			}
 				
 			// Test the colour of the pixel where our cursor is
@@ -350,7 +364,7 @@ namespace SS3D.Engine.Examine
 			}
 			if (smr != null && smr.sharedMesh != null && child.gameObject.GetComponent<Renderer>().enabled)
 			{
-				meshes.Add(new MeshColourAffiliation(smr.sharedMesh, colours.Peek(), child));
+				meshes.Add(new MeshColourAffiliation(smr.sharedMesh, colours.Peek(), child, smr));
 			}
 			
 			// Recursively call this method on each child
@@ -376,13 +390,14 @@ namespace SS3D.Engine.Examine
 			private Mesh mesh;
 			private Color colour;
 			private Transform transform;
-			private Texture texture;
+			private SkinnedMeshRenderer smr;
 			
-			public MeshColourAffiliation(Mesh mesh, Color colour, Transform transform)
+			public MeshColourAffiliation(Mesh mesh, Color colour, Transform transform, SkinnedMeshRenderer smr = null)
 			{
 				this.mesh = mesh;
 				this.colour = colour;
 				this.transform = transform;
+				this.smr = smr;
 			}
 
 			public Mesh GetMesh()
@@ -398,7 +413,12 @@ namespace SS3D.Engine.Examine
 			public Transform GetTransform()
 			{
 				return transform;
-			}			
+			}
+			
+			public SkinnedMeshRenderer GetSkinnedMeshRenderer()
+            {
+				return smr;
+            }
 			
 		}
 		
