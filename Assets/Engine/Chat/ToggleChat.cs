@@ -24,10 +24,10 @@ namespace SS3D.Engine.Inventory.UI
         private void Update()
         {
 			// Button to toggle the chat UI
-			/*if (Input.GetButtonDown("Toggle Chat"))
+			if (Input.GetButtonDown("Toggle Chat"))
 			{
 				Toggle();
-			}*/
+			}
 		}
 
 		public void TaskOnClick()
