@@ -17,6 +17,8 @@ namespace SS3D.Engine.Inventory.UI
         {
 			ExpandButton = GetComponent<Button>();
 			ExpandButton.onClick.AddListener(TaskOnClick);
+			// Go ahead and hide it on the start
+			Toggle();
 		}
 
         private void Update()
