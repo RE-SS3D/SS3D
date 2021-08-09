@@ -75,7 +75,6 @@ namespace SS3D.Engine.Examine
 			// Render all of our meshes to the invisible RenderTexture
 			foreach (MeshColourAffiliation mesh in meshes)
 			{
-				singleColourMaterial.mainTexture = mesh.GetTexture();
 				singleColourMaterial.SetVector("colour", mesh.GetColour());
 				singleColourMaterial.SetPass(0);
 				UnityEngine.Graphics.DrawMeshNow(mesh.GetMesh(), mesh.GetTransform().position, mesh.GetTransform().rotation);
@@ -338,11 +337,11 @@ namespace SS3D.Engine.Examine
 			// If mesh exists, record the colour affiliation of it 
 			if (mf != null && mf.sharedMesh != null && child.gameObject.GetComponent<Renderer>().enabled)
 			{
-				meshes.Add(new MeshColourAffiliation(mf.sharedMesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
+				meshes.Add(new MeshColourAffiliation(mf.sharedMesh, colours.Peek(), child));
 			}
 			if (smr != null && smr.sharedMesh != null && child.gameObject.GetComponent<Renderer>().enabled)
 			{
-				meshes.Add(new MeshColourAffiliation(smr.sharedMesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
+				meshes.Add(new MeshColourAffiliation(smr.sharedMesh, colours.Peek(), child));
 			}
 			
 			// Recursively call this method on each child
@@ -370,14 +369,13 @@ namespace SS3D.Engine.Examine
 			private Transform transform;
 			private Texture texture;
 			
-			public MeshColourAffiliation(Mesh mesh, Color colour, Transform transform, Texture texture)
+			public MeshColourAffiliation(Mesh mesh, Color colour, Transform transform)
 			{
 				this.mesh = mesh;
 				this.colour = colour;
 				this.transform = transform;
-				this.texture = texture;
 			}
-			
+
 			public Mesh GetMesh()
 			{
 				return mesh;
@@ -392,10 +390,6 @@ namespace SS3D.Engine.Examine
 			{
 				return transform;
 			}			
-			
-			public Texture GetTexture(){
-				return texture;
-			}
 			
 		}
 		
