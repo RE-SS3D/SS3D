@@ -31,9 +31,16 @@ namespace SS3D.Engine.Examine
 			MugshotPath = mugshotPath;
 			Mugshot = Resources.Load<Sprite>(MugshotPath);
 		}
-		
+
+		// Returns the name of the object (i.e. Identification Card)
+		// It does NOT return the name of the person identified by the card!
+		public string GetName()
+		{
+			return "Identification Card";
+		}
+
 		// Returns the character first name
-        public string GetFirstName()
+		public string GetFirstName()
 		{
 			return FirstName;
 		}

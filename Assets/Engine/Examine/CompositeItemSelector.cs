@@ -50,12 +50,16 @@ namespace SS3D.Engine.Examine
 				
 		// Indicate whether mouse is currently over the UI
 		private bool mouseOverUI;
+
+		// Confirms whether we need to render the image during OnPostRender.
+		private bool setPostRender;
 				
 		public void Start()
 		{
 			cam = CameraManager.singleton.examineCamera;
 			tex = new Texture2D(1, 1);
 			mouseOverUI = false;
+			setPostRender = false;
 		}
 
 		public void OnPostRender()
@@ -64,7 +68,7 @@ namespace SS3D.Engine.Examine
 			// Don't bother with all of this work if the mouse is over the user interface.
 			// If it is over the interface, we should already have a reference to the object
 			// stored in currentExaminable.
-			if (mouseOverUI)
+			if (mouseOverUI || !setPostRender)
 			{
 				return;
 			}
@@ -125,13 +129,18 @@ namespace SS3D.Engine.Examine
 		
 		/// This is how the Examinator actually returns the Object.
 		public GameObject GetCurrentExaminable(){
+			setPostRender = false;
 			return currentExaminable;
 		}
 		
 		
 		public void CalculateSelectedGameObject()
 		{
-			
+
+			// Tells the CompositeItemSelector that we want to render the meshes in OnPostRender, so
+			// that we can use that texture to determine the examinable.
+			setPostRender = true;
+
 			// Identify if mouse is over the user interface, or over objects in the game world.
 			if (EventSystem.current.IsPointerOverGameObject())
 			{

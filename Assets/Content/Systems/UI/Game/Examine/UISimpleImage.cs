@@ -37,7 +37,7 @@ namespace SS3D.Content.Systems.Examine.UI
 				if (currentExaminable != null)
 				{
 					gameObject.SetActive(true);
-					displayCaption = "<size=16><b>" + currentExaminable.GetCaption() + "</b></size>";
+					displayCaption = "<size=16><b>" + currentExaminable.GetName() + "</b></size>";
 					displayImage = currentExaminable.GetImage();
 				}
             }			

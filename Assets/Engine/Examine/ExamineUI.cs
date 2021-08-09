@@ -10,6 +10,7 @@ namespace SS3D.Engine.Examine
 		// These should be the AbstractExamineUIElements, listed in the same order
 		// as the corresponding ExamineTypes.
 		public AbstractExamineUIElement[] UIElements;
+		public TMP_Text HoverName;
 		public int framesPerRefresh = 10;
 		private AbstractExamineUIElement CurrentUI;
 		private int frames = 0;
@@ -31,7 +32,7 @@ namespace SS3D.Engine.Examine
 				// Disable UI if user not holding down Examine button.
 				if (!Input.GetButton("Examine"))
 				{
-					ClearData();
+					ClearData(true);
 				}
 			}
 		}
@@ -51,7 +52,8 @@ namespace SS3D.Engine.Examine
 			if (data.Length == 0){return;}
 			
 			// The highest Examinable listed in the target's Inspector will decide the UI to use.
-			ExamineType dataType = data[0].GetExamineType(); 
+			ExamineType dataType = data[0].GetExamineType();
+			UpdateHoverName(data[0].GetName());
 			
 			// If the UI is not set, set the appropriate one.
 			if (!CurrentUI)
@@ -71,14 +73,24 @@ namespace SS3D.Engine.Examine
 			CurrentUI.LoadExamineData(data);
 			CurrentUI.RefreshDisplay();
 		}
+
+		public void UpdateHoverName(string newName)
+        {
+			HoverName.text = newName;
+        }
 		
-		public void ClearData()
+		public void ClearData(bool preserveHoverName)
 		{
 			if (CurrentUI)
 			{
 				CurrentUI.DisableElement();
 				CurrentUI = null;
 			}
+
+			if (!preserveHoverName)
+            {
+				UpdateHoverName("");
+            }
 		}
     }
 }
