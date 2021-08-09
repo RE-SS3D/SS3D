@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 namespace SS3D.Engine.Inventory.UI
 {
@@ -24,7 +25,7 @@ namespace SS3D.Engine.Inventory.UI
         private void Update()
         {
 			// Button to toggle the chat UI
-			if (Input.GetButtonDown("Toggle Chat"))
+			if (Input.GetButtonDown("Toggle Chat") && EventSystem.current.currentSelectedGameObject == null)
 			{
 				Toggle();
 			}

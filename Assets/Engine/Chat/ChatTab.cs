@@ -15,6 +15,7 @@ namespace SS3D.Engine.Chat
         public ChatTabData Data;
         private ChatWindow chatWindow;
         private Transform originParent;
+        private Vector3 oldPos;
 
         private void Awake()
         {
@@ -44,7 +45,7 @@ namespace SS3D.Engine.Chat
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (!Data.Removable) return;
-        
+            oldPos = transform.position;
             originParent = transform.parent;
 
             chatWindow.LoadTab();
@@ -68,18 +69,27 @@ namespace SS3D.Engine.Chat
                 ChatWindow window = eventData.hovered.First(x => x.GetComponentInParent<ChatWindow>())
                     .GetComponentInParent<ChatWindow>(); // this line is ugly >:l
                 window.AddTab(Data);
+                if (chatWindow.GetTabCount() < 2)
+                {
+                    Destroy(chatWindow.gameObject);
+                }
                 Destroy(gameObject);
             }
             else
             {
-                chatWindow.ChatRegister.CreateChatWindow(Data, null, Input.mousePosition);
-                Destroy(gameObject);
+                if (chatWindow.GetTabCount() > 1)
+                {
+                    chatWindow.ChatRegister.CreateChatWindow(Data, null, Input.mousePosition);
+                    Destroy(gameObject);
+                }
+                else
+                {
+                    transform.position = oldPos;
+                }
             }
 
             Text.raycastTarget = true;
             image.raycastTarget = true;
-
-            if (originParent.childCount < 1) Destroy(chatWindow.gameObject);
         }
     }
 }

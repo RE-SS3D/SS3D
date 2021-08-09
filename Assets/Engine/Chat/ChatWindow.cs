@@ -38,6 +38,10 @@ namespace SS3D.Engine.Chat
             LoadChannelSelector(tabData);
         }
 
+        public int GetTabCount() {
+            return tabRow.childCount;
+        }
+
         private void LoadChannelSelector(ChatTabData tabData)
         {
             channelDropDown.options.Clear();
