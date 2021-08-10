@@ -812,7 +812,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4059951226281761522
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1610,7 +1610,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3400414798193095991
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3815,6 +3815,7 @@ MonoBehaviour:
   chatTabPrefab: {fileID: 8200174819641522885, guid: 77b4a247c9e13b84c949d930ecab4c36,
     type: 3}
   channelDropDown: {fileID: 3465179352210583905}
+  addTabNameField: {fileID: 4449407438881195670}
 --- !u!1 &7332559107077124948
 GameObject:
   m_ObjectHideFlags: 0

@@ -20,6 +20,7 @@ namespace SS3D.Engine.Chat
         [SerializeField] private TMP_InputField inputField = null;
         [SerializeField] private ChatTab chatTabPrefab = null;
         [SerializeField] private TMP_Dropdown channelDropDown = null;
+        [SerializeField] private GameObject addTabNameField = null;
 
         private ChatTabData currentTabData;
         private ChatRegister chatRegister;
@@ -216,7 +217,8 @@ namespace SS3D.Engine.Chat
 
         public bool PlayerIsTyping()
         {
-            return EventSystem.current.currentSelectedGameObject == inputField.gameObject;
+            return (EventSystem.current.currentSelectedGameObject == inputField.gameObject ||
+                EventSystem.current.currentSelectedGameObject == addTabNameField);
         }
 
         private void UpdateChatFocus()
