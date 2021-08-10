@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using SS3D.Engine.Inventory.UI;
+using UnityEngine.UI;
 
 namespace SS3D.Engine.Chat
 {
@@ -38,8 +39,21 @@ namespace SS3D.Engine.Chat
             LoadChannelSelector(tabData);
         }
 
-        public int GetTabCount() {
+        public int GetTabCount()
+        {
             return tabRow.childCount;
+        }
+
+        /*
+        *   Turns all tabs on, so that the selected tab can be turned off
+        */
+        public void EnableAllTabs()
+        {
+            Button[] buttons = tabRow.GetComponentsInChildren<Button>();
+            foreach (Button button in buttons)
+            {
+                button.interactable = true;
+            }
         }
 
         private void LoadChannelSelector(ChatTabData tabData)

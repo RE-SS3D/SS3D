@@ -39,8 +39,14 @@ namespace SS3D.Engine.Chat
                 20 + Text.GetRenderedValues(true).x);
         }
 
-        public void OpenTab() => chatWindow.LoadTab(Data);
+        public void OpenTab()
+        {
+            chatWindow.LoadTab(Data);
 
+            // Enable all tabs except for the one clicked
+            chatWindow.EnableAllTabs();
+            GetComponent<Button>().interactable = false;
+        }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
