@@ -79,6 +79,44 @@ namespace SS3D.Engine.Chat
             ChatTab chatTab = Instantiate(chatTabPrefab, tabRow);
             chatTab.Init(tabData, this);
             LoadTab(chatTab.Data);
+
+            SelectTab(chatTab.GetComponent<Button>());
+        }
+
+        /// <summary>
+        /// Selects the given tab. Enables all other buttons in row, disables the selected one, and refreshes the channel dropdown.
+        /// </summary>
+        /// <param name="selectedButton">The button of the tab to be selected.</param>
+        public void SelectTab(Button selectedButton)
+        {
+            EnableAllTabs();
+            selectedButton.interactable = false;
+
+            channelDropDown.value = 0;
+            channelDropDown.RefreshShownValue();
+        }
+        public void SelectNextTab(GameObject selectedTab)
+        {
+            EnableAllTabs();
+
+            // Get the next button that isn't the one given
+            Button[] buttons = tabRow.GetComponentsInChildren<Button>();
+            Button selectedButton = selectedTab.GetComponent<Button>();
+            int index = 0;
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                if (buttons[i] != selectedButton)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            buttons[index].interactable = false;
+
+            // Update the selected channel
+            LoadChannelSelector(buttons[index].gameObject.GetComponent<ChatTab>().GetChatTabData());
+            channelDropDown.value = 0;
+            channelDropDown.RefreshShownValue();
         }
 
         public void UpdateMessages()

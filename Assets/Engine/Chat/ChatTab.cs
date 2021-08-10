@@ -22,6 +22,11 @@ namespace SS3D.Engine.Chat
             image = GetComponent<Image>();
         }
 
+        public ChatTabData GetChatTabData()
+        {
+            return Data;
+        }
+
         public void Init(ChatTabData data, ChatWindow window)
         {
             Data = data;
@@ -43,9 +48,7 @@ namespace SS3D.Engine.Chat
         {
             chatWindow.LoadTab(Data);
 
-            // Enable all tabs except for the one clicked
-            chatWindow.EnableAllTabs();
-            GetComponent<Button>().interactable = false;
+            chatWindow.SelectTab(GetComponent<Button>());
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -76,9 +79,7 @@ namespace SS3D.Engine.Chat
                     .GetComponentInParent<ChatWindow>(); // this line is ugly >:l
                 window.AddTab(Data);
                 if (chatWindow.GetTabCount() < 2)
-                {
                     Destroy(chatWindow.gameObject);
-                }
                 Destroy(gameObject);
             }
             else
@@ -89,11 +90,9 @@ namespace SS3D.Engine.Chat
                     Destroy(gameObject);
                 }
                 else
-                {
                     transform.position = oldPos;
-                }
             }
-
+            chatWindow.SelectNextTab(gameObject);
             Text.raycastTarget = true;
             image.raycastTarget = true;
         }
