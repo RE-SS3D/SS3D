@@ -44,9 +44,9 @@ namespace SS3D.Engine.Chat
             return tabRow.childCount;
         }
 
-        /*
-        *   Turns all tabs on, so that the selected tab can be turned off
-        */
+        /// <summary>
+        /// Enables all tabs to be interactable.
+        /// </summary>
         public void EnableAllTabs()
         {
             Button[] buttons = tabRow.GetComponentsInChildren<Button>();
@@ -80,18 +80,19 @@ namespace SS3D.Engine.Chat
             chatTab.Init(tabData, this);
             LoadTab(chatTab.Data);
 
-            SelectTab(chatTab.GetComponent<Button>());
+            SelectTab(chatTab.gameObject);
         }
 
         /// <summary>
         /// Selects the given tab. Enables all other buttons in row, disables the selected one, and refreshes the channel dropdown.
         /// </summary>
         /// <param name="selectedButton">The button of the tab to be selected.</param>
-        public void SelectTab(Button selectedButton)
+        public void SelectTab(GameObject selectedTab)
         {
             EnableAllTabs();
+            Button selectedButton = selectedTab.GetComponent<Button>();
             selectedButton.interactable = false;
-
+            LoadTab(selectedTab.GetComponent<ChatTab>().GetChatTabData());
             channelDropDown.value = 0;
             channelDropDown.RefreshShownValue();
         }
@@ -114,7 +115,7 @@ namespace SS3D.Engine.Chat
             buttons[index].interactable = false;
 
             // Update the selected channel
-            LoadChannelSelector(buttons[index].gameObject.GetComponent<ChatTab>().GetChatTabData());
+            LoadTab(buttons[index].gameObject.GetComponent<ChatTab>().GetChatTabData());
             channelDropDown.value = 0;
             channelDropDown.RefreshShownValue();
         }
@@ -167,13 +168,13 @@ namespace SS3D.Engine.Chat
         {
             if (currentTabData.Removable)
             {
-                if (tabRow.childCount <= 1)
+                if (tabRow.childCount < 2)
                 {
                     Destroy(gameObject);
                     return;
                 }
-
                 Destroy(currentTabData.Tab.gameObject);
+                SelectNextTab(currentTabData.Tab.gameObject);
                 StartCoroutine(UpdateCurrentDataTabNextFrame());
             }
         }

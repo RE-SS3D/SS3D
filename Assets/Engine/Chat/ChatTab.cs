@@ -46,9 +46,7 @@ namespace SS3D.Engine.Chat
 
         public void OpenTab()
         {
-            chatWindow.LoadTab(Data);
-
-            chatWindow.SelectTab(GetComponent<Button>());
+            chatWindow.SelectTab(gameObject);
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -84,11 +82,13 @@ namespace SS3D.Engine.Chat
             }
             else
             {
+                // Create a new chat window as long as there are multiple tabs
                 if (chatWindow.GetTabCount() > 1)
                 {
                     chatWindow.ChatRegister.CreateChatWindow(Data, null, Input.mousePosition);
                     Destroy(gameObject);
                 }
+                // There aren't multiple tabs, just revert back to where you were before
                 else
                     transform.position = oldPos;
             }
