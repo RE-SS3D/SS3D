@@ -30,7 +30,6 @@ namespace SS3D.Engine.Tiles.Connections
             // Checks if there are no cardinal connections
             public bool IsO() => numConnections == 0;
             // Checks for one connection
-            public bool IsC() => numConnections == 1;
             public bool IsU() => numConnections == 1;
             // Checks for two opposite connections
             public bool IsI() => numConnections == 2 && north == south;

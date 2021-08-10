@@ -14,8 +14,8 @@ namespace SS3D.Engine.Tiles.Connections
         public enum OffsetOrientation
         {
             o,
-            cNorth,
-            cSouth,
+            uNorth,
+            uSouth,
             i,
             lNE,
             lNW,
@@ -32,9 +32,9 @@ namespace SS3D.Engine.Tiles.Connections
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
         [Tooltip("A mesh where the north edge is connected, can be rotated to the east")]
-        public Mesh cNorth;
+        public Mesh uNorth;
         [Tooltip("A mesh where the south edge is connected, can be rotated to the west")]
-        public Mesh cSouth;
+        public Mesh uSouth;
         [Tooltip("A mesh where north & south edges are connected")]
         public Mesh i;
         [Tooltip("A mesh where the north & east edges are connected")]
@@ -72,17 +72,17 @@ namespace SS3D.Engine.Tiles.Connections
                 mesh = o;
                 orientation = OffsetOrientation.o;
             }
-            else if (cardinalInfo.IsC())
+            else if (cardinalInfo.IsU())
             {
                 if (cardinalInfo.north > 0 || cardinalInfo.east > 0)
                 {
-                    mesh = cNorth;
-                    orientation = OffsetOrientation.cNorth;
+                    mesh = uNorth;
+                    orientation = OffsetOrientation.uNorth;
                 }
                 else
                 {
-                    mesh = cSouth;
-                    orientation = OffsetOrientation.cSouth;
+                    mesh = uSouth;
+                    orientation = OffsetOrientation.uSouth;
                 }
                 rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
             }
