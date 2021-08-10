@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: Glowshroom_Mature
+  m_Name: Glowshroom
   m_EditorClassIdentifier: 
   layerType: 10
-  nameString: glowshroom_mature
-  prefab: {fileID: 8757431509704750092, guid: c1cc70a3f303ecb459752e9c654c6e6b, type: 3}
+  nameString: glowshroom
+  genericType: plant
+  prefab: {fileID: 8757431509704750092, guid: 77341584f36c27348b6c272ab2cbe6cd, type: 3}
   width: 1
   height: 1

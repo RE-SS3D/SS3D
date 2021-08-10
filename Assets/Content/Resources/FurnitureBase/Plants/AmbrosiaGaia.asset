@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: AmbrosiaGaia_Mature
+  m_Name: AmbrosiaGaia
   m_EditorClassIdentifier: 
   layerType: 10
-  nameString: ambrosia_gaia_mature
-  prefab: {fileID: 8757431509704750092, guid: f0675b684b2b45a4ab560d8ee43c39b9, type: 3}
+  nameString: ambrosia_gaia
+  genericType: plant
+  prefab: {fileID: 5091107218957857814, guid: e4e35157d2824334c91b2e53faface6f, type: 3}
   width: 1
   height: 1

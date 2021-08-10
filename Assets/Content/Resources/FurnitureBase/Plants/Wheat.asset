@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: Wheat_Mature
+  m_Name: Wheat
   m_EditorClassIdentifier: 
   layerType: 10
-  nameString: wheat_mature
-  prefab: {fileID: 8757431509704750092, guid: cb63ca80c2ae3564f884ed90a85346f0, type: 3}
+  nameString: wheat
+  genericType: plant
+  prefab: {fileID: 8757431509704750092, guid: d9ac62d34e6747f44b9c80551c26cedb, type: 3}
   width: 1
   height: 1

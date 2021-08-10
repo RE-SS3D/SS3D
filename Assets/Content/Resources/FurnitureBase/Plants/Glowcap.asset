@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: Glowcap_Mature
+  m_Name: Glowcap
   m_EditorClassIdentifier: 
   layerType: 10
-  nameString: glowcap_mature
-  prefab: {fileID: 8757431509704750092, guid: 1cce70b66ac43db4b8428cfb87a56794, type: 3}
+  nameString: glowcap
+  genericType: plant
+  prefab: {fileID: 8757431509704750092, guid: aff1849e835c89b48b4e488f3a29062d, type: 3}
   width: 1
   height: 1
