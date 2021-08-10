@@ -192,10 +192,14 @@ namespace SS3D.Engine.Chat
             {
                 return;
             }
-        
+
+            //Add the no parse tag so users can't edit their text
+            StringBuilder newText = new StringBuilder();
+            newText.Append("<noparse>").Append(text).Append("</noparse>");
+
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.Channel = currentTabData.Channels[channelDropDown.value];
-            chatMessage.Text = text;
+            chatMessage.Text = newText.ToString();
             inputField.text = "";
             if(chatRegister.RestrictedChannels.Contains(chatMessage.Channel.Name)){
                 return; //do not allow talking in restricted channels
