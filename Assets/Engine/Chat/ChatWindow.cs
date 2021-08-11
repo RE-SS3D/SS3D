@@ -40,6 +40,10 @@ namespace SS3D.Engine.Chat
             LoadChannelSelector(tabData);
         }
 
+        public RectTransform GetTabRow() {
+            return tabRow;
+        }
+
         public int GetTabCount()
         {
             return tabRow.childCount;
@@ -75,13 +79,14 @@ namespace SS3D.Engine.Chat
             }
         }
 
-        public void AddTab(ChatTabData tabData)
+        public ChatTab AddTab(ChatTabData tabData)
         {
             ChatTab chatTab = Instantiate(chatTabPrefab, tabRow);
             chatTab.Init(tabData, this);
             LoadTab(chatTab.Data);
 
             SelectTab(chatTab.gameObject);
+            return chatTab;
         }
 
         /// <summary>
