@@ -20,7 +20,6 @@ namespace SS3D.Engine.Chat
         [SerializeField] private TMP_InputField inputField = null;
         [SerializeField] private ChatTab chatTabPrefab = null;
         [SerializeField] private TMP_Dropdown channelDropDown = null;
-        [SerializeField] private GameObject addTabNameField = null;
 
         private ChatTabData currentTabData;
         private ChatRegister chatRegister;
