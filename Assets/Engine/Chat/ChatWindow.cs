@@ -25,11 +25,6 @@ namespace SS3D.Engine.Chat
 
         public ChatRegister ChatRegister => chatRegister;
 
-        private void Update()
-        {
-            UpdateChatFocus();
-        }
-
         public void Init(ChatTabData tabData, ChatRegister chatRegister)
         {
             this.chatRegister = chatRegister;
@@ -223,24 +218,9 @@ namespace SS3D.Engine.Chat
             return (EventSystem.current.currentSelectedGameObject != null);
         }
 
-        private void UpdateChatFocus()
+        public void FinishTyping()
         {
-            //Make sure player is pressing submit
-            if (!Input.GetButtonDown("Submit"))
-            {
-                return;
-            }
-        
-            //Focus chat window
-            if (!PlayerIsTyping())
-            {
-                inputField.ActivateInputField();
-                return;
-            }
-        
-            //Send message and unfocus
             SendMessage();
-            inputField.DeactivateInputField(true);
             EventSystem.current.SetSelectedGameObject(null);
         }
     }
