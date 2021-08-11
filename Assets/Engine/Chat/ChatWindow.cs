@@ -222,8 +222,7 @@ namespace SS3D.Engine.Chat
 
         public bool PlayerIsTyping()
         {
-            return (EventSystem.current.currentSelectedGameObject == inputField.gameObject ||
-                EventSystem.current.currentSelectedGameObject == addTabNameField);
+            return (EventSystem.current.currentSelectedGameObject != null);
         }
 
         private void UpdateChatFocus()
