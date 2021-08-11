@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using Mirror;
 using SS3D.Engine.Chat;
-using System.Numerics;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
+using UnityEngine.EventSystems;
 
 namespace SS3D.Content.Systems.Player
 {
@@ -55,14 +55,7 @@ namespace SS3D.Content.Systems.Player
                 return;
             }
 
-            //Ignore movement controls when typing in chat
-            if (chatRegister.ChatWindow != null && chatRegister.ChatWindow.PlayerIsTyping())
-            {
-                currentMovement.Set(0, 0);
-                return;
-            }
-
-            if (Input.GetButtonDown("Toggle Run"))
+            if (Input.GetButtonDown("Toggle Run") && EventSystem.current.currentSelectedGameObject == null)
             {
                 isWalking = !isWalking;
             }
@@ -73,8 +66,17 @@ namespace SS3D.Content.Systems.Player
             float x = Input.GetAxisRaw("Horizontal");
             float y = Input.GetAxisRaw("Vertical");
 
+            //Ignore movement controls when typing in chat
+            if (chatRegister.ChatWindows.Count > 0 && EventSystem.current.currentSelectedGameObject != null)
+            {
+                intendedMovement = new Vector2(0, 0);
+            }
             // Smoothly transition to next intended movement
-            intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
+            else
+            {
+                intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
+            }
+            
             currentMovement = Vector2.MoveTowards(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 5f, 3) / 5));
             // Move the player
             if (currentMovement != Vector2.zero)

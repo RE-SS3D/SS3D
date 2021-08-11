@@ -3815,7 +3815,6 @@ MonoBehaviour:
   chatTabPrefab: {fileID: 8200174819641522885, guid: 77b4a247c9e13b84c949d930ecab4c36,
     type: 3}
   channelDropDown: {fileID: 3465179352210583905}
-  addTabNameField: {fileID: 4449407438881195670}
 --- !u!1 &7332559107077124948
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,7 +4,6 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using SS3D.Engine.Inventory.UI;
 using UnityEngine.UI;
 
 namespace SS3D.Engine.Chat
@@ -175,7 +174,7 @@ namespace SS3D.Engine.Chat
             {
                 if (tabRow.childCount < 2)
                 {
-                    Destroy(gameObject);
+                    chatRegister.DeleteChatWindow(this);
                     return;
                 }
                 Destroy(currentTabData.Tab.gameObject);

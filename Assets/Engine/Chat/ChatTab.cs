@@ -137,7 +137,7 @@ namespace SS3D.Engine.Chat
                     PlaceTab(chatTab, window, eventData.position);
                     // Delete the old chat window if it wouldn't have any tabs after deleting this one
                     if (chatWindow.GetTabCount() < 2)
-                        Destroy(chatWindow.gameObject);
+                        chatWindow.ChatRegister.DeleteChatWindow(chatWindow);
                     Destroy(gameObject);
                     chatWindow.SelectNextTab(gameObject);
                 }

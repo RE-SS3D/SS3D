@@ -64,6 +64,7 @@ namespace SS3D.Engine.Inventory.UI
 				}
 			}
 			isShowing = !isShowing;
+			EventSystem.current.SetSelectedGameObject(null);
 		}
 	}
 }
