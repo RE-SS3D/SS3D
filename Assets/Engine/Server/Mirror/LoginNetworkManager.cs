@@ -41,6 +41,9 @@ using UnityEngine.SceneManagement;
     {
         public static LoginNetworkManager singleton { get; private set; }
 
+        // Allows for updating the server numbers when players connect / disconnect.
+        public event System.Action ClientNumbersUpdated;
+
         // Warmup time until round starts
         [Range(3, 3600)]
         [SerializeField] int warmupTime;
@@ -213,6 +216,9 @@ using UnityEngine.SceneManagement;
 
             // Must always send a message, so the client knows if they should spawn through the login server or not
             conn.Send(new LoginServerMessage() {serverAddress = userMustLogin ? loginServerAddress : null});
+
+            // Ensure the display gets updated.
+            StartCoroutine(UpdatePlayerCountDelayed());
         }
 
         /**
@@ -435,5 +441,25 @@ using UnityEngine.SceneManagement;
             if (loadingScreen != null)
                 loadingScreen?.SetActive(state);
         }
+
+        // Ensures that as clients disconnect, the client numbers are updated.
+        public override void OnServerDisconnect(NetworkConnection conn)
+        {
+            base.OnServerDisconnect(conn);
+            ClientNumbersUpdated?.Invoke();
+
+        }
+
+        private IEnumerator UpdatePlayerCountDelayed()
+        {
+            // Wait until the end of frame (so that the event has been subscribed to)
+            yield return new WaitForEndOfFrame();
+
+            // Fire the event
+            Debug.Log("Invoking ClientNumbersUpdated");
+            ClientNumbersUpdated?.Invoke();
+
+        }
+
     }
 }
