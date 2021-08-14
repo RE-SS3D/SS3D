@@ -10,9 +10,18 @@ namespace SS3D.Engine.Examine
 		// These should be the AbstractExamineUIElements, listed in the same order
 		// as the corresponding ExamineTypes.
 		public AbstractExamineUIElement[] UIElements;
-		public TMP_Text HoverName;
-		public int framesPerRefresh = 10;
+
+		// The AbstractExamineUIElement corresponding to the current examine data passed in
 		private AbstractExamineUIElement CurrentUI;
+
+		// Text box to display the item name when we hover over it (without pressing 'Shift')
+		public TMP_Text HoverName;
+
+		// Whether the hover text is enabled 
+		public bool HoverTextEnabled;
+
+		// Values required to periodically update the UI
+		public const int FRAMES_PER_REFRESH = 10;
 		private int frames = 0;
 
 		// Update will periodically update the displayed UI (for example, moving the panel around
@@ -23,7 +32,7 @@ namespace SS3D.Engine.Examine
 			if (CurrentUI)
 			{
 				frames++;
-				if (frames >= framesPerRefresh)
+				if (frames >= FRAMES_PER_REFRESH)
 				{
 					frames = 0;
 					CurrentUI.RefreshDisplay();
@@ -50,10 +59,21 @@ namespace SS3D.Engine.Examine
 			
 			// If there's no data, can't load anything.
 			if (data.Length == 0){return;}
-			
+
+			// We only want the Hover Name to work when another UI is not displayed.
+			if (!Input.GetButton("Examine"))
+			{
+				UpdateHoverName(data[0].GetName());
+				//ClearData(true);
+				return;
+			}
+			else
+            {
+				UpdateHoverName("");
+			}
+
 			// The highest Examinable listed in the target's Inspector will decide the UI to use.
 			ExamineType dataType = data[0].GetExamineType();
-			UpdateHoverName(data[0].GetName());
 			
 			// If the UI is not set, set the appropriate one.
 			if (!CurrentUI)
@@ -74,9 +94,12 @@ namespace SS3D.Engine.Examine
 			CurrentUI.RefreshDisplay();
 		}
 
+		// Changes the name that is displayed in the HoverName text box. It will
+		// only allow a new name if the user settings permit, but it will always
+		// allow the current name to be cleared.
 		public void UpdateHoverName(string newName)
         {
-			HoverName.text = newName;
+			if (HoverTextEnabled || newName.Equals("")) HoverName.text = newName;
         }
 		
 		public void ClearData(bool preserveHoverName)

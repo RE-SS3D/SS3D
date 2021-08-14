@@ -91,8 +91,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 32
-  m_fontSizeBase: 32
+  m_fontSize: 26
+  m_fontSizeBase: 26
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -253,7 +253,7 @@ MonoBehaviour:
   - {fileID: 2431398896060999555}
   - {fileID: 2102310858846442371}
   HoverName: {fileID: 608803672850777149}
-  framesPerRefresh: 10
+  HoverTextEnabled: 1
 --- !u!1 &8461037531701125348
 GameObject:
   m_ObjectHideFlags: 0
@@ -415,6 +415,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850216686778841392, guid: ec789aa05f57e784cb901b3b35e14f7b,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 26
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850216686778841392, guid: ec789aa05f57e784cb901b3b35e14f7b,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 26
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ec789aa05f57e784cb901b3b35e14f7b, type: 3}
@@ -585,6 +595,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4147539548046442822}
     m_Modifications:
+    - target: {fileID: 4351017121550696284, guid: 575edae40d3a9c94fbf966f318922a9b,
+        type: 3}
+      propertyPath: m_fontStyle
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4399939025819249267, guid: 575edae40d3a9c94fbf966f318922a9b,
         type: 3}
       propertyPath: m_LocalPosition.x
