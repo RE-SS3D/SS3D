@@ -91,10 +91,8 @@ namespace SS3D.Engine.Examine
 				}
 				else
                 {
-					smr.forceMatrixRecalculationPerRender = true;
 					smr.BakeMesh(bakedMesh);
 					UnityEngine.Graphics.DrawMeshNow(bakedMesh, mesh.GetTransform().position, smr.transform.rotation);
-					smr.forceMatrixRecalculationPerRender = false;
 				}
 			}
 				
