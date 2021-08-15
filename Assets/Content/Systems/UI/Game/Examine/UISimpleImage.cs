@@ -28,8 +28,6 @@ namespace SS3D.Content.Systems.Examine.UI
 		{
 			StringBuilder builder = new StringBuilder();
 			DataImage currentExaminable;
-			string displayName;
-			string displayDesc;
 			
 			foreach (IExamineData examineData in data)
             {
@@ -37,7 +35,7 @@ namespace SS3D.Content.Systems.Examine.UI
 				if (currentExaminable != null)
 				{
 					gameObject.SetActive(true);
-					displayCaption = "<size=16><b>" + currentExaminable.GetName() + "</b></size>";
+					displayCaption = currentExaminable.GetName();
 					displayImage = currentExaminable.GetImage();
 				}
             }			

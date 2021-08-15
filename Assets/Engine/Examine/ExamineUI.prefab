@@ -91,8 +91,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26
-  m_fontSizeBase: 26
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -311,6 +311,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Simple Image
       objectReference: {fileID: 0}
+    - target: {fileID: 319331335242701184, guid: ec789aa05f57e784cb901b3b35e14f7b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5526890340318770909, guid: ec789aa05f57e784cb901b3b35e14f7b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -419,13 +424,18 @@ PrefabInstance:
     - target: {fileID: 6850216686778841392, guid: ec789aa05f57e784cb901b3b35e14f7b,
         type: 3}
       propertyPath: m_fontSize
-      value: 26
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 6850216686778841392, guid: ec789aa05f57e784cb901b3b35e14f7b,
         type: 3}
       propertyPath: m_fontSizeBase
-      value: 26
+      value: 30
       objectReference: {fileID: 0}
+    - target: {fileID: 6850216686778841392, guid: ec789aa05f57e784cb901b3b35e14f7b,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 5f98b9a8db06e9f46b160f871085985f, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ec789aa05f57e784cb901b3b35e14f7b, type: 3}
 --- !u!224 &8879771846667516802 stripped
