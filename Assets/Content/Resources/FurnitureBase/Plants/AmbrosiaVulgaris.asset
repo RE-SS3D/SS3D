@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: AmbrosiaVulgaris
   m_EditorClassIdentifier: 
-  layerType: 10
-  nameString: ambrosia_vulgaris
+  layer: 10
+  nameString: AmbrosiaVulgaris
   genericType: plant
+  specificType: 
   prefab: {fileID: 612889519444900947, guid: fa1ebd6884058ae43aa2e54b24de026f, type: 3}
   width: 1
   height: 1

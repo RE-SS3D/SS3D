@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Catwalk
   m_EditorClassIdentifier: 
-  layerType: 0
-  nameString: catwalk
+  layer: 0
+  nameString: Catwalk
+  genericType: 
+  specificType: 
   prefab: {fileID: 8178185248287418974, guid: a28267798293970468ab30803632a3f7, type: 3}
   width: 1
   height: 1

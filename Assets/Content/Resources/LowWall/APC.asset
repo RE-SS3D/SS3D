@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: APC
   m_EditorClassIdentifier: 
-  layerType: 9
-  nameString: apc
+  layer: 9
+  nameString: APC
+  genericType: 
+  specificType: 
   prefab: {fileID: 5161561551087789900, guid: 03cd9cb1d2fb2a5499ddf439a2aed57e, type: 3}
   width: 1
   height: 1

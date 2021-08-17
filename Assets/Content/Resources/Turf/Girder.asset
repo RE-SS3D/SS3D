@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Girder
   m_EditorClassIdentifier: 
-  layerType: 2
-  nameString: girder
+  layer: 2
+  nameString: Girder
   genericType: wall
+  specificType: 
   prefab: {fileID: 5989834269598487349, guid: 60695978170ac0c48af8fd7ac2c0a43c, type: 3}
   width: 1
   height: 1

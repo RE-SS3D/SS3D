@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Toilet
   m_EditorClassIdentifier: 
-  layerType: 10
-  nameString: toilet
+  layer: 10
+  nameString: Toilet
+  genericType: 
+  specificType: 
   prefab: {fileID: 5161561551087789900, guid: 980eea1bed9274345a91d8bad0b48b3a, type: 3}
   width: 1
   height: 1

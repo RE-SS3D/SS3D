@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Stove
   m_EditorClassIdentifier: 
-  layerType: 10
-  nameString: stove
+  layer: 10
+  nameString: Stove
+  genericType: 
+  specificType: 
   prefab: {fileID: 4711035701283732717, guid: de3aeaed30f47c542af2483f53c6e87d, type: 3}
   width: 1
   height: 1

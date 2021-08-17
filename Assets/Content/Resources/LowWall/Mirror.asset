@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Mirror
   m_EditorClassIdentifier: 
-  layerType: 9
-  nameString: mirror
+  layer: 9
+  nameString: Mirror
+  genericType: 
+  specificType: 
   prefab: {fileID: 5161561551087789900, guid: 41591d8a579fe6d47861ab0138b4f677, type: 3}
   width: 1
   height: 1

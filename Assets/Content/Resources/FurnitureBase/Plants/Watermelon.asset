@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Watermelon
   m_EditorClassIdentifier: 
-  layerType: 10
-  nameString: watermelon
+  layer: 10
+  nameString: Watermelon
   genericType: plant
+  specificType: 
   prefab: {fileID: 8757431509704750092, guid: 638bd05d277251342878ebd07fd745d2, type: 3}
   width: 1
   height: 1

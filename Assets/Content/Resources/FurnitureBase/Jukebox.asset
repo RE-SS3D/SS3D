@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Jukebox
   m_EditorClassIdentifier: 
-  layerType: 10
-  nameString: jukebox
+  layer: 10
+  nameString: Jukebox
+  genericType: 
+  specificType: 
   prefab: {fileID: 4170175011264555292, guid: 37005ddb87a74c64583b1a3eedefc159, type: 3}
   width: 1
   height: 1

@@ -10,10 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: Fridge
+  m_Name: fridge
   m_EditorClassIdentifier: 
-  layerType: 10
+  layer: 10
   nameString: fridge
+  genericType: 
+  specificType: 
   prefab: {fileID: 4214221335928705926, guid: 56a8c29cc9465b240a1fea110265619c, type: 3}
   width: 1
   height: 1

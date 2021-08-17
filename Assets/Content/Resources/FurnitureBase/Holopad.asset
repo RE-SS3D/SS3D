@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Holopad
   m_EditorClassIdentifier: 
-  layerType: 10
-  nameString: holopad
+  layer: 10
+  nameString: Holopad
+  genericType: 
+  specificType: 
   prefab: {fileID: 2143998444978917423, guid: 76668bb8bc5ed5a4c897bb2c2d1a4187, type: 3}
   width: 1
   height: 1

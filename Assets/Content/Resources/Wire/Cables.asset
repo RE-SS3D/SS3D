@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Cables
   m_EditorClassIdentifier: 
-  layerType: 3
-  nameString: cables
+  layer: 3
+  nameString: Cables
   genericType: wire
+  specificType: 
   prefab: {fileID: 2802364579275783218, guid: 92d3eb280886ba74cb1e19f4e01669a7, type: 3}
   width: 1
   height: 1

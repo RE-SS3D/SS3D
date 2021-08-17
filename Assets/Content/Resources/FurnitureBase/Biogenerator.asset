@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Biogenerator
   m_EditorClassIdentifier: 
-  layerType: 10
-  nameString: biogenerator
+  layer: 10
+  nameString: Biogenerator
+  genericType: 
+  specificType: 
   prefab: {fileID: 1769453492926099347, guid: 9d688b1b7995f5846aca9597f2b27ee3, type: 3}
   width: 1
   height: 1

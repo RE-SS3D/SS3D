@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: SMES
   m_EditorClassIdentifier: 
-  layerType: 10
-  nameString: smes
+  layer: 10
+  nameString: SMES
+  genericType: 
+  specificType: 
   prefab: {fileID: 5385663273565442968, guid: 785491bdf8a546d4f8484ff4d6440abe, type: 3}
   width: 1
   height: 1

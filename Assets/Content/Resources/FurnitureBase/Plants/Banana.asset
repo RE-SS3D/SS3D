@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Banana
   m_EditorClassIdentifier: 
-  layerType: 10
-  nameString: banana
+  layer: 10
+  nameString: Banana
   genericType: plant
+  specificType: 
   prefab: {fileID: 8757431509704750092, guid: 68261416c6e2373468da5f99909b420a, type: 3}
   width: 1
   height: 1

@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: Sink
   m_EditorClassIdentifier: 
-  layerType: 10
-  nameString: sink
+  layer: 10
+  nameString: Sink
+  genericType: 
+  specificType: 
   prefab: {fileID: 4170175011264555292, guid: 05bc6489754309748a2abe47bfa7ba48, type: 3}
   width: 1
   height: 1
