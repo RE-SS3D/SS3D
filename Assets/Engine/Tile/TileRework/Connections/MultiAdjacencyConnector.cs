@@ -18,8 +18,14 @@ namespace SS3D.Engine.Tiles.Connections
         /// <summary>
         /// A type that specifies to which objects to connect to. Must be set if cross connect is used.
         /// </summary>
-        [Tooltip("Id that adjacent objects must be to count. If empty, any id is accepted")]
-        public string type;
+        [Tooltip("Generic ID that adjacent objects must be to count. If empty, any id is accepted.")]
+        private string genericType;
+
+        /// <summary>
+        /// Specific ID to differentiate objects when the generic is the same.
+        /// </summary>
+        [Tooltip("Specific ID to differentiate objects when the generic is the same.")]
+        private string specificType;
 
         /// <summary>
         /// Bool that determines if objects on different layers are allowed to connect to each other.
@@ -74,6 +80,9 @@ namespace SS3D.Engine.Tiles.Connections
 
             if (!filter)
                 filter = GetComponent<MeshFilter>();
+
+            genericType = GetComponent<PlacedTileObject>()?.GetGenericType();
+            specificType = GetComponent<PlacedTileObject>()?.GetSpecificType();
         }
 
         /// <summary>
@@ -215,9 +224,12 @@ namespace SS3D.Engine.Tiles.Connections
 
                 // If cross connect is allowed, we only allow it to connect when the object type matches the connector type
                 if (CrossConnectAllowed)
-                    isConnected &= (placedObject.GetGenericType() == type && type != "");
+                    isConnected &= (placedObject.GetGenericType() == genericType && genericType != "");
                 else
-                    isConnected &= (placedObject.GetGenericType() == type || type == null);
+                    isConnected &= (placedObject.GetGenericType() == genericType || genericType == null);
+
+                // Check for specific
+                isConnected &= (placedObject.GetSpecificType() == specificType || specificType == "");
 
                 isConnected &= (AdjacencyBitmap.Adjacent(blockedConnections, dir) == 0);
             }

@@ -193,7 +193,7 @@ namespace SS3D.Engine.Tiles
             TileChunk chunk = GetOrCreateChunk(position);
             Vector2Int vector = chunk.GetXY(position);
             Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
-            TileLayer layer = tileObjectSO.layerType;
+            TileLayer layer = tileObjectSO.layer;
 
             List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
 
@@ -247,7 +247,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="dir">Direction the object is facing</param
         public void SetTileObject(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
         {
-            TileLayer layer = tileObjectSO.layerType;
+            TileLayer layer = tileObjectSO.layer;
             GameObject layerObject = GetOrCreateLayerObject(layer);
 
             // Get the right chunk
@@ -302,7 +302,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="dir"></param>
         public void LoadTileObject(int subLayerIndex, TileObjectSO tileObjectSO, PlacedTileObject placedObject, Vector3 position, Direction dir)
         {
-            TileLayer layer = tileObjectSO.layerType;
+            TileLayer layer = tileObjectSO.layer;
             GameObject layerObject = GetOrCreateLayerObject(layer);
 
             // Get the right chunk

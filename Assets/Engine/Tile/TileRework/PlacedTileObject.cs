@@ -40,7 +40,7 @@ namespace SS3D.Engine.Tiles
             placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
 
             // Alternative name is required for walls as they can occupy the same tile
-            if (TileHelper.ContainsSubLayers(tileObjectSO.layerType))
+            if (TileHelper.ContainsSubLayers(tileObjectSO.layer))
                 placedGameObject.name += "_" + TileHelper.GetDirectionIndex(dir);
 
             PlacedTileObject placedObject = placedGameObject.GetComponent<PlacedTileObject>();
@@ -152,6 +152,11 @@ namespace SS3D.Engine.Tiles
             return tileObjectSO.genericType;
         }
 
+        public string GetSpecificType()
+        {
+            return tileObjectSO.specificType;
+        }
+
         public string GetName()
         {
             return tileObjectSO.nameString;
@@ -164,7 +169,7 @@ namespace SS3D.Engine.Tiles
 
         public TileLayer GetLayer()
         {
-            return tileObjectSO.layerType;
+            return tileObjectSO.layer;
         }
     }
 }

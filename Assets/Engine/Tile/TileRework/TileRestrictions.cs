@@ -37,7 +37,7 @@ namespace SS3D.Engine.Tiles
         public static bool CanBuild(TileMap map, Vector3 position, int subLayerIndex, TileObjectSO tileObjectSO, Direction dir)
         {
             TileManager tileManager = TileManager.Instance;
-            TileLayer placedLayer = tileObjectSO.layerType;
+            TileLayer placedLayer = tileObjectSO.layer;
             TileObject[] tileObjects = new TileObject[TileHelper.GetTileLayers().Length];
 
             foreach (TileLayer layer in TileHelper.GetTileLayers())
@@ -94,7 +94,7 @@ namespace SS3D.Engine.Tiles
                 return false;
 
             // No low wall mounts on windows
-            if (wallObject.GetPlacedObject(0).GetName().Contains("window") && wallAttachment.layerType == TileLayer.LowWallMount)
+            if (wallObject.GetPlacedObject(0).GetName().Contains("window") && wallAttachment.layer == TileLayer.LowWallMount)
                 return false;
 
             // Cannot build wall mount if it collides with the next wall
@@ -122,8 +122,8 @@ namespace SS3D.Engine.Tiles
                 return false;
 
             // Only allow wires and machines on catwalks
-            if (plenumObject.GetPlacedObject(0).name.Contains("Catwalk") && (plenumAttachment.layerType != TileLayer.Wire &&
-                plenumAttachment.layerType != TileLayer.FurnitureBase))
+            if (plenumObject.GetPlacedObject(0).name.Contains("Catwalk") && (plenumAttachment.layer != TileLayer.Wire &&
+                plenumAttachment.layer != TileLayer.FurnitureBase))
                 return false;
 
             // Can only build on a Plenum and not Catwalks or Lattices

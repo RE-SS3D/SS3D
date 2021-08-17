@@ -270,7 +270,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
         private void OnSceneGUI(SceneView sceneView)
         {
-            if (!tileManager || !tileManager.IsInitialized || tileManager.GetTileMaps().Count == 0)
+            if (!tileManager || tileManager.GetTileMaps().Count == 0)
                 return;
 
             if (showTileGrid)
@@ -635,7 +635,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
             for (int i = 0; i < assetList.Count; i++)
             {
-                if (assetList[i].layerType != layer)
+                if (assetList[i].layer != layer)
                 {
                     continue;
                 }

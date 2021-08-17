@@ -10,13 +10,17 @@ namespace SS3D.Engine.Tiles
     [CreateAssetMenu(fileName = "TileObjectSO", menuName = "TileMap/TileObjectSO", order = 0)]
     public class TileObjectSO : ScriptableObject
     {
-        public TileLayer layerType;
+        public TileLayer layer;
 
         [Tooltip("A name for the object. Make sure it is unique.")]
         public string nameString;
 
         [Tooltip("Specify the generic type. Used for finding matching adjacencies.")]
         public string genericType;
+
+        [Tooltip("Specify the specific type. Used for setting which generics can connect (e.g. wooden tables only connect to each other).")]
+        public string specificType;
+
         public GameObject prefab;
         public int width = 1;
         public int height = 1;
