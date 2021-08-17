@@ -4,6 +4,7 @@ using UnityEngine;
 using SS3D.Engine.Server.Login.Data;
 using SS3D.Engine.Server.Login.Networking;
 using SS3D.Engine.Server.Round;
+using SS3D;
     
     using System.Net;
 using Telepathy;
@@ -39,6 +40,9 @@ using UnityEngine.SceneManagement;
     public class LoginNetworkManager : NetworkManager
     {
         public static LoginNetworkManager singleton { get; private set; }
+
+        // Allows for updating the server numbers when players connect / disconnect.
+        public event System.Action ClientNumbersUpdated;
 
         // Warmup time until round starts
         [Range(3, 3600)]
@@ -212,6 +216,9 @@ using UnityEngine.SceneManagement;
 
             // Must always send a message, so the client knows if they should spawn through the login server or not
             conn.Send(new LoginServerMessage() {serverAddress = userMustLogin ? loginServerAddress : null});
+
+            // Ensure the display gets updated.
+            StartCoroutine(UpdatePlayerCountDelayed());
         }
 
         /**
@@ -237,12 +244,51 @@ using UnityEngine.SceneManagement;
         {
             Debug.Log("OnServerAddPlayer");
 
-            GameObject soul = Instantiate(soulPrefab);
-            
-            NetworkServer.AddPlayerForConnection(conn, soul);
-            //GameObject player = Instantiate(playerDummyPrefab);
-            //NetworkServer.AddPlayerForConnection(conn, player);
+            if (!SceneLoaderManager.singleton.CommencedLoadingMap)
+            {
+                // There is no map loaded. This is the default condition.
+                GameObject soul = Instantiate(soulPrefab);
+                NetworkServer.AddPlayerForConnection(conn, soul);
+                //GameObject player = Instantiate(playerDummyPrefab);
+                //NetworkServer.AddPlayerForConnection(conn, player);
+            }
+            else
+            {
+                // A map has already been loaded when the client joins.
+                StartCoroutine(OnServerAddPlayerDelayed(conn));
+            }
         }
+
+        private IEnumerator OnServerAddPlayerDelayed(NetworkConnection conn)
+        {
+            // Wait until the server has loaded the scene itself.
+            while (!SceneLoaderManager.singleton.IsSelectedMapLoaded())
+                yield return null;
+
+            // Let the client know that the server has loaded the map.
+            SceneLoaderManager.singleton.TargetInvokeMapLoaded(conn);
+
+            // Wait for that to go through
+            yield return new WaitForEndOfFrame();
+
+            // Send client message to load the scene.
+            conn.Send(SceneLoaderManager.singleton.GenerateSceneMessage());
+
+            // Wait for that to go through
+            yield return new WaitForEndOfFrame();
+
+            // Now make the soul.
+            GameObject soul = Instantiate(soulPrefab);
+            NetworkServer.AddPlayerForConnection(conn, soul);
+
+            // Wait for that to go through
+            yield return new WaitForEndOfFrame();
+
+            // Let the client know that the server has loaded the map.
+            SceneLoaderManager.singleton.TargetSetActiveScene(conn);
+        }
+
+
 
         /**
          * The client receives the message informing them of the Login Server,
@@ -395,5 +441,25 @@ using UnityEngine.SceneManagement;
             if (loadingScreen != null)
                 loadingScreen?.SetActive(state);
         }
+
+        // Ensures that as clients disconnect, the client numbers are updated.
+        public override void OnServerDisconnect(NetworkConnection conn)
+        {
+            base.OnServerDisconnect(conn);
+            ClientNumbersUpdated?.Invoke();
+
+        }
+
+        private IEnumerator UpdatePlayerCountDelayed()
+        {
+            // Wait until the end of frame (so that the event has been subscribed to)
+            yield return new WaitForEndOfFrame();
+
+            // Fire the event
+            Debug.Log("Invoking ClientNumbersUpdated");
+            ClientNumbersUpdated?.Invoke();
+
+        }
+
     }
 }
