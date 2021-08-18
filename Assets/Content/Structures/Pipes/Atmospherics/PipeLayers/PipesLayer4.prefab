@@ -143,11 +143,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   selectedAdjacencyType: 0
-  type: pipe
   CrossConnectAllowed: 0
   simpleAdjacency:
     o: {fileID: 5763238997108834030, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    c: {fileID: 6854876588585920493, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+    u: {fileID: 6854876588585920493, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
     i: {fileID: 5763238997108834030, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
     l: {fileID: 3234200807627564179, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
     t: {fileID: 6267177117203792215, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
@@ -172,8 +171,8 @@ MonoBehaviour:
     opaque: 0
   offsetAdjacency:
     o: {fileID: 0}
-    cNorth: {fileID: 0}
-    cSouth: {fileID: 0}
+    uNorth: {fileID: 0}
+    uSouth: {fileID: 0}
     i: {fileID: 0}
     lNE: {fileID: 0}
     lNW: {fileID: 0}
@@ -184,4 +183,4 @@ MonoBehaviour:
     tNSE: {fileID: 0}
     tSWE: {fileID: 0}
     x: {fileID: 0}
-  blockedDirections: 0
+  EditorblockedConnections: 0

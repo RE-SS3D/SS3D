@@ -143,11 +143,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   selectedAdjacencyType: 2
-  type: pipe
   CrossConnectAllowed: 0
   simpleAdjacency:
     o: {fileID: 0}
-    c: {fileID: 0}
+    u: {fileID: 0}
     i: {fileID: 0}
     l: {fileID: 0}
     t: {fileID: 0}
@@ -172,9 +171,9 @@ MonoBehaviour:
     opaque: 0
   offsetAdjacency:
     o: {fileID: 6771834481066591091, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    cNorth: {fileID: -4913184590784469283, guid: 013a2e526b13e1849b628bdc478f9c03,
+    uNorth: {fileID: -4913184590784469283, guid: 013a2e526b13e1849b628bdc478f9c03,
       type: 3}
-    cSouth: {fileID: -8982356636661201101, guid: 013a2e526b13e1849b628bdc478f9c03,
+    uSouth: {fileID: -8982356636661201101, guid: 013a2e526b13e1849b628bdc478f9c03,
       type: 3}
     i: {fileID: 6771834481066591091, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
     lNE: {fileID: 2974487339661499261, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
@@ -186,4 +185,4 @@ MonoBehaviour:
     tNSE: {fileID: -1565585996255746122, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
     tSWE: {fileID: -8084914691331622005, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
     x: {fileID: 5978052073093224489, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  blockedDirections: 0
+  EditorblockedConnections: 0
