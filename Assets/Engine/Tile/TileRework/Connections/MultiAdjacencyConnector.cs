@@ -162,10 +162,12 @@ namespace SS3D.Engine.Tiles.Connections
 
                 if ((neighbour.GetPlacedObject(0) && neighbour.GetPlacedObject(0).HasAdjacencyConnector()) || layer == ownLayer)
                 {
-                    changed |= UpdateSingleConnection(dir, neighbour.GetPlacedObject(0));
+                    bool connected = UpdateSingleConnection(dir, neighbour.GetPlacedObject(0));
+                    changed |= connected;
 
                     // Update our neighbour as well
-                    neighbour.GetPlacedObject(0)?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), GetComponent<PlacedTileObject>());
+                    if (connected)
+                        neighbour.GetPlacedObject(0)?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), GetComponent<PlacedTileObject>());
                 }
             }
 
@@ -236,7 +238,11 @@ namespace SS3D.Engine.Tiles.Connections
             bool isUpdated = adjacents.UpdateDirection(dir, isConnected, true);
             SyncAdjacentConnections(adjacents.Connections, adjacents.Connections);
 
-            return isUpdated;
+            // Cross connect will override adjacents for other layers, so return isConnected instead.
+            if (CrossConnectAllowed)
+                return isConnected;
+            else
+                return isUpdated;
         }
 
         /// <summary>
