@@ -42,10 +42,10 @@ namespace SS3D.Content.Systems.Examine.UI
 					// Prevent blank lines being appended (relevant where a GameObject has multiple components implementing IExaminable.
 					// (in this case, make displayName blank in all but one of them. For example, see Water Cooler prefab)
 					if (displayName != ""){
-						builder.AppendLine("<b>" + displayName + "</b>");
+						builder.AppendLine("<size=30>" + displayName);
 					}
 					if (displayDesc != ""){
-						builder.AppendLine(displayDesc);
+						builder.AppendLine("<size=26>" + displayDesc);
 					}
 				}
             }
