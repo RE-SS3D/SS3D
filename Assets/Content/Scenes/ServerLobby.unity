@@ -9237,7 +9237,7 @@ PrefabInstance:
     - target: {fileID: 8822401509258220664, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
       propertyPath: m_text
-      value: Close Chat
+      value: Toggle Chat Window
       objectReference: {fileID: 0}
     - target: {fileID: 8822401509258220671, guid: a93cde32bd0b5354bbad059464a60b61,
         type: 3}
