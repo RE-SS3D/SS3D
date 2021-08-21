@@ -136,9 +136,9 @@ GameObject:
   - component: {fileID: 6089022188761415156}
   - component: {fileID: 2068755113295557685}
   - component: {fileID: 7876884150038164073}
-  - component: {fileID: 6065577481189309108}
   - component: {fileID: -25655414377668572}
   - component: {fileID: -4235786043834150045}
+  - component: {fileID: -8158986579522940419}
   m_Layer: 16
   m_Name: TableLamp
   m_TagString: Untagged
@@ -257,34 +257,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -3017006229975614685, guid: 2bb544022dbb334419969396af5f52f8, type: 3}
---- !u!114 &6065577481189309108
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5021521585556056798}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ae0cc9eb4c1ca6428dc327bb781cdae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  ItemId: TableLampGrey
-  Name: Table Lamp
-  Volume: 15
-  sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
-  prefab: {fileID: 5021521585556056798}
-  attachmentPoint: {fileID: 3367512477711822723}
-  attachmentPointAlt: {fileID: 0}
-  bulkSize: 3
-  traits: []
-  Size: {x: 0, y: 0}
-  light: {fileID: 5157351164716868161}
-  toggleIcon: {fileID: 21300000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
-  materialOn: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
-  materialOff: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
 --- !u!114 &-25655414377668572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -318,6 +290,34 @@ MonoBehaviour:
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
+--- !u!114 &-8158986579522940419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5021521585556056798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b39e7bc143c3414493985dceebbc7c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  ItemId: TableLamp
+  Name: TableLamp
+  Volume: 20
+  sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
+  prefab: {fileID: 5021521585556056798}
+  attachmentPoint: {fileID: 0}
+  attachmentPointAlt: {fileID: 0}
+  bulkSize: 3
+  traits: []
+  Size: {x: 0, y: 0}
+  light: {fileID: 0}
+  toggleIcon: {fileID: 21300000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
+  materialOn: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  materialOff: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
 --- !u!1 &7196731139744120667
 GameObject:
   m_ObjectHideFlags: 0

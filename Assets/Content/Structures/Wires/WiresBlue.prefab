@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: -7727686409064562107}
   - component: {fileID: -1074477776341974781}
   - component: {fileID: -4998431523760016775}
-  - component: {fileID: -2157675422188738014}
   - component: {fileID: 1342039443250836419}
   m_Layer: 0
   m_Name: WiresBlue
@@ -98,38 +97,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &-2157675422188738014
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2802364579275783218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2aa412cb81ce0c342ad7243c25cebc9f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    blockedDirection: 0
-  type: Wire
-  o: {fileID: -3400695962081112425, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
-  u: {fileID: -5222707795264448424, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
-  uDiagonal: {fileID: -2593557019512570454, guid: 653d23c68a57e03498cd8519026c3404,
-    type: 3}
-  i: {fileID: -3040074533742580466, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
-  iDiagonal: {fileID: 5659556953410983108, guid: 653d23c68a57e03498cd8519026c3404,
-    type: 3}
-  v: {fileID: 3091676867663915486, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
-  l: {fileID: -8166876526216192056, guid: 653d23c68a57e03498cd8519026c3404, type: 3}
-  lAcuteEast: {fileID: -3411864467696780249, guid: 653d23c68a57e03498cd8519026c3404,
-    type: 3}
-  lAcuteWest: {fileID: 5024322579868472207, guid: 653d23c68a57e03498cd8519026c3404,
-    type: 3}
-  lObtuseEast: {fileID: -773248212079153456, guid: 653d23c68a57e03498cd8519026c3404,
-    type: 3}
-  lObtuseWest: {fileID: -773248212079153456, guid: 653d23c68a57e03498cd8519026c3404,
-    type: 3}
 --- !u!114 &1342039443250836419
 MonoBehaviour:
   m_ObjectHideFlags: 0

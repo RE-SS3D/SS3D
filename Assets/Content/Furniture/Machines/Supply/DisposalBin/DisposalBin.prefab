@@ -19,7 +19,6 @@ GameObject:
   - component: {fileID: 8037963738998773868}
   - component: {fileID: 7515595592165819411}
   - component: {fileID: 4430263281735885129}
-  - component: {fileID: -9016706916229720168}
   m_Layer: 0
   m_Name: DisposalBin
   m_TagString: Untagged
@@ -318,20 +317,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
---- !u!114 &-9016706916229720168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6905024007199924851}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
 --- !u!1 &7531797193249841566
 GameObject:
   m_ObjectHideFlags: 0

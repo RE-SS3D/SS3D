@@ -60,7 +60,6 @@ GameObject:
   - component: {fileID: -6833891496423765305}
   - component: {fileID: -8389530401997181573}
   - component: {fileID: -6696039690863873960}
-  - component: {fileID: 64820468387438289}
   m_Layer: 0
   m_Name: ClassicAirlock
   m_TagString: Untagged
@@ -109,8 +108,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 159a9ad506a2d794d80a59383b84ac83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
   wallCapPrefab: {fileID: 5532353597398885135, guid: 1257cb58aa84aeb48a09c63963a02e38,
     type: 3}
   doorType: 0
@@ -306,20 +303,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &64820468387438289
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3290821787637386385}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
 --- !u!1 &3667226139312871055
 GameObject:
   m_ObjectHideFlags: 0

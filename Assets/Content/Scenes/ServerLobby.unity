@@ -25486,7 +25486,7 @@ PrefabInstance:
     - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
       propertyPath: maps.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
@@ -25521,7 +25521,7 @@ PrefabInstance:
     - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
       propertyPath: maps.Array.data[0]
-      value: MainStation
+      value: MiniStation
       objectReference: {fileID: 0}
     - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
@@ -25548,6 +25548,11 @@ PrefabInstance:
       propertyPath: startRoundImage
       value: 
       objectReference: {fileID: 8302026816678043824}
+    - target: {fileID: 4457496468299259295, guid: 5b47bfba5e38174439c06cc062db1ac3,
+        type: 3}
+      propertyPath: maps.Array.data[2]
+      value: EmptyStation
+      objectReference: {fileID: 0}
     - target: {fileID: 4457496469010000567, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
       propertyPath: lobbyCamera

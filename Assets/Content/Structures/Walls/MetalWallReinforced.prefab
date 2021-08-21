@@ -100,8 +100,9 @@ GameObject:
   - component: {fileID: 5423264426121296638}
   - component: {fileID: 6696866361892651655}
   - component: {fileID: 5900408713039550863}
-  - component: {fileID: -1603528896830197534}
   - component: {fileID: 181711760065846440}
+  - component: {fileID: 3329265302435793928}
+  - component: {fileID: -5032096873030947251}
   m_Layer: 0
   m_Name: MetalWallReinforced
   m_TagString: Untagged
@@ -188,44 +189,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.0000002, y: 2, z: 1.0000002}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &-1603528896830197534
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3591147544166670882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa3fb3fb0fa47e54bad7580218ea1e05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: Wall
-  o: {fileID: 7680504983793102251, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  u: {fileID: -5232576218442233994, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  i: {fileID: -3717823834887968953, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  lNone: {fileID: -7695084701698530544, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  lSingle: {fileID: 8708524644065605111, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  tNone: {fileID: -2563544273700514151, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  tSingleRight: {fileID: -6397331943524740619, guid: a8afca278d289ca469539bd9a57ce244,
-    type: 3}
-  tSingleLeft: {fileID: 6348234511471611404, guid: a8afca278d289ca469539bd9a57ce244,
-    type: 3}
-  tDouble: {fileID: 7680504983793102251, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  xNone: {fileID: -1105522344434329162, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  xSingle: {fileID: 545326363990284991, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  xSide: {fileID: -3509257606983051108, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  xOpposite: {fileID: 6204147465193756974, guid: a8afca278d289ca469539bd9a57ce244,
-    type: 3}
-  xTriple: {fileID: -5636990741897013130, guid: a8afca278d289ca469539bd9a57ce244,
-    type: 3}
-  xQuad: {fileID: 3597665157861519443, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
-  viewObstacles:
-  - {fileID: 5351388144419023931}
-  - {fileID: 168552846813719028}
-  - {fileID: 6170480918572581761}
-  - {fileID: 2695440453904607509}
-  opaque: 1
 --- !u!114 &181711760065846440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -241,6 +204,94 @@ MonoBehaviour:
   DisplayName: Reinforced Wall
   Text: 
   MaxDistance: 0
+--- !u!114 &3329265302435793928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
+--- !u!114 &-5032096873030947251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d4c17829cf718f419146d93c0826f22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  selectedAdjacencyType: 1
+  type: wall
+  CrossConnectAllowed: 1
+  simpleAdjacency:
+    o: {fileID: 0}
+    c: {fileID: 0}
+    i: {fileID: 0}
+    l: {fileID: 0}
+    t: {fileID: 0}
+    x: {fileID: 0}
+  advancedAdjacency:
+    o: {fileID: 5994527953264751044, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+    u: {fileID: -5232576218442233994, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+    i: {fileID: -3717823834887968953, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+    lNone: {fileID: -7695084701698530544, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    lSingle: {fileID: 8708524644065605111, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    tNone: {fileID: -2563544273700514151, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    tSingleRight: {fileID: -6397331943524740619, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    tSingleLeft: {fileID: 6348234511471611404, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    tDouble: {fileID: 7680504983793102251, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    xNone: {fileID: -1105522344434329162, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    xSingle: {fileID: 545326363990284991, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    xSide: {fileID: -3509257606983051108, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    xOpposite: {fileID: 6204147465193756974, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    xTriple: {fileID: -5636990741897013130, guid: a8afca278d289ca469539bd9a57ce244,
+      type: 3}
+    xQuad: {fileID: 3597665157861519443, guid: a8afca278d289ca469539bd9a57ce244, type: 3}
+    viewObstacles:
+    - {fileID: 5351388144419023931}
+    - {fileID: 168552846813719028}
+    - {fileID: 6170480918572581761}
+    - {fileID: 2695440453904607509}
+    opaque: 1
+  offsetAdjacency:
+    o: {fileID: 0}
+    cNorth: {fileID: 0}
+    cSouth: {fileID: 0}
+    i: {fileID: 0}
+    lNE: {fileID: 0}
+    lNW: {fileID: 0}
+    lSE: {fileID: 0}
+    lSW: {fileID: 0}
+    tNEW: {fileID: 0}
+    tNSW: {fileID: 0}
+    tNSE: {fileID: 0}
+    tSWE: {fileID: 0}
+    x: {fileID: 0}
+  blockedDirections: 0
 --- !u!1 &5351388144419023931
 GameObject:
   m_ObjectHideFlags: 0

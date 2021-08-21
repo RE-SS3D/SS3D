@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 7182705585173552431}
   - component: {fileID: 7394184406077612064}
   - component: {fileID: 8839139762038401630}
-  - component: {fileID: 7041112031217046610}
   m_Layer: 0
   m_Name: CanisterOxygen
   m_TagString: Untagged
@@ -176,17 +175,3 @@ MonoBehaviour:
   DisplayName: Oxygen Canister
   Text: Contains Oxygen, so make sure this doesn't run out.
   MaxDistance: 0
---- !u!114 &7041112031217046610
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1466349050614861878}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0

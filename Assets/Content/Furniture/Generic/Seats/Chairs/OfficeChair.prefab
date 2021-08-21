@@ -105,7 +105,6 @@ GameObject:
   - component: {fileID: 3059472895816432833}
   - component: {fileID: -6534345850871183944}
   - component: {fileID: -8007393211677902780}
-  - component: {fileID: -3453679615323309297}
   m_Layer: 0
   m_Name: OfficeChair
   m_TagString: Untagged
@@ -178,20 +177,6 @@ MonoBehaviour:
   DisplayName: Office Chair
   Text: 
   MaxDistance: 0
---- !u!114 &-3453679615323309297
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5161561551087789900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
 --- !u!1 &5218468364695561986
 GameObject:
   m_ObjectHideFlags: 0
