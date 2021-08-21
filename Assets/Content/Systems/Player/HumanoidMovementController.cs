@@ -22,7 +22,7 @@ namespace SS3D.Content.Systems.Player
 
         private Animator characterAnimator;
         private CharacterController characterController;
-        private Camera camera;
+        private new Camera camera;
 
         // Current movement the player is making.
         private Vector2 currentMovement = new Vector2();
@@ -78,6 +78,8 @@ namespace SS3D.Content.Systems.Player
             }
             
             currentMovement = Vector2.MoveTowards(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 5f, 3) / 5));
+            var movement = Vector3.zero;
+
             // Move the player
             if (currentMovement != Vector2.zero)
             {
@@ -98,11 +100,18 @@ namespace SS3D.Content.Systems.Player
                 {
                     absoluteMovement = Vector3.Lerp(absoluteMovement, Vector3.zero, Time.deltaTime * 5);
                 }
-                characterController.Move(absoluteMovement * Time.deltaTime);
+
+                movement = absoluteMovement * Time.deltaTime;
             }
+
+            characterController.Move(movement);
+
             // animation Speed is a proportion of maximum runSpeed, and we smoothly transitions the speed with the Lerp
             float currentSpeed = characterAnimator.GetFloat("Speed");
-            float newSpeed = Mathf.LerpUnclamped(currentSpeed, currentMovement.magnitude / runSpeed , Time.deltaTime * (isWalking ? walkSpeed : runSpeed) * 3);
+            float controllerSpeed = characterController.velocity.magnitude;
+
+            float newSpeed = Mathf.LerpUnclamped(currentSpeed, controllerSpeed, Time.deltaTime * (isWalking ? walkSpeed : runSpeed) * 3);
+
             characterAnimator.SetFloat("Speed", newSpeed);
 
             ForceHeightLevel();
