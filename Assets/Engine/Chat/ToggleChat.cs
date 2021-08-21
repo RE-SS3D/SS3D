@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 namespace SS3D.Engine.Inventory.UI
 {
@@ -17,15 +18,17 @@ namespace SS3D.Engine.Inventory.UI
         {
 			ExpandButton = GetComponent<Button>();
 			ExpandButton.onClick.AddListener(TaskOnClick);
+			// Go ahead and hide it on the start
+			Toggle();
 		}
 
         private void Update()
         {
 			// Button to toggle the chat UI
-			/*if (Input.GetButtonDown("Toggle Chat"))
+			if (Input.GetButtonDown("Toggle Chat") && EventSystem.current.currentSelectedGameObject == null)
 			{
 				Toggle();
-			}*/
+			}
 		}
 
 		public void TaskOnClick()
@@ -61,6 +64,7 @@ namespace SS3D.Engine.Inventory.UI
 				}
 			}
 			isShowing = !isShowing;
+			EventSystem.current.SetSelectedGameObject(null);
 		}
 	}
 }

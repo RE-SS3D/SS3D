@@ -1,6 +1,8 @@
 ﻿using System;
 using Mirror;
 using SS3D.Content.Systems.Player;
+using SS3D.Engine.Inventory;
+using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -33,6 +35,9 @@ namespace SS3D.Content.Creatures.Human
         private float knockdownEnd;
         // Will the ragdoll get up by itself?
         private bool isKnockedDown;
+        // The characters' hands, if they exist.
+        private Hands hands;
+
         private HumanoidMovementController movementController;
         private CharacterController characterController;
 
@@ -42,6 +47,7 @@ namespace SS3D.Content.Creatures.Human
             SetEnabledInternal(false);
             character = ArmatureRoot.parent;
             center = ArmatureRoot.GetChild(0);
+            hands = gameObject.GetComponent<Hands>();
         }
 
         void Update()
@@ -93,6 +99,19 @@ namespace SS3D.Content.Creatures.Human
                 isKnockedDown = true;
                 knockdownEnd = Time.time + duration;
                 SetEnabledInternal(true);
+
+                // Drop whatever is in your hands.
+                if (hands != null) {
+                    
+                    foreach (AttachedContainer hand in hands.HandContainers)
+                    {
+                        if (!hand.Container.Empty)
+                        {
+                            hand.Container.Dump();
+                        }
+                    }
+                    
+                }
             }
         }
 

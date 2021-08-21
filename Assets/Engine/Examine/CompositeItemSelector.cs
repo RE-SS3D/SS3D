@@ -50,12 +50,16 @@ namespace SS3D.Engine.Examine
 				
 		// Indicate whether mouse is currently over the UI
 		private bool mouseOverUI;
+
+		// Confirms whether we need to render the image during OnPostRender.
+		private bool setPostRender;
 				
 		public void Start()
 		{
 			cam = CameraManager.singleton.examineCamera;
 			tex = new Texture2D(1, 1);
 			mouseOverUI = false;
+			setPostRender = false;
 		}
 
 		public void OnPostRender()
@@ -64,21 +68,32 @@ namespace SS3D.Engine.Examine
 			// Don't bother with all of this work if the mouse is over the user interface.
 			// If it is over the interface, we should already have a reference to the object
 			// stored in currentExaminable.
-			if (mouseOverUI)
+			if (mouseOverUI || !setPostRender)
 			{
 				return;
 			}
 			
 			// If the window size has changed, amend the RenderTexture correspondingly.
 			ResizeTexturesIfRequired();
-			
+
 			// Render all of our meshes to the invisible RenderTexture
+			SkinnedMeshRenderer smr;
+			Mesh bakedMesh = new Mesh();
 			foreach (MeshColourAffiliation mesh in meshes)
 			{
-				singleColourMaterial.mainTexture = mesh.GetTexture();
 				singleColourMaterial.SetVector("colour", mesh.GetColour());
 				singleColourMaterial.SetPass(0);
-				UnityEngine.Graphics.DrawMeshNow(mesh.GetMesh(), mesh.GetTransform().position, mesh.GetTransform().rotation);
+
+				smr = mesh.GetSkinnedMeshRenderer();
+				if (smr == null)
+                {
+					UnityEngine.Graphics.DrawMeshNow(mesh.GetMesh(), mesh.GetTransform().position, mesh.GetTransform().rotation);
+				}
+				else
+                {
+					smr.BakeMesh(bakedMesh);
+					UnityEngine.Graphics.DrawMeshNow(bakedMesh, mesh.GetTransform().position, smr.transform.rotation);
+				}
 			}
 				
 			// Test the colour of the pixel where our cursor is
@@ -126,13 +141,18 @@ namespace SS3D.Engine.Examine
 		
 		/// This is how the Examinator actually returns the Object.
 		public GameObject GetCurrentExaminable(){
+			setPostRender = false;
 			return currentExaminable;
 		}
 		
 		
 		public void CalculateSelectedGameObject()
 		{
-			
+
+			// Tells the CompositeItemSelector that we want to render the meshes in OnPostRender, so
+			// that we can use that texture to determine the examinable.
+			setPostRender = true;
+
 			// Identify if mouse is over the user interface, or over objects in the game world.
 			if (EventSystem.current.IsPointerOverGameObject())
 			{
@@ -338,11 +358,11 @@ namespace SS3D.Engine.Examine
 			// If mesh exists, record the colour affiliation of it 
 			if (mf != null && mf.sharedMesh != null && child.gameObject.GetComponent<Renderer>().enabled)
 			{
-				meshes.Add(new MeshColourAffiliation(mf.sharedMesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
+				meshes.Add(new MeshColourAffiliation(mf.sharedMesh, colours.Peek(), child));
 			}
 			if (smr != null && smr.sharedMesh != null && child.gameObject.GetComponent<Renderer>().enabled)
 			{
-				meshes.Add(new MeshColourAffiliation(smr.sharedMesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
+				meshes.Add(new MeshColourAffiliation(smr.sharedMesh, colours.Peek(), child, smr));
 			}
 			
 			// Recursively call this method on each child
@@ -368,16 +388,16 @@ namespace SS3D.Engine.Examine
 			private Mesh mesh;
 			private Color colour;
 			private Transform transform;
-			private Texture texture;
+			private SkinnedMeshRenderer smr;
 			
-			public MeshColourAffiliation(Mesh mesh, Color colour, Transform transform, Texture texture)
+			public MeshColourAffiliation(Mesh mesh, Color colour, Transform transform, SkinnedMeshRenderer smr = null)
 			{
 				this.mesh = mesh;
 				this.colour = colour;
 				this.transform = transform;
-				this.texture = texture;
+				this.smr = smr;
 			}
-			
+
 			public Mesh GetMesh()
 			{
 				return mesh;
@@ -391,11 +411,12 @@ namespace SS3D.Engine.Examine
 			public Transform GetTransform()
 			{
 				return transform;
-			}			
-			
-			public Texture GetTexture(){
-				return texture;
 			}
+			
+			public SkinnedMeshRenderer GetSkinnedMeshRenderer()
+            {
+				return smr;
+            }
 			
 		}
 		
