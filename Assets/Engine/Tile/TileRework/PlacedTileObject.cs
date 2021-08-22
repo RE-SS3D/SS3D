@@ -149,17 +149,26 @@ namespace SS3D.Engine.Tiles
 
         public string GetGenericType()
         {
-            return tileObjectSO.genericType;
+            if (tileObjectSO != null)
+                return tileObjectSO.genericType;
+            else
+                return string.Empty;
         }
 
         public string GetSpecificType()
         {
-            return tileObjectSO.specificType;
+            if (tileObjectSO != null)
+                return tileObjectSO.specificType;
+            else
+                return string.Empty;
         }
 
         public string GetName()
         {
-            return tileObjectSO.nameString;
+            if (tileObjectSO != null)
+                return tileObjectSO.nameString;
+            else
+                return string.Empty;
         }
 
         public Direction GetDirection()
