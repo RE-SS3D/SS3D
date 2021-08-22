@@ -108,9 +108,9 @@ namespace SS3D.Content.Systems.Player
 
             // animation Speed is a proportion of maximum runSpeed, and we smoothly transitions the speed with the Lerp
             float currentSpeed = characterAnimator.GetFloat("Speed");
-            float controllerSpeed = characterController.velocity.magnitude;
+            float controllerSpeed = Mathf.Clamp01(characterController.velocity.magnitude / runSpeed);
 
-            float newSpeed = Mathf.LerpUnclamped(currentSpeed, controllerSpeed, Time.deltaTime * (isWalking ? walkSpeed : runSpeed) * 3);
+            float newSpeed = Mathf.Lerp(currentSpeed, controllerSpeed, Time.deltaTime * 15);
 
             characterAnimator.SetFloat("Speed", newSpeed);
 
