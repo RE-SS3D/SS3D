@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
+using SS3D.Engine.Chat;
 
 namespace SS3D.Engine.Inventory.UI
 {
@@ -28,6 +29,18 @@ namespace SS3D.Engine.Inventory.UI
 			if (Input.GetButtonDown("Toggle Chat") && EventSystem.current.currentSelectedGameObject == null)
 			{
 				Toggle();
+			}
+			// Button to focus chat. Also unhides chat if pressed.
+			if (Input.GetButtonDown("Focus Chat") && EventSystem.current.currentSelectedGameObject == null)
+			{
+				if (!isShowing)
+				{
+					Toggle();
+				}
+				foreach (GameObject chatWindow in GameObject.FindGameObjectsWithTag("ChatWindow"))
+				{
+					chatWindow.GetComponent<ChatWindow>().FocusInputField();
+				}
 			}
 		}
 
