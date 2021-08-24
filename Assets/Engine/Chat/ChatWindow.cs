@@ -223,5 +223,10 @@ namespace SS3D.Engine.Chat
             SendMessage();
             EventSystem.current.SetSelectedGameObject(null);
         }
+
+        public void FocusInputField()
+        {
+            inputField.Select();
+        }
     }
 }
