@@ -2,14 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.UIElements;
 
 /// <summary>
 /// This handles the general settings for a user,
 /// it manages graphics and sound for now
 /// </summary>
 public class GeneralSettingsManager : MonoBehaviour
+
 {
     public static GeneralSettingsManager singleton { get; private set; }
     
@@ -22,7 +21,7 @@ public class GeneralSettingsManager : MonoBehaviour
     // the selected graphic settings, please update this to the user options once we have 'em
     // TODO: User options
     public GraphicSettings graphicSettings = GraphicSettings.low;
-    
+
     // keep these the same as the ones in the quality settings
     public enum GraphicSettings
     {
@@ -31,7 +30,7 @@ public class GeneralSettingsManager : MonoBehaviour
         medium = 2,
         high = 3
     }
- 
+
     // singleton
     private void Awake()
     {

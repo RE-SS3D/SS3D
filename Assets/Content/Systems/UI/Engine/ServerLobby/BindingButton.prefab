@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7314347351231916573}
   - component: {fileID: 7314347351231916574}
   - component: {fileID: 7314347351231916575}
+  - component: {fileID: 3795576452512018715}
   m_Layer: 5
   m_Name: BindingButton
   m_TagString: Untagged
@@ -119,9 +120,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: SetGraphicSettings
-        m_Mode: 3
+      - m_Target: {fileID: 3795576452512018715}
+        m_MethodName: onClicked
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -130,6 +131,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &3795576452512018715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7314347351231916569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee95e811f2a56f5479ce91ea6ca6317e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7314347351645212605
 GameObject:
   m_ObjectHideFlags: 0

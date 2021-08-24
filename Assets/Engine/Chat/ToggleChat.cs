@@ -31,7 +31,7 @@ namespace SS3D.Engine.Inventory.UI
 				Toggle();
 			}
 			// Button to focus chat. Also unhides chat if pressed.
-			if (Input.GetButtonDown("Focus Chat") && EventSystem.current.currentSelectedGameObject == null)
+			if (KeybindingHelper.GetButtonDown("Focus Chat") && EventSystem.current.currentSelectedGameObject == null)
 			{
 				if (!isShowing)
 				{
