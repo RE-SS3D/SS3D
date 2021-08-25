@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using SS3D.Engine.Examine;
+using SS3D.Engine.Input;
 
 namespace SS3D.Engine.Inventory.UI
 {
@@ -22,7 +23,7 @@ namespace SS3D.Engine.Inventory.UI
         [SerializeField]
         private Item item;
         private Transform oldParent;
-        private Vector3 startMousePosition;
+        private Vector2 startMousePosition;
         private Vector3 startPosition;
         private Image slotImage;
 
@@ -51,7 +52,7 @@ namespace SS3D.Engine.Inventory.UI
         public void OnPointerDown(PointerEventData eventData)
         {
             startPosition = transform.position;
-            startMousePosition = Input.mousePosition;
+            startMousePosition = InputHelper.inputs.pointer.position.ReadValue<Vector2>();
         }
         
         public void OnPointerClick(PointerEventData eventData)
@@ -80,7 +81,7 @@ namespace SS3D.Engine.Inventory.UI
 
         public void OnDrag(PointerEventData eventData)
         {
-            Vector3 diff = Input.mousePosition - startMousePosition;
+            Vector3 diff = InputHelper.inputs.pointer.position.ReadValue<Vector2>() - startMousePosition;
             transform.position = startPosition + diff;
         }
         

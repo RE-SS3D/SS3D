@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using SS3D.Engine.Input;
 
 namespace SS3D.Engine.Inventory.UI
 {
@@ -23,7 +24,7 @@ namespace SS3D.Engine.Inventory.UI
         private void Update()
         {
 			// Button to toggle the internal clothing UI
-			if (Input.GetButtonDown("Toggle Internal Clothing"))
+			if (InputHelper.inputs.ui.toggleInternalClothingDown.ReadValue<bool>())
 			{
 				Toggle();
 			}

@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using SS3D.Engine.Inventory;
 using SS3D.Engine.Inventory.UI;
+using SS3D.Engine.Input;
 
 
 namespace SS3D.Engine.Examine
@@ -95,10 +96,11 @@ namespace SS3D.Engine.Examine
 					UnityEngine.Graphics.DrawMeshNow(bakedMesh, mesh.GetTransform().position, smr.transform.rotation);
 				}
 			}
-				
+
 			// Test the colour of the pixel where our cursor is
-			int currentX = (int) Input.mousePosition.x;
-			int currentY = (int) Input.mousePosition.y;
+			Vector2 mousePosition = InputHelper.inputs.pointer.position.ReadValue<Vector2>();
+			int currentX = (int) mousePosition.x;
+			int currentY = (int) mousePosition.y;
 
 			// If it's within the screen boundaries...
 			if (currentX >= 0 && currentY >= 0 && currentX < Screen.width && currentY < Screen.height)
@@ -162,7 +164,7 @@ namespace SS3D.Engine.Examine
 				currentExaminable = null;
 
 				// Get a list of all the UI elements under the cursor
-				var pointerEventData = new PointerEventData(EventSystem.current) {position = Input.mousePosition};
+				var pointerEventData = new PointerEventData(EventSystem.current) {position = InputHelper.inputs.pointer.position.ReadValue<Vector2>()};
 				List<RaycastResult> UIhits = new List<RaycastResult>();
 				EventSystem.current.RaycastAll(pointerEventData, UIhits);			
 				
@@ -180,9 +182,10 @@ namespace SS3D.Engine.Examine
 			{
 				mouseOverUI = false;
 			}
-			
-            // Raycast to cursor position. Need to get all possible hits, because the initial hit may have gaps through which we can see other Examinables
-            Ray ray = cam.ScreenPointToRay(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+
+			// Raycast to cursor position. Need to get all possible hits, because the initial hit may have gaps through which we can see other Examinables
+			Vector2 mousePosition = InputHelper.inputs.pointer.position.ReadValue<Vector2>();
+            Ray ray = cam.ScreenPointToRay(new Vector2(mousePosition.x, mousePosition.y));
 			RaycastHit[] hits = Physics.RaycastAll(ray, 200f);
 
 			// Convert the RaycastHits to GameObjects

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using SS3D.Engine.Input;
+using System.Collections;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -147,7 +148,7 @@ namespace SS3D.Engine.Chat
                 // Create a new chat window as long as there are multiple tabs
                 if (chatWindow.GetTabCount() > 1)
                 {
-                    chatWindow.ChatRegister.CreateChatWindow(Data, null, Input.mousePosition);
+                    chatWindow.ChatRegister.CreateChatWindow(Data, null, InputHelper.inputs.pointer.position.ReadValue<Vector2>());
                     Destroy(gameObject);
                     chatWindow.SelectNextTab(gameObject);
                 }

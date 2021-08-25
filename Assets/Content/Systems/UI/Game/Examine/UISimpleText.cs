@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using SS3D.Engine.Examine;
+using SS3D.Engine.Input;
 
 namespace SS3D.Content.Systems.Examine.UI
 {
@@ -21,7 +22,8 @@ namespace SS3D.Content.Systems.Examine.UI
         public override void RefreshDisplay()
         {
             Text.text = displayText;
-			Panel.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
+			Vector2 mousePos = InputHelper.inputs.pointer.position.ReadValue<Vector2>();
+			Panel.position = new Vector3(mousePos.x, mousePos.y, 0);
         }
 		
 		public override void LoadExamineData(IExamineData[] data)

@@ -1,0 +1,321 @@
+{
+    "name": "Inputs",
+    "maps": [
+        {
+            "name": "ui",
+            "id": "fc1b2a61-4efe-48b1-8fa0-0f76e9661897",
+            "actions": [
+                {
+                    "name": "toggleChatDown",
+                    "type": "Button",
+                    "id": "4a079100-8c33-4e2c-bef0-076d8fdd4d15",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
+                    "name": "toggleInternalClothingDown",
+                    "type": "Button",
+                    "id": "44ee3766-a3af-4ff5-bf58-00aa7ba8b024",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
+                    "name": "focusChatDown",
+                    "type": "Button",
+                    "id": "62667858-3588-4bd6-8df2-f5d534112593",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9424b36a-2666-4b5d-8f74-a36ca51306cb",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "toggleChatDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dfe61014-5888-4c14-8813-945b32097b16",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "toggleInternalClothingDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d0b89dfa-d863-46f2-a6fa-7e631addfdd0",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "focusChatDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "pointer",
+            "id": "ee0f925f-9fe4-461f-a24e-ac37fe217016",
+            "actions": [
+                {
+                    "name": "position",
+                    "type": "Value",
+                    "id": "facdede9-4e7a-4d84-9c04-0ec63b615915",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "secondaryActionDown",
+                    "type": "Button",
+                    "id": "a805661f-bd81-4620-977b-7329ceefd3ba",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
+                    "name": "primaryActionDown",
+                    "type": "Button",
+                    "id": "16234339-2e74-42b8-85a2-3c59dd67c22a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
+                    "name": "primaryActionHeld",
+                    "type": "Button",
+                    "id": "919ded4e-000a-4312-9883-999f834700fe",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold"
+                },
+                {
+                    "name": "secondaryActionHeld",
+                    "type": "Button",
+                    "id": "4d58af78-a2bd-4159-810f-b45c884509b7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold"
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9d580a37-193d-428f-b525-e608d58ba5bb",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "position",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "444c76e5-8751-46c0-bf77-a80c1bf8bcfb",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "secondaryActionDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ddf0c49f-e216-4650-a7c3-ea461b67f1e9",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "primaryActionDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "92d7f15a-3371-4eb1-bdb5-1e66d816efe6",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "primaryActionHeld",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "07362855-98e4-4cf5-905d-485cfcd684be",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "secondaryActionHeld",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "player",
+            "id": "3f732837-a54c-43a2-a414-ee7ed49c49de",
+            "actions": [
+                {
+                    "name": "examineHold",
+                    "type": "Button",
+                    "id": "1423de7d-f8bb-4d74-8d60-e30590f68083",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold"
+                },
+                {
+                    "name": "combatModeDown",
+                    "type": "Button",
+                    "id": "273501af-efa6-4b59-b3aa-fb34069d0d86",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
+                    "name": "swapHandDown",
+                    "type": "Button",
+                    "id": "04903fa0-8d32-4877-ba2a-a2c6908df5d9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
+                    "name": "dropItemDown",
+                    "type": "Button",
+                    "id": "82764e0f-b059-4975-bfc9-7f76583eb694",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
+                    "name": "activateDown",
+                    "type": "Button",
+                    "id": "ab79c055-66fb-407e-9722-dd38b5631dc2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4b6ff1f7-5b4e-4c31-a453-d8478c2ab812",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "examineHold",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fac25978-e468-4a6b-9c54-7baedff35138",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "combatModeDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "caa7255a-7c3e-45e3-a62b-842c00d00efd",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "swapHandDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8a583482-4112-4ec0-8705-1e02aed98de4",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "dropItemDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5453032b-a781-4c3f-bddf-0a7b5b893b3f",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "activateDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "misc",
+            "id": "1926618d-2845-4407-b640-13f106a037de",
+            "actions": [
+                {
+                    "name": "leftAlternateHeld",
+                    "type": "Button",
+                    "id": "4ee50e36-9872-41d1-8d44-0594d7dd6500",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold"
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "246a3776-61b6-4e4d-8f3c-2e610098e10c",
+                    "path": "<Keyboard>/leftAlt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "leftAlternateHeld",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Mouse+Keyboard",
+            "bindingGroup": "Mouse+Keyboard",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

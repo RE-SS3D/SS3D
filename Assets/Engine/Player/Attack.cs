@@ -1,6 +1,7 @@
 ﻿using Mirror;
 using UnityEngine;
 using SS3D.Content.Systems.Player.Body; // TODO: This is bad.
+using SS3D.Engine.Input;
 
 namespace SS3D.Engine.Health
 {
@@ -31,13 +32,13 @@ namespace SS3D.Engine.Health
                 return;
             }
             
-            if (!Input.GetKeyDown(KeyCode.F))
+            if (!InputHelper.inputs.player.combatModeDown.ReadValue<bool>())
             {
                 return;
             }
 
             LayerMask layerMask = ~(1 << LayerMask.NameToLayer ("Player"));
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(InputHelper.inputs.pointer.position.ReadValue<Vector2>());
             RaycastHit hit;
             if(!Physics.Raycast(ray, out hit, 10f, layerMask))
             {

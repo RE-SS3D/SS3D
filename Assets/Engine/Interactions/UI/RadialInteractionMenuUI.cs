@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SS3D.Engine.Input;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -110,7 +111,7 @@ namespace SS3D.Engine.Interactions.UI
             bool hasSelfAsParent = false;
             obj = EventSystem.current?.currentSelectedGameObject;
 
-            if (Input.GetButtonDown("Secondary Click"))
+            if (InputHelper.inputs.pointer.secondaryActionDown.ReadValue<bool>())
             {
                 // Check for self as parent of click
                 while (obj != null)
@@ -131,13 +132,13 @@ namespace SS3D.Engine.Interactions.UI
                 }
             }
             // Deletes the object and calls the interaction if it exists when mouse 1 is up
-            if (Input.GetMouseButtonUp(1))
+            if (!InputHelper.inputs.pointer.primaryActionDown.ReadValue<bool>())
             {
                 if (selectedPetal != null)
                     selectedPetal.GetComponentInChildren<Button>().onClick.Invoke();
                 Destroy(gameObject);
             }
-            Vector3 mouse = Input.mousePosition;
+            Vector3 mouse = InputHelper.inputs.pointer.position.ReadValue<Vector2>();
             Vector3 dir = (mouse - indicator.position).normalized;
 
             float atan = Mathf.Atan2(dir.y, dir.x);
@@ -161,7 +162,8 @@ namespace SS3D.Engine.Interactions.UI
             }
 
             folder = new PetalFolder(GetPetalPrefab());
-            Appear(new Vector2(Input.mousePosition.x, Input.mousePosition.y), 1, folder);
+            Vector2 mousePosition = InputHelper.inputs.pointer.position.ReadValue<Vector2>();
+            Appear(new Vector2(mousePosition.x, mousePosition.y), 1, folder);
             foreach (IInteraction interaction in Interactions)
             {
                 Sprite icon = interaction.GetIcon(Event) ? interaction.GetIcon(Event) : missingIcon;
