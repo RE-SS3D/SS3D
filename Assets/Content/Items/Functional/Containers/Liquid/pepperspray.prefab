@@ -45,10 +45,11 @@ GameObject:
   - component: {fileID: 7334983109677519472}
   - component: {fileID: 3541546131235516538}
   - component: {fileID: 1436701974858568618}
+  - component: {fileID: -970840155373657589}
   - component: {fileID: -7916679988573165787}
   - component: {fileID: -1515805523943370819}
   m_Layer: 16
-  m_Name: pepperspray
+  m_Name: PepperSpray
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -93,7 +94,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8429492116086818138}
-  m_Mesh: {fileID: 9067431505445562313, guid: 1d027408b61acc647a8e6c6785bb5b5d, type: 3}
+  m_Mesh: {fileID: 730070235504993562, guid: 1d027408b61acc647a8e6c6785bb5b5d, type: 3}
 --- !u!23 &7838308888416727430
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -162,7 +163,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 9067431505445562313, guid: 1d027408b61acc647a8e6c6785bb5b5d, type: 3}
+  m_Mesh: {fileID: 730070235504993562, guid: 1d027408b61acc647a8e6c6785bb5b5d, type: 3}
 --- !u!114 &1436701974858568618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,12 +178,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: pepper_spray
+  ItemId: PepperSpray
   Name: Pepper Spray
   Volume: 10
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8429492116086818138}
   attachmentPoint: {fileID: 4272554562607298376}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits: []
   Size: {x: 0, y: 0}
@@ -190,6 +192,21 @@ MonoBehaviour:
   particleSystem: {fileID: 8762605811191177629}
   cooldownInSeconds: 3
   useIcon: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
+--- !u!114 &-970840155373657589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8429492116086818138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisplayName: 
+  Text: 
+  MaxDistance: 0
 --- !u!114 &-7916679988573165787
 MonoBehaviour:
   m_ObjectHideFlags: 0

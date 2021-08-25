@@ -175,16 +175,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: whisk
+  ItemId: Whisk
   Name: Whisk
   Volume: 9
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 3794527162878356835}
   attachmentPoint: {fileID: 8869951128713715569}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 7f22e87f08452654f8f20ace0b1e0fa3, type: 2}
+  Size: {x: 0, y: 0}
 --- !u!114 &2923116068905593083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,5 +198,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0

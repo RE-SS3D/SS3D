@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 495010723332035723}
   - component: {fileID: 946744180037249438}
   m_Layer: 0
-  m_Name: Toilet Lid
+  m_Name: ToiletLid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39,7 +39,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3648840853805917807}
-  m_Mesh: {fileID: -311199542343804408, guid: 64730c2ca04ebd84c8cab07dd7ed4ef0, type: 3}
+  m_Mesh: {fileID: -650957270937521012, guid: 64730c2ca04ebd84c8cab07dd7ed4ef0, type: 3}
 --- !u!23 &946744180037249438
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -96,7 +96,6 @@ GameObject:
   - component: {fileID: 4736502494625233072}
   - component: {fileID: 6410542327681874041}
   - component: {fileID: 5281519465761832601}
-  - component: {fileID: -3453679615323309297}
   m_Layer: 0
   m_Name: Toilet
   m_TagString: Untagged
@@ -165,6 +164,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
+  StorageType: 0
+  Pile: 0
   OnlyStoreWhenOpen: 1
   MaxDistance: 1.5
   viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
@@ -244,21 +245,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AttachedContainer: {fileID: 6410542327681874041}
-  Size: {x: 2, y: 2}
---- !u!114 &-3453679615323309297
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5161561551087789900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
+  Size: {x: 1, y: 1}
+  StartFilter: {fileID: 0}
 --- !u!1 &5218468364695561986
 GameObject:
   m_ObjectHideFlags: 0
@@ -269,7 +257,7 @@ GameObject:
   m_Component:
   - component: {fileID: 254666270778612133}
   - component: {fileID: 3115635699280541371}
-  - component: {fileID: 352902799574202225}
+  - component: {fileID: 8671510269173779519}
   m_Layer: 0
   m_Name: Toilet
   m_TagString: Untagged
@@ -299,8 +287,8 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5218468364695561986}
   m_Mesh: {fileID: -8928055837537713139, guid: 64730c2ca04ebd84c8cab07dd7ed4ef0, type: 3}
---- !u!23 &352902799574202225
-MeshRenderer:
+--- !u!137 &8671510269173779519
+SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -313,7 +301,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -339,3 +327,15 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  serializedVersion: 2
+  m_Quality: 0
+  m_UpdateWhenOffscreen: 0
+  m_SkinnedMotionVectors: 1
+  m_Mesh: {fileID: -8928055837537713139, guid: 64730c2ca04ebd84c8cab07dd7ed4ef0, type: 3}
+  m_Bones: []
+  m_BlendShapeWeights: []
+  m_RootBone: {fileID: 0}
+  m_AABB:
+    m_Center: {x: 0.010543302, y: 0.4890518, z: -0.1630926}
+    m_Extent: {x: 0.26160455, y: 0.49727133, z: 0.41007435}
+  m_DirtyAABB: 0

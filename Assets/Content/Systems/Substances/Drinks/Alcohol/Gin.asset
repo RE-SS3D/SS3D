@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Gin
   m_EditorClassIdentifier: 
-  Id: gin
+  Id: Gin
   Color: {r: 0.9339623, g: 0.9339623, b: 0.9339623, a: 0.003921569}
   MillilitersPerMole: 38
