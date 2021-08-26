@@ -37,7 +37,7 @@ namespace SS3D.Engine.Atmospherics
             SetValve(false);
         }
 
-        public IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             return new IInteraction[]
             {

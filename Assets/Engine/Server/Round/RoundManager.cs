@@ -17,13 +17,13 @@ namespace SS3D.Engine.Server.Round
     {
         public static RoundManager singleton { get; private set; }
 
-        private bool warmingUp;
+        [SyncVar] private bool warmingUp;
         [SerializeField] private int warmupTimeSeconds = 5;
         [SerializeField] private int roundTimeSeconds = 300;
         private Coroutine warmupCoroutine;     
         
         private int timerSeconds = 0;
-        private bool started = false;
+        [SyncVar] private bool started = false;
         private Coroutine tickCoroutine;
 
         public static event System.Action ServerWarmupStarted;
@@ -43,68 +43,57 @@ namespace SS3D.Engine.Server.Round
         
         public void StartWarmup()
         {
+            // These activities will happen both on the server and client.
             gameObject.SetActive(true);
-
-            started = false;
             StopAllCoroutines();
-            
             timerSeconds = warmupTimeSeconds;
-
-            warmupCoroutine = StartCoroutine(TickWarmup());
-
-            warmingUp = true;
             ServerWarmupStarted?.Invoke();
-            RpcStartWarmup();
+
+            // Only do SyncVar assignments, tick coroutine and the RPC on the server.
+            if (isServer)
+            {
+                started = false;
+                warmingUp = true;
+                warmupCoroutine = StartCoroutine(TickWarmup());
+                RpcStartWarmup();
+            }
+
+
         }
 
         [ClientRpc]
         private void RpcStartWarmup()
         {
+            // Prevent from running again on server
             if (isServer) return;
-            gameObject.SetActive(true);
-
-            started = false;
-            StopAllCoroutines();
-            
-            timerSeconds = warmupTimeSeconds;
-
-            warmupCoroutine = StartCoroutine(TickWarmup());
-
-            warmingUp = true;
-            ServerWarmupStarted?.Invoke();
+            StartWarmup();
         }
 
         [ContextMenu("Start Round")]
         public void StartRound()
         {
+            // These activities will happen both on the server and client.
             gameObject.SetActive(true);
-            started = true;
-            warmingUp = false;
-            
-            StopCoroutine(warmupCoroutine);
-            
-            tickCoroutine = StartCoroutine("Tick");
 
             Debug.Log("Round Started");
             ServerRoundStarted?.Invoke();
-            RpcStartRound();
+
+            // Only do SyncVar assignments, tick coroutine and the RPC on the server.
+            if (isServer)
+            {
+                started = true;
+                warmingUp = false;
+                StopCoroutine(warmupCoroutine);
+                tickCoroutine = StartCoroutine("Tick");
+                RpcStartRound();
+            }
         }
 
         [ClientRpc]
         public void RpcStartRound()
         {
             if (isServer) return;
-            
-            gameObject.SetActive(true);
-            started = true;
-            warmingUp = false;
-            
-            if (warmupCoroutine != null) StopCoroutine(warmupCoroutine); 
-            
-            tickCoroutine = StartCoroutine("Tick");
-            
-            Debug.Log("Round Started");
-            ServerRoundStarted?.Invoke();
+            StartRound();
         }
 
         public void EndRound()

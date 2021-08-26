@@ -21,6 +21,8 @@ namespace SS3D.Content.Items.Cosmetic
         private AudioSource audioSource;
 
 	// is it playing music
+
+        [SyncVar]
         public bool radioOn;
         public int currentMusic;
 
@@ -166,7 +168,7 @@ namespace SS3D.Content.Items.Cosmetic
             return radioOn;
         }
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = new List<IInteraction>(2)
             {

@@ -14,7 +14,7 @@ namespace SS3D.Engine.Interactions
 
         public GameObject GameObject { get; }
         
-        public IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             return new IInteraction[0];
         }

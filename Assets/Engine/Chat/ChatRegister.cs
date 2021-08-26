@@ -17,15 +17,15 @@ namespace SS3D.Engine.Chat
         [SerializeField] private List<String> restrictedChannels = new List<String>(){"System"};
         [SerializeField] private List<ChatMessage> messages = new List<ChatMessage>();
 
-        private ChatWindow chatWindow;
+        private List<ChatWindow> chatWindows;
 
         public List<string> RestrictedChannels => restrictedChannels;
-        public ChatWindow ChatWindow => chatWindow;
+        public List<ChatWindow> ChatWindows => chatWindows;
 
         private void Start()
         {
             if (!isLocalPlayer) return;
-
+            chatWindows = new List<ChatWindow>();
             CreateChatWindow(new ChatTabData("All", chatChannels.GetChannels(), false, null), null, Vector2.zero);
         }
 
@@ -75,13 +75,13 @@ namespace SS3D.Engine.Chat
             }
             else
             {
-                chatWindow = Instantiate(chatWindowPrefab);
+                chatWindows.Add(Instantiate(chatWindowPrefab));
                 if (position != Vector2.zero)
                 {
-                    chatWindow.transform.position = position;
+                    chatWindows[chatWindows.Count - 1].transform.position = position;
                 }
 
-                chatWindow.Init(tabData, this);
+                chatWindows[chatWindows.Count - 1].Init(tabData, this);
             }
         }
         
@@ -92,7 +92,16 @@ namespace SS3D.Engine.Chat
 
         private void UpdateMessages()
         {
-            chatWindow.UpdateMessages();
+            foreach (ChatWindow chatWindow in chatWindows)
+            {
+                chatWindow.UpdateMessages();
+            }
+        }
+
+        public void DeleteChatWindow(ChatWindow chatWindow)
+        {
+            chatWindows.Remove(chatWindow);
+            Destroy(chatWindow.gameObject);
         }
     }
 }

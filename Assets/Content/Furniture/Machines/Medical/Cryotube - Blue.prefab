@@ -43,7 +43,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3064894055610940026}
-  m_Mesh: {fileID: -3537948731001083504, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
+  m_Mesh: {fileID: -7765939715451239521, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
 --- !u!23 &4331335641258426073
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -114,7 +114,6 @@ GameObject:
   - component: {fileID: 6431728947182756207}
   - component: {fileID: 6371223980325206078}
   - component: {fileID: 1176681601152780847}
-  - component: {fileID: 8959118759034439111}
   m_Layer: 0
   m_Name: Cryotube - Blue
   m_TagString: Untagged
@@ -276,20 +275,6 @@ MonoBehaviour:
   DisplayName: Cryotube
   Text: 
   MaxDistance: 0
---- !u!114 &8959118759034439111
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5385663273565442968}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
 --- !u!1 &5625392702527621547
 GameObject:
   m_ObjectHideFlags: 0
@@ -329,7 +314,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5625392702527621547}
-  m_Mesh: {fileID: -1518938212194376191, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
+  m_Mesh: {fileID: -6705218397201916213, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
 --- !u!23 &5085958358066919364
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -447,7 +432,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6432704430344066030}
-  m_Mesh: {fileID: 31224540767065549, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
+  m_Mesh: {fileID: 3090188475002519873, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
 --- !u!1 &9199454391362990948
 GameObject:
   m_ObjectHideFlags: 0
@@ -489,7 +474,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9199454391362990948}
-  m_Mesh: {fileID: 4789040564987817927, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
+  m_Mesh: {fileID: 3653147570069490128, guid: 9f619fa7a581e9c4aa983af44dcf9008, type: 3}
 --- !u!23 &1580909300231049782
 MeshRenderer:
   m_ObjectHideFlags: 0

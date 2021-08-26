@@ -51,7 +51,7 @@ GameObject:
   - component: {fileID: 5688882188462630418}
   - component: {fileID: 8805611969679259197}
   m_Layer: 16
-  m_Name: banana
+  m_Name: Banana
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -197,16 +197,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: banana
+  ItemId: Banana
   Name: Banana
   Volume: 9
-  container: {fileID: 0}
   sprite: {fileID: 0}
   prefab: {fileID: 8722317747974713380}
   attachmentPoint: {fileID: 6244230459157494590}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
+  Size: {x: 0, y: 0}
 --- !u!114 &6143507213145409448
 MonoBehaviour:
   m_ObjectHideFlags: 0

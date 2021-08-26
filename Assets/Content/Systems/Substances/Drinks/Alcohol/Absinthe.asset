@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Absinthe
   m_EditorClassIdentifier: 
-  Id: absinthe
+  Id: Absinthe
   Color: {r: 0.44672585, g: 0.9433962, b: 0.23584905, a: 0.6862745}
   MillilitersPerMole: 38
