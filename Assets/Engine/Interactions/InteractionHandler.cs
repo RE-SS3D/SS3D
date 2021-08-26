@@ -33,11 +33,11 @@ namespace SS3D.Engine.Interactions
 
         public void Update()
         {
-            // Ensure that mouse isn't over ui (game objects aren't tracked by the eventsystem, so ispointer would return false
-            //if (!isLocalPlayer || camera == null || EventSystem.current.IsPointerOverGameObject())
-            //{
-            //    return;
-            //}
+            // ensure that mouse isn't over ui (game objects aren't tracked by the eventsystem, so ispointer would return false
+            if (!isLocalPlayer || camera == null || EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
 
             if (InputHelper.inputs.pointer.primaryActionDown.ReadValue<bool>())
             {

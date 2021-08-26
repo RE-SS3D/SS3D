@@ -77,8 +77,8 @@ namespace SS3D.Content.Systems.Player
         public void Update()
         {
             // Ignore camera controls when the mouse is over the UI
-            //if (EventSystem.current.IsPointerOverGameObject())
-            //    return;
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
 
             // input handling
             float zoom = Input.GetAxis("Camera Zoom");
