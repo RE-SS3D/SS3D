@@ -2,7 +2,9 @@
     "name": "Mirror",
     "references": [
         "Mirror.CompilerSymbols",
-        "Ninja.WebSockets"
+        "Ninja.WebSockets",
+        "Unity.Addressables",
+        "Unity.ResourceManager"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

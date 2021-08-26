@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using Guid = System.Guid;
 using Object = UnityEngine.Object;
+using UnityEngine.AddressableAssets;
 
 namespace Mirror
 {
@@ -777,19 +778,28 @@ namespace Mirror
 
             // was the object already spawned?
             NetworkIdentity identity = GetExistingObject(msg.netId);
+            AssetReference asset = new AssetReference(msg.assetId.ToString("N"));
 
-            if (identity == null)
+            if (asset.RuntimeKeyIsValid() && identity == null && msg.sceneId == 0)
             {
-                identity = msg.sceneId == 0 ? SpawnPrefab(msg) : SpawnSceneObject(msg);
+                SpawnAddressable(msg, asset);
             }
 
-            if (identity == null)
+            else
             {
-                logger.LogError($"Could not spawn assetId={msg.assetId} scene={msg.sceneId} netId={msg.netId}");
-                return;
-            }
+                if (identity == null)
+                {
+                    identity = msg.sceneId == 0 ? SpawnPrefab(msg) : SpawnSceneObject(msg);
+                }
 
-            ApplySpawnPayload(identity, msg);
+                if (identity == null)
+                {
+                    logger.LogError($"Could not spawn assetId={msg.assetId} scene={msg.sceneId} netId={msg.netId}");
+                    return;
+                }
+
+                ApplySpawnPayload(identity, msg);
+            }
         }
 
         static NetworkIdentity GetExistingObject(uint netid)
@@ -822,6 +832,14 @@ namespace Mirror
             }
             logger.LogError("Failed to spawn server object, did you forget to add it to the NetworkManager? assetId=" + msg.assetId + " netId=" + msg.netId);
             return null;
+        }
+
+        static void SpawnAddressable(SpawnMessage msg, AssetReference asset)
+        {
+            asset.InstantiateAsync(msg.position, msg.rotation).Completed += op =>
+            {
+                ApplySpawnPayload(op.Result.GetComponent<NetworkIdentity>(), msg);
+            };
         }
 
         static NetworkIdentity SpawnSceneObject(SpawnMessage msg)
