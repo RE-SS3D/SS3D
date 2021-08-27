@@ -57,9 +57,9 @@ namespace SS3D.Engine.Inventory.UI
             rect.GetLocalCorners(v); 
             containerName.transform.localPosition = v[1] + new Vector3(0.03f * width, -0.02f * height, 0);
 
-            if (attachedContainer.GetComponent<Item>() != null)
-            {
-                Item item = attachedContainer.GetComponent<Item>();
+            Item item = attachedContainer.GetComponent<Item>();
+            if (item != null)
+            {   
                 item.ItemContainerChanged += OnItemContainerChanged;
             }
         }
@@ -68,8 +68,9 @@ namespace SS3D.Engine.Inventory.UI
         {
             if (oldContainer != null && newContainer != null)
             {
-                //If the item is held in hand, the UI closes when the item is put inside another container
-                if (oldContainer.AttachedTo.IsAttachedToHands() && !(newContainer.AttachedTo.IsAttachedToHands()))
+                //If the item is held in hand, the UI closes when the item is put inside another container.
+                //The UI doesn't close if the item is not put in a container, e.g. left on the ground.
+                if (Inventory.IsAttachedToHands(oldContainer.AttachedTo) && !(Inventory.IsAttachedToHands(newContainer.AttachedTo)))
                 {
                     Close();
                     return;

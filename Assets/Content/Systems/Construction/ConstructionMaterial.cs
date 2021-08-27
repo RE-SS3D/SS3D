@@ -35,6 +35,8 @@ namespace SS3D.Content.Systems.Construction
 
         public void OnItemContainerChanged(Container oldContainer, Container newContainer)
         {
+
+            
             if(constructionMenu != null)
             { 
                 //If the item is put outside of a container, we close the construction menu.
@@ -45,9 +47,9 @@ namespace SS3D.Content.Systems.Construction
                 }
                 if (oldContainer != null && newContainer != null)
                 {
-                    //If the item was held in hand, the construction menu closes when the item isn't held anymore
-                    if (oldContainer.AttachedTo.IsAttachedToHands() && ! (newContainer.AttachedTo.IsAttachedToHands()))
-                    { 
+                    // closes the construction menu if any of the container is not attached to an hand.
+                    if (!oldContainer.AttachedTo.IsHandContainer || !newContainer.AttachedTo.IsHandContainer)
+                    {
                         constructionMenu.Close();
                         return;
                     }

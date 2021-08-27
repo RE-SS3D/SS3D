@@ -14,6 +14,9 @@ namespace SS3D.Engine.Inventory
     /// </summary>
     public class AttachedContainer : MonoBehaviour
     {
+
+        public bool IsHandContainer = false;
+
         /// <summary>
         /// If items should be hidden
         /// </summary>
@@ -48,6 +51,7 @@ namespace SS3D.Engine.Inventory
             get => container;
             set => UpdateContainer(value);
         }
+
 
         /// <summary>
         /// Return the name of the Object as defined by the Examine System. 
@@ -126,18 +130,6 @@ namespace SS3D.Engine.Inventory
             return $"{name}({nameof(AttachedContainer)})[size: {container.Size}, items: {container.ItemCount}]";
         }
 
-        public string NameToString()
-        {
-            return $"{name}";
-        }
-
-        /// <summary>
-        /// Verify if this AttachedContainer is attached to a right or to a left hand
-        /// </summary>
-        public bool IsAttachedToHands()
-        {
-            return NameToString() == "hand_r" || NameToString() == "hand_l";
-        }
         protected virtual void OnItemAttached(Item e)
         {
             ItemAttached?.Invoke(this, e);

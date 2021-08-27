@@ -10,8 +10,7 @@ namespace SS3D.Content.Systems.Interactions
     {
         public Sprite icon;
 
-        public event EventHandler<bool> OpenStateChange;
-        public event EventHandler<OpenInteractionEventArgs> OpenStateChangeSendEvent;
+        public event EventHandler<OpenInteractionEventArgs> OpenStateChange;
         private static readonly int OpenId = Animator.StringToHash("Open");
 
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
@@ -49,12 +48,11 @@ namespace SS3D.Content.Systems.Interactions
             Animator animator = target.GetComponent<Animator>();
             bool open = animator.GetBool(OpenId);
             animator.SetBool(OpenId, !open);
-            OnOpenStateChange(!open);
 
             OpenInteractionEventArgs openInteractionEventArgs = new OpenInteractionEventArgs();
             openInteractionEventArgs.Open = !open;
             openInteractionEventArgs.interactionEvent = interactionEvent;
-            OnOpenStateChangeSendEvent(openInteractionEventArgs);
+            OnOpenStateChange(openInteractionEventArgs);
             return false;
         }
 
@@ -68,14 +66,9 @@ namespace SS3D.Content.Systems.Interactions
             throw new System.NotImplementedException();
         }
 
-        private void OnOpenStateChange(bool e)
+        private void OnOpenStateChange(OpenInteractionEventArgs e)
         {
             OpenStateChange?.Invoke(this, e);
-        }
-
-        private void OnOpenStateChangeSendEvent(OpenInteractionEventArgs e)
-        {
-            OpenStateChangeSendEvent?.Invoke(this, e);
         }
     }
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using Mirror;
 using SS3D.Content.Furniture;
+using SS3D.Content.Systems.Interactions;
 using UnityEngine;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Tiles;
@@ -41,11 +42,11 @@ namespace SS3D.Content.Structures.Fixtures
 
         // Interaction stuff
 
-        protected override void OnOpenStateChange(object sender, bool open)
+        protected override void OnOpenStateChange(object sender, OpenInteractionEventArgs e)
         {
-            base.OnOpenStateChange(sender, open);
-            CommunicateDoorState(open);
-            if (open)
+            base.OnOpenStateChange(sender, e);
+            CommunicateDoorState(e.Open);
+            if (e.Open)
             {
                 closeTimer = StartCoroutine(RunCloseEventually(DOOR_WAIT_CLOSE_TIME));
             }

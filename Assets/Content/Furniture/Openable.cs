@@ -40,7 +40,7 @@ namespace SS3D.Content.Furniture
             return animator.GetBool(OpenId);
         }
 
-        protected virtual void OnOpenStateChange(object sender, bool open)
+        protected virtual void OnOpenStateChange(object sender, OpenInteractionEventArgs e)
         {
             
         }

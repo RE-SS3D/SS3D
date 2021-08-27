@@ -209,6 +209,8 @@ namespace SS3D.Engine.Inventory
             {
                 Object.Destroy(gameObject);
             }
+
+            ItemContainerChanged -= OnItemContainerChanged;
         }
 
         /// <summary>

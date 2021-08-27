@@ -60,6 +60,7 @@ namespace SS3D.Engine.Inventory.Extensions
                 {
                     Size = new Vector2Int(5, 5)
                 };
+                attachedContainer.IsHandContainer = true;
             }
         }
 

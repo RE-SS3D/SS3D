@@ -26,16 +26,17 @@ namespace SS3D.Content.Furniture
             OpenInteraction openInteraction = new OpenInteraction();
             openInteraction.icon = OpenIcon;
             openInteraction.OpenStateChange += OnOpenStateChange;
-            openInteraction.OpenStateChangeSendEvent += OnOpenStateChangeReceiveEvent;
             return new IInteraction[] { openInteraction };
         }
 
         /// <summary>
         /// Method called whenever a NetworkedOpenable object is opened or closed. 
         /// </summary>
-        public void OnOpenStateChangeReceiveEvent(object sender, OpenInteractionEventArgs e)
+        protected virtual void OnOpenStateChange(object sender, OpenInteractionEventArgs e)
         {
+            openState = e.Open;
             CloseUIWhenClosed(e);
+            UpdateAnimator();
         }
 
         /// <summary>
@@ -50,10 +51,11 @@ namespace SS3D.Content.Furniture
                 if (e.interactionEvent.Target is OpenableContainer && !e.Open)
                 {
                     OpenableContainer openableContainer = e.interactionEvent.Target as OpenableContainer;
+                    // Warning : This work only if the game object has only one Attached container. This need to be changed in the future.
                     AttachedContainer attachedContainer = openableContainer.GameObject.GetComponent<AttachedContainer>();
                     hands.Inventory.CmdContainerClose(attachedContainer);
                 }
-            }
+            }     
         }
 
         public bool IsOpen()
@@ -66,11 +68,6 @@ namespace SS3D.Content.Furniture
             animator = GetComponent<Animator>();
         }
 
-        protected virtual void OnOpenStateChange(object sender, bool e)
-        {
-            openState = e;
-            UpdateAnimator();
-        }
         
         private void OpenHook(bool oldVal, bool newVal)
         {

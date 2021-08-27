@@ -130,6 +130,21 @@ namespace SS3D.Engine.Inventory
             }
         }
 
+        /// <summary>
+        /// Checks if the attachedContainer is attached to the hands of the creature.
+        /// </summary> 
+        public bool IsAttachedToHands(AttachedContainer container)
+        {
+            foreach (AttachedContainer attachedContainer in Hands.HandContainers)
+            {
+               if(container == attachedContainer)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public bool CanModifyContainer(AttachedContainer container)
         {
             // TODO: This root transform check might allow you to take out your own organs down the road O_O
