@@ -10,9 +10,11 @@ using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
+    
     // [ExecuteAlways]
     public class AtmosManager : MonoBehaviour
     {
+        /*
         // Test
         public Turf floor;
         public enum ViewType { Pressure, Content, Temperature, Combined, Wind };
@@ -649,14 +651,14 @@ namespace SS3D.Engine.Atmospherics
                         Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y), new Vector3(0.2f * drawSize, value, drawSize));
                     break;
 
-                case OffsetPipesAdjacencyConnector.PipeOrientation.cNorth:
+                case OffsetPipesAdjacencyConnector.PipeOrientation.uNorth:
                     if (rotation > 0)
                         Gizmos.DrawCube(new Vector3(x + 0.25f, value / 2f, y + offsetY), new Vector3(0.5f * drawSize, value, 0.2f * drawSize));
                     else
                         Gizmos.DrawCube(new Vector3(x + offsetX, value / 2f, y + 0.25f), new Vector3(0.2f * drawSize, value, 0.5f * drawSize));
 
                     break;
-                case OffsetPipesAdjacencyConnector.PipeOrientation.cSouth:
+                case OffsetPipesAdjacencyConnector.PipeOrientation.uSouth:
                     if (rotation > 0)
                         Gizmos.DrawCube(new Vector3(x - 0.25f, value / 2f, y + offsetY), new Vector3(0.5f * drawSize, value, 0.2f * drawSize));
                     else
@@ -767,5 +769,6 @@ namespace SS3D.Engine.Atmospherics
             }
 
         }
+        */
     }
 }

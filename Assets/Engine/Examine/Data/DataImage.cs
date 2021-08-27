@@ -13,7 +13,7 @@ namespace SS3D.Engine.Examine
 			Image = image;
 		}
 		
-        public string GetCaption()
+        public string GetName()
 		{
 			return Caption;
 		}

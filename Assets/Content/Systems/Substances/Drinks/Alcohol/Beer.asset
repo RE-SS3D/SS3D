@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Beer
   m_EditorClassIdentifier: 
-  Id: beer
+  Id: Beer
   Color: {r: 0.745283, g: 0.57218736, b: 0.23553754, a: 0.98039216}
   MillilitersPerMole: 50

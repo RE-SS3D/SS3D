@@ -26,8 +26,9 @@ namespace SS3D.Engine.Examine
         private Quaternion lastCameraRotation;
 		public CompositeItemSelector selector;
         private GameObject currentTarget;
-		private bool currentTargetIsComposite;
-
+		private float MIN_UPDATES_PER_SECOND = 3f;
+		private float updateFrequency;
+		private float updateTimer;
 
         private void Start()
         {
@@ -37,6 +38,11 @@ namespace SS3D.Engine.Examine
                 Destroy(this);
             }
 
+			// Establish our minimum frequency timer. This is used to ensure
+			// that objects moving into our cursor are detected.
+			updateFrequency = 1f / MIN_UPDATES_PER_SECOND;
+			updateTimer = 0f;
+
             camera = CameraManager.singleton.examineCamera;
             selector = camera.GetComponent<CompositeItemSelector>();
 	        
@@ -45,7 +51,6 @@ namespace SS3D.Engine.Examine
             examineUi = uiInstance.GetComponent<ExamineUI>();
             
         }
-
 
 		/// This checks whether the Examine button is pressed, and (if so) whether
 		/// the cursor has moved significantly since last check. If it has, it will
@@ -57,31 +62,24 @@ namespace SS3D.Engine.Examine
                 return;
             }
 
-            if (Input.GetButton("Examine"))
-            {
-                Vector3 mousePosition = Input.mousePosition;
-                Vector2 position = new Vector2(mousePosition.x, mousePosition.y);
-                Vector3 cameraPos = camera.transform.position;
-                Quaternion rotation = camera.transform.rotation;
+			// Update the position, rotation and time variables
+			updateTimer += Time.deltaTime;
+            Vector3 mousePosition = Input.mousePosition;
+            Vector2 position = new Vector2(mousePosition.x, mousePosition.y);
+            Vector3 cameraPos = camera.transform.position;
+            Quaternion rotation = camera.transform.rotation;
 
-                if (Vector2.Distance(position, lastMousePosition) > 1 ||
-                    Vector3.Distance(cameraPos, lastCameraPosition) > 0.05 ||
-                    Quaternion.Angle(rotation, lastCameraRotation) > 0.1)
-                {
-                    lastMousePosition = position;
-                    lastCameraPosition = cameraPos;
-                    lastCameraRotation = rotation;
-                    CalculateExamine();
-                }
-            }
-            else if (!float.IsNegativeInfinity(lastMousePosition.x))
+			// If anything has changed too much, we need to recalculate what object we are looking at.
+			if ((Vector2.Distance(position, lastMousePosition) > 1) ||
+				(Vector3.Distance(cameraPos, lastCameraPosition) > 0.05) ||
+				(Quaternion.Angle(rotation, lastCameraRotation) > 0.1) ||
+				(updateTimer > updateFrequency))
             {
-                lastMousePosition = Vector2.negativeInfinity;
-                if (selector == null)
-                {
-	                selector = camera.GetComponent<CompositeItemSelector>();
-                }
-                selector.DisableCamera();
+				updateTimer = 0f;
+                lastMousePosition = position;
+                lastCameraPosition = cameraPos;
+                lastCameraRotation = rotation;
+                CalculateExamine();
             }
         }
 
@@ -90,7 +88,6 @@ namespace SS3D.Engine.Examine
 		/// item is after the rendering has been completed.
         private void CalculateExamine()
         {
-
             if (camera == null)
             {
                 return;
@@ -118,7 +115,7 @@ namespace SS3D.Engine.Examine
 			}
 			else{
 				// If it's over nothing, get rid of the Examine UI.
-				examineUi.ClearData();
+				examineUi.ClearData(false);
 			}
 		}		
 
@@ -142,7 +139,7 @@ namespace SS3D.Engine.Examine
 			}
 			else
 			{
-				examineUi.ClearData();
+				examineUi.ClearData(false);
 			}
         }
     }

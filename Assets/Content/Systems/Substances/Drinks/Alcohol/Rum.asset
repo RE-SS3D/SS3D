@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Rum
   m_EditorClassIdentifier: 
-  Id: rum
+  Id: Rum
   Color: {r: 0.764151, g: 0.6108655, b: 0.4000979, a: 0.6666667}
   MillilitersPerMole: 38

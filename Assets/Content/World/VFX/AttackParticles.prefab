@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7714517724079113235}
   - component: {fileID: 7714517724079113234}
   - component: {fileID: 7714517724079113233}
-  - component: {fileID: -2334589390492040014}
   m_Layer: 0
   m_Name: AttackParticles
   m_TagString: Untagged
@@ -4764,6 +4763,7 @@ ParticleSystemRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -4812,16 +4812,3 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
---- !u!114 &-2334589390492040014
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7714517724079113232}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e642089e2c8474382c55e0ed1ef883, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  time: 0.5

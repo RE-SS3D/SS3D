@@ -21,7 +21,7 @@ public class LoadingScreenManager : MonoBehaviour
     private void Start()
     {
         SceneLoaderManager.mapLoaded += SetAnimatorTrue;
-        TileManager.tileManagerLoaded += SetAnimatorFalse;
+        TileManager.TileManagerLoaded += SetAnimatorFalse;
     }
 
 	public void SetAnimatorTrue()
@@ -37,7 +37,7 @@ public class LoadingScreenManager : MonoBehaviour
 	public void OnDestroy()
 	{
         SceneLoaderManager.mapLoaded -= SetAnimatorTrue;
-        TileManager.tileManagerLoaded -= SetAnimatorFalse;		
+        TileManager.TileManagerLoaded -= SetAnimatorFalse;		
 	}
 	
     public void Toggle(bool state)
