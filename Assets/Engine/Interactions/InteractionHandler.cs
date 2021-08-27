@@ -39,7 +39,7 @@ namespace SS3D.Engine.Interactions
                 return;
             }
 
-            if (InputHelper.inputs.pointer.primaryActionDown.ReadValue<bool>())
+            if (InputHelper.inp.Pointer.PrimaryActionDown.triggered)
             {
                 if (activeMenu != null)
                 {
@@ -48,7 +48,7 @@ namespace SS3D.Engine.Interactions
                 }
 
                 // Run the most prioritised action
-                var ray = camera.ScreenPointToRay(InputHelper.inputs.pointer.position.ReadValue<Vector2>());
+                var ray = camera.ScreenPointToRay(InputHelper.inp.Pointer.Position.ReadValue<Vector2>());
                 var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
 
                 if (viableInteractions.Count > 0)
@@ -58,14 +58,14 @@ namespace SS3D.Engine.Interactions
                 }
 
             }
-            else if (InputHelper.inputs.pointer.primaryActionDown.ReadValue<bool>())
+            else if (InputHelper.inp.Pointer.PrimaryActionDown.triggered)
             {
                 if (activeMenu != null)
                 {
                     Destroy(activeMenu.gameObject);
                 }
 
-                if (InputHelper.inputs.misc.leftAlternateHeld.ReadValue<bool>())
+                if (InputHelper.inp.Misc.LeftAlternateHeld.triggered)
                 {
                     Hands hands = GetComponent<Hands>();
                     if (hands != null )
@@ -79,7 +79,7 @@ namespace SS3D.Engine.Interactions
                 }
                 else
                 {
-                    var ray = camera.ScreenPointToRay(InputHelper.inputs.pointer.position.ReadValue<Vector2>());
+                    var ray = camera.ScreenPointToRay(InputHelper.inp.Pointer.Position.ReadValue<Vector2>());
                     var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
                     if (viableInteractions.Select(x => x.Interaction).ToList().Count > 0)
                     {
@@ -87,7 +87,7 @@ namespace SS3D.Engine.Interactions
                         var obj = Instantiate(menuPrefab, transform.root.transform);
                         activeMenu = obj.GetComponentInChildren<UI.RadialInteractionMenuUI>();
 
-                        activeMenu.Position = InputHelper.inputs.pointer.position.ReadValue<Vector2>();
+                        activeMenu.Position = InputHelper.inp.Pointer.Position.ReadValue<Vector2>();
                         activeMenu.Event = interactionEvent;
                         activeMenu.Interactions = viableInteractions.Select(x => x.Interaction).ToList();
                         activeMenu.onSelect = interaction =>
@@ -99,7 +99,7 @@ namespace SS3D.Engine.Interactions
                 }
             }
 
-            if (InputHelper.inputs.player.activateDown.ReadValue<bool>())
+            if (InputHelper.inp.Player.ActivateDown.triggered)
             {
                 // Activate item in selected hand
                 Hands hands = GetComponent<Hands>();
@@ -142,7 +142,7 @@ namespace SS3D.Engine.Interactions
                 var obj = Instantiate(menuPrefab, transform.root.transform);
                 activeMenu = obj.GetComponentInChildren<UI.RadialInteractionMenuUI>();
 
-                Vector3 mousePosition = InputHelper.inputs.pointer.position.ReadValue<Vector2>();
+                Vector3 mousePosition = InputHelper.inp.Pointer.Position.ReadValue<Vector2>();
                 mousePosition.y = Mathf.Max(obj.transform.GetChild(0).GetComponent<RectTransform>().rect.height, mousePosition.y);
                 activeMenu.Position = mousePosition;
                 activeMenu.Event = interactionEvent;

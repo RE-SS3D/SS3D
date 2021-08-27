@@ -1,12 +1,12 @@
 {
-    "name": "Inputs",
+    "name": "InputActions",
     "maps": [
         {
-            "name": "ui",
+            "name": "UI",
             "id": "fc1b2a61-4efe-48b1-8fa0-0f76e9661897",
             "actions": [
                 {
-                    "name": "toggleChatDown",
+                    "name": "Toggle Chat Down",
                     "type": "Button",
                     "id": "4a079100-8c33-4e2c-bef0-076d8fdd4d15",
                     "expectedControlType": "Button",
@@ -14,7 +14,7 @@
                     "interactions": "Press"
                 },
                 {
-                    "name": "toggleInternalClothingDown",
+                    "name": "Toggle Internal Clothing Down",
                     "type": "Button",
                     "id": "44ee3766-a3af-4ff5-bf58-00aa7ba8b024",
                     "expectedControlType": "Button",
@@ -22,7 +22,7 @@
                     "interactions": "Press"
                 },
                 {
-                    "name": "focusChatDown",
+                    "name": "Focus Chat Down",
                     "type": "Button",
                     "id": "62667858-3588-4bd6-8df2-f5d534112593",
                     "expectedControlType": "Button",
@@ -38,7 +38,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "toggleChatDown",
+                    "action": "Toggle Chat Down",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -49,7 +49,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "toggleInternalClothingDown",
+                    "action": "Toggle Internal Clothing Down",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -60,18 +60,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "focusChatDown",
+                    "action": "Focus Chat Down",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "pointer",
+            "name": "Pointer",
             "id": "ee0f925f-9fe4-461f-a24e-ac37fe217016",
             "actions": [
                 {
-                    "name": "position",
+                    "name": "Position",
                     "type": "Value",
                     "id": "facdede9-4e7a-4d84-9c04-0ec63b615915",
                     "expectedControlType": "Vector2",
@@ -79,7 +79,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "secondaryActionDown",
+                    "name": "Secondary Action Down",
                     "type": "Button",
                     "id": "a805661f-bd81-4620-977b-7329ceefd3ba",
                     "expectedControlType": "Button",
@@ -87,7 +87,7 @@
                     "interactions": "Press"
                 },
                 {
-                    "name": "primaryActionDown",
+                    "name": "Primary Action Down",
                     "type": "Button",
                     "id": "16234339-2e74-42b8-85a2-3c59dd67c22a",
                     "expectedControlType": "Button",
@@ -95,7 +95,7 @@
                     "interactions": "Press"
                 },
                 {
-                    "name": "primaryActionHeld",
+                    "name": "Primary Action Held",
                     "type": "Button",
                     "id": "919ded4e-000a-4312-9883-999f834700fe",
                     "expectedControlType": "Button",
@@ -103,7 +103,7 @@
                     "interactions": "Hold"
                 },
                 {
-                    "name": "secondaryActionHeld",
+                    "name": "Secondary Action Held",
                     "type": "Button",
                     "id": "4d58af78-a2bd-4159-810f-b45c884509b7",
                     "expectedControlType": "Button",
@@ -119,7 +119,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "position",
+                    "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -130,7 +130,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "secondaryActionDown",
+                    "action": "Secondary Action Down",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -141,7 +141,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "primaryActionDown",
+                    "action": "Primary Action Down",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -152,7 +152,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "primaryActionHeld",
+                    "action": "Primary Action Held",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -163,18 +163,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "secondaryActionHeld",
+                    "action": "Secondary Action Held",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "player",
+            "name": "Player",
             "id": "3f732837-a54c-43a2-a414-ee7ed49c49de",
             "actions": [
                 {
-                    "name": "examineHold",
+                    "name": "Examine Held",
                     "type": "Button",
                     "id": "1423de7d-f8bb-4d74-8d60-e30590f68083",
                     "expectedControlType": "Button",
@@ -182,7 +182,7 @@
                     "interactions": "Hold"
                 },
                 {
-                    "name": "combatModeDown",
+                    "name": "Combat Mode Down",
                     "type": "Button",
                     "id": "273501af-efa6-4b59-b3aa-fb34069d0d86",
                     "expectedControlType": "Button",
@@ -190,7 +190,7 @@
                     "interactions": "Press"
                 },
                 {
-                    "name": "swapHandDown",
+                    "name": "Swap Hand Down",
                     "type": "Button",
                     "id": "04903fa0-8d32-4877-ba2a-a2c6908df5d9",
                     "expectedControlType": "Button",
@@ -198,7 +198,7 @@
                     "interactions": "Press"
                 },
                 {
-                    "name": "dropItemDown",
+                    "name": "Drop Item Down",
                     "type": "Button",
                     "id": "82764e0f-b059-4975-bfc9-7f76583eb694",
                     "expectedControlType": "Button",
@@ -206,7 +206,7 @@
                     "interactions": "Press"
                 },
                 {
-                    "name": "activateDown",
+                    "name": "Activate Down",
                     "type": "Button",
                     "id": "ab79c055-66fb-407e-9722-dd38b5631dc2",
                     "expectedControlType": "Button",
@@ -222,7 +222,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "examineHold",
+                    "action": "Examine Held",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -233,7 +233,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "combatModeDown",
+                    "action": "Combat Mode Down",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -244,7 +244,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "swapHandDown",
+                    "action": "Swap Hand Down",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -255,7 +255,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "dropItemDown",
+                    "action": "Drop Item Down",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -266,18 +266,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "activateDown",
+                    "action": "Activate Down",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "misc",
+            "name": "Misc",
             "id": "1926618d-2845-4407-b640-13f106a037de",
             "actions": [
                 {
-                    "name": "leftAlternateHeld",
+                    "name": "Left Alternate Held",
                     "type": "Button",
                     "id": "4ee50e36-9872-41d1-8d44-0594d7dd6500",
                     "expectedControlType": "Button",
@@ -293,7 +293,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "leftAlternateHeld",
+                    "action": "Left Alternate Held",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

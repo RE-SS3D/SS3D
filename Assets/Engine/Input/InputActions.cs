@@ -1,4 +1,4 @@
-// GENERATED AUTOMATICALLY FROM 'Assets/Engine/Input/Inputs.inputactions'
+// GENERATED AUTOMATICALLY FROM 'Assets/Engine/Input/InputActions.inputactions'
 
 using System;
 using System.Collections;
@@ -8,20 +8,20 @@ using UnityEngine.InputSystem.Utilities;
 
 namespace SS3D.Engine.Input
 {
-    public class @Inputs : IInputActionCollection, IDisposable
+    public class @InputActions : IInputActionCollection, IDisposable
     {
         public InputActionAsset asset { get; }
-        public @Inputs()
+        public @InputActions()
         {
             asset = InputActionAsset.FromJson(@"{
-    ""name"": ""Inputs"",
+    ""name"": ""InputActions"",
     ""maps"": [
         {
-            ""name"": ""ui"",
+            ""name"": ""UI"",
             ""id"": ""fc1b2a61-4efe-48b1-8fa0-0f76e9661897"",
             ""actions"": [
                 {
-                    ""name"": ""toggleChatDown"",
+                    ""name"": ""Toggle Chat Down"",
                     ""type"": ""Button"",
                     ""id"": ""4a079100-8c33-4e2c-bef0-076d8fdd4d15"",
                     ""expectedControlType"": ""Button"",
@@ -29,7 +29,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": ""Press""
                 },
                 {
-                    ""name"": ""toggleInternalClothingDown"",
+                    ""name"": ""Toggle Internal Clothing Down"",
                     ""type"": ""Button"",
                     ""id"": ""44ee3766-a3af-4ff5-bf58-00aa7ba8b024"",
                     ""expectedControlType"": ""Button"",
@@ -37,7 +37,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": ""Press""
                 },
                 {
-                    ""name"": ""focusChatDown"",
+                    ""name"": ""Focus Chat Down"",
                     ""type"": ""Button"",
                     ""id"": ""62667858-3588-4bd6-8df2-f5d534112593"",
                     ""expectedControlType"": ""Button"",
@@ -53,7 +53,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""toggleChatDown"",
+                    ""action"": ""Toggle Chat Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -64,7 +64,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""toggleInternalClothingDown"",
+                    ""action"": ""Toggle Internal Clothing Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -75,18 +75,18 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""focusChatDown"",
+                    ""action"": ""Focus Chat Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
             ]
         },
         {
-            ""name"": ""pointer"",
+            ""name"": ""Pointer"",
             ""id"": ""ee0f925f-9fe4-461f-a24e-ac37fe217016"",
             ""actions"": [
                 {
-                    ""name"": ""position"",
+                    ""name"": ""Position"",
                     ""type"": ""Value"",
                     ""id"": ""facdede9-4e7a-4d84-9c04-0ec63b615915"",
                     ""expectedControlType"": ""Vector2"",
@@ -94,7 +94,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""secondaryActionDown"",
+                    ""name"": ""Secondary Action Down"",
                     ""type"": ""Button"",
                     ""id"": ""a805661f-bd81-4620-977b-7329ceefd3ba"",
                     ""expectedControlType"": ""Button"",
@@ -102,7 +102,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": ""Press""
                 },
                 {
-                    ""name"": ""primaryActionDown"",
+                    ""name"": ""Primary Action Down"",
                     ""type"": ""Button"",
                     ""id"": ""16234339-2e74-42b8-85a2-3c59dd67c22a"",
                     ""expectedControlType"": ""Button"",
@@ -110,7 +110,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": ""Press""
                 },
                 {
-                    ""name"": ""primaryActionHeld"",
+                    ""name"": ""Primary Action Held"",
                     ""type"": ""Button"",
                     ""id"": ""919ded4e-000a-4312-9883-999f834700fe"",
                     ""expectedControlType"": ""Button"",
@@ -118,7 +118,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": ""Hold""
                 },
                 {
-                    ""name"": ""secondaryActionHeld"",
+                    ""name"": ""Secondary Action Held"",
                     ""type"": ""Button"",
                     ""id"": ""4d58af78-a2bd-4159-810f-b45c884509b7"",
                     ""expectedControlType"": ""Button"",
@@ -134,7 +134,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""position"",
+                    ""action"": ""Position"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -145,7 +145,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""secondaryActionDown"",
+                    ""action"": ""Secondary Action Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -156,7 +156,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""primaryActionDown"",
+                    ""action"": ""Primary Action Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -167,7 +167,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""primaryActionHeld"",
+                    ""action"": ""Primary Action Held"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -178,18 +178,18 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""secondaryActionHeld"",
+                    ""action"": ""Secondary Action Held"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
             ]
         },
         {
-            ""name"": ""player"",
+            ""name"": ""Player"",
             ""id"": ""3f732837-a54c-43a2-a414-ee7ed49c49de"",
             ""actions"": [
                 {
-                    ""name"": ""examineHold"",
+                    ""name"": ""Examine Held"",
                     ""type"": ""Button"",
                     ""id"": ""1423de7d-f8bb-4d74-8d60-e30590f68083"",
                     ""expectedControlType"": ""Button"",
@@ -197,7 +197,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": ""Hold""
                 },
                 {
-                    ""name"": ""combatModeDown"",
+                    ""name"": ""Combat Mode Down"",
                     ""type"": ""Button"",
                     ""id"": ""273501af-efa6-4b59-b3aa-fb34069d0d86"",
                     ""expectedControlType"": ""Button"",
@@ -205,7 +205,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": ""Press""
                 },
                 {
-                    ""name"": ""swapHandDown"",
+                    ""name"": ""Swap Hand Down"",
                     ""type"": ""Button"",
                     ""id"": ""04903fa0-8d32-4877-ba2a-a2c6908df5d9"",
                     ""expectedControlType"": ""Button"",
@@ -213,7 +213,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": ""Press""
                 },
                 {
-                    ""name"": ""dropItemDown"",
+                    ""name"": ""Drop Item Down"",
                     ""type"": ""Button"",
                     ""id"": ""82764e0f-b059-4975-bfc9-7f76583eb694"",
                     ""expectedControlType"": ""Button"",
@@ -221,7 +221,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": ""Press""
                 },
                 {
-                    ""name"": ""activateDown"",
+                    ""name"": ""Activate Down"",
                     ""type"": ""Button"",
                     ""id"": ""ab79c055-66fb-407e-9722-dd38b5631dc2"",
                     ""expectedControlType"": ""Button"",
@@ -237,7 +237,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""examineHold"",
+                    ""action"": ""Examine Held"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -248,7 +248,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""combatModeDown"",
+                    ""action"": ""Combat Mode Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -259,7 +259,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""swapHandDown"",
+                    ""action"": ""Swap Hand Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -270,7 +270,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""dropItemDown"",
+                    ""action"": ""Drop Item Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -281,18 +281,18 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""activateDown"",
+                    ""action"": ""Activate Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
             ]
         },
         {
-            ""name"": ""misc"",
+            ""name"": ""Misc"",
             ""id"": ""1926618d-2845-4407-b640-13f106a037de"",
             ""actions"": [
                 {
-                    ""name"": ""leftAlternateHeld"",
+                    ""name"": ""Left Alternate Held"",
                     ""type"": ""Button"",
                     ""id"": ""4ee50e36-9872-41d1-8d44-0594d7dd6500"",
                     ""expectedControlType"": ""Button"",
@@ -308,7 +308,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""leftAlternateHeld"",
+                    ""action"": ""Left Alternate Held"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -334,28 +334,28 @@ namespace SS3D.Engine.Input
         }
     ]
 }");
-            // ui
-            m_ui = asset.FindActionMap("ui", throwIfNotFound: true);
-            m_ui_toggleChatDown = m_ui.FindAction("toggleChatDown", throwIfNotFound: true);
-            m_ui_toggleInternalClothingDown = m_ui.FindAction("toggleInternalClothingDown", throwIfNotFound: true);
-            m_ui_focusChatDown = m_ui.FindAction("focusChatDown", throwIfNotFound: true);
-            // pointer
-            m_pointer = asset.FindActionMap("pointer", throwIfNotFound: true);
-            m_pointer_position = m_pointer.FindAction("position", throwIfNotFound: true);
-            m_pointer_secondaryActionDown = m_pointer.FindAction("secondaryActionDown", throwIfNotFound: true);
-            m_pointer_primaryActionDown = m_pointer.FindAction("primaryActionDown", throwIfNotFound: true);
-            m_pointer_primaryActionHeld = m_pointer.FindAction("primaryActionHeld", throwIfNotFound: true);
-            m_pointer_secondaryActionHeld = m_pointer.FindAction("secondaryActionHeld", throwIfNotFound: true);
-            // player
-            m_player = asset.FindActionMap("player", throwIfNotFound: true);
-            m_player_examineHold = m_player.FindAction("examineHold", throwIfNotFound: true);
-            m_player_combatModeDown = m_player.FindAction("combatModeDown", throwIfNotFound: true);
-            m_player_swapHandDown = m_player.FindAction("swapHandDown", throwIfNotFound: true);
-            m_player_dropItemDown = m_player.FindAction("dropItemDown", throwIfNotFound: true);
-            m_player_activateDown = m_player.FindAction("activateDown", throwIfNotFound: true);
-            // misc
-            m_misc = asset.FindActionMap("misc", throwIfNotFound: true);
-            m_misc_leftAlternateHeld = m_misc.FindAction("leftAlternateHeld", throwIfNotFound: true);
+            // UI
+            m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
+            m_UI_ToggleChatDown = m_UI.FindAction("Toggle Chat Down", throwIfNotFound: true);
+            m_UI_ToggleInternalClothingDown = m_UI.FindAction("Toggle Internal Clothing Down", throwIfNotFound: true);
+            m_UI_FocusChatDown = m_UI.FindAction("Focus Chat Down", throwIfNotFound: true);
+            // Pointer
+            m_Pointer = asset.FindActionMap("Pointer", throwIfNotFound: true);
+            m_Pointer_Position = m_Pointer.FindAction("Position", throwIfNotFound: true);
+            m_Pointer_SecondaryActionDown = m_Pointer.FindAction("Secondary Action Down", throwIfNotFound: true);
+            m_Pointer_PrimaryActionDown = m_Pointer.FindAction("Primary Action Down", throwIfNotFound: true);
+            m_Pointer_PrimaryActionHeld = m_Pointer.FindAction("Primary Action Held", throwIfNotFound: true);
+            m_Pointer_SecondaryActionHeld = m_Pointer.FindAction("Secondary Action Held", throwIfNotFound: true);
+            // Player
+            m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
+            m_Player_ExamineHeld = m_Player.FindAction("Examine Held", throwIfNotFound: true);
+            m_Player_CombatModeDown = m_Player.FindAction("Combat Mode Down", throwIfNotFound: true);
+            m_Player_SwapHandDown = m_Player.FindAction("Swap Hand Down", throwIfNotFound: true);
+            m_Player_DropItemDown = m_Player.FindAction("Drop Item Down", throwIfNotFound: true);
+            m_Player_ActivateDown = m_Player.FindAction("Activate Down", throwIfNotFound: true);
+            // Misc
+            m_Misc = asset.FindActionMap("Misc", throwIfNotFound: true);
+            m_Misc_LeftAlternateHeld = m_Misc.FindAction("Left Alternate Held", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -402,73 +402,73 @@ namespace SS3D.Engine.Input
             asset.Disable();
         }
 
-        // ui
-        private readonly InputActionMap m_ui;
-        private IUiActions m_UiActionsCallbackInterface;
-        private readonly InputAction m_ui_toggleChatDown;
-        private readonly InputAction m_ui_toggleInternalClothingDown;
-        private readonly InputAction m_ui_focusChatDown;
-        public struct UiActions
+        // UI
+        private readonly InputActionMap m_UI;
+        private IUIActions m_UIActionsCallbackInterface;
+        private readonly InputAction m_UI_ToggleChatDown;
+        private readonly InputAction m_UI_ToggleInternalClothingDown;
+        private readonly InputAction m_UI_FocusChatDown;
+        public struct UIActions
         {
-            private @Inputs m_Wrapper;
-            public UiActions(@Inputs wrapper) { m_Wrapper = wrapper; }
-            public InputAction @toggleChatDown => m_Wrapper.m_ui_toggleChatDown;
-            public InputAction @toggleInternalClothingDown => m_Wrapper.m_ui_toggleInternalClothingDown;
-            public InputAction @focusChatDown => m_Wrapper.m_ui_focusChatDown;
-            public InputActionMap Get() { return m_Wrapper.m_ui; }
+            private @InputActions m_Wrapper;
+            public UIActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+            public InputAction @ToggleChatDown => m_Wrapper.m_UI_ToggleChatDown;
+            public InputAction @ToggleInternalClothingDown => m_Wrapper.m_UI_ToggleInternalClothingDown;
+            public InputAction @FocusChatDown => m_Wrapper.m_UI_FocusChatDown;
+            public InputActionMap Get() { return m_Wrapper.m_UI; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
             public bool enabled => Get().enabled;
-            public static implicit operator InputActionMap(UiActions set) { return set.Get(); }
-            public void SetCallbacks(IUiActions instance)
+            public static implicit operator InputActionMap(UIActions set) { return set.Get(); }
+            public void SetCallbacks(IUIActions instance)
             {
-                if (m_Wrapper.m_UiActionsCallbackInterface != null)
+                if (m_Wrapper.m_UIActionsCallbackInterface != null)
                 {
-                    @toggleChatDown.started -= m_Wrapper.m_UiActionsCallbackInterface.OnToggleChatDown;
-                    @toggleChatDown.performed -= m_Wrapper.m_UiActionsCallbackInterface.OnToggleChatDown;
-                    @toggleChatDown.canceled -= m_Wrapper.m_UiActionsCallbackInterface.OnToggleChatDown;
-                    @toggleInternalClothingDown.started -= m_Wrapper.m_UiActionsCallbackInterface.OnToggleInternalClothingDown;
-                    @toggleInternalClothingDown.performed -= m_Wrapper.m_UiActionsCallbackInterface.OnToggleInternalClothingDown;
-                    @toggleInternalClothingDown.canceled -= m_Wrapper.m_UiActionsCallbackInterface.OnToggleInternalClothingDown;
-                    @focusChatDown.started -= m_Wrapper.m_UiActionsCallbackInterface.OnFocusChatDown;
-                    @focusChatDown.performed -= m_Wrapper.m_UiActionsCallbackInterface.OnFocusChatDown;
-                    @focusChatDown.canceled -= m_Wrapper.m_UiActionsCallbackInterface.OnFocusChatDown;
+                    @ToggleChatDown.started -= m_Wrapper.m_UIActionsCallbackInterface.OnToggleChatDown;
+                    @ToggleChatDown.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnToggleChatDown;
+                    @ToggleChatDown.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnToggleChatDown;
+                    @ToggleInternalClothingDown.started -= m_Wrapper.m_UIActionsCallbackInterface.OnToggleInternalClothingDown;
+                    @ToggleInternalClothingDown.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnToggleInternalClothingDown;
+                    @ToggleInternalClothingDown.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnToggleInternalClothingDown;
+                    @FocusChatDown.started -= m_Wrapper.m_UIActionsCallbackInterface.OnFocusChatDown;
+                    @FocusChatDown.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnFocusChatDown;
+                    @FocusChatDown.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnFocusChatDown;
                 }
-                m_Wrapper.m_UiActionsCallbackInterface = instance;
+                m_Wrapper.m_UIActionsCallbackInterface = instance;
                 if (instance != null)
                 {
-                    @toggleChatDown.started += instance.OnToggleChatDown;
-                    @toggleChatDown.performed += instance.OnToggleChatDown;
-                    @toggleChatDown.canceled += instance.OnToggleChatDown;
-                    @toggleInternalClothingDown.started += instance.OnToggleInternalClothingDown;
-                    @toggleInternalClothingDown.performed += instance.OnToggleInternalClothingDown;
-                    @toggleInternalClothingDown.canceled += instance.OnToggleInternalClothingDown;
-                    @focusChatDown.started += instance.OnFocusChatDown;
-                    @focusChatDown.performed += instance.OnFocusChatDown;
-                    @focusChatDown.canceled += instance.OnFocusChatDown;
+                    @ToggleChatDown.started += instance.OnToggleChatDown;
+                    @ToggleChatDown.performed += instance.OnToggleChatDown;
+                    @ToggleChatDown.canceled += instance.OnToggleChatDown;
+                    @ToggleInternalClothingDown.started += instance.OnToggleInternalClothingDown;
+                    @ToggleInternalClothingDown.performed += instance.OnToggleInternalClothingDown;
+                    @ToggleInternalClothingDown.canceled += instance.OnToggleInternalClothingDown;
+                    @FocusChatDown.started += instance.OnFocusChatDown;
+                    @FocusChatDown.performed += instance.OnFocusChatDown;
+                    @FocusChatDown.canceled += instance.OnFocusChatDown;
                 }
             }
         }
-        public UiActions @ui => new UiActions(this);
+        public UIActions @UI => new UIActions(this);
 
-        // pointer
-        private readonly InputActionMap m_pointer;
+        // Pointer
+        private readonly InputActionMap m_Pointer;
         private IPointerActions m_PointerActionsCallbackInterface;
-        private readonly InputAction m_pointer_position;
-        private readonly InputAction m_pointer_secondaryActionDown;
-        private readonly InputAction m_pointer_primaryActionDown;
-        private readonly InputAction m_pointer_primaryActionHeld;
-        private readonly InputAction m_pointer_secondaryActionHeld;
+        private readonly InputAction m_Pointer_Position;
+        private readonly InputAction m_Pointer_SecondaryActionDown;
+        private readonly InputAction m_Pointer_PrimaryActionDown;
+        private readonly InputAction m_Pointer_PrimaryActionHeld;
+        private readonly InputAction m_Pointer_SecondaryActionHeld;
         public struct PointerActions
         {
-            private @Inputs m_Wrapper;
-            public PointerActions(@Inputs wrapper) { m_Wrapper = wrapper; }
-            public InputAction @position => m_Wrapper.m_pointer_position;
-            public InputAction @secondaryActionDown => m_Wrapper.m_pointer_secondaryActionDown;
-            public InputAction @primaryActionDown => m_Wrapper.m_pointer_primaryActionDown;
-            public InputAction @primaryActionHeld => m_Wrapper.m_pointer_primaryActionHeld;
-            public InputAction @secondaryActionHeld => m_Wrapper.m_pointer_secondaryActionHeld;
-            public InputActionMap Get() { return m_Wrapper.m_pointer; }
+            private @InputActions m_Wrapper;
+            public PointerActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Position => m_Wrapper.m_Pointer_Position;
+            public InputAction @SecondaryActionDown => m_Wrapper.m_Pointer_SecondaryActionDown;
+            public InputAction @PrimaryActionDown => m_Wrapper.m_Pointer_PrimaryActionDown;
+            public InputAction @PrimaryActionHeld => m_Wrapper.m_Pointer_PrimaryActionHeld;
+            public InputAction @SecondaryActionHeld => m_Wrapper.m_Pointer_SecondaryActionHeld;
+            public InputActionMap Get() { return m_Wrapper.m_Pointer; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
             public bool enabled => Get().enabled;
@@ -477,63 +477,63 @@ namespace SS3D.Engine.Input
             {
                 if (m_Wrapper.m_PointerActionsCallbackInterface != null)
                 {
-                    @position.started -= m_Wrapper.m_PointerActionsCallbackInterface.OnPosition;
-                    @position.performed -= m_Wrapper.m_PointerActionsCallbackInterface.OnPosition;
-                    @position.canceled -= m_Wrapper.m_PointerActionsCallbackInterface.OnPosition;
-                    @secondaryActionDown.started -= m_Wrapper.m_PointerActionsCallbackInterface.OnSecondaryActionDown;
-                    @secondaryActionDown.performed -= m_Wrapper.m_PointerActionsCallbackInterface.OnSecondaryActionDown;
-                    @secondaryActionDown.canceled -= m_Wrapper.m_PointerActionsCallbackInterface.OnSecondaryActionDown;
-                    @primaryActionDown.started -= m_Wrapper.m_PointerActionsCallbackInterface.OnPrimaryActionDown;
-                    @primaryActionDown.performed -= m_Wrapper.m_PointerActionsCallbackInterface.OnPrimaryActionDown;
-                    @primaryActionDown.canceled -= m_Wrapper.m_PointerActionsCallbackInterface.OnPrimaryActionDown;
-                    @primaryActionHeld.started -= m_Wrapper.m_PointerActionsCallbackInterface.OnPrimaryActionHeld;
-                    @primaryActionHeld.performed -= m_Wrapper.m_PointerActionsCallbackInterface.OnPrimaryActionHeld;
-                    @primaryActionHeld.canceled -= m_Wrapper.m_PointerActionsCallbackInterface.OnPrimaryActionHeld;
-                    @secondaryActionHeld.started -= m_Wrapper.m_PointerActionsCallbackInterface.OnSecondaryActionHeld;
-                    @secondaryActionHeld.performed -= m_Wrapper.m_PointerActionsCallbackInterface.OnSecondaryActionHeld;
-                    @secondaryActionHeld.canceled -= m_Wrapper.m_PointerActionsCallbackInterface.OnSecondaryActionHeld;
+                    @Position.started -= m_Wrapper.m_PointerActionsCallbackInterface.OnPosition;
+                    @Position.performed -= m_Wrapper.m_PointerActionsCallbackInterface.OnPosition;
+                    @Position.canceled -= m_Wrapper.m_PointerActionsCallbackInterface.OnPosition;
+                    @SecondaryActionDown.started -= m_Wrapper.m_PointerActionsCallbackInterface.OnSecondaryActionDown;
+                    @SecondaryActionDown.performed -= m_Wrapper.m_PointerActionsCallbackInterface.OnSecondaryActionDown;
+                    @SecondaryActionDown.canceled -= m_Wrapper.m_PointerActionsCallbackInterface.OnSecondaryActionDown;
+                    @PrimaryActionDown.started -= m_Wrapper.m_PointerActionsCallbackInterface.OnPrimaryActionDown;
+                    @PrimaryActionDown.performed -= m_Wrapper.m_PointerActionsCallbackInterface.OnPrimaryActionDown;
+                    @PrimaryActionDown.canceled -= m_Wrapper.m_PointerActionsCallbackInterface.OnPrimaryActionDown;
+                    @PrimaryActionHeld.started -= m_Wrapper.m_PointerActionsCallbackInterface.OnPrimaryActionHeld;
+                    @PrimaryActionHeld.performed -= m_Wrapper.m_PointerActionsCallbackInterface.OnPrimaryActionHeld;
+                    @PrimaryActionHeld.canceled -= m_Wrapper.m_PointerActionsCallbackInterface.OnPrimaryActionHeld;
+                    @SecondaryActionHeld.started -= m_Wrapper.m_PointerActionsCallbackInterface.OnSecondaryActionHeld;
+                    @SecondaryActionHeld.performed -= m_Wrapper.m_PointerActionsCallbackInterface.OnSecondaryActionHeld;
+                    @SecondaryActionHeld.canceled -= m_Wrapper.m_PointerActionsCallbackInterface.OnSecondaryActionHeld;
                 }
                 m_Wrapper.m_PointerActionsCallbackInterface = instance;
                 if (instance != null)
                 {
-                    @position.started += instance.OnPosition;
-                    @position.performed += instance.OnPosition;
-                    @position.canceled += instance.OnPosition;
-                    @secondaryActionDown.started += instance.OnSecondaryActionDown;
-                    @secondaryActionDown.performed += instance.OnSecondaryActionDown;
-                    @secondaryActionDown.canceled += instance.OnSecondaryActionDown;
-                    @primaryActionDown.started += instance.OnPrimaryActionDown;
-                    @primaryActionDown.performed += instance.OnPrimaryActionDown;
-                    @primaryActionDown.canceled += instance.OnPrimaryActionDown;
-                    @primaryActionHeld.started += instance.OnPrimaryActionHeld;
-                    @primaryActionHeld.performed += instance.OnPrimaryActionHeld;
-                    @primaryActionHeld.canceled += instance.OnPrimaryActionHeld;
-                    @secondaryActionHeld.started += instance.OnSecondaryActionHeld;
-                    @secondaryActionHeld.performed += instance.OnSecondaryActionHeld;
-                    @secondaryActionHeld.canceled += instance.OnSecondaryActionHeld;
+                    @Position.started += instance.OnPosition;
+                    @Position.performed += instance.OnPosition;
+                    @Position.canceled += instance.OnPosition;
+                    @SecondaryActionDown.started += instance.OnSecondaryActionDown;
+                    @SecondaryActionDown.performed += instance.OnSecondaryActionDown;
+                    @SecondaryActionDown.canceled += instance.OnSecondaryActionDown;
+                    @PrimaryActionDown.started += instance.OnPrimaryActionDown;
+                    @PrimaryActionDown.performed += instance.OnPrimaryActionDown;
+                    @PrimaryActionDown.canceled += instance.OnPrimaryActionDown;
+                    @PrimaryActionHeld.started += instance.OnPrimaryActionHeld;
+                    @PrimaryActionHeld.performed += instance.OnPrimaryActionHeld;
+                    @PrimaryActionHeld.canceled += instance.OnPrimaryActionHeld;
+                    @SecondaryActionHeld.started += instance.OnSecondaryActionHeld;
+                    @SecondaryActionHeld.performed += instance.OnSecondaryActionHeld;
+                    @SecondaryActionHeld.canceled += instance.OnSecondaryActionHeld;
                 }
             }
         }
-        public PointerActions @pointer => new PointerActions(this);
+        public PointerActions @Pointer => new PointerActions(this);
 
-        // player
-        private readonly InputActionMap m_player;
+        // Player
+        private readonly InputActionMap m_Player;
         private IPlayerActions m_PlayerActionsCallbackInterface;
-        private readonly InputAction m_player_examineHold;
-        private readonly InputAction m_player_combatModeDown;
-        private readonly InputAction m_player_swapHandDown;
-        private readonly InputAction m_player_dropItemDown;
-        private readonly InputAction m_player_activateDown;
+        private readonly InputAction m_Player_ExamineHeld;
+        private readonly InputAction m_Player_CombatModeDown;
+        private readonly InputAction m_Player_SwapHandDown;
+        private readonly InputAction m_Player_DropItemDown;
+        private readonly InputAction m_Player_ActivateDown;
         public struct PlayerActions
         {
-            private @Inputs m_Wrapper;
-            public PlayerActions(@Inputs wrapper) { m_Wrapper = wrapper; }
-            public InputAction @examineHold => m_Wrapper.m_player_examineHold;
-            public InputAction @combatModeDown => m_Wrapper.m_player_combatModeDown;
-            public InputAction @swapHandDown => m_Wrapper.m_player_swapHandDown;
-            public InputAction @dropItemDown => m_Wrapper.m_player_dropItemDown;
-            public InputAction @activateDown => m_Wrapper.m_player_activateDown;
-            public InputActionMap Get() { return m_Wrapper.m_player; }
+            private @InputActions m_Wrapper;
+            public PlayerActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+            public InputAction @ExamineHeld => m_Wrapper.m_Player_ExamineHeld;
+            public InputAction @CombatModeDown => m_Wrapper.m_Player_CombatModeDown;
+            public InputAction @SwapHandDown => m_Wrapper.m_Player_SwapHandDown;
+            public InputAction @DropItemDown => m_Wrapper.m_Player_DropItemDown;
+            public InputAction @ActivateDown => m_Wrapper.m_Player_ActivateDown;
+            public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
             public bool enabled => Get().enabled;
@@ -542,55 +542,55 @@ namespace SS3D.Engine.Input
             {
                 if (m_Wrapper.m_PlayerActionsCallbackInterface != null)
                 {
-                    @examineHold.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnExamineHold;
-                    @examineHold.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnExamineHold;
-                    @examineHold.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnExamineHold;
-                    @combatModeDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCombatModeDown;
-                    @combatModeDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCombatModeDown;
-                    @combatModeDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCombatModeDown;
-                    @swapHandDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwapHandDown;
-                    @swapHandDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwapHandDown;
-                    @swapHandDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwapHandDown;
-                    @dropItemDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDropItemDown;
-                    @dropItemDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDropItemDown;
-                    @dropItemDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDropItemDown;
-                    @activateDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivateDown;
-                    @activateDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivateDown;
-                    @activateDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivateDown;
+                    @ExamineHeld.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnExamineHeld;
+                    @ExamineHeld.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnExamineHeld;
+                    @ExamineHeld.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnExamineHeld;
+                    @CombatModeDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCombatModeDown;
+                    @CombatModeDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCombatModeDown;
+                    @CombatModeDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCombatModeDown;
+                    @SwapHandDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwapHandDown;
+                    @SwapHandDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwapHandDown;
+                    @SwapHandDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwapHandDown;
+                    @DropItemDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDropItemDown;
+                    @DropItemDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDropItemDown;
+                    @DropItemDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDropItemDown;
+                    @ActivateDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivateDown;
+                    @ActivateDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivateDown;
+                    @ActivateDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivateDown;
                 }
                 m_Wrapper.m_PlayerActionsCallbackInterface = instance;
                 if (instance != null)
                 {
-                    @examineHold.started += instance.OnExamineHold;
-                    @examineHold.performed += instance.OnExamineHold;
-                    @examineHold.canceled += instance.OnExamineHold;
-                    @combatModeDown.started += instance.OnCombatModeDown;
-                    @combatModeDown.performed += instance.OnCombatModeDown;
-                    @combatModeDown.canceled += instance.OnCombatModeDown;
-                    @swapHandDown.started += instance.OnSwapHandDown;
-                    @swapHandDown.performed += instance.OnSwapHandDown;
-                    @swapHandDown.canceled += instance.OnSwapHandDown;
-                    @dropItemDown.started += instance.OnDropItemDown;
-                    @dropItemDown.performed += instance.OnDropItemDown;
-                    @dropItemDown.canceled += instance.OnDropItemDown;
-                    @activateDown.started += instance.OnActivateDown;
-                    @activateDown.performed += instance.OnActivateDown;
-                    @activateDown.canceled += instance.OnActivateDown;
+                    @ExamineHeld.started += instance.OnExamineHeld;
+                    @ExamineHeld.performed += instance.OnExamineHeld;
+                    @ExamineHeld.canceled += instance.OnExamineHeld;
+                    @CombatModeDown.started += instance.OnCombatModeDown;
+                    @CombatModeDown.performed += instance.OnCombatModeDown;
+                    @CombatModeDown.canceled += instance.OnCombatModeDown;
+                    @SwapHandDown.started += instance.OnSwapHandDown;
+                    @SwapHandDown.performed += instance.OnSwapHandDown;
+                    @SwapHandDown.canceled += instance.OnSwapHandDown;
+                    @DropItemDown.started += instance.OnDropItemDown;
+                    @DropItemDown.performed += instance.OnDropItemDown;
+                    @DropItemDown.canceled += instance.OnDropItemDown;
+                    @ActivateDown.started += instance.OnActivateDown;
+                    @ActivateDown.performed += instance.OnActivateDown;
+                    @ActivateDown.canceled += instance.OnActivateDown;
                 }
             }
         }
-        public PlayerActions @player => new PlayerActions(this);
+        public PlayerActions @Player => new PlayerActions(this);
 
-        // misc
-        private readonly InputActionMap m_misc;
+        // Misc
+        private readonly InputActionMap m_Misc;
         private IMiscActions m_MiscActionsCallbackInterface;
-        private readonly InputAction m_misc_leftAlternateHeld;
+        private readonly InputAction m_Misc_LeftAlternateHeld;
         public struct MiscActions
         {
-            private @Inputs m_Wrapper;
-            public MiscActions(@Inputs wrapper) { m_Wrapper = wrapper; }
-            public InputAction @leftAlternateHeld => m_Wrapper.m_misc_leftAlternateHeld;
-            public InputActionMap Get() { return m_Wrapper.m_misc; }
+            private @InputActions m_Wrapper;
+            public MiscActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+            public InputAction @LeftAlternateHeld => m_Wrapper.m_Misc_LeftAlternateHeld;
+            public InputActionMap Get() { return m_Wrapper.m_Misc; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
             public bool enabled => Get().enabled;
@@ -599,20 +599,20 @@ namespace SS3D.Engine.Input
             {
                 if (m_Wrapper.m_MiscActionsCallbackInterface != null)
                 {
-                    @leftAlternateHeld.started -= m_Wrapper.m_MiscActionsCallbackInterface.OnLeftAlternateHeld;
-                    @leftAlternateHeld.performed -= m_Wrapper.m_MiscActionsCallbackInterface.OnLeftAlternateHeld;
-                    @leftAlternateHeld.canceled -= m_Wrapper.m_MiscActionsCallbackInterface.OnLeftAlternateHeld;
+                    @LeftAlternateHeld.started -= m_Wrapper.m_MiscActionsCallbackInterface.OnLeftAlternateHeld;
+                    @LeftAlternateHeld.performed -= m_Wrapper.m_MiscActionsCallbackInterface.OnLeftAlternateHeld;
+                    @LeftAlternateHeld.canceled -= m_Wrapper.m_MiscActionsCallbackInterface.OnLeftAlternateHeld;
                 }
                 m_Wrapper.m_MiscActionsCallbackInterface = instance;
                 if (instance != null)
                 {
-                    @leftAlternateHeld.started += instance.OnLeftAlternateHeld;
-                    @leftAlternateHeld.performed += instance.OnLeftAlternateHeld;
-                    @leftAlternateHeld.canceled += instance.OnLeftAlternateHeld;
+                    @LeftAlternateHeld.started += instance.OnLeftAlternateHeld;
+                    @LeftAlternateHeld.performed += instance.OnLeftAlternateHeld;
+                    @LeftAlternateHeld.canceled += instance.OnLeftAlternateHeld;
                 }
             }
         }
-        public MiscActions @misc => new MiscActions(this);
+        public MiscActions @Misc => new MiscActions(this);
         private int m_MouseKeyboardSchemeIndex = -1;
         public InputControlScheme MouseKeyboardScheme
         {
@@ -622,7 +622,7 @@ namespace SS3D.Engine.Input
                 return asset.controlSchemes[m_MouseKeyboardSchemeIndex];
             }
         }
-        public interface IUiActions
+        public interface IUIActions
         {
             void OnToggleChatDown(InputAction.CallbackContext context);
             void OnToggleInternalClothingDown(InputAction.CallbackContext context);
@@ -638,7 +638,7 @@ namespace SS3D.Engine.Input
         }
         public interface IPlayerActions
         {
-            void OnExamineHold(InputAction.CallbackContext context);
+            void OnExamineHeld(InputAction.CallbackContext context);
             void OnCombatModeDown(InputAction.CallbackContext context);
             void OnSwapHandDown(InputAction.CallbackContext context);
             void OnDropItemDown(InputAction.CallbackContext context);

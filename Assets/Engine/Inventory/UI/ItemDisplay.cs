@@ -52,7 +52,7 @@ namespace SS3D.Engine.Inventory.UI
         public void OnPointerDown(PointerEventData eventData)
         {
             startPosition = transform.position;
-            startMousePosition = InputHelper.inputs.pointer.position.ReadValue<Vector2>();
+            startMousePosition = InputHelper.inp.Pointer.Position.ReadValue<Vector2>();
         }
         
         public void OnPointerClick(PointerEventData eventData)
@@ -81,7 +81,7 @@ namespace SS3D.Engine.Inventory.UI
 
         public void OnDrag(PointerEventData eventData)
         {
-            Vector3 diff = InputHelper.inputs.pointer.position.ReadValue<Vector2>() - startMousePosition;
+            Vector3 diff = InputHelper.inp.Pointer.Position.ReadValue<Vector2>() - startMousePosition;
             transform.position = startPosition + diff;
         }
         

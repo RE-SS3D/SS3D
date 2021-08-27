@@ -32,13 +32,13 @@ namespace SS3D.Engine.Health
                 return;
             }
             
-            if (!InputHelper.inputs.player.combatModeDown.ReadValue<bool>())
+            if (!InputHelper.inp.Player.CombatModeDown.triggered)
             {
                 return;
             }
 
             LayerMask layerMask = ~(1 << LayerMask.NameToLayer ("Player"));
-            Ray ray = Camera.main.ScreenPointToRay(InputHelper.inputs.pointer.position.ReadValue<Vector2>());
+            Ray ray = Camera.main.ScreenPointToRay(InputHelper.inp.Pointer.Position.ReadValue<Vector2>());
             RaycastHit hit;
             if(!Physics.Raycast(ray, out hit, 10f, layerMask))
             {
