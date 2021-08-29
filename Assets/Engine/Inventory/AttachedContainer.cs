@@ -17,7 +17,7 @@ namespace SS3D.Engine.Inventory
         /// <summary>
         /// If items should be hidden
         /// </summary>
-        public bool HideItems = true;
+        [SerializeField] private bool hideItems = true;
         /// <summary>
         /// If items should be attached as children
         /// </summary>
@@ -31,13 +31,36 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         public HashSet<Entity> Observers = new HashSet<Entity>();
 
+        public ContainerController.ContainerDescriptor containerDescriptor;
+
+
         private Container container;
 
         public delegate void ObserverHandler(AttachedContainer container, Entity observer);
         
         public event EventHandler<Item> ItemAttached;
         public event EventHandler<Item> ItemDetached;
-        public event ObserverHandler NewObserver; 
+        public event ObserverHandler NewObserver;
+
+        /// <summary>
+        /// Set visibility of objects inside the container.
+        /// If the container is Hidden, the visibility of items is always off.
+        /// </summary>
+        public bool HideItems
+        {
+            get => hideItems;
+            set
+            {
+                if(containerDescriptor.HasContainerType == ContainerType.Hidden)
+                {
+                    hideItems = true;
+                }
+                else
+                {
+                    hideItems = value;
+                }
+            }
+        }
         
         /// <summary>
         /// The container that is attached

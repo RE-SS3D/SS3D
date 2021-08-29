@@ -5,15 +5,11 @@ using Mirror;
 using SS3D.Content.Systems.Interactions;
 using SS3D.Engine.Interactions;
 using UnityEngine;
+using SS3D.Engine.Inventory;
+
 
 namespace SS3D.Content.Furniture.Storage
 {
-    public enum ContainerType
-    {
-        Normal,
-        Pile,
-        Hidden
-    }
 
     public class StorageContainer : InteractionTargetNetworkBehaviour
     {
@@ -22,7 +18,7 @@ namespace SS3D.Content.Furniture.Storage
         /// </summary>
         public ContainerType StorageType = ContainerType.Normal;
 
-        public float MaxDistance = 5f;
+        public AttachedContainer attachedContainer;
 
         [SerializeField] private Sprite viewContainerIcon;
 
@@ -34,7 +30,7 @@ namespace SS3D.Content.Furniture.Storage
             List<IInteraction> interactions = new List<IInteraction>();
             StoreInteraction storeInteraction = new StoreInteraction();
             TakeInteraction takeInteraction = new TakeInteraction();
-            ViewContainerInteraction view = new ViewContainerInteraction {MaxDistance = MaxDistance, icon = viewContainerIcon};
+            ViewContainerInteraction view = new ViewContainerInteraction {MaxDistance = attachedContainer.containerDescriptor.MaxDistance, icon = viewContainerIcon};
 
             switch (StorageType)
             {

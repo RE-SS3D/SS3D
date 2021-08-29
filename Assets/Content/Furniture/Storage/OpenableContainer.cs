@@ -5,6 +5,8 @@ using Mirror;
 using SS3D.Content.Systems.Interactions;
 using SS3D.Engine.Interactions;
 using UnityEngine;
+using SS3D.Engine.Inventory;
+
 
 namespace SS3D.Content.Furniture.Storage
 {
@@ -22,9 +24,16 @@ namespace SS3D.Content.Furniture.Storage
         /// </summary>
         public bool OnlyStoreWhenOpen = false;
 
-        public float MaxDistance = 5f;
-
         [SerializeField] private Sprite viewContainerIcon;
+
+        public AttachedContainer attachedContainer;
+
+        public void SetPile(bool pile)
+        {
+            Pile = pile;
+            if (pile) StorageType = ContainerType.Pile;
+            else StorageType = ContainerType.Normal;
+        }
 
         void OnValidate()
         {
@@ -46,7 +55,7 @@ namespace SS3D.Content.Furniture.Storage
             List<IInteraction> interactions = base.GenerateInteractionsFromTarget(interactionEvent).ToList();
             StoreInteraction storeInteraction = new StoreInteraction();
             TakeInteraction takeInteraction = new TakeInteraction();
-            ViewContainerInteraction view = new ViewContainerInteraction {MaxDistance = MaxDistance, icon = viewContainerIcon};
+            ViewContainerInteraction view = new ViewContainerInteraction {MaxDistance = attachedContainer.containerDescriptor.MaxDistance, icon = viewContainerIcon};
 
         // Implicit or Normal the Store Interaction will always appear, but View only appears in Normal containers
             if (IsOpen() | !OnlyStoreWhenOpen)
