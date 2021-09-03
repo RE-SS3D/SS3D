@@ -13,12 +13,7 @@ namespace SS3D.Content.Furniture.Storage
 
     public class StorageContainer : InteractionTargetNetworkBehaviour
     {
-        /// <summary>
-        /// The type of container, changes weather it has UI or not, or is hidden
-        /// </summary>
-        public ContainerType StorageType = ContainerType.Normal;
-
-        public AttachedContainer attachedContainer;
+        public ContainerDescriptor containerDescriptor;
 
         [SerializeField] private Sprite viewContainerIcon;
 
@@ -30,9 +25,9 @@ namespace SS3D.Content.Furniture.Storage
             List<IInteraction> interactions = new List<IInteraction>();
             StoreInteraction storeInteraction = new StoreInteraction();
             TakeInteraction takeInteraction = new TakeInteraction();
-            ViewContainerInteraction view = new ViewContainerInteraction {MaxDistance = attachedContainer.containerDescriptor.MaxDistance, icon = viewContainerIcon};
+            ViewContainerInteraction view = new ViewContainerInteraction {MaxDistance = containerDescriptor.MaxDistance, icon = viewContainerIcon};
 
-            switch (StorageType)
+            switch (containerDescriptor.ContainerType)
             {
             // Normal Containers don't have a Take Interaction since their UI can be opened
                 case ContainerType.Normal:

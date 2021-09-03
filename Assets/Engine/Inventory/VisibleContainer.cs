@@ -13,10 +13,8 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         public float CheckObserversInterval = 1f;
 
-        /// <summary>
-        /// The container to watch
-        /// </summary>
-        public AttachedContainer AttachedContainer;
+
+        public ContainerDescriptor containerDescriptor;
 
         private float lastObserverCheck;
         private List<Entity> currentObservers;
@@ -30,11 +28,6 @@ namespace SS3D.Engine.Inventory
             }
 
             currentObservers = new List<Entity>();
-            if (AttachedContainer == null)
-            {
-                AttachedContainer = GetComponent<AttachedContainer>();
-                Assert.IsNotNull(AttachedContainer);
-            }
         }
 
         public void Update()
@@ -57,14 +50,14 @@ namespace SS3D.Engine.Inventory
                                 continue;
                             }
 
-                            if (AttachedContainer.AddObserver(creature))
+                            if (containerDescriptor.attachedContainer.AddObserver(creature))
                             {
                                 currentObservers.Add(creature);
                             }
                         }
                         else if (currentObservers.Remove(creature))
                         {
-                            AttachedContainer.RemoveObserver(creature);
+                            containerDescriptor.attachedContainer.RemoveObserver(creature);
                         }
                     }
                 }
