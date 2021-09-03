@@ -9,28 +9,24 @@ namespace SS3D.Engine.Inventory
     /// </summary>
     public class AttachedContainerGenerator : MonoBehaviour
     {
-        public AttachedContainer AttachedContainer;
-        public Vector2Int Size;
-        public Filter StartFilter;
+        public ContainerDescriptor containerDescriptor;
 
-        public void initialize(AttachedContainer AttachedContainer, Vector2Int Size, Filter StartFilter = null)
+        public void initialize(ContainerDescriptor containerDescriptor)
         {
-            this.AttachedContainer = AttachedContainer;
-            this.Size = Size;
-            this.StartFilter = StartFilter;
+            this.containerDescriptor = containerDescriptor;
         }
 
         public void Start()
         {
-            Assert.IsNotNull(AttachedContainer);
+            Assert.IsNotNull(containerDescriptor.attachedContainer);
             
-            AttachedContainer.Container = new Container
+            containerDescriptor.attachedContainer.Container = new Container
             {
-                Size = Size
+                Size = containerDescriptor.Size
             };
 
-            if (StartFilter != null)
-                AttachedContainer.Container.Filters.Add(StartFilter);
+            if (containerDescriptor.StartFilter != null)
+                containerDescriptor.attachedContainer.Container.Filters.Add(containerDescriptor.StartFilter);
         }
     }
 }

@@ -15,14 +15,6 @@ namespace SS3D.Engine.Inventory
     public class AttachedContainer : MonoBehaviour
     {
         /// <summary>
-        /// If items should be hidden
-        /// </summary>
-        [SerializeField] private bool hideItems = true;
-        /// <summary>
-        /// If items should be attached as children
-        /// </summary>
-        public bool AttachItems = true;
-        /// <summary>
         /// The local position of attached items
         /// </summary>
         public Vector3 AttachmentOffset = Vector3.zero;
@@ -31,7 +23,7 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         public HashSet<Entity> Observers = new HashSet<Entity>();
 
-        public ContainerController.ContainerDescriptor containerDescriptor;
+        public ContainerDescriptor containerDescriptor;
 
 
         private Container container;
@@ -41,26 +33,6 @@ namespace SS3D.Engine.Inventory
         public event EventHandler<Item> ItemAttached;
         public event EventHandler<Item> ItemDetached;
         public event ObserverHandler NewObserver;
-
-        /// <summary>
-        /// Set visibility of objects inside the container.
-        /// If the container is Hidden, the visibility of items is always off.
-        /// </summary>
-        public bool HideItems
-        {
-            get => hideItems;
-            set
-            {
-                if(containerDescriptor.HasContainerType == ContainerType.Hidden)
-                {
-                    hideItems = true;
-                }
-                else
-                {
-                    hideItems = value;
-                }
-            }
-        }
         
         /// <summary>
         /// The container that is attached
@@ -192,13 +164,13 @@ namespace SS3D.Engine.Inventory
                     {
                         item.Freeze();
                         // Make invisible
-                        if (HideItems)
+                        if (containerDescriptor.HideItems)
                         {
                             item.SetVisibility(false);
                         }
 
                         // Attach to container
-                        if (AttachItems)
+                        if (containerDescriptor.AttachItems)
                         {
                             Transform itemTransform = item.transform;
                             itemTransform.SetParent(transform, false);
@@ -215,7 +187,7 @@ namespace SS3D.Engine.Inventory
                     {
                         item.Unfreeze();
                         // Restore visibility
-                        if (HideItems)
+                        if (containerDescriptor.HideItems)
                         {
                             item.SetVisibility(true);
                         }
