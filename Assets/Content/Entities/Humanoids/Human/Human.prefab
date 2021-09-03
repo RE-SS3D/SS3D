@@ -2169,7 +2169,7 @@ MonoBehaviour:
   containerName: container
   onlyStoreWhenOpen: 0
   size: {x: 0, y: 0}
-  hideItems: 1
+  hideItems: 0
   attachItems: 1
   startFilter: {fileID: 0}
   initialized: 1
@@ -4117,7 +4117,7 @@ MonoBehaviour:
   containerName: container
   onlyStoreWhenOpen: 0
   size: {x: 0, y: 0}
-  hideItems: 1
+  hideItems: 0
   attachItems: 1
   startFilter: {fileID: 11400000, guid: edc61d09fc1a5a84e98f63e51d1a0f1b, type: 2}
   initialized: 1
