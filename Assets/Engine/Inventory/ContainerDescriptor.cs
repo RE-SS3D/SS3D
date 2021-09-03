@@ -208,7 +208,6 @@ namespace SS3D.Engine.Inventory
                 else if (!value && openableContainer != null)
                 {
                     RemoveOpenable();
-                    AddStorage();
                 }
             }
         }
@@ -224,7 +223,6 @@ namespace SS3D.Engine.Inventory
                 }
                 else if (!value && storageContainer != null)
                 {
-                    AddOpenable();
                     RemoveStorage();
                 }
             }

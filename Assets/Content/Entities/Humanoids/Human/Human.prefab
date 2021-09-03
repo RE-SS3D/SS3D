@@ -4030,11 +4030,12 @@ GameObject:
   m_Component:
   - component: {fileID: 8200820077652235051}
   - component: {fileID: 5640873502109975346}
-  - component: {fileID: 7216539243608207255}
   - component: {fileID: 8869297597610662472}
   - component: {fileID: 3547939921811356850}
   - component: {fileID: 3447648068970816323}
   - component: {fileID: 7784611669467452136}
+  - component: {fileID: 5807624756267220038}
+  - component: {fileID: 7276617234702586979}
   m_Layer: 15
   m_Name: hand_l
   m_TagString: Untagged
@@ -4080,22 +4081,6 @@ MonoBehaviour:
   bodyPartStatuses: 0
   skinnedMeshRenderer: {fileID: 1002436508960242065}
   body: {fileID: 0}
---- !u!114 &7216539243608207255
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6793449098192051331}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Displays:
-  - {fileID: 2248284492931446982}
-  Container: {fileID: 3547939921811356850}
-  Mirrored: 1
 --- !u!114 &8869297597610662472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4167,6 +4152,41 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CheckObserversInterval: 1
   containerDescriptor: {fileID: 8869297597610662472}
+--- !u!95 &5807624756267220038
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6793449098192051331}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &7276617234702586979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6793449098192051331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Displays:
+  - {fileID: 8200820077652235051}
+  Container: {fileID: 3547939921811356850}
+  Mirrored: 0
 --- !u!1 &7165410278998248383
 GameObject:
   m_ObjectHideFlags: 0
