@@ -671,7 +671,7 @@ MonoBehaviour:
   openableContainer: {fileID: 301856449332253038}
   storageContainer: {fileID: 0}
   visibleContainer: {fileID: 1969435442833513626}
-  containerName: container up
+  containerName: side locker
   onlyStoreWhenOpen: 1
   size: {x: 3, y: 3}
   hideItems: 1

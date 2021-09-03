@@ -15,7 +15,7 @@ namespace SS3D.Content.Furniture
         [SyncVar(hook = nameof(OpenHook))]
         private bool openState;
 
-        [SerializeField] private Sprite OpenIcon;
+        [SerializeField] protected Sprite OpenIcon;
 
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {

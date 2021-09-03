@@ -13,7 +13,6 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         public float CheckObserversInterval = 1f;
 
-
         public ContainerDescriptor containerDescriptor;
 
         private float lastObserverCheck;
