@@ -124,10 +124,10 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
         {
             List<IInteraction> interactions = new List<IInteraction>();
             
-            StoreInteraction storeInteraction = new StoreInteraction();
+            StoreInteraction storeInteraction = new StoreInteraction(container.AttachedTo.containerDescriptor);
 
 	    // Sets the interaction range
-            ViewContainerInteraction view = new ViewContainerInteraction { MaxDistance = range };
+            ViewContainerInteraction view = new ViewContainerInteraction(container.AttachedTo.containerDescriptor){ MaxDistance = range };
             DisposeInteraction disposeInteraction = new DisposeInteraction();
 
 	    // if we arent purging something already, we create the interactions

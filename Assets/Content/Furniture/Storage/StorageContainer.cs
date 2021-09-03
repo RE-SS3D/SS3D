@@ -23,9 +23,9 @@ namespace SS3D.Content.Furniture.Storage
 	    // so we don't need to worry about that here, unless we can store stuff without needing it to open
 
             List<IInteraction> interactions = new List<IInteraction>();
-            StoreInteraction storeInteraction = new StoreInteraction();
-            TakeInteraction takeInteraction = new TakeInteraction();
-            ViewContainerInteraction view = new ViewContainerInteraction {MaxDistance = containerDescriptor.MaxDistance, icon = viewContainerIcon};
+            StoreInteraction storeInteraction = new StoreInteraction(containerDescriptor);
+            TakeInteraction takeInteraction = new TakeInteraction(containerDescriptor);
+            ViewContainerInteraction view = new ViewContainerInteraction(containerDescriptor) {MaxDistance = containerDescriptor.MaxDistance, icon = viewContainerIcon};
 
             switch (containerDescriptor.ContainerType)
             {

@@ -1,6 +1,8 @@
 ﻿using System;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Interactions.Extensions;
+using SS3D.Engine.Inventory;
+using SS3D.Content.Furniture.Storage;
 using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
@@ -11,7 +13,16 @@ namespace SS3D.Content.Systems.Interactions
         public Sprite icon;
 
         public event EventHandler<bool> OpenStateChange;
-        private static readonly int OpenId = Animator.StringToHash("Open");
+        protected static readonly int OpenId = Animator.StringToHash("Open");
+
+        private ContainerDescriptor containerDescriptor;
+
+        public OpenInteraction() { }
+
+        public OpenInteraction(ContainerDescriptor containerDescriptor)
+        {
+            this.containerDescriptor = containerDescriptor;
+        }
 
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
@@ -20,7 +31,13 @@ namespace SS3D.Content.Systems.Interactions
 
         public string GetName(InteractionEvent interactionEvent)
         {
-            return ((IGameObjectProvider)interactionEvent.Target).GameObject.GetComponent<Animator>().GetBool(OpenId) ? "Close" : "Open";
+            if(containerDescriptor != null)
+            {
+                string name = containerDescriptor.ContainerName;
+                return ((IGameObjectProvider)interactionEvent.Target).GameObject.GetComponent<Animator>().GetBool(OpenId) ? "Close " + name : "Open " + name;
+            }
+
+            return ((IGameObjectProvider)interactionEvent.Target).GameObject.GetComponent<Animator>().GetBool(OpenId) ? "Close" : "Open";        
         }
 
         public Sprite GetIcon(InteractionEvent interactionEvent)

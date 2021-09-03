@@ -12,6 +12,12 @@ namespace SS3D.Content.Systems.Interactions
     public class TakeInteraction : IInteraction
     {
         public Sprite icon;
+        private ContainerDescriptor containerDescriptor;
+
+        public TakeInteraction(ContainerDescriptor containerDescriptor)
+        {
+            this.containerDescriptor = containerDescriptor;
+        }
 
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
@@ -20,7 +26,7 @@ namespace SS3D.Content.Systems.Interactions
 
         public virtual string GetName(InteractionEvent interactionEvent)
         {
-            return "Take";
+            return "Take in " + containerDescriptor.ContainerName;
         }
 
         public virtual Sprite GetIcon(InteractionEvent interactionEvent)

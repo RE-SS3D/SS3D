@@ -17,26 +17,31 @@ namespace SS3D.Content.Furniture.Storage
 
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
-	    // The "open" state is changed via the object interaction
-	    // so we don't need to worry about that here, unless we can store stuff without needing it to open
+            // The "open" state is changed via the object interaction
+            // so we don't need to worry about that here, unless we can store stuff without needing it to open
 
-            List<IInteraction> interactions = base.GenerateInteractionsFromTarget(interactionEvent).ToList();
-            StoreInteraction storeInteraction = new StoreInteraction();
-            TakeInteraction takeInteraction = new TakeInteraction();
-            ViewContainerInteraction view = new ViewContainerInteraction {MaxDistance = containerDescriptor.MaxDistance, icon = viewContainerIcon};
+            List<IInteraction> interactions = new List<IInteraction>();
+            OpenInteraction openInteraction = new OpenInteraction(containerDescriptor);
+            openInteraction.icon = OpenIcon;
+            openInteraction.OpenStateChange += OnOpenStateChange;
+            StoreInteraction storeInteraction = new StoreInteraction(containerDescriptor);
+            TakeInteraction takeInteraction = new TakeInteraction(containerDescriptor);
+            ViewContainerInteraction view = new ViewContainerInteraction(containerDescriptor){MaxDistance = containerDescriptor.MaxDistance, icon = viewContainerIcon};
 
-        // Implicit or Normal the Store Interaction will always appear, but View only appears in Normal containers
+            interactions.Insert(0, openInteraction);
+
+            // Implicit or Normal the Store Interaction will always appear, but View only appears in Normal containers
             if (IsOpen() | !containerDescriptor.OnlyStoreWhenOpen)
             {
                 switch (containerDescriptor.ContainerType)
                 {
                     case ContainerType.Normal:
-                        interactions.Insert(0, storeInteraction);
-                        interactions.Insert(1, view);
+                        interactions.Insert(1, storeInteraction);
+                        interactions.Insert(2, view);
                         break;
                     case ContainerType.Pile:
-                        interactions.Insert(0, storeInteraction);
-                        interactions.Insert(1, takeInteraction);
+                        interactions.Insert(1, storeInteraction);
+                        interactions.Insert(2, takeInteraction);
                         break;
                 }
             }
