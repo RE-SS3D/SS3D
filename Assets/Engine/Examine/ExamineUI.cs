@@ -40,7 +40,7 @@ namespace SS3D.Engine.Examine
 				}
 				
 				// Disable UI if user not holding down Examine button.
-				if (!InputHelper.inp.UI.Examine.triggered)
+				if (!InputHelper.inp.UI.Examine.IsPressed())
 				{
 					ClearData(true);
 				}
@@ -62,7 +62,7 @@ namespace SS3D.Engine.Examine
 			if (data.Length == 0){return;}
 
 			// We only want the Hover Name to work when another UI is not displayed.
-			if (!InputHelper.inp.UI.Examine.triggered)
+			if (!InputHelper.inp.UI.Examine.IsPressed())
 			{
 				UpdateHoverName(data[0].GetName());
 				//ClearData(true);
