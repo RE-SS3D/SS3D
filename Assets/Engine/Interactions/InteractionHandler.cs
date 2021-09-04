@@ -39,7 +39,7 @@ namespace SS3D.Engine.Interactions
                 return;
             }
 
-            if (InputHelper.inp.Pointer.PrimaryActionDown.triggered)
+            if (InputHelper.inp.Pointer.PrimaryAction.triggered)
             {
                 if (activeMenu != null)
                 {
@@ -58,14 +58,14 @@ namespace SS3D.Engine.Interactions
                 }
 
             }
-            else if (InputHelper.inp.Pointer.PrimaryActionDown.triggered)
+            else if (InputHelper.inp.Pointer.PrimaryAction.triggered)
             {
                 if (activeMenu != null)
                 {
                     Destroy(activeMenu.gameObject);
                 }
 
-                if (InputHelper.inp.Misc.LeftAlternateHeld.triggered)
+                if (InputHelper.inp.Misc.LeftAlternate.triggered)
                 {
                     Hands hands = GetComponent<Hands>();
                     if (hands != null )
@@ -99,7 +99,7 @@ namespace SS3D.Engine.Interactions
                 }
             }
 
-            if (InputHelper.inp.Player.ActivateDown.triggered)
+            if (InputHelper.inp.Player.Activate.triggered)
             {
                 // Activate item in selected hand
                 Hands hands = GetComponent<Hands>();

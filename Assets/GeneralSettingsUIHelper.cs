@@ -74,13 +74,11 @@ public class GeneralSettingsUIHelper : MonoBehaviour
         // subscribe to the event, so we update the buttons when that event is invoked
         GeneralSettingsManager.OnGraphicsChanged += UpdateButtonsState;
 
-        Debug.Log(InputHelper.inp.Misc.LeftAlternateHeld.interactions);
-
         // add keybinding UI
         foreach (PropertyInfo field in InputHelper.inp.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
         {
             // Filters out non-existing categories. These string names should be safe to hardcode
-            if (field.PropertyType == typeof(InputControlScheme) || new List<string> { "asset", "bindingMask", "devices", "controlSchemes" }.Contains(field.Name))
+            if (field.PropertyType == typeof(InputControlScheme) || field.PropertyType == typeof(InputBinding) || new List<string> { "asset", "bindingMask", "devices", "controlSchemes" }.Contains(field.Name))
                 continue;
             string category = field.Name;
             category = category[0].ToString().ToUpper() + category.Substring(1);

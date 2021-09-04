@@ -25,11 +25,13 @@ public class BindingButtonHelper : MonoBehaviour
         inputActionToBind.Disable();
         rebinding = inputActionToBind.PerformInteractiveRebinding()
             .OnMatchWaitForAnother(0.1f)
-            .OnComplete(bind => {
+            .OnComplete(bind =>
+            {
                 rebinding.Dispose();
                 isRebinding = false;
                 text.text = inputActionToBind.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions);
                 inputActionToBind.Enable();
+                PlayerPrefs.SetString("bindings", InputHelper.inp.SaveBindingOverridesAsJson());
             })
             .Start();
     }

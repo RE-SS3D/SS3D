@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.0052985516, g: 0.00091136165, b: 0.0049261176, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -304,6 +304,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}
+      propertyPath: loginManagerPrefab
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
+        type: 3}
       propertyPath: spawnPrefabs.Array.size
       value: 52
       objectReference: {fileID: 0}
@@ -324,15 +329,15 @@ PrefabInstance:
       propertyPath: spawnPrefabs.Array.data[52]
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
-        type: 3}
-      propertyPath: loginManagerPrefab
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 6976582009294150638, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}
       propertyPath: m_Name
       value: Network Manager
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976582009294150639, guid: 8fae6473a9524504fb4453411967b0e2,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6976582009294150639, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}
@@ -351,6 +356,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6976582009294150639, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976582009294150639, guid: 8fae6473a9524504fb4453411967b0e2,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
@@ -363,16 +373,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976582009294150639, guid: 8fae6473a9524504fb4453411967b0e2,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976582009294150639, guid: 8fae6473a9524504fb4453411967b0e2,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6976582009294150639, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}
@@ -871,16 +871,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 1684947901}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: a816af705ea1a524c88a0f8140fcf264,
+    type: 3}
+  m_PointAction: {fileID: 1008385930979715155, guid: a816af705ea1a524c88a0f8140fcf264,
+    type: 3}
+  m_MoveAction: {fileID: 0}
+  m_SubmitAction: {fileID: 0}
+  m_CancelAction: {fileID: 0}
+  m_LeftClickAction: {fileID: 1033054126543431641, guid: a816af705ea1a524c88a0f8140fcf264,
+    type: 3}
+  m_MiddleClickAction: {fileID: 0}
+  m_RightClickAction: {fileID: 0}
+  m_ScrollWheelAction: {fileID: 0}
+  m_TrackedDevicePositionAction: {fileID: 0}
+  m_TrackedDeviceOrientationAction: {fileID: 0}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
 --- !u!114 &1684947903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1457,6 +1469,7 @@ GameObject:
   - component: {fileID: 6795732656805960168}
   - component: {fileID: 272822126949324060}
   - component: {fileID: 6949841544724718937}
+  - component: {fileID: 4052672818036168141}
   m_Layer: 5
   m_Name: Host
   m_TagString: Untagged
@@ -1464,6 +1477,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &4052672818036168141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4052672818036168139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FirstSelected: {fileID: 0}
+  m_sendNavigationEvents: 1
+  m_DragThreshold: 10
 --- !u!1 &4156058360053292720
 GameObject:
   m_ObjectHideFlags: 0
@@ -1716,6 +1744,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Padding: {x: 0, y: 0, z: 0, w: 0}
+  m_Softness: {x: 0, y: 0}
 --- !u!222 &6095344383649891985
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
 ﻿using SS3D.Engine.FOV;
+using SS3D.Engine.Input;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -81,20 +82,21 @@ namespace SS3D.Content.Systems.Player
                 return;
 
             // input handling
-            float zoom = Input.GetAxis("Camera Zoom");
+            float zoom = InputHelper.inp.Player.CameraZoom.ReadValue<Vector2>().y/10;
             float angleDelta = 0.0f;
             float vAngleDelta = 0.0f;
 
             // remember when rotation button was pressed
-            if (Input.GetButtonDown("Camera Rotation"))
+            if (InputHelper.inp.Player.RotateCameraLeft.triggered && InputHelper.inp.Player.RotateCameraLeft.IsPressed()
+                || InputHelper.inp.Player.RotateCameraRight.triggered && InputHelper.inp.Player.RotateCameraRight.IsPressed())
             {
                 prevHorizontalAxisPress = Time.time;
             }
 
-            // middle mouse button rotation 
-            if (Input.GetKey(KeyCode.Mouse2) && (Time.time - prevHorizontalRotationSnap) > CARDINAL_SNAP_TIME)
+            // middle mouse button rotation
+            if (InputHelper.inp.Player.RotateCamera.IsPressed() && (Time.time - prevHorizontalRotationSnap) > CARDINAL_SNAP_TIME)
             {
-                angleDelta = Input.GetAxis("Mouse X");
+                angleDelta = InputHelper.inp.Pointer.Delta.ReadValue<Vector2>().x/10;
                 rotationDuration += Time.deltaTime;
 
                 // Snap rotation to closest 90 degree angle in direction of mouse movement if mouse speed exceeds limit
@@ -111,26 +113,28 @@ namespace SS3D.Content.Systems.Player
             }
 
             // ctrl + q/e rotation
-            if (Input.GetKey(KeyCode.LeftControl))
+            if (InputHelper.inp.Misc.LeftControl.IsPressed())
             {
                 // snap camera if rotation button tapped
-                if (Input.GetButtonUp("Camera Rotation") && (Time.time - prevHorizontalAxisPress) < CARDINAL_SNAP_TIME)
+                if ((InputHelper.inp.Player.RotateCameraLeft.triggered && !InputHelper.inp.Player.RotateCameraLeft.IsPressed()
+                    || InputHelper.inp.Player.RotateCameraRight.triggered && !InputHelper.inp.Player.RotateCameraRight.IsPressed())
+                    && (Time.time - prevHorizontalAxisPress) < CARDINAL_SNAP_TIME)
                 {
-                    angleDelta = Input.GetAxis("Camera Rotation");
+                    angleDelta = (InputHelper.inp.Player.RotateCameraRight.triggered? 1 : 0) - (InputHelper.inp.Player.RotateCameraLeft.triggered? 1 : 0);
                     angle = Mathf.Round((angle + Mathf.Sign(angleDelta) * 45.1f) / 90.0f) * 90.0f;
                     prevHorizontalAxisPress = 0.0f;
                     return;
                 }
                 
                 // rotate camera if rotation button is held down
-                if (Input.GetButton("Camera Rotation") && (Time.time - prevHorizontalAxisPress) > CARDINAL_SNAP_TIME)
+                if ((InputHelper.inp.Player.RotateCameraLeft.IsPressed() || InputHelper.inp.Player.RotateCameraRight.IsPressed()) && (Time.time - prevHorizontalAxisPress) > CARDINAL_SNAP_TIME)
                 {
-                    angleDelta = Input.GetAxis("Camera Rotation") * HORIZONTAL_ROTATION_SENSITIVITY * Time.deltaTime;
+                    angleDelta = ((InputHelper.inp.Player.RotateCameraRight.IsPressed() ? 1 : 0) - (InputHelper.inp.Player.RotateCameraLeft.IsPressed() ? 1 : 0)) * HORIZONTAL_ROTATION_SENSITIVITY * Time.deltaTime;
                 }
             }
 
-            if (Input.GetButton("Camera Vertical Rotation"))
-                vAngleDelta = Input.GetAxis("Camera Vertical Rotation") * VERTICAL_ROTATION_SENSITIVITY *
+            if (InputHelper.inp.Player.RotateCameraUp.IsPressed() || InputHelper.inp.Player.RotateCameraDown.IsPressed())
+                vAngleDelta = ((InputHelper.inp.Player.RotateCameraUp.IsPressed() ? 1 : 0) - (InputHelper.inp.Player.RotateCameraDown.IsPressed() ? 1 : 0)) * VERTICAL_ROTATION_SENSITIVITY *
                               Time.deltaTime;
 
             // Determine new values, clamping as necessary

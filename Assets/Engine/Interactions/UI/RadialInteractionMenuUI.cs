@@ -111,7 +111,7 @@ namespace SS3D.Engine.Interactions.UI
             bool hasSelfAsParent = false;
             obj = EventSystem.current?.currentSelectedGameObject;
 
-            if (InputHelper.inp.Pointer.SecondaryActionDown.triggered)
+            if (InputHelper.inp.Pointer.SecondaryAction.triggered)
             {
                 // Check for self as parent of click
                 while (obj != null)
@@ -132,7 +132,7 @@ namespace SS3D.Engine.Interactions.UI
                 }
             }
             // Deletes the object and calls the interaction if it exists when mouse 1 is up
-            if (!InputHelper.inp.Pointer.PrimaryActionDown.triggered)
+            if (!InputHelper.inp.Pointer.PrimaryAction.triggered)
             {
                 if (selectedPetal != null)
                     selectedPetal.GetComponentInChildren<Button>().onClick.Invoke();

@@ -23,7 +23,7 @@ namespace SS3D.Engine.Inventory.UI
         [SerializeField]
         private Item item;
         private Transform oldParent;
-        private Vector2 startMousePosition;
+        private Vector3 startMousePosition;
         private Vector3 startPosition;
         private Image slotImage;
 
@@ -81,7 +81,8 @@ namespace SS3D.Engine.Inventory.UI
 
         public void OnDrag(PointerEventData eventData)
         {
-            Vector3 diff = InputHelper.inp.Pointer.Position.ReadValue<Vector2>() - startMousePosition;
+            Vector2 mouse = InputHelper.inp.Pointer.Position.ReadValue<Vector2>();
+            Vector3 diff = new Vector3(mouse.x, mouse.y) - startMousePosition;
             transform.position = startPosition + diff;
         }
         

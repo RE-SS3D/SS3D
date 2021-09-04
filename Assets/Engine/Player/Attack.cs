@@ -32,7 +32,7 @@ namespace SS3D.Engine.Health
                 return;
             }
             
-            if (!InputHelper.inp.Player.CombatModeDown.triggered)
+            if (!InputHelper.inp.Player.CombatMode.triggered)
             {
                 return;
             }
