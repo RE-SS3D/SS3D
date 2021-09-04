@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using TMPro;
 using UnityEngine.UI;
+using SS3D.Engine.Input;
+using System.Reflection;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// This helps out GeneralSettingsManager to set up graphics settings and sound via UI,
@@ -71,11 +75,15 @@ public class GeneralSettingsUIHelper : MonoBehaviour
         GeneralSettingsManager.OnGraphicsChanged += UpdateButtonsState;
 
         // add keybinding UI
-        foreach (int categoryInt in Enum.GetValues(typeof(KeybindingManager.Category)))
+        foreach (PropertyInfo field in InputHelper.inp.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
         {
-            KeybindingManager.Category category = (KeybindingManager.Category)categoryInt;
+            // Filters out non-existing categories. These string names should be safe to hardcode
+            if (field.PropertyType == typeof(InputControlScheme) || field.PropertyType == typeof(InputBinding) || new List<string> { "asset", "bindingMask", "devices", "controlSchemes" }.Contains(field.Name))
+                continue;
+            string category = field.Name;
+            category = category[0].ToString().ToUpper() + category.Substring(1);
             GameObject categoryGameObject = Instantiate(new GameObject(), controlPanel.transform);
-            categoryGameObject.name = category.ToString();
+            categoryGameObject.name = name;
             categoryGameObject.AddComponent<RectTransform>();
             categoryGameObject.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
             categoryGameObject.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
@@ -83,16 +91,30 @@ public class GeneralSettingsUIHelper : MonoBehaviour
             categoryGameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(502, categoryGameObject.GetComponent<RectTransform>().sizeDelta.y);
             categoryGameObject.GetComponent<HorizontalLayoutGroup>().childForceExpandWidth = true;
             categoryGameObject.GetComponent<HorizontalLayoutGroup>().childForceExpandHeight = true;
-            GenerateStubs(categoryGameObject, category.ToString(), "Titles");
+            GenerateStubs(categoryGameObject, category, "Titles");
             GenerateStubs(categoryGameObject, null, "Bindings");
             GenerateStubs(categoryGameObject, null, "AltBindings");
 
-            foreach (KeybindingManager.KeyEntry key in KeybindingManager.categoryToEntries[category])
+            foreach (PropertyInfo key in field.PropertyType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
+                object inputGroup = InputHelper.inp.GetType().GetProperty(field.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).GetValue(InputHelper.inp);
+                object inputObj = inputGroup.GetType().GetProperty(key.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).GetValue(inputGroup);
+                if (inputObj.GetType().FullName != "UnityEngine.InputSystem.InputAction")
+                    continue;
+                InputAction inputAction = (InputAction) inputObj;
+                if (!inputAction.interactions.Contains("Press") && !inputAction.interactions.Contains("Hold"))
+                    continue;
                 GameObject title = Instantiate(keyTitle, categoryGameObject.transform.Find("Titles"));
-                title.transform.Find("Title").GetComponent<TMP_Text>().text = key.name;
+                //string name = Regex.Replace(key.Name, @"((?!$)[\p{Lu}])", " $1");
+                title.transform.Find("Title").GetComponent<TMP_Text>().text = inputAction.name;
                 GameObject binding = Instantiate(bindingButton, categoryGameObject.transform.Find("Bindings"));
-                binding.transform.Find("Text (TMP)").GetComponent<TMP_Text>().text = key.key.ToString().ToUpper();
+                TMP_Text text = binding.transform.Find("Text (TMP)").GetComponent<TMP_Text>();
+                text.text = inputAction.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions);
+                BindingButtonHelper buttonHelper = binding.AddComponent<BindingButtonHelper>();
+                buttonHelper.inputActionToBind = inputAction;
+                buttonHelper.text = text;
+                Button button = binding.GetComponent<Button>();
+                button.onClick.AddListener(() => buttonHelper.OnClicked());
                 GameObject altBinding = Instantiate(bindingButton, categoryGameObject.transform.Find("AltBindings"));
                 altBinding.transform.Find("Text (TMP)").GetComponent<TMP_Text>().text = "N/A";
             }

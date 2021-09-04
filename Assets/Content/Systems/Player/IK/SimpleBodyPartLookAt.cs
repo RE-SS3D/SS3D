@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SS3D.Engine.Input;
+using System;
 using UnityEditor;
 using UnityEngine;
 public class SimpleBodyPartLookAt : MonoBehaviour
@@ -80,7 +81,7 @@ public class SimpleBodyPartLookAt : MonoBehaviour
 
     public Vector3 GetMousePosition(bool changeYAxis)
     {
-        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = camera.ScreenPointToRay(InputHelper.inp.Pointer.Position.ReadValue<Vector2>());
         Vector3 mousePos = ray.origin - ray.direction * (ray.origin.y / ray.direction.y);
         mousePos = new Vector3(mousePos.x, changeYAxis ? mousePos.y : transform.position.y, mousePos.z);
 

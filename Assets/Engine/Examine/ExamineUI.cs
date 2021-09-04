@@ -1,6 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
+using SS3D.Engine.Input;
 
 namespace SS3D.Engine.Examine
 {
@@ -39,7 +40,7 @@ namespace SS3D.Engine.Examine
 				}
 				
 				// Disable UI if user not holding down Examine button.
-				if (!Input.GetButton("Examine"))
+				if (!InputHelper.inp.UI.Examine.triggered)
 				{
 					ClearData(true);
 				}
@@ -61,7 +62,7 @@ namespace SS3D.Engine.Examine
 			if (data.Length == 0){return;}
 
 			// We only want the Hover Name to work when another UI is not displayed.
-			if (!Input.GetButton("Examine"))
+			if (!InputHelper.inp.UI.Examine.triggered)
 			{
 				UpdateHoverName(data[0].GetName());
 				//ClearData(true);

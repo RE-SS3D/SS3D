@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using SS3D.Engine.Examine;
+using SS3D.Engine.Input;
 
 namespace SS3D.Engine.Inventory.UI
 {
@@ -51,7 +52,7 @@ namespace SS3D.Engine.Inventory.UI
         public void OnPointerDown(PointerEventData eventData)
         {
             startPosition = transform.position;
-            startMousePosition = Input.mousePosition;
+            startMousePosition = InputHelper.inp.Pointer.Position.ReadValue<Vector2>();
         }
         
         public void OnPointerClick(PointerEventData eventData)
@@ -80,7 +81,8 @@ namespace SS3D.Engine.Inventory.UI
 
         public void OnDrag(PointerEventData eventData)
         {
-            Vector3 diff = Input.mousePosition - startMousePosition;
+            Vector2 mouse = InputHelper.inp.Pointer.Position.ReadValue<Vector2>();
+            Vector3 diff = new Vector3(mouse.x, mouse.y) - startMousePosition;
             transform.position = startPosition + diff;
         }
         

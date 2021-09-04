@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 using SS3D.Engine.Examine;
+using SS3D.Engine.Input;
 
 namespace SS3D.Content.Systems.Examine.UI
 {
@@ -49,7 +50,7 @@ namespace SS3D.Content.Systems.Examine.UI
             Expiry.text = expiry;
 			Mugshot.sprite = mugshot;
 			rectTransform = GetComponent<RectTransform>();
-			Panel.position = new Vector3(Input.mousePosition.x + 5f, Input.mousePosition.y + 5f, 0);
+			Panel.position = new Vector3(InputHelper.inp.Pointer.Position.ReadValue<Vector2>().x + 5f, InputHelper.inp.Pointer.Position.ReadValue<Vector2>().y + 5f, 0);
         }
 		
 		public override void LoadExamineData(IExamineData[] data)

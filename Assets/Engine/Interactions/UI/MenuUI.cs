@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SS3D.Engine.Input;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -46,7 +47,7 @@ namespace SS3D.Engine.Interactions.UI
 
         private void Update()
         {
-            if(Input.GetButtonDown("Click") || Input.GetButtonDown("Secondary Click")) {
+            if(InputHelper.inp.Pointer.PrimaryAction.triggered || InputHelper.inp.Pointer.SecondaryAction.triggered) {
                 // Check for self as parent of click
                 bool hasSelfAsParent = false;
 

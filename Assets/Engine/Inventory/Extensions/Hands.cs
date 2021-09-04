@@ -4,6 +4,7 @@ using Mirror;
 using UnityEngine;
 using SS3D.Engine.Interactions;
 using UnityEngine.EventSystems;
+using SS3D.Engine.Input;
 
 namespace SS3D.Engine.Inventory.Extensions
 {
@@ -112,14 +113,14 @@ namespace SS3D.Engine.Inventory.Extensions
                 return;
 
             // Hand-related buttons
-            if (Input.GetButtonDown("Swap Active") && HandContainers.Length > 0 && EventSystem.current.currentSelectedGameObject == null)
+            if (InputHelper.inp.Player.SwapHand.triggered && HandContainers.Length > 0 && EventSystem.current.currentSelectedGameObject == null)
             {
                 SelectedHandIndex = (SelectedHandIndex + 1) % HandContainers.Length;
                 HandChanged?.Invoke(SelectedHandIndex);
                 CmdSetActiveHand(SelectedHandIndex);
             }
 
-            if (Input.GetButtonDown("Drop Item") && EventSystem.current.currentSelectedGameObject == null)
+            if (InputHelper.inp.Player.DropItem.triggered && EventSystem.current.currentSelectedGameObject == null)
             {
                 CmdDropHeldItem();
             }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using SS3D.Engine.Input;
 using SS3D.Engine.Server.Round;
 using SS3D.Engine.Tiles;
 using TMPro;
@@ -68,7 +69,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && RoundManager.singleton.IsRoundStarted)
+        if (InputHelper.inp.Misc.Escape.ReadValue<bool>() && RoundManager.singleton.IsRoundStarted)
         {
             Toggle();
         }

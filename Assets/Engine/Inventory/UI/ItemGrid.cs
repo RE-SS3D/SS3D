@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using SS3D.Engine.Examine;
+using SS3D.Engine.Input;
 
 namespace SS3D.Engine.Inventory.UI
 {
@@ -230,7 +231,8 @@ namespace SS3D.Engine.Inventory.UI
 
 		public GameObject GetCurrentGameObjectInSlot()
 		{
-			Vector2Int slotPosition = GetSlotPosition(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+            Vector2 mousePosition = InputHelper.inp.Pointer.Position.ReadValue<Vector2>();
+			Vector2Int slotPosition = GetSlotPosition(new Vector2(mousePosition.x, mousePosition.y));
 			Container container = AttachedContainer.Container;
 			if (container.ItemAt(slotPosition) == null)
 			{

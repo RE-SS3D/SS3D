@@ -4,6 +4,7 @@ using Mirror;
 using SS3D.Engine.FOV;
 using UnityEngine;
 using UnityEngine.Assertions;
+using SS3D.Engine.Input;
 
 namespace SS3D.Engine.Examine
 {
@@ -64,8 +65,7 @@ namespace SS3D.Engine.Examine
 
 			// Update the position, rotation and time variables
 			updateTimer += Time.deltaTime;
-            Vector3 mousePosition = Input.mousePosition;
-            Vector2 position = new Vector2(mousePosition.x, mousePosition.y);
+            Vector2 position = InputHelper.inp.Pointer.Position.ReadValue<Vector2>();
             Vector3 cameraPos = camera.transform.position;
             Quaternion rotation = camera.transform.rotation;
 

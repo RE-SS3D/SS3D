@@ -3,25 +3,36 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
+using SS3D.Engine.Input;
+using TMPro;
+using static UnityEngine.InputSystem.InputActionRebindingExtensions;
 
 public class BindingButtonHelper : MonoBehaviour
 {
-    private bool isListening = false;
+    private bool isRebinding = false;
+    private RebindingOperation rebinding;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (isListening && Input.inputString != "")
-        {
-            KeybindingManager.keyToEntry[(KeyCode)Enum.Parse(typeof(KeyCode), gameObject.transform.Find("Text (TMP)").GetComponent<TMPro.TMP_Text>().text, true)].key = (KeyCode)Enum.Parse(typeof(KeyCode), Input.inputString, true);
-            gameObject.transform.Find("Text (TMP)").GetComponent<TMPro.TMP_Text>().text = Input.inputString;
-            UnityEngine.Debug.Log(Input.inputString);
-            isListening = false;
-        }
-    }
+    public InputAction inputActionToBind;
+    public TMP_Text text;
 
-    public void onClicked()
+    public void OnClicked()
     {
-        isListening = true;
+        Debug.Log("Clicked");
+        if (isRebinding)
+            return;
+        isRebinding = true;
+        inputActionToBind.Disable();
+        rebinding = inputActionToBind.PerformInteractiveRebinding()
+            .OnMatchWaitForAnother(0.1f)
+            .OnComplete(bind =>
+            {
+                rebinding.Dispose();
+                isRebinding = false;
+                text.text = inputActionToBind.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions);
+                inputActionToBind.Enable();
+                PlayerPrefs.SetString("bindings", InputHelper.inp.SaveBindingOverridesAsJson());
+            })
+            .Start();
     }
 }

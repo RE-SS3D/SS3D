@@ -430,7 +430,7 @@ namespace SS3D.Engine.Atmospherics
         private Vector3 GetMouse()
         {
             Plane plane = new Plane(Vector3.up, Vector3.zero);
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(InputHelper.inp.Pointer.Position.ReadValue<Vector2>());
             float distance;
 
             if (plane.Raycast(ray, out distance))
