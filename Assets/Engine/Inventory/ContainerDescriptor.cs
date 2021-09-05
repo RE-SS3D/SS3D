@@ -204,12 +204,10 @@ namespace SS3D.Engine.Inventory
             viewIcon = viewIcon == null ? Resources.Load<Sprite>("Interactions/container") : viewIcon;
         }
 
-        #if UNITY_EDITOR
         private void OnDestroy()
         {
-            RemoveContainer();
+                RemoveContainer();
         }
-        #endif
 
         public bool IsOpenable
         {
@@ -267,7 +265,7 @@ namespace SS3D.Engine.Inventory
         /// <summary>
         /// Remove all components linked to this containerDescriptor.
         /// </summary>
-        private void RemoveContainer()
+        public void RemoveContainer()
         {
             RemoveAttached();
             RemoveGenerator();
@@ -285,7 +283,14 @@ namespace SS3D.Engine.Inventory
 
         private void RemoveVisible()
         {
-            DestroyImmediate(visibleContainer, true);
+            if (Application.isPlaying)
+            {
+                Destroy(visibleContainer);
+            }
+            else
+            {
+                DestroyImmediate(visibleContainer, true);
+            }
         }
 
         private void AddOpenable()
@@ -296,7 +301,7 @@ namespace SS3D.Engine.Inventory
             // Containers are either Openable or Storage, they can't be both.
             if (IsStorage && storageContainer != null)
             {
-                DestroyImmediate(storageContainer, true);
+                RemoveStorage();
             }
         }
 
@@ -304,7 +309,14 @@ namespace SS3D.Engine.Inventory
         {
             if(openableContainer != null)
             {
-                DestroyImmediate(openableContainer, true);
+                if (Application.isPlaying)
+                {
+                    Destroy(openableContainer);
+                }
+                else
+                {
+                    DestroyImmediate(openableContainer, false);
+                }     
             }  
         }
 
@@ -314,9 +326,9 @@ namespace SS3D.Engine.Inventory
             storageContainer.containerDescriptor = this;
 
             // Containers are either Openable or Storage, they can't be both.
-            if (IsOpenable && openableContainer != null)
+            if (IsOpenable)
             {
-                DestroyImmediate(openableContainer, true);
+                RemoveOpenable();
             }
         }
 
@@ -324,7 +336,14 @@ namespace SS3D.Engine.Inventory
         {
             if(storageContainer != null)
             {
-                DestroyImmediate(storageContainer, true);
+                if (Application.isPlaying)
+                {
+                    Destroy(storageContainer);
+                }
+                else
+                {
+                    DestroyImmediate(storageContainer, false);
+                }
             }    
         }
 
@@ -336,7 +355,14 @@ namespace SS3D.Engine.Inventory
 
         private void RemoveGenerator()
         {
-            DestroyImmediate(attachedContainerGenerator, true);
+            if (Application.isPlaying)
+            {
+                Destroy(attachedContainerGenerator);
+            }
+            else
+            {
+                DestroyImmediate(attachedContainerGenerator, true);
+            }
         }
 
         private void AddAttached()
@@ -347,10 +373,14 @@ namespace SS3D.Engine.Inventory
 
         private void RemoveAttached()
         {
-            if(attachedContainer != null)
+            if (Application.isPlaying)
+            {
+                Destroy(attachedContainer);
+            }
+            else
             {
                 DestroyImmediate(attachedContainer, true);
-            }     
+            }
         }
 
         private void AddSync()
@@ -367,7 +397,14 @@ namespace SS3D.Engine.Inventory
         {
             if (gameObject.GetComponent<AttachedContainer>() == null)
             {
-                DestroyImmediate(containerSync, true);
+                if (Application.isPlaying)
+                {
+                    Destroy(containerSync);
+                }
+                else
+                {
+                    DestroyImmediate(containerSync, true);
+                }
             }
         }
 
