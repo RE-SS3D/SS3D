@@ -49,8 +49,30 @@ public class ContainerDescriptorEditor : Editor
         }
 
         containerDescriptor.AttachItems = EditorGUILayout.Toggle("Attach Items", containerDescriptor.AttachItems);
-        //containerDescriptor.attachedContainer = (AttachedContainer)EditorGUILayout.ObjectField("Attached container", containerDescriptor.attachedContainer, typeof(AttachedContainer), true);
-        
+
+        ShowIcons();
+    }
+
+    public bool CheckEnabledType(System.Enum e)
+    {
+        ContainerType containerType = (ContainerType)e;
+
+        if (containerDescriptor.IsOpenable)
+        {
+            if (containerType == ContainerType.Normal || containerType == ContainerType.Pile)
+                return true;
+            else
+                return false;
+        }
+        if (containerDescriptor.IsStorage)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void ShowIcons()
+    {
         showIcon = EditorGUILayout.Foldout(showIcon, "Show icons");
 
         if (showIcon)
@@ -75,28 +97,7 @@ public class ContainerDescriptorEditor : Editor
                 containerDescriptor.TakeIcon = (Sprite)EditorGUILayout.ObjectField("Take container icon", containerDescriptor.TakeIcon, typeof(Sprite), true);
             }
         }
-
-        
     }
-
-    public bool CheckEnabledType(System.Enum e)
-    {
-        ContainerType containerType = (ContainerType)e;
-
-        if (containerDescriptor.IsOpenable)
-        {
-            if (containerType == ContainerType.Normal || containerType == ContainerType.Pile)
-                return true;
-            else
-                return false;
-        }
-        if (containerDescriptor.IsStorage)
-        {
-            return true;
-        }
-        return false;
-    }
-
 }
 
 

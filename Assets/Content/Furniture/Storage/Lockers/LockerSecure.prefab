@@ -394,13 +394,13 @@ GameObject:
   - component: {fileID: 8571091857103653437}
   - component: {fileID: 8948142800826122564}
   - component: {fileID: 3580808215382707184}
-  - component: {fileID: 6516975432806974037}
   - component: {fileID: 6225542514865315453}
   - component: {fileID: 3821211540952064295}
   - component: {fileID: 1557268440970064074}
   - component: {fileID: 8872301865148392147}
-  - component: {fileID: 5023814155488601471}
   - component: {fileID: 7817411347477869124}
+  - component: {fileID: 800097528620318511}
+  - component: {fileID: 2452891273730291243}
   m_Layer: 0
   m_Name: LockerSecure
   m_TagString: Untagged
@@ -568,9 +568,9 @@ MonoBehaviour:
   attachedContainer: {fileID: 8948142800826122564}
   attachedContainerGenerator: {fileID: 3580808215382707184}
   containerSync: {fileID: 6225542514865315453}
-  openableContainer: {fileID: 5023814155488601471}
+  openableContainer: {fileID: 2452891273730291243}
   storageContainer: {fileID: 0}
-  visibleContainer: {fileID: 6516975432806974037}
+  visibleContainer: {fileID: 800097528620318511}
   openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
   takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
   storeIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
@@ -610,20 +610,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 8571091857103653437}
---- !u!114 &6516975432806974037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2876708453869312076}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CheckObserversInterval: 1
   containerDescriptor: {fileID: 8571091857103653437}
 --- !u!114 &6225542514865315453
 MonoBehaviour:
@@ -697,23 +683,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   containerDescriptor: {fileID: 3821211540952064295}
---- !u!114 &5023814155488601471
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2876708453869312076}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  OpenIcon: {fileID: 0}
-  containerDescriptor: {fileID: 8571091857103653437}
-  viewContainerIcon: {fileID: 0}
 --- !u!114 &7817411347477869124
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -729,6 +698,37 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   containerDescriptor: {fileID: 3821211540952064295}
+  viewContainerIcon: {fileID: 0}
+--- !u!114 &800097528620318511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876708453869312076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CheckObserversInterval: 1
+  containerDescriptor: {fileID: 8571091857103653437}
+--- !u!114 &2452891273730291243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876708453869312076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  OpenIcon: {fileID: 0}
+  containerDescriptor: {fileID: 8571091857103653437}
   viewContainerIcon: {fileID: 0}
 --- !u!1 &5007033570441933088
 GameObject:

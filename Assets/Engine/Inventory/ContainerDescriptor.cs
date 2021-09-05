@@ -39,14 +39,7 @@ namespace SS3D.Engine.Inventory
                 if (openIcon == null) { return openIcon = Resources.Load<Sprite>("Interactions/door"); }
                 else return openIcon;
             }
-            set
-            {
-                SerializedObject so = new SerializedObject(this);
-                so.Update();
-                SerializedProperty sp = so.FindProperty("openIcon");
-                sp.objectReferenceValue = value;
-                so.ApplyModifiedProperties();
-            }
+            set { SetProperty(ref value, "openIcon"); }
         }
         public Sprite TakeIcon
         {
@@ -55,14 +48,7 @@ namespace SS3D.Engine.Inventory
                 if (takeIcon == null) { return takeIcon = Resources.Load<Sprite>("Interactions/take"); }
                 else return takeIcon;
             }
-            set
-            {
-                SerializedObject so = new SerializedObject(this);
-                so.Update();
-                SerializedProperty sp = so.FindProperty("takeIcon");
-                sp.objectReferenceValue = value;
-                so.ApplyModifiedProperties();
-            }
+            set { SetProperty(ref value, "takeIcon"); }             
         }
         public Sprite StoreIcon
         {
@@ -71,14 +57,7 @@ namespace SS3D.Engine.Inventory
                 if (storeIcon == null) { return storeIcon = Resources.Load<Sprite>("Interactions/discard"); }
                 else return storeIcon;
             }
-            set
-            {
-                SerializedObject so = new SerializedObject(this);
-                so.Update();
-                SerializedProperty sp = so.FindProperty("storeIcon");
-                sp.objectReferenceValue = value;
-                so.ApplyModifiedProperties();
-            }
+            set { SetProperty(ref value, "storeIcon"); }   
         }
         public Sprite ViewIcon
         {
@@ -87,16 +66,8 @@ namespace SS3D.Engine.Inventory
                 if (viewIcon == null) { return viewIcon = Resources.Load<Sprite>("Interactions/container"); }
                 else return viewIcon;
             }
-            set
-            {
-                SerializedObject so = new SerializedObject(this);
-                so.Update();
-                SerializedProperty sp = so.FindProperty("viewIcon");
-                sp.objectReferenceValue = value;
-                so.ApplyModifiedProperties();
-            }
+            set { SetProperty(ref value, "viewIcon"); }
         }
-
 
         public void Start()
         {
@@ -110,42 +81,21 @@ namespace SS3D.Engine.Inventory
         public string ContainerName
         {
             get { return containerName; }
-            set
-            {
-                SerializedObject so = new SerializedObject(this);
-                so.Update();
-                SerializedProperty sp = so.FindProperty("containerName");
-                sp.stringValue = value;
-                so.ApplyModifiedProperties();
-            }
+            set { SetProperty(ref value, "containerName"); }
         }
 
         [SerializeField] private bool onlyStoreWhenOpen = false;
         public bool OnlyStoreWhenOpen
         {
             get { return onlyStoreWhenOpen; }
-            set
-            {
-                SerializedObject so = new SerializedObject(this);
-                so.Update();
-                SerializedProperty sp = so.FindProperty("onlyStoreWhenOpen");
-                sp.boolValue = value;
-                so.ApplyModifiedProperties();
-            }
+            set { SetProperty(ref value, "onlyStoreWhenOpen"); }
         }
 
         [SerializeField]  private Vector2Int size = new Vector2Int(0,0);
         public Vector2Int Size
         {
             get { return size; }
-            set
-            {
-                SerializedObject so = new SerializedObject(this);
-                so.Update();
-                SerializedProperty sp = so.FindProperty("size");
-                sp.vector2IntValue = value;
-                so.ApplyModifiedProperties();
-            }
+            set { SetProperty(ref value, "size"); }
         }
 
         /// <summary>
@@ -161,7 +111,6 @@ namespace SS3D.Engine.Inventory
                 SerializedObject so = new SerializedObject(this);
                 so.Update();
                 SerializedProperty sp = so.FindProperty("hideItems");
-
                 if (ContainerType == ContainerType.Hidden)
                 {
                     sp.boolValue = true; 
@@ -181,42 +130,21 @@ namespace SS3D.Engine.Inventory
         public bool AttachItems
         {
             get { return attachItems; }
-            set
-            {
-                SerializedObject so = new SerializedObject(this);
-                so.Update();
-                SerializedProperty sp = so.FindProperty("attachItems");
-                sp.boolValue = value;
-                so.ApplyModifiedProperties();
-            }
+            set { SetProperty(ref value, "attachItems"); }
         }
 
         [SerializeField] private Filter startFilter;
         public Filter StartFilter
         {
             get { return startFilter; }
-            set
-            {
-                SerializedObject so = new SerializedObject(this);
-                so.Update();
-                SerializedProperty sp = so.FindProperty("startFilter");
-                sp.objectReferenceValue = value;
-                so.ApplyModifiedProperties();
-            }
+            set { SetProperty(ref value, "startFilter"); }
         }
 
         [SerializeField] private bool initialized = false;
         public bool Initialized
         {
             get { return initialized; }
-            private set
-            {
-                SerializedObject so = new SerializedObject(this);
-                so.Update();
-                SerializedProperty sp = so.FindProperty("initialized");
-                sp.boolValue = true;
-                so.ApplyModifiedProperties(); 
-            }
+            private set { SetProperty(ref value, "initialized"); }
         }
 
         #if UNITY_EDITOR
@@ -231,14 +159,7 @@ namespace SS3D.Engine.Inventory
         public float MaxDistance
         {
             get { return maxDistance; }
-            set
-            {
-                SerializedObject so = new SerializedObject(this);
-                so.Update();
-                SerializedProperty sp = so.FindProperty("maxDistance");
-                sp.floatValue = value;
-                so.ApplyModifiedProperties();
-            }
+            set { SetProperty(ref value, "maxDistance"); }
         }
 
         /// <summary>
@@ -255,11 +176,7 @@ namespace SS3D.Engine.Inventory
             }
             set
             {
-                SerializedObject so = new SerializedObject(this);
-                so.Update();
-                SerializedProperty sp = so.FindProperty("containerType");
-                sp.enumValueIndex = (int) value;
-                so.ApplyModifiedProperties();
+                SetProperty(ref value, "containerType");
 
                 if (value == ContainerType.Normal && visibleContainer == null)
                 {
@@ -338,7 +255,7 @@ namespace SS3D.Engine.Inventory
 
         public void RemoveVisible()
         {
-            DestroyImmediate(visibleContainer);
+            DestroyImmediate(visibleContainer, true);
         }
 
         public void AddOpenable()
@@ -418,6 +335,45 @@ namespace SS3D.Engine.Inventory
             {
                 DestroyImmediate(containerSync, true);
             }
+        }
+
+        private void SetProperty<T>(ref T value, string propertyName)
+        {
+            SerializedObject so = new SerializedObject(this);
+            so.Update();
+            SerializedProperty sp = so.FindProperty(propertyName);
+
+            if (value == null)
+            {
+                return;
+            }
+
+            if (value is string)
+            {
+                sp.stringValue = value as string;
+            }
+            else if (value is bool)
+            {
+                sp.boolValue = (bool)(object)value;
+            }
+            else if (value is float)
+            {
+                sp.floatValue = (float)(object)value;
+            }
+            else if (value is Vector2Int)
+            {
+                sp.vector2IntValue = (Vector2Int)(object)value;
+            }
+            else if (value is Object)
+            {
+                sp.objectReferenceValue = value as Object;
+            }
+            else if (value.GetType().IsEnum)
+            {
+                sp.enumValueIndex = (int)(object)value;
+            }
+
+            so.ApplyModifiedProperties();
         }
 
     }
