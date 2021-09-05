@@ -86,7 +86,7 @@ namespace SS3D.Engine.Inventory
         /// <summary>
         /// The local position of attached items
         /// </summary>
-        private Vector3 attachmentOffset = Vector3.zero;
+        [SerializeField] private Vector3 attachmentOffset = Vector3.zero;
         public Vector3 AttachmentOffset
         {
             get { return attachmentOffset; }

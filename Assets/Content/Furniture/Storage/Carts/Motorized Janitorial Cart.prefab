@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &1016121696197167216
+--- !u!114 &7247302599601981926
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -12,17 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachedContainer: {fileID: 6446874019132172239}
-  attachedContainerGenerator: {fileID: 3396563887237823616}
-  containerSync: {fileID: 4389862488903658804}
+  attachedContainer: {fileID: 2915939596726839356}
+  attachedContainerGenerator: {fileID: 5852176331334479143}
+  containerSync: {fileID: 126077911301176582}
   openableContainer: {fileID: 0}
-  storageContainer: {fileID: 8432245696938079417}
+  storageContainer: {fileID: 1385966471074811066}
   visibleContainer: {fileID: 0}
   openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
   takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
   storeIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
   viewIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
-  containerName: Battery compartment
+  attachmentOffset: {x: 0, y: 0, z: 0}
+  containerName: battery compartment
   onlyStoreWhenOpen: 0
   size: {x: 5, y: 5}
   hideItems: 1
@@ -31,34 +32,7 @@ MonoBehaviour:
   initialized: 1
   maxDistance: 5
   containerType: 1
---- !u!114 &3396563887237823616
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6289425011331041029}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 1016121696197167216}
---- !u!114 &4389862488903658804
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6289425011331041029}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2119b201c85e4ba2896540c7243a4b1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
---- !u!114 &6446874019132172239
+--- !u!114 &2915939596726839356
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -70,8 +44,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 1016121696197167216}
---- !u!114 &8432245696938079417
+  containerDescriptor: {fileID: 7247302599601981926}
+--- !u!114 &5852176331334479143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6289425011331041029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDescriptor: {fileID: 7247302599601981926}
+--- !u!114 &1385966471074811066
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,21 +72,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  containerDescriptor: {fileID: 1016121696197167216}
---- !u!114 &2291861705357491004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6289425011331041029}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CheckObserversInterval: 1
-  containerDescriptor: {fileID: 6950533464296763847}
+  containerDescriptor: {fileID: 7247302599601981926}
 --- !u!1001 &1230607458103977360
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -231,7 +204,7 @@ PrefabInstance:
         type: 3}
       propertyPath: visibleContainer
       value: 
-      objectReference: {fileID: 2291861705357491004}
+      objectReference: {fileID: 0}
     - target: {fileID: 8205299663515585045, guid: 3f243f813c03dc94fa25a73f344ee4f8,
         type: 3}
       propertyPath: m_AssetId
@@ -253,6 +226,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     m_RemovedComponents:
+    - {fileID: 1653643711204102977, guid: 3f243f813c03dc94fa25a73f344ee4f8, type: 3}
+    - {fileID: 7187309497569690916, guid: 3f243f813c03dc94fa25a73f344ee4f8, type: 3}
+    - {fileID: 6724647332424947383, guid: 3f243f813c03dc94fa25a73f344ee4f8, type: 3}
+    - {fileID: 8429679521806471705, guid: 3f243f813c03dc94fa25a73f344ee4f8, type: 3}
+    - {fileID: 8171429313810551895, guid: 3f243f813c03dc94fa25a73f344ee4f8, type: 3}
     - {fileID: 5447626806676774917, guid: 3f243f813c03dc94fa25a73f344ee4f8, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 3f243f813c03dc94fa25a73f344ee4f8, type: 3}
 --- !u!1 &6289425011331041029 stripped
@@ -261,15 +239,15 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1230607458103977360}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6950533464296763847 stripped
+--- !u!114 &126077911301176582 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8171429313810551895, guid: 3f243f813c03dc94fa25a73f344ee4f8,
+  m_CorrespondingSourceObject: {fileID: 1201359148048636054, guid: 3f243f813c03dc94fa25a73f344ee4f8,
     type: 3}
   m_PrefabInstance: {fileID: 1230607458103977360}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6289425011331041029}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Script: {fileID: 11500000, guid: 2119b201c85e4ba2896540c7243a4b1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

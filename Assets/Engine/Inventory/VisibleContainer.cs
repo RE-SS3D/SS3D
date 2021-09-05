@@ -11,7 +11,7 @@ namespace SS3D.Engine.Inventory
         /// <summary>
         /// How often the observer list should be updated
         /// </summary>
-        public float CheckObserversInterval = 1f;
+        private float CheckObserversInterval = 1f;
 
         [HideInInspector] public ContainerDescriptor containerDescriptor;
 

@@ -490,12 +490,12 @@ GameObject:
   - component: {fileID: 8305683950039309293}
   - component: {fileID: -5588627775791933915}
   - component: {fileID: 5653810206906820092}
-  - component: {fileID: 8171429313810551895}
-  - component: {fileID: 1653643711204102977}
-  - component: {fileID: 7187309497569690916}
-  - component: {fileID: 8429679521806471705}
-  - component: {fileID: 5447626806676774917}
-  - component: {fileID: 6724647332424947383}
+  - component: {fileID: 4233831653021683432}
+  - component: {fileID: 2008183792320071717}
+  - component: {fileID: 5053913425958437785}
+  - component: {fileID: 27554066507053582}
+  - component: {fileID: 6116733810347379120}
+  - component: {fileID: 1201359148048636054}
   m_Layer: 0
   m_Name: Janitorial Cart
   m_TagString: Untagged
@@ -640,7 +640,7 @@ MonoBehaviour:
   DisplayName: Janitorial Cart
   Text: Neatly holds all of the janitor's equipment.
   MaxDistance: 0
---- !u!114 &8171429313810551895
+--- !u!114 &4233831653021683432
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -652,26 +652,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachedContainer: {fileID: 1653643711204102977}
-  attachedContainerGenerator: {fileID: 7187309497569690916}
-  containerSync: {fileID: 6724647332424947383}
+  attachedContainer: {fileID: 2008183792320071717}
+  attachedContainerGenerator: {fileID: 5053913425958437785}
+  containerSync: {fileID: 1201359148048636054}
   openableContainer: {fileID: 0}
-  storageContainer: {fileID: 8429679521806471705}
-  visibleContainer: {fileID: 5447626806676774917}
+  storageContainer: {fileID: 27554066507053582}
+  visibleContainer: {fileID: 6116733810347379120}
   openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
   takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
   storeIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
   viewIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
-  containerName: trash collector
+  attachmentOffset: {x: 0, y: 0, z: 0}
+  containerName: Trash
   onlyStoreWhenOpen: 0
-  size: {x: 6, y: 6}
-  hideItems: 1
+  size: {x: 5, y: 5}
+  hideItems: 0
   attachItems: 1
   startFilter: {fileID: 0}
   initialized: 1
   maxDistance: 5
   containerType: 0
---- !u!114 &1653643711204102977
+--- !u!114 &2008183792320071717
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -683,9 +684,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AttachmentOffset: {x: 0, y: 0, z: 0}
-  containerDescriptor: {fileID: 8171429313810551895}
---- !u!114 &7187309497569690916
+  containerDescriptor: {fileID: 4233831653021683432}
+--- !u!114 &5053913425958437785
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -697,8 +697,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 8171429313810551895}
---- !u!114 &8429679521806471705
+  containerDescriptor: {fileID: 4233831653021683432}
+--- !u!114 &27554066507053582
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -712,9 +712,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  containerDescriptor: {fileID: 8171429313810551895}
-  viewContainerIcon: {fileID: 0}
---- !u!114 &5447626806676774917
+  containerDescriptor: {fileID: 4233831653021683432}
+--- !u!114 &6116733810347379120
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -726,9 +725,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CheckObserversInterval: 1
-  containerDescriptor: {fileID: 8171429313810551895}
---- !u!114 &6724647332424947383
+  containerDescriptor: {fileID: 4233831653021683432}
+--- !u!114 &1201359148048636054
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
