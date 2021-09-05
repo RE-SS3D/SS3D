@@ -16,7 +16,6 @@ namespace SS3D.Content.Furniture
         private bool openState;
 
         [SerializeField] protected Sprite OpenIcon;
-
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             OpenInteraction openInteraction = new OpenInteraction();

@@ -9,6 +9,7 @@ public class ContainerDescriptorEditor : Editor
 {
     private ContainerDescriptor containerDescriptor;
     private GUIStyle TitleStyle;
+    private bool showIcon = false;
 
     public void OnEnable()
     {
@@ -48,7 +49,34 @@ public class ContainerDescriptorEditor : Editor
         }
 
         containerDescriptor.AttachItems = EditorGUILayout.Toggle("Attach Items", containerDescriptor.AttachItems);
-        containerDescriptor.attachedContainer = (AttachedContainer)EditorGUILayout.ObjectField("Attached container", containerDescriptor.attachedContainer, typeof(AttachedContainer), true);
+        //containerDescriptor.attachedContainer = (AttachedContainer)EditorGUILayout.ObjectField("Attached container", containerDescriptor.attachedContainer, typeof(AttachedContainer), true);
+        
+        showIcon = EditorGUILayout.Foldout(showIcon, "Show icons");
+
+        if (showIcon)
+        {
+            if (containerDescriptor.IsOpenable)
+            {
+                containerDescriptor.OpenIcon = (Sprite)EditorGUILayout.ObjectField("Open container icon", containerDescriptor.OpenIcon, typeof(Sprite), true);
+            }
+
+            if (containerDescriptor.ContainerType == ContainerType.Normal || containerDescriptor.ContainerType == ContainerType.Pile)
+            {
+                containerDescriptor.StoreIcon = (Sprite)EditorGUILayout.ObjectField("Store container icon", containerDescriptor.StoreIcon, typeof(Sprite), true);
+            }
+
+            if (containerDescriptor.ContainerType == ContainerType.Normal)
+            {
+                containerDescriptor.ViewIcon = (Sprite)EditorGUILayout.ObjectField("View container icon", containerDescriptor.ViewIcon, typeof(Sprite), true);
+            }
+
+            if (containerDescriptor.ContainerType == ContainerType.Pile)
+            {
+                containerDescriptor.TakeIcon = (Sprite)EditorGUILayout.ObjectField("Take container icon", containerDescriptor.TakeIcon, typeof(Sprite), true);
+            }
+        }
+
+        
     }
 
     public bool CheckEnabledType(System.Enum e)

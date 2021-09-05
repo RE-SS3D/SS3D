@@ -8,6 +8,7 @@ using UnityEngine;
 using SS3D.Engine.Inventory;
 
 
+
 namespace SS3D.Content.Furniture.Storage
 {
 
@@ -24,8 +25,11 @@ namespace SS3D.Content.Furniture.Storage
 
             List<IInteraction> interactions = new List<IInteraction>();
             StoreInteraction storeInteraction = new StoreInteraction(containerDescriptor);
+            storeInteraction.icon = containerDescriptor.StoreIcon;
             TakeInteraction takeInteraction = new TakeInteraction(containerDescriptor);
+            takeInteraction.icon = containerDescriptor.TakeIcon;
             ViewContainerInteraction view = new ViewContainerInteraction(containerDescriptor) {MaxDistance = containerDescriptor.MaxDistance, icon = viewContainerIcon};
+            view.icon = containerDescriptor.ViewIcon;
 
             switch (containerDescriptor.ContainerType)
             {

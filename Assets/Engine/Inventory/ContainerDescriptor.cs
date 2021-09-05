@@ -27,6 +27,85 @@ namespace SS3D.Engine.Inventory
         public StorageContainer storageContainer;
         public VisibleContainer visibleContainer;
 
+        [SerializeField] private Sprite openIcon;
+        [SerializeField] private Sprite takeIcon;
+        [SerializeField] private Sprite storeIcon;
+        [SerializeField] private Sprite viewIcon;
+
+        public Sprite OpenIcon 
+        {
+            get
+            {
+                if (openIcon == null) { return openIcon = Resources.Load<Sprite>("Interactions/door"); }
+                else return openIcon;
+            }
+            set
+            {
+                SerializedObject so = new SerializedObject(this);
+                so.Update();
+                SerializedProperty sp = so.FindProperty("openIcon");
+                sp.objectReferenceValue = value;
+                so.ApplyModifiedProperties();
+            }
+        }
+        public Sprite TakeIcon
+        {
+            get
+            {
+                if (takeIcon == null) { return takeIcon = Resources.Load<Sprite>("Interactions/take"); }
+                else return takeIcon;
+            }
+            set
+            {
+                SerializedObject so = new SerializedObject(this);
+                so.Update();
+                SerializedProperty sp = so.FindProperty("takeIcon");
+                sp.objectReferenceValue = value;
+                so.ApplyModifiedProperties();
+            }
+        }
+        public Sprite StoreIcon
+        {
+            get
+            {
+                if (storeIcon == null) { return storeIcon = Resources.Load<Sprite>("Interactions/discard"); }
+                else return storeIcon;
+            }
+            set
+            {
+                SerializedObject so = new SerializedObject(this);
+                so.Update();
+                SerializedProperty sp = so.FindProperty("storeIcon");
+                sp.objectReferenceValue = value;
+                so.ApplyModifiedProperties();
+            }
+        }
+        public Sprite ViewIcon
+        {
+            get
+            {
+                if (viewIcon == null) { return viewIcon = Resources.Load<Sprite>("Interactions/container"); }
+                else return viewIcon;
+            }
+            set
+            {
+                SerializedObject so = new SerializedObject(this);
+                so.Update();
+                SerializedProperty sp = so.FindProperty("viewIcon");
+                sp.objectReferenceValue = value;
+                so.ApplyModifiedProperties();
+            }
+        }
+
+
+        public void Start()
+        {
+            openIcon = openIcon == null ? Resources.Load<Sprite>("Interactions/door") : openIcon;
+            takeIcon = takeIcon == null ? Resources.Load<Sprite>("Interactions/take") : takeIcon;
+            storeIcon = storeIcon == null ? Resources.Load<Sprite>("Interactions/discard") : storeIcon;
+            viewIcon = viewIcon == null ? Resources.Load<Sprite>("Interactions/container") : viewIcon;
+        }
+
         [SerializeField] private string containerName = "container";
         public string ContainerName
         {
