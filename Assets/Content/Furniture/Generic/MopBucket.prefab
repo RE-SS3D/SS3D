@@ -174,7 +174,7 @@ MonoBehaviour:
   takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
   storeIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
   viewIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
-  containerName: container
+  containerName: mop bucket
   onlyStoreWhenOpen: 0
   size: {x: 3, y: 4}
   hideItems: 0

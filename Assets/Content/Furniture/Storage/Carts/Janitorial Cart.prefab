@@ -490,6 +490,12 @@ GameObject:
   - component: {fileID: 8305683950039309293}
   - component: {fileID: -5588627775791933915}
   - component: {fileID: 5653810206906820092}
+  - component: {fileID: 8171429313810551895}
+  - component: {fileID: 1653643711204102977}
+  - component: {fileID: 7187309497569690916}
+  - component: {fileID: 8429679521806471705}
+  - component: {fileID: 5447626806676774917}
+  - component: {fileID: 6724647332424947383}
   m_Layer: 0
   m_Name: Janitorial Cart
   m_TagString: Untagged
@@ -634,6 +640,108 @@ MonoBehaviour:
   DisplayName: Janitorial Cart
   Text: Neatly holds all of the janitor's equipment.
   MaxDistance: 0
+--- !u!114 &8171429313810551895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5069778086634185365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 1653643711204102977}
+  attachedContainerGenerator: {fileID: 7187309497569690916}
+  containerSync: {fileID: 6724647332424947383}
+  openableContainer: {fileID: 0}
+  storageContainer: {fileID: 8429679521806471705}
+  visibleContainer: {fileID: 5447626806676774917}
+  openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
+  takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
+  storeIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
+  viewIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
+  containerName: trash collector
+  onlyStoreWhenOpen: 0
+  size: {x: 6, y: 6}
+  hideItems: 1
+  attachItems: 1
+  startFilter: {fileID: 0}
+  initialized: 1
+  maxDistance: 5
+  containerType: 0
+--- !u!114 &1653643711204102977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5069778086634185365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AttachmentOffset: {x: 0, y: 0, z: 0}
+  containerDescriptor: {fileID: 8171429313810551895}
+--- !u!114 &7187309497569690916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5069778086634185365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDescriptor: {fileID: 8171429313810551895}
+--- !u!114 &8429679521806471705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5069778086634185365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7af9ca4d0981a8140bebf788b3626b23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  containerDescriptor: {fileID: 8171429313810551895}
+  viewContainerIcon: {fileID: 0}
+--- !u!114 &5447626806676774917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5069778086634185365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CheckObserversInterval: 1
+  containerDescriptor: {fileID: 8171429313810551895}
+--- !u!114 &6724647332424947383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5069778086634185365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2119b201c85e4ba2896540c7243a4b1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
 --- !u!1 &5221473445564893971
 GameObject:
   m_ObjectHideFlags: 0

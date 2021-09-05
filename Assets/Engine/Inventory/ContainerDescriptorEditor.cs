@@ -50,6 +50,8 @@ public class ContainerDescriptorEditor : Editor
 
         containerDescriptor.AttachItems = EditorGUILayout.Toggle("Attach Items", containerDescriptor.AttachItems);
 
+        containerDescriptor.AttachmentOffset = EditorGUILayout.Vector3Field("Attachment Offset", containerDescriptor.AttachmentOffset);
+
         ShowIcons();
     }
 

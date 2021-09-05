@@ -9,7 +9,7 @@ namespace SS3D.Engine.Inventory
     /// </summary>
     public class AttachedContainerGenerator : MonoBehaviour
     {
-        public ContainerDescriptor containerDescriptor;
+        [HideInInspector] public ContainerDescriptor containerDescriptor;
 
         public void initialize(ContainerDescriptor containerDescriptor)
         {

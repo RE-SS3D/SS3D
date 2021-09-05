@@ -19,6 +19,11 @@ namespace SS3D.Engine.Inventory
         Hidden
     }
 
+    /// <summary>
+    /// ContainerDescriptor manages every aspect of a container attached to a gameObject.
+    /// It's purpose is to centralize all relevant aspect of a container, it should be the only component one has to deal with when 
+    /// adding containers to a game object.
+    /// </summary>
     [ExecuteAlways]
     public class ContainerDescriptor : MonoBehaviour
     {
@@ -30,12 +35,8 @@ namespace SS3D.Engine.Inventory
         public StorageContainer storageContainer;
         public VisibleContainer visibleContainer;
 
-        // Container interaction icons, visible when interacting with a container.
+        // Open interaction icon, visible when opening a container.
         [SerializeField] private Sprite openIcon;
-        [SerializeField] private Sprite takeIcon;
-        [SerializeField] private Sprite storeIcon;
-        [SerializeField] private Sprite viewIcon;
-
         public Sprite OpenIcon 
         {
             get
@@ -45,6 +46,9 @@ namespace SS3D.Engine.Inventory
             }
             set { SetProperty(ref value, "openIcon"); }
         }
+
+        // Take interaction icon, visible when taking something from a container.
+        [SerializeField] private Sprite takeIcon;
         public Sprite TakeIcon
         {
             get
@@ -54,6 +58,9 @@ namespace SS3D.Engine.Inventory
             }
             set { SetProperty(ref value, "takeIcon"); }             
         }
+
+        // Store interaction icon, visible when storing something in a container.
+        [SerializeField] private Sprite storeIcon;
         public Sprite StoreIcon
         {
             get
@@ -63,6 +70,9 @@ namespace SS3D.Engine.Inventory
             }
             set { SetProperty(ref value, "storeIcon"); }   
         }
+
+        // View interaction icon, visible when viewing a container.
+        [SerializeField] private Sprite viewIcon;
         public Sprite ViewIcon
         {
             get
@@ -73,13 +83,14 @@ namespace SS3D.Engine.Inventory
             set { SetProperty(ref value, "viewIcon"); }
         }
 
-        public void Start()
+        /// <summary>
+        /// The local position of attached items
+        /// </summary>
+        private Vector3 attachmentOffset = Vector3.zero;
+        public Vector3 AttachmentOffset
         {
-            // If container interactions icon are not defined at start, load default icons.
-            openIcon = openIcon == null ? Resources.Load<Sprite>("Interactions/door") : openIcon;
-            takeIcon = takeIcon == null ? Resources.Load<Sprite>("Interactions/take") : takeIcon;
-            storeIcon = storeIcon == null ? Resources.Load<Sprite>("Interactions/discard") : storeIcon;
-            viewIcon = viewIcon == null ? Resources.Load<Sprite>("Interactions/container") : viewIcon;
+            get { return attachmentOffset; }
+            set { SetProperty(ref value, "attachmentOffset"); }
         }
 
         /// <summary> Name of the container. </summary>
@@ -155,13 +166,6 @@ namespace SS3D.Engine.Inventory
             private set { SetProperty(ref value, "initialized"); }
         }
 
-        #if UNITY_EDITOR
-        private void OnDestroy()
-        {
-             RemoveContainer();           
-        }
-#endif
-
         /// <summary> max distance at which the container is visible if not hidden </summary>
         [SerializeField] private float maxDistance = 5f;
         public float MaxDistance
@@ -190,6 +194,22 @@ namespace SS3D.Engine.Inventory
                 }
             }
         }
+
+        public void Start()
+        {
+            // If container interactions icon are not defined at start, load default icons.
+            openIcon = openIcon == null ? Resources.Load<Sprite>("Interactions/door") : openIcon;
+            takeIcon = takeIcon == null ? Resources.Load<Sprite>("Interactions/take") : takeIcon;
+            storeIcon = storeIcon == null ? Resources.Load<Sprite>("Interactions/discard") : storeIcon;
+            viewIcon = viewIcon == null ? Resources.Load<Sprite>("Interactions/container") : viewIcon;
+        }
+
+        #if UNITY_EDITOR
+        private void OnDestroy()
+        {
+            RemoveContainer();
+        }
+        #endif
 
         public bool IsOpenable
         {
@@ -384,6 +404,10 @@ namespace SS3D.Engine.Inventory
             {
                 sp.vector2IntValue = (Vector2Int)(object)value;
             }
+            else if (value is Vector3)
+            {
+                sp.vector3Value = (Vector3)(object)value;
+            }
             else if (value is Object)
             {
                 sp.objectReferenceValue = value as Object;
@@ -391,6 +415,10 @@ namespace SS3D.Engine.Inventory
             else if (value.GetType().IsEnum)
             {
                 sp.enumValueIndex = (int)(object)value;
+            }
+            else
+            {
+                Debug.LogError("Value is not any recognised type.");
             }
 
             so.ApplyModifiedProperties();

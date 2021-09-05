@@ -12,8 +12,8 @@ namespace SS3D.Content.Furniture.Storage
     public class OpenableContainer : NetworkedOpenable
     {
 
-        public ContainerDescriptor containerDescriptor;
-        [SerializeField] private Sprite viewContainerIcon;
+        [HideInInspector] public ContainerDescriptor containerDescriptor;
+        private Sprite viewContainerIcon;
 
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {

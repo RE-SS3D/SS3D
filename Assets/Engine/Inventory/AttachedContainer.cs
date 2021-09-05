@@ -15,16 +15,11 @@ namespace SS3D.Engine.Inventory
     public class AttachedContainer : MonoBehaviour
     {
         /// <summary>
-        /// The local position of attached items
-        /// </summary>
-        public Vector3 AttachmentOffset = Vector3.zero;
-        /// <summary>
         /// The creatures looking at this container
         /// </summary>
         public HashSet<Entity> Observers = new HashSet<Entity>();
 
-        public ContainerDescriptor containerDescriptor;
-
+        [HideInInspector] public ContainerDescriptor containerDescriptor;
 
         private Container container;
 
@@ -174,7 +169,7 @@ namespace SS3D.Engine.Inventory
                         {
                             Transform itemTransform = item.transform;
                             itemTransform.SetParent(transform, false);
-                            itemTransform.localPosition = AttachmentOffset;
+                            itemTransform.localPosition = containerDescriptor.AttachmentOffset;
                             OnItemAttached(item);
                         }
                     }

@@ -14,9 +14,9 @@ namespace SS3D.Content.Furniture.Storage
 
     public class StorageContainer : InteractionTargetNetworkBehaviour
     {
-        public ContainerDescriptor containerDescriptor;
+        [HideInInspector] public ContainerDescriptor containerDescriptor;
 
-        [SerializeField] private Sprite viewContainerIcon;
+        private Sprite viewContainerIcon;
 
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
