@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SS3D.Content.Systems.Player
 {
     [RequireComponent(typeof(AudioListener))]
-    public class PlayerListener : MonoBehaviour
+    public class PlayerListener : NetworkBehaviour
     {
         private AudioListener listener;
 
@@ -13,17 +13,11 @@ namespace SS3D.Content.Systems.Player
         {
             if (NetworkClient.active)
             {
-                if (NetworkClient.connection.identity.gameObject != transform.parent.gameObject)
+                if (!GetComponentInParent<NetworkIdentity>().isLocalPlayer)
                 {
                     // Destroy if listener of other player
                     Destroy(gameObject);
                 }
-            }
-            
-            else if (NetworkServer.active)
-            {
-                // Destroy if server only
-                Destroy(gameObject);
             }
         }
     }
