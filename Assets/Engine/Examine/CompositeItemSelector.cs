@@ -98,7 +98,7 @@ namespace SS3D.Engine.Examine
 			}
 
 			// Test the colour of the pixel where our cursor is
-			Vector2 mousePosition = InputHelper.inp.Pointer.Position.ReadValue<Vector2>();
+			Vector2 mousePosition = InputHelper.inputs.Pointer.Position.ReadValue<Vector2>();
 			int currentX = (int) mousePosition.x;
 			int currentY = (int) mousePosition.y;
 
@@ -164,7 +164,7 @@ namespace SS3D.Engine.Examine
 				currentExaminable = null;
 
 				// Get a list of all the UI elements under the cursor
-				var pointerEventData = new PointerEventData(EventSystem.current) {position = InputHelper.inp.Pointer.Position.ReadValue<Vector2>()};
+				var pointerEventData = new PointerEventData(EventSystem.current) {position = InputHelper.inputs.Pointer.Position.ReadValue<Vector2>()};
 				List<RaycastResult> UIhits = new List<RaycastResult>();
 				EventSystem.current.RaycastAll(pointerEventData, UIhits);			
 				
@@ -184,7 +184,7 @@ namespace SS3D.Engine.Examine
 			}
 
 			// Raycast to cursor position. Need to get all possible hits, because the initial hit may have gaps through which we can see other Examinables
-			Vector2 mousePosition = InputHelper.inp.Pointer.Position.ReadValue<Vector2>();
+			Vector2 mousePosition = InputHelper.inputs.Pointer.Position.ReadValue<Vector2>();
             Ray ray = cam.ScreenPointToRay(new Vector2(mousePosition.x, mousePosition.y));
 			RaycastHit[] hits = Physics.RaycastAll(ray, 200f);
 

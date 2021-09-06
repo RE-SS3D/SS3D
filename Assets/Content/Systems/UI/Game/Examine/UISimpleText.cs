@@ -22,7 +22,7 @@ namespace SS3D.Content.Systems.Examine.UI
         public override void RefreshDisplay()
         {
             Text.text = displayText;
-			Vector2 mousePos = InputHelper.inp.Pointer.Position.ReadValue<Vector2>();
+			Vector2 mousePos = InputHelper.inputs.Pointer.Position.ReadValue<Vector2>();
 			Panel.position = new Vector3(mousePos.x, mousePos.y, 0);
         }
 		

@@ -7,7 +7,7 @@ namespace SS3D.Engine.Input {
     public class InputHelper : MonoBehaviour
     {
 
-        public static InputActions inp { get; } = new InputActions();
+        public static InputActions inputs { get; } = new InputActions();
 
         static InputHelper()
         {
@@ -18,12 +18,12 @@ namespace SS3D.Engine.Input {
             {
                 //InputHelper.inp.LoadBindingOverridesFromJson(bindings);
             }
-            inp.Enable();
+            inputs.Enable();
         }
 
         public static Vector3 GetPointerWorldPos()
         {
-            return Camera.current.ScreenToWorldPoint(inp.Pointer.Position.ReadValue<Vector2>());
+            return Camera.current.ScreenToWorldPoint(inputs.Pointer.Position.ReadValue<Vector2>());
         }
     }
 }

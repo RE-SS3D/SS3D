@@ -47,7 +47,7 @@ namespace SS3D.Engine.Interactions.UI
 
         private void Update()
         {
-            if(InputHelper.inp.Pointer.PrimaryAction.triggered || InputHelper.inp.Pointer.SecondaryAction.triggered) {
+            if(InputHelper.inputs.Pointer.PrimaryAction.triggered || InputHelper.inputs.Pointer.SecondaryAction.triggered) {
                 // Check for self as parent of click
                 bool hasSelfAsParent = false;
 

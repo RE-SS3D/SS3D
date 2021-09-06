@@ -238,7 +238,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Run",
+                    "name": "Toggle Run",
                     "type": "Button",
                     "id": "a0713e35-c920-460d-8f01-d468078101f6",
                     "expectedControlType": "Button",
@@ -335,7 +335,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
-                    "action": "Run",
+                    "action": "Toggle Run",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

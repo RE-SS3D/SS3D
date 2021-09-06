@@ -262,7 +262,7 @@ namespace SS3D.Engine.Input
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Run"",
+                    ""name"": ""Toggle Run"",
                     ""type"": ""Button"",
                     ""id"": ""a0713e35-c920-460d-8f01-d468078101f6"",
                     ""expectedControlType"": ""Button"",
@@ -359,7 +359,7 @@ namespace SS3D.Engine.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""Run"",
+                    ""action"": ""Toggle Run"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -684,7 +684,7 @@ namespace SS3D.Engine.Input
             m_Player_SwapHand = m_Player.FindAction("Swap Hand", throwIfNotFound: true);
             m_Player_DropItem = m_Player.FindAction("Drop Item", throwIfNotFound: true);
             m_Player_Activate = m_Player.FindAction("Activate", throwIfNotFound: true);
-            m_Player_Run = m_Player.FindAction("Run", throwIfNotFound: true);
+            m_Player_ToggleRun = m_Player.FindAction("Toggle Run", throwIfNotFound: true);
             m_Player_MoveUp = m_Player.FindAction("Move Up", throwIfNotFound: true);
             m_Player_MoveDown = m_Player.FindAction("Move Down", throwIfNotFound: true);
             m_Player_MoveLeft = m_Player.FindAction("Move Left", throwIfNotFound: true);
@@ -889,7 +889,7 @@ namespace SS3D.Engine.Input
         private readonly InputAction m_Player_SwapHand;
         private readonly InputAction m_Player_DropItem;
         private readonly InputAction m_Player_Activate;
-        private readonly InputAction m_Player_Run;
+        private readonly InputAction m_Player_ToggleRun;
         private readonly InputAction m_Player_MoveUp;
         private readonly InputAction m_Player_MoveDown;
         private readonly InputAction m_Player_MoveLeft;
@@ -902,7 +902,7 @@ namespace SS3D.Engine.Input
             public InputAction @SwapHand => m_Wrapper.m_Player_SwapHand;
             public InputAction @DropItem => m_Wrapper.m_Player_DropItem;
             public InputAction @Activate => m_Wrapper.m_Player_Activate;
-            public InputAction @Run => m_Wrapper.m_Player_Run;
+            public InputAction @ToggleRun => m_Wrapper.m_Player_ToggleRun;
             public InputAction @MoveUp => m_Wrapper.m_Player_MoveUp;
             public InputAction @MoveDown => m_Wrapper.m_Player_MoveDown;
             public InputAction @MoveLeft => m_Wrapper.m_Player_MoveLeft;
@@ -928,9 +928,9 @@ namespace SS3D.Engine.Input
                     @Activate.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivate;
                     @Activate.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivate;
                     @Activate.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivate;
-                    @Run.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRun;
-                    @Run.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRun;
-                    @Run.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRun;
+                    @ToggleRun.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleRun;
+                    @ToggleRun.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleRun;
+                    @ToggleRun.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleRun;
                     @MoveUp.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveUp;
                     @MoveUp.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveUp;
                     @MoveUp.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveUp;
@@ -959,9 +959,9 @@ namespace SS3D.Engine.Input
                     @Activate.started += instance.OnActivate;
                     @Activate.performed += instance.OnActivate;
                     @Activate.canceled += instance.OnActivate;
-                    @Run.started += instance.OnRun;
-                    @Run.performed += instance.OnRun;
-                    @Run.canceled += instance.OnRun;
+                    @ToggleRun.started += instance.OnToggleRun;
+                    @ToggleRun.performed += instance.OnToggleRun;
+                    @ToggleRun.canceled += instance.OnToggleRun;
                     @MoveUp.started += instance.OnMoveUp;
                     @MoveUp.performed += instance.OnMoveUp;
                     @MoveUp.canceled += instance.OnMoveUp;
@@ -1146,7 +1146,7 @@ namespace SS3D.Engine.Input
             void OnSwapHand(InputAction.CallbackContext context);
             void OnDropItem(InputAction.CallbackContext context);
             void OnActivate(InputAction.CallbackContext context);
-            void OnRun(InputAction.CallbackContext context);
+            void OnToggleRun(InputAction.CallbackContext context);
             void OnMoveUp(InputAction.CallbackContext context);
             void OnMoveDown(InputAction.CallbackContext context);
             void OnMoveLeft(InputAction.CallbackContext context);

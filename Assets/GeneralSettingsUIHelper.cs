@@ -75,7 +75,7 @@ public class GeneralSettingsUIHelper : MonoBehaviour
         GeneralSettingsManager.OnGraphicsChanged += UpdateButtonsState;
 
         // add keybinding UI
-        foreach (PropertyInfo field in InputHelper.inp.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+        foreach (PropertyInfo field in InputHelper.inputs.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
         {
             // Filters out non-existing categories. These string names should be safe to hardcode
             if (field.PropertyType == typeof(InputControlScheme) || field.PropertyType == typeof(InputBinding) || new List<string> { "asset", "bindingMask", "devices", "controlSchemes", "bindings" }.Contains(field.Name))
@@ -100,7 +100,7 @@ public class GeneralSettingsUIHelper : MonoBehaviour
             // This code makes it so we dont have to hardcode what inputs actually exist.
             foreach (PropertyInfo key in field.PropertyType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
-                object inputGroup = InputHelper.inp.GetType().GetProperty(field.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).GetValue(InputHelper.inp);
+                object inputGroup = InputHelper.inputs.GetType().GetProperty(field.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).GetValue(InputHelper.inputs);
                 object inputObj = inputGroup.GetType().GetProperty(key.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).GetValue(inputGroup);
                 if (inputObj.GetType().FullName != "UnityEngine.InputSystem.InputAction")
                 {

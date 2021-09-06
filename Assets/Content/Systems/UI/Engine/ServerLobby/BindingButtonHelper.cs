@@ -31,7 +31,7 @@ public class BindingButtonHelper : MonoBehaviour
                 isRebinding = false;
                 text.text = inputActionToBind.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions);
                 inputActionToBind.Enable();
-                PlayerPrefs.SetString("bindings", InputHelper.inp.SaveBindingOverridesAsJson());
+                PlayerPrefs.SetString("bindings", InputHelper.inputs.SaveBindingOverridesAsJson());
             })
             .Start();
     }

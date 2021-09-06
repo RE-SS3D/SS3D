@@ -69,7 +69,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
 
     private void Update()
     {
-        if (InputHelper.inp.Misc.Escape.triggered && RoundManager.singleton.IsRoundStarted)
+        if (InputHelper.inputs.Misc.Escape.triggered && RoundManager.singleton.IsRoundStarted)
         {
             Toggle();
         }

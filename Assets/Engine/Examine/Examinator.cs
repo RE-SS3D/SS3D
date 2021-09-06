@@ -65,7 +65,7 @@ namespace SS3D.Engine.Examine
 
 			// Update the position, rotation and time variables
 			updateTimer += Time.deltaTime;
-            Vector2 position = InputHelper.inp.Pointer.Position.ReadValue<Vector2>();
+            Vector2 position = InputHelper.inputs.Pointer.Position.ReadValue<Vector2>();
             Vector3 cameraPos = camera.transform.position;
             Quaternion rotation = camera.transform.rotation;
 
