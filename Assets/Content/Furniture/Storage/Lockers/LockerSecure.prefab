@@ -391,16 +391,16 @@ GameObject:
   - component: {fileID: 2313279728372933186}
   - component: {fileID: 226357803256970257}
   - component: {fileID: 8390364960802322756}
-  - component: {fileID: 4594472708900815207}
-  - component: {fileID: 3507576303412010423}
-  - component: {fileID: 5358227094710109874}
-  - component: {fileID: 5142581720515245275}
-  - component: {fileID: 3198135378939777181}
-  - component: {fileID: 1500025759300882868}
-  - component: {fileID: 7394833554587445763}
-  - component: {fileID: 1774417170786113780}
-  - component: {fileID: 7441123870568596133}
-  - component: {fileID: 3272792138569838269}
+  - component: {fileID: 6789977180281552830}
+  - component: {fileID: 6769492389543985728}
+  - component: {fileID: 5515434525293136154}
+  - component: {fileID: 5460671415351344834}
+  - component: {fileID: 2332770887244154971}
+  - component: {fileID: 5268824920572218968}
+  - component: {fileID: 5968990734664171589}
+  - component: {fileID: 6890820064306921166}
+  - component: {fileID: 178545523786164631}
+  - component: {fileID: 7968628461076615631}
   m_Layer: 0
   m_Name: LockerSecure
   m_TagString: Untagged
@@ -553,7 +553,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.63288033, y: 1.7198707, z: 0.55178964}
   m_Center: {x: 0.000000044703484, y: 0.8598699, z: 0.0024448484}
---- !u!114 &4594472708900815207
+--- !u!114 &6789977180281552830
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -565,12 +565,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachedContainer: {fileID: 3507576303412010423}
-  attachedContainerGenerator: {fileID: 5358227094710109874}
-  containerSync: {fileID: 3198135378939777181}
-  openableContainer: {fileID: 1500025759300882868}
-  storageContainer: {fileID: 0}
-  visibleContainer: {fileID: 5142581720515245275}
+  attachedContainer: {fileID: 6769492389543985728}
+  attachedContainerGenerator: {fileID: 5515434525293136154}
+  containerSync: {fileID: 2332770887244154971}
+  containerInteractive: {fileID: 5268824920572218968}
+  visibleContainer: {fileID: 5460671415351344834}
   openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
   takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
   storeIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
@@ -579,15 +578,15 @@ MonoBehaviour:
   containerName: main locker
   onlyStoreWhenOpen: 1
   size: {x: 5, y: 5}
-  hideItems: 0
+  hideItems: 1
   attachItems: 1
   startFilter: {fileID: 0}
   initialized: 1
   maxDistance: 5
   containerType: 0
   isOpenable: 1
-  isStorage: 0
---- !u!114 &3507576303412010423
+  isInteractive: 1
+--- !u!114 &6769492389543985728
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -599,8 +598,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 4594472708900815207}
---- !u!114 &5358227094710109874
+  containerDescriptor: {fileID: 6789977180281552830}
+--- !u!114 &5515434525293136154
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -612,8 +611,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 4594472708900815207}
---- !u!114 &5142581720515245275
+  containerDescriptor: {fileID: 6789977180281552830}
+--- !u!114 &5460671415351344834
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -625,8 +624,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 4594472708900815207}
---- !u!114 &3198135378939777181
+  containerDescriptor: {fileID: 6789977180281552830}
+--- !u!114 &2332770887244154971
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -640,7 +639,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
---- !u!114 &1500025759300882868
+--- !u!114 &5268824920572218968
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -655,8 +654,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   OpenIcon: {fileID: 0}
-  containerDescriptor: {fileID: 4594472708900815207}
---- !u!114 &7394833554587445763
+  containerDescriptor: {fileID: 6789977180281552830}
+--- !u!114 &5968990734664171589
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -668,11 +667,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachedContainer: {fileID: 1774417170786113780}
-  attachedContainerGenerator: {fileID: 7441123870568596133}
-  containerSync: {fileID: 3198135378939777181}
-  openableContainer: {fileID: 0}
-  storageContainer: {fileID: 3272792138569838269}
+  attachedContainer: {fileID: 6890820064306921166}
+  attachedContainerGenerator: {fileID: 178545523786164631}
+  containerSync: {fileID: 2332770887244154971}
+  containerInteractive: {fileID: 7968628461076615631}
   visibleContainer: {fileID: 0}
   openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
   takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
@@ -689,8 +687,8 @@ MonoBehaviour:
   maxDistance: 5
   containerType: 1
   isOpenable: 0
-  isStorage: 1
---- !u!114 &1774417170786113780
+  isInteractive: 1
+--- !u!114 &6890820064306921166
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -702,8 +700,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 7394833554587445763}
---- !u!114 &7441123870568596133
+  containerDescriptor: {fileID: 5968990734664171589}
+--- !u!114 &178545523786164631
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -715,8 +713,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 7394833554587445763}
---- !u!114 &3272792138569838269
+  containerDescriptor: {fileID: 5968990734664171589}
+--- !u!114 &7968628461076615631
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -725,12 +723,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2876708453869312076}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7af9ca4d0981a8140bebf788b3626b23, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  containerDescriptor: {fileID: 7394833554587445763}
+  OpenIcon: {fileID: 0}
+  containerDescriptor: {fileID: 5968990734664171589}
 --- !u!1 &5007033570441933088
 GameObject:
   m_ObjectHideFlags: 0

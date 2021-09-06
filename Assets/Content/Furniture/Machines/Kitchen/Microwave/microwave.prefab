@@ -16,14 +16,14 @@ GameObject:
   - component: {fileID: 5428085332758549000}
   - component: {fileID: 5951043273896807154}
   - component: {fileID: 5524012885757289377}
-  - component: {fileID: 3646364236061738243}
-  - component: {fileID: 8762140865007196563}
   - component: {fileID: 1099298561151547284}
   - component: {fileID: 761874278517760475}
-  - component: {fileID: 4157744339643039771}
-  - component: {fileID: 5697875963860545448}
-  - component: {fileID: 254379746982147387}
-  - component: {fileID: 2624089843631532184}
+  - component: {fileID: 3310229086256173745}
+  - component: {fileID: 3978345712886049409}
+  - component: {fileID: 8040670973321556379}
+  - component: {fileID: 4066546996173283868}
+  - component: {fileID: 5693175086955095041}
+  - component: {fileID: 3212605730418522024}
   m_Layer: 0
   m_Name: microwave
   m_TagString: Untagged
@@ -176,46 +176,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.7627539, y: 0.4895372, z: 0.45154876}
   m_Center: {x: 0.00000017881393, y: 0.2447686, z: -0.013495617}
---- !u!114 &3646364236061738243
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3444034143536514343}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
-  StorageType: 0
-  Pile: 0
-  OnlyStoreWhenOpen: 1
-  MaxDistance: 1.5
-  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
---- !u!114 &8762140865007196563
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3444034143536514343}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd22e5b037bc86545a52321457236696, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  MicrowaveDuration: 5
-  DestroyedItemPrefab: {fileID: 8232994725938073509, guid: 84577e5c3dd25de4aa38b44840ace509,
-    type: 3}
-  AttachedContainer: {fileID: 4157744339643039771}
-  onSound: {fileID: 8300000, guid: 91dcb7669f644934b9c52d400421f1a7, type: 3}
-  finishSound: {fileID: 8300000, guid: f22e34e83e0f9874e8ebc28d164810c2, type: 3}
 --- !u!114 &1099298561151547284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -330,7 +290,40 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &4157744339643039771
+--- !u!114 &3310229086256173745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3444034143536514343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 3978345712886049409}
+  attachedContainerGenerator: {fileID: 8040670973321556379}
+  containerSync: {fileID: 3212605730418522024}
+  containerInteractive: {fileID: 4066546996173283868}
+  visibleContainer: {fileID: 5693175086955095041}
+  openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
+  takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
+  storeIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
+  viewIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
+  attachmentOffset: {x: 0, y: 0, z: 0}
+  containerName: microwave
+  onlyStoreWhenOpen: 1
+  size: {x: 2, y: 2}
+  hideItems: 1
+  attachItems: 1
+  startFilter: {fileID: 0}
+  initialized: 1
+  maxDistance: 5
+  containerType: 0
+  isOpenable: 1
+  isInteractive: 1
+--- !u!114 &3978345712886049409
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -342,10 +335,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HideItems: 1
-  AttachItems: 1
-  AttachmentOffset: {x: 0, y: 0, z: 0}
---- !u!114 &5697875963860545448
+  containerDescriptor: {fileID: 3310229086256173745}
+--- !u!114 &8040670973321556379
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -357,10 +348,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AttachedContainer: {fileID: 4157744339643039771}
-  Size: {x: 4, y: 2}
-  StartFilter: {fileID: 0}
---- !u!114 &254379746982147387
+  containerDescriptor: {fileID: 3310229086256173745}
+--- !u!114 &4066546996173283868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3444034143536514343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  OpenIcon: {fileID: 0}
+  containerDescriptor: {fileID: 3310229086256173745}
+--- !u!114 &5693175086955095041
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -372,9 +377,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CheckObserversInterval: 2
-  AttachedContainer: {fileID: 4157744339643039771}
---- !u!114 &2624089843631532184
+  containerDescriptor: {fileID: 3310229086256173745}
+--- !u!114 &3212605730418522024
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
