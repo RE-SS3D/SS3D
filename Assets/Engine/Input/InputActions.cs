@@ -262,42 +262,6 @@ namespace SS3D.Engine.Input
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Left/Right"",
-                    ""type"": ""Value"",
-                    ""id"": ""685b0eeb-4d29-4853-af39-d07febac1449"",
-                    ""expectedControlType"": ""Axis"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""Up/Down"",
-                    ""type"": ""Value"",
-                    ""id"": ""89b4d2dd-ad75-485f-a3bd-a58381e3aee5"",
-                    ""expectedControlType"": ""Axis"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""Camera Zoom"",
-                    ""type"": ""Value"",
-                    ""id"": ""ff31f005-baff-4c04-b6cc-193ac9c07ab5"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""Rotate Camera"",
-                    ""type"": ""Button"",
-                    ""id"": ""03d45856-8207-4d7b-ba19-b430e8d56b16"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": ""Press"",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Run"",
                     ""type"": ""Button"",
                     ""id"": ""a0713e35-c920-460d-8f01-d468078101f6"",
@@ -307,39 +271,39 @@ namespace SS3D.Engine.Input
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Rotate Camera Right"",
+                    ""name"": ""Move Up"",
                     ""type"": ""Button"",
-                    ""id"": ""112234e4-2e58-482d-b83d-e26482167258"",
+                    ""id"": ""866a3750-c248-4df8-a3a0-e771b10ad472"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Press(behavior=2)"",
+                    ""interactions"": ""Press"",
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Rotate Camera Left"",
+                    ""name"": ""Move Down"",
                     ""type"": ""Button"",
-                    ""id"": ""a61e504e-8a11-4f88-ba0c-6e88f9c7b107"",
+                    ""id"": ""6e1d700a-d02d-489f-a28e-162a80d88c99"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Press(behavior=2)"",
+                    ""interactions"": ""Press"",
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Rotate Camera Up"",
+                    ""name"": ""Move Left"",
                     ""type"": ""Button"",
-                    ""id"": ""365d2e27-8d6f-4fac-a0bd-6006e1278b85"",
+                    ""id"": ""0031285e-eea8-4412-ba9d-66e62ae7b04f"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Hold"",
+                    ""interactions"": ""Press"",
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Rotate Camera Down"",
+                    ""name"": ""Move Right"",
                     ""type"": ""Button"",
-                    ""id"": ""86585d07-5691-4aa1-85a4-b23cab3d9472"",
+                    ""id"": ""8f1252a5-b158-49d9-a5c2-2126518bbd68"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Hold"",
+                    ""interactions"": ""Press"",
                     ""initialStateCheck"": false
                 }
             ],
@@ -389,98 +353,10 @@ namespace SS3D.Engine.Input
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""1D Axis"",
-                    ""id"": ""c5168160-7249-45db-ae13-cde3ad8f25ec"",
-                    ""path"": ""1DAxis"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Left/Right"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""negative"",
-                    ""id"": ""baa8b52a-7414-4676-8161-294fcfb11f9d"",
-                    ""path"": ""<Keyboard>/a"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""Left/Right"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""positive"",
-                    ""id"": ""0748a889-1c28-44b9-9a7b-f3b9f5283855"",
-                    ""path"": ""<Keyboard>/d"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""Left/Right"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""1D Axis"",
-                    ""id"": ""2f575936-baf0-4c9f-bd48-45f98ec22abb"",
-                    ""path"": ""1DAxis"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Up/Down"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""negative"",
-                    ""id"": ""75be7228-fa84-48be-ae0a-c7197fa4b8f9"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""Up/Down"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""positive"",
-                    ""id"": ""e156d80f-9da7-4ecf-ad0b-ce2106e66d1f"",
-                    ""path"": ""<Keyboard>/w"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""Up/Down"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""45721da4-5abc-43c9-8a48-b19194f0d810"",
-                    ""path"": ""<Mouse>/scroll"",
-                    ""interactions"": """",
-                    ""processors"": ""ScaleVector2(y=0.06)"",
-                    ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""Camera Zoom"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""01572158-5267-40ce-98b1-e0a7760c4cd2"",
-                    ""path"": ""<Mouse>/middleButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""Rotate Camera"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
                     ""name"": """",
                     ""id"": ""a1528c7b-17ba-4af1-b810-fc9c881520f4"",
                     ""path"": ""<Keyboard>/capsLock"",
-                    ""interactions"": ""Press"",
+                    ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
                     ""action"": ""Run"",
@@ -489,45 +365,45 @@ namespace SS3D.Engine.Input
                 },
                 {
                     ""name"": """",
-                    ""id"": ""61d6d8b1-6d97-4f6b-bcde-eee8031b86a2"",
-                    ""path"": ""<Keyboard>/e"",
+                    ""id"": ""41ca7392-fff5-46e6-8863-39f28dd59a46"",
+                    ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""Rotate Camera Right"",
+                    ""action"": ""Move Up"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""60a38283-b018-4e79-8eba-0644ed1b5314"",
-                    ""path"": ""<Keyboard>/q"",
+                    ""id"": ""58939d07-5492-49af-bd17-77dae5d02f50"",
+                    ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""Rotate Camera Left"",
+                    ""action"": ""Move Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""cddd5e9a-ae48-42ad-b422-4635a3c51c5b"",
-                    ""path"": ""<Keyboard>/equals"",
+                    ""id"": ""f81ec1e3-e618-4976-9877-103a8f273c15"",
+                    ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""Rotate Camera Up"",
+                    ""action"": ""Move Left"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""dd73c134-0835-4843-b1bd-6d7775a27414"",
-                    ""path"": ""<Keyboard>/minus"",
+                    ""id"": ""c72be45e-5077-4b9d-b5f1-09be601de669"",
+                    ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
-                    ""action"": ""Rotate Camera Down"",
+                    ""action"": ""Move Right"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -600,6 +476,174 @@ namespace SS3D.Engine.Input
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Camera"",
+            ""id"": ""fb69bc1f-a37a-40b1-ad0f-39dde2737947"",
+            ""actions"": [
+                {
+                    ""name"": ""Rotate Right"",
+                    ""type"": ""Button"",
+                    ""id"": ""ca4333c8-e657-46f8-ab38-f16b493034d2"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=2)"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Rotate Left"",
+                    ""type"": ""Button"",
+                    ""id"": ""724f0504-0af4-40ab-a822-ce5677547cfa"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=2)"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Rotate Up"",
+                    ""type"": ""Button"",
+                    ""id"": ""43c02874-abd5-4fe4-9aa5-2001e732b3cb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Rotate Down"",
+                    ""type"": ""Button"",
+                    ""id"": ""569a5b47-c64c-409b-b4f2-e29d2807357d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Zoom In"",
+                    ""type"": ""Button"",
+                    ""id"": ""47b27f88-d003-412e-bb65-2d8d22b53ebd"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Zoom Out"",
+                    ""type"": ""Button"",
+                    ""id"": ""8df3a487-1919-4b8d-94db-376bdb260d6c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Rotate With Mouse"",
+                    ""type"": ""Button"",
+                    ""id"": ""1e9c57c6-6cd4-41e3-b861-89bd6c6efffb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Zoom With Mouse Wheel"",
+                    ""type"": ""Value"",
+                    ""id"": ""263c813d-e22a-485f-9109-bd93d622ab24"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""9e2aa793-d7c2-447c-afb1-369d8a0f082e"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Mouse+Keyboard"",
+                    ""action"": ""Rotate Right"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f66d19ba-d3cd-45ed-8e0f-6b4bf89dd45c"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Mouse+Keyboard"",
+                    ""action"": ""Rotate Left"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6cd4da06-5a9b-4009-a906-e8c1c691627b"",
+                    ""path"": ""<Keyboard>/equals"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Mouse+Keyboard"",
+                    ""action"": ""Rotate Up"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""20effc7e-4763-4f1d-a98f-c654522fc7f8"",
+                    ""path"": ""<Keyboard>/minus"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Mouse+Keyboard"",
+                    ""action"": ""Rotate Down"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1f021076-3759-41c6-9170-0881cae400a1"",
+                    ""path"": ""<Keyboard>/rightBracket"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Mouse+Keyboard"",
+                    ""action"": ""Zoom In"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e24f38a6-1bd6-42cb-b83e-b81162c0bb77"",
+                    ""path"": ""<Keyboard>/leftBracket"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Mouse+Keyboard"",
+                    ""action"": ""Zoom Out"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e30c48e2-bd06-49a0-8117-c16a98cbdf89"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Mouse+Keyboard"",
+                    ""action"": ""Rotate With Mouse"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3a493b83-fd9c-4fdf-809d-5f94b8c1eb28"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": ""ScaleVector2(y=0.006)"",
+                    ""groups"": ""Mouse+Keyboard"",
+                    ""action"": ""Zoom With Mouse Wheel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -640,20 +684,26 @@ namespace SS3D.Engine.Input
             m_Player_SwapHand = m_Player.FindAction("Swap Hand", throwIfNotFound: true);
             m_Player_DropItem = m_Player.FindAction("Drop Item", throwIfNotFound: true);
             m_Player_Activate = m_Player.FindAction("Activate", throwIfNotFound: true);
-            m_Player_LeftRight = m_Player.FindAction("Left/Right", throwIfNotFound: true);
-            m_Player_UpDown = m_Player.FindAction("Up/Down", throwIfNotFound: true);
-            m_Player_CameraZoom = m_Player.FindAction("Camera Zoom", throwIfNotFound: true);
-            m_Player_RotateCamera = m_Player.FindAction("Rotate Camera", throwIfNotFound: true);
             m_Player_Run = m_Player.FindAction("Run", throwIfNotFound: true);
-            m_Player_RotateCameraRight = m_Player.FindAction("Rotate Camera Right", throwIfNotFound: true);
-            m_Player_RotateCameraLeft = m_Player.FindAction("Rotate Camera Left", throwIfNotFound: true);
-            m_Player_RotateCameraUp = m_Player.FindAction("Rotate Camera Up", throwIfNotFound: true);
-            m_Player_RotateCameraDown = m_Player.FindAction("Rotate Camera Down", throwIfNotFound: true);
+            m_Player_MoveUp = m_Player.FindAction("Move Up", throwIfNotFound: true);
+            m_Player_MoveDown = m_Player.FindAction("Move Down", throwIfNotFound: true);
+            m_Player_MoveLeft = m_Player.FindAction("Move Left", throwIfNotFound: true);
+            m_Player_MoveRight = m_Player.FindAction("Move Right", throwIfNotFound: true);
             // Misc
             m_Misc = asset.FindActionMap("Misc", throwIfNotFound: true);
             m_Misc_LeftAlternate = m_Misc.FindAction("Left Alternate", throwIfNotFound: true);
             m_Misc_LeftControl = m_Misc.FindAction("Left Control", throwIfNotFound: true);
             m_Misc_Escape = m_Misc.FindAction("Escape", throwIfNotFound: true);
+            // Camera
+            m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
+            m_Camera_RotateRight = m_Camera.FindAction("Rotate Right", throwIfNotFound: true);
+            m_Camera_RotateLeft = m_Camera.FindAction("Rotate Left", throwIfNotFound: true);
+            m_Camera_RotateUp = m_Camera.FindAction("Rotate Up", throwIfNotFound: true);
+            m_Camera_RotateDown = m_Camera.FindAction("Rotate Down", throwIfNotFound: true);
+            m_Camera_ZoomIn = m_Camera.FindAction("Zoom In", throwIfNotFound: true);
+            m_Camera_ZoomOut = m_Camera.FindAction("Zoom Out", throwIfNotFound: true);
+            m_Camera_RotateWithMouse = m_Camera.FindAction("Rotate With Mouse", throwIfNotFound: true);
+            m_Camera_ZoomWithMouseWheel = m_Camera.FindAction("Zoom With Mouse Wheel", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -839,15 +889,11 @@ namespace SS3D.Engine.Input
         private readonly InputAction m_Player_SwapHand;
         private readonly InputAction m_Player_DropItem;
         private readonly InputAction m_Player_Activate;
-        private readonly InputAction m_Player_LeftRight;
-        private readonly InputAction m_Player_UpDown;
-        private readonly InputAction m_Player_CameraZoom;
-        private readonly InputAction m_Player_RotateCamera;
         private readonly InputAction m_Player_Run;
-        private readonly InputAction m_Player_RotateCameraRight;
-        private readonly InputAction m_Player_RotateCameraLeft;
-        private readonly InputAction m_Player_RotateCameraUp;
-        private readonly InputAction m_Player_RotateCameraDown;
+        private readonly InputAction m_Player_MoveUp;
+        private readonly InputAction m_Player_MoveDown;
+        private readonly InputAction m_Player_MoveLeft;
+        private readonly InputAction m_Player_MoveRight;
         public struct PlayerActions
         {
             private @InputActions m_Wrapper;
@@ -856,15 +902,11 @@ namespace SS3D.Engine.Input
             public InputAction @SwapHand => m_Wrapper.m_Player_SwapHand;
             public InputAction @DropItem => m_Wrapper.m_Player_DropItem;
             public InputAction @Activate => m_Wrapper.m_Player_Activate;
-            public InputAction @LeftRight => m_Wrapper.m_Player_LeftRight;
-            public InputAction @UpDown => m_Wrapper.m_Player_UpDown;
-            public InputAction @CameraZoom => m_Wrapper.m_Player_CameraZoom;
-            public InputAction @RotateCamera => m_Wrapper.m_Player_RotateCamera;
             public InputAction @Run => m_Wrapper.m_Player_Run;
-            public InputAction @RotateCameraRight => m_Wrapper.m_Player_RotateCameraRight;
-            public InputAction @RotateCameraLeft => m_Wrapper.m_Player_RotateCameraLeft;
-            public InputAction @RotateCameraUp => m_Wrapper.m_Player_RotateCameraUp;
-            public InputAction @RotateCameraDown => m_Wrapper.m_Player_RotateCameraDown;
+            public InputAction @MoveUp => m_Wrapper.m_Player_MoveUp;
+            public InputAction @MoveDown => m_Wrapper.m_Player_MoveDown;
+            public InputAction @MoveLeft => m_Wrapper.m_Player_MoveLeft;
+            public InputAction @MoveRight => m_Wrapper.m_Player_MoveRight;
             public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -886,33 +928,21 @@ namespace SS3D.Engine.Input
                     @Activate.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivate;
                     @Activate.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivate;
                     @Activate.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivate;
-                    @LeftRight.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLeftRight;
-                    @LeftRight.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLeftRight;
-                    @LeftRight.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLeftRight;
-                    @UpDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnUpDown;
-                    @UpDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnUpDown;
-                    @UpDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnUpDown;
-                    @CameraZoom.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraZoom;
-                    @CameraZoom.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraZoom;
-                    @CameraZoom.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraZoom;
-                    @RotateCamera.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCamera;
-                    @RotateCamera.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCamera;
-                    @RotateCamera.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCamera;
                     @Run.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRun;
                     @Run.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRun;
                     @Run.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRun;
-                    @RotateCameraRight.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCameraRight;
-                    @RotateCameraRight.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCameraRight;
-                    @RotateCameraRight.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCameraRight;
-                    @RotateCameraLeft.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCameraLeft;
-                    @RotateCameraLeft.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCameraLeft;
-                    @RotateCameraLeft.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCameraLeft;
-                    @RotateCameraUp.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCameraUp;
-                    @RotateCameraUp.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCameraUp;
-                    @RotateCameraUp.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCameraUp;
-                    @RotateCameraDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCameraDown;
-                    @RotateCameraDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCameraDown;
-                    @RotateCameraDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCameraDown;
+                    @MoveUp.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveUp;
+                    @MoveUp.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveUp;
+                    @MoveUp.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveUp;
+                    @MoveDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveDown;
+                    @MoveDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveDown;
+                    @MoveDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveDown;
+                    @MoveLeft.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveLeft;
+                    @MoveLeft.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveLeft;
+                    @MoveLeft.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveLeft;
+                    @MoveRight.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveRight;
+                    @MoveRight.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveRight;
+                    @MoveRight.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveRight;
                 }
                 m_Wrapper.m_PlayerActionsCallbackInterface = instance;
                 if (instance != null)
@@ -929,33 +959,21 @@ namespace SS3D.Engine.Input
                     @Activate.started += instance.OnActivate;
                     @Activate.performed += instance.OnActivate;
                     @Activate.canceled += instance.OnActivate;
-                    @LeftRight.started += instance.OnLeftRight;
-                    @LeftRight.performed += instance.OnLeftRight;
-                    @LeftRight.canceled += instance.OnLeftRight;
-                    @UpDown.started += instance.OnUpDown;
-                    @UpDown.performed += instance.OnUpDown;
-                    @UpDown.canceled += instance.OnUpDown;
-                    @CameraZoom.started += instance.OnCameraZoom;
-                    @CameraZoom.performed += instance.OnCameraZoom;
-                    @CameraZoom.canceled += instance.OnCameraZoom;
-                    @RotateCamera.started += instance.OnRotateCamera;
-                    @RotateCamera.performed += instance.OnRotateCamera;
-                    @RotateCamera.canceled += instance.OnRotateCamera;
                     @Run.started += instance.OnRun;
                     @Run.performed += instance.OnRun;
                     @Run.canceled += instance.OnRun;
-                    @RotateCameraRight.started += instance.OnRotateCameraRight;
-                    @RotateCameraRight.performed += instance.OnRotateCameraRight;
-                    @RotateCameraRight.canceled += instance.OnRotateCameraRight;
-                    @RotateCameraLeft.started += instance.OnRotateCameraLeft;
-                    @RotateCameraLeft.performed += instance.OnRotateCameraLeft;
-                    @RotateCameraLeft.canceled += instance.OnRotateCameraLeft;
-                    @RotateCameraUp.started += instance.OnRotateCameraUp;
-                    @RotateCameraUp.performed += instance.OnRotateCameraUp;
-                    @RotateCameraUp.canceled += instance.OnRotateCameraUp;
-                    @RotateCameraDown.started += instance.OnRotateCameraDown;
-                    @RotateCameraDown.performed += instance.OnRotateCameraDown;
-                    @RotateCameraDown.canceled += instance.OnRotateCameraDown;
+                    @MoveUp.started += instance.OnMoveUp;
+                    @MoveUp.performed += instance.OnMoveUp;
+                    @MoveUp.canceled += instance.OnMoveUp;
+                    @MoveDown.started += instance.OnMoveDown;
+                    @MoveDown.performed += instance.OnMoveDown;
+                    @MoveDown.canceled += instance.OnMoveDown;
+                    @MoveLeft.started += instance.OnMoveLeft;
+                    @MoveLeft.performed += instance.OnMoveLeft;
+                    @MoveLeft.canceled += instance.OnMoveLeft;
+                    @MoveRight.started += instance.OnMoveRight;
+                    @MoveRight.performed += instance.OnMoveRight;
+                    @MoveRight.canceled += instance.OnMoveRight;
                 }
             }
         }
@@ -1009,6 +1027,95 @@ namespace SS3D.Engine.Input
             }
         }
         public MiscActions @Misc => new MiscActions(this);
+
+        // Camera
+        private readonly InputActionMap m_Camera;
+        private ICameraActions m_CameraActionsCallbackInterface;
+        private readonly InputAction m_Camera_RotateRight;
+        private readonly InputAction m_Camera_RotateLeft;
+        private readonly InputAction m_Camera_RotateUp;
+        private readonly InputAction m_Camera_RotateDown;
+        private readonly InputAction m_Camera_ZoomIn;
+        private readonly InputAction m_Camera_ZoomOut;
+        private readonly InputAction m_Camera_RotateWithMouse;
+        private readonly InputAction m_Camera_ZoomWithMouseWheel;
+        public struct CameraActions
+        {
+            private @InputActions m_Wrapper;
+            public CameraActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+            public InputAction @RotateRight => m_Wrapper.m_Camera_RotateRight;
+            public InputAction @RotateLeft => m_Wrapper.m_Camera_RotateLeft;
+            public InputAction @RotateUp => m_Wrapper.m_Camera_RotateUp;
+            public InputAction @RotateDown => m_Wrapper.m_Camera_RotateDown;
+            public InputAction @ZoomIn => m_Wrapper.m_Camera_ZoomIn;
+            public InputAction @ZoomOut => m_Wrapper.m_Camera_ZoomOut;
+            public InputAction @RotateWithMouse => m_Wrapper.m_Camera_RotateWithMouse;
+            public InputAction @ZoomWithMouseWheel => m_Wrapper.m_Camera_ZoomWithMouseWheel;
+            public InputActionMap Get() { return m_Wrapper.m_Camera; }
+            public void Enable() { Get().Enable(); }
+            public void Disable() { Get().Disable(); }
+            public bool enabled => Get().enabled;
+            public static implicit operator InputActionMap(CameraActions set) { return set.Get(); }
+            public void SetCallbacks(ICameraActions instance)
+            {
+                if (m_Wrapper.m_CameraActionsCallbackInterface != null)
+                {
+                    @RotateRight.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateRight;
+                    @RotateRight.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateRight;
+                    @RotateRight.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateRight;
+                    @RotateLeft.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateLeft;
+                    @RotateLeft.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateLeft;
+                    @RotateLeft.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateLeft;
+                    @RotateUp.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateUp;
+                    @RotateUp.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateUp;
+                    @RotateUp.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateUp;
+                    @RotateDown.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateDown;
+                    @RotateDown.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateDown;
+                    @RotateDown.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateDown;
+                    @ZoomIn.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoomIn;
+                    @ZoomIn.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoomIn;
+                    @ZoomIn.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoomIn;
+                    @ZoomOut.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoomOut;
+                    @ZoomOut.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoomOut;
+                    @ZoomOut.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoomOut;
+                    @RotateWithMouse.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateWithMouse;
+                    @RotateWithMouse.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateWithMouse;
+                    @RotateWithMouse.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotateWithMouse;
+                    @ZoomWithMouseWheel.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoomWithMouseWheel;
+                    @ZoomWithMouseWheel.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoomWithMouseWheel;
+                    @ZoomWithMouseWheel.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoomWithMouseWheel;
+                }
+                m_Wrapper.m_CameraActionsCallbackInterface = instance;
+                if (instance != null)
+                {
+                    @RotateRight.started += instance.OnRotateRight;
+                    @RotateRight.performed += instance.OnRotateRight;
+                    @RotateRight.canceled += instance.OnRotateRight;
+                    @RotateLeft.started += instance.OnRotateLeft;
+                    @RotateLeft.performed += instance.OnRotateLeft;
+                    @RotateLeft.canceled += instance.OnRotateLeft;
+                    @RotateUp.started += instance.OnRotateUp;
+                    @RotateUp.performed += instance.OnRotateUp;
+                    @RotateUp.canceled += instance.OnRotateUp;
+                    @RotateDown.started += instance.OnRotateDown;
+                    @RotateDown.performed += instance.OnRotateDown;
+                    @RotateDown.canceled += instance.OnRotateDown;
+                    @ZoomIn.started += instance.OnZoomIn;
+                    @ZoomIn.performed += instance.OnZoomIn;
+                    @ZoomIn.canceled += instance.OnZoomIn;
+                    @ZoomOut.started += instance.OnZoomOut;
+                    @ZoomOut.performed += instance.OnZoomOut;
+                    @ZoomOut.canceled += instance.OnZoomOut;
+                    @RotateWithMouse.started += instance.OnRotateWithMouse;
+                    @RotateWithMouse.performed += instance.OnRotateWithMouse;
+                    @RotateWithMouse.canceled += instance.OnRotateWithMouse;
+                    @ZoomWithMouseWheel.started += instance.OnZoomWithMouseWheel;
+                    @ZoomWithMouseWheel.performed += instance.OnZoomWithMouseWheel;
+                    @ZoomWithMouseWheel.canceled += instance.OnZoomWithMouseWheel;
+                }
+            }
+        }
+        public CameraActions @Camera => new CameraActions(this);
         private int m_MouseKeyboardSchemeIndex = -1;
         public InputControlScheme MouseKeyboardScheme
         {
@@ -1039,21 +1146,28 @@ namespace SS3D.Engine.Input
             void OnSwapHand(InputAction.CallbackContext context);
             void OnDropItem(InputAction.CallbackContext context);
             void OnActivate(InputAction.CallbackContext context);
-            void OnLeftRight(InputAction.CallbackContext context);
-            void OnUpDown(InputAction.CallbackContext context);
-            void OnCameraZoom(InputAction.CallbackContext context);
-            void OnRotateCamera(InputAction.CallbackContext context);
             void OnRun(InputAction.CallbackContext context);
-            void OnRotateCameraRight(InputAction.CallbackContext context);
-            void OnRotateCameraLeft(InputAction.CallbackContext context);
-            void OnRotateCameraUp(InputAction.CallbackContext context);
-            void OnRotateCameraDown(InputAction.CallbackContext context);
+            void OnMoveUp(InputAction.CallbackContext context);
+            void OnMoveDown(InputAction.CallbackContext context);
+            void OnMoveLeft(InputAction.CallbackContext context);
+            void OnMoveRight(InputAction.CallbackContext context);
         }
         public interface IMiscActions
         {
             void OnLeftAlternate(InputAction.CallbackContext context);
             void OnLeftControl(InputAction.CallbackContext context);
             void OnEscape(InputAction.CallbackContext context);
+        }
+        public interface ICameraActions
+        {
+            void OnRotateRight(InputAction.CallbackContext context);
+            void OnRotateLeft(InputAction.CallbackContext context);
+            void OnRotateUp(InputAction.CallbackContext context);
+            void OnRotateDown(InputAction.CallbackContext context);
+            void OnZoomIn(InputAction.CallbackContext context);
+            void OnZoomOut(InputAction.CallbackContext context);
+            void OnRotateWithMouse(InputAction.CallbackContext context);
+            void OnZoomWithMouseWheel(InputAction.CallbackContext context);
         }
     }
 }

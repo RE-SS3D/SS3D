@@ -64,8 +64,8 @@ namespace SS3D.Content.Systems.Player
             // TODO: Implement gravity and grabbing
             // Calculate next movement
             // The vector is not normalized to allow for the input having potential rise and fall times
-            float x = InputHelper.inp.Player.LeftRight.ReadValue<float>();
-            float y = InputHelper.inp.Player.UpDown.ReadValue<float>();
+            float x = (InputHelper.inp.Player.MoveRight.IsPressed() ? 1 : 0) -(InputHelper.inp.Player.MoveLeft.IsPressed() ? 1 : 0);
+            float y = (InputHelper.inp.Player.MoveUp.IsPressed() ? 1 : 0) -(InputHelper.inp.Player.MoveDown.IsPressed() ? 1 : 0);
 
             //Ignore movement controls when typing in chat
             if (chatRegister.ChatWindows.Count > 0 && EventSystem.current.currentSelectedGameObject != null)

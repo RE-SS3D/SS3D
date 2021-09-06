@@ -16,7 +16,7 @@ namespace SS3D.Engine.Input {
             string bindings = PlayerPrefs.GetString("bindings", null);
             if (bindings != null)
             {
-                InputHelper.inp.LoadBindingOverridesFromJson(bindings);
+                //InputHelper.inp.LoadBindingOverridesFromJson(bindings);
             }
             inp.Enable();
         }

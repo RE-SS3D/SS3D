@@ -78,10 +78,11 @@ public class GeneralSettingsUIHelper : MonoBehaviour
         foreach (PropertyInfo field in InputHelper.inp.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
         {
             // Filters out non-existing categories. These string names should be safe to hardcode
-            if (field.PropertyType == typeof(InputControlScheme) || field.PropertyType == typeof(InputBinding) || new List<string> { "asset", "bindingMask", "devices", "controlSchemes" }.Contains(field.Name))
+            if (field.PropertyType == typeof(InputControlScheme) || field.PropertyType == typeof(InputBinding) || new List<string> { "asset", "bindingMask", "devices", "controlSchemes", "bindings" }.Contains(field.Name))
                 continue;
             string category = field.Name;
             category = category[0].ToString().ToUpper() + category.Substring(1);
+            // Adds a new category, to put bindings into, complete with a layhout group.
             GameObject categoryGameObject = Instantiate(new GameObject(), controlPanel.transform);
             categoryGameObject.name = name;
             categoryGameObject.AddComponent<RectTransform>();
@@ -91,22 +92,33 @@ public class GeneralSettingsUIHelper : MonoBehaviour
             categoryGameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(502, categoryGameObject.GetComponent<RectTransform>().sizeDelta.y);
             categoryGameObject.GetComponent<HorizontalLayoutGroup>().childForceExpandWidth = true;
             categoryGameObject.GetComponent<HorizontalLayoutGroup>().childForceExpandHeight = true;
+
             GenerateStubs(categoryGameObject, category, "Titles");
             GenerateStubs(categoryGameObject, null, "Bindings");
-            GenerateStubs(categoryGameObject, null, "AltBindings");
 
+            // Iterates through every field in a InputSystem category with an aggressive set of filters to ensure no accidents happen.
+            // This code makes it so we dont have to hardcode what inputs actually exist.
             foreach (PropertyInfo key in field.PropertyType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
                 object inputGroup = InputHelper.inp.GetType().GetProperty(field.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).GetValue(InputHelper.inp);
                 object inputObj = inputGroup.GetType().GetProperty(key.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).GetValue(inputGroup);
                 if (inputObj.GetType().FullName != "UnityEngine.InputSystem.InputAction")
+                {
                     continue;
-                InputAction inputAction = (InputAction) inputObj;
+                }
+
+                // Gets the actual InputAction for getting the input name and input rebinding
+                InputAction inputAction = (InputAction) inputObj; 
                 if (!inputAction.interactions.Contains("Press") && !inputAction.interactions.Contains("Hold"))
+                {
                     continue;
+                }
+
+                // Find the title to add the button under and add the binding name
                 GameObject title = Instantiate(keyTitle, categoryGameObject.transform.Find("Titles"));
-                //string name = Regex.Replace(key.Name, @"((?!$)[\p{Lu}])", " $1");
                 title.transform.Find("Title").GetComponent<TMP_Text>().text = inputAction.name;
+
+                // Add the binding button and attach the rebind script and InputAction to rebind to it.
                 GameObject binding = Instantiate(bindingButton, categoryGameObject.transform.Find("Bindings"));
                 TMP_Text text = binding.transform.Find("Text (TMP)").GetComponent<TMP_Text>();
                 text.text = inputAction.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions);
@@ -122,7 +134,7 @@ public class GeneralSettingsUIHelper : MonoBehaviour
         }
     }
 
-    // Some boilerplate that generates the category and the three objects used to store titles, binding and alt binding.
+    // Some boilerplate that generates the category and the three objects used to store titles and bindings.
     private void GenerateStubs(GameObject parent, string name, string titleName)
     {
         GameObject titles = Instantiate(new GameObject(), parent.transform);

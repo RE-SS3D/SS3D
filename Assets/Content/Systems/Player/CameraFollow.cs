@@ -82,19 +82,19 @@ namespace SS3D.Content.Systems.Player
                 return;
 
             // input handling
-            float zoom = InputHelper.inp.Player.CameraZoom.ReadValue<Vector2>().y/10;
+            float zoom = InputHelper.inp.Camera.ZoomWithMouseWheel.IsPressed()? InputHelper.inp.Camera.ZoomWithMouseWheel.ReadValue<Vector2>().y : (InputHelper.inp.Camera.ZoomIn.triggered ? 1 : 0) - (InputHelper.inp.Camera.ZoomOut.triggered ? 1 : 0);
             float angleDelta = 0.0f;
             float vAngleDelta = 0.0f;
 
             // remember when rotation button was pressed
-            if (InputHelper.inp.Player.RotateCameraLeft.triggered && InputHelper.inp.Player.RotateCameraLeft.IsPressed()
-                || InputHelper.inp.Player.RotateCameraRight.triggered && InputHelper.inp.Player.RotateCameraRight.IsPressed())
+            if (InputHelper.inp.Camera.RotateLeft.triggered && InputHelper.inp.Camera.RotateLeft.IsPressed()
+                || InputHelper.inp.Camera.RotateRight.triggered && InputHelper.inp.Camera.RotateRight.IsPressed())
             {
                 prevHorizontalAxisPress = Time.time;
             }
 
             // middle mouse button rotation
-            if (InputHelper.inp.Player.RotateCamera.IsPressed() && (Time.time - prevHorizontalRotationSnap) > CARDINAL_SNAP_TIME)
+            if (InputHelper.inp.Camera.RotateWithMouse.IsPressed() && (Time.time - prevHorizontalRotationSnap) > CARDINAL_SNAP_TIME)
             {
                 angleDelta = InputHelper.inp.Pointer.Delta.ReadValue<Vector2>().x/10;
                 rotationDuration += Time.deltaTime;
@@ -116,25 +116,25 @@ namespace SS3D.Content.Systems.Player
             if (InputHelper.inp.Misc.LeftControl.IsPressed())
             {
                 // snap camera if rotation button tapped
-                if ((InputHelper.inp.Player.RotateCameraLeft.triggered && !InputHelper.inp.Player.RotateCameraLeft.IsPressed()
-                    || InputHelper.inp.Player.RotateCameraRight.triggered && !InputHelper.inp.Player.RotateCameraRight.IsPressed())
+                if ((InputHelper.inp.Camera.RotateLeft.triggered && !InputHelper.inp.Camera.RotateLeft.IsPressed()
+                    || InputHelper.inp.Camera.RotateRight.triggered && !InputHelper.inp.Camera.RotateRight.IsPressed())
                     && (Time.time - prevHorizontalAxisPress) < CARDINAL_SNAP_TIME)
                 {
-                    angleDelta = (InputHelper.inp.Player.RotateCameraRight.triggered? 1 : 0) - (InputHelper.inp.Player.RotateCameraLeft.triggered? 1 : 0);
+                    angleDelta = (InputHelper.inp.Camera.RotateRight.triggered? 1 : 0) - (InputHelper.inp.Camera.RotateLeft.triggered? 1 : 0);
                     angle = Mathf.Round((angle + Mathf.Sign(angleDelta) * 45.1f) / 90.0f) * 90.0f;
                     prevHorizontalAxisPress = 0.0f;
                     return;
                 }
                 
                 // rotate camera if rotation button is held down
-                if ((InputHelper.inp.Player.RotateCameraLeft.IsPressed() || InputHelper.inp.Player.RotateCameraRight.IsPressed()) && (Time.time - prevHorizontalAxisPress) > CARDINAL_SNAP_TIME)
+                if ((InputHelper.inp.Camera.RotateLeft.IsPressed() || InputHelper.inp.Camera.RotateRight.IsPressed()) && (Time.time - prevHorizontalAxisPress) > CARDINAL_SNAP_TIME)
                 {
-                    angleDelta = ((InputHelper.inp.Player.RotateCameraRight.IsPressed() ? 1 : 0) - (InputHelper.inp.Player.RotateCameraLeft.IsPressed() ? 1 : 0)) * HORIZONTAL_ROTATION_SENSITIVITY * Time.deltaTime;
+                    angleDelta = ((InputHelper.inp.Camera.RotateRight.IsPressed() ? 1 : 0) - (InputHelper.inp.Camera.RotateLeft.IsPressed() ? 1 : 0)) * HORIZONTAL_ROTATION_SENSITIVITY * Time.deltaTime;
                 }
             }
 
-            if (InputHelper.inp.Player.RotateCameraUp.IsPressed() || InputHelper.inp.Player.RotateCameraDown.IsPressed())
-                vAngleDelta = ((InputHelper.inp.Player.RotateCameraUp.IsPressed() ? 1 : 0) - (InputHelper.inp.Player.RotateCameraDown.IsPressed() ? 1 : 0)) * VERTICAL_ROTATION_SENSITIVITY *
+            if (InputHelper.inp.Camera.RotateUp.IsPressed() || InputHelper.inp.Camera.RotateDown.IsPressed())
+                vAngleDelta = ((InputHelper.inp.Camera.RotateUp.IsPressed() ? 1 : 0) - (InputHelper.inp.Camera.RotateDown.IsPressed() ? 1 : 0)) * VERTICAL_ROTATION_SENSITIVITY *
                               Time.deltaTime;
 
             // Determine new values, clamping as necessary
