@@ -44,7 +44,7 @@ namespace SS3D.Engine.Inventory
             }
             
             Containers.Clear();
-            GetComponentsInChildren(false, Containers);
+            Containers = GetComponentsInChildren<AttachedContainer>(false).ToList();
             if (NetworkServer.active)
             {
                 SubscribeToContainers();

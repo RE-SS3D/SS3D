@@ -29,8 +29,7 @@ namespace SS3D.Engine.Inventory
         public AttachedContainer attachedContainer;
         public AttachedContainerGenerator attachedContainerGenerator;
         public ContainerSync containerSync;
-        public OpenableContainer openableContainer;
-        public StorageContainer storageContainer;
+        public ContainerInteractive containerInteractive; 
         public VisibleContainer visibleContainer;
 
         // Open interaction icon, visible when opening a container.
@@ -78,7 +77,7 @@ namespace SS3D.Engine.Inventory
 
         public bool isOpenable;
 
-        public bool isStorage;
+        public bool isInteractive;
 
         public void Start()
         {
