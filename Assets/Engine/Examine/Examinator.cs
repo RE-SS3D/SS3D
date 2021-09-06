@@ -33,10 +33,11 @@ namespace SS3D.Engine.Examine
 
         private void Start()
         {
-            // Mirror is kinda whack
-            if (!hasAuthority)
+            // Prevent duplicate examinators from being in the scene in multiplayer.
+            if (!isLocalPlayer)
             {
                 Destroy(this);
+				return;
             }
 
 			// Establish our minimum frequency timer. This is used to ensure
