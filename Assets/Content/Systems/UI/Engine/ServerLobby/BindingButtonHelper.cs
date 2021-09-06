@@ -18,9 +18,11 @@ public class BindingButtonHelper : MonoBehaviour
 
     public void OnClicked()
     {
-        Debug.Log("Clicked");
+        Debug.Log("Rebinding " + inputActionToBind.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions));
         if (isRebinding)
+        {
             return;
+        }
         isRebinding = true;
         inputActionToBind.Disable();
         rebinding = inputActionToBind.PerformInteractiveRebinding()
