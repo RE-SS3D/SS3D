@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,12 +12,17 @@ namespace SS3D.Engine.Input {
 
         static InputHelper()
         {
-
-
             string bindings = PlayerPrefs.GetString("bindings", null);
             if (bindings != null)
             {
-                //InputHelper.inp.LoadBindingOverridesFromJson(bindings);
+                try
+                {
+                    inputs.LoadBindingOverridesFromJson(bindings);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.StackTrace);
+                }
             }
             inputs.Enable();
         }
