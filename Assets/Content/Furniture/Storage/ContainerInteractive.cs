@@ -59,5 +59,36 @@ namespace SS3D.Content.Furniture.Storage
 
             return interactions.ToArray();
         }
+        protected override void OnOpenStateChange(object sender, bool e)
+        {
+            base.OnOpenStateChange(sender, e);
+            if (!e)
+            {
+                closeUis();
+            }
+        }
+
+        /// <summary>
+        /// recursively closes all container UI when the root container is closed.
+        /// This is potentially very slow as it calls get component for every items in every container.
+        /// A faster solution could be to use unity game tag and to tag every object with a container as such.
+        /// Keeping track in Container of the list of items that are containers would make it really fast.
+        /// </summary>
+        private void closeUis()
+        {
+            if(containerDescriptor.containerUi != null)
+            {
+                containerDescriptor.containerUi.Close();
+            }
+            
+            foreach(Item item in containerDescriptor.attachedContainer.Container.Items)
+            {
+                ContainerInteractive containerInteractive = item.GameObject.GetComponent<ContainerInteractive>();
+                if (containerInteractive != null)
+                {
+                    containerInteractive.closeUis();
+                }
+            }
+        }
     }
 }

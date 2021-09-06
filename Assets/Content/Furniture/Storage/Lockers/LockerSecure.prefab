@@ -570,6 +570,7 @@ MonoBehaviour:
   containerSync: {fileID: 2332770887244154971}
   containerInteractive: {fileID: 5268824920572218968}
   visibleContainer: {fileID: 5460671415351344834}
+  containerUi: {fileID: 0}
   openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
   takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
   storeIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
@@ -577,7 +578,7 @@ MonoBehaviour:
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: main locker
   onlyStoreWhenOpen: 1
-  size: {x: 5, y: 5}
+  size: {x: 6, y: 6}
   hideItems: 1
   attachItems: 1
   startFilter: {fileID: 0}
@@ -672,6 +673,7 @@ MonoBehaviour:
   containerSync: {fileID: 2332770887244154971}
   containerInteractive: {fileID: 7968628461076615631}
   visibleContainer: {fileID: 0}
+  containerUi: {fileID: 0}
   openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
   takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
   storeIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}

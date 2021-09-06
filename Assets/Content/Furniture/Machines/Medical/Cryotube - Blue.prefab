@@ -298,21 +298,22 @@ MonoBehaviour:
   containerSync: {fileID: 6194878692302648710}
   containerInteractive: {fileID: 8362534545526458143}
   visibleContainer: {fileID: 3480879995346903896}
+  containerUi: {fileID: 0}
   openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
   takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
   storeIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
   viewIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: container
-  onlyStoreWhenOpen: 0
-  size: {x: 3, y: 2}
+  onlyStoreWhenOpen: 1
+  size: {x: 7, y: 7}
   hideItems: 1
   attachItems: 1
   startFilter: {fileID: 0}
   initialized: 1
   maxDistance: 5
   containerType: 0
-  isOpenable: 0
+  isOpenable: 1
   isInteractive: 1
 --- !u!114 &2678844142035812827
 MonoBehaviour:

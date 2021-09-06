@@ -1,6 +1,8 @@
 
 using UnityEngine;
 using SS3D.Content.Furniture.Storage;
+using SS3D.Engine.Inventory.UI;
+
 
 namespace SS3D.Engine.Inventory
 {
@@ -31,6 +33,8 @@ namespace SS3D.Engine.Inventory
         public ContainerSync containerSync;
         public ContainerInteractive containerInteractive; 
         public VisibleContainer visibleContainer;
+
+        public ContainerUi containerUi;
 
         // Open interaction icon, visible when opening a container.
         public Sprite openIcon;
