@@ -25,13 +25,13 @@ namespace SS3D.Content.Furniture.Storage
 
             List<IInteraction> interactions = new List<IInteraction>();
             StoreInteraction storeInteraction = new StoreInteraction(containerDescriptor);
-            storeInteraction.icon = containerDescriptor.StoreIcon;
+            storeInteraction.icon = containerDescriptor.storeIcon;
             TakeInteraction takeInteraction = new TakeInteraction(containerDescriptor);
-            takeInteraction.icon = containerDescriptor.TakeIcon;
-            ViewContainerInteraction view = new ViewContainerInteraction(containerDescriptor) {MaxDistance = containerDescriptor.MaxDistance, icon = viewContainerIcon};
-            view.icon = containerDescriptor.ViewIcon;
+            takeInteraction.icon = containerDescriptor.takeIcon;
+            ViewContainerInteraction view = new ViewContainerInteraction(containerDescriptor) {MaxDistance = containerDescriptor.maxDistance, icon = viewContainerIcon};
+            view.icon = containerDescriptor.viewIcon;
 
-            switch (containerDescriptor.ContainerType)
+            switch (containerDescriptor.containerType)
             {
             // Normal Containers don't have a Take Interaction since their UI can be opened
                 case ContainerType.Normal:

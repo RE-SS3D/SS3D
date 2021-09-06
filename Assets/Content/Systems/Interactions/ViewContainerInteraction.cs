@@ -25,7 +25,7 @@ namespace SS3D.Content.Systems.Interactions
 
         public string GetName(InteractionEvent interactionEvent)
         {
-            return "View " + containerDescriptor.ContainerName;
+            return "View " + containerDescriptor.containerName;
         }
 
         public Sprite GetIcon(InteractionEvent interactionEvent)

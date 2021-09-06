@@ -22,21 +22,21 @@ namespace SS3D.Content.Furniture.Storage
 
             List<IInteraction> interactions = new List<IInteraction>();
             OpenInteraction openInteraction = new OpenInteraction(containerDescriptor);
-            openInteraction.icon = containerDescriptor.OpenIcon;
+            openInteraction.icon = containerDescriptor.openIcon;
             openInteraction.OpenStateChange += OnOpenStateChange;
             StoreInteraction storeInteraction = new StoreInteraction(containerDescriptor);
-            storeInteraction.icon = containerDescriptor.StoreIcon;
+            storeInteraction.icon = containerDescriptor.storeIcon;
             TakeInteraction takeInteraction = new TakeInteraction(containerDescriptor);
-            takeInteraction.icon = containerDescriptor.TakeIcon;
-            ViewContainerInteraction view = new ViewContainerInteraction(containerDescriptor){MaxDistance = containerDescriptor.MaxDistance, icon = viewContainerIcon};
-            view.icon = containerDescriptor.ViewIcon;
+            takeInteraction.icon = containerDescriptor.takeIcon;
+            ViewContainerInteraction view = new ViewContainerInteraction(containerDescriptor){MaxDistance = containerDescriptor.maxDistance, icon = viewContainerIcon};
+            view.icon = containerDescriptor.viewIcon;
 
             interactions.Insert(0, openInteraction);
 
             // Implicit or Normal the Store Interaction will always appear, but View only appears in Normal containers
-            if (IsOpen() | !containerDescriptor.OnlyStoreWhenOpen)
+            if (IsOpen() | !containerDescriptor.onlyStoreWhenOpen)
             {
-                switch (containerDescriptor.ContainerType)
+                switch (containerDescriptor.containerType)
                 {
                     case ContainerType.Normal:
                         interactions.Insert(1, storeInteraction);

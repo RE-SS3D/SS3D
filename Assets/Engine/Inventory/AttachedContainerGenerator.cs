@@ -22,11 +22,11 @@ namespace SS3D.Engine.Inventory
             
             containerDescriptor.attachedContainer.Container = new Container
             {
-                Size = containerDescriptor.Size
+                Size = containerDescriptor.size
             };
 
-            if (containerDescriptor.StartFilter != null)
-                containerDescriptor.attachedContainer.Container.Filters.Add(containerDescriptor.StartFilter);
+            if (containerDescriptor.startFilter != null)
+                containerDescriptor.attachedContainer.Container.Filters.Add(containerDescriptor.startFilter);
         }
     }
 }

@@ -159,17 +159,17 @@ namespace SS3D.Engine.Inventory
                     {
                         item.Freeze();
                         // Make invisible
-                        if (containerDescriptor.HideItems)
+                        if (containerDescriptor.hideItems)
                         {
                             item.SetVisibility(false);
                         }
 
                         // Attach to container
-                        if (containerDescriptor.AttachItems)
+                        if (containerDescriptor.attachItems)
                         {
                             Transform itemTransform = item.transform;
                             itemTransform.SetParent(transform, false);
-                            itemTransform.localPosition = containerDescriptor.AttachmentOffset;
+                            itemTransform.localPosition = containerDescriptor.attachmentOffset;
                             OnItemAttached(item);
                         }
                     }
@@ -182,7 +182,7 @@ namespace SS3D.Engine.Inventory
                     {
                         item.Unfreeze();
                         // Restore visibility
-                        if (containerDescriptor.HideItems)
+                        if (containerDescriptor.hideItems)
                         {
                             item.SetVisibility(true);
                         }

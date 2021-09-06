@@ -33,7 +33,7 @@ namespace SS3D.Content.Systems.Interactions
         {
             if(containerDescriptor != null)
             {
-                string name = containerDescriptor.ContainerName;
+                string name = containerDescriptor.containerName;
                 return ((IGameObjectProvider)interactionEvent.Target).GameObject.GetComponent<Animator>().GetBool(OpenId) ? "Close " + name : "Open " + name;
             }
 
