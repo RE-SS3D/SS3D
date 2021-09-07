@@ -458,9 +458,9 @@ namespace SS3D.Engine.Inventory
         public void Dump()
         {
             Item[] oldItems = items.Select(x => x.Item).ToArray();
-            foreach (var item in items)
+            for (int i = 0; i < oldItems.Length; i++)
             {
-                item.Item.Container = null;
+                oldItems[i].Container = null;
             }
             items.Clear();
 
