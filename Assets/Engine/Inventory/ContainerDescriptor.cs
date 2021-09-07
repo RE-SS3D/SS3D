@@ -3,6 +3,9 @@ using UnityEngine;
 using SS3D.Content.Furniture.Storage;
 using SS3D.Engine.Inventory.UI;
 using UnityEngine.Assertions;
+using Mirror;
+using SS3D.Content;
+
 
 
 namespace SS3D.Engine.Inventory
@@ -32,7 +35,6 @@ namespace SS3D.Engine.Inventory
         public AttachedContainer attachedContainer;
         public ContainerSync containerSync;
         public ContainerInteractive containerInteractive; 
-        public VisibleContainer visibleContainer;
 
         public ContainerUi containerUi;
 
@@ -83,6 +85,13 @@ namespace SS3D.Engine.Inventory
 
         public bool isInteractive;
 
+        /// <summary>
+        /// How often the observer list should be updated
+        /// </summary>
+        private float CheckObserversInterval = 1f;
+
+        private float lastObserverCheck;
+        
         public void Awake()
         {
             // create a new container of Size size
@@ -101,6 +110,49 @@ namespace SS3D.Engine.Inventory
             takeIcon = takeIcon == null ? Resources.Load<Sprite>("Interactions/take") : takeIcon;
             storeIcon = storeIcon == null ? Resources.Load<Sprite>("Interactions/discard") : storeIcon;
             viewIcon = viewIcon == null ? Resources.Load<Sprite>("Interactions/container") : viewIcon;
+        }
+
+        public void Update()
+        {
+            // if the container has an UI
+            if(containerType == ContainerType.Normal)
+            {
+                UpdateObservers();
+            }
+        }
+
+        private void UpdateObservers()
+        {
+            if (lastObserverCheck + CheckObserversInterval < Time.time)
+            {
+                // Could probably be more efficient, it's currently checking every connection in game.
+                // The Observers list could instead be actualized when a creature interact with the container directly. 
+                foreach (NetworkConnectionToClient connection in NetworkServer.connections.Values)
+                {
+                    if (connection != null && connection.identity != null)
+                    {
+                        var creature = connection.identity.GetComponent<Entity>();
+                        if (creature == null)
+                        {
+                            continue;
+                        }
+                        if (creature.CanSee(gameObject))
+                        {
+                            if (attachedContainer.Observers.Contains(creature))
+                            {
+                                continue;
+                            }
+                            attachedContainer.AddObserver(creature);
+                        }
+                        else 
+                        {
+                            attachedContainer.RemoveObserver(creature);
+                        }
+                    }
+                }
+
+                lastObserverCheck = Time.time;
+            }
         }
     }
 }

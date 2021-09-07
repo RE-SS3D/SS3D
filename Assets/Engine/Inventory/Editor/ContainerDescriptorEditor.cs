@@ -15,7 +15,6 @@ public class ContainerDescriptorEditor : Editor
     private AttachedContainer attachedContainer; 
     private ContainerSync containerSync;
     private ContainerInteractive containerInteractive;
-    private VisibleContainer visibleContainer;
 
     public void OnEnable()
     {
@@ -28,8 +27,7 @@ public class ContainerDescriptorEditor : Editor
 
         attachedContainer = containerDescriptor.attachedContainer;
         containerSync = containerDescriptor.containerSync;
-        containerInteractive = containerDescriptor.containerInteractive;
-        visibleContainer = containerDescriptor.visibleContainer;     
+        containerInteractive = containerDescriptor.containerInteractive;   
     }
 
     public override void OnInspectorGUI()
@@ -135,7 +133,6 @@ public class ContainerDescriptorEditor : Editor
         {
             AddAttached();    
             AddInteractive();
-            AddVisible();
             AddSync();
             containerDescriptor.initialized = true;
         }
@@ -170,16 +167,6 @@ public class ContainerDescriptorEditor : Editor
         ContainerType containerType = (ContainerType)EditorGUILayout.EnumPopup(new GUIContent("Container type"), containerDescriptor.containerType, CheckEnabledType, false);
         SerializedProperty sp = serializedObject.FindProperty("containerType");
         sp.enumValueIndex = (int)containerType;
-
-        if (containerType == ContainerType.Normal && containerDescriptor.visibleContainer == null)
-        {
-            AddVisible();
-        }
-        // Hidden containers are never visible. For pile containers, it's not clear yet as they could have an UI. It might change in the future.
-        if (containerType == ContainerType.Hidden || containerType == ContainerType.Pile)
-        {
-            RemoveVisible();
-        }
     }
     private void HandleMaxDistance()
     {
@@ -222,10 +209,6 @@ public class ContainerDescriptorEditor : Editor
         {
             SerializedProperty sp2 = serializedObject.FindProperty("containerType");
             sp2.enumValueIndex = (int) ContainerType.Normal;
-            if (containerDescriptor.visibleContainer == null)
-            {
-                AddVisible();
-            }
         }
 
         // Openable container are always interactive.
@@ -256,18 +239,6 @@ public class ContainerDescriptorEditor : Editor
             sp.boolValue = hideItems;
         }
         serializedObject.ApplyModifiedProperties();
-    }
-
-    private void AddVisible()
-    {
-        SerializedProperty sp = serializedObject.FindProperty("visibleContainer");
-        sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<VisibleContainer>();
-        serializedObject.ApplyModifiedProperties();
-        containerDescriptor.visibleContainer.containerDescriptor = containerDescriptor;
-    }
-    private void RemoveVisible()
-    {
-            DestroyImmediate(visibleContainer, true);
     }
     private void AddInteractive()
     {
@@ -338,7 +309,6 @@ public class ContainerDescriptorEditor : Editor
     {
         DestroyImmediate(attachedContainer, true);
         DestroyImmediate(containerInteractive, true);
-        DestroyImmediate(visibleContainer, true);
 
         if (Selection.activeGameObject.GetComponent<AttachedContainer>() == null)
         {
