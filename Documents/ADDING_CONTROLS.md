@@ -19,7 +19,7 @@ Use the category that best fits your new action.
 
 ## Technical Notes
 
-- If you set your action to hold, triggered and acts in the exact same way as if you set the press type to Press and Release.
+- If you set your action to hold, `triggered` acts in the exact same way as if you set the press type to Press and Release.
 
 - If you set your action type to a vector or something similar for some reason, the min and max will always be -1 and 1 for keys, and -160 and 160 for mousewheel.
 
