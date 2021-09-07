@@ -2,6 +2,7 @@
 using UnityEngine;
 using SS3D.Content.Furniture.Storage;
 using SS3D.Engine.Inventory.UI;
+using UnityEngine.Assertions;
 
 
 namespace SS3D.Engine.Inventory
@@ -29,7 +30,6 @@ namespace SS3D.Engine.Inventory
     {
         // References toward all container related scripts.
         public AttachedContainer attachedContainer;
-        public AttachedContainerGenerator attachedContainerGenerator;
         public ContainerSync containerSync;
         public ContainerInteractive containerInteractive; 
         public VisibleContainer visibleContainer;
@@ -68,7 +68,7 @@ namespace SS3D.Engine.Inventory
         /// <summary> If items should be attached as children. </summary>
         public bool attachItems = true;
 
-        /// <summary> The initial filter of the container. </summary>
+        /// <summary> The initial filter of the container. Controls what can go in the container. </summary>
         public Filter startFilter;
 
         /// <summary> Used as a flag to create relevant components for the container only once, when the containerDescriptor is added. </summary>
@@ -83,8 +83,19 @@ namespace SS3D.Engine.Inventory
 
         public bool isInteractive;
 
-        public void Start()
+        public void Awake()
         {
+            // create a new container of Size size
+            Assert.IsNotNull(attachedContainer);
+            attachedContainer.Container = new Container
+            {
+                Size = size
+            };
+
+            // add optional filters
+            if (startFilter != null)
+                attachedContainer.Container.Filters.Add(startFilter);
+
             // If container interactions icon are not defined at start, load default icons.
             openIcon = openIcon == null ? Resources.Load<Sprite>("Interactions/door") : openIcon;
             takeIcon = takeIcon == null ? Resources.Load<Sprite>("Interactions/take") : takeIcon;

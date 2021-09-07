@@ -12,8 +12,7 @@ public class ContainerDescriptorEditor : Editor
     private ContainerDescriptor containerDescriptor;
     private GUIStyle TitleStyle;
     private bool showIcon = false;
-    private AttachedContainer attachedContainer;
-    private AttachedContainerGenerator attachedContainerGenerator;
+    private AttachedContainer attachedContainer; 
     private ContainerSync containerSync;
     private ContainerInteractive containerInteractive;
     private VisibleContainer visibleContainer;
@@ -28,7 +27,6 @@ public class ContainerDescriptorEditor : Editor
         AddBase();
 
         attachedContainer = containerDescriptor.attachedContainer;
-        attachedContainerGenerator = containerDescriptor.attachedContainerGenerator;
         containerSync = containerDescriptor.containerSync;
         containerInteractive = containerDescriptor.containerInteractive;
         visibleContainer = containerDescriptor.visibleContainer;     
@@ -135,8 +133,7 @@ public class ContainerDescriptorEditor : Editor
     {
         if (!containerDescriptor.initialized)
         {
-            AddAttached();
-            AddGenerator();
+            AddAttached();    
             AddInteractive();
             AddVisible();
             AddSync();
@@ -300,17 +297,6 @@ public class ContainerDescriptorEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    private void AddGenerator()
-    {
-        containerDescriptor.attachedContainerGenerator = containerDescriptor.gameObject.AddComponent<AttachedContainerGenerator>();
-        containerDescriptor.attachedContainerGenerator.containerDescriptor = containerDescriptor;
-    }
-
-    private void RemoveGenerator()
-    {
-        DestroyImmediate(attachedContainerGenerator, true);
-    }
-
     private void AddAttached()
     {
         containerDescriptor.attachedContainer = containerDescriptor.gameObject.AddComponent<AttachedContainer>();
@@ -351,7 +337,6 @@ public class ContainerDescriptorEditor : Editor
     private void RemoveContainer()
     {
         DestroyImmediate(attachedContainer, true);
-        DestroyImmediate(attachedContainerGenerator, true);
         DestroyImmediate(containerInteractive, true);
         DestroyImmediate(visibleContainer, true);
 
