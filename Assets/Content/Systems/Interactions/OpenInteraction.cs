@@ -30,14 +30,26 @@ namespace SS3D.Content.Systems.Interactions
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
+            // Check whether the object is in range
             if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
                 return false;
             }
-            
+
+            // Confirm that there is an entity doing this interaction
+            Entity entity = interactionEvent.Source.GetEntity();
+            if (entity == null)
+            {
+                return false;
+            }
+
             if (interactionEvent.Target is IGameObjectProvider target)
             {
-                return target.GameObject.GetComponent<Animator>() != null;
+                // Check that the entity is actually capable of interacting with the target
+                if (entity.CanInteract(target.GameObject))
+                {
+                    return target.GameObject.GetComponent<Animator>() != null;
+                }
             }
             return false;
         }
