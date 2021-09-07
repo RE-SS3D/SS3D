@@ -19,13 +19,27 @@ public class IntentManager : MonoBehaviour
     public Color colorHarm;
     public Color colorHelp;
 
+    private Button IntentButton;
+
     public enum IntentType
     {
         Help,
         Harm
     }
+
+    void Start()
+    {
+        IntentButton = GetComponent<Button>();
+        IntentButton.onClick.AddListener(TaskOnClick);
+    }
+
+    void TaskOnClick()
+		{
+			SelectIntent();
+		}
+
     // Select the body part and deselect others
-    public void SelectIntent(Button selected)
+    public void SelectIntent()
     {
         bool harm = selectedIntent == IntentType.Harm;
         selectedIntent = harm ? IntentType.Help : IntentType.Harm;
