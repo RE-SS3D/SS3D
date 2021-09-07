@@ -219,6 +219,25 @@ public class ContainerDescriptorEditor : Editor
         SerializedProperty sp = serializedObject.FindProperty("isOpenable");
         sp.boolValue = isOpenable;
         serializedObject.ApplyModifiedProperties();
+
+        // Openable containers can't be hidden.
+        if(containerDescriptor.containerType == ContainerType.Hidden && isOpenable)
+        {
+            SerializedProperty sp2 = serializedObject.FindProperty("containerType");
+            sp2.enumValueIndex = (int) ContainerType.Normal;
+            if (containerDescriptor.visibleContainer == null)
+            {
+                AddVisible();
+            }
+        }
+
+        // Openable container are always interactive.
+        if (isOpenable)
+        {
+            SerializedProperty sp3 = serializedObject.FindProperty("isInteractive");
+            sp3.boolValue = true;
+            serializedObject.ApplyModifiedProperties();
+        }    
     }
     private void HandleOnlyStoreWhenOpen()
     {
@@ -270,6 +289,14 @@ public class ContainerDescriptorEditor : Editor
         DestroyImmediate(containerInteractive, true);
         SerializedProperty sp = serializedObject.FindProperty("isInteractive");
         sp.boolValue = false;
+        serializedObject.ApplyModifiedProperties();
+
+        SerializedProperty sp2 = serializedObject.FindProperty("isOpenable");
+        sp2.boolValue = false;
+        serializedObject.ApplyModifiedProperties();
+
+        SerializedProperty sp3 = serializedObject.FindProperty("onlyStoreWhenOpen");
+        sp3.boolValue = false;
         serializedObject.ApplyModifiedProperties();
     }
 
