@@ -146,13 +146,13 @@ GameObject:
   - component: {fileID: 226357803256970257}
   - component: {fileID: 8390364960802322756}
   - component: {fileID: 9070210520109077429}
-  - component: {fileID: 1814607823178817070}
-  - component: {fileID: 7562207170407633276}
-  - component: {fileID: 112365547714534255}
-  - component: {fileID: 3915564516418818665}
-  - component: {fileID: 3244324007525454707}
-  - component: {fileID: 8888227292215114418}
-  - component: {fileID: 1604589931804223894}
+  - component: {fileID: 8609914432885028925}
+  - component: {fileID: 480694477262860392}
+  - component: {fileID: 1814201091478461007}
+  - component: {fileID: 65556355723438765}
+  - component: {fileID: 6484024172410904774}
+  - component: {fileID: 3921864672977133529}
+  - component: {fileID: 2847546755473809289}
   m_Layer: 0
   m_Name: Locker
   m_TagString: Untagged
@@ -319,7 +319,7 @@ MonoBehaviour:
   DisplayName: Locker
   Text: Stores stuff.
   MaxDistance: 0
---- !u!114 &1814607823178817070
+--- !u!114 &8609914432885028925
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -331,9 +331,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachedContainer: {fileID: 7562207170407633276}
+  attachedContainer: {fileID: 480694477262860392}
   containerSync: {fileID: 0}
-  containerInteractive: {fileID: 112365547714534255}
+  containerInteractive: {fileID: 1814201091478461007}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -342,7 +342,7 @@ MonoBehaviour:
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: main locker
   onlyStoreWhenOpen: 1
-  size: {x: 3, y: 3}
+  size: {x: 4, y: 4}
   hideItems: 1
   attachItems: 1
   startFilter: {fileID: 0}
@@ -351,7 +351,7 @@ MonoBehaviour:
   containerType: 0
   isOpenable: 1
   isInteractive: 1
---- !u!114 &7562207170407633276
+--- !u!114 &480694477262860392
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -363,8 +363,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 1814607823178817070}
---- !u!114 &112365547714534255
+  containerDescriptor: {fileID: 8609914432885028925}
+--- !u!114 &1814201091478461007
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -379,8 +379,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   OpenIcon: {fileID: 0}
-  containerDescriptor: {fileID: 1814607823178817070}
---- !u!114 &3915564516418818665
+  containerDescriptor: {fileID: 8609914432885028925}
+--- !u!114 &65556355723438765
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -394,7 +394,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
---- !u!114 &3244324007525454707
+--- !u!114 &6484024172410904774
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -406,9 +406,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachedContainer: {fileID: 8888227292215114418}
+  attachedContainer: {fileID: 3921864672977133529}
   containerSync: {fileID: 0}
-  containerInteractive: {fileID: 1604589931804223894}
+  containerInteractive: {fileID: 2847546755473809289}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -417,7 +417,7 @@ MonoBehaviour:
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: side locker
   onlyStoreWhenOpen: 0
-  size: {x: 2, y: 2}
+  size: {x: 3, y: 3}
   hideItems: 1
   attachItems: 1
   startFilter: {fileID: 0}
@@ -426,7 +426,7 @@ MonoBehaviour:
   containerType: 1
   isOpenable: 0
   isInteractive: 1
---- !u!114 &8888227292215114418
+--- !u!114 &3921864672977133529
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -438,8 +438,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 3244324007525454707}
---- !u!114 &1604589931804223894
+  containerDescriptor: {fileID: 6484024172410904774}
+--- !u!114 &2847546755473809289
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -454,4 +454,4 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   OpenIcon: {fileID: 0}
-  containerDescriptor: {fileID: 3244324007525454707}
+  containerDescriptor: {fileID: 6484024172410904774}
