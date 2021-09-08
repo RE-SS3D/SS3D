@@ -238,7 +238,7 @@ namespace SS3D.Engine.Chat
 
         public void Update()
         {
-            if ((Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter) && this.isSelected)
+            if ((Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter)) && this.isSelected)
             { 
                 SendMessage(); 
             }
