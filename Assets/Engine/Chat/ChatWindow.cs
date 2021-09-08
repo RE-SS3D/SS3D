@@ -25,8 +25,6 @@ namespace SS3D.Engine.Chat
 
         public ChatRegister ChatRegister => chatRegister;
 
-        public bool isSelected;
-
         public void Init(ChatTabData tabData, ChatRegister chatRegister)
         {
             this.chatRegister = chatRegister;
@@ -207,7 +205,6 @@ namespace SS3D.Engine.Chat
             }
 
             chatRegister.CmdSendMessage(chatMessage);
-            EventSystem.current.SetSelectedGameObject(null);
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -221,27 +218,19 @@ namespace SS3D.Engine.Chat
             return (EventSystem.current.currentSelectedGameObject != null);
         }
 
+        public void FinishTyping(){
+            if ((Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter)) ) {
+                SendMessage();
+            }
+
+            EventSystem.current.SetSelectedGameObject(null);
+
+        }
         public void FocusInputField()
         {
             inputField.Select();
-        }
-
-        public void onSelect()
-        {
-            this.isSelected = true;
-        }
-
-        public void onDeselect()
-        {
-            this.isSelected = false;
-        }
-
-        public void Update()
-        {
-            if ((Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter)) && this.isSelected)
-            { 
-                SendMessage(); 
-            }
+        
         }
     }
+
 }
