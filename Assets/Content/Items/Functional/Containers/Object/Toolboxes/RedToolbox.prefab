@@ -234,9 +234,7 @@ GameObject:
   - component: {fileID: -396234361631906964}
   - component: {fileID: 8984766001432014251}
   - component: {fileID: 4469562446528477193}
-  - component: {fileID: 4064354730430873157}
   - component: {fileID: 7681387737837336857}
-  - component: {fileID: 2619326083095352681}
   - component: {fileID: 8774879036025570029}
   m_Layer: 16
   m_Name: RedToolbox
@@ -397,16 +395,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attachedContainer: {fileID: 4469562446528477193}
-  attachedContainerGenerator: {fileID: 4064354730430873157}
   containerSync: {fileID: 8774879036025570029}
   containerInteractive: {fileID: 7681387737837336857}
-  visibleContainer: {fileID: 2619326083095352681}
+  containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
   storeIcon: {fileID: 0}
   viewIcon: {fileID: 0}
   attachmentOffset: {x: 0, y: 0, z: 0}
-  containerName: container
+  containerName: red toolbox
   onlyStoreWhenOpen: 1
   size: {x: 3, y: 3}
   hideItems: 1
@@ -430,19 +427,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   containerDescriptor: {fileID: 8984766001432014251}
---- !u!114 &4064354730430873157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533951594911835035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 8984766001432014251}
 --- !u!114 &7681387737837336857
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -458,19 +442,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   OpenIcon: {fileID: 0}
-  containerDescriptor: {fileID: 8984766001432014251}
---- !u!114 &2619326083095352681
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533951594911835035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   containerDescriptor: {fileID: 8984766001432014251}
 --- !u!114 &8774879036025570029
 MonoBehaviour:

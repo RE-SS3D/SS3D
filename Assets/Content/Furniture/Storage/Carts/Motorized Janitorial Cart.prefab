@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &6607952608845362864
+--- !u!114 &3403677919292827686
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -12,27 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachedContainer: {fileID: 6543599663705625233}
-  attachedContainerGenerator: {fileID: 8758314021191472069}
-  containerSync: {fileID: 4457129679322822099}
-  openableContainer: {fileID: 0}
-  storageContainer: {fileID: 5102587943057200226}
-  visibleContainer: {fileID: 0}
-  openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
-  takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
-  storeIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
-  viewIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
+  attachedContainer: {fileID: 7459978131093067977}
+  containerSync: {fileID: 0}
+  containerInteractive: {fileID: 7408037214966147921}
+  containerUi: {fileID: 0}
+  openIcon: {fileID: 0}
+  takeIcon: {fileID: 0}
+  storeIcon: {fileID: 0}
+  viewIcon: {fileID: 0}
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: battery compartment
   onlyStoreWhenOpen: 0
-  size: {x: 3, y: 3}
+  size: {x: 2, y: 2}
   hideItems: 1
   attachItems: 1
-  startFilter: {fileID: 11400000, guid: 47ba41d97fc87d9469fa5be5b67bcbc2, type: 2}
+  startFilter: {fileID: 0}
   initialized: 1
   maxDistance: 5
   containerType: 1
---- !u!114 &6543599663705625233
+  isOpenable: 0
+  isInteractive: 1
+--- !u!114 &7459978131093067977
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,8 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 6607952608845362864}
---- !u!114 &8758314021191472069
+  containerDescriptor: {fileID: 3403677919292827686}
+--- !u!114 &7408037214966147921
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -54,25 +54,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 6289425011331041029}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 6607952608845362864}
---- !u!114 &5102587943057200226
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6289425011331041029}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7af9ca4d0981a8140bebf788b3626b23, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  containerDescriptor: {fileID: 6607952608845362864}
+  OpenIcon: {fileID: 0}
+  containerDescriptor: {fileID: 3403677919292827686}
 --- !u!1001 &1230607458103977360
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -142,6 +130,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8070487468840128646, guid: 3f243f813c03dc94fa25a73f344ee4f8,
         type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070487468840128646, guid: 3f243f813c03dc94fa25a73f344ee4f8,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -157,6 +150,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8070487468840128646, guid: 3f243f813c03dc94fa25a73f344ee4f8,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070487468840128646, guid: 3f243f813c03dc94fa25a73f344ee4f8,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
@@ -169,16 +167,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8070487468840128646, guid: 3f243f813c03dc94fa25a73f344ee4f8,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8070487468840128646, guid: 3f243f813c03dc94fa25a73f344ee4f8,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8070487468840128646, guid: 3f243f813c03dc94fa25a73f344ee4f8,
         type: 3}
@@ -239,15 +227,3 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1230607458103977360}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4457129679322822099 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3227138244421931075, guid: 3f243f813c03dc94fa25a73f344ee4f8,
-    type: 3}
-  m_PrefabInstance: {fileID: 1230607458103977360}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6289425011331041029}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2119b201c85e4ba2896540c7243a4b1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

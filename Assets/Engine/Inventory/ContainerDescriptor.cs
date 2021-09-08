@@ -27,6 +27,9 @@ namespace SS3D.Engine.Inventory
     /// ContainerDescriptor manages every aspect of a container attached to a gameObject.
     /// It's purpose is to centralize all relevant aspect of a container, it should be the only component one has to deal with when 
     /// adding containers to a game object.
+    /// Warning : Many attributes should be private instead of public. They are currently public because ContainerDescriptorEditor
+    /// needs to acces them directly, not through accessors or properties. ContainerDescriptorEditor should be declared as friend of 
+    /// ContainerDescriptor and most attributes should be private.
     /// </summary>
     public class ContainerDescriptor : MonoBehaviour
     {
@@ -72,7 +75,8 @@ namespace SS3D.Engine.Inventory
         /// <summary> The initial filter of the container. Controls what can go in the container. </summary>
         public Filter startFilter;
 
-        /// <summary> Used as a flag to create relevant components for the container only once, when the containerDescriptor is added. </summary>
+        /// <summary> Used as a flag to create relevant components for the container only once, when the containerDescriptor is added.
+        /// Used only by the Container Descriptor Editor</summary>
         public bool initialized = false;
 
         /// <summary> max distance at which the container is visible if not hidden </summary>

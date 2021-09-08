@@ -15,12 +15,11 @@ GameObject:
   - component: {fileID: 6689567568504538635}
   - component: {fileID: -3120317585915594544}
   - component: {fileID: -8083790513753718198}
-  - component: {fileID: 1981298109093057099}
-  - component: {fileID: 760937799653656271}
-  - component: {fileID: 4680753565401617806}
-  - component: {fileID: 1995653710945788349}
-  - component: {fileID: 7820281090163672140}
-  - component: {fileID: 5958089439892808166}
+  - component: {fileID: 4977585089586467796}
+  - component: {fileID: 4759627806277600562}
+  - component: {fileID: 7641541757941780632}
+  - component: {fileID: 3174596974336047494}
+  - component: {fileID: 7745630569793271760}
   m_Layer: 0
   m_Name: MopBucket
   m_TagString: Untagged
@@ -152,7 +151,7 @@ MonoBehaviour:
   DisplayName: Mop Bucket
   Text: 
   MaxDistance: 0
---- !u!114 &1981298109093057099
+--- !u!114 &4977585089586467796
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -164,26 +163,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachedContainer: {fileID: 760937799653656271}
-  attachedContainerGenerator: {fileID: 4680753565401617806}
-  containerSync: {fileID: 5958089439892808166}
-  openableContainer: {fileID: 0}
-  storageContainer: {fileID: 1995653710945788349}
-  visibleContainer: {fileID: 7820281090163672140}
-  openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
-  takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
-  storeIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
-  viewIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
+  attachedContainer: {fileID: 4759627806277600562}
+  containerSync: {fileID: 0}
+  containerInteractive: {fileID: 3174596974336047494}
+  containerUi: {fileID: 0}
+  openIcon: {fileID: 0}
+  takeIcon: {fileID: 0}
+  storeIcon: {fileID: 0}
+  viewIcon: {fileID: 0}
+  attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: mop bucket
   onlyStoreWhenOpen: 0
-  size: {x: 3, y: 4}
-  hideItems: 0
+  size: {x: 2, y: 2}
+  hideItems: 1
   attachItems: 1
   startFilter: {fileID: 0}
   initialized: 1
   maxDistance: 5
   containerType: 0
---- !u!114 &760937799653656271
+  isOpenable: 0
+  isInteractive: 1
+--- !u!114 &4759627806277600562
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -195,9 +195,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AttachmentOffset: {x: 0, y: 0, z: 0}
-  containerDescriptor: {fileID: 1981298109093057099}
---- !u!114 &4680753565401617806
+  containerDescriptor: {fileID: 4977585089586467796}
+--- !u!95 &7641541757941780632
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963665549342937872}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3174596974336047494
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -206,41 +224,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 963665549342937872}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 1981298109093057099}
---- !u!114 &1995653710945788349
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963665549342937872}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7af9ca4d0981a8140bebf788b3626b23, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  containerDescriptor: {fileID: 1981298109093057099}
-  viewContainerIcon: {fileID: 0}
---- !u!114 &7820281090163672140
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963665549342937872}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CheckObserversInterval: 1
-  containerDescriptor: {fileID: 1981298109093057099}
---- !u!114 &5958089439892808166
+  OpenIcon: {fileID: 0}
+  containerDescriptor: {fileID: 4977585089586467796}
+--- !u!114 &7745630569793271760
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

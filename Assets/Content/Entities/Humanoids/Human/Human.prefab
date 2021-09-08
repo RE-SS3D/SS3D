@@ -2054,6 +2054,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 173648d0ee0ccd240af52a475462692e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
 --- !u!1 &2448277291314358949
 GameObject:
   m_ObjectHideFlags: 0
@@ -2068,8 +2070,6 @@ GameObject:
   - component: {fileID: 3623899252154688686}
   - component: {fileID: 4409330219691020040}
   - component: {fileID: 8954022733386996155}
-  - component: {fileID: 8897578862319546621}
-  - component: {fileID: 1297340537171234237}
   - component: {fileID: 5051930415852072573}
   m_Layer: 15
   m_Name: hand_r
@@ -2161,12 +2161,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attachedContainer: {fileID: 8954022733386996155}
-  attachedContainerGenerator: {fileID: 8897578862319546621}
   containerSync: {fileID: 5051930415852072573}
-  openableContainer: {fileID: 0}
-  storageContainer: {fileID: 0}
-  visibleContainer: {fileID: 1297340537171234237}
-  containerName: container
+  containerInteractive: {fileID: 0}
+  containerUi: {fileID: 0}
+  openIcon: {fileID: 0}
+  takeIcon: {fileID: 0}
+  storeIcon: {fileID: 0}
+  viewIcon: {fileID: 0}
+  attachmentOffset: {x: 0, y: 0, z: 0}
+  containerName: right hand
   onlyStoreWhenOpen: 0
   size: {x: 0, y: 0}
   hideItems: 0
@@ -2175,6 +2178,8 @@ MonoBehaviour:
   initialized: 1
   maxDistance: 5
   containerType: 0
+  isOpenable: 0
+  isInteractive: 0
 --- !u!114 &8954022733386996155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2187,34 +2192,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AttachmentOffset: {x: 0, y: 0, z: 0}
-  containerDescriptor: {fileID: 4409330219691020040}
---- !u!114 &8897578862319546621
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2448277291314358949}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 4409330219691020040}
---- !u!114 &1297340537171234237
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2448277291314358949}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CheckObserversInterval: 1
   containerDescriptor: {fileID: 4409330219691020040}
 --- !u!114 &5051930415852072573
 MonoBehaviour:
@@ -4033,7 +4010,6 @@ GameObject:
   - component: {fileID: 8869297597610662472}
   - component: {fileID: 3547939921811356850}
   - component: {fileID: 3447648068970816323}
-  - component: {fileID: 7784611669467452136}
   - component: {fileID: 5807624756267220038}
   - component: {fileID: 7276617234702586979}
   m_Layer: 15
@@ -4094,12 +4070,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attachedContainer: {fileID: 3547939921811356850}
-  attachedContainerGenerator: {fileID: 0}
   containerSync: {fileID: 0}
-  openableContainer: {fileID: 0}
-  storageContainer: {fileID: 0}
-  visibleContainer: {fileID: 7784611669467452136}
-  containerName: container
+  containerInteractive: {fileID: 0}
+  containerUi: {fileID: 0}
+  openIcon: {fileID: 0}
+  takeIcon: {fileID: 0}
+  storeIcon: {fileID: 0}
+  viewIcon: {fileID: 0}
+  attachmentOffset: {x: 0, y: 0, z: 0}
+  containerName: left hand
   onlyStoreWhenOpen: 0
   size: {x: 0, y: 0}
   hideItems: 0
@@ -4108,6 +4087,8 @@ MonoBehaviour:
   initialized: 1
   maxDistance: 5
   containerType: 0
+  isOpenable: 0
+  isInteractive: 0
 --- !u!114 &3547939921811356850
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4120,7 +4101,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AttachmentOffset: {x: 0, y: 0, z: 0}
   containerDescriptor: {fileID: 8869297597610662472}
 --- !u!114 &3447648068970816323
 MonoBehaviour:
@@ -4138,20 +4118,6 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
---- !u!114 &7784611669467452136
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6793449098192051331}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CheckObserversInterval: 1
-  containerDescriptor: {fileID: 8869297597610662472}
 --- !u!95 &5807624756267220038
 Animator:
   serializedVersion: 3
@@ -5444,6 +5410,10 @@ PrefabInstance:
       value: DropShadowProjector
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
+      propertyPath: m_RootOrder
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -5456,6 +5426,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0.7071068
       objectReference: {fileID: 0}
@@ -5466,14 +5440,6 @@ PrefabInstance:
     - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
-      propertyPath: m_RootOrder
-      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

@@ -21,6 +21,7 @@ public class ContainerDescriptorEditor : Editor
         TitleStyle = new GUIStyle();
         TitleStyle.fontSize = 13;
         TitleStyle.fontStyle = FontStyle.Bold;
+        TitleStyle.normal.textColor = Color.white;
 
         containerDescriptor = (ContainerDescriptor)target;
         AddBase();
@@ -32,9 +33,6 @@ public class ContainerDescriptorEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        //VisibleContainer v = containerDescriptor.gameObject.GetComponent<VisibleContainer>();
-        //DestroyImmediate(v);
-
         serializedObject.Update();
 
         EditorGUILayout.LabelField(containerDescriptor.containerName, TitleStyle);
@@ -69,11 +67,14 @@ public class ContainerDescriptorEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    
+    /// <summary>
+    /// determines which type a container can be depending if it's interactive and openable.
+    /// </summary>
     public bool CheckEnabledType(System.Enum e)
     {
         ContainerType containerType = (ContainerType)e;
 
+        //
         if (containerDescriptor.isOpenable)
         {
             if (containerType == ContainerType.Normal || containerType == ContainerType.Pile)
@@ -88,6 +89,9 @@ public class ContainerDescriptorEditor : Editor
         return false;
     }
 
+    /// <summary>
+    /// Handles showing and setting icons in editor.
+    /// </summary>
     public void ShowIcons()
     {
         showIcon = EditorGUILayout.Foldout(showIcon, "Show icons");
@@ -134,7 +138,9 @@ public class ContainerDescriptorEditor : Editor
             AddAttached();    
             AddInteractive();
             AddSync();
-            containerDescriptor.initialized = true;
+            SerializedProperty sp = serializedObject.FindProperty("initialized");
+            sp.boolValue = true;
+            serializedObject.ApplyModifiedProperties();
         }
     }
 
@@ -143,30 +149,35 @@ public class ContainerDescriptorEditor : Editor
         Filter startFilter = (Filter)EditorGUILayout.ObjectField("Filter", containerDescriptor.startFilter, typeof(Filter), true);
         SerializedProperty sp = serializedObject.FindProperty("startFilter");
         sp.objectReferenceValue = startFilter;
+        serializedObject.ApplyModifiedProperties();
     }
     private void HandleSize()
     {
         Vector2Int size = EditorGUILayout.Vector2IntField("Size", containerDescriptor.size);
         SerializedProperty sp = serializedObject.FindProperty("size");
         sp.vector2IntValue = size;
+        serializedObject.ApplyModifiedProperties();
     }
     private void HandleAttachmentOffset()
     {
         Vector3 attachmentOffset = EditorGUILayout.Vector3Field("Attachment Offset", containerDescriptor.attachmentOffset);
         SerializedProperty sp = serializedObject.FindProperty("attachmentOffset");
         sp.vector3Value = attachmentOffset;
+        serializedObject.ApplyModifiedProperties();
     }
     private void HandleAttachItems()
     {
         bool attachItems = EditorGUILayout.Toggle("Attach Items", containerDescriptor.attachItems);
         SerializedProperty sp = serializedObject.FindProperty("attachItems");
         sp.boolValue = attachItems;
+        serializedObject.ApplyModifiedProperties();
     }
     private void HandleContainerType()
     {
         ContainerType containerType = (ContainerType)EditorGUILayout.EnumPopup(new GUIContent("Container type"), containerDescriptor.containerType, CheckEnabledType, false);
         SerializedProperty sp = serializedObject.FindProperty("containerType");
         sp.enumValueIndex = (int)containerType;
+        serializedObject.ApplyModifiedProperties();
     }
     private void HandleMaxDistance()
     {
@@ -209,6 +220,7 @@ public class ContainerDescriptorEditor : Editor
         {
             SerializedProperty sp2 = serializedObject.FindProperty("containerType");
             sp2.enumValueIndex = (int) ContainerType.Normal;
+            serializedObject.ApplyModifiedProperties();
         }
 
         // Openable container are always interactive.
@@ -273,12 +285,6 @@ public class ContainerDescriptorEditor : Editor
         containerDescriptor.attachedContainer = containerDescriptor.gameObject.AddComponent<AttachedContainer>();
         containerDescriptor.attachedContainer.containerDescriptor = containerDescriptor;
     }
-
-    private void RemoveAttached()
-    {
-        DestroyImmediate(attachedContainer, true);
-    }
-
     private void AddSync()
     {
         // There should be only one container sync script for any game object.
@@ -289,14 +295,6 @@ public class ContainerDescriptorEditor : Editor
         }
     }
 
-    private void RemoveSync()
-    {
-        if (Selection.activeGameObject.GetComponent<AttachedContainer>() == null)
-        {
-            DestroyImmediate(containerSync, true);
-        }          
-    }
-
     private void OnDestroy()
     {
         if(containerDescriptor == null)
@@ -305,17 +303,22 @@ public class ContainerDescriptorEditor : Editor
         }
     }
 
+    /// <summary>
+    /// Remove container related script on the target game object.
+    /// </summary>
     private void RemoveContainer()
     {
         DestroyImmediate(attachedContainer, true);
         DestroyImmediate(containerInteractive, true);
 
-        // This works only if the gameObject is selected. Sometimes the containerSync is not deleted because of it.
-        if (Selection.activeGameObject.GetComponent<AttachedContainer>() == null)
+        if (Selection.activeGameObject != null)
         {
-            DestroyImmediate(containerSync, true);
+            // This works only if the gameObject is selected. Sometimes the containerSync is not deleted because of it.
+            if (Selection.activeGameObject.GetComponent<AttachedContainer>() == null)
+            {
+                DestroyImmediate(containerSync, true);
+            }
         }
-
     }
 
 }

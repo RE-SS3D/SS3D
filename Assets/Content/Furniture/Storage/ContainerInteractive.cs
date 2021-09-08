@@ -12,7 +12,7 @@ namespace SS3D.Content.Furniture.Storage
     public class ContainerInteractive : NetworkedOpenable
     {
 
-        public ContainerDescriptor containerDescriptor;
+        [HideInInspector] public ContainerDescriptor containerDescriptor;
         private Sprite viewContainerIcon;
 
         protected override void Start()
