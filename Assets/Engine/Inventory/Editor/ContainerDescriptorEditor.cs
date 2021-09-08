@@ -310,10 +310,12 @@ public class ContainerDescriptorEditor : Editor
         DestroyImmediate(attachedContainer, true);
         DestroyImmediate(containerInteractive, true);
 
+        // This works only if the gameObject is selected. Sometimes the containerSync is not deleted because of it.
         if (Selection.activeGameObject.GetComponent<AttachedContainer>() == null)
         {
             DestroyImmediate(containerSync, true);
         }
+
     }
 
 }

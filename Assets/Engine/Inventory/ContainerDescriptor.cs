@@ -28,7 +28,6 @@ namespace SS3D.Engine.Inventory
     /// It's purpose is to centralize all relevant aspect of a container, it should be the only component one has to deal with when 
     /// adding containers to a game object.
     /// </summary>
-    [ExecuteAlways]
     public class ContainerDescriptor : MonoBehaviour
     {
         // References toward all container related scripts.
