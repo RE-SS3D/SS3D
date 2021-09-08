@@ -59,8 +59,12 @@ namespace SS3D.Content.Furniture.Storage
 
             return interactions.ToArray();
         }
+
+        
         protected override void OnOpenStateChange(object sender, bool e)
         {
+            // this is not called from the client for some reasons
+            Debug.Log("container changing state !");
             base.OnOpenStateChange(sender, e);
             if (!e)
             {
