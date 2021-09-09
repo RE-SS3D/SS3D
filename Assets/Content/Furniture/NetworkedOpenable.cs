@@ -41,9 +41,8 @@ namespace SS3D.Content.Furniture
             UpdateAnimator();
         }
         
-        private void OpenHook(bool oldVal, bool newVal)
+        protected virtual void OpenHook(bool oldVal, bool newVal)
         {
-
             UpdateAnimator();
         }
         
