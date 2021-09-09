@@ -59,9 +59,14 @@ namespace SS3D.Content.Furniture.Storage
 
             return interactions.ToArray();
         }
+
+        
         protected override void OnOpenStateChange(object sender, bool e)
         {
+            Debug.Log("In containerInteractive, before OnOpenStateChange base");
+            // this is not called from the client for some reasons 
             base.OnOpenStateChange(sender, e);
+            Debug.Log("In containerInteractive, OnOpenStateChange");
             if (!e)
             {
                 closeUis();
@@ -76,7 +81,8 @@ namespace SS3D.Content.Furniture.Storage
         /// </summary>
         private void closeUis()
         {
-            if(containerDescriptor.containerUi != null)
+            Debug.Log("In containerInteractive, closeUIs !");
+            if (containerDescriptor.containerUi != null)
             {
                 containerDescriptor.containerUi.Close();
             }

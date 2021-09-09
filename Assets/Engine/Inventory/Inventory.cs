@@ -228,6 +228,7 @@ namespace SS3D.Engine.Inventory
                 NetworkConnection client = connectionToClient;
                 if (client != null)
                 {
+                    Debug.Log("In remove container client is not null !");
                     TargetCloseContainer(client, container);
                 }
             }
