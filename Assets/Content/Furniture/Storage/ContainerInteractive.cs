@@ -67,15 +67,11 @@ namespace SS3D.Content.Furniture.Storage
             // this is not called from the client for some reasons 
             base.OnOpenStateChange(sender, e);
             Debug.Log("In containerInteractive, OnOpenStateChange");
-            if (!e)
-            {
-                closeUis();
-            }
         }
 
         /// <summary>
         /// recursively closes all container UI when the root container is closed.
-        /// This is potentially very slow as it calls get component for every items in every container.
+        /// This is potentially very slow when there's a lot of containers and items as it calls get component for every items in every container.
         /// A faster solution could be to use unity game tag and to tag every object with a container as such.
         /// Keeping track in Container of the list of items that are containers would make it really fast.
         /// </summary>
@@ -87,13 +83,24 @@ namespace SS3D.Content.Furniture.Storage
                 containerDescriptor.containerUi.Close();
             }
             
+            // We check for each item if they are interactive containers
             foreach(Item item in containerDescriptor.attachedContainer.Container.Items)
             {
                 ContainerInteractive containerInteractive = item.GameObject.GetComponent<ContainerInteractive>();
+                // if the item is an interactive container, we call this method again on it.
                 if (containerInteractive != null)
                 {
                     containerInteractive.closeUis();
                 }
+            }
+        }
+
+        protected override void OpenHook(bool oldVal, bool newVal)
+        {
+            base.OpenHook(oldVal, newVal);
+            if (!newVal)
+            {
+                closeUis();
             }
         }
     }
