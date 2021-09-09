@@ -33,7 +33,7 @@ public class IntentManager : MonoBehaviour
         intentButton.onClick.AddListener(TaskOnClick);
     }
 
-    private void TaskOnClick()
+    public void TaskOnClick()
     {
         SelectIntent();
     }
