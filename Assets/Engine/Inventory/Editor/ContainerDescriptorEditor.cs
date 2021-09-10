@@ -13,7 +13,6 @@ public class ContainerDescriptorEditor : Editor
     private GUIStyle TitleStyle;
     private bool showIcon = false;
     private AttachedContainer attachedContainer; 
-    private ContainerSync containerSync;
     private ContainerInteractive containerInteractive;
 
     public void OnEnable()
@@ -27,8 +26,7 @@ public class ContainerDescriptorEditor : Editor
         AddBase();
 
         attachedContainer = containerDescriptor.attachedContainer;
-        containerSync = containerDescriptor.containerSync;
-        containerInteractive = containerDescriptor.containerInteractive;   
+        containerInteractive = containerDescriptor.containerInteractive;
     }
 
     public override void OnInspectorGUI()
@@ -137,7 +135,6 @@ public class ContainerDescriptorEditor : Editor
         {
             AddAttached();    
             AddInteractive();
-            AddSync();
             SerializedProperty sp = serializedObject.FindProperty("initialized");
             sp.boolValue = true;
             serializedObject.ApplyModifiedProperties();
@@ -285,15 +282,6 @@ public class ContainerDescriptorEditor : Editor
         containerDescriptor.attachedContainer = containerDescriptor.gameObject.AddComponent<AttachedContainer>();
         containerDescriptor.attachedContainer.containerDescriptor = containerDescriptor;
     }
-    private void AddSync()
-    {
-        // There should be only one container sync script for any game object.
-        containerDescriptor.containerSync = containerDescriptor.gameObject.GetComponent<ContainerSync>();
-        if (containerDescriptor.containerSync == null)
-        {
-            containerDescriptor.containerSync = containerDescriptor.gameObject.AddComponent<ContainerSync>();
-        }
-    }
 
     private void OnDestroy()
     {
@@ -310,15 +298,6 @@ public class ContainerDescriptorEditor : Editor
     {
         DestroyImmediate(attachedContainer, true);
         DestroyImmediate(containerInteractive, true);
-
-        if (Selection.activeGameObject != null)
-        {
-            // This works only if the gameObject is selected. Sometimes the containerSync is not deleted because of it.
-            if (Selection.activeGameObject.GetComponent<AttachedContainer>() == null)
-            {
-                DestroyImmediate(containerSync, true);
-            }
-        }
     }
 
 }
