@@ -19,11 +19,16 @@ namespace SS3D.Engine.Inventory
     [DisallowMultipleComponent]
     public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget, IContainerizable
     {
-        public string ItemId;
+        public string itemId;
         public string Name;
 
         [Tooltip("The volume an item ocuppies in a container")]
         [SerializeField] private float volume = 10f;
+
+        public string ItemId
+        {
+            get => itemId;
+        }
 
         public float Volume
         {

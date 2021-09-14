@@ -65,14 +65,14 @@ namespace SS3D.Engine.Inventory.UI
             // thanks Unity UI
             yield return new WaitForEndOfFrame();
             Container container = AttachedContainer.Container;
-            foreach (Item item in container.Items)
+            foreach (IContainerizable item in container.Containerizables)
             {
                 Vector2Int position = container.PositionOf(item);
                 CreateItemDisplay(item, position);
             }
         }
 
-        private void ContainerOnContentsChanged(Container container, IEnumerable<Item> items, Container.ContainerChangeType type)
+        private void ContainerOnContentsChanged(Container container, IEnumerable<IContainerizable> items, Container.ContainerChangeType type)
         {
             switch (type)
             {
@@ -179,7 +179,7 @@ namespace SS3D.Engine.Inventory.UI
         
         public override void OnItemDrop(ItemDisplay display)
         {
-            Item item = display.Item;
+            IContainerizable item = display.Item;
             Vector2Int size = item.Size;
             Vector3 dragPosition = display.transform.position;
             
@@ -213,7 +213,7 @@ namespace SS3D.Engine.Inventory.UI
             transform.localPosition = slot.localPosition;
         }
 
-        private void CreateItemDisplay(Item item, Vector2Int position)
+        private void CreateItemDisplay(IContainerizable item, Vector2Int position)
         {
             GameObject o = Instantiate(ItemDisplayPrefab, transform);
             var gridItem = o.GetComponent<ItemGridItem>();
@@ -238,7 +238,7 @@ namespace SS3D.Engine.Inventory.UI
 			}
 			else
 			{
-				return container.ItemAt(slotPosition).gameObject;
+				return container.ItemAt(slotPosition).GetGameObject();
 			}
 		}
 		

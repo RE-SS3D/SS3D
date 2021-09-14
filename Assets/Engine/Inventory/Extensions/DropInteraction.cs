@@ -44,7 +44,7 @@ namespace SS3D.Engine.Inventory.Extensions
             if (interactionEvent.Source.Parent is Hands hands)
             {
 		// we place the item in the hand in the point we clicked
-                hands.PlaceHeldItem(interactionEvent.Point, hands.ItemInHand.transform.rotation);
+                hands.PlaceHeldItem(interactionEvent.Point, hands.ItemInHand.GetGameObject().transform.rotation);
             }
             
             return false;

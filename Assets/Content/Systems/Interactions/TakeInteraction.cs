@@ -63,7 +63,7 @@ namespace SS3D.Content.Systems.Interactions
         public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Hands hands = (Hands) interactionEvent.Source;
-            Item PickupItem = containerDescriptor.attachedContainer.Container.StoredItems[0].Item;
+            IContainerizable PickupItem = containerDescriptor.attachedContainer.Container.StoredContainerizables[0].Item;
             if (PickupItem != null)
             {
                 hands.Pickup(PickupItem);

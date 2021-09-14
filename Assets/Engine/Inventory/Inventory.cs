@@ -95,7 +95,7 @@ namespace SS3D.Engine.Inventory
                     var handler = GetComponent<InteractionHandler>();
                     if (handler != null)
                     {
-                        handler.InteractInHand(Hands.ItemInHand.gameObject, gameObject);
+                        handler.InteractInHand(Hands.ItemInHand.GetGameObject(), gameObject);
                     }
                 }
             }
@@ -141,7 +141,7 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="item">The item to transfer</param>
         /// <param name="targetContainer">Into which container to move the item</param>
-        public void ClientTransferItem(Item item, Vector2Int position, AttachedContainer targetContainer)
+        public void ClientTransferItem(IContainerizable item, Vector2Int position, AttachedContainer targetContainer)
         {
             NetworkedContainerReference? reference = NetworkedContainerReference.CreateReference(targetContainer);
             if (reference == null)
@@ -150,16 +150,16 @@ namespace SS3D.Engine.Inventory
                 return;
             }
             
-            CmdTransferItem(item.gameObject, position, (NetworkedContainerReference) reference);
+            CmdTransferItem(item.GetGameObject(), position, (NetworkedContainerReference) reference);
         }
 
         /// <summary>
         /// Requests the server to drop an item out of a container
         /// </summary>
         /// <param name="item">The item to drop</param>
-        public void ClientDropItem(Item item)
+        public void ClientDropItem(IContainerizable item)
         {
-            CmdDropItem(item.gameObject);
+            CmdDropItem(item.GetGameObject());
         }
 
         [Command]

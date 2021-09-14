@@ -20,14 +20,14 @@ namespace SS3D.Engine.Inventory.UI
         protected InventoryDisplayElement InventoryDisplayElement;
         
         [SerializeField]
-        private Item item;
+        private IContainerizable item;
         private Transform oldParent;
         private Vector3 startMousePosition;
         private Vector3 startPosition;
         private Image slotImage;
 
 
-        public Item Item
+        public IContainerizable Item
         {
             get => item;
             set

@@ -32,7 +32,7 @@ namespace SS3D.Engine.Inventory.Extensions
         /// <summary>
         /// The item held in the active hand
         /// </summary>
-        public Item ItemInHand => SelectedHandContainer?.Items.FirstOrDefault();
+        public IContainerizable ItemInHand => SelectedHandContainer?.Containerizables.FirstOrDefault();
         
         /// <summary>
         /// The currently active hand
@@ -64,7 +64,7 @@ namespace SS3D.Engine.Inventory.Extensions
         }
 
         [Server]
-        public void Pickup(Item item)
+        public void Pickup(IContainerizable item)
         {
             if (SelectedHandEmpty)
             {
@@ -99,7 +99,7 @@ namespace SS3D.Engine.Inventory.Extensions
                 return;
             }
 
-            Item item = ItemInHand;
+            IContainerizable item = ItemInHand;
             item.Container = null;
             ItemUtility.Place(item, position, rotation, transform);
         }
@@ -173,13 +173,13 @@ namespace SS3D.Engine.Inventory.Extensions
 
         public IInteractionSource GetActiveTool()
         {
-            Item itemInHand = ItemInHand;
+            IContainerizable itemInHand = ItemInHand;
             if (itemInHand == null)
             {
                 return null;
             }
 
-            IInteractionSource interactionSource = itemInHand.prefab.GetComponent<IInteractionSource>();
+            IInteractionSource interactionSource = itemInHand.GetGameObject().GetComponent<IInteractionSource>();
             if (interactionSource != null)
             {
                 interactionSource.Parent = this;

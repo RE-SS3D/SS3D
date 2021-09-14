@@ -381,7 +381,7 @@ namespace SS3D.Engine.Inventory
             if (Empty)
             {
                 containerizables.AddRange(otherContainer.containerizables);
-                OnContainerChanged(otherContainer.containerizables, ContainerChangeType.Add);
+                OnContainerChanged(otherContainer.Containerizables, ContainerChangeType.Add);
                 return;
             }
             
@@ -436,7 +436,7 @@ namespace SS3D.Engine.Inventory
             {
                 containerizables.Add(otherContainer.containerizables[i]);
             }
-            OnContainerChanged(otherContainer.containerizables.Skip(changedIndex + 1), ContainerChangeType.Add);
+            OnContainerChanged(otherContainer.Containerizables.Skip(changedIndex + 1), ContainerChangeType.Add);
                   
         }
 

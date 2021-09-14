@@ -20,7 +20,7 @@ namespace SS3D.Engine.Examine
 		{
 			// See what's in the player's hand
 			Hands hands = examinator.GetComponent<Hands>();
-			Item current = hands.ItemInHand;
+			IContainerizable current = hands.ItemInHand;
 			
 			// If there's nothing there, requirement isn't met.
 			if (current == null)

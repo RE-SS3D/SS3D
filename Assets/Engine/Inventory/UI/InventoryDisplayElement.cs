@@ -17,7 +17,7 @@ namespace SS3D.Engine.Inventory.UI
         /// Called when an item is dragged and dropped outside
         /// </summary>
         /// <param name="item">The dragged item</param>
-        public void DropItemOutside(Item item)
+        public void DropItemOutside(IContainerizable item)
         {
             Inventory.ClientDropItem(item);
         }

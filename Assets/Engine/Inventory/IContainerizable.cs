@@ -22,23 +22,33 @@ namespace SS3D.Engine.Inventory
             set;
         }
 
+        Sprite InventorySprite
+        {
+            get;
+        }
 
-        public bool InContainer();
 
-        public void SetContainer(Container newContainer, bool alreadyAdded, bool alreadyRemoved);
+        bool InContainer();
 
-        public void SetContainerUnchecked(Container newContainer);
+        void SetContainer(Container newContainer, bool alreadyAdded, bool alreadyRemoved);
 
-        public GameObject GetGameObject();
+       void SetContainerUnchecked(Container newContainer);
 
-        public List<Trait> Traits 
+        GameObject GetGameObject();
+
+        List<Trait> Traits 
         {
             get;
             set;
         }
 
+        string ItemId
+        {
+            get;
+        }
+        
 
-        public void Destroy();
+        void Destroy();
 
     }
 }

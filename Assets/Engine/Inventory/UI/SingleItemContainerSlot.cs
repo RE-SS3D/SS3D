@@ -44,7 +44,7 @@ namespace SS3D.Engine.Inventory.UI
 
         private void UpdateDisplay()
         {
-            ItemDisplay.Item = container.Container.Items.FirstOrDefault();
+            ItemDisplay.Item = container.Container.Containerizables.FirstOrDefault();
         }
 
         private void UpdateContainer(AttachedContainer newContainer)
@@ -63,7 +63,7 @@ namespace SS3D.Engine.Inventory.UI
             container = newContainer;
         }
 
-        private void ContainerContentsChanged(Container _, IEnumerable<Item> items, Container.ContainerChangeType changeType)
+        private void ContainerContentsChanged(Container _, IEnumerable<IContainerizable> items, Container.ContainerChangeType changeType)
         {
             if (changeType != Engine.Inventory.Container.ContainerChangeType.Move)
             {
@@ -90,7 +90,7 @@ namespace SS3D.Engine.Inventory.UI
 			}
 			else
 			{
-				return ItemDisplay.Item.gameObject;
+				return ItemDisplay.Item.GetGameObject();
 			}
 		}
 		

@@ -14,20 +14,20 @@ namespace SS3D.Content.Systems.Interactions
         /// <param name="original">The original item</param>
         /// <param name="replacement">The replacement</param>
         /// <param name="destroyOriginal">If the original item should be destroyed</param>
-        public static void ReplaceItem(Item original, Item replacement, bool destroyOriginal = true)
+        public static void ReplaceItem(IContainerizable original, Item replacement, bool destroyOriginal = true)
         {
             Container container = original.Container;
             if (container != null)
             {
                 int index = container.FindItem(original);
-                Container.StoredItem storedItem = container.StoredItems[index];
+                Container.StoredIContainerizable storedItem = container.StoredContainerizables[index];
                 container.RemoveItem(storedItem.Item);
                 container.AddItem(replacement, storedItem.Position);
             }
             else
             {
-                replacement.transform.position = original.transform.position;
-                replacement.transform.rotation = original.transform.rotation;
+                replacement.transform.position = original.GetGameObject().transform.position;
+                replacement.transform.rotation = original.GetGameObject().transform.rotation;
             }
 
             if (destroyOriginal)

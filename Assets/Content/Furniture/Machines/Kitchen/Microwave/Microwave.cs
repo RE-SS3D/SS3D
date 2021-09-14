@@ -107,12 +107,12 @@ public class Microwave : InteractionTargetNetworkBehaviour
 
     private void CookItems()
     {
-        var items = containerDescriptor.attachedContainer.Container.Items.ToArray();
+        var items = containerDescriptor.attachedContainer.Container.Containerizables.ToArray();
 
         // tries to get a microweavable in each item that is in the container
-        foreach (Item item in items)
+        foreach (IContainerizable item in items)
         {
-            Microwaveable microwaveable = item.GetComponent<Microwaveable>();
+            Microwaveable microwaveable = item.GetGameObject().GetComponent<Microwaveable>();
             if (microwaveable != null)
             {
                 // if the microwaveable has a result we produce it
