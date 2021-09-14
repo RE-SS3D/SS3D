@@ -26,13 +26,6 @@ namespace SS3D.Content.Furniture.Storage
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         { 
             List<IInteraction> interactions = new List<IInteraction>();
-            if (containerDescriptor.isOpenable)
-            {
-                OpenInteraction openInteraction = new OpenInteraction(containerDescriptor);
-                openInteraction.icon = containerDescriptor.openIcon;
-                openInteraction.OpenStateChange += OnOpenStateChange;
-                interactions.Add(openInteraction);
-            }
 
             StoreInteraction storeInteraction = new StoreInteraction(containerDescriptor);
             storeInteraction.icon = containerDescriptor.storeIcon;
@@ -55,6 +48,14 @@ namespace SS3D.Content.Furniture.Storage
                         interactions.Add(takeInteraction);
                         break;
                 }
+            }
+
+            if (containerDescriptor.isOpenable)
+            {
+                OpenInteraction openInteraction = new OpenInteraction(containerDescriptor);
+                openInteraction.icon = containerDescriptor.openIcon;
+                openInteraction.OpenStateChange += OnOpenStateChange;
+                interactions.Add(openInteraction);
             }
 
             return interactions.ToArray();
