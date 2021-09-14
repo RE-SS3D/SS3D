@@ -6,17 +6,17 @@ namespace SS3D.Engine.Networking
 {
     public static class StoredItemReaderWriter
     {
-        public static void WriteStoredItem(this NetworkWriter writer, Container.StoredItem item)
+        public static void WriteStoredItem(this NetworkWriter writer, Container.StoredIContainerizable item)
         {
-            writer.WriteGameObject(item.Item.gameObject);
+            writer.WriteGameObject(item.Item.GetGameObject());
             writer.WriteVector2Int(item.Position);
         }
         
-        public static Container.StoredItem ReadStoredItem(this NetworkReader reader)
+        public static Container.StoredIContainerizable ReadStoredItem(this NetworkReader reader)
         {
             var item = reader.ReadGameObject().GetComponent<Item>();
             Vector2Int position = reader.ReadVector2Int();
-            return new Container.StoredItem(item, position);
+            return new Container.StoredIContainerizable(item, position);
         }
     }
 }

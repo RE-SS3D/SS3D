@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using SS3D.Content;
+
 
 namespace SS3D.Engine.Inventory
 {
@@ -25,10 +27,10 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         public AttachedContainer AttachedTo { get; set; }
 
-        private readonly List<StoredItem> items = new List<StoredItem>();
+        private readonly List<StoredIContainerizable> containerizables = new List<StoredIContainerizable>();
         private readonly object modificationLock = new object();
 
-        public delegate void ContainerContentsHandler(Container container, IEnumerable<Item> items,
+        public delegate void ContainerContentsHandler(Container container, IEnumerable<IContainerizable> items,
             ContainerChangeType type);
 
         /// <summary>
@@ -44,17 +46,17 @@ namespace SS3D.Engine.Inventory
         /// <summary>
         /// How many items are in this container
         /// </summary>
-        public int ItemCount => items.Count;
-        
+        public int ItemCount => containerizables.Count;
+
         /// <summary>
         /// The items stored in this container
         /// </summary>
-        public IEnumerable<Item> Items => items.Select(x => x.Item);
+        public IEnumerable<IContainerizable> Containerizables => containerizables.Select(x => x.Item);
 
         /// <summary>
         /// The items stored in this container, including information on how they are stored
         /// </summary>
-        public List<StoredItem> StoredItems => items;
+        public List<StoredIContainerizable> StoredContainerizables => containerizables;
 
         /// <summary>
         /// The last time the contents of this container were changed
@@ -66,29 +68,29 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="item">The item to place</param>
         /// <returns>If the item was added</returns>
-        public bool AddItem(Item item)
+        public bool AddItem(IContainerizable containerizable)
         {
-            if (ContainsItem(item))
+            if (ContainsItem(containerizable))
             {
                 return true;
             }
 
-            if (!CouldStoreItem(item))
+            if (!CouldStoreItem(containerizable))
             {
                 return false;
             }
 
-            Vector2Int itemSize = item.Size;
-            int maxX = Size.x - itemSize.x;
-            int maxY = Size.y - itemSize.y;
+            Vector2Int containerizableSize = containerizable.Size;
+            int maxX = Size.x - containerizableSize.x;
+            int maxY = Size.y - containerizableSize.y;
 
             // TODO: Use a more efficient algorithm
             for (int y = 0; y <= maxY; y++)
             {
                 for (int x = 0; x <= maxX; x++)
                 {
-                    Vector2Int itemPosition = new Vector2Int(x, y);
-                    if (AddItem(item, itemPosition))
+                    Vector2Int containerizablePosition = new Vector2Int(x, y);
+                    if (AddItem(containerizable, containerizablePosition))
                     {
                         return true;
                     }
@@ -104,18 +106,18 @@ namespace SS3D.Engine.Inventory
         /// <param name="storedItem">The item to add</param>
         /// <param name="position">The target position in the container</param>
         /// <returns>If the item was added</returns>
-        public bool AddItem(Item item, Vector2Int position)
+        public bool AddItem(IContainerizable item, Vector2Int position)
         {
             int itemIndex = FindItem(item);
             if (itemIndex != -1)
             {
-                StoredItem existingItem = StoredItems[itemIndex];
+                StoredIContainerizable existingItem = StoredContainerizables[itemIndex];
                 // Try to move existing item
                 if (existingItem.Position != position)
                 {
                     if (IsAreaFreeExcluding(new RectInt(position, item.Size), item))
                     {
-                        StoredItems[itemIndex] = new StoredItem(item, position);
+                        StoredContainerizables[itemIndex] = new StoredIContainerizable(item, position);
                         OnContainerChanged(new[] {item}, ContainerChangeType.Move);
                         return true;
                     }
@@ -156,9 +158,9 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="item">The item to add</param>
         /// <param name="position">Where the item should go, make sure this position is valid and free!</param>
-        private void AddItemUnchecked(Item item, Vector2Int position)
+        private void AddItemUnchecked(IContainerizable item, Vector2Int position)
         {
-            var newItem = new StoredItem(item, position);
+            var newItem = new StoredIContainerizable(item, position);
 
             // Move it if it is already in the container
             if (MoveItemUnchecked(newItem))
@@ -166,7 +168,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
-            items.Add(newItem);
+            containerizables.Add(newItem);
             LastModification = Time.time;
         }
 
@@ -174,7 +176,7 @@ namespace SS3D.Engine.Inventory
         /// Adds a stored item without checking any validity
         /// <param name="storedItem">The item to store</param>
         /// </summary>
-        public void AddItemUnchecked(StoredItem storedItem)
+        public void AddItemUnchecked(StoredIContainerizable storedItem)
         {
             AddItemUnchecked(storedItem.Item, storedItem.Position);
         }
@@ -183,14 +185,14 @@ namespace SS3D.Engine.Inventory
         /// Add an array of items without performing checks
         /// </summary>
         /// <param name="items"></param>
-        public void AddItemsUnchecked(StoredItem[] items)
+        public void AddItemsUnchecked(StoredIContainerizable[] containerizables)
         {
-            foreach (StoredItem storedItem in items)
+            foreach (StoredIContainerizable storedItem in containerizables)
             {
                 AddItemUnchecked(storedItem);
             }
             
-            OnContainerChanged(items.Select(x => x.Item), ContainerChangeType.Add);
+            OnContainerChanged(containerizables.Select(x => x.Item), ContainerChangeType.Add);
         }
 
         /// <summary>
@@ -210,7 +212,7 @@ namespace SS3D.Engine.Inventory
                 return false;
             }
 
-            foreach (StoredItem storedItem in items)
+            foreach (StoredIContainerizable storedItem in containerizables)
             {
                 var storedItemPlacement = new RectInt(storedItem.Position, storedItem.Item.Size);
                 if (area.Overlaps(storedItemPlacement))
@@ -228,21 +230,21 @@ namespace SS3D.Engine.Inventory
         /// <param name="area">The area to check</param>
         /// <param name="item">The item to exclude from the check</param>
         /// <returns>If the given area is free</returns>
-        public bool IsAreaFreeExcluding(RectInt area, Item item)
+        public bool IsAreaFreeExcluding(RectInt area, IContainerizable item)
         {
             int i = FindItem(item);
-            StoredItem storedItem = default;
+            StoredIContainerizable storedContainerizable = default;
             if (i != -1)
             {
-                storedItem = items[i];
-                items[i] = new StoredItem(storedItem.Item, new Vector2Int(100000, 100000));
+                storedContainerizable = containerizables[i];
+                containerizables[i] = new StoredIContainerizable(storedContainerizable.Item, new Vector2Int(100000, 100000));
             }
 
             bool areaFree = IsAreaFree(area);
 
             if (i != -1)
             {
-                items[i] = storedItem;
+                containerizables[i] = storedContainerizable;
             }
 
             return areaFree;
@@ -252,11 +254,11 @@ namespace SS3D.Engine.Inventory
         /// Removes an item from the container
         /// </summary>
         /// <param name="item">The item to remove</param>
-        public void RemoveItem(Item item)
+        public void RemoveItem(IContainerizable item)
         {
-            for (var i = 0; i < items.Count; i++)
+            for (var i = 0; i < containerizables.Count; i++)
             {
-                if (items[i].Item == item)
+                if (containerizables[i].Item == item)
                 {
                     RemoveItemAt(i);
                     return;
@@ -268,18 +270,18 @@ namespace SS3D.Engine.Inventory
         /// Removes multiple items from the container
         /// </summary>
         /// <param name="itemsToRemove">An array of items to remove</param>
-        public void RemoveItems(Item[] itemsToRemove)
+        public void RemoveItems(IContainerizable[] itemsToRemove)
         {
-            foreach (Item itemToRemove in itemsToRemove)
+            foreach (IContainerizable itemToRemove in itemsToRemove)
             {
                 lock (modificationLock)
                 {
-                    for (var i = 0; i < items.Count; i++)
+                    for (var i = 0; i < containerizables.Count; i++)
                     {
-                        StoredItem storedItem = items[i];
+                        StoredIContainerizable storedItem = containerizables[i];
                         if (storedItem.Item == itemToRemove)
                         {
-                            StoredItems.RemoveAt(i);
+                            StoredContainerizables.RemoveAt(i);
                             itemToRemove.SetContainer(null, true, true);
                             break;
                         }
@@ -297,16 +299,16 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="item">The item to move</param>
         /// <returns>If the item was moved</returns>
-        public bool MoveItemUnchecked(StoredItem item)
+        public bool MoveItemUnchecked(StoredIContainerizable item)
         {
-            for (var i = 0; i < items.Count; i++)
+            for (var i = 0; i < containerizables.Count; i++)
             {
-                StoredItem x = items[i];
+                StoredIContainerizable x = containerizables[i];
                 if (x.Item == item.Item)
                 {
                     if (x.Position != item.Position)
                     {
-                        items[i] = item;
+                        containerizables[i] = item;
                         LastModification = Time.time;
                     }
 
@@ -321,9 +323,9 @@ namespace SS3D.Engine.Inventory
         /// Moves multiple items without performing validation
         /// </summary>
         /// <param name="items">The items to move</param>
-        public void MoveItemsUnchecked(StoredItem[] items)
+        public void MoveItemsUnchecked(StoredIContainerizable[] items)
         {
-            foreach (StoredItem storedItem in items)
+            foreach (StoredIContainerizable storedItem in items)
             {
                 MoveItemUnchecked(storedItem);
             }
@@ -336,9 +338,9 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="position">The position to check</param>
         /// <returns>The item at the position, or null if there is none</returns>
-        public Item ItemAt(Vector2Int position)
+        public IContainerizable ItemAt(Vector2Int position)
         {
-            foreach (StoredItem storedItem in items)
+            foreach (StoredIContainerizable storedItem in containerizables)
             {
                 var storedItemPlacement = new RectInt(storedItem.Position, storedItem.Item.Size);
                 if (storedItemPlacement.Contains(position))
@@ -355,9 +357,9 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="item">The item to look for</param>
         /// <returns>The item's position or (-1, -1)</returns>
-        public Vector2Int PositionOf(Item item)
+        public Vector2Int PositionOf(IContainerizable item)
         {
-            foreach (StoredItem storedItem in items)
+            foreach (StoredIContainerizable storedItem in containerizables)
             {
                 if (storedItem.Item == item)
                 {
@@ -378,8 +380,8 @@ namespace SS3D.Engine.Inventory
             
             if (Empty)
             {
-                items.AddRange(otherContainer.items);
-                OnContainerChanged(otherContainer.Items, ContainerChangeType.Add);
+                containerizables.AddRange(otherContainer.containerizables);
+                OnContainerChanged(otherContainer.containerizables, ContainerChangeType.Add);
                 return;
             }
             
@@ -391,12 +393,12 @@ namespace SS3D.Engine.Inventory
             
             // Loop through all items to find the first index of divergence
             // We can assume that all items after that point have been changed, as items are always inserted at the end
-            List<Item> movedItems = new List<Item>();
+            List<IContainerizable> movedItems = new List<IContainerizable>();
             int changedIndex = -1;
-            for (var i = 0; i < items.Count; i++)
+            for (var i = 0; i < containerizables.Count; i++)
             {
-                StoredItem storedItem = items[i];
-                StoredItem otherContainerItem = otherContainer.items[i];
+                StoredIContainerizable storedItem = containerizables[i];
+                StoredIContainerizable otherContainerItem = otherContainer.containerizables[i];
                 if (storedItem.Item != otherContainerItem.Item)
                 {
                     changedIndex = i;
@@ -422,29 +424,28 @@ namespace SS3D.Engine.Inventory
             }
 
             // Remove all items after first divergence
-            Item[] removedItems = new Item[items.Count - changedIndex];
-            for (var i = changedIndex; i < items.Count;)
+            Item[] removedItems = new Item[containerizables.Count - changedIndex];
+            for (var i = changedIndex; i < containerizables.Count;)
             {
-                items.RemoveAt(i);
+                containerizables.RemoveAt(i);
             }
             OnContainerChanged(removedItems.AsEnumerable(), ContainerChangeType.Remove);
 
             // Add all remaining items
             for (int i = changedIndex; i < otherContainer.ItemCount; i++)
             {
-                items.Add(otherContainer.items[i]);
+                containerizables.Add(otherContainer.containerizables[i]);
             }
-            OnContainerChanged(otherContainer.Items.Skip(changedIndex + 1), ContainerChangeType.Add);
-            
-            
+            OnContainerChanged(otherContainer.containerizables.Skip(changedIndex + 1), ContainerChangeType.Add);
+                  
         }
 
         private void RemoveItemAt(int index)
         {
-            StoredItem item = items[index];
+            StoredIContainerizable item = containerizables[index];
             lock (modificationLock)
             {
-                items.RemoveAt(index);
+                containerizables.RemoveAt(index);
             }
 
             LastModification = Time.time;
@@ -457,12 +458,12 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         public void Dump()
         {
-            Item[] oldItems = items.Select(x => x.Item).ToArray();
+            IContainerizable[] oldItems = containerizables.Select(x => x.Item).ToArray();
             for (int i = 0; i < oldItems.Length; i++)
             {
                 oldItems[i].Container = null;
             }
-            items.Clear();
+            containerizables.Clear();
 
             LastModification = Time.time;
             OnContainerChanged(oldItems, ContainerChangeType.Remove);
@@ -473,12 +474,12 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         public void Destroy()
         {
-            Item[] oldItems = items.Select(x => x.Item).ToArray();
-            foreach (var item in items)
+            IContainerizable[] oldItems = containerizables.Select(x => x.Item).ToArray();
+            foreach (var item in containerizables)
             {
                 item.Item.Destroy();
             }
-            items.Clear();
+            containerizables.Clear();
 
             LastModification = Time.time;
             OnContainerChanged(oldItems, ContainerChangeType.Remove);
@@ -489,9 +490,9 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="item">The item to search for</param>
         /// <returns>If it is in this container</returns>
-        public bool ContainsItem(Item item)
+        public bool ContainsItem(IContainerizable item)
         {
-            foreach (StoredItem storedItem in items)
+            foreach (StoredIContainerizable storedItem in containerizables)
             {
                 if (storedItem.Item == item)
                 {
@@ -507,10 +508,10 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool CouldStoreItem(Item item)
+        public bool CouldStoreItem(IContainerizable item)
         {
             // Do not store if the item is the container itself
-            if (AttachedTo.GetComponent<Item>() == item)
+            if (AttachedTo.GetComponent<IContainerizable>() == item)
             {
                 return false;
             }
@@ -531,7 +532,7 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool CouldHoldItem(Item item)
+        public bool CouldHoldItem(IContainerizable item)
         {
             Vector2Int itemSize = item.Size;
             int maxX = Size.x - itemSize.x;
@@ -557,11 +558,11 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="item">The item to look for</param>
         /// <returns>The index of the item or -1 if not found</returns>
-        public int FindItem(Item item)
+        public int FindItem(IContainerizable item)
         {
-            for (var i = 0; i < items.Count; i++)
+            for (var i = 0; i < containerizables.Count; i++)
             {
-                StoredItem storedItem = items[i];
+                StoredIContainerizable storedItem = containerizables[i];
                 if (storedItem.Item == item)
                 {
                     return i;
@@ -571,40 +572,40 @@ namespace SS3D.Engine.Inventory
             return -1;
         }
 
-        private void OnItemAdded(Item item)
+        private void OnItemAdded(IContainerizable item)
         {
             OnContainerChanged(new[] {item}, ContainerChangeType.Add);
         }
 
-        private void OnItemRemoved(Item item)
+        private void OnItemRemoved(IContainerizable item)
         {
             OnContainerChanged(new[] {item}, ContainerChangeType.Remove);
         }
 
-        protected virtual void OnContainerChanged(IEnumerable<Item> changedItems, ContainerChangeType type)
+        protected virtual void OnContainerChanged(IEnumerable<IContainerizable> changedItems, ContainerChangeType type)
         {
             ContentsChanged?.Invoke(this, changedItems, type);
         }
 
-        public struct StoredItem : IEquatable<StoredItem>
+        public struct StoredIContainerizable : IEquatable<StoredIContainerizable>
         {
-            public readonly Item Item;
+            public readonly IContainerizable Item;
             public readonly Vector2Int Position;
 
-            public StoredItem(Item item, Vector2Int position)
+            public StoredIContainerizable(IContainerizable item, Vector2Int position)
             {
                 Item = item;
                 Position = position;
             }
 
-            public bool Equals(StoredItem other)
+            public bool Equals(StoredIContainerizable other)
             {
                 return Equals(Item, other.Item) && Position.Equals(other.Position);
             }
 
             public override bool Equals(object obj)
             {
-                return obj is StoredItem other && Equals(other);
+                return obj is StoredIContainerizable other && Equals(other);
             }
 
             public override int GetHashCode()

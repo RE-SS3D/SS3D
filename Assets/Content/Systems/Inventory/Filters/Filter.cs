@@ -9,13 +9,13 @@ public class Filter : ScriptableObject
     public List<Trait> acceptedTraits;
     public List<Trait> deniedTraits;
 
-    public bool CanStore(Item item)
+    public bool CanStore(IContainerizable item)
     {
         int traitCount = 0;
         if (acceptedTraits.Count == 0 && deniedTraits.Count == 0)
             return true;
 
-        foreach (Trait trait in item.traits)
+        foreach (Trait trait in item.Traits)
         {
             if (acceptedTraits.Contains(trait))
             {

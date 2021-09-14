@@ -17,13 +17,29 @@ namespace SS3D.Engine.Inventory
      * An item describes what is held in a container.
      */
     [DisallowMultipleComponent]
-    public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget
+    public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget, IContainerizable
     {
         public string ItemId;
         public string Name;
 
-	    [Tooltip("The volume an item ocuppies in a container")]
-        public float Volume = 10f;
+        [Tooltip("The volume an item ocuppies in a container")]
+        [SerializeField] private float volume = 10f;
+
+        public float Volume
+        {
+            get => volume;
+        }
+
+        public GameObject GetGameObject()
+        {
+            return prefab;
+        }
+
+        public List<Trait> Traits
+        {
+            get => traits;
+            set => traits = value;
+        }
 	
 	// TODO: Make this private or just not show in the editor
 	// the sprite used for containers UI
@@ -45,8 +61,15 @@ namespace SS3D.Engine.Inventory
         public List<Trait> traits;
 
         [Tooltip("The size of the item inside a container")]
-        public Vector2Int Size;
-        
+        [SerializeField] private Vector2Int size;
+
+        public Vector2Int Size
+        {
+            get => size;
+            set => size = value;
+        }
+
+
         private Stackable stack;
         private Container container;
         private FrozenItem frozenItem;

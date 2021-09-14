@@ -149,7 +149,7 @@ namespace SS3D.Engine.Inventory
             container = newContainer;
         }
 
-        private void ContainerContentsChanged(Container container, IEnumerable<Item> items, Container.ContainerChangeType type)
+        private void ContainerContentsChanged(Container container, IEnumerable<IContainerizable> items, Container.ContainerChangeType type)
         {
             switch (type)
             {

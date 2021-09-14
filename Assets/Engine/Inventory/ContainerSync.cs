@@ -60,7 +60,7 @@ namespace SS3D.Engine.Inventory
                 AttachedContainer accessible = Containers[i];
 
                 // Container contents change
-                void ContentsHandler(Container _, IEnumerable<Item> items, Container.ContainerChangeType type)
+                void ContentsHandler(Container _, IEnumerable<IContainerizable> items, Container.ContainerChangeType type)
                 {
                     SyncContainerDelta(accessible, items, type);
                 }
@@ -103,7 +103,7 @@ namespace SS3D.Engine.Inventory
         /// <param name="container">The container the change happened in</param>
         /// <param name="changedItems">The items that changed</param>
         /// <param name="type">The type of change</param>
-        private void SyncContainerDelta(AttachedContainer attachedContainer, IEnumerable<Item> changedItems,
+        private void SyncContainerDelta(AttachedContainer attachedContainer, IEnumerable<IContainerizable> changedItems,
             Container.ContainerChangeType type)
         {
             if (attachedContainer.Observers.Count == 0)
@@ -112,17 +112,17 @@ namespace SS3D.Engine.Inventory
             }
 
             int index = Containers.FindIndex(c => attachedContainer == c);;
-            Item[] items = changedItems.ToArray();
-            GameObject[] itemGameObjects = items.Select(x => x.gameObject).ToArray();
+            IContainerizable[] items = changedItems.ToArray();
+            GameObject[] itemGameObjects = items.Select(x => x.GetGameObject()).ToArray();
             Container container = attachedContainer.Container;
 
-            Container.StoredItem[] storedItems = null;
+            Container.StoredIContainerizable[] storedItems = null;
             if (type == Container.ContainerChangeType.Add || type == Container.ContainerChangeType.Move)
             {
-                storedItems = new Container.StoredItem[items.Length];
+                storedItems = new Container.StoredIContainerizable[items.Length];
                 for (var i = 0; i < items.Length; i++)
                 {
-                    storedItems[i] = container.StoredItems[container.FindItem(items[i])];
+                    storedItems[i] = container.StoredContainerizables[container.FindItem(items[i])];
                 }
             }
 
@@ -173,7 +173,7 @@ namespace SS3D.Engine.Inventory
         }
 
         [TargetRpc]
-        private void TargetSyncItemsAdd(NetworkConnection target, int containerId, Container.StoredItem[] items)
+        private void TargetSyncItemsAdd(NetworkConnection target, int containerId, Container.StoredIContainerizable[] items)
         {
             if (NetworkServer.active)
             {
@@ -197,7 +197,7 @@ namespace SS3D.Engine.Inventory
         }
 
         [TargetRpc]
-        private void TargetSyncItemsMove(NetworkConnection target, int containerId, Container.StoredItem[] items)
+        private void TargetSyncItemsMove(NetworkConnection target, int containerId, Container.StoredIContainerizable[] items)
         {
             if (NetworkServer.active)
             {

@@ -81,7 +81,7 @@ namespace SS3D.Engine.Inventory
             {
                 if (!container.Container.Empty)
                 {
-                    ClientTransferItem(container.Container.Items.First(), Vector2Int.zero, Hands.SelectedHand);
+                    ClientTransferItem(container.Container.Containerizables.First(), Vector2Int.zero, Hands.SelectedHand);
                 }
             }
             else
@@ -113,7 +113,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
-            Item item = container.Container.ItemAt(position);
+            IContainerizable item = container.Container.ItemAt(position);
             if (Hands.SelectedHandEmpty)
             {
                 if (item != null)
