@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 5055055840736840480}
   - component: {fileID: 2622024214267529593}
   - component: {fileID: 355740003791169296}
+  - component: {fileID: 2434943589415651117}
   m_Layer: 0
   m_Name: microwave
   m_TagString: Untagged
@@ -425,6 +426,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+--- !u!114 &2434943589415651117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3444034143536514343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd22e5b037bc86545a52321457236696, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  MicrowaveDuration: 5
+  DestroyedItemPrefab: {fileID: 6704569312823119817}
+  onSound: {fileID: 8300000, guid: 18088b9f0e2635142acd8908effffd7c, type: 3}
+  finishSound: {fileID: 8300000, guid: f22e34e83e0f9874e8ebc28d164810c2, type: 3}
+  containerDescriptor: {fileID: 7542054549941471179}
 --- !u!1 &6704569312823119817
 GameObject:
   m_ObjectHideFlags: 0
