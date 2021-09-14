@@ -398,6 +398,7 @@ GameObject:
   - component: {fileID: 5968990734664171589}
   - component: {fileID: 6890820064306921166}
   - component: {fileID: 7968628461076615631}
+  - component: {fileID: 959800382168891740}
   m_Layer: 0
   m_Name: LockerSecure
   m_TagString: Untagged
@@ -686,6 +687,21 @@ MonoBehaviour:
   syncInterval: 0.1
   OpenIcon: {fileID: 0}
   containerDescriptor: {fileID: 5968990734664171589}
+--- !u!114 &959800382168891740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876708453869312076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisplayName: Secure locker
+  Text: Stores stuff
+  MaxDistance: 0
 --- !u!1 &5007033570441933088
 GameObject:
   m_ObjectHideFlags: 0
