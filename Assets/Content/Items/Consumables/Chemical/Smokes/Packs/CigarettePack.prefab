@@ -486,13 +486,13 @@ GameObject:
   - component: {fileID: 2081909342595332650}
   - component: {fileID: 6258711892491357218}
   - component: {fileID: 2884915648782529247}
-  - component: {fileID: -4694851487162049909}
   - component: {fileID: -8822467730395627730}
   - component: {fileID: -396234361631906964}
   - component: {fileID: -873706720358734130}
   - component: {fileID: 3578116224902229382}
-  - component: {fileID: 967319583440751856}
-  - component: {fileID: 5383969629031452887}
+  - component: {fileID: 5297538975650353676}
+  - component: {fileID: 5907964870670837485}
+  - component: {fileID: 7577100068504327687}
   m_Layer: 16
   m_Name: CigarettePack
   m_TagString: Untagged
@@ -586,26 +586,6 @@ MonoBehaviour:
   bulkSize: 1
   traits: []
   Size: {x: 0, y: 0}
---- !u!114 &-4694851487162049909
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533951594911835035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
-  StorageType: 0
-  Pile: 0
-  OnlyStoreWhenOpen: 1
-  MaxDistance: 1.5
-  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
 --- !u!114 &-8822467730395627730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -672,7 +652,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
---- !u!114 &967319583440751856
+--- !u!114 &5297538975650353676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 5907964870670837485}
+  containerSync: {fileID: 0}
+  containerInteractive: {fileID: 7577100068504327687}
+  containerUi: {fileID: 0}
+  openIcon: {fileID: 0}
+  takeIcon: {fileID: 0}
+  storeIcon: {fileID: 0}
+  viewIcon: {fileID: 0}
+  attachmentOffset: {x: 0, y: 0, z: 0}
+  containerName: cigarette pack
+  onlyStoreWhenOpen: 1
+  size: {x: 6, y: 2}
+  hideItems: 1
+  attachItems: 1
+  startFilter: {fileID: 11400000, guid: 82e9b88d2855d804caf0719d41240302, type: 2}
+  initialized: 1
+  maxDistance: 5
+  containerType: 1
+  isOpenable: 1
+  isInteractive: 1
+--- !u!114 &5907964870670837485
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -684,10 +696,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HideItems: 1
-  AttachItems: 1
-  AttachmentOffset: {x: 0, y: 0, z: 0}
---- !u!114 &5383969629031452887
+  containerDescriptor: {fileID: 5297538975650353676}
+--- !u!114 &7577100068504327687
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -696,12 +706,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 5533951594911835035}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AttachedContainer: {fileID: 967319583440751856}
-  Size: {x: 2, y: 2}
-  StartFilter: {fileID: 0}
+  syncMode: 0
+  syncInterval: 0.1
+  OpenIcon: {fileID: 0}
+  containerDescriptor: {fileID: 5297538975650353676}
 --- !u!1 &5782550245647892975
 GameObject:
   m_ObjectHideFlags: 0
