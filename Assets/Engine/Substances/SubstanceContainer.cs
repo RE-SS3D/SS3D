@@ -5,6 +5,7 @@ using Mirror;
 using SS3D.Content.Systems.Substances;
 using SS3D.Engine.Interactions;
 using UnityEngine;
+using SS3D.Engine.Inventory;
 
 namespace SS3D.Engine.Substances
 {
@@ -13,6 +14,12 @@ namespace SS3D.Engine.Substances
     /// </summary>
     public class SubstanceContainer : InteractionTargetBehaviour
     {
+        [SerializeField] private ContainerDescriptor containerDescriptor;
+        public ContainerDescriptor ContainerDescriptor
+        {
+            get => containerDescriptor;
+        }
+
         /// <summary>
         /// A list of all substances in this container
         /// </summary>

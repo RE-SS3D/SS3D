@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using SS3D.Content;
-
+using SS3D.Engine.Substances;
 
 namespace SS3D.Engine.Inventory
 {
@@ -12,6 +12,13 @@ namespace SS3D.Engine.Inventory
     /// </summary>
     public class Container
     {
+        private SubstanceContainer substanceContainer;
+
+        public SubstanceContainer SubstanceContainer
+        {
+            get => substanceContainer;
+        }
+
         /// <summary>
         /// The size of this container
         /// </summary>
