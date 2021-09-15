@@ -397,6 +397,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 4469562446528477193}
   containerSync: {fileID: 8774879036025570029}
   containerInteractive: {fileID: 7681387737837336857}
+  customInteractionScript: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -414,6 +415,7 @@ MonoBehaviour:
   containerType: 0
   isOpenable: 1
   isInteractive: 1
+  hasCustomInteraction: 0
 --- !u!114 &4469562446528477193
 MonoBehaviour:
   m_ObjectHideFlags: 0
