@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using SS3D.Engine.Inventory;
 using SS3D.Content.Furniture.Storage;
+using SS3D.Engine.Interactions;
 
 using System.Collections.Generic;
 
@@ -37,6 +38,16 @@ public class ContainerDescriptorEditor : Editor
 
         HandleContainerName();
         HandleIsInteractive();
+        if (containerDescriptor.isInteractive)
+        {
+            HandleCustomInteraction();
+        }
+
+        if (containerDescriptor.hasCustomInteraction)
+        {
+            HandleCustomInteractionScript();
+        }
+
         HandleIsOpenable();
 
         if (containerDescriptor.isOpenable)
@@ -198,6 +209,25 @@ public class ContainerDescriptorEditor : Editor
             RemoveInteractive();
         }
     }
+
+    private void HandleCustomInteraction()
+    {
+        bool hasCustomInteraction = EditorGUILayout.Toggle("has custom interaction", containerDescriptor.hasCustomInteraction);
+        SerializedProperty sp = serializedObject.FindProperty("hasCustomInteraction");
+        sp.boolValue = hasCustomInteraction;
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    private void HandleCustomInteractionScript()
+    {
+        InteractionTargetNetworkBehaviour customInteractionScript = (InteractionTargetNetworkBehaviour)
+            EditorGUILayout.ObjectField("custom interaction script", containerDescriptor.customInteractionScript, typeof(InteractionTargetNetworkBehaviour), true);
+
+            SerializedProperty sp = serializedObject.FindProperty("customInteractionScript");
+            sp.objectReferenceValue = customInteractionScript;
+            serializedObject.ApplyModifiedProperties();
+    }
+
     private void HandleContainerName()
     {
         string containerName = EditorGUILayout.TextField("Container Name", containerDescriptor.containerName);
@@ -274,6 +304,10 @@ public class ContainerDescriptorEditor : Editor
 
         SerializedProperty sp3 = serializedObject.FindProperty("onlyStoreWhenOpen");
         sp3.boolValue = false;
+        serializedObject.ApplyModifiedProperties();
+
+        SerializedProperty sp4= serializedObject.FindProperty("hasCustomInteraction");
+        sp4.boolValue = false;
         serializedObject.ApplyModifiedProperties();
     }
 

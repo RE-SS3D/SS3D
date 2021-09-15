@@ -5,6 +5,7 @@ using SS3D.Engine.Inventory.UI;
 using UnityEngine.Assertions;
 using Mirror;
 using SS3D.Content;
+using SS3D.Engine.Interactions;
 
 
 
@@ -36,8 +37,11 @@ namespace SS3D.Engine.Inventory
         // References toward all container related scripts.
         public AttachedContainer attachedContainer;
         public ContainerSync containerSync;
-        public ContainerInteractive containerInteractive; 
+        public ContainerInteractive containerInteractive;
 
+        public InteractionTargetNetworkBehaviour customInteractionScript;
+
+        // reference towards the container UI linked to this container.
         public ContainerUi containerUi;
 
         // Open interaction icon, visible when opening a container.
@@ -87,6 +91,8 @@ namespace SS3D.Engine.Inventory
         public bool isOpenable;
 
         public bool isInteractive;
+
+        public bool hasCustomInteraction;
 
         /// <summary>
         /// How often the observer list should be updated

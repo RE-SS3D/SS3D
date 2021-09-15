@@ -24,7 +24,12 @@ namespace SS3D.Content.Furniture.Storage
         }
 
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
-        { 
+        {
+            if (containerDescriptor.hasCustomInteraction)
+            {
+                return containerDescriptor.customInteractionScript.GenerateInteractionsFromTarget(interactionEvent);
+            }
+
             List<IInteraction> interactions = new List<IInteraction>();
 
             StoreInteraction storeInteraction = new StoreInteraction(containerDescriptor);
