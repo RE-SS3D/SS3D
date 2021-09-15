@@ -1,9 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using SS3D.Engine.Interactions.Extensions;
+﻿using System.Collections.Generic;
+using SS3D.Engine.Inventory;
 using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
-using UnityEngine.XR;
+using Mirror;
+using System;
+using Object = UnityEngine.Object;
+using SS3D.Engine.Interactions;
 
 namespace SS3D.Content
 {
@@ -13,13 +15,102 @@ namespace SS3D.Content
     /// do combat, etc.
     /// Anything you expect that is a creature should be considered an Entity
     /// </summary>
-    public class Entity : MonoBehaviour
+    public class Entity : InteractionSourceNetworkBehaviour, IContainerizable
     {
+
+        public List<Trait> traits;
+
         // view range for the FOV
         public float ViewRange = 10f;
 
         // hands for the interactions
         private Hands hands;
+
+        [SerializeField] private Vector2Int size;
+        [SerializeField] private float volume;
+
+        private Container container;
+
+
+        public Vector2Int Size
+        {
+            get => size;
+            set => size = value;
+        }
+
+        public float Volume
+        {
+            get => volume;
+        }
+
+        public Container Container
+        {
+            get => container;
+            set => SetContainer(value, false, false);
+        }
+
+        public Sprite InventorySprite
+        {
+            get;
+        }
+
+
+        public bool InContainer()
+        {
+            return container != null;
+        }
+
+        public void SetContainer(Container newContainer, bool alreadyAdded, bool alreadyRemoved)
+        {
+            if (container == newContainer)
+            {
+                return;
+            }
+
+            container?.RemoveItem(this);
+
+            if (!alreadyAdded && newContainer != null)
+            {
+                newContainer.AddItem(this);
+            }
+
+            container = newContainer;
+        }
+
+        public void SetContainerUnchecked(Container newContainer)
+        {
+            container = newContainer;
+        }
+        public GameObject GetGameObject()
+        {
+            return gameObject;
+        }
+
+        public List<Trait> Traits
+        {
+            get => traits;
+            set => traits = value;
+        }
+
+        public string ItemId
+        {
+            get;
+        }
+
+
+        public void Destroy()
+        {
+            Container = null;
+
+            if (isServer)
+            {
+                NetworkServer.Destroy(gameObject);
+            }
+            else
+            {
+                Object.Destroy(gameObject);
+            }
+        }
 
         public Hands Hands
         {
