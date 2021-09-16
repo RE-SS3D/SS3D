@@ -1,8 +1,9 @@
-//C# Example (LookAtPointEditor.cs)
 using UnityEditor;
 using UnityEngine;
 using SS3D.Engine.Inventory;
 using SS3D.Content.Furniture.Storage;
+using SS3D.Engine.Substances;
+
 
 using System.Collections.Generic;
 
@@ -60,6 +61,7 @@ public class ContainerDescriptorEditor : Editor
 
         HandleAttachItems();
         HandleAttachmentOffset();
+        HandleCanHoldSubstances();
 
         ShowIcons();
         serializedObject.ApplyModifiedProperties();
@@ -247,6 +249,42 @@ public class ContainerDescriptorEditor : Editor
         {
             sp.boolValue = hideItems;
         }
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    private void HandleCanHoldSubstances()
+    {
+        bool canHoldSubstances = EditorGUILayout.Toggle("Can Hold Substances", containerDescriptor.canHoldSubstances);
+        SerializedProperty sp = serializedObject.FindProperty("canHoldSubstances");
+        sp.boolValue = canHoldSubstances;
+        serializedObject.ApplyModifiedProperties();
+
+        if (canHoldSubstances && containerDescriptor.substanceContainer == null)
+        {
+            AddSubstances();
+        }
+        else if (!canHoldSubstances && containerDescriptor.substanceContainer != null)
+        {
+            RemoveSubstances();
+        }
+
+    }
+
+    private void AddSubstances()
+    {
+        SerializedProperty sp = serializedObject.FindProperty("canHoldSubstances");
+        sp.boolValue = true;
+        serializedObject.ApplyModifiedProperties();
+
+        SerializedProperty sp2 = serializedObject.FindProperty("substanceContainer");
+        sp2.objectReferenceValue = containerDescriptor.gameObject.AddComponent<SubstanceContainer>();
+        serializedObject.ApplyModifiedProperties();
+        containerDescriptor.containerInteractive.containerDescriptor = containerDescriptor;
+    }
+    private void RemoveSubstances()
+    {
+        SerializedProperty sp = serializedObject.FindProperty("canHoldSubstances");
+        sp.boolValue = false;
         serializedObject.ApplyModifiedProperties();
     }
     private void AddInteractive()

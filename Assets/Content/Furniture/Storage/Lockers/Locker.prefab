@@ -335,6 +335,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 480694477262860392}
   containerSync: {fileID: 0}
   containerInteractive: {fileID: 1814201091478461007}
+  substanceContainer: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -351,6 +352,7 @@ MonoBehaviour:
   maxDistance: 5
   containerType: 0
   isOpenable: 1
+  canHoldSubstances: 0
   isInteractive: 1
 --- !u!114 &480694477262860392
 MonoBehaviour:
@@ -410,6 +412,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 3921864672977133529}
   containerSync: {fileID: 0}
   containerInteractive: {fileID: 2847546755473809289}
+  substanceContainer: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -426,6 +429,7 @@ MonoBehaviour:
   maxDistance: 5
   containerType: 1
   isOpenable: 0
+  canHoldSubstances: 0
   isInteractive: 1
 --- !u!114 &3921864672977133529
 MonoBehaviour:

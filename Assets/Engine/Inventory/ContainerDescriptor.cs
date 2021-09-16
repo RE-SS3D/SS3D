@@ -5,6 +5,7 @@ using SS3D.Engine.Inventory.UI;
 using UnityEngine.Assertions;
 using Mirror;
 using SS3D.Content;
+using SS3D.Engine.Substances;
 
 
 
@@ -36,7 +37,8 @@ namespace SS3D.Engine.Inventory
         // References toward all container related scripts.
         public AttachedContainer attachedContainer;
         public ContainerSync containerSync;
-        public ContainerInteractive containerInteractive; 
+        public ContainerInteractive containerInteractive;
+        public SubstanceContainer substanceContainer;
 
         public ContainerUi containerUi;
 
@@ -85,6 +87,8 @@ namespace SS3D.Engine.Inventory
         public ContainerType containerType = ContainerType.Normal;
 
         public bool isOpenable;
+
+        public bool canHoldSubstances;
 
         public bool isInteractive;
 
