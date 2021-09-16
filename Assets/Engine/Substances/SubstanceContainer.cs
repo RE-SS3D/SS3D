@@ -18,6 +18,7 @@ namespace SS3D.Engine.Substances
         public ContainerDescriptor ContainerDescriptor
         {
             get => containerDescriptor;
+            set => containerDescriptor = value;
         }
 
         /// <summary>

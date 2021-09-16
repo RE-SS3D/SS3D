@@ -16,6 +16,7 @@ public class ContainerDescriptorEditor : Editor
     private bool showIcon = false;
     private AttachedContainer attachedContainer; 
     private ContainerInteractive containerInteractive;
+    private SubstanceContainer substanceContainer;
 
     public void OnEnable()
     {
@@ -29,6 +30,7 @@ public class ContainerDescriptorEditor : Editor
 
         attachedContainer = containerDescriptor.attachedContainer;
         containerInteractive = containerDescriptor.containerInteractive;
+        substanceContainer = containerDescriptor.substanceContainer;
     }
 
     public override void OnInspectorGUI()
@@ -312,10 +314,11 @@ public class ContainerDescriptorEditor : Editor
         SerializedProperty sp2 = serializedObject.FindProperty("substanceContainer");
         sp2.objectReferenceValue = containerDescriptor.gameObject.AddComponent<SubstanceContainer>();
         serializedObject.ApplyModifiedProperties();
-        containerDescriptor.containerInteractive.containerDescriptor = containerDescriptor;
+        containerDescriptor.substanceContainer.ContainerDescriptor = containerDescriptor;
     }
     private void RemoveSubstances()
     {
+        DestroyImmediate(substanceContainer);
         SerializedProperty sp = serializedObject.FindProperty("canHoldSubstances");
         sp.boolValue = false;
         serializedObject.ApplyModifiedProperties();

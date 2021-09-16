@@ -396,6 +396,7 @@ GameObject:
   - component: {fileID: 2332770887244154971}
   - component: {fileID: 5268824920572218968}
   - component: {fileID: 959800382168891740}
+  - component: {fileID: 3334941162667434930}
   m_Layer: 0
   m_Name: LockerSecure
   m_TagString: Untagged
@@ -563,6 +564,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 6769492389543985728}
   containerSync: {fileID: 2332770887244154971}
   containerInteractive: {fileID: 5268824920572218968}
+  substanceContainer: {fileID: 3334941162667434930}
   containerUi: {fileID: 0}
   openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
   takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
@@ -571,6 +573,7 @@ MonoBehaviour:
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: locker
   onlyStoreWhenOpen: 1
+  openWhenContainerViewed: 0
   size: {x: 4, y: 8}
   hideItems: 1
   attachItems: 1
@@ -579,7 +582,9 @@ MonoBehaviour:
   maxDistance: 5
   containerType: 0
   isOpenable: 1
+  canHoldSubstances: 1
   isInteractive: 1
+  hasCustomInteraction: 0
 --- !u!114 &6769492389543985728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -638,6 +643,23 @@ MonoBehaviour:
   DisplayName: Secure locker
   Text: Stores stuff
   MaxDistance: 0
+--- !u!114 &3334941162667434930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876708453869312076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDescriptor: {fileID: 0}
+  Volume: 0
+  Temperature: 0
+  Locked: 0
+  substances: []
 --- !u!1 &5007033570441933088
 GameObject:
   m_ObjectHideFlags: 0
