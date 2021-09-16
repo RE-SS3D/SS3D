@@ -1285,8 +1285,10 @@ GameObject:
   - component: {fileID: 1496625315116405185}
   - component: {fileID: 901849949230438595}
   - component: {fileID: 4345301749275640112}
+  - component: {fileID: 2697114711415273318}
+  - component: {fileID: 4437536535896930134}
   m_Layer: 0
-  m_Name: Ccorgi
+  m_Name: Corgi
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1349,7 +1351,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4706a8bb1f7943e43873549fa0b6ce14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  traits: []
   ViewRange: 10
+  pickupable: 1
+  size: {x: 1, y: 1}
+  volume: 5
+  pickupSprite: {fileID: 0}
+  attachmentPoint: {fileID: 2709665429581567834}
+  attachmentPointAlt: {fileID: 2709665429581567834}
+--- !u!114 &2697114711415273318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7899445757232768394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
+--- !u!95 &4437536535896930134
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7899445757232768394}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: dfaea4c79504d61458dbd954bccd476f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &8027909562908164662
 GameObject:
   m_ObjectHideFlags: 0
