@@ -527,7 +527,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aec684877e2d2ef4dbae8f2ca19b9e0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  traits: []
   ViewRange: 10
+  size: {x: 0, y: 0}
+  volume: 0
 --- !u!114 &280135170638016455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2163,6 +2168,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 8954022733386996155}
   containerSync: {fileID: 0}
   containerInteractive: {fileID: 0}
+  substanceContainer: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -2172,7 +2178,7 @@ MonoBehaviour:
   containerName: right hand
   onlyStoreWhenOpen: 0
   openWhenContainerViewed: 0
-  size: {x: 0, y: 0}
+  size: {x: 6, y: 6}
   hideItems: 0
   attachItems: 1
   startFilter: {fileID: 0}
@@ -2180,8 +2186,10 @@ MonoBehaviour:
   maxDistance: 5
   containerType: 0
   isOpenable: 0
+  canHoldSubstances: 0
   isInteractive: 0
   hasCustomInteraction: 0
+  volume: 1000
 --- !u!114 &8954022733386996155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4079,6 +4087,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 3547939921811356850}
   containerSync: {fileID: 0}
   containerInteractive: {fileID: 0}
+  substanceContainer: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -4088,7 +4097,7 @@ MonoBehaviour:
   containerName: left hand
   onlyStoreWhenOpen: 0
   openWhenContainerViewed: 0
-  size: {x: 0, y: 0}
+  size: {x: 6, y: 6}
   hideItems: 0
   attachItems: 1
   startFilter: {fileID: 11400000, guid: edc61d09fc1a5a84e98f63e51d1a0f1b, type: 2}
@@ -4096,8 +4105,10 @@ MonoBehaviour:
   maxDistance: 5
   containerType: 0
   isOpenable: 0
+  canHoldSubstances: 0
   isInteractive: 0
   hasCustomInteraction: 0
+  volume: 1000
 --- !u!114 &3547939921811356850
 MonoBehaviour:
   m_ObjectHideFlags: 0

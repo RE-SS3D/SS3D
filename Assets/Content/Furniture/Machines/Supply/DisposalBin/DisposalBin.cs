@@ -114,7 +114,7 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
             {
                 animator.SetTrigger("Dispose");
                 audioSource.Play();
-                
+                containerDescriptor.attachedContainer.Container.Destroy();
                 //busy = true;
                 // TODO: busy = false and Purge() or Dump() ? are called on the animation clip event
 		// ^ probably done already, check the animation, delete those lines if its already done
