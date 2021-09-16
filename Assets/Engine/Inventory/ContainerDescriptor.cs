@@ -39,8 +39,6 @@ namespace SS3D.Engine.Inventory
         public ContainerSync containerSync;
         public ContainerInteractive containerInteractive;
 
-        public InteractionTargetNetworkBehaviour customInteractionScript;
-
         // reference towards the container UI linked to this container.
         public ContainerUi containerUi;
 

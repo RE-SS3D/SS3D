@@ -43,11 +43,6 @@ public class ContainerDescriptorEditor : Editor
             HandleCustomInteraction();
         }
 
-        if (containerDescriptor.hasCustomInteraction)
-        {
-            HandleCustomInteractionScript();
-        }
-
         HandleIsOpenable();
 
         if (containerDescriptor.isOpenable)
@@ -234,16 +229,6 @@ public class ContainerDescriptorEditor : Editor
         SerializedProperty sp = serializedObject.FindProperty("hasCustomInteraction");
         sp.boolValue = hasCustomInteraction;
         serializedObject.ApplyModifiedProperties();
-    }
-
-    private void HandleCustomInteractionScript()
-    {
-        InteractionTargetNetworkBehaviour customInteractionScript = (InteractionTargetNetworkBehaviour)
-            EditorGUILayout.ObjectField("custom interaction script", containerDescriptor.customInteractionScript, typeof(InteractionTargetNetworkBehaviour), true);
-
-            SerializedProperty sp = serializedObject.FindProperty("customInteractionScript");
-            sp.objectReferenceValue = customInteractionScript;
-            serializedObject.ApplyModifiedProperties();
     }
 
     private void HandleContainerName()
