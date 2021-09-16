@@ -340,6 +340,7 @@ MonoBehaviour:
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: locker
   onlyStoreWhenOpen: 1
+  openWhenContainerViewed: 1
   size: {x: 4, y: 8}
   hideItems: 0
   attachItems: 1

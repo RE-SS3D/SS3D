@@ -411,6 +411,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 6707174422823836613}
   containerSync: {fileID: 0}
   containerInteractive: {fileID: 7738501091738870602}
+  customInteractionScript: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -419,6 +420,7 @@ MonoBehaviour:
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: medkit
   onlyStoreWhenOpen: 1
+  openWhenContainerViewed: 1
   size: {x: 2, y: 6}
   hideItems: 1
   attachItems: 1
@@ -426,8 +428,9 @@ MonoBehaviour:
   initialized: 1
   maxDistance: 5
   containerType: 0
-  isOpenable: 1
+  isOpenable: 0
   isInteractive: 1
+  hasCustomInteraction: 0
 --- !u!114 &6707174422823836613
 MonoBehaviour:
   m_ObjectHideFlags: 0

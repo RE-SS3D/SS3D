@@ -54,6 +54,10 @@ public class ContainerDescriptorEditor : Editor
         {
             HandleOnlyStoreWhenOpen();       
         }
+        else
+        {
+            HandleOpenWhenContainerViewed();
+        }
 
         if (containerDescriptor.containerType != ContainerType.Hidden && containerDescriptor.containerType != ContainerType.Pile)
         {
@@ -149,6 +153,22 @@ public class ContainerDescriptorEditor : Editor
             SerializedProperty sp = serializedObject.FindProperty("initialized");
             sp.boolValue = true;
             serializedObject.ApplyModifiedProperties();
+        }
+    }
+    private void HandleOpenWhenContainerViewed()
+    {
+        // check if the gameObject has a open animation
+        foreach(AnimatorControllerParameter controllerParameter in containerDescriptor.gameObject.GetComponent<Animator>().parameters)
+        {
+            if(controllerParameter.name == "Open")
+            {
+                bool openWhenContainerViewed = EditorGUILayout.Toggle("open when container viewed", containerDescriptor.attachItems);
+                Debug.Log(openWhenContainerViewed);
+                SerializedProperty sp = serializedObject.FindProperty("openWhenContainerViewed");
+                sp.boolValue = openWhenContainerViewed;
+                Debug.Log(sp.boolValue);
+                serializedObject.ApplyModifiedProperties();
+            }
         }
     }
 

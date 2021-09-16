@@ -15,14 +15,6 @@ namespace SS3D.Content.Furniture.Storage
         [HideInInspector] public ContainerDescriptor containerDescriptor;
         private Sprite viewContainerIcon;
 
-        protected override void Start()
-        {   
-            if (containerDescriptor.isOpenable)
-            {
-                animator = GameObject.GetComponent<Animator>();
-            }     
-        }
-
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             if (containerDescriptor.hasCustomInteraction)
@@ -40,7 +32,7 @@ namespace SS3D.Content.Furniture.Storage
             view.icon = containerDescriptor.viewIcon;
 
             // Pile or Normal the Store Interaction will always appear, but View only appears in Normal containers
-            if (IsOpen() | !containerDescriptor.onlyStoreWhenOpen | !containerDescriptor.isInteractive)
+            if (IsOpen() | !containerDescriptor.onlyStoreWhenOpen | !containerDescriptor.isOpenable)
             {
                 switch (containerDescriptor.containerType)
                 {

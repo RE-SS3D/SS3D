@@ -228,7 +228,6 @@ namespace SS3D.Engine.Inventory
                 NetworkConnection client = connectionToClient;
                 if (client != null)
                 {
-                    Debug.Log("In remove container client is not null !");
                     TargetCloseContainer(client, container);
                 }
             }
@@ -275,12 +274,41 @@ namespace SS3D.Engine.Inventory
         private void TargetOpenContainer(NetworkConnection target, AttachedContainer container)
         {
             OnContainerOpened(container);
+            CmdSetOpenState(container, true);         
         }
-        
+
+        /// <summary>
+        /// On containers having OpenWhenContainerViewed set true, this set the containers state appropriately.
+        /// If the container is viewed by another entity, it's already opened, and therefore it does nothing.
+        /// If this entity is the first to view it, it trigger the open animation of the object.
+        /// If the entity is the last to view it, it closes the container.
+        /// </summary>
+        /// <param name="container"> The container viewed by this entity.</param>
+        /// <param name="state"> The state to set in the container, true is opened and false is closed.</param>
+        [Command]
+        private void CmdSetOpenState(AttachedContainer container, bool state)
+        {
+            if (container.containerDescriptor.openWhenContainerViewed)
+            {
+                Entity currentObserver = GetComponent<Entity>(); 
+            foreach (Entity observer in container.Observers)
+            {
+                // checks if the container is already viewed by another entity
+                if (observer.Hands.Inventory.HasContainer(container) && observer != currentObserver)
+                {              
+                    return;
+                }
+            }
+            container.containerDescriptor.containerInteractive.setOpenState(state);
+            }
+        }
+
+
         [TargetRpc]
         private void TargetCloseContainer(NetworkConnection target, AttachedContainer container)
         {
             OnContainerClosed(container);
+            CmdSetOpenState(container, false);      
         }
 
         /**

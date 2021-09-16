@@ -39,6 +39,13 @@ namespace SS3D.Content.Furniture
             openState = e;
             UpdateAnimator();
         }
+
+        [Server]
+        public void setOpenState(bool e)
+        {
+            openState = e;
+            UpdateAnimator();
+        }
         
         protected virtual void OpenHook(bool oldVal, bool newVal)
         {

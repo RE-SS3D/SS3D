@@ -64,6 +64,9 @@ namespace SS3D.Engine.Inventory
         /// <summary> If the container is openable, this defines if things can be stored in the container without opening it. </summary>
         public bool onlyStoreWhenOpen = false;
 
+        /// <summary> When the container UI is opened, if set true, the animation on the object is triggered </summary>
+        public bool openWhenContainerViewed = false;
+
         /// <summary> Defines the size of the container, every item takes a defined place inside a container. </summary>
         public Vector2Int size = new Vector2Int(0,0);
 
