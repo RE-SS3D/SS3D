@@ -169,6 +169,13 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
+            // This prevents handler errors when TargetSyncContainer is called before the Start() method
+            // is executed. For example, this can occur for the player character on a client.
+            if (Containers.Count == 0)
+            {
+                UpdateContainers();
+            }
+
             Containers[containerId].Container.Reconcile(container);
         }
 
