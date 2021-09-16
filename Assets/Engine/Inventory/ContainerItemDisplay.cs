@@ -1,6 +1,8 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.Assertions;
+using System.Collections.Generic;
+
 
 namespace SS3D.Engine.Inventory
 {
@@ -24,13 +26,13 @@ namespace SS3D.Engine.Inventory
         /// <summary>
         /// The list of items displayed in the container;
         /// </summary>
-        private Item[] displayedItems;
+        private List<IContainerizable> displayedItems;
 
         public void Start()
         {
             Assert.IsNotNull(Container);
             
-            displayedItems = new Item[Displays.Length];
+            displayedItems = new List<IContainerizable>();
             Container.ItemAttached += ContainerOnItemAttached;
             Container.ItemDetached += ContainerOnItemDetached;
         }
@@ -40,31 +42,18 @@ namespace SS3D.Engine.Inventory
             Container.ItemAttached -= ContainerOnItemAttached;
         }
 
-        private void ContainerOnItemAttached(object sender, Item item)
+        private void ContainerOnItemAttached(object sender, IContainerizable item)
         {
             // Defines the transform of the item to be the first available position.
-            int index = -1;
-            for (var i = 0; i < Displays.Length; i++)
-            {
-                if (displayedItems[i] == null)
-                {
-                    index = i;
-                    break;
-                }
-            }
+            int index = displayedItems.Count;
 
-            if (index == -1)
-            {
-                return;
-            }
-
-            Transform itemTransform = item.transform;
+            Transform itemTransform = item.GetGameObject().transform;
 
             // Check if a custom attachment point should be used
-            Transform attachmentPoint = item.attachmentPoint;
-            if (Mirrored && item.attachmentPointAlt != null)
+            Transform attachmentPoint = item.AttachmentPoint;
+            if (Mirrored && item.AttachmentPointAlt != null)
             {
-                attachmentPoint = item.attachmentPointAlt;
+                attachmentPoint = item.AttachmentPointAlt;
             }
 
             if (attachmentPoint != null)
@@ -91,34 +80,26 @@ namespace SS3D.Engine.Inventory
                 itemTransform.localRotation = new Quaternion();
             }
 
-            displayedItems[index] = item;
+            displayedItems.Add(item);
         }
         
-        private void ContainerOnItemDetached(object sender, Item item)
+        private void ContainerOnItemDetached(object sender, IContainerizable item)
         {
-            int index = -1;
-            for (var i = 0; i < Displays.Length; i++)
-            {
-                if (displayedItems[i] == item)
-                {
-                    index = i;
-                    break;
-                }
-            }
+            int index = displayedItems.FindIndex(x => x == item);
 
             if (index == -1)
             {
                 return;
             }
 
-            Transform itemParent = item.transform.parent;
+            Transform itemParent = item.GetGameObject().transform.parent;
             if (itemParent != null && itemParent != Displays[index])
             {
-                item.transform.SetParent(null, true);
+                item.GetGameObject().transform.SetParent(null, true);
                 Destroy(itemParent.gameObject);
             }
 
-            displayedItems[index] = null;
+            displayedItems.Remove(item);
         }
     }
 }

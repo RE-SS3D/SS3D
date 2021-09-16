@@ -15,7 +15,7 @@ namespace SS3D.Content
     /// do combat, etc.
     /// Anything you expect that is a creature should be considered an Entity
     /// </summary>
-    public class Entity : InteractionSourceNetworkBehaviour, IContainerizable
+    public class Entity : InteractionSourceNetworkBehaviour, IContainerizable, IInteractionTarget
     {
 
         public List<Trait> traits;
@@ -26,10 +26,46 @@ namespace SS3D.Content
         // hands for the interactions
         private Hands hands;
 
+        [SerializeField] private bool pickupable = false;
         [SerializeField] private Vector2Int size;
         [SerializeField] private float volume;
 
         private Container container;
+
+        [SerializeField] private Sprite pickupSprite;
+
+        public void SetVisibility(bool visible)
+        {
+            return;
+        }
+
+        public void Freeze()
+        {
+            return;
+        }
+
+        public void Unfreeze()
+        {
+            return;
+        }
+
+        [Tooltip("a point we use to know how the item should be oriented when held in a hand")]
+        public Transform attachmentPoint;
+
+        [Tooltip("same point but for the left hand, in cases where it's needed")]
+        public Transform attachmentPointAlt;
+
+        public Transform AttachmentPoint
+        {
+            get => attachmentPoint;
+            set => attachmentPoint = value;
+        }
+
+        public Transform AttachmentPointAlt
+        {
+            get => attachmentPointAlt;
+            set => attachmentPointAlt = value;
+        }
 
 
         public Vector2Int Size
@@ -149,6 +185,25 @@ namespace SS3D.Content
             }
 
             return hand.GetInteractionRange().IsInRange(hand.InteractionOrigin, otherObject.transform.position);
+        }
+
+        public virtual IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
+        {
+            if (pickupable)
+            {
+                return new IInteraction[] { new PickupInteraction { icon = pickupSprite } };
+            }
+            return new IInteraction[0];
+        }
+
+        public override void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        {
+            base.GenerateInteractionsFromSource(targets, interactions);
+            if (pickupable)
+            {
+                DropInteraction dropInteraction = new DropInteraction();
+                interactions.Add(new InteractionEntry(null, dropInteraction));
+            }
         }
     }
 }

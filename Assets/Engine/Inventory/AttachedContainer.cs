@@ -25,8 +25,8 @@ namespace SS3D.Engine.Inventory
 
         public delegate void ObserverHandler(AttachedContainer container, Entity observer);
         
-        public event EventHandler<Item> ItemAttached;
-        public event EventHandler<Item> ItemDetached;
+        public event EventHandler<IContainerizable> ItemAttached;
+        public event EventHandler<IContainerizable> ItemDetached;
         public event ObserverHandler NewObserver;
         
         /// <summary>
@@ -116,12 +116,12 @@ namespace SS3D.Engine.Inventory
             return $"{name}({nameof(AttachedContainer)})[size: {container.Size}, items: {container.ItemCount}]";
         }
 
-        protected virtual void OnItemAttached(Item e)
+        protected virtual void OnItemAttached(IContainerizable e)
         {
             ItemAttached?.Invoke(this, e);
         }
 
-        protected virtual void OnItemDetached(Item e)
+        protected virtual void OnItemDetached(IContainerizable e)
         {
             ItemDetached?.Invoke(this, e);
         }
@@ -155,7 +155,7 @@ namespace SS3D.Engine.Inventory
             {
                 case Container.ContainerChangeType.Add:
                 {
-                    foreach (Item item in items)
+                    foreach (IContainerizable item in items)
                     {
                         item.Freeze();
                         // Make invisible
@@ -167,7 +167,7 @@ namespace SS3D.Engine.Inventory
                         // Attach to container
                         if (containerDescriptor.attachItems)
                         {
-                            Transform itemTransform = item.transform;
+                            Transform itemTransform = item.GetGameObject().transform;
                             itemTransform.SetParent(transform, false);
                             itemTransform.localPosition = containerDescriptor.attachmentOffset;
                             OnItemAttached(item);
@@ -178,7 +178,7 @@ namespace SS3D.Engine.Inventory
                 }
                 case Container.ContainerChangeType.Remove:
                 {
-                    foreach (Item item in items)
+                    foreach (IContainerizable item in items)
                     {
                         item.Unfreeze();
                         // Restore visibility
@@ -187,9 +187,9 @@ namespace SS3D.Engine.Inventory
                             item.SetVisibility(true);
                         }
                         // Remove parent if child of this
-                        if (item.transform.parent == transform)
+                        if (item.GetGameObject().transform.parent == transform)
                         {
-                            item.transform.SetParent(null, true);
+                            item.GetGameObject().transform.SetParent(null, true);
                         }
                         OnItemDetached(item);
                     }

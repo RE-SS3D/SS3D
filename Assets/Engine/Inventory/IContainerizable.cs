@@ -46,7 +46,24 @@ namespace SS3D.Engine.Inventory
         {
             get;
         }
-        
+
+        void Freeze();
+
+        void Unfreeze();
+
+        void SetVisibility(bool visible);
+
+        Transform AttachmentPoint
+        {
+            get;
+            set;
+        }
+
+        Transform AttachmentPointAlt
+        {
+            get;
+            set;
+        }
 
         void Destroy();
 

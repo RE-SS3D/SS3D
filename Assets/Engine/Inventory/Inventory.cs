@@ -226,7 +226,6 @@ namespace SS3D.Engine.Inventory
         {
             if (openedContainers.Remove(container))
             {
-                Debug.Log("client call remove");
                 SetOpenState(container, false);
                 NetworkConnection client = connectionToClient;
                 if (client != null)

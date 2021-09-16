@@ -59,6 +59,18 @@ namespace SS3D.Engine.Inventory
         [Tooltip("same point but for the left hand, in cases where it's needed")]
         public Transform attachmentPointAlt;
 
+        public Transform AttachmentPoint
+        {
+            get => attachmentPoint;
+            set => attachmentPoint = value;
+        }
+
+        public Transform AttachmentPointAlt
+        {
+            get => attachmentPointAlt;
+            set => attachmentPointAlt = value;
+        }
+
         [Tooltip("the bulk of the item, how heavy it is")]
         public BulkSize bulkSize = BulkSize.Medium;
 
