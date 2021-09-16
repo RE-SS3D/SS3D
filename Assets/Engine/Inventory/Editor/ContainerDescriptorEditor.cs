@@ -162,7 +162,7 @@ public class ContainerDescriptorEditor : Editor
         {
             if(controllerParameter.name == "Open")
             {
-                bool openWhenContainerViewed = EditorGUILayout.Toggle("open when container viewed", containerDescriptor.attachItems);
+                bool openWhenContainerViewed = EditorGUILayout.Toggle("open when container viewed", containerDescriptor.openWhenContainerViewed);
                 Debug.Log(openWhenContainerViewed);
                 SerializedProperty sp = serializedObject.FindProperty("openWhenContainerViewed");
                 sp.boolValue = openWhenContainerViewed;
