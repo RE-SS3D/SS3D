@@ -91,8 +91,10 @@ namespace SS3D.Engine.Inventory
 
         public bool isOpenable;
 
+        /// <summary> If true, adds the containerInteractive script. Defines container interactions common to most containers. </summary>
         public bool isInteractive;
 
+        /// <summary> If true, interactions in containerInteractive are ignored, instead, a script should implement IInteractionTarget </summary>
         public bool hasCustomInteraction;
 
         /// <summary>
@@ -136,7 +138,6 @@ namespace SS3D.Engine.Inventory
             if (lastObserverCheck + CheckObserversInterval < Time.time)
             {
                 // Could probably be more efficient, it's currently checking every connection in game.
-                // The Observers list could instead be actualized when a creature interact with the container directly. 
                 foreach (NetworkConnectionToClient connection in NetworkServer.connections.Values)
                 {
                     if (connection != null && connection.identity != null)

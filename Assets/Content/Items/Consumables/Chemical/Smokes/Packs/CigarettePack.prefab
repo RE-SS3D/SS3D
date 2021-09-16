@@ -675,6 +675,7 @@ MonoBehaviour:
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: cigarette pack
   onlyStoreWhenOpen: 1
+  openWhenContainerViewed: 1
   size: {x: 6, y: 2}
   hideItems: 1
   attachItems: 1
@@ -682,8 +683,9 @@ MonoBehaviour:
   initialized: 1
   maxDistance: 5
   containerType: 1
-  isOpenable: 1
+  isOpenable: 0
   isInteractive: 1
+  hasCustomInteraction: 0
 --- !u!114 &5907964870670837485
 MonoBehaviour:
   m_ObjectHideFlags: 0
