@@ -211,6 +211,7 @@ namespace SS3D.Engine.Inventory
         {
             container.AddObserver(GetComponent<Entity>());
             openedContainers.Add(container);
+            SetOpenState(container, true);
             NetworkConnection client = connectionToClient;
             if (client != null)
             {
@@ -225,6 +226,8 @@ namespace SS3D.Engine.Inventory
         {
             if (openedContainers.Remove(container))
             {
+                Debug.Log("client call remove");
+                SetOpenState(container, false);
                 NetworkConnection client = connectionToClient;
                 if (client != null)
                 {
@@ -273,8 +276,7 @@ namespace SS3D.Engine.Inventory
         [TargetRpc]
         private void TargetOpenContainer(NetworkConnection target, AttachedContainer container)
         {
-            OnContainerOpened(container);
-            CmdSetOpenState(container, true);         
+            OnContainerOpened(container);        
         }
 
         /// <summary>
@@ -285,8 +287,8 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="container"> The container viewed by this entity.</param>
         /// <param name="state"> The state to set in the container, true is opened and false is closed.</param>
-        [Command]
-        private void CmdSetOpenState(AttachedContainer container, bool state)
+        [Server]
+        private void SetOpenState(AttachedContainer container, bool state)
         {
             if (container.containerDescriptor.openWhenContainerViewed)
             {
@@ -307,8 +309,7 @@ namespace SS3D.Engine.Inventory
         [TargetRpc]
         private void TargetCloseContainer(NetworkConnection target, AttachedContainer container)
         {
-            OnContainerClosed(container);
-            CmdSetOpenState(container, false);      
+            OnContainerClosed(container);    
         }
 
         /**

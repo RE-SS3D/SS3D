@@ -418,7 +418,7 @@ MonoBehaviour:
   storeIcon: {fileID: 0}
   viewIcon: {fileID: 0}
   attachmentOffset: {x: 0, y: 0, z: 0}
-  containerName: container
+  containerName: toolbox
   onlyStoreWhenOpen: 0
   openWhenContainerViewed: 1
   size: {x: 3, y: 3}
