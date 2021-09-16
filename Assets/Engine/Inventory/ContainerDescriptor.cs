@@ -112,7 +112,21 @@ namespace SS3D.Engine.Inventory
         public float volume = 1000f;
 
         private float lastObserverCheck;
-        
+
+        public float RemainingVolume
+        {
+            get
+            {
+                float remainingVolume = volume - attachedContainer.Container.TotalStoredVolume();
+                if (canHoldSubstances)
+                {
+                    remainingVolume -= substanceContainer.CurrentVolume;
+                }
+                return remainingVolume;
+            }
+
+        }
+
         public void Awake()
         {
             // create a new container of Size size

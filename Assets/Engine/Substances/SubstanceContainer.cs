@@ -64,7 +64,11 @@ namespace SS3D.Engine.Substances
         /// <summary>
         /// The capacity of this container in milliliters
         /// </summary>
-        public float Volume;
+        public float Volume 
+        {
+            get => ContainerDescriptor.volume;
+        }
+        
 
         /// <summary>
         /// The temperature of the container
@@ -97,7 +101,7 @@ namespace SS3D.Engine.Substances
 
         public bool CanTranfer()
         {
-            return Locked;
+            return !Locked;
         }
 
         /// <summary>
@@ -117,6 +121,7 @@ namespace SS3D.Engine.Substances
         /// <param name="moles">How many moles should be added</param>
         public void AddSubstance(Substance substance, float moles)
         {
+           
             if (!CanTranfer())
                 return;
             
@@ -138,6 +143,7 @@ namespace SS3D.Engine.Substances
                 entry.Moles += moles;
                 Substances[index] = entry;
             }
+            Debug.Log("substance is added. Remaining volume is " + RemainingVolume);
         }
 
         /// <summary>

@@ -107,6 +107,16 @@ namespace SS3D.Engine.Inventory
             return false;
         }
 
+        public float TotalStoredVolume()
+        {
+            float volume = 0f;
+            foreach(IContainerizable stored in Containerizables)
+            {
+                volume += stored.Volume;
+            }
+            return volume;
+        }
+
         /// <summary>
         /// Tries to add an item at the specified position
         /// </summary>
