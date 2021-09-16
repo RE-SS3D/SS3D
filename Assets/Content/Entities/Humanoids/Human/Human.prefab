@@ -2070,7 +2070,7 @@ GameObject:
   - component: {fileID: 3623899252154688686}
   - component: {fileID: 4409330219691020040}
   - component: {fileID: 8954022733386996155}
-  - component: {fileID: 5051930415852072573}
+  - component: {fileID: 141195248142489828}
   m_Layer: 15
   m_Name: hand_r
   m_TagString: Untagged
@@ -2161,7 +2161,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attachedContainer: {fileID: 8954022733386996155}
-  containerSync: {fileID: 5051930415852072573}
+  containerSync: {fileID: 0}
   containerInteractive: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
@@ -2171,6 +2171,7 @@ MonoBehaviour:
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: right hand
   onlyStoreWhenOpen: 0
+  openWhenContainerViewed: 0
   size: {x: 0, y: 0}
   hideItems: 0
   attachItems: 1
@@ -2180,6 +2181,7 @@ MonoBehaviour:
   containerType: 0
   isOpenable: 0
   isInteractive: 0
+  hasCustomInteraction: 0
 --- !u!114 &8954022733386996155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2193,20 +2195,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   containerDescriptor: {fileID: 4409330219691020040}
---- !u!114 &5051930415852072573
-MonoBehaviour:
+--- !u!95 &141195248142489828
+Animator:
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2448277291314358949}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2119b201c85e4ba2896540c7243a4b1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &2667178978926422381
 GameObject:
   m_ObjectHideFlags: 0
@@ -4080,6 +4087,7 @@ MonoBehaviour:
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: left hand
   onlyStoreWhenOpen: 0
+  openWhenContainerViewed: 0
   size: {x: 0, y: 0}
   hideItems: 0
   attachItems: 1
@@ -4089,6 +4097,7 @@ MonoBehaviour:
   containerType: 0
   isOpenable: 0
   isInteractive: 0
+  hasCustomInteraction: 0
 --- !u!114 &3547939921811356850
 MonoBehaviour:
   m_ObjectHideFlags: 0

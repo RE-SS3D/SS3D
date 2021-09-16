@@ -36,7 +36,13 @@ namespace SS3D.Content.Furniture
 
         protected virtual void OnOpenStateChange(object sender, bool e)
         {
-            Debug.Log("in NetworkedOpenable, OnOpenStateChange");
+            openState = e;
+            UpdateAnimator();
+        }
+
+        [Server]
+        public void setOpenState(bool e)
+        {
             openState = e;
             UpdateAnimator();
         }
@@ -48,7 +54,6 @@ namespace SS3D.Content.Furniture
         
         private void UpdateAnimator()
         {
-            Debug.Log("in NetworkedOpenable, UpdateAnimator");
             animator.SetBool(OpenAnimation, openState);
         }
     }

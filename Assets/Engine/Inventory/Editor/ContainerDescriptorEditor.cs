@@ -4,6 +4,7 @@ using SS3D.Engine.Inventory;
 using SS3D.Content.Furniture.Storage;
 using SS3D.Engine.Substances;
 
+using SS3D.Engine.Interactions;
 
 using System.Collections.Generic;
 
@@ -38,11 +39,20 @@ public class ContainerDescriptorEditor : Editor
 
         HandleContainerName();
         HandleIsInteractive();
+        if (containerDescriptor.isInteractive)
+        {
+            HandleCustomInteraction();
+        }
+
         HandleIsOpenable();
 
         if (containerDescriptor.isOpenable)
         {
             HandleOnlyStoreWhenOpen();       
+        }
+        else
+        {
+            HandleOpenWhenContainerViewed();
         }
 
         if (containerDescriptor.containerType != ContainerType.Hidden && containerDescriptor.containerType != ContainerType.Pile)
@@ -142,6 +152,20 @@ public class ContainerDescriptorEditor : Editor
             serializedObject.ApplyModifiedProperties();
         }
     }
+    private void HandleOpenWhenContainerViewed()
+    {
+        // check if the gameObject has a open animation
+        foreach(AnimatorControllerParameter controllerParameter in containerDescriptor.gameObject.GetComponent<Animator>().parameters)
+        {
+            if(controllerParameter.name == "Open")
+            {
+                bool openWhenContainerViewed = EditorGUILayout.Toggle("open when container viewed", containerDescriptor.openWhenContainerViewed); 
+                SerializedProperty sp = serializedObject.FindProperty("openWhenContainerViewed");
+                sp.boolValue = openWhenContainerViewed;
+                serializedObject.ApplyModifiedProperties();
+            }
+        }
+    }
 
     private void HandleStartFilter()
     {
@@ -200,6 +224,15 @@ public class ContainerDescriptorEditor : Editor
             RemoveInteractive();
         }
     }
+
+    private void HandleCustomInteraction()
+    {
+        bool hasCustomInteraction = EditorGUILayout.Toggle("has custom interaction", containerDescriptor.hasCustomInteraction);
+        SerializedProperty sp = serializedObject.FindProperty("hasCustomInteraction");
+        sp.boolValue = hasCustomInteraction;
+        serializedObject.ApplyModifiedProperties();
+    }
+
     private void HandleContainerName()
     {
         string containerName = EditorGUILayout.TextField("Container Name", containerDescriptor.containerName);
@@ -312,6 +345,10 @@ public class ContainerDescriptorEditor : Editor
 
         SerializedProperty sp3 = serializedObject.FindProperty("onlyStoreWhenOpen");
         sp3.boolValue = false;
+        serializedObject.ApplyModifiedProperties();
+
+        SerializedProperty sp4= serializedObject.FindProperty("hasCustomInteraction");
+        sp4.boolValue = false;
         serializedObject.ApplyModifiedProperties();
     }
 

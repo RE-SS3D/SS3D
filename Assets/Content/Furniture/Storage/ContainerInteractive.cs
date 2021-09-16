@@ -15,16 +15,13 @@ namespace SS3D.Content.Furniture.Storage
         [HideInInspector] public ContainerDescriptor containerDescriptor;
         private Sprite viewContainerIcon;
 
-        protected override void Start()
-        {   
-            if (containerDescriptor.isOpenable)
-            {
-                animator = GameObject.GetComponent<Animator>();
-            }     
-        }
-
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
-        { 
+        {
+            if (containerDescriptor.hasCustomInteraction)
+            {
+                return new IInteraction[0];
+            }
+
             List<IInteraction> interactions = new List<IInteraction>();
 
             StoreInteraction storeInteraction = new StoreInteraction(containerDescriptor);
@@ -35,7 +32,7 @@ namespace SS3D.Content.Furniture.Storage
             view.icon = containerDescriptor.viewIcon;
 
             // Pile or Normal the Store Interaction will always appear, but View only appears in Normal containers
-            if (IsOpen() | !containerDescriptor.onlyStoreWhenOpen | !containerDescriptor.isInteractive)
+            if (IsOpen() | !containerDescriptor.onlyStoreWhenOpen | !containerDescriptor.isOpenable)
             {
                 switch (containerDescriptor.containerType)
                 {
@@ -63,22 +60,18 @@ namespace SS3D.Content.Furniture.Storage
 
         
         protected override void OnOpenStateChange(object sender, bool e)
-        {
-            Debug.Log("In containerInteractive, before OnOpenStateChange base");
-            // this is not called from the client for some reasons 
+        {  
             base.OnOpenStateChange(sender, e);
-            Debug.Log("In containerInteractive, OnOpenStateChange");
         }
 
         /// <summary>
         /// recursively closes all container UI when the root container is closed.
         /// This is potentially very slow when there's a lot of containers and items as it calls get component for every items in every container.
         /// A faster solution could be to use unity game tag and to tag every object with a container as such.
-        /// Keeping track in Container of the list of items that are containers would make it really fast.
+        /// Keeping track in Container of the list of objects that are containers would make it really fast.
         /// </summary>
         private void closeUis()
         {
-            Debug.Log("In containerInteractive, closeUIs !");
             if (containerDescriptor.containerUi != null)
             {
                 containerDescriptor.containerUi.Close();
@@ -87,11 +80,14 @@ namespace SS3D.Content.Furniture.Storage
             // We check for each item if they are interactive containers
             foreach(IContainerizable item in containerDescriptor.attachedContainer.Container.Containerizables)
             {
-                ContainerInteractive containerInteractive = item.GetGameObject().GetComponent<ContainerInteractive>();
+                ContainerInteractive[] containerInteractives = item.GameObject.GetComponents<ContainerInteractive>();
                 // if the item is an interactive container, we call this method again on it.
-                if (containerInteractive != null)
+                if (containerInteractives != null)
                 {
-                    containerInteractive.closeUis();
+                    foreach(ContainerInteractive c in containerInteractives)
+                    {
+                        c.closeUis();
+                    }                   
                 }
             }
         }

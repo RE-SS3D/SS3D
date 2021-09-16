@@ -49,7 +49,7 @@ namespace SS3D.Engine.Inventory.Extensions
         /// </summary>
         public bool SelectedHandEmpty => SelectedHandContainer.Empty;
 
-        public void Start()
+        public void Awake()
         {
             SupportsMultipleInteractions = true;
             

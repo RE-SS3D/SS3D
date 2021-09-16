@@ -6,6 +6,7 @@ using UnityEngine.Assertions;
 using Mirror;
 using SS3D.Content;
 using SS3D.Engine.Substances;
+using SS3D.Engine.Interactions;
 
 
 
@@ -40,6 +41,7 @@ namespace SS3D.Engine.Inventory
         public ContainerInteractive containerInteractive;
         public SubstanceContainer substanceContainer;
 
+        // reference towards the container UI linked to this container.
         public ContainerUi containerUi;
 
         // Open interaction icon, visible when opening a container.
@@ -61,6 +63,9 @@ namespace SS3D.Engine.Inventory
 
         /// <summary> If the container is openable, this defines if things can be stored in the container without opening it. </summary>
         public bool onlyStoreWhenOpen = false;
+
+        /// <summary> When the container UI is opened, if set true, the animation on the object is triggered </summary>
+        public bool openWhenContainerViewed = false;
 
         /// <summary> Defines the size of the container, every item takes a defined place inside a container. </summary>
         public Vector2Int size = new Vector2Int(0,0);
@@ -90,7 +95,11 @@ namespace SS3D.Engine.Inventory
 
         public bool canHoldSubstances;
 
+        /// <summary> If true, adds the containerInteractive script. Defines container interactions common to most containers. </summary>
         public bool isInteractive;
+
+        /// <summary> If true, interactions in containerInteractive are ignored, instead, a script should implement IInteractionTarget </summary>
+        public bool hasCustomInteraction;
 
         /// <summary>
         /// How often the observer list should be updated
@@ -133,7 +142,6 @@ namespace SS3D.Engine.Inventory
             if (lastObserverCheck + CheckObserversInterval < Time.time)
             {
                 // Could probably be more efficient, it's currently checking every connection in game.
-                // The Observers list could instead be actualized when a creature interact with the container directly. 
                 foreach (NetworkConnectionToClient connection in NetworkServer.connections.Values)
                 {
                     if (connection != null && connection.identity != null)
