@@ -19,7 +19,7 @@ namespace SS3D.Content.Furniture.Storage
         {
             if (containerDescriptor.hasCustomInteraction)
             {
-                return containerDescriptor.customInteractionScript.GenerateInteractionsFromTarget(interactionEvent);
+                return new IInteraction[0];
             }
 
             List<IInteraction> interactions = new List<IInteraction>();
