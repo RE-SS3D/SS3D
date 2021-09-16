@@ -106,6 +106,11 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         private float CheckObserversInterval = 1f;
 
+        /// <summary>
+        /// The capacity of this container in milliliters
+        /// </summary>
+        public float volume = 1000f;
+
         private float lastObserverCheck;
         
         public void Awake()

@@ -74,6 +74,7 @@ public class ContainerDescriptorEditor : Editor
         HandleAttachItems();
         HandleAttachmentOffset();
         HandleCanHoldSubstances();
+        HandleVolume();
 
         ShowIcons();
         serializedObject.ApplyModifiedProperties();
@@ -272,6 +273,15 @@ public class ContainerDescriptorEditor : Editor
         sp.boolValue = onlyStoreWhenOpen;
         serializedObject.ApplyModifiedProperties();
     }
+
+    private void HandleVolume()
+    {
+        float volume = EditorGUILayout.FloatField("Volume", containerDescriptor.volume);
+        SerializedProperty sp = serializedObject.FindProperty("volume");
+        sp.floatValue = volume;
+        serializedObject.ApplyModifiedProperties();
+    }
+
     private void HandleHideItems()
     {
         bool hideItems = EditorGUILayout.Toggle("Hide Items", containerDescriptor.hideItems);

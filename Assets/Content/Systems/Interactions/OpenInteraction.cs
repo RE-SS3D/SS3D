@@ -73,7 +73,6 @@ namespace SS3D.Content.Systems.Interactions
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Debug.Log("in OpenInteraction, Start");
             GameObject target = ((IGameObjectProvider) interactionEvent.Target).GameObject;
             Animator animator = target.GetComponent<Animator>();
             bool open = animator.GetBool(OpenId);
@@ -94,7 +93,6 @@ namespace SS3D.Content.Systems.Interactions
 
         private void OnOpenStateChange(bool e)
         {
-            Debug.Log("In OpenInteraction, OnOpenStateChange");
             OpenStateChange?.Invoke(this, e);
         }
     }
