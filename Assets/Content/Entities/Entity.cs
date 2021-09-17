@@ -6,6 +6,7 @@ using Mirror;
 using System;
 using Object = UnityEngine.Object;
 using SS3D.Engine.Interactions;
+using SS3D.Engine.Utilities;
 
 namespace SS3D.Content
 {
@@ -32,7 +33,7 @@ namespace SS3D.Content
 
         private Container container;
 
-        [SerializeField] private Sprite pickupSprite;
+        [SerializeField] private Sprite sprite;
 
         public void SetVisibility(bool visible)
         {
@@ -87,7 +88,15 @@ namespace SS3D.Content
 
         public Sprite InventorySprite
         {
-            get;
+            get
+            {
+                if (sprite  == null)
+                {
+                    GenerateNewIcon();
+                }
+
+                return sprite;
+            }
         }
 
 
@@ -191,7 +200,7 @@ namespace SS3D.Content
         {
             if (pickupable)
             {
-                return new IInteraction[] { new PickupInteraction { icon = pickupSprite } };
+                return new IInteraction[] { new PickupInteraction { icon = sprite } };
             }
             return new IInteraction[0];
         }
@@ -204,6 +213,42 @@ namespace SS3D.Content
                 DropInteraction dropInteraction = new DropInteraction();
                 interactions.Add(new InteractionEntry(null, dropInteraction));
             }
+        }
+
+        public virtual void Start()
+        {
+            foreach (var animator in GetComponents<Animator>())
+            {
+                animator.keepAnimatorControllerStateOnDisable = true;
+            }
+
+            // Items can't have no size
+            if (Size.x == 0)
+            {
+                Size = new Vector2Int(1, Size.y);
+            }
+            if (Size.y == 0)
+            {
+                Size = new Vector2Int(Size.x, 1);
+            }
+
+            if (sprite == null && NetworkClient.active)
+            {
+                GenerateNewIcon();
+            }
+        }
+
+        // TODO: Improve this
+        // we have this to generate icons at start, I do not know how bad it is for performance
+        // if you know anything about it, tell us
+        public void GenerateNewIcon()
+        {
+            RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
+            RuntimePreviewGenerator.OrthographicMode = true;
+
+            Texture2D texture = RuntimePreviewGenerator.GenerateModelPreview(this.transform, 128, 128, false);
+            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
+            sprite.name = transform.name;
         }
     }
 }

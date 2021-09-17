@@ -65,6 +65,8 @@ namespace SS3D.Engine.Inventory
             set;
         }
 
+        void GenerateNewIcon();
+
         void Destroy();
 
     }
