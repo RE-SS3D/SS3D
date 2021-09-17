@@ -367,7 +367,7 @@ MonoBehaviour:
   canHoldSubstances: 1
   isInteractive: 1
   hasCustomInteraction: 0
-  volume: 100000
+  volume: 1000
 --- !u!114 &7500473405672096913
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -434,7 +434,7 @@ GameObject:
   - component: {fileID: 6891701966897057378}
   - component: {fileID: 3963227401901443938}
   m_Layer: 5
-  m_Name: Item Display
+  m_Name: ItemDisplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -566,4 +566,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemImage: {fileID: 1236023188648638431}
-  item: {fileID: 0}

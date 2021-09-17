@@ -117,14 +117,26 @@ namespace SS3D.Engine.Inventory
         {
             get
             {
-                float remainingVolume = volume - attachedContainer.Container.TotalStoredVolume();
+                return volume - VolumeOccupied;
+            }
+        }
+
+        public float VolumeOccupied
+        {
+            get
+            {
+                float volumeOccupied = attachedContainer.Container.TotalStoredVolume();
                 if (canHoldSubstances)
                 {
-                    remainingVolume -= substanceContainer.CurrentVolume;
+                    volumeOccupied += substanceContainer.CurrentVolume;
                 }
-                return remainingVolume;
+                return volumeOccupied;
             }
+        }
 
+        public float PercentageFull
+        {
+            get => 100 * (VolumeOccupied / volume);
         }
 
         public void Awake()

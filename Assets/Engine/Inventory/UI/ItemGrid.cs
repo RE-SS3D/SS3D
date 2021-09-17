@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using SS3D.Engine.Examine;
+using SS3D.Engine.Substances;
 
 namespace SS3D.Engine.Inventory.UI
 {
@@ -53,11 +54,16 @@ namespace SS3D.Engine.Inventory.UI
             }
 
             container.ContentsChanged += ContainerOnContentsChanged;
+            if (AttachedContainer.containerDescriptor.canHoldSubstances)
+            {
+                container.AttachedTo.containerDescriptor.substanceContainer.ContentsChanged += ContainerOnSubstanceChanged;
+            }
         }
 
         private void OnDestroy()
         {
             AttachedContainer.Container.ContentsChanged -= ContainerOnContentsChanged;
+            AttachedContainer.containerDescriptor.substanceContainer.ContentsChanged -= ContainerOnSubstanceChanged;
         }
 
         private IEnumerator DisplayInitialItems()
@@ -72,19 +78,25 @@ namespace SS3D.Engine.Inventory.UI
             }
         }
 
+        private void ContainerOnSubstanceChanged(SubstanceContainer substanceContainer)
+        {
+            return;
+        }
+
+
         private void ContainerOnContentsChanged(Container container, IEnumerable<IContainerizable> items, Container.ContainerChangeType type)
         {
             switch (type)
             {
                 case Container.ContainerChangeType.Add:
-                    foreach (Item item in items)
+                    foreach (IContainerizable item in items)
                     {
                         Vector2Int position = container.PositionOf(item);
                         CreateItemDisplay(item, position);
                     }
                     break;
                 case Container.ContainerChangeType.Remove:
-                    foreach (Item item in items)
+                    foreach (IContainerizable item in items)
                     {
                         for (var i = 0; i < gridItems.Count; i++)
                         {
@@ -99,7 +111,7 @@ namespace SS3D.Engine.Inventory.UI
                     }
                     break;
                 case Container.ContainerChangeType.Move:
-                    foreach (Item item in items)
+                    foreach (IContainerizable item in items)
                     {
                         foreach (ItemGridItem gridItem in gridItems)
                         {

@@ -32,8 +32,17 @@ namespace SS3D.Engine.Inventory.UI
             get => item;
             set
             {
+
                 item = value;
-                UpdateDisplay();
+                if (item != null)
+                {
+                    float percentageFull = value.Container.AttachedTo.containerDescriptor.PercentageFull;
+                    UpdateDisplay(percentageFull);
+                }
+                else
+                {
+                    UpdateDisplay(0f);
+                }
             }
         }
 
@@ -42,7 +51,7 @@ namespace SS3D.Engine.Inventory.UI
             slotImage = GetComponent<Image>();
             if (item != null)
             {
-                UpdateDisplay();
+                UpdateDisplay(item.Container.AttachedTo.containerDescriptor.PercentageFull);
             } 
         }
         
@@ -104,13 +113,21 @@ namespace SS3D.Engine.Inventory.UI
             }
         }
         
-        private void UpdateDisplay()
+        private void UpdateDisplay(float percentageFull)
         {
             ItemImage.sprite = Item != null ? Item.InventorySprite : null;
             
-            Color imageColor = ItemImage.color;
+            Color imageColor = ItemImage.color;               
             imageColor.a = ItemImage.sprite != null ? 255 : 0;
             ItemImage.color = imageColor;
+
+            // for some reasons it colors the picture inside the hand slots instead of the background
+            if(slotImage != null)
+            {
+                Color slotColor = slotImage.color;
+                slotColor.r = percentageFull / 100f;
+                slotImage.color = slotColor;
+            }    
         }
 
     }

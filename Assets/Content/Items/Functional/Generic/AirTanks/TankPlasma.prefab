@@ -145,16 +145,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: TankPlasma
+  itemId: 
   Name: Plasma Tank
-  Volume: 15
+  volume: 300
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 4422134463688631668}
   attachmentPoint: {fileID: 2990600726818224912}
   attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits: []
-  Size: {x: 0, y: 0}
+  size: {x: 0, y: 0}
 --- !u!114 &6911354805868887126
 MonoBehaviour:
   m_ObjectHideFlags: 0
