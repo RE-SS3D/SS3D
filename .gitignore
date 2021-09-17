@@ -34,9 +34,6 @@
 .vscode/
 .vsconfig
 
-# Visual studio project config
-.vsconfig
-
 # Gradle cache directory
 .gradle/
 
