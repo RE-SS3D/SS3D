@@ -320,16 +320,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: Toolbox
+  itemId: 
   Name: Red Toolbox
-  Volume: 70
+  volume: 10
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5533951594911835035}
   attachmentPoint: {fileID: 6311512130502363032}
   attachmentPointAlt: {fileID: 2809404673239714095}
   bulkSize: 3
   traits: []
-  Size: {x: 4, y: 3}
+  size: {x: 0, y: 0}
 --- !u!114 &-8822467730395627730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -411,7 +411,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 3062276285580371944}
   containerSync: {fileID: 0}
   containerInteractive: {fileID: 8690033845096219880}
-  customInteractionScript: {fileID: 0}
+  substanceContainer: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -429,8 +429,10 @@ MonoBehaviour:
   maxDistance: 5
   containerType: 0
   isOpenable: 0
+  canHoldSubstances: 0
   isInteractive: 1
   hasCustomInteraction: 0
+  volume: 1000
 --- !u!114 &3062276285580371944
 MonoBehaviour:
   m_ObjectHideFlags: 0

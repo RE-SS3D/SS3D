@@ -63,7 +63,10 @@ namespace SS3D.Engine.Inventory.UI
         private void OnDestroy()
         {
             AttachedContainer.Container.ContentsChanged -= ContainerOnContentsChanged;
-            AttachedContainer.containerDescriptor.substanceContainer.ContentsChanged -= ContainerOnSubstanceChanged;
+            if (AttachedContainer.containerDescriptor.canHoldSubstances)
+            {
+                AttachedContainer.containerDescriptor.substanceContainer.ContentsChanged -= ContainerOnSubstanceChanged;
+            }
         }
 
         private IEnumerator DisplayInitialItems()

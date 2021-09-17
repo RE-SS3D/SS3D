@@ -22,6 +22,7 @@ namespace SS3D.Engine.Inventory.UI
                 Grid.AttachedContainer = value;
                 UpdateContainer(value.Container);
             }
+            get => attachedContainer;
         }
 
         private AttachedContainer attachedContainer;

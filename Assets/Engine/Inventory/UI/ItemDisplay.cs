@@ -120,14 +120,6 @@ namespace SS3D.Engine.Inventory.UI
             Color imageColor = ItemImage.color;               
             imageColor.a = ItemImage.sprite != null ? 255 : 0;
             ItemImage.color = imageColor;
-
-            // for some reasons it colors the picture inside the hand slots instead of the background
-            if(slotImage != null)
-            {
-                Color slotColor = slotImage.color;
-                slotColor.r = percentageFull / 100f;
-                slotImage.color = slotColor;
-            }    
         }
 
     }
