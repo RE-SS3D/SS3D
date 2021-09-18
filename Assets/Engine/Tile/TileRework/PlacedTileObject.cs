@@ -53,7 +53,7 @@ namespace SS3D.Engine.Tiles
 
             if (NetworkServer.active)
             {
-                if (!ClientScene.prefabs.ContainsValue(placedGameObject))
+                if (!NetworkClient.prefabs.ContainsValue(placedGameObject))
                     Debug.LogWarning("Prefab was not found in the Spawnable list. Please add it.");
                 NetworkServer.Spawn(placedGameObject);
             }

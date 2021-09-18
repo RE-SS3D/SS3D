@@ -232,7 +232,7 @@ using UnityEngine.SceneManagement;
                 Debug.LogWarning("The Login system does not support having a separate Online Scene yet!");
                 return;
             }
-            ClientScene.AddPlayer(conn);
+            NetworkClient.AddPlayer();
         }
 
         /**
