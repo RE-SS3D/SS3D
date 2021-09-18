@@ -50,7 +50,7 @@ using UnityEngine.SceneManagement;
         /**
          * Information about the login server sent to the client.
          */
-        public class LoginServerMessage : MessageBase
+        public class LoginServerMessage : NetworkMessage
         {
             // If null, then no 
             public string serverAddress;
@@ -59,7 +59,7 @@ using UnityEngine.SceneManagement;
         /**
          * Information about the player's chosen character sent from client to server
          */
-        public class CharacterSelectMessage : MessageBase
+        public class CharacterSelectMessage : NetworkMessage
         {
             public CharacterResponse character;
         }
