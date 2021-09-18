@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,13 +8,15 @@ namespace Mirror
     /// Component that controls visibility of networked objects for players.
     /// <para>Any object with this component on it will not be visible to players more than a (configurable) distance away.</para>
     /// </summary>
+    // Deprecated 2021-07-13
+    [Obsolete(NetworkVisibilityObsoleteMessage.Message)]
     [AddComponentMenu("Network/NetworkProximityChecker")]
     [RequireComponent(typeof(NetworkIdentity))]
-    [HelpURL("https://mirror-networking.com/docs/Components/NetworkProximityChecker.html")]
+    [HelpURL("https://mirror-networking.gitbook.io/docs/components/network-proximity-checker")]
     public class NetworkProximityChecker : NetworkVisibility
     {
         /// <summary>
-        /// The maximim range that objects will be visible at.
+        /// The maximum range that objects will be visible at.
         /// </summary>
         [Tooltip("The maximum range that objects will be visible at.")]
         public int visRange = 10;
@@ -24,25 +27,18 @@ namespace Mirror
         [Tooltip("How often (in seconds) that this object should update the list of observers that can see it.")]
         public float visUpdateInterval = 1;
 
-        /// <summary>
-        /// Flag to force this object to be hidden for players.
-        /// <para>If this object is a player object, it will not be hidden for that player.</para>
-        /// </summary>
-        [Tooltip("Enable to force this object to be hidden from players.")]
-        public bool forceHidden;
-
-        float lastUpdateTime;
-
-        void Update()
+        public override void OnStartServer()
         {
-            if (!NetworkServer.active)
-                return;
+            InvokeRepeating(nameof(RebuildObservers), 0, visUpdateInterval);
+        }
+        public override void OnStopServer()
+        {
+            CancelInvoke(nameof(RebuildObservers));
+        }
 
-            if (Time.time - lastUpdateTime > visUpdateInterval)
-            {
-                netIdentity.RebuildObservers(false);
-                lastUpdateTime = Time.time;
-            }
+        void RebuildObservers()
+        {
+            netIdentity.RebuildObservers(false);
         }
 
         /// <summary>
@@ -53,9 +49,6 @@ namespace Mirror
         /// <returns>True if the player can see this object.</returns>
         public override bool OnCheckObserver(NetworkConnection conn)
         {
-            if (forceHidden)
-                return false;
-
             return Vector3.Distance(conn.identity.transform.position, transform.position) < visRange;
         }
 
@@ -68,9 +61,6 @@ namespace Mirror
         public override void OnRebuildObservers(HashSet<NetworkConnection> observers, bool initialize)
         {
             // if force hidden then return without adding any observers.
-            if (forceHidden)
-                return;
-
             // 'transform.' calls GetComponent, only do it once
             Vector3 position = transform.position;
 
