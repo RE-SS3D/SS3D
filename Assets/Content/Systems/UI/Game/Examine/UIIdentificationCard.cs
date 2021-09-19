@@ -50,7 +50,7 @@ namespace SS3D.Content.Systems.Examine.UI
             Expiry.text = expiry;
 			Mugshot.sprite = mugshot;
 			rectTransform = GetComponent<RectTransform>();
-			Panel.position = new Vector3(InputHelper.inputs.Pointer.Position.ReadValue<Vector2>().x + 5f, InputHelper.inputs.Pointer.Position.ReadValue<Vector2>().y + 5f, 0);
+			Panel.position = new Vector3(InputHelper.Inputs.Pointer.Position.ReadValue<Vector2>().x + 5f, InputHelper.Inputs.Pointer.Position.ReadValue<Vector2>().y + 5f, 0);
         }
 		
 		public override void LoadExamineData(IExamineData[] data)

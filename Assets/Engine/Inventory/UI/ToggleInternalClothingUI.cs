@@ -24,7 +24,7 @@ namespace SS3D.Engine.Inventory.UI
         private void Update()
         {
 			// Button to toggle the internal clothing UI
-			if (InputHelper.inputs.UI.ToggleInternalClothing.triggered)
+			if (InputHelper.Inputs.UI.ToggleInternalClothing.triggered)
 			{
 				Toggle();
 			}

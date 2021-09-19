@@ -27,12 +27,12 @@ namespace SS3D.Engine.Inventory.UI
         private void Update()
         {
 			// Button to toggle the chat UI
-			if (InputHelper.inputs.UI.ToggleChat.triggered && EventSystem.current.currentSelectedGameObject == null)
+			if (InputHelper.Inputs.UI.ToggleChat.triggered && EventSystem.current.currentSelectedGameObject == null)
 			{
 				Toggle();
 			}
 			// Button to focus chat. Also unhides chat if pressed.
-			if (InputHelper.inputs.UI.FocusChat.triggered && EventSystem.current.currentSelectedGameObject == null)
+			if (InputHelper.Inputs.UI.FocusChat.triggered && EventSystem.current.currentSelectedGameObject == null)
 			{
 				if (!isShowing)
 				{

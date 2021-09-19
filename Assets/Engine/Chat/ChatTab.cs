@@ -148,7 +148,7 @@ namespace SS3D.Engine.Chat
                 // Create a new chat window as long as there are multiple tabs
                 if (chatWindow.GetTabCount() > 1)
                 {
-                    chatWindow.ChatRegister.CreateChatWindow(Data, null, InputHelper.inputs.Pointer.Position.ReadValue<Vector2>());
+                    chatWindow.ChatRegister.CreateChatWindow(Data, null, InputHelper.Inputs.Pointer.Position.ReadValue<Vector2>());
                     Destroy(gameObject);
                     chatWindow.SelectNextTab(gameObject);
                 }

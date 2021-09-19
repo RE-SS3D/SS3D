@@ -113,14 +113,14 @@ namespace SS3D.Engine.Inventory.Extensions
                 return;
 
             // Hand-related buttons
-            if (InputHelper.inputs.Player.SwapHand.triggered && HandContainers.Length > 0 && EventSystem.current.currentSelectedGameObject == null)
+            if (InputHelper.Inputs.Player.SwapHand.triggered && HandContainers.Length > 0 && EventSystem.current.currentSelectedGameObject == null)
             {
                 SelectedHandIndex = (SelectedHandIndex + 1) % HandContainers.Length;
                 HandChanged?.Invoke(SelectedHandIndex);
                 CmdSetActiveHand(SelectedHandIndex);
             }
 
-            if (InputHelper.inputs.Player.DropItem.triggered && EventSystem.current.currentSelectedGameObject == null)
+            if (InputHelper.Inputs.Player.DropItem.triggered && EventSystem.current.currentSelectedGameObject == null)
             {
                 CmdDropHeldItem();
             }

@@ -21,7 +21,7 @@ namespace SS3D.Content.Systems.Examine.UI
             Caption.text = displayCaption;
 			ImageUI.sprite = displayImage;
 			
-			Panel.position = new Vector3(InputHelper.inputs.Pointer.Position.ReadValue<Vector2>().x, InputHelper.inputs.Pointer.Position.ReadValue<Vector2>().y, 0);
+			Panel.position = new Vector3(InputHelper.Inputs.Pointer.Position.ReadValue<Vector2>().x, InputHelper.Inputs.Pointer.Position.ReadValue<Vector2>().y, 0);
 
         }
 		

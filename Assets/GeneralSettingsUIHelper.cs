@@ -75,7 +75,7 @@ public class GeneralSettingsUIHelper : MonoBehaviour
         GeneralSettingsManager.OnGraphicsChanged += UpdateButtonsState;
 
         // add keybinding UI
-        foreach (PropertyInfo field in InputHelper.inputs.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+        foreach (PropertyInfo field in InputHelper.Inputs.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
         {
             // Filters out non-existing categories. These string names should be safe to hardcode
             if (field.PropertyType == typeof(InputControlScheme) || field.PropertyType == typeof(InputBinding) || new List<string> { "asset", "bindingMask", "devices", "controlSchemes", "bindings" }.Contains(field.Name))
@@ -100,7 +100,7 @@ public class GeneralSettingsUIHelper : MonoBehaviour
             // This code makes it so we dont have to hardcode what inputs actually exist.
             foreach (PropertyInfo key in field.PropertyType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
-                object inputGroup = InputHelper.inputs.GetType().GetProperty(field.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).GetValue(InputHelper.inputs);
+                object inputGroup = InputHelper.Inputs.GetType().GetProperty(field.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).GetValue(InputHelper.Inputs);
                 object inputObj = inputGroup.GetType().GetProperty(key.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).GetValue(inputGroup);
                 if (inputObj.GetType().FullName != "UnityEngine.InputSystem.InputAction")
                 {
@@ -124,7 +124,7 @@ public class GeneralSettingsUIHelper : MonoBehaviour
                 text.text = inputAction.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions);
                 BindingButtonHelper buttonHelper = binding.AddComponent<BindingButtonHelper>();
                 buttonHelper.inputActionToBind = inputAction;
-                buttonHelper.text = text;
+                buttonHelper.buttonText = text;
                 Button button = binding.GetComponent<Button>();
                 button.onClick.AddListener(() => buttonHelper.OnClicked());
                 GameObject altBinding = Instantiate(bindingButton, categoryGameObject.transform.Find("AltBindings"));

@@ -5,11 +5,19 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace SS3D.Engine.Input {
+
+    /// <summary>
+    /// A static class that holds the current actions and their bindings.
+    /// Can be referenced from anywhere.
+    /// </summary>
     public class InputHelper : MonoBehaviour
     {
 
-        public static InputActions inputs { get; } = new InputActions();
+        public static InputActions Inputs { get; } = new InputActions();
 
+        /// <summary>
+        /// Loads and enables the user's saved bindings, if they have any.
+        /// </summary>
         static InputHelper()
         {
             string bindings = PlayerPrefs.GetString("bindings", null);
@@ -17,19 +25,14 @@ namespace SS3D.Engine.Input {
             {
                 try
                 {
-                    inputs.LoadBindingOverridesFromJson(bindings);
+                    Inputs.LoadBindingOverridesFromJson(bindings);
                 }
                 catch (Exception e)
                 {
                     Debug.Log(e.StackTrace);
                 }
             }
-            inputs.Enable();
-        }
-
-        public static Vector3 GetPointerWorldPos()
-        {
-            return Camera.current.ScreenToWorldPoint(inputs.Pointer.Position.ReadValue<Vector2>());
+            Inputs.Enable();
         }
     }
 }

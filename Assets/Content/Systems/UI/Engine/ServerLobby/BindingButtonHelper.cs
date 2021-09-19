@@ -2,39 +2,52 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
-using SS3D.Engine.Input;
 using TMPro;
 using static UnityEngine.InputSystem.InputActionRebindingExtensions;
 
-public class BindingButtonHelper : MonoBehaviour
+namespace SS3D.Engine.Input
 {
-    private bool isRebinding = false;
-    private RebindingOperation rebinding;
-
-    public InputAction inputActionToBind;
-    public TMP_Text text;
-
-    public void OnClicked()
+    /// <summary>
+    /// Behavior responsible for handling rebinding an action when the attached button is pressed.
+    /// Should be attached to a button with a TMP_Text on it.
+    /// Used in "Content/Systems/UI/Engine/ServerLobby/BindingButton.prefab".
+    /// </summary>
+    public class BindingButtonHelper : MonoBehaviour
     {
-        Debug.Log("Rebinding " + inputActionToBind.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions));
-        if (isRebinding)
+        private bool isRebinding = false;
+        private RebindingOperation rebinding;
+
+        public InputAction inputActionToBind;
+        public TMP_Text buttonText;
+
+        public void OnClicked()
         {
-            return;
-        }
-        isRebinding = true;
-        inputActionToBind.Disable();
-        rebinding = inputActionToBind.PerformInteractiveRebinding()
-            .OnMatchWaitForAnother(0.1f)
-            .OnComplete(bind =>
+            Debug.Log("Rebinding " + inputActionToBind.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions));
+            // Sanity check, although not really necessary because all actions are disabled once pressed.
+            if (isRebinding)
             {
-                rebinding.Dispose();
-                isRebinding = false;
-                text.text = inputActionToBind.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions);
-                inputActionToBind.Enable();
-                PlayerPrefs.SetString("bindings", InputHelper.inputs.SaveBindingOverridesAsJson());
-            })
-            .Start();
+                return;
+            }
+            isRebinding = true;
+            InputHelper.Inputs.Disable();
+            buttonText.text = "Rebinding";
+            rebinding = inputActionToBind.PerformInteractiveRebinding()
+                .OnComplete(EndRebind)
+                .OnCancel(EndRebind)
+                .Start();
+        }
+
+        /// <summary>
+        /// Cleans up the rebind operation, sets the button to the new input and saves the new input binding.
+        /// </summary>
+        private void EndRebind(RebindingOperation bind)
+        {
+            rebinding.Dispose();
+            buttonText.text = inputActionToBind.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions);
+            InputHelper.Inputs.Enable();
+            PlayerPrefs.SetString("bindings", InputHelper.Inputs.SaveBindingOverridesAsJson());
+            isRebinding = false;
+        }
     }
 }
