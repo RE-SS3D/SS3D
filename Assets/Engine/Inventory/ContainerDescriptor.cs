@@ -144,21 +144,24 @@ namespace SS3D.Engine.Inventory
         public void Awake()
         {
             // create a new container of Size size
-            Assert.IsNotNull(attachedContainer);
-            attachedContainer.Container = new Container
+            if (!substancesOnly)
             {
-                Size = size
-            };
+                Assert.IsNotNull(attachedContainer);
+                attachedContainer.Container = new Container
+                {
+                    Size = size
+                };
 
-            // add optional filters
-            if (startFilter != null)
-                attachedContainer.Container.Filters.Add(startFilter);
+                // add optional filters
+                if (startFilter != null)
+                    attachedContainer.Container.Filters.Add(startFilter);
 
-            // If container interactions icon are not defined at start, load default icons.
-            openIcon = openIcon == null ? Resources.Load<Sprite>("Interactions/door") : openIcon;
-            takeIcon = takeIcon == null ? Resources.Load<Sprite>("Interactions/take") : takeIcon;
-            storeIcon = storeIcon == null ? Resources.Load<Sprite>("Interactions/discard") : storeIcon;
-            viewIcon = viewIcon == null ? Resources.Load<Sprite>("Interactions/container") : viewIcon;
+                // If container interactions icon are not defined at start, load default icons.
+                openIcon = openIcon == null ? Resources.Load<Sprite>("Interactions/door") : openIcon;
+                takeIcon = takeIcon == null ? Resources.Load<Sprite>("Interactions/take") : takeIcon;
+                storeIcon = storeIcon == null ? Resources.Load<Sprite>("Interactions/discard") : storeIcon;
+                viewIcon = viewIcon == null ? Resources.Load<Sprite>("Interactions/container") : viewIcon;
+            }     
         }
 
         public void Update()
@@ -172,7 +175,7 @@ namespace SS3D.Engine.Inventory
 
         private void UpdateObservers()
         {
-            if (lastObserverCheck + CheckObserversInterval < Time.time)
+            if (lastObserverCheck + CheckObserversInterval < Time.time && !substancesOnly)
             {
                 // Could probably be more efficient, it's currently checking every connection in game.
                 foreach (NetworkConnectionToClient connection in NetworkServer.connections.Values)

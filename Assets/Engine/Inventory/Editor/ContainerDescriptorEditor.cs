@@ -35,6 +35,8 @@ public class ContainerDescriptorEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        //DestroyImmediate(containerDescriptor.gameObject.GetComponent<ContainerInteractive>(), true);
+       // DestroyImmediate(containerDescriptor.gameObject.GetComponent<AttachedContainer>(), true);
         serializedObject.Update();
 
         EditorGUILayout.LabelField(containerDescriptor.containerName, TitleStyle);
@@ -185,7 +187,7 @@ public class ContainerDescriptorEditor : Editor
             return;
         }
 
-        if(!substancesOnly && attachedContainer == null)
+        if(!substancesOnly && containerDescriptor.attachedContainer == null)
         {
             AddAttached();
             AddInteractive();
@@ -381,6 +383,7 @@ public class ContainerDescriptorEditor : Editor
         sp2.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerInteractive>();
         serializedObject.ApplyModifiedProperties();
         containerDescriptor.containerInteractive.containerDescriptor = containerDescriptor;
+        containerInteractive = containerDescriptor.containerInteractive;
     }
 
     private void RemoveInteractive()
@@ -405,8 +408,18 @@ public class ContainerDescriptorEditor : Editor
 
     private void AddAttached()
     {
-        containerDescriptor.attachedContainer = containerDescriptor.gameObject.AddComponent<AttachedContainer>();
+        AttachedContainer attachedContainer = containerDescriptor.gameObject.AddComponent<AttachedContainer>();
+        SerializedProperty sp = serializedObject.FindProperty("attachedContainer");
+        sp.objectReferenceValue = attachedContainer;
+        serializedObject.ApplyModifiedProperties();
+
         containerDescriptor.attachedContainer.containerDescriptor = containerDescriptor;
+    }
+
+    private void RemoveAttached()
+    {
+        DestroyImmediate(attachedContainer, true);
+        
     }
 
     private void OnDestroy()
