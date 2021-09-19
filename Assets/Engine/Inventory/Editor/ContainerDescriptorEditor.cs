@@ -40,42 +40,54 @@ public class ContainerDescriptorEditor : Editor
         EditorGUILayout.LabelField(containerDescriptor.containerName, TitleStyle);
 
         HandleContainerName();
-        HandleIsInteractive();
-        if (containerDescriptor.isInteractive)
+
+        if (!containerDescriptor.substancesOnly)
         {
-            HandleCustomInteraction();
+            HandleIsInteractive();
+            if (containerDescriptor.isInteractive)
+            {
+                HandleCustomInteraction();
+            }
+
+            HandleIsOpenable();
+
+            if (containerDescriptor.isOpenable)
+            {
+                HandleOnlyStoreWhenOpen();
+            }
+            else
+            {
+                HandleOpenWhenContainerViewed();
+            }
+
+            if (containerDescriptor.containerType != ContainerType.Hidden && containerDescriptor.containerType != ContainerType.Pile)
+            {
+                HandleMaxDistance();
+            }
+
+            HandleContainerType();
+            HandleSize();
+
+
+            if (containerDescriptor.containerType != ContainerType.Hidden)
+            {
+                HandleHideItems();
+            }
+
+            HandleAttachItems();
+            HandleAttachmentOffset();
         }
 
-        HandleIsOpenable();
+        
 
-        if (containerDescriptor.isOpenable)
-        {
-            HandleOnlyStoreWhenOpen();       
-        }
-        else
-        {
-            HandleOpenWhenContainerViewed();
-        }
-
-        if (containerDescriptor.containerType != ContainerType.Hidden && containerDescriptor.containerType != ContainerType.Pile)
-        {
-            HandleMaxDistance();
-        }
-
-        HandleContainerType();
-        HandleSize();
-        HandleStartFilter();
-
-        if(containerDescriptor.containerType != ContainerType.Hidden)
-        {
-            HandleHideItems();
-        }
-
-        HandleAttachItems();
-        HandleAttachmentOffset();
         HandleCanHoldSubstances();
-        HandleVolume();
+        if (containerDescriptor.canHoldSubstances)
+        {
+            HandleSubstancesOnly();
+        }
 
+        HandleVolume();
+        HandleStartFilter();
         ShowIcons();
         serializedObject.ApplyModifiedProperties();
     }
@@ -155,6 +167,32 @@ public class ContainerDescriptorEditor : Editor
             serializedObject.ApplyModifiedProperties();
         }
     }
+
+    private void HandleSubstancesOnly()
+    {
+
+        bool substancesOnly = EditorGUILayout.Toggle("substances Only", containerDescriptor.substancesOnly);
+        SerializedProperty sp = serializedObject.FindProperty("substancesOnly");
+        sp.boolValue = substancesOnly;
+        serializedObject.ApplyModifiedProperties();
+
+        if (substancesOnly && attachedContainer != null)
+        {
+            RemoveContainer();
+            SerializedProperty sp2 = serializedObject.FindProperty("isInteractive");
+            sp2.boolValue = false;
+            serializedObject.ApplyModifiedProperties();
+            return;
+        }
+
+        if(!substancesOnly && attachedContainer == null)
+        {
+            AddAttached();
+            AddInteractive();
+        }
+        
+    }
+
     private void HandleOpenWhenContainerViewed()
     {
         // check if the gameObject has a open animation

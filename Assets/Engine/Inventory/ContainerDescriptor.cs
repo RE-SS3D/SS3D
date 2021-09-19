@@ -95,6 +95,8 @@ namespace SS3D.Engine.Inventory
 
         public bool canHoldSubstances;
 
+        public bool substancesOnly;
+
         /// <summary> If true, adds the containerInteractive script. Defines container interactions common to most containers. </summary>
         public bool isInteractive;
 
