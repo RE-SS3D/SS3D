@@ -87,6 +87,7 @@ namespace Telepathy
         public Action OnConnected;
         public Action<ArraySegment<byte>> OnData;
         public Action OnDisconnected;
+        public static event System.Action connectionFailed;  // SS3D addition to Mirror
 
         // disconnect if send queue gets too big.
         // -> avoids ever growing queue memory if network is slower than input
@@ -158,6 +159,8 @@ namespace Telepathy
                 // add 'Disconnected' event to receive pipe so that the caller
                 // knows that the Connect failed. otherwise they will never know
                 state.receivePipe.Enqueue(0, EventType.Disconnected, default);
+
+                connectionFailed?.Invoke();
             }
             catch (ThreadInterruptedException)
             {
