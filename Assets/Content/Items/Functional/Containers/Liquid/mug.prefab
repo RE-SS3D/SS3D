@@ -92,10 +92,12 @@ GameObject:
   - component: {fileID: -7286066127811980280}
   - component: {fileID: 654448484461224830}
   - component: {fileID: -5630982792375612835}
-  - component: {fileID: 8914252857924424772}
   - component: {fileID: -7777233483341371724}
   - component: {fileID: -6476219540935553843}
   - component: {fileID: 5848840416633041717}
+  - component: {fileID: 5290759375157798187}
+  - component: {fileID: 1916694269416733005}
+  - component: {fileID: 3183348468849230222}
   m_Layer: 16
   m_Name: mug
   m_TagString: Untagged
@@ -183,22 +185,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &8914252857924424772
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 971113513204449908}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Volume: 500
-  Temperature: 0
-  Locked: 0
-  substances: []
 --- !u!114 &-7777233483341371724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,7 +199,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  Container: {fileID: 8914252857924424772}
+  Container: {fileID: 3183348468849230222}
   DisplayObject: {fileID: 259709101332184134}
   EmptyPosition: {x: 0, y: 0, z: 0}
   FullPosition: {x: 0, y: 0, z: 0}
@@ -306,9 +292,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: Mug
+  itemId: 
   Name: Mug
-  Volume: 8
+  volume: 10
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 971113513204449908}
   attachmentPoint: {fileID: 8833359133489883299}
@@ -316,7 +302,7 @@ MonoBehaviour:
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: a86f8b10eacec4540a203b13004c2389, type: 2}
-  Size: {x: 0, y: 0}
+  size: {x: 0, y: 0}
 --- !u!114 &5848840416633041717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -332,6 +318,79 @@ MonoBehaviour:
   DisplayName: 
   Text: 
   MaxDistance: 0
+--- !u!114 &5290759375157798187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 971113513204449908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 0}
+  containerSync: {fileID: 0}
+  containerInteractive: {fileID: 0}
+  substanceContainer: {fileID: 3183348468849230222}
+  containerUi: {fileID: 0}
+  openIcon: {fileID: 0}
+  takeIcon: {fileID: 0}
+  storeIcon: {fileID: 0}
+  viewIcon: {fileID: 0}
+  attachmentOffset: {x: 0, y: 0, z: 0}
+  containerName: container
+  onlyStoreWhenOpen: 0
+  openWhenContainerViewed: 0
+  size: {x: 0, y: 0}
+  hideItems: 1
+  attachItems: 1
+  startFilter: {fileID: 0}
+  initialized: 1
+  maxDistance: 5
+  containerType: 0
+  isOpenable: 0
+  canHoldSubstances: 1
+  substancesOnly: 1
+  isInteractive: 0
+  hasCustomInteraction: 0
+  volume: 1000
+--- !u!95 &1916694269416733005
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 971113513204449908}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3183348468849230222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 971113513204449908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDescriptor: {fileID: 5290759375157798187}
+  Temperature: 0
+  Locked: 0
+  substances: []
 --- !u!1 &1767974948169436971
 GameObject:
   m_ObjectHideFlags: 0
