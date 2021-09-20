@@ -146,7 +146,7 @@ namespace SS3D.Engine.Inventory
                 return true;
             }
 
-            if (!CouldStoreItem(item))
+            if (!CouldStoreItem(item) || !canHoldVolume(item))
             {
                 return false;
             }
@@ -545,12 +545,27 @@ namespace SS3D.Engine.Inventory
         }
 
         /// <summary>
+        /// Checks if the item volume fits the remaining volume in the container
+        /// </summary>
+        /// <param name="item"> The Icontainerizable whose volume is being tested</param>
+        /// <returns></returns>
+        public bool canHoldVolume(IContainerizable item)
+        {
+            return AttachedTo.containerDescriptor.volume > AttachedTo.containerDescriptor.VolumeOccupied + item.Volume;  
+        }
+
+        /// <summary>
         /// Checks if this item fits inside the container
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
         public bool CouldHoldItem(IContainerizable item)
-        {
+        { 
+            if (!canHoldVolume(item))
+            {
+                return false;
+            }
+
             Vector2Int itemSize = item.Size;
             int maxX = Size.x - itemSize.x;
             int maxY = Size.y - itemSize.y;
