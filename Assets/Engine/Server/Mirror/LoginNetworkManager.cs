@@ -375,7 +375,7 @@ using UnityEngine.SceneManagement;
             yield return new WaitUntil(() => roundManager.IsRoundStarted);
 
             //Something has gone horribly wrong
-            if (characterSelection?.character == null) throw new Exception("Could not read character data");
+            if (characterSelection.character == null) throw new Exception("Could not read character data");
 
             // Spawn player based on their character choices
             Transform startPos = GetStartPosition();
