@@ -294,11 +294,11 @@ using UnityEngine.SceneManagement;
          * The client receives the message informing them of the Login Server,
          * Uses this to start the player's character select process
          */
-        private void OnLoginDataMessage(NetworkConnection conn, LoginServerMessage message)
+        private void OnLoginDataMessage(LoginServerMessage message)
         {
             if (message.serverAddress == null)
             {
-                SpawnPlayerWithoutLoginServer(conn);
+                SpawnPlayerWithoutLoginServer(NetworkClient.connection);
                 return;
             }
 
@@ -306,7 +306,7 @@ using UnityEngine.SceneManagement;
             // If successful, hand over control to the LoginManager, telling it to call SpawnPlayerWithLoginServer when
             // the user has chosen their player.
             loginManager.UpdateApiAddress(message.serverAddress,
-                character => SpawnPlayerWithLoginServer(conn, character));
+                character => SpawnPlayerWithLoginServer(NetworkClient.connection, character));
             loginManager.ApiHeartbeat(BeginLoginProcedure);
         }
 
