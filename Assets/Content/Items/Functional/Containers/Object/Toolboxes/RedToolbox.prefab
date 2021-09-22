@@ -235,7 +235,7 @@ GameObject:
   - component: {fileID: 8774879036025570029}
   - component: {fileID: 4887714770556236701}
   - component: {fileID: 3062276285580371944}
-  - component: {fileID: 8690033845096219880}
+  - component: {fileID: 7343372462105043187}
   m_Layer: 16
   m_Name: RedToolbox
   m_TagString: Untagged
@@ -410,8 +410,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attachedContainer: {fileID: 3062276285580371944}
   containerSync: {fileID: 0}
-  containerInteractive: {fileID: 8690033845096219880}
-  customInteractionScript: {fileID: 0}
+  containerInteractive: {fileID: 7343372462105043187}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -421,15 +420,15 @@ MonoBehaviour:
   containerName: toolbox
   onlyStoreWhenOpen: 0
   openWhenContainerViewed: 1
-  size: {x: 3, y: 3}
+  size: {x: 4, y: 4}
   hideItems: 1
   attachItems: 1
   startFilter: {fileID: 0}
   initialized: 1
   maxDistance: 5
-  containerType: 0
   isOpenable: 0
   isInteractive: 1
+  hasUi: 1
   hasCustomInteraction: 0
 --- !u!114 &3062276285580371944
 MonoBehaviour:
@@ -444,7 +443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   containerDescriptor: {fileID: 4887714770556236701}
---- !u!114 &8690033845096219880
+--- !u!114 &7343372462105043187
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

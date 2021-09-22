@@ -13,18 +13,6 @@ namespace SS3D.Engine.Inventory
 {
 
     /// <summary>
-    /// if is normal, has an UI, if Pile or Hidden, has no UI.
-    /// Visible script only attached on container with an UI. 
-    /// Warning, Pile container can have an UI when there is multiple containers on the same game object, in the context menu. 
-    /// </summary>
-    public enum ContainerType
-    {
-        Normal,
-        Pile,
-        Hidden
-    }
-
-    /// <summary>
     /// ContainerDescriptor manages every aspect of a container attached to a gameObject.
     /// It's purpose is to centralize all relevant aspect of a container, it should be the only component one has to deal with when 
     /// adding containers to a game object.
@@ -87,12 +75,12 @@ namespace SS3D.Engine.Inventory
         /// <summary> max distance at which the container is visible if not hidden </summary>
         public float maxDistance = 5f;
 
-        public ContainerType containerType = ContainerType.Normal;
-
         public bool isOpenable;
 
         /// <summary> If true, adds the containerInteractive script. Defines container interactions common to most containers. </summary>
         public bool isInteractive;
+
+        public bool hasUi;
 
         /// <summary> If true, interactions in containerInteractive are ignored, instead, a script should implement IInteractionTarget </summary>
         public bool hasCustomInteraction;
@@ -127,7 +115,7 @@ namespace SS3D.Engine.Inventory
         public void Update()
         {
             // if the container has an UI
-            if(containerType == ContainerType.Normal)
+            if(hasUi)
             {
                 UpdateObservers();
             }

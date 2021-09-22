@@ -343,7 +343,7 @@ MonoBehaviour:
   containerName: locker
   onlyStoreWhenOpen: 1
   openWhenContainerViewed: 0
-  size: {x: 4, y: 8}
+  size: {x: 3, y: 4}
   hideItems: 0
   attachItems: 1
   startFilter: {fileID: 0}
