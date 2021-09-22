@@ -34,17 +34,16 @@ namespace SS3D.Content.Furniture.Storage
             // Pile or Normal the Store Interaction will always appear, but View only appears in Normal containers
             if (IsOpen() | !containerDescriptor.onlyStoreWhenOpen | !containerDescriptor.isOpenable)
             {
-                switch (containerDescriptor.containerType)
+                if (containerDescriptor.hasUi)
                 {
-                    case ContainerType.Normal:
-                        interactions.Add(storeInteraction);
-                        interactions.Add(view);
-                        break;
-                    case ContainerType.Pile:
-                        interactions.Add(storeInteraction);
-                        interactions.Add(takeInteraction);
-                        break;
+                    interactions.Add(storeInteraction);
+                    interactions.Add(view);
                 }
+                else
+                {
+                    interactions.Add(storeInteraction);
+                    interactions.Add(takeInteraction);
+                }           
             }
 
             if (containerDescriptor.isOpenable)

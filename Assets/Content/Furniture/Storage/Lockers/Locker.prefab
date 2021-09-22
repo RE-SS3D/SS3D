@@ -317,6 +317,53 @@ MonoBehaviour:
   DisplayName: Locker
   Text: Stores stuff.
   MaxDistance: 0
+--- !u!114 &8609914432885028925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876708453869312076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 480694477262860392}
+  containerSync: {fileID: 0}
+  containerInteractive: {fileID: 4563506958215233606}
+  containerUi: {fileID: 0}
+  openIcon: {fileID: 0}
+  takeIcon: {fileID: 0}
+  storeIcon: {fileID: 0}
+  viewIcon: {fileID: 0}
+  attachmentOffset: {x: 0, y: 0, z: 0}
+  containerName: locker
+  onlyStoreWhenOpen: 1
+  openWhenContainerViewed: 0
+  size: {x: 3, y: 4}
+  hideItems: 0
+  attachItems: 1
+  startFilter: {fileID: 0}
+  initialized: 1
+  maxDistance: 5
+  isOpenable: 1
+  isInteractive: 1
+  hasUi: 1
+  hasCustomInteraction: 0
+--- !u!114 &480694477262860392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876708453869312076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDescriptor: {fileID: 8609914432885028925}
 --- !u!114 &65556355723438765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -362,10 +409,10 @@ MonoBehaviour:
   startFilter: {fileID: 0}
   initialized: 1
   maxDistance: 5
-  containerType: 0
   isOpenable: 1
   canHoldSubstances: 1
   isInteractive: 1
+  hasUi: 0
   hasCustomInteraction: 0
   volume: 1000
 --- !u!114 &7500473405672096913
