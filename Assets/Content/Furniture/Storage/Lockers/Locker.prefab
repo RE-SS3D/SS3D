@@ -349,9 +349,9 @@ MonoBehaviour:
   startFilter: {fileID: 0}
   initialized: 1
   maxDistance: 5
-  containerType: 0
   isOpenable: 1
   isInteractive: 1
+  hasUi: 1
   hasCustomInteraction: 0
 --- !u!114 &480694477262860392
 MonoBehaviour:
@@ -426,9 +426,9 @@ MonoBehaviour:
   startFilter: {fileID: 0}
   initialized: 1
   maxDistance: 5
-  containerType: 0
   isOpenable: 1
   isInteractive: 1
+  hasUi: 0
   hasCustomInteraction: 0
 --- !u!114 &8258030576322460152
 MonoBehaviour:
