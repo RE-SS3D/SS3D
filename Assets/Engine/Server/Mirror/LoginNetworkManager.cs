@@ -139,6 +139,7 @@ using UnityEngine.SceneManagement;
         /// <summary>
         /// Initial server setup
         /// </summary>
+        [Server]
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -150,6 +151,7 @@ using UnityEngine.SceneManagement;
         /// Server setup after round restart
         /// </summary>
         /// <param name="sceneName"></param>
+        [Server]
         public override void OnServerSceneChanged(string sceneName)
         {
             base.OnServerSceneChanged(sceneName);
@@ -160,6 +162,7 @@ using UnityEngine.SceneManagement;
             UpdateLoadingScreen(false);
         }
 
+        [Client]
         public override void OnStartClient()
         {
             base.OnStartClient();
@@ -167,6 +170,7 @@ using UnityEngine.SceneManagement;
             NetworkClient.RegisterHandler<LoginServerMessage>(OnLoginDataMessage, false);
         }
 
+        [Server]
         private void SetupServerManagers()
         {
             roundManager = GameObject.FindObjectOfType<RoundManager>();
@@ -208,6 +212,7 @@ using UnityEngine.SceneManagement;
         /**
          * Step 1: When the player connects, the server sends info about the login server to the client.
          */
+        [Server]
         public override void OnServerConnect(NetworkConnection conn)
         {
             base.OnServerConnect(conn);
@@ -224,6 +229,7 @@ using UnityEngine.SceneManagement;
         /**
          * Once the client establishes a connection, it immediately tells the server to add them as a player
          */
+        [Client]
         public override void OnClientConnect(NetworkConnection conn)
         {
             if (clientLoadedScene)
@@ -289,7 +295,6 @@ using UnityEngine.SceneManagement;
 
             // Wait for that to go through
             yield return new WaitForEndOfFrame();
-
             // Let the client know that the server has loaded the map.
             SceneLoaderManager.singleton.TargetSetActiveScene(conn);
         }
@@ -300,6 +305,7 @@ using UnityEngine.SceneManagement;
          * The client receives the message informing them of the Login Server,
          * Uses this to start the player's character select process
          */
+        [Client]
         private void OnLoginDataMessage(LoginServerMessage message)
         {
             if (message.serverAddress == null)
@@ -319,6 +325,7 @@ using UnityEngine.SceneManagement;
         /**
          * Once the player has selected a character, the client tells the server of the chosen character.
          */
+        [Client]
         private void SpawnPlayerWithLoginServer(NetworkConnection conn, CharacterResponse characterResponse)
         {
             conn.Send(new CharacterSelectMessage {character = characterResponse});
@@ -327,10 +334,10 @@ using UnityEngine.SceneManagement;
         /**
          * If the client is told that the login server doesn't exist, we build them a John Doe.
          */
+        [Client]
         private CharacterResponse SpawnPlayerWithoutLoginServer(NetworkConnection conn)
         {
-            CharacterResponse characterResponse = new CharacterResponse();
-            characterResponse.name = "John Doe";
+            CharacterResponse characterResponse = GetDefaultCharacter();
             conn.Send(new CharacterSelectMessage {character = characterResponse});
             return characterResponse;
         }
@@ -338,6 +345,7 @@ using UnityEngine.SceneManagement;
         /**
          * If the client sends a CharacterSelect, we log them in with that character.
          */
+        [Server]
         private void OnCharacterSelectMessage(NetworkConnection conn, CharacterSelectMessage characterSelection)
         {
             if (!IsPlayerPrefabValid(conn))
@@ -347,11 +355,24 @@ using UnityEngine.SceneManagement;
 
             //StartCoroutine(SpawnPlayerAfterRoundStart(conn, characterSelection));
         }
-        
+      
+        /// <summary>
+        /// Returns a character with the default configuration. This can be called on client and server.
+        /// </summary>
+        /// <returns></returns>
+        private CharacterResponse GetDefaultCharacter()
+        {
+            CharacterResponse character = new CharacterResponse();
+            character.name = "John Doe";
+            return character;
+        }
+
+
+        [Server]
         public void SpawnPlayerAfterRoundStart(NetworkConnection conn)
         {
-            Debug.LogError(conn.address);
-            CharacterResponse character = SpawnPlayerWithoutLoginServer(conn);
+
+            CharacterResponse character = GetDefaultCharacter();
 
             Debug.Log("Spawning player after round start " + "conn: " + conn.address + " character: " + character.name);
             //Something has gone horribly wrong
@@ -397,6 +418,7 @@ using UnityEngine.SceneManagement;
             NetworkServer.AddPlayerForConnection(conn, player);
         }
 
+        [Server]
         private bool IsPlayerPrefabValid(NetworkConnection conn)
         {
             if (playerPrefab == null)
@@ -421,6 +443,7 @@ using UnityEngine.SceneManagement;
             return true;
         }
         
+        [Client]
         public override void OnClientChangeScene(string newSceneName, SceneOperation sceneOperation, bool customHandling)
         {
             base.OnClientChangeScene(newSceneName, sceneOperation, customHandling);
@@ -428,6 +451,7 @@ using UnityEngine.SceneManagement;
             UpdateLoadingScreen(true);
         }
 
+        [Server]
         public override void OnServerChangeScene(string newSceneName)
         {
             base.OnServerChangeScene(newSceneName);
@@ -435,6 +459,7 @@ using UnityEngine.SceneManagement;
             UpdateLoadingScreen(true);
         }
         
+        [Client]
         public override void OnClientSceneChanged(NetworkConnection conn)
         {
             base.OnClientSceneChanged(conn);
@@ -448,6 +473,7 @@ using UnityEngine.SceneManagement;
                 loadingScreen?.SetActive(state);
         }
 
+        [Server]
         // Ensures that as clients disconnect, the client numbers are updated.
         public override void OnServerDisconnect(NetworkConnection conn)
         {
@@ -456,13 +482,13 @@ using UnityEngine.SceneManagement;
 
         }
 
+        [Server]
         private IEnumerator UpdatePlayerCountDelayed()
         {
             // Wait until the end of frame (so that the event has been subscribed to)
             yield return new WaitForEndOfFrame();
 
             // Fire the event
-            Debug.Log("Invoking ClientNumbersUpdated");
             ClientNumbersUpdated?.Invoke();
 
         }
