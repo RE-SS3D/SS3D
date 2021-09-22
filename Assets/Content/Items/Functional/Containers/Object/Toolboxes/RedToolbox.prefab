@@ -235,7 +235,6 @@ GameObject:
   - component: {fileID: 8774879036025570029}
   - component: {fileID: 4887714770556236701}
   - component: {fileID: 3062276285580371944}
-  - component: {fileID: 8690033845096219880}
   m_Layer: 16
   m_Name: RedToolbox
   m_TagString: Untagged
@@ -410,8 +409,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attachedContainer: {fileID: 3062276285580371944}
   containerSync: {fileID: 0}
-  containerInteractive: {fileID: 8690033845096219880}
-  customInteractionScript: {fileID: 0}
+  containerInteractive: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -420,8 +418,8 @@ MonoBehaviour:
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: toolbox
   onlyStoreWhenOpen: 0
-  openWhenContainerViewed: 1
-  size: {x: 3, y: 3}
+  openWhenContainerViewed: 0
+  size: {x: 4, y: 4}
   hideItems: 1
   attachItems: 1
   startFilter: {fileID: 0}
@@ -429,7 +427,7 @@ MonoBehaviour:
   maxDistance: 5
   containerType: 0
   isOpenable: 0
-  isInteractive: 1
+  isInteractive: 0
   hasCustomInteraction: 0
 --- !u!114 &3062276285580371944
 MonoBehaviour:
@@ -443,22 +441,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 4887714770556236701}
---- !u!114 &8690033845096219880
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533951594911835035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  OpenIcon: {fileID: 0}
   containerDescriptor: {fileID: 4887714770556236701}
 --- !u!1 &8066562249021099569
 GameObject:
