@@ -1357,8 +1357,8 @@ MonoBehaviour:
   ViewRange: 10
   pickupable: 1
   size: {x: 1, y: 1}
-  volume: 5
-  pickupSprite: {fileID: 0}
+  volume: 50
+  sprite: {fileID: 0}
   attachmentPoint: {fileID: 2709665429581567834}
   attachmentPointAlt: {fileID: 2709665429581567834}
 --- !u!114 &2697114711415273318

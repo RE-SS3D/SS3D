@@ -28,6 +28,12 @@ namespace SS3D.Content
         private Hands hands;
 
         [SerializeField] private bool pickupable = false;
+
+        public bool Pickupable
+        {
+            get => pickupable;
+        }
+
         [SerializeField] private Vector2Int size;
         [SerializeField] private float volume;
 
@@ -198,7 +204,7 @@ namespace SS3D.Content
 
         public virtual IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
-            if (pickupable)
+            if (Pickupable)
             {
                 return new IInteraction[] { new PickupInteraction { icon = sprite } };
             }

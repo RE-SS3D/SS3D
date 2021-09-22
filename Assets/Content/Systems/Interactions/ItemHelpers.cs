@@ -14,7 +14,7 @@ namespace SS3D.Content.Systems.Interactions
         /// <param name="original">The original item</param>
         /// <param name="replacement">The replacement</param>
         /// <param name="destroyOriginal">If the original item should be destroyed</param>
-        public static void ReplaceItem(IContainerizable original, Item replacement, bool destroyOriginal = true)
+        public static void ReplaceItem(IContainerizable original, IContainerizable replacement, bool destroyOriginal = true)
         {
             Container container = original.Container;
             if (container != null)
@@ -26,8 +26,8 @@ namespace SS3D.Content.Systems.Interactions
             }
             else
             {
-                replacement.transform.position = original.GetGameObject().transform.position;
-                replacement.transform.rotation = original.GetGameObject().transform.rotation;
+                replacement.GetGameObject().transform.position = original.GetGameObject().transform.position;
+                replacement.GetGameObject().transform.rotation = original.GetGameObject().transform.rotation;
             }
 
             if (destroyOriginal)

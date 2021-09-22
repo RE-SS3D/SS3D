@@ -100,6 +100,15 @@ public class ContainerDescriptorEditor : Editor
         Vector3 attachmentOffset = EditorGUILayout.Vector3Field("Attachment Offset", containerDescriptor.attachmentOffset);
         HandleAttachmentOffset(attachmentOffset);
 
+        bool canHoldSubstances = EditorGUILayout.Toggle("Can Hold Substances", containerDescriptor.canHoldSubstances);
+        HandleCanHoldSubstances(canHoldSubstances);
+
+        if (canHoldSubstances)
+        {
+            bool substancesOnly = EditorGUILayout.Toggle("substances Only", containerDescriptor.substancesOnly);
+            HandleSubstancesOnly(substancesOnly);
+        }
+
         ShowIcons();
         serializedObject.ApplyModifiedProperties();
     }
@@ -158,20 +167,16 @@ public class ContainerDescriptorEditor : Editor
         }
     }
 
-    private void HandleSubstancesOnly()
+    private void HandleSubstancesOnly(bool substancesOnly)
     {
-
-        bool substancesOnly = EditorGUILayout.Toggle("substances Only", containerDescriptor.substancesOnly);
         SerializedProperty sp = serializedObject.FindProperty("substancesOnly");
         sp.boolValue = substancesOnly;
         serializedObject.ApplyModifiedProperties();
 
         if (substancesOnly && attachedContainer != null)
         {
-            RemoveContainer();
-            SerializedProperty sp2 = serializedObject.FindProperty("isInteractive");
-            sp2.boolValue = false;
-            serializedObject.ApplyModifiedProperties();
+            RemoveAttached();
+            RemoveInteractive();
             return;
         }
 
@@ -179,11 +184,9 @@ public class ContainerDescriptorEditor : Editor
         {
             AddAttached();
             AddInteractive();
-        }
-        
+        }    
     }
 
-    private void HandleOpenWhenContainerViewed()
     private void HandleHasUi(bool hasUi)
     {
         SerializedProperty sp = serializedObject.FindProperty("hasUi");
@@ -286,7 +289,6 @@ public class ContainerDescriptorEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    private void HandleHideItems()
     private void HandleHideItems(bool hideItems)
     {
         SerializedProperty sp = serializedObject.FindProperty("hideItems");
@@ -294,9 +296,8 @@ public class ContainerDescriptorEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    private void HandleCanHoldSubstances()
+    private void HandleCanHoldSubstances(bool canHoldSubstances)
     {
-        bool canHoldSubstances = EditorGUILayout.Toggle("Can Hold Substances", containerDescriptor.canHoldSubstances);
         SerializedProperty sp = serializedObject.FindProperty("canHoldSubstances");
         sp.boolValue = canHoldSubstances;
         serializedObject.ApplyModifiedProperties();
@@ -309,7 +310,6 @@ public class ContainerDescriptorEditor : Editor
         {
             RemoveSubstances();
         }
-
     }
 
     private void AddSubstances()

@@ -165,7 +165,7 @@ namespace SS3D.Engine.Inventory
         [Command]
         private void CmdTransferItem(GameObject itemObject, Vector2Int position, NetworkedContainerReference reference)
         {
-            var item = itemObject.GetComponent<Item>();
+            var item = itemObject.GetComponent<IContainerizable>();
             if (item == null)
             {
                 return;

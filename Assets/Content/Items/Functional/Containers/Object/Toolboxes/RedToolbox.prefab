@@ -233,9 +233,10 @@ GameObject:
   - component: {fileID: 5206759755089209485}
   - component: {fileID: -396234361631906964}
   - component: {fileID: 8774879036025570029}
-  - component: {fileID: 4887714770556236701}
-  - component: {fileID: 3062276285580371944}
-  - component: {fileID: 7343372462105043187}
+  - component: {fileID: 8709028415860229759}
+  - component: {fileID: 5200356740423923286}
+  - component: {fileID: 575940797712042916}
+  - component: {fileID: 8102343595168727836}
   m_Layer: 16
   m_Name: RedToolbox
   m_TagString: Untagged
@@ -396,7 +397,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
---- !u!114 &4887714770556236701
+--- !u!114 &8709028415860229759
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -408,18 +409,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attachedContainer: {fileID: 8516118862778407106}
+  attachedContainer: {fileID: 5200356740423923286}
   containerSync: {fileID: 0}
-  containerInteractive: {fileID: 4709528782551600393}
-  substanceContainer: {fileID: 165210132083104775}
-  containerInteractive: {fileID: 7343372462105043187}
+  containerInteractive: {fileID: 575940797712042916}
+  substanceContainer: {fileID: 8102343595168727836}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
   storeIcon: {fileID: 0}
   viewIcon: {fileID: 0}
   attachmentOffset: {x: 0, y: 0, z: 0}
-  containerName: toolbox
+  containerName: container
   onlyStoreWhenOpen: 0
   openWhenContainerViewed: 1
   size: {x: 4, y: 4}
@@ -435,23 +435,7 @@ MonoBehaviour:
   hasUi: 1
   hasCustomInteraction: 0
   volume: 1000
---- !u!114 &165210132083104775
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533951594911835035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 4887714770556236701}
-  Temperature: 0
-  Locked: 0
-  substances: []
---- !u!114 &8516118862778407106
+--- !u!114 &5200356740423923286
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -463,8 +447,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 4887714770556236701}
---- !u!114 &7343372462105043187
+  containerDescriptor: {fileID: 8709028415860229759}
+--- !u!114 &575940797712042916
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -479,7 +463,23 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   OpenIcon: {fileID: 0}
-  containerDescriptor: {fileID: 4887714770556236701}
+  containerDescriptor: {fileID: 8709028415860229759}
+--- !u!114 &8102343595168727836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDescriptor: {fileID: 8709028415860229759}
+  Temperature: 0
+  Locked: 0
+  substances: []
 --- !u!1 &8066562249021099569
 GameObject:
   m_ObjectHideFlags: 0

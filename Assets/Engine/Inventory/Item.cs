@@ -35,6 +35,11 @@ namespace SS3D.Engine.Inventory
             get => volume;
         }
 
+        public bool Pickupable
+        {
+            get => true;
+        }
+
         public GameObject GetGameObject()
         {
             return prefab;
@@ -350,7 +355,11 @@ namespace SS3D.Engine.Inventory
 #endif
         public virtual IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] { new PickupInteraction { icon = sprite } };
+            if (Pickupable)
+            {
+                return new IInteraction[] { new PickupInteraction { icon = sprite } };
+            }
+            return new IInteraction[0];
         }
 
         public bool InContainer()

@@ -59,8 +59,7 @@ namespace SS3D.Engine.Inventory.Extensions
 	    // remember that when we call this Start, we are starting the interaction per se
 	    // so we check if the source of the interaction is a Hand, and if the target is an Item
             if (interactionEvent.Source is Hands hands && interactionEvent.Target is IContainerizable target)
-            {
-                Debug.Log("in PickupInteraction, Start");
+            {         
 		// and then we run the function that adds it to the container
                 hands.Pickup(target);
             }

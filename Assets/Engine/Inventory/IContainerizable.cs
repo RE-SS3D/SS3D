@@ -11,6 +11,11 @@ namespace SS3D.Engine.Inventory
             set;
         }
 
+        bool Pickupable
+        {
+            get;
+        }
+
         float Volume
         {
             get;
