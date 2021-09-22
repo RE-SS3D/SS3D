@@ -46,20 +46,22 @@ public class ContainerDescriptorEditor : Editor
 
         if (containerDescriptor.isInteractive)
         {
+            bool hasUi = EditorGUILayout.Toggle("has UI", containerDescriptor.hasUi);
+            HandleHasUi(hasUi);
+
+            bool isOpenable = EditorGUILayout.Toggle("is Openable", containerDescriptor.isOpenable);
+            HandleIsOpenable(isOpenable);
+
             bool hasCustomInteraction = EditorGUILayout.Toggle("has custom interaction", containerDescriptor.hasCustomInteraction);
             HandleCustomInteraction(hasCustomInteraction);
         }
-
-        
-        bool isOpenable = EditorGUILayout.Toggle("is Openable", containerDescriptor.isOpenable);
-        HandleIsOpenable(isOpenable);
 
         if (containerDescriptor.isOpenable)
         {
             bool onlyStoreWhenOpen = EditorGUILayout.Toggle("Only store when open", containerDescriptor.onlyStoreWhenOpen);
             HandleOnlyStoreWhenOpen(onlyStoreWhenOpen);       
         }
-        else
+        else if(containerDescriptor.hasUi)
         {  
             // check if the gameObject has a open animation
             foreach (AnimatorControllerParameter controllerParameter in containerDescriptor.gameObject.GetComponent<Animator>().parameters)
@@ -72,14 +74,11 @@ public class ContainerDescriptorEditor : Editor
             }      
         }
 
-        if (containerDescriptor.containerType != ContainerType.Hidden && containerDescriptor.containerType != ContainerType.Pile)
+        if (containerDescriptor.hasUi)
         {
             float maxDistance = EditorGUILayout.FloatField("Max distance", containerDescriptor.maxDistance);
             HandleMaxDistance(maxDistance);
         }
-
-        ContainerType containerType = (ContainerType)EditorGUILayout.EnumPopup(new GUIContent("Container type"), containerDescriptor.containerType, CheckEnabledType, false);
-        HandleContainerType(containerType);
 
         Vector2Int size = EditorGUILayout.Vector2IntField("Size", containerDescriptor.size);
         HandleSize(size);
@@ -87,12 +86,9 @@ public class ContainerDescriptorEditor : Editor
         Filter startFilter = (Filter)EditorGUILayout.ObjectField("Filter", containerDescriptor.startFilter, typeof(Filter), true);
         HandleStartFilter(startFilter);
 
-        if (containerDescriptor.containerType != ContainerType.Hidden)
-        {
-            bool hideItems = EditorGUILayout.Toggle("Hide Items", containerDescriptor.hideItems);
-            HandleHideItems(hideItems);
-        }
-
+        bool hideItems = EditorGUILayout.Toggle("Hide Items", containerDescriptor.hideItems);
+        HandleHideItems(hideItems);
+        
         bool attachItems = EditorGUILayout.Toggle("Attach Items", containerDescriptor.attachItems);
         HandleAttachItems(attachItems);
 
@@ -101,28 +97,6 @@ public class ContainerDescriptorEditor : Editor
 
         ShowIcons();
         serializedObject.ApplyModifiedProperties();
-    }
-
-    /// <summary>
-    /// determines which type a container can be depending if it's interactive and openable.
-    /// </summary>
-    public bool CheckEnabledType(System.Enum e)
-    {
-        ContainerType containerType = (ContainerType)e;
-
-        //
-        if (containerDescriptor.isOpenable)
-        {
-            if (containerType == ContainerType.Normal || containerType == ContainerType.Pile)
-                return true;
-            else
-                return false;
-        }
-        if (containerDescriptor.isInteractive && !containerDescriptor.isOpenable)
-        {
-            return true;
-        }
-        return false;
     }
 
     /// <summary>
@@ -141,21 +115,21 @@ public class ContainerDescriptorEditor : Editor
                 sp.objectReferenceValue = openIcon;
             }
 
-            if (containerDescriptor.containerType == ContainerType.Normal || containerDescriptor.containerType == ContainerType.Pile)
+            if (containerDescriptor.isInteractive)
             {
                 Sprite storeIcon = (Sprite)EditorGUILayout.ObjectField("Store container icon", containerDescriptor.storeIcon, typeof(Sprite), true);
                 SerializedProperty sp = serializedObject.FindProperty("storeIcon");
                 sp.objectReferenceValue = storeIcon;
             }
 
-            if (containerDescriptor.containerType == ContainerType.Normal)
+            if (containerDescriptor.hasUi)
             {
                 Sprite viewIcon = (Sprite)EditorGUILayout.ObjectField("View container icon", containerDescriptor.viewIcon, typeof(Sprite), true);
                 SerializedProperty sp = serializedObject.FindProperty("viewIcon");
                 sp.objectReferenceValue = viewIcon;
             }
 
-            if (containerDescriptor.containerType == ContainerType.Pile)
+            if (containerDescriptor.isInteractive && !containerDescriptor.hasUi)
             {
                 Sprite takeIcon = (Sprite)EditorGUILayout.ObjectField("Take container icon", containerDescriptor.takeIcon, typeof(Sprite), true);
                 SerializedProperty sp = serializedObject.FindProperty("takeIcon");
@@ -178,6 +152,14 @@ public class ContainerDescriptorEditor : Editor
             serializedObject.ApplyModifiedProperties();
         }
     }
+
+    private void HandleHasUi(bool hasUi)
+    {
+        SerializedProperty sp = serializedObject.FindProperty("hasUi");
+        sp.boolValue = hasUi;
+        serializedObject.ApplyModifiedProperties();
+    }
+
     private void HandleOpenWhenContainerViewed(bool openWhenContainerViewed)
     {
         SerializedProperty sp = serializedObject.FindProperty("openWhenContainerViewed");
@@ -209,12 +191,7 @@ public class ContainerDescriptorEditor : Editor
         sp.boolValue = attachItems;
         serializedObject.ApplyModifiedProperties();
     }
-    private void HandleContainerType(ContainerType containerType)
-    {   
-        SerializedProperty sp = serializedObject.FindProperty("containerType");
-        sp.enumValueIndex = (int)containerType;
-        serializedObject.ApplyModifiedProperties();
-    }
+
     private void HandleMaxDistance(float maxDistance)
     {      
         SerializedProperty sp = serializedObject.FindProperty("maxDistance");
@@ -256,12 +233,6 @@ public class ContainerDescriptorEditor : Editor
         sp.boolValue = isOpenable;
         serializedObject.ApplyModifiedProperties();
 
-        // Openable containers can't be hidden.
-        if(containerDescriptor.containerType == ContainerType.Hidden && isOpenable)
-        {
-            HandleContainerType(ContainerType.Normal);
-        }
-
         // Openable container are always interactive.
         if (isOpenable)
         {
@@ -278,14 +249,7 @@ public class ContainerDescriptorEditor : Editor
     private void HandleHideItems(bool hideItems)
     {
         SerializedProperty sp = serializedObject.FindProperty("hideItems");
-        if (containerDescriptor.containerType == ContainerType.Hidden)
-        {
-            sp.boolValue = true;
-        }
-        else
-        {
-            sp.boolValue = hideItems;
-        }
+        sp.boolValue = hideItems;
         serializedObject.ApplyModifiedProperties();
     }
     private void AddInteractive()
@@ -304,6 +268,7 @@ public class ContainerDescriptorEditor : Editor
         HandleIsOpenable(false);
         HandleOnlyStoreWhenOpen(false);
         HandleCustomInteraction(false);
+        HandleOpenWhenContainerViewed(false);
     }
 
     private void AddAttached()
@@ -316,19 +281,10 @@ public class ContainerDescriptorEditor : Editor
     {
         if(containerDescriptor == null)
         {
-            RemoveContainer();
+            DestroyImmediate(attachedContainer, true);
+            DestroyImmediate(containerInteractive, true);
         }
     }
-
-    /// <summary>
-    /// Remove container related script on the target game object.
-    /// </summary>
-    private void RemoveContainer()
-    {
-        DestroyImmediate(attachedContainer, true);
-        DestroyImmediate(containerInteractive, true);
-    }
-
 }
 
 
