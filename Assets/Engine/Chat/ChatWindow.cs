@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using SS3D.Engine.Input;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using TMPro;
@@ -219,7 +220,7 @@ namespace SS3D.Engine.Chat
         }
 
         public void FinishTyping(){
-            if ((Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter)) ) {
+            if (InputHelper.Inputs.Misc.Submit.IsPressed()) {
                 SendMessage();
             }
 

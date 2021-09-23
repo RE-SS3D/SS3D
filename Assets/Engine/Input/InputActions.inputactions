@@ -435,6 +435,15 @@
                     "processors": "",
                     "interactions": "Press",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Submit",
+                    "type": "Button",
+                    "id": "f5841663-909e-44e6-a499-0136c8a38232",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -468,6 +477,17 @@
                     "processors": "",
                     "groups": "Mouse+Keyboard",
                     "action": "Escape",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2c612261-e5bf-4e38-a11a-781ad98a5ef6",
+                    "path": "*/{Submit}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

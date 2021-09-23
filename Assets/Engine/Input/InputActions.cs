@@ -459,6 +459,15 @@ namespace SS3D.Engine.Input
                     ""processors"": """",
                     ""interactions"": ""Press"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Submit"",
+                    ""type"": ""Button"",
+                    ""id"": ""f5841663-909e-44e6-a499-0136c8a38232"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -492,6 +501,17 @@ namespace SS3D.Engine.Input
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
                     ""action"": ""Escape"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2c612261-e5bf-4e38-a11a-781ad98a5ef6"",
+                    ""path"": ""*/{Submit}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Mouse+Keyboard"",
+                    ""action"": ""Submit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -715,6 +735,7 @@ namespace SS3D.Engine.Input
             m_Misc_LeftAlternate = m_Misc.FindAction("Left Alternate", throwIfNotFound: true);
             m_Misc_LeftControl = m_Misc.FindAction("Left Control", throwIfNotFound: true);
             m_Misc_Escape = m_Misc.FindAction("Escape", throwIfNotFound: true);
+            m_Misc_Submit = m_Misc.FindAction("Submit", throwIfNotFound: true);
             // Camera
             m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
             m_Camera_RotateRight = m_Camera.FindAction("Rotate Right", throwIfNotFound: true);
@@ -1014,6 +1035,7 @@ namespace SS3D.Engine.Input
         private readonly InputAction m_Misc_LeftAlternate;
         private readonly InputAction m_Misc_LeftControl;
         private readonly InputAction m_Misc_Escape;
+        private readonly InputAction m_Misc_Submit;
         public struct MiscActions
         {
             private @InputActions m_Wrapper;
@@ -1021,6 +1043,7 @@ namespace SS3D.Engine.Input
             public InputAction @LeftAlternate => m_Wrapper.m_Misc_LeftAlternate;
             public InputAction @LeftControl => m_Wrapper.m_Misc_LeftControl;
             public InputAction @Escape => m_Wrapper.m_Misc_Escape;
+            public InputAction @Submit => m_Wrapper.m_Misc_Submit;
             public InputActionMap Get() { return m_Wrapper.m_Misc; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1039,6 +1062,9 @@ namespace SS3D.Engine.Input
                     @Escape.started -= m_Wrapper.m_MiscActionsCallbackInterface.OnEscape;
                     @Escape.performed -= m_Wrapper.m_MiscActionsCallbackInterface.OnEscape;
                     @Escape.canceled -= m_Wrapper.m_MiscActionsCallbackInterface.OnEscape;
+                    @Submit.started -= m_Wrapper.m_MiscActionsCallbackInterface.OnSubmit;
+                    @Submit.performed -= m_Wrapper.m_MiscActionsCallbackInterface.OnSubmit;
+                    @Submit.canceled -= m_Wrapper.m_MiscActionsCallbackInterface.OnSubmit;
                 }
                 m_Wrapper.m_MiscActionsCallbackInterface = instance;
                 if (instance != null)
@@ -1052,6 +1078,9 @@ namespace SS3D.Engine.Input
                     @Escape.started += instance.OnEscape;
                     @Escape.performed += instance.OnEscape;
                     @Escape.canceled += instance.OnEscape;
+                    @Submit.started += instance.OnSubmit;
+                    @Submit.performed += instance.OnSubmit;
+                    @Submit.canceled += instance.OnSubmit;
                 }
             }
         }
@@ -1187,6 +1216,7 @@ namespace SS3D.Engine.Input
             void OnLeftAlternate(InputAction.CallbackContext context);
             void OnLeftControl(InputAction.CallbackContext context);
             void OnEscape(InputAction.CallbackContext context);
+            void OnSubmit(InputAction.CallbackContext context);
         }
         public interface ICameraActions
         {
