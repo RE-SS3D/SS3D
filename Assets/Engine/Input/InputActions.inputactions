@@ -66,7 +66,7 @@
                 {
                     "name": "",
                     "id": "dfe61014-5888-4c14-8813-945b32097b16",
-                    "path": "<Keyboard>/i",
+                    "path": "<Keyboard>/backquote",
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse+Keyboard",
@@ -148,6 +148,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Scroll",
+                    "type": "PassThrough",
+                    "id": "8b22a9f1-3286-4fff-8b62-ed1f0b1d4404",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -192,6 +201,17 @@
                     "processors": "",
                     "groups": "Mouse+Keyboard",
                     "action": "Delta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e97c7255-084a-4125-93f4-b21a1a3bc99b",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse+Keyboard",
+                    "action": "Scroll",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

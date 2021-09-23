@@ -90,7 +90,7 @@ namespace SS3D.Engine.Input
                 {
                     ""name"": """",
                     ""id"": ""dfe61014-5888-4c14-8813-945b32097b16"",
-                    ""path"": ""<Keyboard>/i"",
+                    ""path"": ""<Keyboard>/backquote"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
@@ -172,6 +172,15 @@ namespace SS3D.Engine.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Scroll"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""8b22a9f1-3286-4fff-8b62-ed1f0b1d4404"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -216,6 +225,17 @@ namespace SS3D.Engine.Input
                     ""processors"": """",
                     ""groups"": ""Mouse+Keyboard"",
                     ""action"": ""Delta"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e97c7255-084a-4125-93f4-b21a1a3bc99b"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Mouse+Keyboard"",
+                    ""action"": ""Scroll"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -678,6 +698,7 @@ namespace SS3D.Engine.Input
             m_Pointer_SecondaryAction = m_Pointer.FindAction("Secondary Action", throwIfNotFound: true);
             m_Pointer_PrimaryAction = m_Pointer.FindAction("Primary Action", throwIfNotFound: true);
             m_Pointer_Delta = m_Pointer.FindAction("Delta", throwIfNotFound: true);
+            m_Pointer_Scroll = m_Pointer.FindAction("Scroll", throwIfNotFound: true);
             // Player
             m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
             m_Player_CombatMode = m_Player.FindAction("Combat Mode", throwIfNotFound: true);
@@ -832,6 +853,7 @@ namespace SS3D.Engine.Input
         private readonly InputAction m_Pointer_SecondaryAction;
         private readonly InputAction m_Pointer_PrimaryAction;
         private readonly InputAction m_Pointer_Delta;
+        private readonly InputAction m_Pointer_Scroll;
         public struct PointerActions
         {
             private @InputActions m_Wrapper;
@@ -840,6 +862,7 @@ namespace SS3D.Engine.Input
             public InputAction @SecondaryAction => m_Wrapper.m_Pointer_SecondaryAction;
             public InputAction @PrimaryAction => m_Wrapper.m_Pointer_PrimaryAction;
             public InputAction @Delta => m_Wrapper.m_Pointer_Delta;
+            public InputAction @Scroll => m_Wrapper.m_Pointer_Scroll;
             public InputActionMap Get() { return m_Wrapper.m_Pointer; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -861,6 +884,9 @@ namespace SS3D.Engine.Input
                     @Delta.started -= m_Wrapper.m_PointerActionsCallbackInterface.OnDelta;
                     @Delta.performed -= m_Wrapper.m_PointerActionsCallbackInterface.OnDelta;
                     @Delta.canceled -= m_Wrapper.m_PointerActionsCallbackInterface.OnDelta;
+                    @Scroll.started -= m_Wrapper.m_PointerActionsCallbackInterface.OnScroll;
+                    @Scroll.performed -= m_Wrapper.m_PointerActionsCallbackInterface.OnScroll;
+                    @Scroll.canceled -= m_Wrapper.m_PointerActionsCallbackInterface.OnScroll;
                 }
                 m_Wrapper.m_PointerActionsCallbackInterface = instance;
                 if (instance != null)
@@ -877,6 +903,9 @@ namespace SS3D.Engine.Input
                     @Delta.started += instance.OnDelta;
                     @Delta.performed += instance.OnDelta;
                     @Delta.canceled += instance.OnDelta;
+                    @Scroll.started += instance.OnScroll;
+                    @Scroll.performed += instance.OnScroll;
+                    @Scroll.canceled += instance.OnScroll;
                 }
             }
         }
@@ -1139,6 +1168,7 @@ namespace SS3D.Engine.Input
             void OnSecondaryAction(InputAction.CallbackContext context);
             void OnPrimaryAction(InputAction.CallbackContext context);
             void OnDelta(InputAction.CallbackContext context);
+            void OnScroll(InputAction.CallbackContext context);
         }
         public interface IPlayerActions
         {
