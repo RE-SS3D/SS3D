@@ -220,7 +220,7 @@ namespace SS3D.Engine.Chat
         }
 
         public void FinishTyping(){
-            if (InputHelper.Inputs.Misc.Submit.IsPressed()) {
+            if (InputHelper.Inputs.System.Submit.IsPressed()) {
                 SendMessage();
             }
 

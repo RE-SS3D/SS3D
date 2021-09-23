@@ -125,6 +125,7 @@ public class GeneralSettingsUIHelper : MonoBehaviour
                 BindingButtonHelper buttonHelper = binding.AddComponent<BindingButtonHelper>();
                 buttonHelper.inputActionToBind = inputAction;
                 buttonHelper.buttonText = text;
+                buttonHelper.isRebindable = category != "System";
                 Button button = binding.GetComponent<Button>();
                 button.onClick.AddListener(() => buttonHelper.OnClicked());
                 GameObject altBinding = Instantiate(bindingButton, categoryGameObject.transform.Find("AltBindings"));
@@ -134,7 +135,7 @@ public class GeneralSettingsUIHelper : MonoBehaviour
         }
     }
 
-    // Some boilerplate that generates the category and the three objects used to store titles and bindings.
+    // Some boilerplate that generates the category and the two objects used to store titles and bindings.
     private void GenerateStubs(GameObject parent, string name, string titleName)
     {
         GameObject titles = Instantiate(new GameObject(), parent.transform);

@@ -430,7 +430,7 @@ namespace SS3D.Engine.Input
             ]
         },
         {
-            ""name"": ""Misc"",
+            ""name"": ""System"",
             ""id"": ""1926618d-2845-4407-b640-13f106a037de"",
             ""actions"": [
                 {
@@ -730,12 +730,12 @@ namespace SS3D.Engine.Input
             m_Player_MoveDown = m_Player.FindAction("Move Down", throwIfNotFound: true);
             m_Player_MoveLeft = m_Player.FindAction("Move Left", throwIfNotFound: true);
             m_Player_MoveRight = m_Player.FindAction("Move Right", throwIfNotFound: true);
-            // Misc
-            m_Misc = asset.FindActionMap("Misc", throwIfNotFound: true);
-            m_Misc_LeftAlternate = m_Misc.FindAction("Left Alternate", throwIfNotFound: true);
-            m_Misc_LeftControl = m_Misc.FindAction("Left Control", throwIfNotFound: true);
-            m_Misc_Escape = m_Misc.FindAction("Escape", throwIfNotFound: true);
-            m_Misc_Submit = m_Misc.FindAction("Submit", throwIfNotFound: true);
+            // System
+            m_System = asset.FindActionMap("System", throwIfNotFound: true);
+            m_System_LeftAlternate = m_System.FindAction("Left Alternate", throwIfNotFound: true);
+            m_System_LeftControl = m_System.FindAction("Left Control", throwIfNotFound: true);
+            m_System_Escape = m_System.FindAction("Escape", throwIfNotFound: true);
+            m_System_Submit = m_System.FindAction("Submit", throwIfNotFound: true);
             // Camera
             m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
             m_Camera_RotateRight = m_Camera.FindAction("Rotate Right", throwIfNotFound: true);
@@ -1029,44 +1029,44 @@ namespace SS3D.Engine.Input
         }
         public PlayerActions @Player => new PlayerActions(this);
 
-        // Misc
-        private readonly InputActionMap m_Misc;
-        private IMiscActions m_MiscActionsCallbackInterface;
-        private readonly InputAction m_Misc_LeftAlternate;
-        private readonly InputAction m_Misc_LeftControl;
-        private readonly InputAction m_Misc_Escape;
-        private readonly InputAction m_Misc_Submit;
-        public struct MiscActions
+        // System
+        private readonly InputActionMap m_System;
+        private ISystemActions m_SystemActionsCallbackInterface;
+        private readonly InputAction m_System_LeftAlternate;
+        private readonly InputAction m_System_LeftControl;
+        private readonly InputAction m_System_Escape;
+        private readonly InputAction m_System_Submit;
+        public struct SystemActions
         {
             private @InputActions m_Wrapper;
-            public MiscActions(@InputActions wrapper) { m_Wrapper = wrapper; }
-            public InputAction @LeftAlternate => m_Wrapper.m_Misc_LeftAlternate;
-            public InputAction @LeftControl => m_Wrapper.m_Misc_LeftControl;
-            public InputAction @Escape => m_Wrapper.m_Misc_Escape;
-            public InputAction @Submit => m_Wrapper.m_Misc_Submit;
-            public InputActionMap Get() { return m_Wrapper.m_Misc; }
+            public SystemActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+            public InputAction @LeftAlternate => m_Wrapper.m_System_LeftAlternate;
+            public InputAction @LeftControl => m_Wrapper.m_System_LeftControl;
+            public InputAction @Escape => m_Wrapper.m_System_Escape;
+            public InputAction @Submit => m_Wrapper.m_System_Submit;
+            public InputActionMap Get() { return m_Wrapper.m_System; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
             public bool enabled => Get().enabled;
-            public static implicit operator InputActionMap(MiscActions set) { return set.Get(); }
-            public void SetCallbacks(IMiscActions instance)
+            public static implicit operator InputActionMap(SystemActions set) { return set.Get(); }
+            public void SetCallbacks(ISystemActions instance)
             {
-                if (m_Wrapper.m_MiscActionsCallbackInterface != null)
+                if (m_Wrapper.m_SystemActionsCallbackInterface != null)
                 {
-                    @LeftAlternate.started -= m_Wrapper.m_MiscActionsCallbackInterface.OnLeftAlternate;
-                    @LeftAlternate.performed -= m_Wrapper.m_MiscActionsCallbackInterface.OnLeftAlternate;
-                    @LeftAlternate.canceled -= m_Wrapper.m_MiscActionsCallbackInterface.OnLeftAlternate;
-                    @LeftControl.started -= m_Wrapper.m_MiscActionsCallbackInterface.OnLeftControl;
-                    @LeftControl.performed -= m_Wrapper.m_MiscActionsCallbackInterface.OnLeftControl;
-                    @LeftControl.canceled -= m_Wrapper.m_MiscActionsCallbackInterface.OnLeftControl;
-                    @Escape.started -= m_Wrapper.m_MiscActionsCallbackInterface.OnEscape;
-                    @Escape.performed -= m_Wrapper.m_MiscActionsCallbackInterface.OnEscape;
-                    @Escape.canceled -= m_Wrapper.m_MiscActionsCallbackInterface.OnEscape;
-                    @Submit.started -= m_Wrapper.m_MiscActionsCallbackInterface.OnSubmit;
-                    @Submit.performed -= m_Wrapper.m_MiscActionsCallbackInterface.OnSubmit;
-                    @Submit.canceled -= m_Wrapper.m_MiscActionsCallbackInterface.OnSubmit;
+                    @LeftAlternate.started -= m_Wrapper.m_SystemActionsCallbackInterface.OnLeftAlternate;
+                    @LeftAlternate.performed -= m_Wrapper.m_SystemActionsCallbackInterface.OnLeftAlternate;
+                    @LeftAlternate.canceled -= m_Wrapper.m_SystemActionsCallbackInterface.OnLeftAlternate;
+                    @LeftControl.started -= m_Wrapper.m_SystemActionsCallbackInterface.OnLeftControl;
+                    @LeftControl.performed -= m_Wrapper.m_SystemActionsCallbackInterface.OnLeftControl;
+                    @LeftControl.canceled -= m_Wrapper.m_SystemActionsCallbackInterface.OnLeftControl;
+                    @Escape.started -= m_Wrapper.m_SystemActionsCallbackInterface.OnEscape;
+                    @Escape.performed -= m_Wrapper.m_SystemActionsCallbackInterface.OnEscape;
+                    @Escape.canceled -= m_Wrapper.m_SystemActionsCallbackInterface.OnEscape;
+                    @Submit.started -= m_Wrapper.m_SystemActionsCallbackInterface.OnSubmit;
+                    @Submit.performed -= m_Wrapper.m_SystemActionsCallbackInterface.OnSubmit;
+                    @Submit.canceled -= m_Wrapper.m_SystemActionsCallbackInterface.OnSubmit;
                 }
-                m_Wrapper.m_MiscActionsCallbackInterface = instance;
+                m_Wrapper.m_SystemActionsCallbackInterface = instance;
                 if (instance != null)
                 {
                     @LeftAlternate.started += instance.OnLeftAlternate;
@@ -1084,7 +1084,7 @@ namespace SS3D.Engine.Input
                 }
             }
         }
-        public MiscActions @Misc => new MiscActions(this);
+        public SystemActions @System => new SystemActions(this);
 
         // Camera
         private readonly InputActionMap m_Camera;
@@ -1211,7 +1211,7 @@ namespace SS3D.Engine.Input
             void OnMoveLeft(InputAction.CallbackContext context);
             void OnMoveRight(InputAction.CallbackContext context);
         }
-        public interface IMiscActions
+        public interface ISystemActions
         {
             void OnLeftAlternate(InputAction.CallbackContext context);
             void OnLeftControl(InputAction.CallbackContext context);

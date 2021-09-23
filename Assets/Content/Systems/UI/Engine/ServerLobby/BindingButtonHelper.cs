@@ -20,22 +20,39 @@ namespace SS3D.Engine.Input
 
         public InputAction inputActionToBind;
         public TMP_Text buttonText;
+        public bool isRebindable;
 
         public void OnClicked()
         {
-            Debug.Log("Rebinding " + inputActionToBind.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions));
-            // Sanity check, although not really necessary because all actions are disabled once pressed.
-            if (isRebinding)
+            if (isRebindable)
             {
-                return;
+                Debug.Log("Rebinding " + inputActionToBind.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions));
+                // Sanity check, although not really necessary because all actions are disabled once pressed.
+                if (isRebinding)
+                {
+                    return;
+                }
+                isRebinding = true;
+                InputHelper.Inputs.Disable();
+                buttonText.text = "Rebinding";
+                rebinding = inputActionToBind.PerformInteractiveRebinding()
+                    .OnComplete(EndRebind)
+                    .OnCancel(EndRebind)
+                    .Start();
             }
-            isRebinding = true;
-            InputHelper.Inputs.Disable();
-            buttonText.text = "Rebinding";
-            rebinding = inputActionToBind.PerformInteractiveRebinding()
-                .OnComplete(EndRebind)
-                .OnCancel(EndRebind)
-                .Start();
+            else
+            {
+                buttonText.text = "Cannot Rebind!";
+                Invoke("ResetText", 2);
+            }
+        }
+
+        private void ResetText()
+        {
+            if (!isRebinding)
+            {
+                buttonText.text = inputActionToBind.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions);
+            }
         }
 
         /// <summary>
@@ -44,10 +61,10 @@ namespace SS3D.Engine.Input
         private void EndRebind(RebindingOperation bind)
         {
             rebinding.Dispose();
-            buttonText.text = inputActionToBind.GetBindingDisplayString(InputBinding.DisplayStringOptions.DontIncludeInteractions);
             InputHelper.Inputs.Enable();
             PlayerPrefs.SetString("bindings", InputHelper.Inputs.SaveBindingOverridesAsJson());
             isRebinding = false;
+            ResetText();
         }
     }
 }

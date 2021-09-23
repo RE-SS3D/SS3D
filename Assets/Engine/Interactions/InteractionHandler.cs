@@ -65,7 +65,7 @@ namespace SS3D.Engine.Interactions
                     Destroy(activeMenu.gameObject);
                 }
 
-                if (InputHelper.Inputs.Misc.LeftAlternate.triggered)
+                if (InputHelper.Inputs.System.LeftAlternate.triggered)
                 {
                     Hands hands = GetComponent<Hands>();
                     if (hands != null )

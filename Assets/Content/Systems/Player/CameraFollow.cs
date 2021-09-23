@@ -113,7 +113,7 @@ namespace SS3D.Content.Systems.Player
             }
 
             // ctrl + q/e rotation
-            if (InputHelper.Inputs.Misc.LeftControl.IsPressed())
+            if (InputHelper.Inputs.System.LeftControl.IsPressed())
             {
                 // snap camera if rotation button tapped
                 if ((InputHelper.Inputs.Camera.RotateLeft.triggered && !InputHelper.Inputs.Camera.RotateLeft.IsPressed()
