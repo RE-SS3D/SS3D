@@ -109,7 +109,7 @@ public class GeneralSettingsUIHelper : MonoBehaviour
 
                 // Gets the actual InputAction for getting the input name and input rebinding
                 InputAction inputAction = (InputAction) inputObj; 
-                if (!inputAction.interactions.Contains("Press") && !inputAction.interactions.Contains("Hold"))
+                if ((inputAction.interactions.Contains("Press") && inputAction.interactions.Contains("Hold")) || inputAction.name == "Submit")
                 {
                     continue;
                 }
