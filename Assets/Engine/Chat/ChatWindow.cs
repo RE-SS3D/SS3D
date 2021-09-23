@@ -218,15 +218,19 @@ namespace SS3D.Engine.Chat
             return (EventSystem.current.currentSelectedGameObject != null);
         }
 
-        public void FinishTyping()
-        {
-            SendMessage();
-            EventSystem.current.SetSelectedGameObject(null);
-        }
+        public void FinishTyping(){
+            if ((Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter)) ) {
+                SendMessage();
+            }
 
+            EventSystem.current.SetSelectedGameObject(null);
+
+        }
         public void FocusInputField()
         {
             inputField.Select();
+        
         }
     }
+
 }

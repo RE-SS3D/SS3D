@@ -30,7 +30,7 @@ namespace SS3D.Engine.Inventory.UI
 				Toggle();
 			}*/
 		}
-        void TaskOnClick()
+        public void TaskOnClick()
 		{
 			Toggle();
 		}
@@ -50,7 +50,7 @@ namespace SS3D.Engine.Inventory.UI
 				BodyTargetCanvas.alpha = 1f; //this makes it visible again
 				BodyTargetCanvas.blocksRaycasts = true; //this allows the UI to receive inputs again.
 			}
-			ButtonTransform.localScale = new Vector3(ButtonTransform.localScale.x * -1, ButtonTransform.localScale.y * -1, ButtonTransform.localScale.z);
+			this.gameObject.transform.GetChild(0).eulerAngles = new Vector3(this.gameObject.transform.GetChild(0).eulerAngles.x, this.gameObject.transform.GetChild(0).eulerAngles.y, this.gameObject.transform.GetChild(0).eulerAngles.z + 180);
 			isShowing = !isShowing;
 		}
 	}

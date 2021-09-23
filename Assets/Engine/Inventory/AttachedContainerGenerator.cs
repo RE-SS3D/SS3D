@@ -13,7 +13,7 @@ namespace SS3D.Engine.Inventory
         public Vector2Int Size;
         public Filter StartFilter;
 
-        public void Start()
+        public void Awake()
         {
             Assert.IsNotNull(AttachedContainer);
             
