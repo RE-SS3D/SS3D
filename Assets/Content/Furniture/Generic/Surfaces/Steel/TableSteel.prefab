@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -2535380303791209004}
   - component: {fileID: -7245858325371128762}
   m_Layer: 0
-  m_Name: TableMetal
+  m_Name: TableSteel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +44,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8036950609662249464}
-  m_Mesh: {fileID: 2322848670761334695, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+  m_Mesh: {fileID: -6584651252408597845, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
 --- !u!23 &6984099654956712234
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -109,7 +109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Metal Table
+  DisplayName: Steel Table
   Text: 
   MaxDistance: 0
 --- !u!114 &-2535380303791209004
@@ -143,47 +143,47 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   selectedAdjacencyType: 1
-  type: table
   CrossConnectAllowed: 0
   simpleAdjacency:
     o: {fileID: 0}
-    c: {fileID: 0}
+    u: {fileID: 0}
     i: {fileID: 0}
     l: {fileID: 0}
     t: {fileID: 0}
     x: {fileID: 0}
   advancedAdjacency:
-    o: {fileID: 2322848670761334695, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-    u: {fileID: 7745281341925457866, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-    i: {fileID: 2528759063624406942, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-    lNone: {fileID: -3147055159611835921, guid: f860e5d60928a9a428e4e08ced949943,
+    o: {fileID: -6584651252408597845, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+    u: {fileID: 1516601059846573687, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+    i: {fileID: -7725530803512371161, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+    lNone: {fileID: -7366641889529296951, guid: f860e5d60928a9a428e4e08ced949943,
       type: 3}
-    lSingle: {fileID: 6772196638450847013, guid: f860e5d60928a9a428e4e08ced949943,
+    lSingle: {fileID: -7143296690163918018, guid: f860e5d60928a9a428e4e08ced949943,
       type: 3}
-    tNone: {fileID: 1321078938811735782, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-    tSingleRight: {fileID: -4281538616729302783, guid: f860e5d60928a9a428e4e08ced949943,
+    tNone: {fileID: 9086542729253838179, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
+    tSingleRight: {fileID: -7585036472595684286, guid: f860e5d60928a9a428e4e08ced949943,
       type: 3}
-    tSingleLeft: {fileID: 4149459232411989835, guid: f860e5d60928a9a428e4e08ced949943,
+    tSingleLeft: {fileID: -4753064796524163854, guid: f860e5d60928a9a428e4e08ced949943,
       type: 3}
-    tDouble: {fileID: 8373393617121163240, guid: f860e5d60928a9a428e4e08ced949943,
+    tDouble: {fileID: 1820601144754092433, guid: f860e5d60928a9a428e4e08ced949943,
       type: 3}
-    xNone: {fileID: 2093934115067227924, guid: f860e5d60928a9a428e4e08ced949943, type: 3}
-    xSingle: {fileID: 2136301112500897677, guid: f860e5d60928a9a428e4e08ced949943,
+    xNone: {fileID: -5519172923466323909, guid: f860e5d60928a9a428e4e08ced949943,
       type: 3}
-    xSide: {fileID: -5854263339068436191, guid: f860e5d60928a9a428e4e08ced949943,
+    xSingle: {fileID: 7333013526853445384, guid: f860e5d60928a9a428e4e08ced949943,
       type: 3}
-    xOpposite: {fileID: 1420634745428322101, guid: f860e5d60928a9a428e4e08ced949943,
+    xSide: {fileID: -8537839409271453831, guid: f860e5d60928a9a428e4e08ced949943,
       type: 3}
-    xTriple: {fileID: 1928062334942078183, guid: f860e5d60928a9a428e4e08ced949943,
+    xOpposite: {fileID: -3138516981719917878, guid: f860e5d60928a9a428e4e08ced949943,
       type: 3}
-    xQuad: {fileID: -6775380624637099578, guid: f860e5d60928a9a428e4e08ced949943,
+    xTriple: {fileID: -5465242921297115404, guid: f860e5d60928a9a428e4e08ced949943,
+      type: 3}
+    xQuad: {fileID: -7024319511112420413, guid: f860e5d60928a9a428e4e08ced949943,
       type: 3}
     viewObstacles: []
     opaque: 0
   offsetAdjacency:
     o: {fileID: 0}
-    cNorth: {fileID: 0}
-    cSouth: {fileID: 0}
+    uNorth: {fileID: 0}
+    uSouth: {fileID: 0}
     i: {fileID: 0}
     lNE: {fileID: 0}
     lNW: {fileID: 0}
@@ -194,7 +194,7 @@ MonoBehaviour:
     tNSE: {fileID: 0}
     tSWE: {fileID: 0}
     x: {fileID: 0}
-  blockedDirections: 0
+  EditorblockedConnections: 0
 --- !u!1001 &5077701558365432987
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -205,6 +205,10 @@ PrefabInstance:
     - target: {fileID: 100002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
       propertyPath: m_Name
       value: DropShadowProjector
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
       propertyPath: m_LocalPosition.x
@@ -219,6 +223,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0.7071068
       objectReference: {fileID: 0}
@@ -228,14 +236,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
-      propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
@@ -251,13 +251,13 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11900000, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
-      propertyPath: m_OrthographicSize
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 11900000, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 2100000, guid: db45ce65733b4134c96424ec0ae980f2, type: 2}
+    - target: {fileID: 11900000, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
+      propertyPath: m_OrthographicSize
+      value: 0.7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 28a5e79925e3ce04a82856c16a572cbe, type: 3}
 --- !u!4 &5077701558365828633 stripped

@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: Girder
+  m_Name: TableFrameSteel
   m_EditorClassIdentifier: 
-  layer: 2
-  nameString: Girder
-  genericType: wall
+  layer: 10
+  nameString: TableFrameSteel
+  genericType: 
   specificType: 
-  prefab: {fileID: 5989834269598487349, guid: 60695978170ac0c48af8fd7ac2c0a43c, type: 3}
+  prefab: {fileID: 3879826479501069436, guid: e9009aff81f29eb429148fd71961539f, type: 3}
   width: 1
   height: 1
