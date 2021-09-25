@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: MetalWallReinforced
+  m_Name: SteelGirder
   m_EditorClassIdentifier: 
   layer: 2
-  nameString: MetalWallReinforced
+  nameString: SteelGirder
   genericType: wall
   specificType: 
-  prefab: {fileID: 3591147544166670882, guid: d11a68992658b7741bd28ffdf04165ba, type: 3}
+  prefab: {fileID: 5989834269598487349, guid: 60695978170ac0c48af8fd7ac2c0a43c, type: 3}
   width: 1
   height: 1
