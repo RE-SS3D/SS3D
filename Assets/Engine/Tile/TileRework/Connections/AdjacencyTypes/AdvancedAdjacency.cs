@@ -116,7 +116,7 @@ namespace SS3D.Engine.Tiles.Connections
                     : corners == 2 ? tSingleRight
                     : tDouble;
 
-                rotation = TileHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyNegative());
+                rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyNegative());
 
                 if (opaque)
                 {

@@ -53,7 +53,7 @@ namespace SS3D.Engine.Tiles.Connections
             else if (cardinalInfo.IsT())
             {
                 mesh = t;
-                rotation = TileHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyNegative());
+                rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyNegative());
             }
             else // Must be X
                 mesh = x;
