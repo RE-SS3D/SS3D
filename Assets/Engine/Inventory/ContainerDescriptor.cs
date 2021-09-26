@@ -6,8 +6,8 @@ using UnityEngine.Assertions;
 using Mirror;
 using SS3D.Content;
 using SS3D.Engine.Interactions;
-
-
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SS3D.Engine.Inventory
 {
@@ -20,7 +20,7 @@ namespace SS3D.Engine.Inventory
     /// needs to acces them directly, not through accessors or properties. ContainerDescriptorEditor should be declared as friend of 
     /// ContainerDescriptor and most attributes should be private.
     /// </summary>
-    public class ContainerDescriptor : MonoBehaviour
+    public class ContainerDescriptor : NetworkBehaviour
     {
         // References toward all container related scripts.
         public AttachedContainer attachedContainer;
@@ -110,6 +110,8 @@ namespace SS3D.Engine.Inventory
             takeIcon = takeIcon == null ? Resources.Load<Sprite>("Interactions/take") : takeIcon;
             storeIcon = storeIcon == null ? Resources.Load<Sprite>("Interactions/discard") : storeIcon;
             viewIcon = viewIcon == null ? Resources.Load<Sprite>("Interactions/container") : viewIcon;
+
+            UpdateContainers();
         }
 
         public void Update()
@@ -150,5 +152,159 @@ namespace SS3D.Engine.Inventory
                 lastObserverCheck = Time.time;
             }
         }
+
+        private Container.ContainerContentsHandler changeHandler;
+
+        public void UpdateContainers()
+        {
+            if (changeHandler != null)
+            {
+                attachedContainer.Container.ContentsChanged -= changeHandler;
+                changeHandler = null;
+            }
+
+            if (NetworkServer.active)
+            {
+                SubscribeToContainers();
+            }
+        }
+
+        private void SubscribeToContainers()
+        {
+            // Go through each container, subscribing to events
+            
+
+            void ContentsHandler(Container _, IEnumerable<Item> items, Container.ContainerChangeType type)
+            {
+                SyncContainerDelta(attachedContainer, items, type);
+            }
+
+                attachedContainer.Container.ContentsChanged += ContentsHandler;
+                changeHandler = ContentsHandler;
+
+                // New accessor
+                attachedContainer.NewObserver += SyncContainer;
+            
+        }
+
+        private void SyncContainer(AttachedContainer container, Entity creature)
+        {
+            var identity = creature.GetComponent<NetworkIdentity>();
+            if (identity == null)
+            {
+                return;
+            }
+
+            var client = identity.connectionToClient;
+            if (client == null)
+            {
+                return;
+            }
+
+            TargetSyncContainer(client, container.Container);
+        }
+
+        private void SyncContainerDelta(AttachedContainer attachedContainer, IEnumerable<Item> changedItems,
+    Container.ContainerChangeType type)
+        {
+            if (attachedContainer.Observers.Count == 0)
+            {
+                return;
+            }
+
+            Item[] items = changedItems.ToArray();
+            GameObject[] itemGameObjects = items.Select(x => x.gameObject).ToArray();
+            Container container = attachedContainer.Container;
+
+            Container.StoredItem[] storedItems = null;
+            if (type == Container.ContainerChangeType.Add || type == Container.ContainerChangeType.Move)
+            {
+                storedItems = new Container.StoredItem[items.Length];
+                for (var i = 0; i < items.Length; i++)
+                {
+                    storedItems[i] = container.StoredItems[container.FindItem(items[i])];
+                }
+            }
+
+
+            foreach (Entity creature in attachedContainer.Observers)
+            {
+                if (creature == null)
+                {
+                    continue;
+                }
+
+                var identity = creature.GetComponent<NetworkIdentity>();
+                if (identity == null)
+                {
+                    continue;
+                }
+
+                var client = identity.connectionToClient;
+                if (client == null)
+                {
+                    continue;
+                }
+
+                if (type == Container.ContainerChangeType.Remove)
+                {
+                    TargetSyncItemsRemove(client, itemGameObjects);
+                }
+                else if (type == Container.ContainerChangeType.Add)
+                {
+                    TargetSyncItemsAdd(client, storedItems);
+                }
+                else if (type == Container.ContainerChangeType.Move)
+                {
+                    TargetSyncItemsMove(client, storedItems);
+                }
+            }
+        }
+
+        [TargetRpc]
+        private void TargetSyncContainer(NetworkConnection target, Container container)
+        {
+            if (NetworkServer.active)
+            {
+                return;
+            }
+
+            UpdateContainers();
+            attachedContainer.Container.Reconcile(container);
+        }
+
+        [TargetRpc]
+        private void TargetSyncItemsAdd(NetworkConnection target, Container.StoredItem[] items)
+        {
+            if (NetworkServer.active)
+            {
+                return;
+            }
+
+            attachedContainer.Container.AddItemsUnchecked(items);
+        }
+
+        [TargetRpc]
+        private void TargetSyncItemsRemove(NetworkConnection target, GameObject[] items)
+        {
+            if (NetworkServer.active)
+            {
+                return;
+            }
+
+            attachedContainer.Container.RemoveItems(items.Select(x => x.GetComponent<Item>()).ToArray());
+        }
+
+        [TargetRpc]
+        private void TargetSyncItemsMove(NetworkConnection target, Container.StoredItem[] items)
+        {
+            if (NetworkServer.active)
+            {
+                return;
+            }
+
+            attachedContainer.Container.MoveItemsUnchecked(items);
+        }
+
     }
 }

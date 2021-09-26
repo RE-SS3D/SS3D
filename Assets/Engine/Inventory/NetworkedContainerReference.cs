@@ -1,4 +1,7 @@
 ﻿using Mirror;
+using System.Collections.Generic;
+using UnityEngine;
+
 
 namespace SS3D.Engine.Inventory
 {
@@ -18,21 +21,32 @@ namespace SS3D.Engine.Inventory
 
         public static NetworkedContainerReference? CreateReference(AttachedContainer container)
         {
-            var sync = container.GetComponentInParent<ContainerSync>();
+            var sync = container.GetComponents<ContainerDescriptor>();
+            ContainerDescriptor target = null;
             if (sync == null)
             {
                 return null;
             }
 
-            int index = sync.IndexOf(container);
-            if (index == -1)
+            int index = 0;
+            foreach(ContainerDescriptor c in sync)
+            {
+                if(c.attachedContainer == container)
+                {
+                    target = c;
+                    break;
+                }
+                index += 1;
+            }
+
+            if(target == null)
             {
                 return null;
             }
 
             return new NetworkedContainerReference
             {
-                SyncNetworkId = sync.netId,
+                SyncNetworkId = target.netId,
                 ContainerIndex = (uint) index
             };
         }
@@ -41,17 +55,19 @@ namespace SS3D.Engine.Inventory
         {
             if (NetworkIdentity.spawned.TryGetValue(SyncNetworkId, out NetworkIdentity identity))
             {
-                var sync = identity.gameObject.GetComponent<ContainerSync>();
+                var sync = identity.gameObject.GetComponents<ContainerDescriptor>();
                 if (sync == null)
                 {
                     return null;
                 }
 
-                if (ContainerIndex < sync.Containers.Count)
+                if (ContainerIndex < sync.Length)
                 {
-                    return sync.Containers[(int) ContainerIndex];
+                    return sync[ContainerIndex].attachedContainer;
                 }
             }
+
+            Debug.Log("can't get value in FindContainer()");
 
             return null;
         }
