@@ -63,11 +63,36 @@ namespace SS3D.Content.Systems.Interactions
             if (interactionEvent.Target is IGameObjectProvider target)
             {
                 // Check that the entity is actually capable of interacting with the target
-                if (entity.CanInteract(target.GameObject))
+                if (entity.CanInteract(target.GameObject) && IsFirstContainerOpenable(target))
                 {
                     return target.GameObject.GetComponent<Animator>() != null;
                 }
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Verifies if the containerDescriptor referenced by this script is the first one on the game object at the source of the interaction.
+        /// </summary>
+        private bool IsFirstContainerOpenable(IGameObjectProvider target)
+        {
+            // Only accept the first Openable container on the GameObject.
+            // Note: if you want separately functioning doors etc, they must be on different GameObjects.
+            ContainerDescriptor[] containerDescriptors = target.GameObject.GetComponents<ContainerDescriptor>();
+            for (int i = 0; i < containerDescriptors.Length; i++)
+            {
+
+                if (containerDescriptor != containerDescriptors[i] && containerDescriptors[i].isOpenable)
+                {
+                    return false;
+                }
+
+                if (containerDescriptor == containerDescriptors[i])
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 

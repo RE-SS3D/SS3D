@@ -36,8 +36,27 @@ namespace SS3D.Content.Furniture
 
         protected virtual void OnOpenStateChange(object sender, bool e)
         {
+            OpenAllOpenables(sender, e);
             openState = e;
             UpdateAnimator();
+        }
+
+        /// <summary>
+        /// On game objects with a single open animation but multiple containers depending on it,
+        /// this method assures us that when the animation is fired, all NetworkedOpenable scripts are updated.
+        /// </summary>
+        private void OpenAllOpenables(object sender, bool e)
+        {
+            NetworkedOpenable[] openables = gameObject.GetComponents<NetworkedOpenable>();
+
+            // If this is the top NetworkedOpenable in the inspector, tell the others to open too. 
+            if (openables[0] == this)
+            {
+                for (int i = 1; i < openables.Length; i++)
+                {
+                    openables[i].OnOpenStateChange(sender, e);
+                }
+            }
         }
 
         [Server]
