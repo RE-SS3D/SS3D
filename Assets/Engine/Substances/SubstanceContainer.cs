@@ -87,9 +87,9 @@ namespace SS3D.Engine.Substances
             return Substances.Count < 1;
         }
 
-        public bool CanTranfer()
+        public bool CanTransfer()
         {
-            return Locked;
+            return !Locked;
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace SS3D.Engine.Substances
         /// <param name="moles">How many moles should be added</param>
         public void AddSubstance(Substance substance, float moles)
         {
-            if (!CanTranfer())
+            if (!CanTransfer())
                 return;
             
             var remainingCapacity = RemainingVolume;
@@ -149,7 +149,7 @@ namespace SS3D.Engine.Substances
         /// <param name="moles">The amount of substance</param>
         public void RemoveSubstance(Substance substance, float moles = float.MaxValue)
         {
-            if (!CanTranfer()) 
+            if (!CanTransfer()) 
                 return;
             
             int index = IndexOfSubstance(substance);
