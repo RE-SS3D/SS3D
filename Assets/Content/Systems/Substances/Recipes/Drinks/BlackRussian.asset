@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Ingredients:
   - Id: Vodka
-    RelativeAmount: 3
+    RelativeAmount: 1.3815789
   - Id: Kahlua
-    RelativeAmount: 2
+    RelativeAmount: 1
   Results:
   - Id: BlackRussian
     RelativeAmount: 1
