@@ -129,8 +129,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InteractionName: Dispense
-  Substance: Water
-  Moles: 5.555555
+  substances:
+  - Water
+  amount: 250
+  useMillilitres: 1
 --- !u!114 &9055692276633119394
 MonoBehaviour:
   m_ObjectHideFlags: 0
