@@ -1525,6 +1525,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4811199063769927608, guid: 33f138fd77f12bf42ba03827596f66e1, type: 3}
+    - {fileID: 3734325509069202337, guid: 33f138fd77f12bf42ba03827596f66e1, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 33f138fd77f12bf42ba03827596f66e1, type: 3}
 --- !u!4 &4828485990197208760 stripped
 Transform:
@@ -1605,7 +1606,7 @@ PrefabInstance:
       value: cardboard box
       objectReference: {fileID: 0}
     m_RemovedComponents:
-    - {fileID: 4811199063769927608, guid: 33f138fd77f12bf42ba03827596f66e1, type: 3}
+    - {fileID: 3734325509069202337, guid: 33f138fd77f12bf42ba03827596f66e1, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 33f138fd77f12bf42ba03827596f66e1, type: 3}
 --- !u!4 &5415468539376512869 stripped
 Transform:

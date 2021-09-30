@@ -15,6 +15,7 @@ public class ContainerDescriptorEditor : Editor
     private bool showIcon = false;
     private AttachedContainer attachedContainer; 
     private ContainerInteractive containerInteractive;
+    private ContainerInteractive containerSync;
 
     public void OnEnable()
     {
@@ -147,6 +148,7 @@ public class ContainerDescriptorEditor : Editor
         {
             AddAttached();
             HandleIsInteractive(true);
+            AddSync();
             SerializedProperty sp = serializedObject.FindProperty("initialized");
             sp.boolValue = true;
             serializedObject.ApplyModifiedProperties();
@@ -277,12 +279,33 @@ public class ContainerDescriptorEditor : Editor
         containerDescriptor.attachedContainer.containerDescriptor = containerDescriptor;
     }
 
+    private void AddSync()
+    {
+        if(containerDescriptor.gameObject.GetComponent<ContainerSync>() == null)
+        {
+            SerializedProperty sp = serializedObject.FindProperty("containerSync");
+            sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerSync>();
+            serializedObject.ApplyModifiedProperties();
+        }
+    }
+
+    private void RemoveSync()
+    {
+        GameObject g = Selection.activeGameObject;
+        var containerDescriptors = g.GetComponents<ContainerDescriptor>();
+        if (containerDescriptors != null && containerDescriptors.Length == 0)
+        {
+            DestroyImmediate(g.GetComponent<ContainerSync>());
+        }  
+    }
+
     private void OnDestroy()
     {
         if(containerDescriptor == null)
         {
             DestroyImmediate(attachedContainer, true);
             DestroyImmediate(containerInteractive, true);
+            RemoveSync();
         }
     }
 }

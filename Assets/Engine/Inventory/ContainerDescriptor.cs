@@ -5,9 +5,6 @@ using SS3D.Engine.Inventory.UI;
 using UnityEngine.Assertions;
 using Mirror;
 using SS3D.Content;
-using SS3D.Engine.Interactions;
-
-
 
 namespace SS3D.Engine.Inventory
 {

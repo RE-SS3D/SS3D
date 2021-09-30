@@ -230,18 +230,15 @@ namespace SS3D.Engine.Inventory
                     continue;
 
                 var containerSyncToRemove = child.GetComponent<ContainerSync>();
-                if (containerSync != null && containerSyncToRemove != null)
+                UnityEditor.EditorApplication.delayCall += () =>
                 {
-                    UnityEditor.EditorApplication.delayCall += () =>
+                    if (Application.isEditor && containerSync != null && containerSyncToRemove != null)
                     {
-                        if (Application.isEditor)
-                        {
-                            Debug.Log("On object " + child.gameObject.name + ", remove containerSync because a containerSync script is already on a parent");
-                            DestroyImmediate(containerSyncToRemove, true);
-                        }               
-                    };
-                    
-                }
+                        Debug.Log("On object " + child.gameObject.name + ", remove containerSync because a containerSync script is already on a parent");
+                        DestroyImmediate(containerSyncToRemove, true);
+                    }               
+                };
+                     
 
                 RemoveUselessContainerSync(child.gameObject);
             }
