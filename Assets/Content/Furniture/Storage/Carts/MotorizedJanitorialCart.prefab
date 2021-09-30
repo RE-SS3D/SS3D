@@ -23,28 +23,17 @@ MonoBehaviour:
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: battery compartment
   onlyStoreWhenOpen: 0
+  openWhenContainerViewed: 0
   size: {x: 2, y: 2}
   hideItems: 1
   attachItems: 1
   startFilter: {fileID: 0}
   initialized: 1
   maxDistance: 5
-  containerType: 1
   isOpenable: 0
   isInteractive: 1
---- !u!114 &7459978131093067977
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6289425011331041029}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 3403677919292827686}
+  hasUi: 0
+  hasCustomInteraction: 0
 --- !u!114 &7408037214966147921
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,6 +49,19 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   OpenIcon: {fileID: 0}
+  containerDescriptor: {fileID: 3403677919292827686}
+--- !u!114 &7459978131093067977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6289425011331041029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   containerDescriptor: {fileID: 3403677919292827686}
 --- !u!1001 &1230607458103977360
 PrefabInstance:
@@ -116,7 +118,7 @@ PrefabInstance:
     - target: {fileID: 5069778086634185365, guid: 3f243f813c03dc94fa25a73f344ee4f8,
         type: 3}
       propertyPath: m_Name
-      value: Motorized Janitorial Cart
+      value: MotorizedJanitorialCart
       objectReference: {fileID: 0}
     - target: {fileID: 5579997132595385319, guid: 3f243f813c03dc94fa25a73f344ee4f8,
         type: 3}

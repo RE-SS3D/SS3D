@@ -214,5 +214,37 @@ namespace SS3D.Engine.Inventory
             var accessibleContainer = Containers[containerId];
             accessibleContainer.Container.MoveItemsUnchecked(items);
         }
+
+        private void OnValidate()
+        {
+            RemoveUselessContainerSync(this.gameObject);
+        }
+
+        private void RemoveUselessContainerSync(GameObject gameObject)
+        {
+            var containerSync = gameObject.GetComponent<ContainerSync>();
+            var children = gameObject.GetComponentsInChildren<Transform>();
+            foreach (Transform child in children)
+            {
+                if (child == gameObject.transform)
+                    continue;
+
+                var containerSyncToRemove = child.GetComponent<ContainerSync>();
+                if (containerSync != null && containerSyncToRemove != null)
+                {
+                    UnityEditor.EditorApplication.delayCall += () =>
+                    {
+                        if (Application.isEditor)
+                        {
+                            Debug.Log("On object " + child.gameObject.name + ", remove containerSync because a containerSync script is already on a parent");
+                            DestroyImmediate(containerSyncToRemove, true);
+                        }               
+                    };
+                    
+                }
+
+                RemoveUselessContainerSync(child.gameObject);
+            }
+        }
     }
 }
