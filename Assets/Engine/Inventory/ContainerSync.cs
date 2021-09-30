@@ -217,11 +217,12 @@ namespace SS3D.Engine.Inventory
 
         private void OnValidate()
         {
-            RemoveUselessContainerSync(this.gameObject);
-        }
+                RemoveUselessContainerSync(this.gameObject);
+        }  
 
         private void RemoveUselessContainerSync(GameObject gameObject)
         {
+            #if UNITY_EDITOR
             var containerSync = gameObject.GetComponent<ContainerSync>();
             var children = gameObject.GetComponentsInChildren<Transform>();
             foreach (Transform child in children)
@@ -242,6 +243,7 @@ namespace SS3D.Engine.Inventory
 
                 RemoveUselessContainerSync(child.gameObject);
             }
+            #endif
         }
     }
 }
