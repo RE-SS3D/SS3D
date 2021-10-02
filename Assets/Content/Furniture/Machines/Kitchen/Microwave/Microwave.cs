@@ -38,6 +38,8 @@ public class Microwave : InteractionTargetNetworkBehaviour
     // actual container
     public ContainerDescriptor containerDescriptor;
 
+    private Animator animator;
+
     private void Start()
     {
 
@@ -48,10 +50,13 @@ public class Microwave : InteractionTargetNetworkBehaviour
         emissionMaterial.DisableKeyword("_EMISSION");
         light = GetComponentInChildren<Light>();
         light.enabled = false;
+        animator = GetComponent<Animator>();
     }
 
     public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
     {
+
+
         return new IInteraction[] {new SimpleInteraction
         {
             // TODO: Should be a custom interaction
@@ -66,12 +71,14 @@ public class Microwave : InteractionTargetNetworkBehaviour
             return false;
         }
 
-        // Can't be turned on if the door is open, we might add a hacking thing to bypass this later
-        //if (openableContainer != null && openableContainer.IsOpen())
-        //{
-        //    return false;
-        //}
+        var open = animator.GetBool((Animator.StringToHash("Open")));
+        if (open)
+        {
+            return false;
+        }
 
+
+        // Can't be turned on if the door is open, we might add a hacking thing to bypass this later
         return !isOn;
     }
 
