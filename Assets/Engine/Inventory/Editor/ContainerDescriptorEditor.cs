@@ -350,6 +350,11 @@ public class ContainerDescriptorEditor : Editor
         HandleOpenWhenContainerViewed(false);
     }
 
+    private void RemoveAttached()
+    {
+        DestroyImmediate(attachedContainer, true);
+    }
+
     private void AddAttached()
     {
         containerDescriptor.attachedContainer = containerDescriptor.gameObject.AddComponent<AttachedContainer>();
