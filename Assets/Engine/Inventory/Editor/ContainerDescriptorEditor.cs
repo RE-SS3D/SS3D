@@ -318,6 +318,7 @@ public class ContainerDescriptorEditor : Editor
         if (isOpenable)
         {
             HandleIsInteractive(true);
+            HandleOpenWhenContainerViewed(false);
         }    
     }
 
@@ -390,6 +391,7 @@ public class ContainerDescriptorEditor : Editor
     {
         DestroyImmediate(containerInteractive, true);
 
+        HandleHasUi(false);
         HandleIsInteractive(false);
         HandleIsOpenable(false);
         HandleOnlyStoreWhenOpen(false);
