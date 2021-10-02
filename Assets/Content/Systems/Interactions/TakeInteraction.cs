@@ -12,6 +12,12 @@ namespace SS3D.Content.Systems.Interactions
     public class TakeInteraction : IInteraction
     {
         public Sprite icon;
+        private ContainerDescriptor containerDescriptor;
+
+        public TakeInteraction(ContainerDescriptor containerDescriptor)
+        {
+            this.containerDescriptor = containerDescriptor;
+        }
 
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
@@ -20,11 +26,20 @@ namespace SS3D.Content.Systems.Interactions
 
         public virtual string GetName(InteractionEvent interactionEvent)
         {
-            return "Take";
+            return "Take in " + containerDescriptor.containerName;
         }
 
         public virtual Sprite GetIcon(InteractionEvent interactionEvent)
         {
+            if(icon != null)
+            {
+                Debug.Log("get icon" + icon.name);
+            }
+            else
+            {
+                Debug.Log("icon is null");
+            }
+            
             return icon;
         }
 
@@ -35,8 +50,8 @@ namespace SS3D.Content.Systems.Interactions
                 return false;
             }
 
-        // Will only appear if the current hand is empty and the container isn't empty
-            var target = interactionEvent.Target.GetComponent<AttachedContainer>();
+            // Will only appear if the current hand is empty and the container isn't empty
+            var target = containerDescriptor.attachedContainer;
             if (interactionEvent.Source is Hands hands && target != null)
             {
                 return hands.SelectedHandEmpty && !target.Container.Empty;
@@ -48,12 +63,11 @@ namespace SS3D.Content.Systems.Interactions
         public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Hands hands = (Hands) interactionEvent.Source;
-            Item PickupItem = interactionEvent.Target.GetComponent<AttachedContainer>().Container.StoredItems[0].Item;
+            Item PickupItem = containerDescriptor.attachedContainer.Container.StoredItems[0].Item;
             if (PickupItem != null)
             {
                 hands.Pickup(PickupItem);
             }
-
             return false;
         }
 

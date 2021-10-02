@@ -344,7 +344,7 @@ using UnityEngine.SceneManagement;
         
         public void SpawnPlayerAfterRoundStart(NetworkConnection conn)
         {
-            Debug.LogError(conn.address);
+            Debug.Log("Spawn player from address " + conn.address);
             CharacterResponse character = SpawnPlayerWithoutLoginServer(conn);
 
             Debug.Log("Spawning player after round start " + "conn: " + conn.address + " character: " + character.name);

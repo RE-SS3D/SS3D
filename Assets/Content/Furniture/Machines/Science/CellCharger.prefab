@@ -615,12 +615,11 @@ GameObject:
   - component: {fileID: -5812287283981547438}
   - component: {fileID: -7336993563048116294}
   - component: {fileID: 1326119814106932438}
-  - component: {fileID: 8312077444202497988}
-  - component: {fileID: 6554092212881448881}
   - component: {fileID: 387266436717436548}
-  - component: {fileID: 3091307957380661479}
-  - component: {fileID: 1571593285745743663}
-  - component: {fileID: 1405522440386804809}
+  - component: {fileID: 5974712284015357203}
+  - component: {fileID: 4914324846151129755}
+  - component: {fileID: 924532214569197786}
+  - component: {fileID: 5017216499777655807}
   m_Layer: 16
   m_Name: CellCharger
   m_TagString: Untagged
@@ -793,7 +792,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  AttachedContainer: {fileID: 8312077444202497988}
+  containerDescriptor: {fileID: 5974712284015357203}
   wiresMeshRenderer: {fileID: 6935684457514274430}
   redLight: {fileID: 244226616592630479}
   orangeLight: {fileID: 4418909824230124800}
@@ -814,36 +813,6 @@ MonoBehaviour:
   DisplayName: Power Cell Charger
   Text: 
   MaxDistance: 0
---- !u!114 &8312077444202497988
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8232994725938073509}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HideItems: 0
-  AttachItems: 1
-  AttachmentOffset: {x: 0, y: 0, z: 0}
---- !u!114 &6554092212881448881
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8232994725938073509}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AttachedContainer: {fileID: 8312077444202497988}
-  Size: {x: 1, y: 1}
-  StartFilter: {fileID: 11400000, guid: 47ba41d97fc87d9469fa5be5b67bcbc2, type: 2}
 --- !u!114 &387266436717436548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -858,9 +827,70 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Displays:
   - {fileID: 2518627989031759827}
-  Container: {fileID: 8312077444202497988}
+  Container: {fileID: 4914324846151129755}
   Mirrored: 0
---- !u!114 &3091307957380661479
+--- !u!114 &5974712284015357203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8232994725938073509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 4914324846151129755}
+  containerSync: {fileID: 0}
+  containerInteractive: {fileID: 924532214569197786}
+  containerUi: {fileID: 0}
+  openIcon: {fileID: 0}
+  takeIcon: {fileID: 0}
+  storeIcon: {fileID: 0}
+  viewIcon: {fileID: 0}
+  attachmentOffset: {x: 0, y: 0, z: 0}
+  containerName: container
+  onlyStoreWhenOpen: 0
+  size: {x: 1, y: 1}
+  hideItems: 0
+  attachItems: 1
+  startFilter: {fileID: 11400000, guid: 47ba41d97fc87d9469fa5be5b67bcbc2, type: 2}
+  initialized: 1
+  maxDistance: 5
+  containerType: 1
+  isOpenable: 0
+  isInteractive: 1
+--- !u!114 &4914324846151129755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8232994725938073509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDescriptor: {fileID: 5974712284015357203}
+--- !u!114 &924532214569197786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8232994725938073509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  OpenIcon: {fileID: 0}
+  containerDescriptor: {fileID: 5974712284015357203}
+--- !u!114 &5017216499777655807
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -874,34 +904,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
---- !u!114 &1571593285745743663
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8232994725938073509}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CheckObserversInterval: 2
-  AttachedContainer: {fileID: 8312077444202497988}
---- !u!114 &1405522440386804809
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8232994725938073509}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7af9ca4d0981a8140bebf788b3626b23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  StorageType: 1
-  MaxDistance: 5
-  viewContainerIcon: {fileID: 0}

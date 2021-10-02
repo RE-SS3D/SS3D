@@ -4,12 +4,26 @@ using UnityEngine.Assertions;
 
 namespace SS3D.Engine.Inventory
 {
+    /// <summary>
+    /// This allows control over the position of displayed items inside the container.
+    /// It also allows to define multiple points where items can be displayed inside the container,
+    /// and items placed in the container appears at those different points in the order defined. 
+    /// Take for example a battery compartment, battery should appear side by side when placed inside the compartment container.
+    /// Without this they would pile up in the same spot.
+    /// </summary>
     public class ContainerItemDisplay : MonoBehaviour
     {
+        /// <summary>
+        /// The list of transforms defining where the items are displayed.
+        /// </summary>
         public Transform[] Displays;
+
         public AttachedContainer Container;
         public bool Mirrored;
 
+        /// <summary>
+        /// The list of items displayed in the container;
+        /// </summary>
         private Item[] displayedItems;
 
         public void Start()
@@ -28,6 +42,7 @@ namespace SS3D.Engine.Inventory
 
         private void ContainerOnItemAttached(object sender, Item item)
         {
+            // Defines the transform of the item to be the first available position.
             int index = -1;
             for (var i = 0; i < Displays.Length; i++)
             {

@@ -139,6 +139,7 @@ GameObject:
   - component: {fileID: -25655414377668572}
   - component: {fileID: -4235786043834150045}
   - component: {fileID: -8158986579522940419}
+  - component: {fileID: 5817708582434615160}
   m_Layer: 16
   m_Name: TableLamp
   m_TagString: Untagged
@@ -314,10 +315,71 @@ MonoBehaviour:
   bulkSize: 3
   traits: []
   Size: {x: 0, y: 0}
-  light: {fileID: 0}
+  light: {fileID: 5817708582434615160}
   toggleIcon: {fileID: 21300000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
   materialOn: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
   materialOff: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+--- !u!108 &5817708582434615160
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5021521585556056798}
+  m_Enabled: 1
+  serializedVersion: 10
+  m_Type: 2
+  m_Shape: 0
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 0.5
+  m_Range: 10
+  m_SpotAngle: 30
+  m_InnerSpotAngle: 21.80208
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
 --- !u!1 &7196731139744120667
 GameObject:
   m_ObjectHideFlags: 0
