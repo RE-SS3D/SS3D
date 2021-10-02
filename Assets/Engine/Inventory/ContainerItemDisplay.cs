@@ -13,12 +13,7 @@ namespace SS3D.Engine.Inventory
     /// </summary>
     public class ContainerItemDisplay : MonoBehaviour
     {
-        /// <summary>
-        /// The list of transforms defining where the items are displayed.
-        /// </summary>
-        public Transform[] Displays;
-
-        public AttachedContainer Container;
+        public ContainerDescriptor containerDescriptor;
         public bool Mirrored;
 
         /// <summary>
@@ -28,23 +23,24 @@ namespace SS3D.Engine.Inventory
 
         public void Start()
         {
-            Assert.IsNotNull(Container);
+            Assert.IsNotNull(containerDescriptor);
             
-            displayedItems = new Item[Displays.Length];
-            Container.ItemAttached += ContainerOnItemAttached;
-            Container.ItemDetached += ContainerOnItemDetached;
+            displayedItems = new Item[containerDescriptor.displays.Length];
+            containerDescriptor.attachedContainer.ItemAttached += ContainerOnItemAttached;
+            containerDescriptor.attachedContainer.ItemDetached += ContainerOnItemDetached;
         }
 
         public void OnDestroy()
         {
-            Container.ItemAttached -= ContainerOnItemAttached;
+            containerDescriptor.attachedContainer.ItemAttached -= ContainerOnItemAttached;
+            containerDescriptor.attachedContainer.ItemDetached -= ContainerOnItemDetached;
         }
 
         private void ContainerOnItemAttached(object sender, Item item)
         {
             // Defines the transform of the item to be the first available position.
             int index = -1;
-            for (var i = 0; i < Displays.Length; i++)
+            for (var i = 0; i < containerDescriptor.displays.Length; i++)
             {
                 if (displayedItems[i] == null)
                 {
@@ -73,7 +69,7 @@ namespace SS3D.Engine.Inventory
                 // HACK: Required because rotation pivot can be different
                 GameObject temporaryPoint = new GameObject("TempPivotPoint");
                 
-                temporaryPoint.transform.SetParent(Displays[index].transform, false);
+                temporaryPoint.transform.SetParent(containerDescriptor.displays[index].transform, false);
                 temporaryPoint.transform.localPosition = Vector3.zero;
                 temporaryPoint.transform.rotation = attachmentPoint.root.rotation *  attachmentPoint.localRotation;
                 
@@ -86,7 +82,7 @@ namespace SS3D.Engine.Inventory
             }
             else
             {
-                itemTransform.SetParent(Displays[index].transform, false);
+                itemTransform.SetParent(containerDescriptor.displays[index].transform, false);
                 itemTransform.localPosition = new Vector3();
                 itemTransform.localRotation = new Quaternion();
             }
@@ -97,7 +93,7 @@ namespace SS3D.Engine.Inventory
         private void ContainerOnItemDetached(object sender, Item item)
         {
             int index = -1;
-            for (var i = 0; i < Displays.Length; i++)
+            for (var i = 0; i < containerDescriptor.displays.Length; i++)
             {
                 if (displayedItems[i] == item)
                 {
@@ -112,7 +108,7 @@ namespace SS3D.Engine.Inventory
             }
 
             Transform itemParent = item.transform.parent;
-            if (itemParent != null && itemParent != Displays[index])
+            if (itemParent != null && itemParent != containerDescriptor.displays[index])
             {
                 item.transform.SetParent(null, true);
                 Destroy(itemParent.gameObject);

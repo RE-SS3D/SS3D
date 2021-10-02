@@ -15,7 +15,8 @@ public class ContainerDescriptorEditor : Editor
     private bool showIcon = false;
     private AttachedContainer attachedContainer; 
     private ContainerInteractive containerInteractive;
-    private ContainerInteractive containerSync;
+    private ContainerSync containerSync;
+    private ContainerItemDisplay containerItemDisplay;
 
     public void OnEnable()
     {
@@ -29,6 +30,7 @@ public class ContainerDescriptorEditor : Editor
 
         attachedContainer = containerDescriptor.attachedContainer;
         containerInteractive = containerDescriptor.containerInteractive;
+        containerItemDisplay = containerDescriptor.containerItemDisplay;
     }
 
     public override void OnInspectorGUI()
@@ -94,6 +96,23 @@ public class ContainerDescriptorEditor : Editor
         {
             Vector3 attachmentOffset = EditorGUILayout.Vector3Field(new GUIContent("Attachment Offset", "define the position of the items inside the container"), containerDescriptor.attachmentOffset);
             HandleAttachmentOffset(attachmentOffset);
+
+            bool hasCustomDisplay = EditorGUILayout.Toggle(new GUIContent("Has custom display", "adds the container item display script, defines custom positions for items in the container"), containerDescriptor.hasCustomDisplay);
+            HandleHasCustomDisplay(hasCustomDisplay);
+
+            if (hasCustomDisplay)
+            {
+                int numberDisplay = EditorGUILayout.IntField(new GUIContent("number of display", "the number of items to display in custom position"), containerDescriptor.numberDisplay);
+                HandleNumberDisplay(numberDisplay);
+
+                SerializedProperty sp = serializedObject.FindProperty("displays");
+                sp.arraySize = numberDisplay;
+                for (int i = 0; i < sp.arraySize; ++i)
+                {
+                    SerializedProperty transformProp = sp.GetArrayElementAtIndex(i);
+                    EditorGUILayout.PropertyField(transformProp, new GUIContent("Element " + i));
+                }
+            }
         }
 
         bool attachItems = EditorGUILayout.Toggle(new GUIContent("Attach Items", "Set if items should be attached as children of the container game object"), containerDescriptor.attachItems);
@@ -158,6 +177,28 @@ public class ContainerDescriptorEditor : Editor
             SerializedProperty sp = serializedObject.FindProperty("initialized");
             sp.boolValue = true;
             serializedObject.ApplyModifiedProperties();
+        }
+    }
+
+    private void HandleNumberDisplay(int numberDisplay)
+    {
+        SerializedProperty sp = serializedObject.FindProperty("numberDisplay");
+        sp.intValue = numberDisplay;
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    private void HandleHasCustomDisplay(bool hasCustomDisplay)
+    {
+        SerializedProperty sp = serializedObject.FindProperty("hasCustomDisplay");
+        sp.boolValue = hasCustomDisplay;
+        serializedObject.ApplyModifiedProperties();
+        if(hasCustomDisplay && containerDescriptor.containerItemDisplay == null)
+        {
+            AddCustomDisplay();
+        }
+        if(!hasCustomDisplay && containerDescriptor.containerItemDisplay != null)
+        {
+            RemoveCustomDisplay();
         }
     }
 
@@ -279,6 +320,19 @@ public class ContainerDescriptorEditor : Editor
         HandleOpenWhenContainerViewed(false);
     }
 
+    private void AddCustomDisplay()
+    {
+        SerializedProperty sp = serializedObject.FindProperty("containerItemDisplay");
+        sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerItemDisplay>();
+        serializedObject.ApplyModifiedProperties();
+        containerDescriptor.containerItemDisplay.containerDescriptor = containerDescriptor;
+    }
+
+    private void RemoveCustomDisplay()
+    {
+        DestroyImmediate(containerItemDisplay, true);
+    }
+
     private void AddAttached()
     {
         containerDescriptor.attachedContainer = containerDescriptor.gameObject.AddComponent<AttachedContainer>();
@@ -291,18 +345,22 @@ public class ContainerDescriptorEditor : Editor
         {
             SerializedProperty sp = serializedObject.FindProperty("containerSync");
             sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerSync>();
-            serializedObject.ApplyModifiedProperties();
+            serializedObject.ApplyModifiedProperties();           
         }
+        
     }
 
     private void RemoveSync()
     {
         GameObject g = Selection.activeGameObject;
-        var containerDescriptors = g.GetComponents<ContainerDescriptor>();
-        if (containerDescriptors != null && containerDescriptors.Length == 0)
+        if(g != null)
         {
-            DestroyImmediate(g.GetComponent<ContainerSync>());
-        }  
+            var containerDescriptors = g.GetComponents<ContainerDescriptor>();
+            if (containerDescriptors != null && containerDescriptors.Length == 0)
+            {
+                DestroyImmediate(g.GetComponent<ContainerSync>());
+            }
+        }
     }
 
     private void OnDestroy()

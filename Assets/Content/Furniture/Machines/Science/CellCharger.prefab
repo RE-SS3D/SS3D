@@ -615,11 +615,11 @@ GameObject:
   - component: {fileID: -5812287283981547438}
   - component: {fileID: -7336993563048116294}
   - component: {fileID: 1326119814106932438}
-  - component: {fileID: 387266436717436548}
   - component: {fileID: 5974712284015357203}
   - component: {fileID: 4914324846151129755}
   - component: {fileID: 924532214569197786}
   - component: {fileID: 5017216499777655807}
+  - component: {fileID: 4456891875060699839}
   m_Layer: 16
   m_Name: CellCharger
   m_TagString: Untagged
@@ -813,22 +813,6 @@ MonoBehaviour:
   DisplayName: Power Cell Charger
   Text: 
   MaxDistance: 0
---- !u!114 &387266436717436548
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8232994725938073509}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Displays:
-  - {fileID: 2518627989031759827}
-  Container: {fileID: 4914324846151129755}
-  Mirrored: 0
 --- !u!114 &5974712284015357203
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -844,6 +828,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 4914324846151129755}
   containerSync: {fileID: 0}
   containerInteractive: {fileID: 924532214569197786}
+  containerItemDisplay: {fileID: 4456891875060699839}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -852,15 +837,21 @@ MonoBehaviour:
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: container
   onlyStoreWhenOpen: 0
+  openWhenContainerViewed: 0
   size: {x: 1, y: 1}
   hideItems: 0
   attachItems: 1
   startFilter: {fileID: 11400000, guid: 47ba41d97fc87d9469fa5be5b67bcbc2, type: 2}
   initialized: 1
   maxDistance: 5
-  containerType: 1
   isOpenable: 0
   isInteractive: 1
+  hasUi: 0
+  hasCustomInteraction: 0
+  hasCustomDisplay: 1
+  displays:
+  - {fileID: 2518627989031759827}
+  numberDisplay: 1
 --- !u!114 &4914324846151129755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -904,3 +895,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+--- !u!114 &4456891875060699839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8232994725938073509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDescriptor: {fileID: 5974712284015357203}
+  Mirrored: 0
