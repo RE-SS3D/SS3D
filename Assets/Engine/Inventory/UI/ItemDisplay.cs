@@ -7,7 +7,7 @@ using SS3D.Engine.Examine;
 namespace SS3D.Engine.Inventory.UI
 {
     /// <summary>
-    /// Shows an item and allows actions such as dragging
+    /// Shows an containable and allows actions such as dragging
     /// </summary>
     public class ItemDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, IPointerClickHandler
     {
@@ -20,7 +20,7 @@ namespace SS3D.Engine.Inventory.UI
         protected InventoryDisplayElement InventoryDisplayElement;
         
         [SerializeField]
-        private IContainable item;
+        private IContainable containable;
         private Transform oldParent;
         private Vector3 startMousePosition;
         private Vector3 startPosition;
@@ -29,12 +29,12 @@ namespace SS3D.Engine.Inventory.UI
 
         public IContainable Item
         {
-            get => item;
+            get => containable;
             set
             {
 
-                item = value;
-                if (item != null)
+                containable = value;
+                if (containable != null)
                 {
                     float percentageFull = value.Container.AttachedTo.containerDescriptor.PercentageFull;
                     UpdateDisplay(percentageFull);
@@ -49,9 +49,9 @@ namespace SS3D.Engine.Inventory.UI
         public void Start()
         {
             slotImage = GetComponent<Image>();
-            if (item != null)
+            if (containable != null)
             {
-                UpdateDisplay(item.Container.AttachedTo.containerDescriptor.PercentageFull);
+                UpdateDisplay(containable.Container.AttachedTo.containerDescriptor.PercentageFull);
             } 
         }
         

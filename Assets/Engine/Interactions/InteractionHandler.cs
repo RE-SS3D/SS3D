@@ -69,10 +69,10 @@ namespace SS3D.Engine.Interactions
                     Hands hands = GetComponent<Hands>();
                     if (hands != null )
                     {
-                        IContainable item = hands.ItemInHand;
-                        if (item != null)
+                        IContainable containable = hands.ItemInHand;
+                        if (containable != null)
                         {
-                            InteractInHand(item.GetGameObject(), gameObject, true);
+                            InteractInHand(containable.GetGameObject(), gameObject, true);
                         }
                     }
                 }
@@ -100,14 +100,14 @@ namespace SS3D.Engine.Interactions
 
             if (Input.GetButtonDown("Activate"))
             {
-                // Activate item in selected hand
+                // Activate containable in selected hand
                 Hands hands = GetComponent<Hands>();
                 if (hands != null )
                 {
-                    IContainable item = hands.ItemInHand;
-                    if (item != null)
+                    IContainable containable = hands.ItemInHand;
+                    if (containable != null)
                     {
-                        InteractInHand(item.GetGameObject(), gameObject);
+                        InteractInHand(containable.GetGameObject(), gameObject);
                     }
                 }
             }
@@ -117,7 +117,7 @@ namespace SS3D.Engine.Interactions
         /// Performs an in-hand interaction
         /// </summary>
         /// <param name="target">The target clicked on</param>
-        /// <param name="source">The current selected item or the hands</param>
+        /// <param name="source">The current selected containable or the hands</param>
         /// <param name="showMenu">If a selection menu should be shown</param>
         [Client]
         public void InteractInHand(GameObject target, GameObject sourceObject, bool showMenu = false)

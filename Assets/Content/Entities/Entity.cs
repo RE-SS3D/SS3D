@@ -56,7 +56,7 @@ namespace SS3D.Content
             return;
         }
 
-        [Tooltip("a point we use to know how the item should be oriented when held in a hand")]
+        [Tooltip("a point we use to know how the containable should be oriented when held in a hand")]
         public Transform attachmentPoint;
 
         [Tooltip("same point but for the left hand, in cases where it's needed")]

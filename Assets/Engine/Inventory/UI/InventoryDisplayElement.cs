@@ -8,18 +8,18 @@ namespace SS3D.Engine.Inventory.UI
         public Inventory Inventory;
 
         /// <summary>
-        /// Called when an item is being dropped onto this display
+        /// Called when an containable is being dropped onto this display
         /// </summary>
         /// <param name="display"></param>
         public abstract void OnItemDrop(ItemDisplay display);
         
         /// <summary>
-        /// Called when an item is dragged and dropped outside
+        /// Called when an containable is dragged and dropped outside
         /// </summary>
-        /// <param name="item">The dragged item</param>
-        public void DropItemOutside(IContainable item)
+        /// <param name="containable">The dragged containable</param>
+        public void DropItemOutside(IContainable containable)
         {
-            Inventory.ClientDropItem(item);
+            Inventory.ClientDropItem(containable);
         }
 
         public void OnDrop(PointerEventData eventData)

@@ -113,17 +113,17 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
-            IContainable item = container.Container.ItemAt(position);
+            IContainable containable = container.Container.ItemAt(position);
             if (Hands.SelectedHandEmpty)
             {
-                if (item != null)
+                if (containable != null)
                 {
-                    ClientTransferItem(item, Vector2Int.zero, Hands.SelectedHand);
+                    ClientTransferItem(containable, Vector2Int.zero, Hands.SelectedHand);
                 }
             }
             else
             {
-                if (item == null)
+                if (containable == null)
                 {
                     ClientTransferItem(Hands.ItemInHand, position, container);
                 }
@@ -137,41 +137,41 @@ namespace SS3D.Engine.Inventory
         }
 
         /// <summary>
-        /// Requests the server to transfer an item
+        /// Requests the server to transfer an containable
         /// </summary>
-        /// <param name="item">The item to transfer</param>
-        /// <param name="targetContainer">Into which container to move the item</param>
-        public void ClientTransferItem(IContainable item, Vector2Int position, AttachedContainer targetContainer)
+        /// <param name="containable">The containable to transfer</param>
+        /// <param name="targetContainer">Into which container to move the containable</param>
+        public void ClientTransferItem(IContainable containable, Vector2Int position, AttachedContainer targetContainer)
         {
             NetworkedContainerReference? reference = NetworkedContainerReference.CreateReference(targetContainer);
             if (reference == null)
             {
-                Debug.LogError("Couldn't create reference for container in item transfer", targetContainer);
+                Debug.LogError("Couldn't create reference for container in containable transfer", targetContainer);
                 return;
             }
             
-            CmdTransferItem(item.GetGameObject(), position, (NetworkedContainerReference) reference);
+            CmdTransferItem(containable.GetGameObject(), position, (NetworkedContainerReference) reference);
         }
 
         /// <summary>
-        /// Requests the server to drop an item out of a container
+        /// Requests the server to drop an containable out of a container
         /// </summary>
-        /// <param name="item">The item to drop</param>
-        public void ClientDropItem(IContainable item)
+        /// <param name="containable">The containable to drop</param>
+        public void ClientDropItem(IContainable containable)
         {
-            CmdDropItem(item.GetGameObject());
+            CmdDropItem(containable.GetGameObject());
         }
 
         [Command]
         private void CmdTransferItem(GameObject itemObject, Vector2Int position, NetworkedContainerReference reference)
         {
-            var item = itemObject.GetComponent<IContainable>();
-            if (item == null)
+            var containable = itemObject.GetComponent<IContainable>();
+            if (containable == null)
             {
                 return;
             }
 
-            Container itemContainer = item.Container;
+            Container itemContainer = containable.Container;
             if (itemContainer == null)
             {
                 return;
@@ -201,7 +201,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
             
-            attachedContainer.Container.AddItem(item, position);
+            attachedContainer.Container.AddItem(containable, position);
         }
 
         /// <summary>
@@ -252,13 +252,13 @@ namespace SS3D.Engine.Inventory
         [Command]
         private void CmdDropItem(GameObject gameObject)
         {
-            var item = gameObject.GetComponent<Item>();
-            if (item == null)
+            var containable = gameObject.GetComponent<Item>();
+            if (containable == null)
             {
                 return;
             }
 
-            AttachedContainer attachedTo = item.Container?.AttachedTo;
+            AttachedContainer attachedTo = containable.Container?.AttachedTo;
             if (attachedTo == null)
             {
                 return;
@@ -269,7 +269,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
-            item.Container = null;
+            containable.Container = null;
         }
 
         [TargetRpc]
@@ -312,46 +312,46 @@ namespace SS3D.Engine.Inventory
         }
 
         /**
-         * Graphically adds the item back into the world (for server and all clients).
+         * Graphically adds the containable back into the world (for server and all clients).
          * Must be called from server initially
          */
-        private void Spawn(GameObject item, Vector3 position, Quaternion rotation)
+        private void Spawn(GameObject containable, Vector3 position, Quaternion rotation)
         {
             // World will be the parent
-            item.transform.parent = null;
+            containable.transform.parent = null;
 
-            Vector3 itemDimensions = item.GetComponentInChildren<Collider>().bounds.size;
+            Vector3 itemDimensions = containable.GetComponentInChildren<Collider>().bounds.size;
             float itemSize = 0;
             
             for(int i = 0; i < 3; i++) {
                 if (itemDimensions[i] > itemSize)
                     itemSize = itemDimensions[i];                 
             }
-            float distance = Vector3.Distance(item.transform.position, position);
+            float distance = Vector3.Distance(containable.transform.position, position);
             position = distance > 0 ? position + new Vector3(0, itemSize * 0.5f, 0) : position;
 
             if (distance > 0)
-                item.transform.LookAt(transform);
+                containable.transform.LookAt(transform);
             else
-                item.transform.rotation = rotation;
-            item.transform.position = position;
-            //item.transform.rotation = item.GetComponent<Item>().attachmentPoint.rotation;
+                containable.transform.rotation = rotation;
+            containable.transform.position = position;
+            //containable.transform.rotation = containable.GetComponent<Item>().attachmentPoint.rotation;
             
-            //Vector3 transformRotation = item.transform.rotation.eulerAngles;
+            //Vector3 transformRotation = containable.transform.rotation.eulerAngles;
             //transformRotation.x = 0f;
             //transformRotation.z = 0f;
-            //item.transform.rotation = Quaternion.Euler(transformRotation);
-            item.SetActive(true);
+            //containable.transform.rotation = Quaternion.Euler(transformRotation);
+            containable.SetActive(true);
 
             if (isServer)
-                RpcSpawn(item, position, rotation);
+                RpcSpawn(containable, position, rotation);
         }
 
         [ClientRpc]
-        private void RpcSpawn(GameObject item, Vector3 position, Quaternion rotation)
+        private void RpcSpawn(GameObject containable, Vector3 position, Quaternion rotation)
         {
             if (!isServer) // Silly thing to prevent looping when server and client are one
-                Spawn(item, position, rotation);
+                Spawn(containable, position, rotation);
         }
 
         protected virtual void OnContainerOpened(AttachedContainer container)

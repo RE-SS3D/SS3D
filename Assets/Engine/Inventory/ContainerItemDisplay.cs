@@ -38,18 +38,18 @@ namespace SS3D.Engine.Inventory
             containerDescriptor.attachedContainer.ItemDetached -= ContainerOnItemDetached;
         }
 
-        private void ContainerOnItemAttached(object sender, IContainable item)
+        private void ContainerOnItemAttached(object sender, IContainable containable)
         {
-            // Defines the transform of the item to be the first available position.
+            // Defines the transform of the containable to be the first available position.
             int index = displayedItems.Count;
 
-            Transform itemTransform = item.GetGameObject().transform;
+            Transform itemTransform = containable.GetGameObject().transform;
 
             // Check if a custom attachment point should be used
-            Transform attachmentPoint = item.AttachmentPoint;
-            if (Mirrored && item.AttachmentPointAlt != null)
+            Transform attachmentPoint = containable.AttachmentPoint;
+            if (Mirrored && containable.AttachmentPointAlt != null)
             {
-                attachmentPoint = item.AttachmentPointAlt;
+                attachmentPoint = containable.AttachmentPointAlt;
             }
 
             if (attachmentPoint != null)
@@ -76,26 +76,26 @@ namespace SS3D.Engine.Inventory
                 itemTransform.localRotation = new Quaternion();
             }
 
-            displayedItems.Add(item);
+            displayedItems.Add(containable);
         }
         
-        private void ContainerOnItemDetached(object sender, IContainable item)
+        private void ContainerOnItemDetached(object sender, IContainable containable)
         {
-            int index = displayedItems.FindIndex(x => x == item);
+            int index = displayedItems.FindIndex(x => x == containable);
 
             if (index == -1)
             {
                 return;
             }
 
-            Transform itemParent = item.GetGameObject().transform.parent;
+            Transform itemParent = containable.GetGameObject().transform.parent;
             if (itemParent != null && itemParent != containerDescriptor.displays[index])
             {
-                item.GetGameObject().transform.SetParent(null, true);
+                containable.GetGameObject().transform.SetParent(null, true);
                 Destroy(itemParent.gameObject);
             }
 
-            displayedItems.Remove(item);
+            displayedItems.Remove(containable);
         }
     }
 }

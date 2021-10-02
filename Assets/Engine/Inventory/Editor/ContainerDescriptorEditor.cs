@@ -86,7 +86,7 @@ public class ContainerDescriptorEditor : Editor
             HandleMaxDistance(maxDistance);
         }
 
-        Vector2Int size = EditorGUILayout.Vector2IntField(new GUIContent("Size", "Defines the size of the container, every item takes a defined place inside a container"), containerDescriptor.size);
+        Vector2Int size = EditorGUILayout.Vector2IntField(new GUIContent("Size", "Defines the size of the container, every containable takes a defined place inside a container"), containerDescriptor.size);
         HandleSize(size);
 
         Filter startFilter = (Filter)EditorGUILayout.ObjectField(new GUIContent("Filter", "Filter on the container, controls what can go in the container"), containerDescriptor.startFilter, typeof(Filter), true);
@@ -100,7 +100,7 @@ public class ContainerDescriptorEditor : Editor
             Vector3 attachmentOffset = EditorGUILayout.Vector3Field(new GUIContent("Attachment Offset", "define the position of the items inside the container"), containerDescriptor.attachmentOffset);
             HandleAttachmentOffset(attachmentOffset);
 
-            bool hasCustomDisplay = EditorGUILayout.Toggle(new GUIContent("Has custom display", "adds the container item display script, defines custom positions for items in the container"), containerDescriptor.hasCustomDisplay);
+            bool hasCustomDisplay = EditorGUILayout.Toggle(new GUIContent("Has custom display", "adds the container containable display script, defines custom positions for items in the container"), containerDescriptor.hasCustomDisplay);
             HandleHasCustomDisplay(hasCustomDisplay);
 
             if (hasCustomDisplay)

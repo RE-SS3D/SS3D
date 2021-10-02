@@ -30,7 +30,7 @@ namespace SS3D.Engine.Inventory.Extensions
         public event Action<int> HandChanged;
         
         /// <summary>
-        /// The item held in the active hand
+        /// The containable held in the active hand
         /// </summary>
         public IContainable ItemInHand => SelectedHandContainer?.Containerizables.FirstOrDefault();
         
@@ -64,11 +64,11 @@ namespace SS3D.Engine.Inventory.Extensions
         }
 
         [Server]
-        public void Pickup(IContainable item)
+        public void Pickup(IContainable containable)
         {
             if (SelectedHandEmpty)
             {
-                SelectedHandContainer.AddItem(item);
+                SelectedHandContainer.AddItem(containable);
             }
         }
 
@@ -78,7 +78,7 @@ namespace SS3D.Engine.Inventory.Extensions
         }
 
         /*
-         * Command wrappers for inventory actions using the currently held item
+         * Command wrappers for inventory actions using the currently held containable
          */
         [Server]
         public void DropHeldItem()
@@ -99,9 +99,9 @@ namespace SS3D.Engine.Inventory.Extensions
                 return;
             }
 
-            IContainable item = ItemInHand;
-            item.Container = null;
-            ItemUtility.Place(item, position, rotation, transform);
+            IContainable containable = ItemInHand;
+            containable.Container = null;
+            ItemUtility.Place(containable, position, rotation, transform);
         }
 
         public override void Update()
