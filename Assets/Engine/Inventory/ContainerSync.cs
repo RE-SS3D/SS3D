@@ -98,7 +98,7 @@ namespace SS3D.Engine.Inventory
 
 
         /// <summary>
-        /// Syncs a single item change to all accessing clients
+        /// Syncs a single containable change to all accessing clients
         /// </summary>
         /// <param name="container">The container the change happened in</param>
         /// <param name="changedItems">The items that changed</param>
@@ -116,13 +116,13 @@ namespace SS3D.Engine.Inventory
             GameObject[] itemGameObjects = items.Select(x => x.GetGameObject()).ToArray();
             Container container = attachedContainer.Container;
 
-            Container.StoredIContainerizable[] storedItems = null;
+            Container.StoredIContainable[] storedItems = null;
             if (type == Container.ContainerChangeType.Add || type == Container.ContainerChangeType.Move)
             {
-                storedItems = new Container.StoredIContainerizable[items.Length];
+                storedItems = new Container.StoredIContainable[items.Length];
                 for (var i = 0; i < items.Length; i++)
                 {
-                    storedItems[i] = container.StoredContainerizables[container.FindItem(items[i])];
+                    storedItems[i] = container.StoredContainables[container.FindItem(items[i])];
                 }
             }
 
@@ -180,7 +180,7 @@ namespace SS3D.Engine.Inventory
         }
 
         [TargetRpc]
-        private void TargetSyncItemsAdd(NetworkConnection target, int containerId, Container.StoredIContainerizable[] items)
+        private void TargetSyncItemsAdd(NetworkConnection target, int containerId, Container.StoredIContainable[] items)
         {
             if (NetworkServer.active)
             {
@@ -204,7 +204,7 @@ namespace SS3D.Engine.Inventory
         }
 
         [TargetRpc]
-        private void TargetSyncItemsMove(NetworkConnection target, int containerId, Container.StoredIContainerizable[] items)
+        private void TargetSyncItemsMove(NetworkConnection target, int containerId, Container.StoredIContainable[] items)
         {
             if (NetworkServer.active)
             {

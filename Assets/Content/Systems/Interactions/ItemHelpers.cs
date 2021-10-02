@@ -9,18 +9,18 @@ namespace SS3D.Content.Systems.Interactions
     public static class ItemHelpers
     {
         /// <summary>
-        /// Replaces an item with a different item
+        /// Replaces an containable with a different containable
         /// </summary>
-        /// <param name="original">The original item</param>
+        /// <param name="original">The original containable</param>
         /// <param name="replacement">The replacement</param>
-        /// <param name="destroyOriginal">If the original item should be destroyed</param>
+        /// <param name="destroyOriginal">If the original containable should be destroyed</param>
         public static void ReplaceItem(IContainable original, IContainable replacement, bool destroyOriginal = true)
         {
             Container container = original.Container;
             if (container != null)
             {
                 int index = container.FindItem(original);
-                Container.StoredIContainerizable storedItem = container.StoredContainerizables[index];
+                Container.StoredIContainable storedItem = container.StoredContainables[index];
                 container.RemoveItem(storedItem.Item);
                 container.AddItem(replacement, storedItem.Position);
             }

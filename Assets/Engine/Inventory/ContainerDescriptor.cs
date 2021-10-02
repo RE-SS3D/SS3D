@@ -56,7 +56,7 @@ namespace SS3D.Engine.Inventory
         /// <summary> When the container UI is opened, if set true, the animation on the object is triggered </summary>
         public bool openWhenContainerViewed = false;
 
-        /// <summary> Defines the size of the container, every item takes a defined place inside a container. </summary>
+        /// <summary> Defines the size of the container, every containable takes a defined place inside a container. </summary>
         public Vector2Int size = new Vector2Int(0,0);
 
         /// <summary>

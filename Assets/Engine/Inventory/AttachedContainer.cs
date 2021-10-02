@@ -155,22 +155,22 @@ namespace SS3D.Engine.Inventory
             {
                 case Container.ContainerChangeType.Add:
                 {
-                    foreach (IContainable item in items)
+                    foreach (IContainable containable in items)
                     {
-                        item.Freeze();
+                        containable.Freeze();
                         // Make invisible
                         if (containerDescriptor.hideItems)
                         {
-                            item.SetVisibility(false);
+                            containable.SetVisibility(false);
                         }
 
                         // Attach to container
                         if (containerDescriptor.attachItems)
                         {
-                            Transform itemTransform = item.GetGameObject().transform;
+                            Transform itemTransform = containable.GetGameObject().transform;
                             itemTransform.SetParent(transform, false);
                             itemTransform.localPosition = containerDescriptor.attachmentOffset;
-                            OnItemAttached(item);
+                            OnItemAttached(containable);
                         }
                     }
 
@@ -178,20 +178,20 @@ namespace SS3D.Engine.Inventory
                 }
                 case Container.ContainerChangeType.Remove:
                 {
-                    foreach (IContainable item in items)
+                    foreach (IContainable containable in items)
                     {
-                        item.Unfreeze();
+                        containable.Unfreeze();
                         // Restore visibility
                         if (containerDescriptor.hideItems)
                         {
-                            item.SetVisibility(true);
+                            containable.SetVisibility(true);
                         }
                         // Remove parent if child of this
-                        if (item.GetGameObject().transform.parent == transform)
+                        if (containable.GetGameObject().transform.parent == transform)
                         {
-                            item.GetGameObject().transform.SetParent(null, true);
+                            containable.GetGameObject().transform.SetParent(null, true);
                         }
-                        OnItemDetached(item);
+                        OnItemDetached(containable);
                     }
 
                     break;

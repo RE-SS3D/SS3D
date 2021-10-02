@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace SS3D.Content.Systems.Interactions
 {
-    // This Interaction takes the first available item inside a container
+    // This Interaction takes the first available containable inside a container
     public class TakeInteraction : IInteraction
     {
         public Sprite icon;
@@ -63,8 +63,8 @@ namespace SS3D.Content.Systems.Interactions
         public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Hands hands = (Hands) interactionEvent.Source;
-            int index = containerDescriptor.attachedContainer.Container.StoredContainerizables.Count -1;
-            IContainable PickupItem = containerDescriptor.attachedContainer.Container.StoredContainerizables[index].Item;
+            int index = containerDescriptor.attachedContainer.Container.StoredContainables.Count -1;
+            IContainable PickupItem = containerDescriptor.attachedContainer.Container.StoredContainables[index].Item;
             if (PickupItem != null)
             {
                 hands.Pickup(PickupItem);
