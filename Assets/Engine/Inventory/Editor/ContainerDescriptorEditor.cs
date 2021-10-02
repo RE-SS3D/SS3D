@@ -17,7 +17,6 @@ public class ContainerDescriptorEditor : Editor
     private AttachedContainer attachedContainer; 
     private ContainerInteractive containerInteractive;
     private SubstanceContainer substanceContainer;
-    private ContainerInteractive containerSync;
     private ContainerSync containerSync;
     private ContainerItemDisplay containerItemDisplay;
 
@@ -206,11 +205,13 @@ public class ContainerDescriptorEditor : Editor
             return;
         }
 
-        if(!substancesOnly && containerDescriptor.attachedContainer == null)
+        if (!substancesOnly && containerDescriptor.attachedContainer == null)
         {
             AddAttached();
             AddInteractive();
-        }    
+        }
+    }
+
     private void HandleNumberDisplay(int numberDisplay)
     {
         SerializedProperty sp = serializedObject.FindProperty("numberDisplay");
@@ -399,6 +400,8 @@ public class ContainerDescriptorEditor : Editor
     private void RemoveAttached()
     {
         DestroyImmediate(attachedContainer, true);
+    }
+
     private void AddCustomDisplay()
     {
         SerializedProperty sp = serializedObject.FindProperty("containerItemDisplay");
