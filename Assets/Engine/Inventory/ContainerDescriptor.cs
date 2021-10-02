@@ -57,6 +57,7 @@ namespace SS3D.Engine.Inventory
         /// Set visibility of objects inside the container (not in the UI, in the actual game object).
         /// If the container is Hidden, the visibility of items is always off.
         /// </summary>
+        [Tooltip("Set visibility of items in container.")]
         public bool hideItems = true;
 
         /// <summary> If items should be attached as children. </summary>
