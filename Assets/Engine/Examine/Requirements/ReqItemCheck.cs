@@ -29,7 +29,7 @@ namespace SS3D.Engine.Examine
 			}
 			
 			// If something's there, see if it matches what we are looking for
-			return (current.ItemId == ItemID);
+			return (current.ContainableId == ItemID);
 		}
     }
 }

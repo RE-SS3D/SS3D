@@ -48,7 +48,7 @@ namespace SS3D.Engine.Inventory.UI
                 Instantiate(ItemSlotPrefab, parent);
             }
 
-            if (container.ItemCount > 0)
+            if (container.ContainableCount > 0)
             {
                 StartCoroutine(DisplayInitialItems());
             }
@@ -247,13 +247,13 @@ namespace SS3D.Engine.Inventory.UI
 		{
 			Vector2Int slotPosition = GetSlotPosition(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
 			Container container = AttachedContainer.Container;
-			if (container.ItemAt(slotPosition) == null)
+			if (container.ContainableAt(slotPosition) == null)
 			{
 				return null;
 			}
 			else
 			{
-				return container.ItemAt(slotPosition).GetGameObject();
+				return container.ContainableAt(slotPosition).GetGameObject();
 			}
 		}
 		

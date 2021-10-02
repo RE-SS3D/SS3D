@@ -68,7 +68,7 @@ namespace SS3D.Engine.Inventory.Extensions
         {
             if (SelectedHandEmpty)
             {
-                SelectedHandContainer.AddItem(containable);
+                SelectedHandContainer.AddContainable(containable);
             }
         }
 

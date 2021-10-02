@@ -296,16 +296,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
+  itemId: 
   Name: 
-  Volume: 10
+  volume: 10
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 2954702816147868532}
   attachmentPoint: {fileID: 2338883495983009488}
   attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits: []
-  Size: {x: 0, y: 0}
+  size: {x: 0, y: 0}
 --- !u!54 &2586193647671002034
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -654,6 +654,8 @@ MonoBehaviour:
   attachedContainer: {fileID: 3230899053323025513}
   containerSync: {fileID: 0}
   containerInteractive: {fileID: 1777746915210031534}
+  substanceContainer: {fileID: 0}
+  containerCustomDisplay: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -664,15 +666,21 @@ MonoBehaviour:
   onlyStoreWhenOpen: 0
   openWhenContainerViewed: 0
   size: {x: 3, y: 3}
-  hideItems: 1
-  attachItems: 1
+  hideContainables: 1
+  attachContainables: 1
   startFilter: {fileID: 0}
   initialized: 1
   maxDistance: 5
   isOpenable: 0
+  canHoldSubstances: 0
+  substancesOnly: 0
   isInteractive: 1
   hasUi: 0
   hasCustomInteraction: 0
+  hasCustomDisplay: 0
+  displays: []
+  numberDisplay: 0
+  volume: 1000
 --- !u!114 &3230899053323025513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -938,16 +946,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
+  itemId: 
   Name: 
-  Volume: 10
+  volume: 10
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 6200101252375068876}
   attachmentPoint: {fileID: 6881354644099237224}
   attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits: []
-  Size: {x: 0, y: 0}
+  size: {x: 0, y: 0}
 --- !u!54 &8808370119886968644
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1227,16 +1235,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
+  itemId: 
   Name: 
-  Volume: 10
+  volume: 10
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 8630155634588003791}
   attachmentPoint: {fileID: 9128845340931549291}
   attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits: []
-  Size: {x: 0, y: 0}
+  size: {x: 0, y: 0}
 --- !u!54 &1299280962751579616
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1425,16 +1433,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: 
+  itemId: 
   Name: 
-  Volume: 10
+  volume: 10
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 9097183383077839387}
   attachmentPoint: {fileID: 675237414642596693}
   attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits: []
-  Size: {x: 0, y: 0}
+  size: {x: 0, y: 0}
 --- !u!54 &3051365526954558651
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1607,6 +1615,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3734325509069202337, guid: 33f138fd77f12bf42ba03827596f66e1, type: 3}
+    - {fileID: 4811199063769927608, guid: 33f138fd77f12bf42ba03827596f66e1, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 33f138fd77f12bf42ba03827596f66e1, type: 3}
 --- !u!4 &5415468539376512869 stripped
 Transform:

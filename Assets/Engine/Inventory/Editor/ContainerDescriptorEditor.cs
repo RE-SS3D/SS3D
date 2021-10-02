@@ -18,7 +18,7 @@ public class ContainerDescriptorEditor : Editor
     private ContainerInteractive containerInteractive;
     private SubstanceContainer substanceContainer;
     private ContainerSync containerSync;
-    private ContainerItemDisplay containerItemDisplay;
+    private ContainerCustomDisplay containerCustomDisplay;
 
     public void OnEnable()
     {
@@ -33,7 +33,7 @@ public class ContainerDescriptorEditor : Editor
         attachedContainer = containerDescriptor.attachedContainer;
         containerInteractive = containerDescriptor.containerInteractive;
         substanceContainer = containerDescriptor.substanceContainer;
-        containerItemDisplay = containerDescriptor.containerItemDisplay;
+        containerCustomDisplay = containerDescriptor.containerCustomDisplay;
     }
 
     public override void OnInspectorGUI()
@@ -92,10 +92,10 @@ public class ContainerDescriptorEditor : Editor
         Filter startFilter = (Filter)EditorGUILayout.ObjectField(new GUIContent("Filter", "Filter on the container, controls what can go in the container"), containerDescriptor.startFilter, typeof(Filter), true);
         HandleStartFilter(startFilter);
 
-        bool hideItems = EditorGUILayout.Toggle(new GUIContent("Hide items", "Set if items should be attached as children of the container"), containerDescriptor.hideItems);
-        HandleHideItems(hideItems);
+        bool hideContainables = EditorGUILayout.Toggle(new GUIContent("Hide items", "Set if items should be attached as children of the container"), containerDescriptor.hideContainables);
+        HandleHideContainables(hideContainables);
 
-        if (!hideItems)
+        if (!hideContainables)
         {
             Vector3 attachmentOffset = EditorGUILayout.Vector3Field(new GUIContent("Attachment Offset", "define the position of the items inside the container"), containerDescriptor.attachmentOffset);
             HandleAttachmentOffset(attachmentOffset);
@@ -118,8 +118,8 @@ public class ContainerDescriptorEditor : Editor
             }
         }
 
-        bool attachItems = EditorGUILayout.Toggle(new GUIContent("Attach Items", "Set if items should be attached as children of the container game object"), containerDescriptor.attachItems);
-        HandleAttachItems(attachItems);
+        bool attachContainables = EditorGUILayout.Toggle(new GUIContent("Attach Containables", "Set if items should be attached as children of the container game object"), containerDescriptor.attachContainables);
+        HandleAttachContainables(attachContainables);
 
 
 
@@ -224,11 +224,11 @@ public class ContainerDescriptorEditor : Editor
         SerializedProperty sp = serializedObject.FindProperty("hasCustomDisplay");
         sp.boolValue = hasCustomDisplay;
         serializedObject.ApplyModifiedProperties();
-        if(hasCustomDisplay && containerDescriptor.containerItemDisplay == null)
+        if(hasCustomDisplay && containerDescriptor.containerCustomDisplay == null)
         {
             AddCustomDisplay();
         }
-        if(!hasCustomDisplay && containerDescriptor.containerItemDisplay != null)
+        if(!hasCustomDisplay && containerDescriptor.containerCustomDisplay != null)
         {
             RemoveCustomDisplay();
         }
@@ -266,10 +266,10 @@ public class ContainerDescriptorEditor : Editor
         sp.vector3Value = attachmentOffset;
         serializedObject.ApplyModifiedProperties();
     }
-    private void HandleAttachItems(bool attachItems)
+    private void HandleAttachContainables(bool attachContainables)
     {
-        SerializedProperty sp = serializedObject.FindProperty("attachItems");
-        sp.boolValue = attachItems;
+        SerializedProperty sp = serializedObject.FindProperty("attachContainables");
+        sp.boolValue = attachContainables;
         serializedObject.ApplyModifiedProperties();
     }
 
@@ -336,10 +336,10 @@ public class ContainerDescriptorEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    private void HandleHideItems(bool hideItems)
+    private void HandleHideContainables(bool hideContainables)
     {
-        SerializedProperty sp = serializedObject.FindProperty("hideItems");
-        sp.boolValue = hideItems;
+        SerializedProperty sp = serializedObject.FindProperty("hideContainables");
+        sp.boolValue = hideContainables;
         serializedObject.ApplyModifiedProperties();
     }
 
@@ -404,15 +404,15 @@ public class ContainerDescriptorEditor : Editor
 
     private void AddCustomDisplay()
     {
-        SerializedProperty sp = serializedObject.FindProperty("containerItemDisplay");
-        sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerItemDisplay>();
+        SerializedProperty sp = serializedObject.FindProperty("containerContainableDisplay");
+        sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerCustomDisplay>();
         serializedObject.ApplyModifiedProperties();
-        containerDescriptor.containerItemDisplay.containerDescriptor = containerDescriptor;
+        containerDescriptor.containerCustomDisplay.containerDescriptor = containerDescriptor;
     }
 
     private void RemoveCustomDisplay()
     {
-        DestroyImmediate(containerItemDisplay, true);
+        DestroyImmediate(containerCustomDisplay, true);
     }
 
     private void AddAttached()

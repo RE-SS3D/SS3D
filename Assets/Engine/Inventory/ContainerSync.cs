@@ -122,7 +122,7 @@ namespace SS3D.Engine.Inventory
                 storedItems = new Container.StoredIContainable[items.Length];
                 for (var i = 0; i < items.Length; i++)
                 {
-                    storedItems[i] = container.StoredContainables[container.FindItem(items[i])];
+                    storedItems[i] = container.StoredContainables[container.FindContainable(items[i])];
                 }
             }
 
@@ -188,7 +188,7 @@ namespace SS3D.Engine.Inventory
             }
 
             var accessibleContainer = Containers[containerId];
-            accessibleContainer.Container.AddItemsUnchecked(items);
+            accessibleContainer.Container.AddContainablesUnchecked(items);
         }
 
         [TargetRpc]
@@ -200,7 +200,7 @@ namespace SS3D.Engine.Inventory
             }
 
             var accessibleContainer = Containers[containerId];
-            accessibleContainer.Container.RemoveItems(items.Select(x => x.GetComponent<Item>()).ToArray());
+            accessibleContainer.Container.RemoveContainables(items.Select(x => x.GetComponent<Item>()).ToArray());
         }
 
         [TargetRpc]
@@ -212,7 +212,7 @@ namespace SS3D.Engine.Inventory
             }
 
             var accessibleContainer = Containers[containerId];
-            accessibleContainer.Container.MoveItemsUnchecked(items);
+            accessibleContainer.Container.MoveContainablesUnchecked(items);
         }
 
         private void OnValidate()

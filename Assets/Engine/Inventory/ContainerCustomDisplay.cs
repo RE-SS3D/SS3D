@@ -13,7 +13,7 @@ namespace SS3D.Engine.Inventory
     /// Take for example a battery compartment, battery should appear side by side when placed inside the compartment container.
     /// Without this they would pile up in the same spot.
     /// </summary>
-    public class ContainerItemDisplay : MonoBehaviour
+    public class ContainerCustomDisplay : MonoBehaviour
     {
         public ContainerDescriptor containerDescriptor;
         public bool Mirrored;

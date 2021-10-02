@@ -164,7 +164,7 @@ namespace SS3D.Content.Systems.Construction
             }
             
             // Add material requirement
-            interaction = new ItemRequirement(interaction, item.ItemId, construction.amount);
+            interaction = new ItemRequirement(interaction, item.ContainableId, construction.amount);
             
             var source = GetComponent<IInteractionSource>();
             // Create interaction data

@@ -113,7 +113,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
-            IContainable containable = container.Container.ItemAt(position);
+            IContainable containable = container.Container.ContainableAt(position);
             if (Hands.SelectedHandEmpty)
             {
                 if (containable != null)
@@ -201,7 +201,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
             
-            attachedContainer.Container.AddItem(containable, position);
+            attachedContainer.Container.AddContainable(containable, position);
         }
 
         /// <summary>

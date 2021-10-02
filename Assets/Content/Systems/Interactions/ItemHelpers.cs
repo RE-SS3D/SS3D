@@ -19,10 +19,10 @@ namespace SS3D.Content.Systems.Interactions
             Container container = original.Container;
             if (container != null)
             {
-                int index = container.FindItem(original);
+                int index = container.FindContainable(original);
                 Container.StoredIContainable storedItem = container.StoredContainables[index];
-                container.RemoveItem(storedItem.Item);
-                container.AddItem(replacement, storedItem.Position);
+                container.RemoveContainable(storedItem.Containable);
+                container.AddContainable(replacement, storedItem.Position);
             }
             else
             {

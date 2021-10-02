@@ -25,7 +25,7 @@ namespace SS3D.Engine.Inventory
         [Tooltip("The volume an item ocuppies in a container")]
         [SerializeField] private float volume = 10f;
 
-        public string ItemId
+        public string ContainableId
         {
             get => itemId;
         }
@@ -390,11 +390,11 @@ namespace SS3D.Engine.Inventory
                 return;
             }
             
-            container?.RemoveItem(this);
+            container?.RemoveContainable(this);
             
             if (!alreadyAdded && newContainer != null)
             {
-                newContainer.AddItem(this);
+                newContainer.AddContainable(this);
             }
 
             container = newContainer;

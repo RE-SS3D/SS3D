@@ -8,7 +8,7 @@ namespace SS3D.Engine.Networking
     {
         public static void WriteStoredItem(this NetworkWriter writer, Container.StoredIContainable containable)
         {
-            writer.WriteGameObject(containable.Item.GetGameObject());
+            writer.WriteGameObject(containable.Containable.GetGameObject());
             writer.WriteVector2Int(containable.Position);
         }
         

@@ -47,7 +47,7 @@ namespace SS3D.Engine.Inventory
             set;
         }
 
-        string ItemId
+        string ContainableId
         {
             get;
         }

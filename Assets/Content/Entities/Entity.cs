@@ -118,11 +118,11 @@ namespace SS3D.Content
                 return;
             }
 
-            container?.RemoveItem(this);
+            container?.RemoveContainable(this);
 
             if (!alreadyAdded && newContainer != null)
             {
-                newContainer.AddItem(this);
+                newContainer.AddContainable(this);
             }
 
             container = newContainer;
@@ -143,7 +143,7 @@ namespace SS3D.Content
             set => traits = value;
         }
 
-        public string ItemId
+        public string ContainableId
         {
             get;
         }
@@ -228,7 +228,7 @@ namespace SS3D.Content
                 animator.keepAnimatorControllerStateOnDisable = true;
             }
 
-            // Items can't have no size
+            // Containables can't have no size
             if (Size.x == 0)
             {
                 Size = new Vector2Int(1, Size.y);

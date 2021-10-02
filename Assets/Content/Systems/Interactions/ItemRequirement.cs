@@ -34,7 +34,7 @@ namespace SS3D.Content.Systems.Interactions
                 return false;
             }
 
-            return item.ItemId == Id && item.HasQuantity(Amount);
+            return item.ContainableId == Id && item.HasQuantity(Amount);
         }
 
         protected override void ApplyRequirement(InteractionEvent interactionEvent)

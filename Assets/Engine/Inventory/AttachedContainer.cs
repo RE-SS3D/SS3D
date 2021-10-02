@@ -113,7 +113,7 @@ namespace SS3D.Engine.Inventory
 
         public override string ToString()
         {
-            return $"{name}({nameof(AttachedContainer)})[size: {container.Size}, items: {container.ItemCount}]";
+            return $"{name}({nameof(AttachedContainer)})[size: {container.Size}, items: {container.ContainableCount}]";
         }
 
         protected virtual void OnItemAttached(IContainable e)
@@ -159,13 +159,13 @@ namespace SS3D.Engine.Inventory
                     {
                         containable.Freeze();
                         // Make invisible
-                        if (containerDescriptor.hideItems)
+                        if (containerDescriptor.hideContainables)
                         {
                             containable.SetVisibility(false);
                         }
 
                         // Attach to container
-                        if (containerDescriptor.attachItems)
+                        if (containerDescriptor.attachContainables)
                         {
                             Transform itemTransform = containable.GetGameObject().transform;
                             itemTransform.SetParent(transform, false);
@@ -182,7 +182,7 @@ namespace SS3D.Engine.Inventory
                     {
                         containable.Unfreeze();
                         // Restore visibility
-                        if (containerDescriptor.hideItems)
+                        if (containerDescriptor.hideContainables)
                         {
                             containable.SetVisibility(true);
                         }

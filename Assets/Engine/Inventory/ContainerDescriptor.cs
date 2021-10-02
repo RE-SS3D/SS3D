@@ -28,7 +28,7 @@ namespace SS3D.Engine.Inventory
         public ContainerSync containerSync;
         public ContainerInteractive containerInteractive;
         public SubstanceContainer substanceContainer;
-        public ContainerItemDisplay containerItemDisplay;
+        public ContainerCustomDisplay containerCustomDisplay;
 
         // reference towards the container UI linked to this container.
         public ContainerUi containerUi;
@@ -64,10 +64,10 @@ namespace SS3D.Engine.Inventory
         /// If the container is Hidden, the visibility of items is always off.
         /// </summary>
         [Tooltip("Set visibility of items in container.")]
-        public bool hideItems = true;
+        public bool hideContainables = true;
 
         /// <summary> If items should be attached as children. </summary>
-        public bool attachItems = true;
+        public bool attachContainables = true;
 
         /// <summary> The initial filter of the container. Controls what can go in the container. </summary>
         public Filter startFilter;

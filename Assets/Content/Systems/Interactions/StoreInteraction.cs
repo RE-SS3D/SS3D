@@ -50,13 +50,13 @@ namespace SS3D.Content.Systems.Interactions
         private bool CanStore(IContainable item, AttachedContainer target)
         {
             Container container = target.Container;
-            return container.CouldStoreItem(item) && container.CouldHoldItem(item);
+            return container.CouldStoreContainable(item) && container.CouldHoldContainable(item);
         }
 
         public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Hands hands = (Hands) interactionEvent.Source.Parent;
-            containerDescriptor.attachedContainer.Container.AddItem(hands.ItemInHand);
+            containerDescriptor.attachedContainer.Container.AddContainable(hands.ItemInHand);
 
             return false;
         }

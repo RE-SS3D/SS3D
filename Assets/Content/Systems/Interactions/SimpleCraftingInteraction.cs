@@ -51,7 +51,7 @@ public class SimpleCraftingInteraction : IInteraction
     public bool CanInteract(InteractionEvent interactionEvent)
     {
         Item item = interactionEvent.Source as Item;
-        if (item == null || item.ItemId != ItemId)
+        if (item == null || item.ContainableId != ItemId)
         {
             return false;
         }

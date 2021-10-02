@@ -64,7 +64,7 @@ namespace SS3D.Content.Systems.Interactions
         {
             Hands hands = (Hands) interactionEvent.Source;
             int index = containerDescriptor.attachedContainer.Container.StoredContainables.Count -1;
-            IContainable PickupItem = containerDescriptor.attachedContainer.Container.StoredContainables[index].Item;
+            IContainable PickupItem = containerDescriptor.attachedContainer.Container.StoredContainables[index].Containable;
             if (PickupItem != null)
             {
                 hands.Pickup(PickupItem);
