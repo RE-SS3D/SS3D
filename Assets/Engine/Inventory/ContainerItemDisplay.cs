@@ -21,16 +21,13 @@ namespace SS3D.Engine.Inventory
         /// <summary>
         /// The list of items displayed in the container;
         /// </summary>
-        private List<IContainerizable> displayedItems;
+        private List<IContainable> displayedItems;
 
         public void Start()
         {
             Assert.IsNotNull(containerDescriptor);
             
-            displayedItems = new List<IContainerizable>();
-            Container.ItemAttached += ContainerOnItemAttached;
-            Container.ItemDetached += ContainerOnItemDetached;
-            displayedItems = new Item[containerDescriptor.displays.Length];
+            displayedItems = new List<IContainable>();
             containerDescriptor.attachedContainer.ItemAttached += ContainerOnItemAttached;
             containerDescriptor.attachedContainer.ItemDetached += ContainerOnItemDetached;
         }
@@ -41,7 +38,7 @@ namespace SS3D.Engine.Inventory
             containerDescriptor.attachedContainer.ItemDetached -= ContainerOnItemDetached;
         }
 
-        private void ContainerOnItemAttached(object sender, IContainerizable item)
+        private void ContainerOnItemAttached(object sender, IContainable item)
         {
             // Defines the transform of the item to be the first available position.
             int index = displayedItems.Count;
@@ -82,7 +79,7 @@ namespace SS3D.Engine.Inventory
             displayedItems.Add(item);
         }
         
-        private void ContainerOnItemDetached(object sender, IContainerizable item)
+        private void ContainerOnItemDetached(object sender, IContainable item)
         {
             int index = displayedItems.FindIndex(x => x == item);
 
@@ -91,7 +88,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
-            Transform itemParent = item.transform.parent;
+            Transform itemParent = item.GetGameObject().transform.parent;
             if (itemParent != null && itemParent != containerDescriptor.displays[index])
             {
                 item.GetGameObject().transform.SetParent(null, true);

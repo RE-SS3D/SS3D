@@ -41,7 +41,7 @@ public class CellCharger : NetworkBehaviour
                 // (this prevents the delay between putting a battery in and seeing the lights change)
                 if (isServer)
                 {
-                    foreach (IContainerizable item in containerDescriptor.attachedContainer.Container.Containerizables)
+                    foreach (IContainable item in containerDescriptor.attachedContainer.Container.Containerizables)
                     {
                         IChargeable chargeable = item.GetGameObject().GetComponent<IChargeable>();
                         if (chargeable != null) UpdateLights(chargeable.GetPowerPercentage());
@@ -70,7 +70,7 @@ public class CellCharger : NetworkBehaviour
     // Recharges the current cell that is placed on it
     private void Recharge()
     {
-        foreach (IContainerizable item in containerDescriptor.attachedContainer.Container.Containerizables)
+        foreach (IContainable item in containerDescriptor.attachedContainer.Container.Containerizables)
         {
             IChargeable chargeable = item.GetGameObject().GetComponent<IChargeable>();
             if (chargeable != null)

@@ -20,7 +20,7 @@ public class ColorChangeWhenFilled : MonoBehaviour
         setColor(attachedContainer.Container);
     }
 
-    private void OnContainerChanged(Container container, IEnumerable<IContainerizable> items,
+    private void OnContainerChanged(Container container, IEnumerable<IContainable> items,
            Container.ContainerChangeType type)
     {
         setColor(container);

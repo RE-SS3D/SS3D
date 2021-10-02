@@ -41,7 +41,7 @@ namespace SS3D.Engine.Inventory.Extensions
                 
 		        // we try to get the Item component from the GameObject we just interacted with
 		        // you can only pickup items (for now, TODO: we have to consider people too), which makes sense
-                IContainerizable item = targetBehaviour.GameObject.GetComponent<IContainerizable>(); 
+                IContainable item = targetBehaviour.GameObject.GetComponent<IContainable>(); 
                 if (item == null)
                 {
                     return false;
@@ -58,7 +58,7 @@ namespace SS3D.Engine.Inventory.Extensions
         {
 	    // remember that when we call this Start, we are starting the interaction per se
 	    // so we check if the source of the interaction is a Hand, and if the target is an Item
-            if (interactionEvent.Source is Hands hands && interactionEvent.Target is IContainerizable target)
+            if (interactionEvent.Source is Hands hands && interactionEvent.Target is IContainable target)
             {         
 		// and then we run the function that adds it to the container
                 hands.Pickup(target);

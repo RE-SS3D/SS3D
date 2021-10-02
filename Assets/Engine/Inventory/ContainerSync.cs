@@ -60,7 +60,7 @@ namespace SS3D.Engine.Inventory
                 AttachedContainer accessible = Containers[i];
 
                 // Container contents change
-                void ContentsHandler(Container _, IEnumerable<IContainerizable> items, Container.ContainerChangeType type)
+                void ContentsHandler(Container _, IEnumerable<IContainable> items, Container.ContainerChangeType type)
                 {
                     SyncContainerDelta(accessible, items, type);
                 }
@@ -103,7 +103,7 @@ namespace SS3D.Engine.Inventory
         /// <param name="container">The container the change happened in</param>
         /// <param name="changedItems">The items that changed</param>
         /// <param name="type">The type of change</param>
-        private void SyncContainerDelta(AttachedContainer attachedContainer, IEnumerable<IContainerizable> changedItems,
+        private void SyncContainerDelta(AttachedContainer attachedContainer, IEnumerable<IContainable> changedItems,
             Container.ContainerChangeType type)
         {
             if (attachedContainer.Observers.Count == 0)
@@ -112,7 +112,7 @@ namespace SS3D.Engine.Inventory
             }
 
             int index = Containers.FindIndex(c => attachedContainer == c);;
-            IContainerizable[] items = changedItems.ToArray();
+            IContainable[] items = changedItems.ToArray();
             GameObject[] itemGameObjects = items.Select(x => x.GetGameObject()).ToArray();
             Container container = attachedContainer.Container;
 

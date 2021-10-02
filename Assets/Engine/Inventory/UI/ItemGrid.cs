@@ -74,7 +74,7 @@ namespace SS3D.Engine.Inventory.UI
             // thanks Unity UI
             yield return new WaitForEndOfFrame();
             Container container = AttachedContainer.Container;
-            foreach (IContainerizable item in container.Containerizables)
+            foreach (IContainable item in container.Containerizables)
             {
                 Vector2Int position = container.PositionOf(item);
                 CreateItemDisplay(item, position);
@@ -87,19 +87,19 @@ namespace SS3D.Engine.Inventory.UI
         }
 
 
-        private void ContainerOnContentsChanged(Container container, IEnumerable<IContainerizable> items, Container.ContainerChangeType type)
+        private void ContainerOnContentsChanged(Container container, IEnumerable<IContainable> items, Container.ContainerChangeType type)
         {
             switch (type)
             {
                 case Container.ContainerChangeType.Add:
-                    foreach (IContainerizable item in items)
+                    foreach (IContainable item in items)
                     {
                         Vector2Int position = container.PositionOf(item);
                         CreateItemDisplay(item, position);
                     }
                     break;
                 case Container.ContainerChangeType.Remove:
-                    foreach (IContainerizable item in items)
+                    foreach (IContainable item in items)
                     {
                         for (var i = 0; i < gridItems.Count; i++)
                         {
@@ -114,7 +114,7 @@ namespace SS3D.Engine.Inventory.UI
                     }
                     break;
                 case Container.ContainerChangeType.Move:
-                    foreach (IContainerizable item in items)
+                    foreach (IContainable item in items)
                     {
                         foreach (ItemGridItem gridItem in gridItems)
                         {
@@ -194,7 +194,7 @@ namespace SS3D.Engine.Inventory.UI
         
         public override void OnItemDrop(ItemDisplay display)
         {
-            IContainerizable item = display.Item;
+            IContainable item = display.Item;
             Vector2Int size = item.Size;
             Vector3 dragPosition = display.transform.position;
             
@@ -228,7 +228,7 @@ namespace SS3D.Engine.Inventory.UI
             transform.localPosition = slot.localPosition;
         }
 
-        private void CreateItemDisplay(IContainerizable item, Vector2Int position)
+        private void CreateItemDisplay(IContainable item, Vector2Int position)
         {
             GameObject o = Instantiate(ItemDisplayPrefab, transform);
             var gridItem = o.GetComponent<ItemGridItem>();

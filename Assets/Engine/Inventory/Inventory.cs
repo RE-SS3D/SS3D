@@ -113,7 +113,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
-            IContainerizable item = container.Container.ItemAt(position);
+            IContainable item = container.Container.ItemAt(position);
             if (Hands.SelectedHandEmpty)
             {
                 if (item != null)
@@ -141,7 +141,7 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="item">The item to transfer</param>
         /// <param name="targetContainer">Into which container to move the item</param>
-        public void ClientTransferItem(IContainerizable item, Vector2Int position, AttachedContainer targetContainer)
+        public void ClientTransferItem(IContainable item, Vector2Int position, AttachedContainer targetContainer)
         {
             NetworkedContainerReference? reference = NetworkedContainerReference.CreateReference(targetContainer);
             if (reference == null)
@@ -157,7 +157,7 @@ namespace SS3D.Engine.Inventory
         /// Requests the server to drop an item out of a container
         /// </summary>
         /// <param name="item">The item to drop</param>
-        public void ClientDropItem(IContainerizable item)
+        public void ClientDropItem(IContainable item)
         {
             CmdDropItem(item.GetGameObject());
         }
@@ -165,7 +165,7 @@ namespace SS3D.Engine.Inventory
         [Command]
         private void CmdTransferItem(GameObject itemObject, Vector2Int position, NetworkedContainerReference reference)
         {
-            var item = itemObject.GetComponent<IContainerizable>();
+            var item = itemObject.GetComponent<IContainable>();
             if (item == null)
             {
                 return;

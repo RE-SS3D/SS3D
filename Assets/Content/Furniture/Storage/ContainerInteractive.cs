@@ -77,7 +77,7 @@ namespace SS3D.Content.Furniture.Storage
             }
             
             // We check for each item if they are interactive containers
-            foreach(IContainerizable item in containerDescriptor.attachedContainer.Container.Containerizables)
+            foreach(IContainable item in containerDescriptor.attachedContainer.Container.Containerizables)
             {
                 ContainerInteractive[] containerInteractives = item.GetGameObject().GetComponents<ContainerInteractive>();
                 // if the item is an interactive container, we call this method again on it.

@@ -16,7 +16,7 @@ namespace SS3D.Content
     /// do combat, etc.
     /// Anything you expect that is a creature should be considered an Entity
     /// </summary>
-    public class Entity : InteractionSourceNetworkBehaviour, IContainerizable, IInteractionTarget
+    public class Entity : InteractionSourceNetworkBehaviour, IContainable, IInteractionTarget
     {
 
         public List<Trait> traits;

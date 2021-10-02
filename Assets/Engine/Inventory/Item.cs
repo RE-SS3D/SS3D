@@ -17,7 +17,7 @@ namespace SS3D.Engine.Inventory
      * An item describes what is held in a container.
      */
     [DisallowMultipleComponent]
-    public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget, IContainerizable
+    public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget, IContainable
     {
         public string itemId;
         public string Name;

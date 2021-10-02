@@ -63,7 +63,7 @@ namespace SS3D.Engine.Inventory.UI
             container = newContainer;
         }
 
-        private void ContainerContentsChanged(Container _, IEnumerable<IContainerizable> items, Container.ContainerChangeType changeType)
+        private void ContainerContentsChanged(Container _, IEnumerable<IContainable> items, Container.ContainerChangeType changeType)
         {
             if (changeType != Engine.Inventory.Container.ContainerChangeType.Move)
             {

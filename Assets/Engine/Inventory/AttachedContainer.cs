@@ -25,8 +25,8 @@ namespace SS3D.Engine.Inventory
 
         public delegate void ObserverHandler(AttachedContainer container, Entity observer);
         
-        public event EventHandler<IContainerizable> ItemAttached;
-        public event EventHandler<IContainerizable> ItemDetached;
+        public event EventHandler<IContainable> ItemAttached;
+        public event EventHandler<IContainable> ItemDetached;
         public event ObserverHandler NewObserver;
         
         /// <summary>
@@ -116,12 +116,12 @@ namespace SS3D.Engine.Inventory
             return $"{name}({nameof(AttachedContainer)})[size: {container.Size}, items: {container.ItemCount}]";
         }
 
-        protected virtual void OnItemAttached(IContainerizable e)
+        protected virtual void OnItemAttached(IContainable e)
         {
             ItemAttached?.Invoke(this, e);
         }
 
-        protected virtual void OnItemDetached(IContainerizable e)
+        protected virtual void OnItemDetached(IContainable e)
         {
             ItemDetached?.Invoke(this, e);
         }
@@ -149,13 +149,13 @@ namespace SS3D.Engine.Inventory
             container = newContainer;
         }
 
-        private void ContainerContentsChanged(Container container, IEnumerable<IContainerizable> items, Container.ContainerChangeType type)
+        private void ContainerContentsChanged(Container container, IEnumerable<IContainable> items, Container.ContainerChangeType type)
         {
             switch (type)
             {
                 case Container.ContainerChangeType.Add:
                 {
-                    foreach (IContainerizable item in items)
+                    foreach (IContainable item in items)
                     {
                         item.Freeze();
                         // Make invisible
@@ -178,7 +178,7 @@ namespace SS3D.Engine.Inventory
                 }
                 case Container.ContainerChangeType.Remove:
                 {
-                    foreach (IContainerizable item in items)
+                    foreach (IContainable item in items)
                     {
                         item.Unfreeze();
                         // Restore visibility

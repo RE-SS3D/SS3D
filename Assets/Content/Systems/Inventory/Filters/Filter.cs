@@ -9,7 +9,7 @@ public class Filter : ScriptableObject
     public List<Trait> acceptedTraits;
     public List<Trait> deniedTraits;
 
-    public bool CanStore(IContainerizable item)
+    public bool CanStore(IContainable item)
     {
         int traitCount = 0;
         if (acceptedTraits.Count == 0 && deniedTraits.Count == 0)

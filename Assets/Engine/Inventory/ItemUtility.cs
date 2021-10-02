@@ -4,7 +4,7 @@ namespace SS3D.Engine.Inventory
 {
     public static class ItemUtility
     {
-        public static void Place(IContainerizable item, Vector3 position, Quaternion rotation, Transform lookTarget = null)
+        public static void Place(IContainable item, Vector3 position, Quaternion rotation, Transform lookTarget = null)
         {
             Vector3 itemDimensions = item.GetGameObject().GetComponentInChildren<Collider>().bounds.size;
             float itemSize = 0;

@@ -69,7 +69,7 @@ namespace SS3D.Engine.Interactions
                     Hands hands = GetComponent<Hands>();
                     if (hands != null )
                     {
-                        IContainerizable item = hands.ItemInHand;
+                        IContainable item = hands.ItemInHand;
                         if (item != null)
                         {
                             InteractInHand(item.GetGameObject(), gameObject, true);
@@ -104,7 +104,7 @@ namespace SS3D.Engine.Interactions
                 Hands hands = GetComponent<Hands>();
                 if (hands != null )
                 {
-                    IContainerizable item = hands.ItemInHand;
+                    IContainable item = hands.ItemInHand;
                     if (item != null)
                     {
                         InteractInHand(item.GetGameObject(), gameObject);

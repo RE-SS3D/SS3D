@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SS3D.Engine.Inventory
 {
-    public interface IContainerizable
+    public interface IContainable
     {
         Vector2Int Size
         {

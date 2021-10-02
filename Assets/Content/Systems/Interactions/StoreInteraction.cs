@@ -47,7 +47,7 @@ namespace SS3D.Content.Systems.Interactions
             return false;
         }
 
-        private bool CanStore(IContainerizable item, AttachedContainer target)
+        private bool CanStore(IContainable item, AttachedContainer target)
         {
             Container container = target.Container;
             return container.CouldStoreItem(item) && container.CouldHoldItem(item);
