@@ -92,7 +92,7 @@ public class ContainerDescriptorEditor : Editor
         Filter startFilter = (Filter)EditorGUILayout.ObjectField(new GUIContent("Filter", "Filter on the container, controls what can go in the container"), containerDescriptor.startFilter, typeof(Filter), true);
         HandleStartFilter(startFilter);
 
-        bool hideContainables = EditorGUILayout.Toggle(new GUIContent("Hide items", "Set if items should be attached as children of the container"), containerDescriptor.hideContainables);
+        bool hideContainables = EditorGUILayout.Toggle(new GUIContent("Hide containables", "Set if items should be attached as children of the container"), containerDescriptor.hideContainables);
         HandleHideContainables(hideContainables);
 
         if (!hideContainables)
@@ -100,12 +100,12 @@ public class ContainerDescriptorEditor : Editor
             Vector3 attachmentOffset = EditorGUILayout.Vector3Field(new GUIContent("Attachment Offset", "define the position of the items inside the container"), containerDescriptor.attachmentOffset);
             HandleAttachmentOffset(attachmentOffset);
 
-            bool hasCustomDisplay = EditorGUILayout.Toggle(new GUIContent("Has custom display", "adds the container containable display script, defines custom positions for items in the container"), containerDescriptor.hasCustomDisplay);
+            bool hasCustomDisplay = EditorGUILayout.Toggle(new GUIContent("Has custom display", "Adds the ContainerCustomDisplay script, defines custom positions for containables in the container"), containerDescriptor.hasCustomDisplay);
             HandleHasCustomDisplay(hasCustomDisplay);
 
             if (hasCustomDisplay)
             {
-                int numberDisplay = EditorGUILayout.IntField(new GUIContent("number of display", "the number of items to display in custom position"), containerDescriptor.numberDisplay);
+                int numberDisplay = EditorGUILayout.IntField(new GUIContent("number of display", "the number of containables to display in custom position"), containerDescriptor.numberDisplay);
                 HandleNumberDisplay(numberDisplay);
 
                 SerializedProperty sp = serializedObject.FindProperty("displays");
@@ -118,18 +118,18 @@ public class ContainerDescriptorEditor : Editor
             }
         }
 
-        bool attachContainables = EditorGUILayout.Toggle(new GUIContent("Attach Containables", "Set if items should be attached as children of the container game object"), containerDescriptor.attachContainables);
+        bool attachContainables = EditorGUILayout.Toggle(new GUIContent("Attach Containables", "Set if containables should be attached as children of the container game object"), containerDescriptor.attachContainables);
         HandleAttachContainables(attachContainables);
 
 
 
 
-        bool canHoldSubstances = EditorGUILayout.Toggle("Can Hold Substances", containerDescriptor.canHoldSubstances);
+        bool canHoldSubstances = EditorGUILayout.Toggle(new GUIContent("Can Hold Substances","Defines if the container can hold substances"), containerDescriptor.canHoldSubstances);
         HandleCanHoldSubstances(canHoldSubstances);
 
         if (canHoldSubstances)
         {
-            bool substancesOnly = EditorGUILayout.Toggle("substances Only", containerDescriptor.substancesOnly);
+            bool substancesOnly = EditorGUILayout.Toggle(new GUIContent("substances Only","Set the container to hold only substances"), containerDescriptor.substancesOnly);
             HandleSubstancesOnly(substancesOnly);
         }
 
