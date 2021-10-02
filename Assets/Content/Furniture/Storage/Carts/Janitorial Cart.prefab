@@ -662,15 +662,17 @@ MonoBehaviour:
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: cart trash
   onlyStoreWhenOpen: 0
+  openWhenContainerViewed: 0
   size: {x: 3, y: 3}
   hideItems: 1
   attachItems: 1
   startFilter: {fileID: 0}
   initialized: 1
   maxDistance: 5
-  containerType: 0
   isOpenable: 0
   isInteractive: 1
+  hasUi: 0
+  hasCustomInteraction: 0
 --- !u!114 &3230899053323025513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1521,7 +1523,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: cardboard box
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4811199063769927608, guid: 33f138fd77f12bf42ba03827596f66e1, type: 3}
+    - {fileID: 3734325509069202337, guid: 33f138fd77f12bf42ba03827596f66e1, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 33f138fd77f12bf42ba03827596f66e1, type: 3}
 --- !u!4 &4828485990197208760 stripped
 Transform:
@@ -1601,7 +1605,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: cardboard box
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3734325509069202337, guid: 33f138fd77f12bf42ba03827596f66e1, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 33f138fd77f12bf42ba03827596f66e1, type: 3}
 --- !u!4 &5415468539376512869 stripped
 Transform:
@@ -1681,7 +1686,8 @@ PrefabInstance:
       propertyPath: m_AssetId
       value: 
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7745630569793271760, guid: 7df6d6e44c7ebac4f9bba7a3e9543c8e, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 7df6d6e44c7ebac4f9bba7a3e9543c8e, type: 3}
 --- !u!4 &5961226931208061903 stripped
 Transform:

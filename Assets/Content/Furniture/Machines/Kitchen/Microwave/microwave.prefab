@@ -372,17 +372,19 @@ MonoBehaviour:
   storeIcon: {fileID: 0}
   viewIcon: {fileID: 0}
   attachmentOffset: {x: 0, y: 0, z: 0}
-  containerName: container
+  containerName: microwave
   onlyStoreWhenOpen: 1
+  openWhenContainerViewed: 0
   size: {x: 2, y: 2}
   hideItems: 1
   attachItems: 1
   startFilter: {fileID: 11400000, guid: 2071a6502a8dccb4d81ec35517f716cc, type: 2}
   initialized: 1
   maxDistance: 5
-  containerType: 0
   isOpenable: 1
   isInteractive: 1
+  hasUi: 1
+  hasCustomInteraction: 0
 --- !u!114 &5055055840736840480
 MonoBehaviour:
   m_ObjectHideFlags: 0

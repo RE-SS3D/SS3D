@@ -154,11 +154,8 @@ namespace SS3D.Engine.Inventory
 
         public void Update()
         {
-            // if the container has an UI
-            if(hasUi)
-            {
+                // this should be executed only for some kind of containers, not sure which one. It needs some conditions.
                 UpdateObservers();
-            }
         }
 
         private void UpdateObservers()

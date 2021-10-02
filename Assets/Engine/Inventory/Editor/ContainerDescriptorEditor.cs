@@ -17,6 +17,7 @@ public class ContainerDescriptorEditor : Editor
     private AttachedContainer attachedContainer; 
     private ContainerInteractive containerInteractive;
     private SubstanceContainer substanceContainer;
+    private ContainerInteractive containerSync;
 
     public void OnEnable()
     {
@@ -35,8 +36,6 @@ public class ContainerDescriptorEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        //DestroyImmediate(containerDescriptor.gameObject.GetComponent<ContainerInteractive>(), true);
-       // DestroyImmediate(containerDescriptor.gameObject.GetComponent<AttachedContainer>(), true);
         serializedObject.Update();
 
         EditorGUILayout.LabelField(containerDescriptor.containerName, TitleStyle);
@@ -161,6 +160,7 @@ public class ContainerDescriptorEditor : Editor
         {
             AddAttached();
             HandleIsInteractive(true);
+            AddSync();
             SerializedProperty sp = serializedObject.FindProperty("initialized");
             sp.boolValue = true;
             serializedObject.ApplyModifiedProperties();
@@ -352,18 +352,28 @@ public class ContainerDescriptorEditor : Editor
 
     private void AddAttached()
     {
-        AttachedContainer attachedContainer = containerDescriptor.gameObject.AddComponent<AttachedContainer>();
-        SerializedProperty sp = serializedObject.FindProperty("attachedContainer");
-        sp.objectReferenceValue = attachedContainer;
-        serializedObject.ApplyModifiedProperties();
-
+        containerDescriptor.attachedContainer = containerDescriptor.gameObject.AddComponent<AttachedContainer>();
         containerDescriptor.attachedContainer.containerDescriptor = containerDescriptor;
     }
 
-    private void RemoveAttached()
+    private void AddSync()
     {
-        DestroyImmediate(attachedContainer, true);
-        
+        if(containerDescriptor.gameObject.GetComponent<ContainerSync>() == null)
+        {
+            SerializedProperty sp = serializedObject.FindProperty("containerSync");
+            sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerSync>();
+            serializedObject.ApplyModifiedProperties();
+        }
+    }
+
+    private void RemoveSync()
+    {
+        GameObject g = Selection.activeGameObject;
+        var containerDescriptors = g.GetComponents<ContainerDescriptor>();
+        if (containerDescriptors != null && containerDescriptors.Length == 0)
+        {
+            DestroyImmediate(g.GetComponent<ContainerSync>());
+        }  
     }
 
     private void OnDestroy()
@@ -372,6 +382,7 @@ public class ContainerDescriptorEditor : Editor
         {
             DestroyImmediate(attachedContainer, true);
             DestroyImmediate(containerInteractive, true);
+            RemoveSync();
         }
     }
 }
