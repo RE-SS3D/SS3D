@@ -28,6 +28,7 @@ namespace SS3D.Engine.Inventory
         public ContainerSync containerSync;
         public ContainerInteractive containerInteractive;
         public SubstanceContainer substanceContainer;
+        public ContainerItemDisplay containerItemDisplay;
 
         // reference towards the container UI linked to this container.
         public ContainerUi containerUi;
@@ -62,6 +63,7 @@ namespace SS3D.Engine.Inventory
         /// Set visibility of objects inside the container (not in the UI, in the actual game object).
         /// If the container is Hidden, the visibility of items is always off.
         /// </summary>
+        [Tooltip("Set visibility of items in container.")]
         public bool hideItems = true;
 
         /// <summary> If items should be attached as children. </summary>
@@ -90,6 +92,14 @@ namespace SS3D.Engine.Inventory
 
         /// <summary> If true, interactions in containerInteractive are ignored, instead, a script should implement IInteractionTarget </summary>
         public bool hasCustomInteraction;
+
+        /// <summary> If items in the container should be displayed at particular locations in the container</summary>
+        public bool hasCustomDisplay;
+
+        /// <summary> The list of transforms defining where the items are displayed.</summary>
+        public Transform[] displays;
+
+        public int numberDisplay;
 
         /// <summary>
         /// How often the observer list should be updated

@@ -2071,11 +2071,11 @@ GameObject:
   m_Component:
   - component: {fileID: 9114095814780560127}
   - component: {fileID: 5306361817331504544}
-  - component: {fileID: 8043091635003570766}
   - component: {fileID: 3623899252154688686}
   - component: {fileID: 4409330219691020040}
   - component: {fileID: 8954022733386996155}
   - component: {fileID: 141195248142489828}
+  - component: {fileID: 2465783307128278743}
   m_Layer: 15
   m_Name: hand_r
   m_TagString: Untagged
@@ -2121,22 +2121,6 @@ MonoBehaviour:
   bodyPartStatuses: 0
   skinnedMeshRenderer: {fileID: 6572013783268959225}
   body: {fileID: 0}
---- !u!114 &8043091635003570766
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2448277291314358949}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Displays:
-  - {fileID: 6523730774157206108}
-  Container: {fileID: 8954022733386996155}
-  Mirrored: 0
 --- !u!114 &3623899252154688686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2169,6 +2153,7 @@ MonoBehaviour:
   containerSync: {fileID: 0}
   containerInteractive: {fileID: 0}
   substanceContainer: {fileID: 0}
+  containerItemDisplay: {fileID: 2465783307128278743}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -2181,15 +2166,19 @@ MonoBehaviour:
   size: {x: 6, y: 6}
   hideItems: 0
   attachItems: 1
-  startFilter: {fileID: 0}
+  startFilter: {fileID: 11400000, guid: 965f83328d6f0ef4db3ca6b713932c19, type: 2}
   initialized: 1
   maxDistance: 5
-  containerType: 0
   isOpenable: 0
   canHoldSubstances: 0
   isInteractive: 0
+  hasUi: 0
   hasCustomInteraction: 0
   volume: 1000
+  hasCustomDisplay: 1
+  displays:
+  - {fileID: 6523730774157206108}
+  numberDisplay: 1
 --- !u!114 &8954022733386996155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2222,6 +2211,20 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &2465783307128278743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2448277291314358949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDescriptor: {fileID: 4409330219691020040}
+  Mirrored: 0
 --- !u!1 &2667178978926422381
 GameObject:
   m_ObjectHideFlags: 0
@@ -4026,7 +4029,7 @@ GameObject:
   - component: {fileID: 3547939921811356850}
   - component: {fileID: 3447648068970816323}
   - component: {fileID: 5807624756267220038}
-  - component: {fileID: 7276617234702586979}
+  - component: {fileID: 7394904886429592793}
   m_Layer: 15
   m_Name: hand_l
   m_TagString: Untagged
@@ -4088,6 +4091,7 @@ MonoBehaviour:
   containerSync: {fileID: 0}
   containerInteractive: {fileID: 0}
   substanceContainer: {fileID: 0}
+  containerItemDisplay: {fileID: 7394904886429592793}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -4103,12 +4107,16 @@ MonoBehaviour:
   startFilter: {fileID: 11400000, guid: edc61d09fc1a5a84e98f63e51d1a0f1b, type: 2}
   initialized: 1
   maxDistance: 5
-  containerType: 0
   isOpenable: 0
   canHoldSubstances: 0
   isInteractive: 0
+  hasUi: 0
   hasCustomInteraction: 0
   volume: 1000
+  hasCustomDisplay: 1
+  displays:
+  - {fileID: 2248284492931446982}
+  numberDisplay: 1
 --- !u!114 &3547939921811356850
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4157,7 +4165,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &7276617234702586979
+--- !u!114 &7394904886429592793
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4169,9 +4177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Displays:
-  - {fileID: 8200820077652235051}
-  Container: {fileID: 3547939921811356850}
+  containerDescriptor: {fileID: 8869297597610662472}
   Mirrored: 0
 --- !u!1 &7165410278998248383
 GameObject:
