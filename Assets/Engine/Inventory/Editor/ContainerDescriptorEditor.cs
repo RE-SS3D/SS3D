@@ -102,6 +102,8 @@ public class ContainerDescriptorEditor : Editor
 
             if (hasCustomDisplay)
             {
+                bool useAttachmentPoint = EditorGUILayout.Toggle(new GUIContent("use attachment point", "if the attachment point of the item should be used or not"), containerDescriptor.useAttachmentPoint);
+                HandleUseAttachmentPoint(useAttachmentPoint);
                 int numberDisplay = EditorGUILayout.IntField(new GUIContent("number of display", "the number of items to display in custom position"), containerDescriptor.numberDisplay);
                 HandleNumberDisplay(numberDisplay);
 
@@ -200,6 +202,13 @@ public class ContainerDescriptorEditor : Editor
         {
             RemoveCustomDisplay();
         }
+    }
+
+    private void HandleUseAttachmentPoint(bool useAttachmentPoint)
+    {
+        SerializedProperty sp = serializedObject.FindProperty("useAttachmentPoint");
+        sp.boolValue = useAttachmentPoint;
+        serializedObject.ApplyModifiedProperties();
     }
 
     private void HandleHasUi(bool hasUi)

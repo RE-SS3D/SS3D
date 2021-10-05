@@ -87,6 +87,9 @@ namespace SS3D.Engine.Inventory
         /// <summary> If items in the container should be displayed at particular locations in the container</summary>
         public bool hasCustomDisplay;
 
+        /// <summary> If the attachment point of the item should be used when displaying items at custom transform of the container</summary>
+        public bool useAttachmentPoint;
+
         /// <summary> The list of transforms defining where the items are displayed.</summary>
         public Transform[] displays;
 

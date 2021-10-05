@@ -56,38 +56,49 @@ namespace SS3D.Engine.Inventory
 
             Transform itemTransform = item.transform;
 
-            // Check if a custom attachment point should be used
-            Transform attachmentPoint = item.attachmentPoint;
-            if (Mirrored && item.attachmentPointAlt != null)
+            if (containerDescriptor.useAttachmentPoint)
             {
-                attachmentPoint = item.attachmentPointAlt;
-            }
+                // Check if a custom attachment point should be used
+                Transform attachmentPoint = item.attachmentPoint;
+                if (Mirrored && item.attachmentPointAlt != null)
+                {
+                    attachmentPoint = item.attachmentPointAlt;
+                }
 
-            if (attachmentPoint != null)
-            {
-                // Create new (temporary) point
-                // HACK: Required because rotation pivot can be different
-                GameObject temporaryPoint = new GameObject("TempPivotPoint");
-                
-                temporaryPoint.transform.SetParent(containerDescriptor.displays[index].transform, false);
-                temporaryPoint.transform.localPosition = Vector3.zero;
-                temporaryPoint.transform.rotation = attachmentPoint.root.rotation *  attachmentPoint.localRotation;
-                
-                // Assign parent
-                itemTransform.SetParent(temporaryPoint.transform, false);
-                // Assign the relative position between the attachment point and the object
-                itemTransform.localPosition = -attachmentPoint.localPosition;
-                //item.transform.rotation = displays[index].transform.rotation;
-                itemTransform.localRotation = Quaternion.identity;
+                if (attachmentPoint != null)
+                {
+                    // Create new (temporary) point
+                    // HACK: Required because rotation pivot can be different
+                    GameObject temporaryPoint = new GameObject("TempPivotPoint");
+
+                    temporaryPoint.transform.SetParent(containerDescriptor.displays[index].transform, false);
+                    temporaryPoint.transform.localPosition = Vector3.zero;
+                    temporaryPoint.transform.rotation = attachmentPoint.root.rotation * attachmentPoint.localRotation;
+
+                    // Assign parent
+                    itemTransform.SetParent(temporaryPoint.transform, false);
+                    // Assign the relative position between the attachment point and the object
+                    itemTransform.localPosition = -attachmentPoint.localPosition;
+                    //item.transform.rotation = displays[index].transform.rotation;
+                    itemTransform.localRotation = Quaternion.identity;
+                }
+                else
+                {
+                    itemTransform.SetParent(containerDescriptor.displays[index].transform, false);
+                    itemTransform.localPosition = new Vector3();
+                    itemTransform.localRotation = new Quaternion();
+                }
             }
             else
             {
                 itemTransform.SetParent(containerDescriptor.displays[index].transform, false);
-                itemTransform.localPosition = new Vector3();
-                itemTransform.localRotation = new Quaternion();
+                itemTransform.position = containerDescriptor.displays[index].transform.position;
+                itemTransform.rotation = containerDescriptor.displays[index].transform.rotation;
             }
 
+
             displayedItems[index] = item;
+
         }
         
         private void ContainerOnItemDetached(object sender, Item item)
