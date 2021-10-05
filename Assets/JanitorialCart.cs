@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
+/// <summary>
+/// Handles creating the items going on the janitorial cart at runtime.
+/// This is necessary as Mirror doesn't support nested Network Identities.
+/// </summary>
 public class JanitorialCart : NetworkBehaviour
 {
     public GameObject boxOne;
@@ -18,7 +22,7 @@ public class JanitorialCart : NetworkBehaviour
 
     void Start()
     {
-        
+        // Go through each transform on the cart that must have an item and instantiate the correct item at the correct position.
         Transform[] transforms = this.transform.GetComponentsInChildren<Transform>();
         foreach(Transform transform in transforms)
         {
@@ -57,6 +61,8 @@ public class JanitorialCart : NetworkBehaviour
                     break;
             }
 
+            // Set the item tranforms to be child of the transforms on the cart. 
+            // Spawn the item for all clients
             if(cartItem != null)
             {
                 cartItem.transform.parent = transform;
