@@ -9,13 +9,9 @@ namespace SS3D.Engine.Chat
 		public Vector2 minSize = new Vector2 (100, 100);
 		public Vector2 maxSize = new Vector2 (400, 400);
 	
-		private RectTransform panelRectTransform;
+		[SerializeField] private RectTransform panelRectTransform;
 		private Vector2 originalLocalPointerPosition;
 		private Vector2 originalSizeDelta;
-	
-		void Awake () {
-			panelRectTransform = transform.parent.GetComponent<RectTransform> ();
-		}
 	
 		public void OnPointerDown (PointerEventData data) {
 			originalSizeDelta = panelRectTransform.sizeDelta;

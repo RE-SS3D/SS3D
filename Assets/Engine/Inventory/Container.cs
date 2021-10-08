@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -83,9 +83,9 @@ namespace SS3D.Engine.Inventory
             int maxY = Size.y - itemSize.y;
 
             // TODO: Use a more efficient algorithm
-            for (int y = 0; y < maxY; y++)
+            for (int y = 0; y <= maxY; y++)
             {
-                for (int x = 0; x < maxX; x++)
+                for (int x = 0; x <= maxX; x++)
                 {
                     Vector2Int itemPosition = new Vector2Int(x, y);
                     if (AddItem(item, itemPosition))
@@ -458,10 +458,12 @@ namespace SS3D.Engine.Inventory
         public void Dump()
         {
             Item[] oldItems = items.Select(x => x.Item).ToArray();
-            while (items.Count > 0)
+            for (int i = 0; i < oldItems.Length; i++)
             {
-                items[0].Item.Container = null;
+                oldItems[i].Container = null;
             }
+            items.Clear();
+
             LastModification = Time.time;
             OnContainerChanged(oldItems, ContainerChangeType.Remove);
         }
@@ -472,10 +474,11 @@ namespace SS3D.Engine.Inventory
         public void Destroy()
         {
             Item[] oldItems = items.Select(x => x.Item).ToArray();
-            while (items.Count > 0)
+            foreach (var item in items)
             {
-                items[0].Item.Destroy();
+                item.Item.Destroy();
             }
+            items.Clear();
 
             LastModification = Time.time;
             OnContainerChanged(oldItems, ContainerChangeType.Remove);
@@ -506,6 +509,12 @@ namespace SS3D.Engine.Inventory
         /// <returns></returns>
         public bool CouldStoreItem(Item item)
         {
+            // Do not store if the item is the container itself
+            if (AttachedTo.GetComponent<Item>() == item)
+            {
+                return false;
+            }
+
             foreach (Filter filter in Filters)
             {
                 if (!filter.CanStore(item))
@@ -515,6 +524,32 @@ namespace SS3D.Engine.Inventory
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Checks if this item fits inside the container
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool CouldHoldItem(Item item)
+        {
+            Vector2Int itemSize = item.Size;
+            int maxX = Size.x - itemSize.x;
+            int maxY = Size.y - itemSize.y;
+
+            // TODO: Use a more efficient algorithm
+            for (int y = 0; y <= maxY; y++)
+            {
+                for (int x = 0; x <= maxX; x++)
+                {
+                    if (IsAreaFreeExcluding(new RectInt(new Vector2Int(x, y), item.Size), item))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

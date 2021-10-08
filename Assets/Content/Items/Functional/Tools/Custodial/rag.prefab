@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 138234506716581735}
   - component: {fileID: -7885728966543823944}
   m_Layer: 16
-  m_Name: rag
+  m_Name: Rag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -145,15 +145,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: rag
+  ItemId: Rag
   Name: Rag
   Volume: 10
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 830238684080913657}
   attachmentPoint: {fileID: 6752557065525440836}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 1
   traits: []
+  Size: {x: 0, y: 0}
 --- !u!114 &138234506716581735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,6 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: 
   Text: 
   MaxDistance: 0
 --- !u!114 &-7885728966543823944

@@ -1,35 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &801519622411522031
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1627077535971059575}
-  m_Layer: 0
-  m_Name: Blender_Container_Position
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1627077535971059575
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 801519622411522031}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.000000026077032, y: 0.26721922, z: -0.000000053644182}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3374609316605189504}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1769453492926099347
 GameObject:
   m_ObjectHideFlags: 0
@@ -45,7 +15,6 @@ GameObject:
   - component: {fileID: -774126658597833377}
   - component: {fileID: -9091612087525422286}
   - component: {fileID: 7848135095644858374}
-  - component: {fileID: 4509924043709195859}
   m_Layer: 0
   m_Name: blender
   m_TagString: Untagged
@@ -60,12 +29,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1769453492926099347}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4757901460252883030}
-  - {fileID: 1627077535971059575}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -178,20 +146,6 @@ MonoBehaviour:
   DisplayName: Blender
   Text: Will it blend?
   MaxDistance: 0
---- !u!114 &4509924043709195859
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1769453492926099347}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
 --- !u!1 &6833785211540108661
 GameObject:
   m_ObjectHideFlags: 0
@@ -205,7 +159,7 @@ GameObject:
   - component: {fileID: 2671053852253509350}
   - component: {fileID: 3239787597379218179}
   m_Layer: 0
-  m_Name: Blender_Container
+  m_Name: BlenderContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -232,7 +186,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6833785211540108661}
-  m_Mesh: {fileID: -3287328911643645571, guid: 1fa72a3feeb97854b820c0ef021338c0, type: 3}
+  m_Mesh: {fileID: 1497440258693647001, guid: 1fa72a3feeb97854b820c0ef021338c0, type: 3}
 --- !u!23 &2671053852253509350
 MeshRenderer:
   m_ObjectHideFlags: 0

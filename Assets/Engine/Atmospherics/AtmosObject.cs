@@ -10,6 +10,7 @@ namespace SS3D.Engine.Atmospherics
     // this is used to store gas and make atmos go brrrr
     public class AtmosObject : ScriptableObject
     {
+        /*
         private AtmosManager manager;
         private AtmosContainer atmosContainer = new AtmosContainer();
 
@@ -420,5 +421,6 @@ namespace SS3D.Engine.Atmospherics
             }
             s_SimlateMixingPerfMarker.End();
         }
+        */
     }
 }

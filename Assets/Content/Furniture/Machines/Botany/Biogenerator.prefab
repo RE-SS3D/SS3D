@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1627077535971059575}
   m_Layer: 0
-  m_Name: Biogen Beaker Slot
+  m_Name: BiogenBeakerSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,7 +46,6 @@ GameObject:
   - component: {fileID: -774126658597833377}
   - component: {fileID: -9091612087525422286}
   - component: {fileID: 7848135095644858374}
-  - component: {fileID: -4768826254171661378}
   m_Layer: 0
   m_Name: Biogenerator
   m_TagString: Untagged
@@ -96,7 +95,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
-  - {fileID: 2100000, guid: 0dfcd2fea1adf10409cb067ed40da41b, type: 2}
+  - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -179,20 +178,6 @@ MonoBehaviour:
   DisplayName: Biogenerator
   Text: 
   MaxDistance: 0
---- !u!114 &-4768826254171661378
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1769453492926099347}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
 --- !u!1001 &308137637121226383
 PrefabInstance:
   m_ObjectHideFlags: 0

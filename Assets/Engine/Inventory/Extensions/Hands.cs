@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using UnityEngine;
 using SS3D.Engine.Interactions;
-using UnityEngine.Serialization;
+using UnityEngine.EventSystems;
 
 namespace SS3D.Engine.Inventory.Extensions
 {
@@ -50,7 +49,7 @@ namespace SS3D.Engine.Inventory.Extensions
         /// </summary>
         public bool SelectedHandEmpty => SelectedHandContainer.Empty;
 
-        public void Start()
+        public void Awake()
         {
             SupportsMultipleInteractions = true;
             
@@ -113,16 +112,43 @@ namespace SS3D.Engine.Inventory.Extensions
                 return;
 
             // Hand-related buttons
-            if (Input.GetButtonDown("Swap Active") && HandContainers.Length > 0)
+            if (Input.GetButtonDown("Swap Active") && HandContainers.Length > 0 && EventSystem.current.currentSelectedGameObject == null)
             {
                 SelectedHandIndex = (SelectedHandIndex + 1) % HandContainers.Length;
                 HandChanged?.Invoke(SelectedHandIndex);
                 CmdSetActiveHand(SelectedHandIndex);
             }
 
-            if (Input.GetButtonDown("Drop Item"))
+            if (Input.GetButtonDown("Drop Item") && EventSystem.current.currentSelectedGameObject == null)
             {
                 CmdDropHeldItem();
+            }
+        }
+
+        /// <summary>
+        /// Set the Active hand of the Player to be the AttachedContainer passed in parameter. 
+        /// Do nothing if the parameter is the already active parameter.
+        /// </summary>
+        /// <param name="selectedContainer">This AttachedContainer should only be a hand.</param>
+        public void SetActiveHand(AttachedContainer selectedContainer)
+        {
+            if (selectedContainer == SelectedHand)
+            {
+                return;
+            }
+            else
+            {
+                SelectedHandIndex = HandContainers.ToList().IndexOf(selectedContainer);
+                if (SelectedHandIndex != -1)
+                {
+                    HandChanged?.Invoke(SelectedHandIndex);
+                    CmdSetActiveHand(SelectedHandIndex);
+                }
+                else
+                {
+                    Debug.LogError("selectedContainer is not in HandContainers.");
+                    return;
+                }
             }
         }
 

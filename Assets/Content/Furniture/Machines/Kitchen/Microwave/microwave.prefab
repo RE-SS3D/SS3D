@@ -16,15 +16,14 @@ GameObject:
   - component: {fileID: 5428085332758549000}
   - component: {fileID: 5951043273896807154}
   - component: {fileID: 5524012885757289377}
-  - component: {fileID: 3646364236061738243}
-  - component: {fileID: 8762140865007196563}
   - component: {fileID: 1099298561151547284}
   - component: {fileID: 761874278517760475}
-  - component: {fileID: 4157744339643039771}
-  - component: {fileID: 5697875963860545448}
-  - component: {fileID: 254379746982147387}
-  - component: {fileID: 2624089843631532184}
-  - component: {fileID: 8777157309085735604}
+  - component: {fileID: 5143805799199364758}
+  - component: {fileID: 7542054549941471179}
+  - component: {fileID: 5055055840736840480}
+  - component: {fileID: 2622024214267529593}
+  - component: {fileID: 355740003791169296}
+  - component: {fileID: 2434943589415651117}
   m_Layer: 0
   m_Name: microwave
   m_TagString: Untagged
@@ -177,44 +176,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.7627539, y: 0.4895372, z: 0.45154876}
   m_Center: {x: 0.00000017881393, y: 0.2447686, z: -0.013495617}
---- !u!114 &3646364236061738243
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3444034143536514343}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
-  OnlyStoreWhenOpen: 1
-  MaxDistance: 1.5
-  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
---- !u!114 &8762140865007196563
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3444034143536514343}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd22e5b037bc86545a52321457236696, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  MicrowaveDuration: 5
-  DestroyedItemPrefab: {fileID: 8232994725938073509, guid: 84577e5c3dd25de4aa38b44840ace509,
-    type: 3}
-  AttachedContainer: {fileID: 4157744339643039771}
-  onSound: {fileID: 8300000, guid: 91dcb7669f644934b9c52d400421f1a7, type: 3}
-  finishSound: {fileID: 8300000, guid: f22e34e83e0f9874e8ebc28d164810c2, type: 3}
 --- !u!114 &1099298561151547284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,7 +290,102 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &4157744339643039771
+--- !u!108 &5143805799199364758
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3444034143536514343}
+  m_Enabled: 1
+  serializedVersion: 10
+  m_Type: 2
+  m_Shape: 0
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 1
+  m_Range: 10
+  m_SpotAngle: 30
+  m_InnerSpotAngle: 21.80208
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
+--- !u!114 &7542054549941471179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3444034143536514343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 5055055840736840480}
+  containerSync: {fileID: 0}
+  containerInteractive: {fileID: 2622024214267529593}
+  containerUi: {fileID: 0}
+  openIcon: {fileID: 0}
+  takeIcon: {fileID: 0}
+  storeIcon: {fileID: 0}
+  viewIcon: {fileID: 0}
+  attachmentOffset: {x: 0, y: 0, z: 0}
+  containerName: microwave
+  onlyStoreWhenOpen: 1
+  openWhenContainerViewed: 0
+  size: {x: 2, y: 2}
+  hideItems: 1
+  attachItems: 1
+  startFilter: {fileID: 11400000, guid: 2071a6502a8dccb4d81ec35517f716cc, type: 2}
+  initialized: 1
+  maxDistance: 5
+  isOpenable: 1
+  isInteractive: 1
+  hasUi: 1
+  hasCustomInteraction: 0
+--- !u!114 &5055055840736840480
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -341,10 +397,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HideItems: 1
-  AttachItems: 1
-  AttachmentOffset: {x: 0, y: 0, z: 0}
---- !u!114 &5697875963860545448
+  containerDescriptor: {fileID: 7542054549941471179}
+--- !u!114 &2622024214267529593
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -353,26 +407,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3444034143536514343}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AttachedContainer: {fileID: 4157744339643039771}
-  Size: {x: 4, y: 2}
---- !u!114 &254379746982147387
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3444034143536514343}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CheckObserversInterval: 2
-  AttachedContainer: {fileID: 4157744339643039771}
---- !u!114 &2624089843631532184
+  syncMode: 0
+  syncInterval: 0.1
+  OpenIcon: {fileID: 0}
+  containerDescriptor: {fileID: 7542054549941471179}
+--- !u!114 &355740003791169296
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -386,7 +428,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
---- !u!114 &8777157309085735604
+--- !u!114 &2434943589415651117
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -395,11 +437,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 3444034143536514343}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
+  m_Script: {fileID: 11500000, guid: fd22e5b037bc86545a52321457236696, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
+  syncMode: 0
+  syncInterval: 0.1
+  MicrowaveDuration: 5
+  DestroyedItemPrefab: {fileID: 6704569312823119817}
+  onSound: {fileID: 8300000, guid: 18088b9f0e2635142acd8908effffd7c, type: 3}
+  finishSound: {fileID: 8300000, guid: f22e34e83e0f9874e8ebc28d164810c2, type: 3}
+  containerDescriptor: {fileID: 7542054549941471179}
 --- !u!1 &6704569312823119817
 GameObject:
   m_ObjectHideFlags: 0
@@ -413,7 +460,7 @@ GameObject:
   - component: {fileID: 5344617163524279920}
   - component: {fileID: 3882256163096065417}
   m_Layer: 14
-  m_Name: door
+  m_Name: MicrowaveDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -427,7 +474,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6704569312823119817}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.355, y: 0.246, z: 0.208}
+  m_LocalPosition: {x: 0.346, y: 0.245, z: 0.208}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1842239525696927540}
@@ -440,7 +487,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6704569312823119817}
-  m_Mesh: {fileID: -7202259287175836969, guid: b3aa889e08de3dd45a91e1c266c1ef82, type: 3}
+  m_Mesh: {fileID: -3795046666754063819, guid: b3aa889e08de3dd45a91e1c266c1ef82, type: 3}
 --- !u!23 &5344617163524279920
 MeshRenderer:
   m_ObjectHideFlags: 0

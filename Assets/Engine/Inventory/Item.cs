@@ -85,6 +85,12 @@ namespace SS3D.Engine.Inventory
         public void Awake()
         {
             sprite = null;
+
+            // Add a warning if an item is not on the Item layer (layer 16).
+            if (gameObject.layer != 16)
+            {
+                Debug.LogWarning("Item " + Name + " is on layer " + gameObject.layer);
+            }
         }
         
         [ContextMenu("Create Icon")]
@@ -125,9 +131,9 @@ namespace SS3D.Engine.Inventory
         }
         
 	// this creates the base interactions for an item, in this case, the drop interaction
-        public override void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        public override void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            base.CreateInteractions(targets, interactions);
+            base.GenerateInteractionsFromSource(targets, interactions);
             DropInteraction dropInteraction = new DropInteraction();
             interactions.Add(new InteractionEntry(null, dropInteraction));
         }
@@ -257,7 +263,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
-            Mesh handGuide = (Mesh)AssetDatabase.LoadAssetAtPath("Assets/Art/Models/Other/handgizmo.fbx", typeof(Mesh));
+            Mesh handGuide = (Mesh)AssetDatabase.LoadAssetAtPath("Assets/Art/Models/Other/HoldGizmo.fbx", typeof(Mesh));
 
             // Don't even have to check without attachment
             if (attachmentPoint == null)
@@ -302,7 +308,7 @@ namespace SS3D.Engine.Inventory
         }
 
 #endif
-        public virtual IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public virtual IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             return new IInteraction[] { new PickupInteraction { icon = sprite } };
         }

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Wine
   m_EditorClassIdentifier: 
-  Id: wine
+  Id: Wine
   Color: {r: 0.6981132, g: 0.2272161, b: 0.30827233, a: 0.78431374}
   MillilitersPerMole: 35

@@ -9,17 +9,48 @@ using SS3D.Engine.Inventory;
 namespace SS3D.Content.Items.Functional.Tools
 {
     // Simple flashlight
-    public class Flashlight : Item
+    public class Flashlight : Item, IToggleable
     {
         [SerializeField]
         public new Light light = null;
-        public Sprite turnOnIcon;
-        
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public Sprite toggleIcon;
+        public Material bulbMaterialOn;
+        public Material bulbMaterialOff;
+
+        public GameObject bulbObject;
+        private MeshRenderer meshRenderer;
+
+        public void Start() 
         {
-            List<IInteraction> list = base.GenerateInteractions(interactionEvent).ToList();
-            list.Add(new FlashlightInteraction{ icon = turnOnIcon });
-            return list.ToArray();
+            meshRenderer = bulbObject.GetComponent<MeshRenderer>();
+            meshRenderer.material = (light.enabled ? bulbMaterialOn : bulbMaterialOff);
+        }
+        
+        public void Toggle()
+        {
+            light.enabled = !light.enabled;
+            meshRenderer.material = (light.enabled ? bulbMaterialOn : bulbMaterialOff);
+
+            RpcToggle(light.enabled);
+        }
+
+        public bool GetState()
+        {
+            return light.enabled;
+        }
+
+        [ClientRpc]
+        private void RpcToggle(bool lightEnabled) 
+        {
+            light.enabled = lightEnabled;
+            meshRenderer.material = lightEnabled ? bulbMaterialOn : bulbMaterialOff;
+        }
+
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
+        {
+            List<IInteraction> interactions = base.GenerateInteractionsFromTarget(interactionEvent).ToList();
+            interactions.Add(new ToggleInteraction{ IconOn = toggleIcon, IconOff = toggleIcon });
+            return interactions.ToArray();
         }
     }
 }

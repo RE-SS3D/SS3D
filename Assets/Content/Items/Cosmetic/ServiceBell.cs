@@ -92,9 +92,9 @@ namespace SS3D.Content.Items.Cosmetic
             audioSource.PlayOneShot(bellSound);
         }
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
-            List<IInteraction> interactions = base.GenerateInteractions(interactionEvent).ToList();
+            List<IInteraction> interactions = base.GenerateInteractionsFromTarget(interactionEvent).ToList();
             interactions.Insert(0, new BellInteraction());
             return interactions.ToArray();
         }

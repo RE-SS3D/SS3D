@@ -20,8 +20,6 @@ public class Microwave : InteractionTargetNetworkBehaviour
     // Prefab for the ashes, when an item is burned
     // TODO: implement the assetdata stuffs
     public GameObject DestroyedItemPrefab;
-    // Place for the container to place items that is placed in the object
-    public AttachedContainer AttachedContainer;
 
     private AudioSource audioSource;
     // Sound that plays when its turned on
@@ -38,23 +36,27 @@ public class Microwave : InteractionTargetNetworkBehaviour
     // we might have isOn for electricity stuff
     private bool isOn;
     // actual container
-    private StorageContainer storageContainer;
+    public ContainerDescriptor containerDescriptor;
+
+    private Animator animator;
 
     private void Start()
     {
-        Assert.IsNotNull(AttachedContainer);
-        
-        storageContainer = GetComponent<StorageContainer>();
+
+        Assert.IsNotNull(containerDescriptor);
         audioSource = GetComponent<AudioSource>();
 
         emissionMaterial = GetComponent<Renderer>().materials[1];
         emissionMaterial.DisableKeyword("_EMISSION");
         light = GetComponentInChildren<Light>();
         light.enabled = false;
+        animator = GetComponent<Animator>();
     }
 
-    public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+    public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
     {
+
+
         return new IInteraction[] {new SimpleInteraction
         {
             // TODO: Should be a custom interaction
@@ -69,12 +71,14 @@ public class Microwave : InteractionTargetNetworkBehaviour
             return false;
         }
 
-        // Can't be turned on if the door is open, we might add a hacking thing to bypass this later
-        if (storageContainer != null && storageContainer.IsOpen())
+        var open = animator.GetBool((Animator.StringToHash("Open")));
+        if (open)
         {
             return false;
         }
 
+
+        // Can't be turned on if the door is open, we might add a hacking thing to bypass this later
         return !isOn;
     }
 
@@ -90,10 +94,10 @@ public class Microwave : InteractionTargetNetworkBehaviour
     private void SetActivated(bool activated)
     {
         isOn = activated;
-        if (storageContainer != null)
-        {
-            storageContainer.enabled = !activated;
-        }
+       // if (openableContainer != null)
+      //  {
+      //      openableContainer.enabled = !activated;
+      //  }
     }
 
     // Start a cycle
@@ -110,7 +114,7 @@ public class Microwave : InteractionTargetNetworkBehaviour
 
     private void CookItems()
     {
-        var items = AttachedContainer.Container.Items.ToArray();
+        var items = containerDescriptor.attachedContainer.Container.Items.ToArray();
 
         // tries to get a microweavable in each item that is in the container
         foreach (Item item in items)

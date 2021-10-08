@@ -20,10 +20,26 @@ public class LoadingScreenManager : MonoBehaviour
 
     private void Start()
     {
-        SceneLoaderManager.mapLoaded += delegate { Toggle(true); };
-        TileManager.tileManagerLoaded += delegate { Toggle(false); };
+        SceneLoaderManager.mapLoaded += SetAnimatorTrue;
+        TileManager.TileManagerLoaded += SetAnimatorFalse;
     }
 
+	public void SetAnimatorTrue()
+	{
+		Toggle(true);
+	}
+	
+	public void SetAnimatorFalse()
+	{
+		Toggle(false);
+	}	
+
+	public void OnDestroy()
+	{
+        SceneLoaderManager.mapLoaded -= SetAnimatorTrue;
+        TileManager.TileManagerLoaded -= SetAnimatorFalse;		
+	}
+	
     public void Toggle(bool state)
     {
         if (!animator.enabled) animator.enabled = true;

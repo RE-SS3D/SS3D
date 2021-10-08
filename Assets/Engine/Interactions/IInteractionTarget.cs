@@ -10,6 +10,6 @@
         /// </summary>
         /// <param name="interactionEvent">The interaction event</param>
         /// <returns>All possible interactions</returns>
-        IInteraction[] GenerateInteractions(InteractionEvent interactionEvent);
+        IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent);
     }
 }

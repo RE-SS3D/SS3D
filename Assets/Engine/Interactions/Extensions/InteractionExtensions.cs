@@ -65,6 +65,8 @@ namespace SS3D.Engine.Interactions.Extensions
 
         private static bool IsWallTop(Vector3 position, float deadzone = 0)
         {
+            return false;
+            /*
             TileObject tileObject = TileManager.singleton.GetTile(position);
             if (!tileObject.Tile.turf.isWall)
             {
@@ -80,6 +82,7 @@ namespace SS3D.Engine.Interactions.Extensions
             }
 
             return position.y >= topHeight - deadzone;
+            */
         }
     }
 }
