@@ -31,6 +31,8 @@ namespace SS3D.Engine.Chat
 
             AddTab(tabData);
             LoadChannelSelector(tabData);
+
+            ToggleChatWindowUI(); // Hide window by default
         }
 
         public RectTransform GetTabRow() {
@@ -178,6 +180,28 @@ namespace SS3D.Engine.Chat
             }
         }
 
+        public void ToggleChatWindowUI()
+        {
+            CanvasGroup Chat = GetComponentInChildren<CanvasGroup>();
+            if(Chat)
+            {
+                bool IsVisible = Chat.alpha == 1 ? true : false;
+                if(IsVisible)
+                {
+                    // Hide and disable input
+                    Chat.alpha = 0f;
+                    Chat.blocksRaycasts = false;
+                    EventSystem.current.SetSelectedGameObject(null,null); // Set focus to the viewport again
+                }
+                else
+                {
+                    // Make visible and enable input
+                    Chat.alpha = 1f;
+                    Chat.blocksRaycasts = true;
+                }
+            }
+        }
+
         private IEnumerator UpdateCurrentDataTabNextFrame()
         {
             yield return null;
@@ -218,7 +242,8 @@ namespace SS3D.Engine.Chat
             return (EventSystem.current.currentSelectedGameObject != null);
         }
 
-        public void FinishTyping(){
+        public void FinishTyping()
+        {
             if ((Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter)) ) {
                 SendMessage();
             }
