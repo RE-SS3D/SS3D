@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48bc3e6256e003f49b038fe30c1d9be6, type: 3}
+  m_Name: JaniCartHigh
+  m_EditorClassIdentifier: 
+  mustHaveAll: 0
+  acceptedTraits:
+  - {fileID: 11400000, guid: 14e79f146d4e43944b79d22a74b451b6, type: 2}
+  - {fileID: 11400000, guid: b8fdd1ad2fba6334982df354a9932ec3, type: 2}
+  deniedTraits: []
+  hash: 1802137687
