@@ -167,6 +167,12 @@ namespace SS3D.Engine.Chat
 
         public void CloseTab()
         {
+            // If the current tab can't be closed and there are no other tabs, hide the entire window instead.
+            if(!currentTabData.Removable && tabRow.childCount < 2)
+            {
+                ToggleChatWindowUI();
+            }
+
             if (currentTabData.Removable)
             {
                 if (tabRow.childCount < 2)

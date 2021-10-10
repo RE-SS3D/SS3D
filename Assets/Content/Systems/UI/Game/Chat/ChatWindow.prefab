@@ -3198,7 +3198,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7861828484222706393}
-        m_MethodName: ToggleChatWindowUI
+        m_MethodName: CloseTab
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
