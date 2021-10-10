@@ -97,20 +97,24 @@ public class JanitorialCart : NetworkBehaviour
         {
             switch (containerDescriptor.containerName)
             {
-                case "box spot":
+                case "cart":
                     Debug.Log("add boxes to box spot");
                     if(boxOneInstance != null)
                         containerDescriptor.attachedContainer.Container.AddItem(boxOneInstance.gameObject.GetComponent<Item>());
                     if (boxTwoInstance != null)
                         containerDescriptor.attachedContainer.Container.AddItem(boxTwoInstance.gameObject.GetComponent<Item>());
-                    break;
-                case "rag spot":
                     if (ragOneInstance != null)
                         containerDescriptor.attachedContainer.Container.AddItem(ragOneInstance.gameObject.GetComponent<Item>());
                     if (ragTwoInstance != null)
                         containerDescriptor.attachedContainer.Container.AddItem(ragTwoInstance.gameObject.GetComponent<Item>());
                     if (ragThreeInstance != null)
                         containerDescriptor.attachedContainer.Container.AddItem(ragThreeInstance.gameObject.GetComponent<Item>());
+                    if (mopInstance != null)
+                        containerDescriptor.attachedContainer.Container.AddItem(mopInstance.gameObject.GetComponent<Item>());
+                    if (spaceCleanerInstance != null)
+                        containerDescriptor.attachedContainer.Container.AddItem(spaceCleanerInstance.gameObject.GetComponent<Item>());
+                    if (soapInstance != null)
+                        containerDescriptor.attachedContainer.Container.AddItem(soapInstance.gameObject.GetComponent<Item>());
                     break;
             }
         }
