@@ -158,7 +158,8 @@ MonoBehaviour:
   attachmentPoint: {fileID: 1136631946976607037}
   attachmentPointAlt: {fileID: 0}
   bulkSize: 2
-  traits: []
+  traits:
+  - {fileID: 11400000, guid: b8fdd1ad2fba6334982df354a9932ec3, type: 2}
   Size: {x: 0, y: 0}
   spraySound: {fileID: 8300000, guid: 86d294ec42ce3e64fbf4fc13739dcbd6, type: 3}
   particleSystem: {fileID: 2414233150983122931}
@@ -429,6 +430,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 651733426864796695, guid: 7fc08e70e0552eb4da30f809aadf8666,
         type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 651733426864796695, guid: 7fc08e70e0552eb4da30f809aadf8666,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -441,6 +447,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.139
+      objectReference: {fileID: 0}
+    - target: {fileID: 651733426864796695, guid: 7fc08e70e0552eb4da30f809aadf8666,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 651733426864796695, guid: 7fc08e70e0552eb4da30f809aadf8666,
         type: 3}
@@ -459,16 +470,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 651733426864796695, guid: 7fc08e70e0552eb4da30f809aadf8666,
         type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 651733426864796695, guid: 7fc08e70e0552eb4da30f809aadf8666,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 651733426864796695, guid: 7fc08e70e0552eb4da30f809aadf8666,
-        type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: -90
       objectReference: {fileID: 0}
@@ -484,13 +485,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4068288819870881742, guid: 7fc08e70e0552eb4da30f809aadf8666,
         type: 3}
-      propertyPath: playOnAwake
-      value: 1
+      propertyPath: looping
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4068288819870881742, guid: 7fc08e70e0552eb4da30f809aadf8666,
         type: 3}
-      propertyPath: looping
-      value: 0
+      propertyPath: playOnAwake
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9146105795711067569, guid: 7fc08e70e0552eb4da30f809aadf8666,
         type: 3}

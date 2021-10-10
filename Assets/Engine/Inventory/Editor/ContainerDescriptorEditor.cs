@@ -108,11 +108,17 @@ public class ContainerDescriptorEditor : Editor
                 HandleNumberDisplay(numberDisplay);
 
                 SerializedProperty sp = serializedObject.FindProperty("displays");
+                SerializedProperty sp2 = serializedObject.FindProperty("displaysFilter");
+
                 sp.arraySize = numberDisplay;
+                sp2.arraySize = numberDisplay;
                 for (int i = 0; i < sp.arraySize; ++i)
                 {
                     SerializedProperty transformProp = sp.GetArrayElementAtIndex(i);
                     EditorGUILayout.PropertyField(transformProp, new GUIContent("Element " + i));
+
+                    SerializedProperty filterProp = sp2.GetArrayElementAtIndex(i);
+                    EditorGUILayout.PropertyField(filterProp, new GUIContent("Filter " + i));
                 }
             }
         }
@@ -120,7 +126,13 @@ public class ContainerDescriptorEditor : Editor
         bool attachItems = EditorGUILayout.Toggle(new GUIContent("Attach Items", "Set if items should be attached as children of the container game object"), containerDescriptor.attachItems);
         HandleAttachItems(attachItems);
 
-
+        bool hasMaxItemNumber  = EditorGUILayout.Toggle(new GUIContent("has max item number", "if the container is limited in number of items"), containerDescriptor.hasMaxItemNumber);
+        HandleHasMaxItemNumber(hasMaxItemNumber);
+        if (hasMaxItemNumber)
+        {
+            int maxItemNumber = EditorGUILayout.IntField(new GUIContent("max item number", "the maximum number of items the container can hold"), containerDescriptor.maxItemNumber);
+            HandleMaxItemNumber(maxItemNumber);
+        }
 
 
         ShowIcons();
@@ -208,6 +220,20 @@ public class ContainerDescriptorEditor : Editor
     {
         SerializedProperty sp = serializedObject.FindProperty("useAttachmentPoint");
         sp.boolValue = useAttachmentPoint;
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    private void HandleMaxItemNumber(int maxItemNumber)
+    {
+        SerializedProperty sp = serializedObject.FindProperty("maxItemNumber");
+        sp.intValue = maxItemNumber;
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    private void HandleHasMaxItemNumber(bool hasMaxItemNumber)
+    {
+        SerializedProperty sp = serializedObject.FindProperty("maxItemNumber");
+        sp.boolValue = hasMaxItemNumber;
         serializedObject.ApplyModifiedProperties();
     }
 

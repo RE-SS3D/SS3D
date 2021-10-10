@@ -82,18 +82,27 @@ namespace SS3D.Engine.Inventory
         public bool hasUi;
 
         /// <summary> If true, interactions in containerInteractive are ignored, instead, a script should implement IInteractionTarget </summary>
-        public bool hasCustomInteraction;
+        public bool hasCustomInteraction = false;
 
         /// <summary> If items in the container should be displayed at particular locations in the container</summary>
-        public bool hasCustomDisplay;
+        public bool hasCustomDisplay = false;
 
         /// <summary> If the attachment point of the item should be used when displaying items at custom transform of the container</summary>
-        public bool useAttachmentPoint;
+        public bool useAttachmentPoint = false;
 
         /// <summary> The list of transforms defining where the items are displayed.</summary>
         public Transform[] displays;
 
+        /// <summary> The list of filters.</summary>
+        public Filter[] displaysFilter;
+
+        /// <summary> The list of items displayed in the container</summary>
+        public Item[] displayedItems;
+
         public int numberDisplay;
+
+        public bool hasMaxItemNumber = false;
+        public int maxItemNumber = 1000;
 
         /// <summary>
         /// How often the observer list should be updated
@@ -120,6 +129,8 @@ namespace SS3D.Engine.Inventory
             takeIcon = takeIcon == null ? Resources.Load<Sprite>("Interactions/take") : takeIcon;
             storeIcon = storeIcon == null ? Resources.Load<Sprite>("Interactions/discard") : storeIcon;
             viewIcon = viewIcon == null ? Resources.Load<Sprite>("Interactions/container") : viewIcon;
+
+            displayedItems = new Item[numberDisplay];
         }
 
         public void Update()

@@ -1,6 +1,8 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.Assertions;
+using System.Collections.Generic;
+
 
 namespace SS3D.Engine.Inventory
 {
@@ -16,16 +18,9 @@ namespace SS3D.Engine.Inventory
         public ContainerDescriptor containerDescriptor;
         public bool Mirrored;
 
-        /// <summary>
-        /// The list of items displayed in the container;
-        /// </summary>
-        private Item[] displayedItems;
-
         public void Start()
         {
             Assert.IsNotNull(containerDescriptor);
-            
-            displayedItems = new Item[containerDescriptor.displays.Length];
             containerDescriptor.attachedContainer.ItemAttached += ContainerOnItemAttached;
             containerDescriptor.attachedContainer.ItemDetached += ContainerOnItemDetached;
         }
@@ -42,7 +37,7 @@ namespace SS3D.Engine.Inventory
             int index = -1;
             for (var i = 0; i < containerDescriptor.displays.Length; i++)
             {
-                if (displayedItems[i] == null)
+                if (containerDescriptor.displayedItems[i] == null && (containerDescriptor.displaysFilter[i] == null || containerDescriptor.displaysFilter[i].CanStore(item)))
                 {
                     index = i;
                     break;
@@ -96,9 +91,7 @@ namespace SS3D.Engine.Inventory
                 itemTransform.rotation = containerDescriptor.displays[index].transform.rotation;
             }
 
-
-            displayedItems[index] = item;
-
+            containerDescriptor.displayedItems[index] = item;
         }
         
         private void ContainerOnItemDetached(object sender, Item item)
@@ -106,7 +99,7 @@ namespace SS3D.Engine.Inventory
             int index = -1;
             for (var i = 0; i < containerDescriptor.displays.Length; i++)
             {
-                if (displayedItems[i] == item)
+                if (containerDescriptor.displayedItems[i] == item)
                 {
                     index = i;
                     break;
@@ -125,7 +118,7 @@ namespace SS3D.Engine.Inventory
                 Destroy(itemParent.gameObject);
             }
 
-            displayedItems[index] = null;
+            containerDescriptor.displayedItems[index] = null;
         }
     }
 }

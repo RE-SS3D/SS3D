@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 138234506716581735}
   - component: {fileID: -7885728966543823944}
   m_Layer: 16
-  m_Name: Rag
+  m_Name: rag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -153,7 +153,8 @@ MonoBehaviour:
   attachmentPoint: {fileID: 6752557065525440836}
   attachmentPointAlt: {fileID: 0}
   bulkSize: 1
-  traits: []
+  traits:
+  - {fileID: 11400000, guid: 8aea501de5d310e4c83b65b95112e02e, type: 2}
   Size: {x: 0, y: 0}
 --- !u!114 &138234506716581735
 MonoBehaviour:

@@ -49,7 +49,7 @@ GameObject:
   - component: {fileID: 5255869551476044215}
   - component: {fileID: 2902236087434809221}
   m_Layer: 16
-  m_Name: Soap
+  m_Name: SoapBlue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -184,7 +184,8 @@ MonoBehaviour:
   attachmentPoint: {fileID: 8474352757739705035}
   attachmentPointAlt: {fileID: 0}
   bulkSize: 0
-  traits: []
+  traits:
+  - {fileID: 11400000, guid: 14e79f146d4e43944b79d22a74b451b6, type: 2}
   Size: {x: 0, y: 0}
 --- !u!114 &6608698360755572192
 MonoBehaviour:

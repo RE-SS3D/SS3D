@@ -2168,9 +2168,15 @@ MonoBehaviour:
   hasUi: 0
   hasCustomInteraction: 0
   hasCustomDisplay: 1
+  useAttachmentPoint: 1
   displays:
   - {fileID: 6523730774157206108}
+  displaysFilter:
+  - {fileID: 0}
+  displayedItems: []
   numberDisplay: 1
+  hasMaxItemNumber: 0
+  maxItemNumber: 0
 --- !u!114 &8954022733386996155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4103,9 +4109,15 @@ MonoBehaviour:
   hasUi: 0
   hasCustomInteraction: 0
   hasCustomDisplay: 1
+  useAttachmentPoint: 1
   displays:
   - {fileID: 2248284492931446982}
+  displaysFilter:
+  - {fileID: 0}
+  displayedItems: []
   numberDisplay: 1
+  hasMaxItemNumber: 0
+  maxItemNumber: 0
 --- !u!114 &3547939921811356850
 MonoBehaviour:
   m_ObjectHideFlags: 0

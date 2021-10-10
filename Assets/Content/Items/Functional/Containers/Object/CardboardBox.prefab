@@ -188,7 +188,8 @@ MonoBehaviour:
   attachmentPoint: {fileID: 3203922127485635406}
   attachmentPointAlt: {fileID: 0}
   bulkSize: 3
-  traits: []
+  traits:
+  - {fileID: 11400000, guid: c86c5e7afa378ad46a102b4b1f16f1ec, type: 2}
   Size: {x: 5, y: 4}
 --- !u!114 &8026662465185345548
 MonoBehaviour:
@@ -257,6 +258,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 2701883316079781727}
   containerSync: {fileID: 0}
   containerInteractive: {fileID: 3461519149272235498}
+  containerItemDisplay: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -276,6 +278,14 @@ MonoBehaviour:
   isInteractive: 1
   hasUi: 0
   hasCustomInteraction: 0
+  hasCustomDisplay: 0
+  useAttachmentPoint: 0
+  displays: []
+  displaysFilter: []
+  displayedItems: []
+  numberDisplay: 0
+  hasMaxItemNumber: 0
+  maxItemNumber: 0
 --- !u!114 &2701883316079781727
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -523,6 +523,25 @@ namespace SS3D.Engine.Inventory
                 }
             }
 
+            if (AttachedTo.containerDescriptor.hasCustomDisplay)
+            {
+                int index = -1;
+                for (var i = 0; i < AttachedTo.containerDescriptor.displays.Length; i++)
+                {
+                    if (AttachedTo.containerDescriptor.displayedItems[i] == null && 
+                        (AttachedTo.containerDescriptor.displaysFilter[i] == null || AttachedTo.containerDescriptor.displaysFilter[i].CanStore(item)))
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+
+                if(index == -1)
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 

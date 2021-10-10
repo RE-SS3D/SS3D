@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 8305323804518448030}
   - component: {fileID: -1950864518426958933}
   m_Layer: 16
-  m_Name: Mop
+  m_Name: mop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -186,6 +186,7 @@ MonoBehaviour:
   bulkSize: 4
   traits:
   - {fileID: 11400000, guid: 7f22e87f08452654f8f20ace0b1e0fa3, type: 2}
+  - {fileID: 11400000, guid: 4d5bf1bedcc8d444db430e73943e8e65, type: 2}
   Size: {x: 1, y: 3}
 --- !u!114 &8305323804518448030
 MonoBehaviour:
