@@ -523,11 +523,13 @@ namespace SS3D.Engine.Inventory
                 }
             }
 
+            // If the container has custom display, we check if there's any "slots" that can fit the item.
             if (AttachedTo.containerDescriptor.hasCustomDisplay)
             {
                 int index = -1;
                 for (var i = 0; i < AttachedTo.containerDescriptor.displays.Length; i++)
                 {
+                    // If the slot is empty and if there's no filter or a compatible filter with the item.
                     if (AttachedTo.containerDescriptor.displayedItems[i] == null && 
                         (AttachedTo.containerDescriptor.displaysFilter[i] == null || AttachedTo.containerDescriptor.displaysFilter[i].CanStore(item)))
                     {

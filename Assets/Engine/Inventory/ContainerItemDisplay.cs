@@ -33,7 +33,7 @@ namespace SS3D.Engine.Inventory
 
         private void ContainerOnItemAttached(object sender, Item item)
         {
-            // Defines the transform of the item to be the first available position.
+            // Defines the transform of the item to be the first available position, for which the filter on this position is compatible with the item.
             int index = -1;
             for (var i = 0; i < containerDescriptor.displays.Length; i++)
             {
@@ -86,6 +86,7 @@ namespace SS3D.Engine.Inventory
             }
             else
             {
+                //simply use the custom transform defined to place the item
                 itemTransform.SetParent(containerDescriptor.displays[index].transform, false);
                 itemTransform.position = containerDescriptor.displays[index].transform.position;
                 itemTransform.rotation = containerDescriptor.displays[index].transform.rotation;
