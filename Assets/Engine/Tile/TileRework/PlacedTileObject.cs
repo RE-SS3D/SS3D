@@ -25,6 +25,11 @@ namespace SS3D.Engine.Tiles
             public Direction dir;
         }
 
+        public TileObjectSO TileObjectSO
+        {
+            get => tileObjectSO;
+        }
+
         /// <summary>
         /// Creates a new PlacedTileObject from a TileObjectSO at a given position and direction. Uses NetworkServer.Spawn() if a server is running.
         /// </summary>

@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using SS3D.Engine.Inventory;
 using SS3D.Engine.Inventory.UI;
+using SS3D.Engine.Tiles;
 
 
 namespace SS3D.Engine.Examine
@@ -24,7 +25,9 @@ namespace SS3D.Engine.Examine
 		private List<ExaminableColourAffiliation> examinables;
 		private List<GameObject> tiles;
 		private Stack<Color> colours;
-		
+		private TileMap map;
+
+
 		// Single pixel texture simply used to read the pixel colour under the mouse
 		private Texture2D tex;
 		
@@ -247,7 +250,33 @@ namespace SS3D.Engine.Examine
 			}
 			return descendant;
 		}
-		
+
+		List<GameObject> GetTileObjects(GameObject obj)
+		{
+			TileObject tileObject = null;
+			List<GameObject> gameObjects = new List<GameObject>();
+			if (map == null)
+			{
+				map = GameObject.Find("Main map").GetComponent<TileMap>();
+			}
+
+			foreach (TileLayer tileLayer in (TileLayer[])Enum.GetValues(typeof(TileLayer)))
+			{
+				tileObject = map.GetTileObject(tileLayer, obj.transform.position);
+				PlacedTileObject[] placedTileObjects = tileObject.placedObjects;
+				for (int i = 0; i < placedTileObjects.Length; i++)
+				{
+					if (placedTileObjects[i] != null)
+					{
+						Debug.Log("game object " + placedTileObjects[i].TileObjectSO.prefab.name);
+						gameObjects.Add(placedTileObjects[i].TileObjectSO.prefab);
+					}
+
+				}
+			}
+			return gameObjects;
+		}
+
 		/// This method enables the camera and establishes our data structures.
 		private void EnableCamera(){
 			if (cam == null)
@@ -306,12 +335,28 @@ namespace SS3D.Engine.Examine
 			GameObject ancestor;
 			bool alreadyInList;
 			EnableCamera();
+			List<GameObject> recordedObj = new List<GameObject>();
 			foreach (GameObject obj in allHitObjects)
 			{
+
+				GetTileObjects(obj);
 				// Check to see if the GameObject is already recorded
 				alreadyInList = false;
 				ancestor = GetAncestor(obj);
-				foreach (GameObject tile in tiles)
+
+				List<GameObject> gameObjects = GetTileObjects(obj);
+				foreach (GameObject gameObject in gameObjects)
+				{
+                    if (!recordedObj.Contains(gameObject))
+                    {
+						colours.Push(new Color(rValue, gValue, bValue, 1.0f));
+						AddChildToLists(gameObject.transform);
+					}
+					recordedObj.Add(gameObject);
+					
+				}
+
+				/*foreach (GameObject tile in tiles)
 				{
 					if (ancestor == tile)
 					{
@@ -324,7 +369,7 @@ namespace SS3D.Engine.Examine
 					colours.Push(new Color(rValue, gValue, bValue, 1.0f));
 					AddChildToLists(ancestor.transform);
 					tiles.Add(ancestor);
-				}
+				}*/
 				
 			}
 		}
