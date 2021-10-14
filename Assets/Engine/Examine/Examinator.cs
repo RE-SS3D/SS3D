@@ -26,7 +26,7 @@ namespace SS3D.Engine.Examine
         private Quaternion lastCameraRotation;
 		public CompositeItemSelector selector;
         private GameObject currentTarget;
-		private float MIN_UPDATES_PER_SECOND = 3f;
+		private float MIN_UPDATES_PER_SECOND = 10f;
 		private float updateFrequency;
 		private float updateTimer;
 
@@ -71,10 +71,7 @@ namespace SS3D.Engine.Examine
             Quaternion rotation = camera.transform.rotation;
 
 			// If anything has changed too much, we need to recalculate what object we are looking at.
-			if ((Vector2.Distance(position, lastMousePosition) > 1) ||
-				(Vector3.Distance(cameraPos, lastCameraPosition) > 0.05) ||
-				(Quaternion.Angle(rotation, lastCameraRotation) > 0.1) ||
-				(updateTimer > updateFrequency))
+			if (updateTimer > updateFrequency)
             {
 				updateTimer = 0f;
                 lastMousePosition = position;

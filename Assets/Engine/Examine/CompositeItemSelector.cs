@@ -6,7 +6,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using SS3D.Engine.Inventory;
 using SS3D.Engine.Inventory.UI;
-
+using SS3D.Engine.Tiles;
+using UnityEngine.Rendering;
+using UnityEngine.Experimental.Rendering;
 
 namespace SS3D.Engine.Examine
 {
@@ -24,7 +26,9 @@ namespace SS3D.Engine.Examine
 		private List<ExaminableColourAffiliation> examinables;
 		private List<GameObject> tiles;
 		private Stack<Color> colours;
-		
+		private TileMap map;
+
+
 		// Single pixel texture simply used to read the pixel colour under the mouse
 		private Texture2D tex;
 		
@@ -53,7 +57,10 @@ namespace SS3D.Engine.Examine
 
 		// Confirms whether we need to render the image during OnPostRender.
 		private bool setPostRender;
-				
+
+		private int maxMeshes = 15;
+		private GraphicsFormat format;
+
 		public void Start()
 		{
 			cam = CameraManager.singleton.examineCamera;
@@ -64,7 +71,6 @@ namespace SS3D.Engine.Examine
 
 		public void OnPostRender()
 		{
-			
 			// Don't bother with all of this work if the mouse is over the user interface.
 			// If it is over the interface, we should already have a reference to the object
 			// stored in currentExaminable.
@@ -83,7 +89,6 @@ namespace SS3D.Engine.Examine
 			{
 				singleColourMaterial.SetVector("colour", mesh.GetColour());
 				singleColourMaterial.SetPass(0);
-
 				smr = mesh.GetSkinnedMeshRenderer();
 				if (smr == null)
                 {
@@ -105,28 +110,51 @@ namespace SS3D.Engine.Examine
 			{
 				// Copy the pixel to our Texture2D, so we can read its colour.
 				imageArea = new Rect(currentX, Screen.height - currentY - 1, 1, 1); // Note well: y increases downwards for Struct, but upwards for Screen coordinates. Thanks Unity.
-				tex.ReadPixels(imageArea, 0, 0, false);
-				Color point = tex.GetPixel(0, 0);
-				bool hit = false;
-				
-				// Check the unique colour of each Examinable, to see if it corresponds to the colour at the cursor. 
-				foreach (ExaminableColourAffiliation examinable in examinables)
-				{
-					//if (point == examinable.GetColour())
-					if (matchesColour(point, examinable.GetColour()))	
-					{
-						currentExaminable = examinable.GetExaminable();
-						hit = true;
-					}
-				}					
+
+				// public static AsyncGPUReadbackRequest Request(Texture src, int mipIndex, int x, int width, int y, int height, int z, int depth, GraphicsFormat dstFormat, Action<AsyncGPUReadbackRequest> callback = null);
+				// read the texture and do something with it in OnCompleteReadback
+				AsyncGPUReadback.Request(rt, 0, currentX, 1, Screen.height - currentY - 1, 1, 0, 1, TextureFormat.RGBA32, OnCompleteReadback);
+				//AsyncGPUReadback.Request(rt, 0, TextureFormat.RGBA32, OnCompleteReadback);
 			}
 			else
 			{
 				currentExaminable = null;
 			}
+			
 		}
-		
-		
+
+		void OnCompleteReadback(AsyncGPUReadbackRequest request)
+		{
+			if (request.hasError)
+			{
+				Debug.Log("GPU readback error detected.");
+				return;
+			}
+
+			byte[] array = request.GetData<byte>().ToArray();
+
+
+			int currentX = (int)Input.mousePosition.x;
+			int currentY = (int)Input.mousePosition.y;
+
+			Color color1 = new Color(array[0], array[1], array[2], array[3]);
+			Debug.Log(color1);
+
+			if (examinables == null) return;
+
+			// Check the unique colour of each Examinable, to see if it corresponds to the colour at the cursor. 
+			foreach (ExaminableColourAffiliation examinable in examinables)
+			{
+				if (matchesColour(color1, examinable.GetColour()))
+				{
+					Debug.Log("there's a match !");
+					currentExaminable = examinable.GetExaminable();
+					break;
+				}
+			}
+			DisableCamera();
+		}
+
 		/// This function checks to see if the colour is 'close enough' to one of our recorded
 		/// colours. We can't just use Equals, because rounding errors can make it unreliable.
 		private bool matchesColour(Color colour1, Color colour2)
@@ -236,18 +264,52 @@ namespace SS3D.Engine.Examine
 				
 			}
 		}
-		
+		private bool IsAncestorTileManager(GameObject descendant)
+        {
+			while (descendant.transform.parent != null && descendant.transform.parent.name != "TileManager")
+			{
+				descendant = descendant.transform.parent.gameObject;
+			}
+			if (descendant.transform.parent == null) return false;
+			else return true;
+		}
+
+
 		/// This method returns the root GameObject 
 		private GameObject GetAncestor (GameObject descendant)
 		{
-			// This statement is very bad - need to confirm standard GameObject hierarchy...
-			while (descendant.transform.parent != null && descendant.transform.parent.name != "TileMap" && descendant.transform.parent.name != "Objects" && descendant.transform.parent.name != "InventoryUI Rework Beep")
+			while (descendant.transform.parent != null && descendant.transform.parent.name != "Items")
 			{
 				descendant = descendant.transform.parent.gameObject;
 			}
 			return descendant;
 		}
-		
+
+		List<GameObject> GetTileObjects(GameObject obj)
+		{
+			TileObject tileObject = null;
+			List<GameObject> gameObjects = new List<GameObject>();
+			if (map == null)
+			{
+				map = GameObject.Find("Main map").GetComponent<TileMap>();
+			}
+
+			foreach (TileLayer tileLayer in (TileLayer[])Enum.GetValues(typeof(TileLayer)))
+			{
+				tileObject = map.GetTileObject(tileLayer, obj.transform.position);
+				PlacedTileObject[] placedTileObjects = tileObject.placedObjects;
+				for (int i = 0; i < placedTileObjects.Length; i++)
+				{
+					if (placedTileObjects[i] != null)
+					{
+						gameObjects.Add(placedTileObjects[i].gameObject);
+					}
+
+				}
+			}
+			return gameObjects;
+		}
+
 		/// This method enables the camera and establishes our data structures.
 		private void EnableCamera(){
 			if (cam == null)
@@ -296,7 +358,6 @@ namespace SS3D.Engine.Examine
 			colours = null;
 			
 			//rt = null;
-			currentExaminable = null;
 		}
 		
 		/// This method adds all of the objects targeted by the RaycastAll to the
@@ -304,28 +365,28 @@ namespace SS3D.Engine.Examine
 		public void AddMeshesToLists(GameObject[] allHitObjects)
 		{
 			GameObject ancestor;
-			bool alreadyInList;
 			EnableCamera();
+			List<GameObject> recordedObj = new List<GameObject>();
 			foreach (GameObject obj in allHitObjects)
 			{
-				// Check to see if the GameObject is already recorded
-				alreadyInList = false;
-				ancestor = GetAncestor(obj);
-				foreach (GameObject tile in tiles)
-				{
-					if (ancestor == tile)
-					{
-						alreadyInList = true;
-					}
-				}
-				// If not already recorded, record it!
-				if (!alreadyInList)
-				{
+                if (!IsAncestorTileManager(obj))
+                {
+					ancestor =  GetAncestor(obj);
 					colours.Push(new Color(rValue, gValue, bValue, 1.0f));
 					AddChildToLists(ancestor.transform);
-					tiles.Add(ancestor);
 				}
-				
+
+				ancestor = GetAncestor(obj);
+				List<GameObject> gameObjects = GetTileObjects(obj);
+				foreach (GameObject gameObject in gameObjects)
+				{
+                    if (!recordedObj.Contains(gameObject))
+                    {
+						colours.Push(new Color(rValue, gValue, bValue, 1.0f));
+						AddChildToLists(gameObject.transform);
+						recordedObj.Add(gameObject);
+					}	
+				}		
 			}
 		}
 	
@@ -335,7 +396,7 @@ namespace SS3D.Engine.Examine
 		private void AddChildToLists(Transform child)
 		{		
 			// Don't record the mesh if the child is disabled!
-			if (child.gameObject.activeSelf == false)
+			if (child.gameObject.activeSelf == false || meshes.Count >= maxMeshes)
 			{
 				return;
 			}
@@ -449,10 +510,7 @@ namespace SS3D.Engine.Examine
 			public string GetName()
 			{
 				return name;
-			}
-			
-			
-			
+			}	
 		}
 	}
 }
