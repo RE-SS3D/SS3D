@@ -111,22 +111,10 @@ namespace SS3D.Engine.Examine
 				// Copy the pixel to our Texture2D, so we can read its colour.
 				imageArea = new Rect(currentX, Screen.height - currentY - 1, 1, 1); // Note well: y increases downwards for Struct, but upwards for Screen coordinates. Thanks Unity.
 
-				tex.ReadPixels(imageArea, 0, 0, false);
-				Color point = tex.GetPixel(0, 0);
-
-				// define a texture of the size of the screen
-				var renderTexture = RenderTexture.GetTemporary(Screen.width, Screen.height, 32);
-
-				format = renderTexture.graphicsFormat;
-
-				// makes a screenshot and put it into the texture, this is pretty slow I believe too ..
-				ScreenCapture.CaptureScreenshotIntoRenderTexture(renderTexture);
-
-				//AsyncGPUReadback.Request(renderTexture, 0, currentX, 1, currentY, 1, 0, 0, format, OnCompleteReadback);
+				// public static AsyncGPUReadbackRequest Request(Texture src, int mipIndex, int x, int width, int y, int height, int z, int depth, GraphicsFormat dstFormat, Action<AsyncGPUReadbackRequest> callback = null);
 				// read the texture and do something with it in OnCompleteReadback
-				AsyncGPUReadback.Request(renderTexture, 0, TextureFormat.RGBA32, OnCompleteReadback);
-
-				RenderTexture.ReleaseTemporary(renderTexture);
+				AsyncGPUReadback.Request(rt, 0, currentX, 1, Screen.height - currentY - 1, 1, 0, 1, TextureFormat.RGBA32, OnCompleteReadback);
+				//AsyncGPUReadback.Request(rt, 0, TextureFormat.RGBA32, OnCompleteReadback);
 			}
 			else
 			{
@@ -144,16 +132,12 @@ namespace SS3D.Engine.Examine
 			}
 
 			byte[] array = request.GetData<byte>().ToArray();
-			Color[] colors = new Color[Screen.height * Screen.width];
-			for(int i =0; i< colors.Length; i++)
-            {
-				colors[i] = new Color(array[4*i], array[4 *i + 1], array[4 * i + 2], array[4 * i + 3]);
-            }
+
 
 			int currentX = (int)Input.mousePosition.x;
 			int currentY = (int)Input.mousePosition.y;
 
-			Color color1 = colors[currentY * Screen.width + currentX];
+			Color color1 = new Color(array[0], array[1], array[2], array[3]);
 			Debug.Log(color1);
 
 			if (examinables == null) return;
