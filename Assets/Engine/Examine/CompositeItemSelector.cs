@@ -8,6 +8,7 @@ using SS3D.Engine.Inventory;
 using SS3D.Engine.Inventory.UI;
 using SS3D.Engine.Tiles;
 using UnityEngine.Rendering;
+using UnityEngine.Experimental.Rendering;
 
 namespace SS3D.Engine.Examine
 {
@@ -58,7 +59,8 @@ namespace SS3D.Engine.Examine
 		private bool setPostRender;
 
 		private int maxMeshes = 15;
-				
+		private GraphicsFormat format;
+
 		public void Start()
 		{
 			cam = CameraManager.singleton.examineCamera;
@@ -112,19 +114,59 @@ namespace SS3D.Engine.Examine
 				tex.ReadPixels(imageArea, 0, 0, false);
 				Color point = tex.GetPixel(0, 0);
 
-				// Check the unique colour of each Examinable, to see if it corresponds to the colour at the cursor. 
-				foreach (ExaminableColourAffiliation examinable in examinables)
-				{
-					if (matchesColour(point, examinable.GetColour()))	
-					{
-						currentExaminable = examinable.GetExaminable();
-						break;
-					}
-				}		
+				// define a texture of the size of the screen
+				var renderTexture = RenderTexture.GetTemporary(Screen.width, Screen.height, 32);
+
+				format = renderTexture.graphicsFormat;
+
+				// makes a screenshot and put it into the texture, this is pretty slow I believe too ..
+				ScreenCapture.CaptureScreenshotIntoRenderTexture(renderTexture);
+
+				//AsyncGPUReadback.Request(renderTexture, 0, currentX, 1, currentY, 1, 0, 0, format, OnCompleteReadback);
+				// read the texture and do something with it in OnCompleteReadback
+				AsyncGPUReadback.Request(renderTexture, 0, TextureFormat.RGBA32, OnCompleteReadback);
+
+				RenderTexture.ReleaseTemporary(renderTexture);
 			}
 			else
 			{
 				currentExaminable = null;
+			}
+			
+		}
+
+		void OnCompleteReadback(AsyncGPUReadbackRequest request)
+		{
+			if (request.hasError)
+			{
+				Debug.Log("GPU readback error detected.");
+				return;
+			}
+
+			byte[] array = request.GetData<byte>().ToArray();
+			Color[] colors = new Color[Screen.height * Screen.width];
+			for(int i =0; i< colors.Length; i++)
+            {
+				colors[i] = new Color(array[4*i], array[4 *i + 1], array[4 * i + 2], array[4 * i + 3]);
+            }
+
+			int currentX = (int)Input.mousePosition.x;
+			int currentY = (int)Input.mousePosition.y;
+
+			Color color1 = colors[currentY * Screen.width + currentX];
+			Debug.Log(color1);
+
+			if (examinables == null) return;
+
+			// Check the unique colour of each Examinable, to see if it corresponds to the colour at the cursor. 
+			foreach (ExaminableColourAffiliation examinable in examinables)
+			{
+				if (matchesColour(color1, examinable.GetColour()))
+				{
+					Debug.Log("there's a match !");
+					currentExaminable = examinable.GetExaminable();
+					break;
+				}
 			}
 			DisableCamera();
 		}
