@@ -26,7 +26,7 @@ namespace SS3D.Engine.Examine
         private Quaternion lastCameraRotation;
 		public CompositeItemSelector selector;
         private GameObject currentTarget;
-		private float MIN_UPDATES_PER_SECOND = 10f;
+		private float MIN_UPDATES_PER_SECOND = 100f;
 		private float updateFrequency;
 		private float updateTimer;
 

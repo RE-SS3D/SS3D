@@ -20,6 +20,8 @@ namespace SS3D.Engine.Examine
     {
 	    public Camera cam;
 		public Material singleColourMaterial;
+		private const int RT_HEIGHT = 256;
+		private const int RT_WIDTH = 256;
 		
 		// Data structures to store our mesh and colour affiliations
 		private List<MeshColourAffiliation> meshes;
@@ -102,18 +104,22 @@ namespace SS3D.Engine.Examine
 			}
 				
 			// Test the colour of the pixel where our cursor is
-			int currentX = (int) Input.mousePosition.x;
-			int currentY = (int) Input.mousePosition.y;
+			float currentX = Input.mousePosition.x;
+			float currentY = Input.mousePosition.y;
 
 			// If it's within the screen boundaries...
 			if (currentX >= 0 && currentY >= 0 && currentX < Screen.width && currentY < Screen.height)
 			{
 				// Copy the pixel to our Texture2D, so we can read its colour.
-				imageArea = new Rect(currentX, Screen.height - currentY - 1, 1, 1); // Note well: y increases downwards for Struct, but upwards for Screen coordinates. Thanks Unity.
+				float xRatio = RT_WIDTH / Screen.width;
+				float yRatio = RT_HEIGHT / Screen.height;
+
+
+				imageArea = new Rect(currentX * xRatio, (Screen.height - currentY - 1) * yRatio, 1, 1); // Note well: y increases downwards for Struct, but upwards for Screen coordinates. Thanks Unity.
 
 				// public static AsyncGPUReadbackRequest Request(Texture src, int mipIndex, int x, int width, int y, int height, int z, int depth, GraphicsFormat dstFormat, Action<AsyncGPUReadbackRequest> callback = null);
 				// read the texture and do something with it in OnCompleteReadback
-				AsyncGPUReadback.Request(rt, 0, currentX, 1, Screen.height - currentY - 1, 1, 0, 1, TextureFormat.RGBA32, OnCompleteReadback);
+				AsyncGPUReadback.Request(rt, 0, (int)(currentX * xRatio), 1, (int)((Screen.height - currentY - 1) * yRatio), 1, 0, 1, TextureFormat.RGBA32, OnCompleteReadback);
 				//AsyncGPUReadback.Request(rt, 0, TextureFormat.RGBA32, OnCompleteReadback);
 			}
 			else
@@ -230,10 +236,10 @@ namespace SS3D.Engine.Examine
 			// If textures don't currently exist, create them at the correct size.
 			if (recordedScreenWidth != Screen.width || recordedScreenHeight != Screen.height)	
 			{
-				cam.targetTexture = null;
-				rt.Release();
-				rt = new RenderTexture(Screen.width, Screen.height, 16);
-				cam.targetTexture = rt;
+				//cam.targetTexture = null;
+				//rt.Release();
+				//rt = new RenderTexture(Screen.width, Screen.height, 16);
+				//cam.targetTexture = rt;
 
 				recordedScreenWidth = Screen.width;
 				recordedScreenHeight = Screen.height;
@@ -330,7 +336,7 @@ namespace SS3D.Engine.Examine
 				rValue = 1.0f;
 				gValue = 1.0f;
 				bValue = 1.0f;
-				decrement = 0.05f;
+				decrement = 0.2f;
 				tolerance = decrement / 4.0f;
 				
 				
@@ -339,8 +345,8 @@ namespace SS3D.Engine.Examine
 				recordedScreenHeight = Screen.height;
 				
 				// Establish the renderTexture
-				rt = new RenderTexture(Screen.width, Screen.height, 16);
-				cam.targetTexture = rt;
+				//rt = new RenderTexture(Screen.width, Screen.height, 16);
+				//cam.targetTexture = rt;
 			}
 		}
 		

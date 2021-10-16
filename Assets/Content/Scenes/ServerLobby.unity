@@ -23885,7 +23885,7 @@ MonoBehaviour:
   cam: {fileID: 4722498698952168811}
   singleColourMaterial: {fileID: 2100000, guid: 95867334491c7b247866b990bc1698b6,
     type: 2}
-  rt: {fileID: 0}
+  rt: {fileID: 8400000, guid: aaf8ae7980be60e4a8cfd5f64f4a3f07, type: 2}
 --- !u!1 &1364040791138817693
 GameObject:
   m_ObjectHideFlags: 0
@@ -26190,7 +26190,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 0
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 0}
+  m_TargetTexture: {fileID: 8400000, guid: aaf8ae7980be60e4a8cfd5f64f4a3f07, type: 2}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
