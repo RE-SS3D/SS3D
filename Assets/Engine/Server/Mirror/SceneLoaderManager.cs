@@ -211,7 +211,7 @@ namespace SS3D
             }
         }
 
-        [Command(ignoreAuthority = true)]
+        [Command(requiresAuthority = false)]
         public void CmdSetSelectedMap(string scene)
         {
             selectedMap = scene;

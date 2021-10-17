@@ -57,7 +57,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 56a8c29cc9465b240a1fea110265619c
   hasSpawned: 0
 --- !u!114 &4559837401137349769
 MonoBehaviour:
@@ -74,9 +75,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!33 &8346846025180399405
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -216,6 +228,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 8999495644529346004}
   containerSync: {fileID: 0}
   containerInteractive: {fileID: 4983719359491253607}
+  containerItemDisplay: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -224,15 +237,20 @@ MonoBehaviour:
   attachmentOffset: {x: 0, y: 0, z: 0}
   containerName: fridge
   onlyStoreWhenOpen: 1
+  openWhenContainerViewed: 0
   size: {x: 4, y: 8}
   hideItems: 1
   attachItems: 1
   startFilter: {fileID: 0}
   initialized: 1
   maxDistance: 5
-  containerType: 0
   isOpenable: 1
   isInteractive: 1
+  hasUi: 0
+  hasCustomInteraction: 0
+  hasCustomDisplay: 0
+  displays: []
+  numberDisplay: 0
 --- !u!114 &8999495644529346004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -274,8 +292,6 @@ GameObject:
   - component: {fileID: 2621842397224039768}
   - component: {fileID: 6889282342120757457}
   - component: {fileID: 2328583508320183080}
-  - component: {fileID: 4285060363148910370}
-  - component: {fileID: 5443252286308906427}
   m_Layer: 14
   m_Name: FridgeDoor
   m_TagString: Untagged
@@ -357,37 +373,3 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.91609585, y: 1.7028121, z: 0.18759535}
   m_Center: {x: 0.44432867, y: 0.0014936328, z: 0.06708368}
---- !u!114 &4285060363148910370
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5240830354732226920}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
---- !u!114 &5443252286308906427
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5240830354732226920}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
