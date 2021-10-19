@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using SS3D.Engine.Tiles;
 using UnityEngine;
@@ -121,6 +121,7 @@ namespace SS3D.Engine.Examine
             Color pixel = readbackTexture.GetPixel(0, 0);
             if (pixel.a < 1)
             {
+                CurrentExaminable = null;
                 return;
             }
 
