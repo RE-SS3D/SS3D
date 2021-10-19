@@ -192,25 +192,23 @@ namespace SS3D.Engine.Examine
             // Raycast to cursor position. Need to get all possible hits, because the initial hit may have gaps through which we can see other Examinables
             Ray ray = CameraManager.singleton.playerCamera.ScreenPointToRay(new Vector2(Input.mousePosition.x,
                 Input.mousePosition.y));
-            int rayCount = Physics.RaycastNonAlloc(ray, raycastHits, 200f);
+            int rayCount = Physics.SphereCastNonAlloc(ray, 0.1f, raycastHits, 100f);
 
             // Record examinables and meshes for each hit object
-            bool tilesAdded = false;
             for (int i = 0; i < rayCount; i++)
             {
                 GameObject hitObject = raycastHits[i].transform.gameObject;
-                if (!tilesAdded)
+                if (identifiers.HasGameObject(hitObject))
                 {
-                    // Check if we hit a tile
-                    var tileObject = hitObject.GetComponent<PlacedTileObject>();
-                    if (tileObject)
-                    {
-                        // Add examinables for all tile objects
-                        AddExaminablesForTile(tileObject);
-                        // We should only ever hover over one tile, so don't repeat this process
-                        tilesAdded = true;
-                        continue;
-                    }
+                    continue;
+                }
+                // Check if we hit a tile
+                var tileObject = hitObject.GetComponent<PlacedTileObject>();
+                if (tileObject)
+                {
+                    // Add examinables for all tile objects
+                    AddExaminablesForTile(tileObject);
+                    continue;
                 }
                 AddExaminablesRecursive(hitObject);
             }
@@ -284,6 +282,10 @@ namespace SS3D.Engine.Examine
             foreach (TileLayer layer in tileLayers)
             {
                 TileObject tileObject = tileChunk.GetTileObject(layer, tileOffset.x, tileOffset.y);
+                if (tileObject == null)
+                {
+                    continue;
+                }
                 PlacedTileObject[] placedObjects = tileObject.GetAllPlacedObjects();
                 foreach (PlacedTileObject placedObject in placedObjects)
                 {
@@ -326,6 +328,24 @@ namespace SS3D.Engine.Examine
             public bool HasExaminable(GameObject examinable)
             {
                 return examinables.ContainsValue(examinable);
+            }
+
+            public bool HasGameObject(GameObject gameObject)
+            {
+                if (HasExaminable(gameObject))
+                {
+                    return true;
+                }
+
+                foreach (Tuple<Mesh, GameObject> pair in meshes)
+                {
+                    if (gameObject == pair.Item2)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
             }
 
             public void AddExaminable(GameObject examinable)
