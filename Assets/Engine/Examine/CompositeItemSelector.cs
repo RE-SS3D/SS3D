@@ -244,7 +244,9 @@ namespace SS3D.Engine.Examine
                     var meshRenderer = gameObject.GetComponent<SkinnedMeshRenderer>();
                     if (meshRenderer)
                     {
-                        identifiers.AddMesh(meshRenderer.sharedMesh, gameObject, ((MonoBehaviour) current).gameObject);
+                        var mesh = new Mesh();
+                        meshRenderer.BakeMesh(mesh);
+                        identifiers.AddMesh(mesh, gameObject, ((MonoBehaviour) current).gameObject);
                     }
                 }
             }
