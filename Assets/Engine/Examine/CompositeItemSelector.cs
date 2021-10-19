@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using SS3D.Engine.Tiles;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Experimental.Rendering;
@@ -181,9 +182,24 @@ namespace SS3D.Engine.Examine
             int rayCount = Physics.RaycastNonAlloc(ray, raycastHits, 200f);
 
             // Record examinables and meshes for each hit object
+            bool tilesAdded = false;
             for (int i = 0; i < rayCount; i++)
             {
-                AddExaminablesRecursive(raycastHits[i].transform.gameObject);
+                GameObject hitObject = raycastHits[i].transform.gameObject;
+                if (!tilesAdded)
+                {
+                    // Check if we hit a tile
+                    var tileObject = hitObject.GetComponent<PlacedTileObject>();
+                    if (tileObject)
+                    {
+                        // Add examinables for all tile objects
+                        AddExaminablesForTile(tileObject);
+                        // We should only ever hover over one tile, so don't repeat this process
+                        tilesAdded = true;
+                        continue;
+                    }
+                }
+                AddExaminablesRecursive(hitObject);
             }
 
             // We want to render at the next opportunity
@@ -237,6 +253,30 @@ namespace SS3D.Engine.Examine
             for (var i = 0; i < childCount; i++)
             {
                 AddExaminablesRecursive(objectTransform.GetChild(i).gameObject, current);
+            }
+        }
+
+        private void AddExaminablesForTile(PlacedTileObject tile)
+        {
+            // Get the chunk and chunk position for the tile
+            var tileMap = tile.GetComponentInParent<TileMap>();
+            Vector3 worldPosition = tile.transform.position;
+            Vector2Int chunkKey = tileMap.GetKey(worldPosition);
+            TileChunk tileChunk = tileMap.GetChunk(chunkKey);
+            Vector2Int tileOffset = tileChunk.GetXY(worldPosition);
+            // Get the placed objects for all tile layers and add their examinables
+            TileLayer[] tileLayers = TileHelper.GetTileLayers();
+            foreach (TileLayer layer in tileLayers)
+            {
+                TileObject tileObject = tileChunk.GetTileObject(layer, tileOffset.x, tileOffset.y);
+                PlacedTileObject[] placedObjects = tileObject.GetAllPlacedObjects();
+                foreach (PlacedTileObject placedObject in placedObjects)
+                {
+                    if (placedObject)
+                    {
+                        AddExaminablesRecursive(placedObject.gameObject);
+                    }
+                }
             }
         }
 

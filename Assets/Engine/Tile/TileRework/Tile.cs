@@ -48,9 +48,15 @@ namespace SS3D.Engine.Tiles
 
     public static class TileHelper
     {
+        private static TileLayer[] tileLayers;
+        
         public static TileLayer[] GetTileLayers()
         {
-            return (TileLayer[])Enum.GetValues(typeof(TileLayer));
+            if (tileLayers == null)
+            {
+                tileLayers = (TileLayer[]) Enum.GetValues(typeof(TileLayer));
+            }
+            return tileLayers;
         }
 
         public static bool ContainsSubLayers(TileLayer layer)

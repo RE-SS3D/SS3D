@@ -92,6 +92,16 @@ namespace SS3D.Engine.Tiles
         }
 
         /// <summary>
+        /// Get a chunk for the passed chunk key
+        /// </summary>
+        /// <param name="chunkKey">The key for the chunk</param>
+        public TileChunk GetChunk(Vector2Int chunkKey)
+        {
+            chunks.TryGetValue(chunkKey, out TileChunk value);
+            return value;
+        }
+
+        /// <summary>
         /// Create a new chunk.
         /// </summary>
         /// <param name="chunkKey">Unique key to use</param>
@@ -136,7 +146,7 @@ namespace SS3D.Engine.Tiles
         /// </summary>
         /// <param name="worldPosition"></param>
         /// <returns></returns>
-        private Vector2Int GetKey(Vector3 worldPosition)
+        public Vector2Int GetKey(Vector3 worldPosition)
         {
             int x = (int)Math.Floor(worldPosition.x / CHUNK_SIZE);
             int y = (int)Math.Floor(worldPosition.z / CHUNK_SIZE);
