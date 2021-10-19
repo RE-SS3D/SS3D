@@ -106,26 +106,32 @@ namespace SS3D.Engine.Examine
 
         private void OnCompleteReadback(AsyncGPUReadbackRequest request)
         {
-            isRendering = false;
-            if (request.hasError)
+            try
             {
-                Debug.LogError("Error in examine GPU readback");
-                return;
+                if (request.hasError)
+                {
+                    Debug.LogError("Error in examine GPU readback");
+                    return;
+                }
+
+                shouldRender = false;
+
+                readbackTexture.LoadRawTextureData(request.GetData<byte>());
+                readbackTexture.Apply();
+
+                Color pixel = readbackTexture.GetPixel(0, 0);
+                if (pixel.a < 1)
+                {
+                    CurrentExaminable = null;
+                    return;
+                }
+
+                CurrentExaminable = identifiers.FindExaminable(pixel);
             }
-
-            shouldRender = false;
-
-            readbackTexture.LoadRawTextureData(request.GetData<byte>());
-            readbackTexture.Apply();
-
-            Color pixel = readbackTexture.GetPixel(0, 0);
-            if (pixel.a < 1)
+            finally
             {
-                CurrentExaminable = null;
-                return;
+                isRendering = false;
             }
-
-            CurrentExaminable = identifiers.FindExaminable(pixel);
         }
 
         private void FitRenderTexture()
@@ -148,6 +154,12 @@ namespace SS3D.Engine.Examine
 
         public void CalculateSelectedGameObject()
         {
+            // Ensure we don't update information while still processing a frame
+            if (isRendering)
+            {
+                return;
+            }
+            
             // Identify if mouse is over the user interface, or over objects in the game world.
             if (EventSystem.current.IsPointerOverGameObject())
             {
