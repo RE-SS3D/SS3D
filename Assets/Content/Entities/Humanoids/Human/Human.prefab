@@ -162,7 +162,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 808fc3b770e18cf4a8fe9dbd48fa2444
   hasSpawned: 0
 --- !u!114 &-5918456934534797284
 MonoBehaviour:
@@ -195,9 +196,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 1
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!143 &-5804938744367538470
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2071,7 +2083,6 @@ GameObject:
   m_Component:
   - component: {fileID: 9114095814780560127}
   - component: {fileID: 5306361817331504544}
-  - component: {fileID: 3623899252154688686}
   - component: {fileID: 4409330219691020040}
   - component: {fileID: 8954022733386996155}
   - component: {fileID: 141195248142489828}
@@ -2121,22 +2132,6 @@ MonoBehaviour:
   bodyPartStatuses: 0
   skinnedMeshRenderer: {fileID: 6572013783268959225}
   body: {fileID: 0}
---- !u!114 &3623899252154688686
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2448277291314358949}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!114 &4409330219691020040
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4027,7 +4022,6 @@ GameObject:
   - component: {fileID: 5640873502109975346}
   - component: {fileID: 8869297597610662472}
   - component: {fileID: 3547939921811356850}
-  - component: {fileID: 3447648068970816323}
   - component: {fileID: 5807624756267220038}
   - component: {fileID: 7394904886429592793}
   m_Layer: 15
@@ -4130,22 +4124,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   containerDescriptor: {fileID: 8869297597610662472}
---- !u!114 &3447648068970816323
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6793449098192051331}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!95 &5807624756267220038
 Animator:
   serializedVersion: 3
