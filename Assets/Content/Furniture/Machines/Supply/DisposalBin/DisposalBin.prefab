@@ -57,7 +57,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: c2e97cce5ba37634595cae7496d36d43
   hasSpawned: 0
 --- !u!137 &3218971402796315495
 SkinnedMeshRenderer:
@@ -361,7 +362,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6961753422362153491}
-  - component: {fileID: 1373846368647650835}
   - component: {fileID: 1319823207770862825}
   - component: {fileID: 5135535264400666509}
   m_Layer: 14
@@ -385,22 +385,6 @@ Transform:
   m_Father: {fileID: 1198456887731256720}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1373846368647650835
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7531797193249841566}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!137 &1319823207770862825
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -475,7 +459,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8022666627076981674}
-  - component: {fileID: 5606958418186678386}
   - component: {fileID: 715812269395323215}
   - component: {fileID: 6686499578327712894}
   m_Layer: 14
@@ -499,22 +482,6 @@ Transform:
   m_Father: {fileID: 1198456887731256720}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5606958418186678386
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7725815442462270694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!137 &715812269395323215
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0

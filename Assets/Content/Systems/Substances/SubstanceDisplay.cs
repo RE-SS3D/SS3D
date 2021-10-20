@@ -96,7 +96,7 @@ namespace SS3D.Content.Systems.Substances
 
             //trans.localPosition = Vector3.Lerp(EmptyPosition, FullPosition, Mathf.Min(relativeVolume, 1));
             //trans.localScale = new Vector3(ScaleX.Evaluate(relativeVolume), ScaleY.Evaluate(relativeVolume), ScaleZ.Evaluate(relativeVolume));
-            RpcUpdateDisplay(trans.localPosition, trans.localScale, newColor);
+            //RpcUpdateDisplay(trans.localPosition, trans.localScale, newColor);
         }
 
         private Color CalculateColor()
