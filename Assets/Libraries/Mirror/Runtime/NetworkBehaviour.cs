@@ -1,165 +1,150 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using Mirror.RemoteCalls;
 using UnityEngine;
 
 namespace Mirror
 {
-    /// <summary>
-    /// Sync to everyone, or only to owner.
-    /// </summary>
     public enum SyncMode { Observers, Owner }
 
-    /// <summary>
-    /// Base class which should be inherited by scripts which contain networking functionality.
-    /// </summary>
-    /// <remarks>
-    /// <para>This is a MonoBehaviour class so scripts which need to use the networking feature should inherit this class instead of MonoBehaviour. It allows you to invoke networked actions, receive various callbacks, and automatically synchronize state from server-to-client.</para>
-    /// <para>The NetworkBehaviour component requires a NetworkIdentity on the game object. There can be multiple NetworkBehaviours on a single game object. For an object with sub-components in a hierarchy, the NetworkIdentity must be on the root object, and NetworkBehaviour scripts must also be on the root object.</para>
-    /// <para>Some of the built-in components of the networking system are derived from NetworkBehaviour, including NetworkTransport, NetworkAnimator and NetworkProximityChecker.</para>
-    /// </remarks>
+    /// <summary>Base class for networked components.</summary>
     [AddComponentMenu("")]
     [RequireComponent(typeof(NetworkIdentity))]
-    [HelpURL("https://mirror-networking.com/docs/Guides/NetworkBehaviour.html")]
+    [HelpURL("https://mirror-networking.gitbook.io/docs/guides/networkbehaviour")]
     public abstract class NetworkBehaviour : MonoBehaviour
     {
-        static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkBehaviour));
-
-        internal float lastSyncTime;
-
+        /// <summary>sync mode for OnSerialize</summary>
         // hidden because NetworkBehaviourInspector shows it only if has OnSerialize.
-        /// <summary>
-        /// sync mode for OnSerialize
-        /// </summary>
+        [Tooltip("By default synced data is sent from the server to all Observers of the object.\nChange this to Owner to only have the server update the client that has ownership authority for this object")]
         [HideInInspector] public SyncMode syncMode = SyncMode.Observers;
 
+        /// <summary>sync interval for OnSerialize (in seconds)</summary>
         // hidden because NetworkBehaviourInspector shows it only if has OnSerialize.
-        /// <summary>
-        /// sync interval for OnSerialize (in seconds)
-        /// </summary>
-        [Tooltip("Time in seconds until next change is synchronized to the client. '0' means send immediately if changed. '0.5' means only send changes every 500ms.\n(This is for state synchronization like SyncVars, SyncLists, OnSerialize. Not for Cmds, Rpcs, etc.)")]
         // [0,2] should be enough. anything >2s is too laggy anyway.
+        [Tooltip("Time in seconds until next change is synchronized to the client. '0' means send immediately if changed. '0.5' means only send changes every 500ms.\n(This is for state synchronization like SyncVars, SyncLists, OnSerialize. Not for Cmds, Rpcs, etc.)")]
         [Range(0, 2)]
         [HideInInspector] public float syncInterval = 0.1f;
+        internal double lastSyncTime;
 
-        /// <summary>
-        /// Returns true if this object is active on an active server.
-        /// <para>This is only true if the object has been spawned. This is different from NetworkServer.active, which is true if the server itself is active rather than this object being active.</para>
-        /// </summary>
+        /// <summary>True if this object is on the server and has been spawned.</summary>
+        // This is different from NetworkServer.active, which is true if the
+        // server itself is active rather than this object being active.
         public bool isServer => netIdentity.isServer;
 
-        /// <summary>
-        /// Returns true if running as a client and this object was spawned by a server.
-        /// </summary>
+        /// <summary>True if this object is on the client and has been spawned by the server.</summary>
         public bool isClient => netIdentity.isClient;
 
-        /// <summary>
-        /// This returns true if this object is the one that represents the player on the local machine.
-        /// <para>In multiplayer games, there are multiple instances of the Player object. The client needs to know which one is for "themselves" so that only that player processes input and potentially has a camera attached. The IsLocalPlayer function will return true only for the player instance that belongs to the player on the local machine, so it can be used to filter out input for non-local players.</para>
-        /// </summary>
+        /// <summary>True if this object is the the client's own local player.</summary>
         public bool isLocalPlayer => netIdentity.isLocalPlayer;
 
-        /// <summary>
-        /// True if this object only exists on the server
-        /// </summary>
-        public bool isServerOnly => isServer && !isClient;
+        /// <summary>True if this object is on the server-only, not host.</summary>
+        public bool isServerOnly => netIdentity.isServerOnly;
 
-        /// <summary>
-        /// True if this object exists on a client that is not also acting as a server
-        /// </summary>
-        public bool isClientOnly => isClient && !isServer;
+        /// <summary>True if this object is on the client-only, not host.</summary>
+        public bool isClientOnly => netIdentity.isClientOnly;
 
-        /// <summary>
-        /// This returns true if this object is the authoritative version of the object in the distributed network application.
-        /// <para>The <see cref="NetworkIdentity.hasAuthority">NetworkIdentity.hasAuthority</see> value on the NetworkIdentity determines how authority is determined. For most objects, authority is held by the server. For objects with <see cref="NetworkIdentity.hasAuthority">NetworkIdentity.hasAuthority</see> set, authority is held by the client of that player.</para>
-        /// </summary>
+        /// <summary>This returns true if this object is the authoritative version of the object in the distributed network application.</summary>
+        // keeping this ridiculous summary as a reminder of a time long gone...
         public bool hasAuthority => netIdentity.hasAuthority;
 
-        /// <summary>
-        /// The unique network Id of this object.
-        /// <para>This is assigned at runtime by the network server and will be unique for all objects for that network session.</para>
-        /// </summary>
+        /// <summary>The unique network Id of this object (unique at runtime).</summary>
         public uint netId => netIdentity.netId;
 
-        /// <summary>
-        /// The <see cref="NetworkConnection">NetworkConnection</see> associated with this <see cref="NetworkIdentity">NetworkIdentity.</see> This is only valid for player objects on the client.
-        /// </summary>
+        /// <summary>Client's network connection to the server. This is only valid for player objects on the client.</summary>
         public NetworkConnection connectionToServer => netIdentity.connectionToServer;
 
-        /// <summary>
-        /// The <see cref="NetworkConnection">NetworkConnection</see> associated with this <see cref="NetworkIdentity">NetworkIdentity.</see> This is only valid for player objects on the server.
-        /// </summary>
+        /// <summary>Server's network connection to the client. This is only valid for player objects on the server.</summary>
         public NetworkConnection connectionToClient => netIdentity.connectionToClient;
 
-        /// <summary>
-        /// The sender of the current network function
-        /// </summary>
-        public static NetworkConnection currentSender = null;
+        // SyncLists, SyncSets, etc.
+        protected readonly List<SyncObject> syncObjects = new List<SyncObject>();
 
+        // NetworkIdentity based values set from NetworkIdentity.Awake(),
+        // which is way more simple and way faster than trying to figure out
+        // component index from in here by searching all NetworkComponents.
+
+        /// <summary>Returns the NetworkIdentity of this object</summary>
+        public NetworkIdentity netIdentity { get; internal set; }
+
+        /// <summary>Returns the index of the component on this object</summary>
+        public int ComponentIndex { get; internal set; }
+
+        // to avoid fully serializing entities every time, we have two options:
+        // * run a delta compression algorithm
+        //   -> for fixed size types this is as easy as varint(b-a) for all
+        //   -> for dynamically sized types like strings this is not easy.
+        //      algorithms need to detect inserts/deletions, i.e. Myers Diff.
+        //      those are very cpu intensive and barely fast enough for large
+        //      scale multiplayer games (in Unity)
+        // * or we use dirty bits as meta data about which fields have changed
+        //   -> spares us from running delta algorithms
+        //   -> still supports dynamically sized types
+        //
+        // 64 bit mask, tracking up to 64 SyncVars.
         protected ulong syncVarDirtyBits { get; private set; }
+        // 64 bit mask, tracking up to 64 sync collections (internal for tests).
+        // internal for tests, field for faster access (instead of property)
+        // TODO 64 SyncLists are too much. consider smaller mask later.
+        internal ulong syncObjectDirtyBits;
+
+        // hook guard to avoid deadlocks when calling hooks in host mode
         ulong syncVarHookGuard;
 
-        protected bool getSyncVarHookGuard(ulong dirtyBit)
-        {
-            return (syncVarHookGuard & dirtyBit) != 0UL;
-        }
+        // USED BY WEAVER to set syncvars in host mode without deadlocking
+        protected bool GetSyncVarHookGuard(ulong dirtyBit) =>
+            (syncVarHookGuard & dirtyBit) != 0UL;
 
-        protected void setSyncVarHookGuard(ulong dirtyBit, bool value)
+        // DEPRECATED 2021-09-16 (old weavers used it)
+        [Obsolete("Renamed to GetSyncVarHookGuard (uppercase)")]
+        protected bool getSyncVarHookGuard(ulong dirtyBit) => GetSyncVarHookGuard(dirtyBit);
+
+        // USED BY WEAVER to set syncvars in host mode without deadlocking
+        protected void SetSyncVarHookGuard(ulong dirtyBit, bool value)
         {
+            // set the bit
             if (value)
                 syncVarHookGuard |= dirtyBit;
+            // clear the bit
             else
                 syncVarHookGuard &= ~dirtyBit;
         }
 
-        /// <summary>
-        /// objects that can synchronize themselves, such as synclists
-        /// </summary>
-        protected readonly List<SyncObject> syncObjects = new List<SyncObject>();
+        // DEPRECATED 2021-09-16 (old weavers used it)
+        [Obsolete("Renamed to SetSyncVarHookGuard (uppercase)")]
+        protected void setSyncVarHookGuard(ulong dirtyBit, bool value) => SetSyncVarHookGuard(dirtyBit, value);
 
-        /// <summary>
-        /// NetworkIdentity component caching for easier access
-        /// </summary>
-        NetworkIdentity netIdentityCache;
-
-        /// <summary>
-        /// Returns the NetworkIdentity of this object
-        /// </summary>
-        public NetworkIdentity netIdentity
+        /// <summary>Set as dirty so that it's synced to clients again.</summary>
+        // these are masks, not bit numbers, ie. 110011b not '2' for 2nd bit.
+        public void SetDirtyBit(ulong dirtyBit)
         {
-            get
-            {
-                if (netIdentityCache == null)
-                {
-                    netIdentityCache = GetComponent<NetworkIdentity>();
-                }
-                if (netIdentityCache == null)
-                {
-                    logger.LogError("There is no NetworkIdentity on " + name + ". Please add one.");
-                }
-                return netIdentityCache;
-            }
+            syncVarDirtyBits |= dirtyBit;
         }
 
-        /// <summary>
-        /// Returns the index of the component on this object
-        /// </summary>
-        public int ComponentIndex
+        // true if syncInterval elapsed and any SyncVar or SyncObject is dirty
+        public bool IsDirty()
         {
-            get
+            if (NetworkTime.localTime - lastSyncTime >= syncInterval)
             {
-                // note: FindIndex causes allocations, we search manually instead
-                for (int i = 0; i < netIdentity.NetworkBehaviours.Length; i++)
-                {
-                    NetworkBehaviour component = netIdentity.NetworkBehaviours[i];
-                    if (component == this)
-                        return i;
-                }
+                // OR both bitmasks. != 0 if either was dirty.
+                return (syncVarDirtyBits | syncObjectDirtyBits) != 0UL;
+            }
+            return false;
+        }
 
-                // this should never happen
-                logger.LogError("Could not find component in GameObject. You should not add/remove components in networked objects dynamically", this);
+        /// <summary>Clears all the dirty bits that were set by SetDirtyBits()</summary>
+        // automatically invoked when an update is sent for this object, but can
+        // be called manually as well.
+        public void ClearAllDirtyBits()
+        {
+            lastSyncTime = NetworkTime.localTime;
+            syncVarDirtyBits = 0L;
+            syncObjectDirtyBits = 0L;
 
-                return -1;
+            // clear all unsynchronized changes in syncobjects
+            // (Linq allocates, use for instead)
+            for (int i = 0; i < syncObjects.Count; ++i)
+            {
+                syncObjects[i].ClearChanges();
             }
         }
 
@@ -168,43 +153,55 @@ namespace Mirror
         // We collect all of them and we synchronize them with OnSerialize/OnDeserialize
         protected void InitSyncObject(SyncObject syncObject)
         {
-            syncObjects.Add(syncObject);
-        }
-
-        #region Commands
-
-        internal static int GetMethodHash(Type invokeClass, string methodName)
-        {
-            // (invokeClass + ":" + cmdName).GetStableHashCode() would cause allocations.
-            // so hash1 + hash2 is better.
-            unchecked
+            if (syncObject == null)
             {
-                int hash = invokeClass.FullName.GetStableHashCode();
-                return hash * 503 + methodName.GetStableHashCode();
+                Debug.LogError("Uninitialized SyncObject. Manually call the constructor on your SyncList, SyncSet or SyncDictionary");
+                return;
             }
+
+            // add it, remember the index in list (if Count=0, index=0 etc.)
+            int index = syncObjects.Count;
+            syncObjects.Add(syncObject);
+
+            // OnDirty needs to set nth bit in our dirty mask
+            ulong nthBit = 1UL << index;
+            syncObject.OnDirty = () => syncObjectDirtyBits |= nthBit;
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        protected void SendCommandInternal(Type invokeClass, string cmdName, NetworkWriter writer, int channelId, bool ignoreAuthority = false)
+        protected void SendCommandInternal(Type invokeClass, string cmdName, NetworkWriter writer, int channelId, bool requiresAuthority = true)
         {
             // this was in Weaver before
             // NOTE: we could remove this later to allow calling Cmds on Server
             //       to avoid Wrapper functions. a lot of people requested this.
             if (!NetworkClient.active)
             {
-                logger.LogError("Command Function " + cmdName + " called on server without an active client.");
-                return;
-            }
-            // local players can always send commands, regardless of authority, other objects must have authority.
-            if (!(ignoreAuthority || isLocalPlayer || hasAuthority))
-            {
-                logger.LogWarning($"Trying to send command for object without authority. {invokeClass.ToString()}.{cmdName}");
+                Debug.LogError($"Command Function {cmdName} called without an active client.");
                 return;
             }
 
-            if (ClientScene.readyConnection == null)
+            // local players can always send commands, regardless of authority, other objects must have authority.
+            if (!(!requiresAuthority || isLocalPlayer || hasAuthority))
             {
-                logger.LogError("Send command attempted with no client running [client=" + connectionToServer + "].");
+                Debug.LogWarning($"Trying to send command for object without authority. {invokeClass}.{cmdName}");
+                return;
+            }
+
+            // previously we used NetworkClient.readyConnection.
+            // now we check .ready separately and use .connection instead.
+            if (!NetworkClient.ready)
+            {
+                Debug.LogError("Send command attempted while NetworkClient is not ready.");
+                return;
+            }
+
+            // IMPORTANT: can't use .connectionToServer here because calling
+            // a command on other objects is allowed if requireAuthority is
+            // false. other objects don't have a .connectionToServer.
+            // => so we always need to use NetworkClient.connection instead.
+            // => see also: https://github.com/vis2k/Mirror/issues/2629
+            if (NetworkClient.connection == null)
+            {
+                Debug.LogError("Send command attempted with no client running.");
                 return;
             }
 
@@ -214,41 +211,32 @@ namespace Mirror
                 netId = netId,
                 componentIndex = ComponentIndex,
                 // type+func so Inventory.RpcUse != Equipment.RpcUse
-                functionHash = GetMethodHash(invokeClass, cmdName),
+                functionHash = RemoteCallHelper.GetMethodHash(invokeClass, cmdName),
                 // segment to avoid reader allocations
                 payload = writer.ToArraySegment()
             };
 
-            ClientScene.readyConnection.Send(message, channelId);
+            // IMPORTANT: can't use .connectionToServer here because calling
+            // a command on other objects is allowed if requireAuthority is
+            // false. other objects don't have a .connectionToServer.
+            // => so we always need to use NetworkClient.connection instead.
+            // => see also: https://github.com/vis2k/Mirror/issues/2629
+            NetworkClient.connection.Send(message, channelId);
         }
 
-        /// <summary>
-        /// Manually invoke a Command.
-        /// </summary>
-        /// <param name="cmdHash">Hash of the Command name.</param>
-        /// <param name="reader">Parameters to pass to the command.</param>
-        /// <returns>Returns true if successful.</returns>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public virtual bool InvokeCommand(int cmdHash, NetworkReader reader)
-        {
-            return InvokeHandlerDelegate(cmdHash, MirrorInvokeType.Command, reader);
-        }
-        #endregion
-
-        #region Client RPCs
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        protected void SendRPCInternal(Type invokeClass, string rpcName, NetworkWriter writer, int channelId, bool excludeOwner)
+        protected void SendRPCInternal(Type invokeClass, string rpcName, NetworkWriter writer, int channelId, bool includeOwner)
         {
             // this was in Weaver before
             if (!NetworkServer.active)
             {
-                logger.LogError("RPC Function " + rpcName + " called on Client.");
+                Debug.LogError("RPC Function " + rpcName + " called on Client.");
                 return;
             }
+
             // This cannot use NetworkServer.active, as that is not specific to this object.
             if (!isServer)
             {
-                logger.LogWarning("ClientRpc " + rpcName + " called on un-spawned object: " + name);
+                Debug.LogWarning("ClientRpc " + rpcName + " called on un-spawned object: " + name);
                 return;
             }
 
@@ -258,41 +246,44 @@ namespace Mirror
                 netId = netId,
                 componentIndex = ComponentIndex,
                 // type+func so Inventory.RpcUse != Equipment.RpcUse
-                functionHash = GetMethodHash(invokeClass, rpcName),
+                functionHash = RemoteCallHelper.GetMethodHash(invokeClass, rpcName),
                 // segment to avoid reader allocations
                 payload = writer.ToArraySegment()
             };
 
-            // The public facing parameter is excludeOwner in [ClientRpc]
-            // so we negate it here to logically align with SendToReady.
-            bool includeOwner = !excludeOwner;
             NetworkServer.SendToReady(netIdentity, message, includeOwner, channelId);
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
         protected void SendTargetRPCInternal(NetworkConnection conn, Type invokeClass, string rpcName, NetworkWriter writer, int channelId)
         {
-            // this was in Weaver before
             if (!NetworkServer.active)
             {
-                logger.LogError("TargetRPC Function " + rpcName + " called on client.");
+                Debug.LogError($"TargetRPC {rpcName} called when server not active");
                 return;
             }
+
+            if (!isServer)
+            {
+                Debug.LogWarning($"TargetRpc {rpcName} called on {name} but that object has not been spawned or has been unspawned");
+                return;
+            }
+
             // connection parameter is optional. assign if null.
-            if (conn == null)
+            if (conn is null)
             {
                 conn = connectionToClient;
             }
-            // this was in Weaver before
-            if (conn is NetworkConnectionToServer)
+
+            // if still null
+            if (conn is null)
             {
-                logger.LogError("TargetRPC Function " + rpcName + " called on connection to server");
+                Debug.LogError($"TargetRPC {rpcName} was given a null connection, make sure the object has an owner or you pass in the target connection");
                 return;
             }
-            // This cannot use NetworkServer.active, as that is not specific to this object.
-            if (!isServer)
+
+            if (!(conn is NetworkConnectionToClient))
             {
-                logger.LogWarning("TargetRpc " + rpcName + " called on un-spawned object: " + name);
+                Debug.LogError($"TargetRPC {rpcName} requires a NetworkConnectionToClient but was given {conn.GetType().Name}");
                 return;
             }
 
@@ -302,7 +293,7 @@ namespace Mirror
                 netId = netId,
                 componentIndex = ComponentIndex,
                 // type+func so Inventory.RpcUse != Equipment.RpcUse
-                functionHash = GetMethodHash(invokeClass, rpcName),
+                functionHash = RemoteCallHelper.GetMethodHash(invokeClass, rpcName),
                 // segment to avoid reader allocations
                 payload = writer.ToArraySegment()
             };
@@ -310,242 +301,10 @@ namespace Mirror
             conn.Send(message, channelId);
         }
 
-        /// <summary>
-        /// Manually invoke an RPC function.
-        /// </summary>
-        /// <param name="rpcHash">Hash of the RPC name.</param>
-        /// <param name="reader">Parameters to pass to the RPC function.</param>
-        /// <returns>Returns true if successful.</returns>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public virtual bool InvokeRPC(int rpcHash, NetworkReader reader)
-        {
-            return InvokeHandlerDelegate(rpcHash, MirrorInvokeType.ClientRpc, reader);
-        }
-        #endregion
-
-        #region Sync Events
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        protected void SendEventInternal(Type invokeClass, string eventName, NetworkWriter writer, int channelId)
-        {
-            if (!NetworkServer.active)
-            {
-                logger.LogWarning("SendEvent no server?");
-                return;
-            }
-
-            // construct the message
-            SyncEventMessage message = new SyncEventMessage
-            {
-                netId = netId,
-                componentIndex = ComponentIndex,
-                // type+func so Inventory.RpcUse != Equipment.RpcUse
-                functionHash = GetMethodHash(invokeClass, eventName),
-                // segment to avoid reader allocations
-                payload = writer.ToArraySegment()
-            };
-
-            NetworkServer.SendToReady(netIdentity, message, channelId);
-        }
-
-        /// <summary>
-        /// Manually invoke a SyncEvent.
-        /// </summary>
-        /// <param name="eventHash">Hash of the SyncEvent name.</param>
-        /// <param name="reader">Parameters to pass to the SyncEvent.</param>
-        /// <returns>Returns true if successful.</returns>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public virtual bool InvokeSyncEvent(int eventHash, NetworkReader reader)
-        {
-            return InvokeHandlerDelegate(eventHash, MirrorInvokeType.SyncEvent, reader);
-        }
-        #endregion
-
-        #region Code Gen Path Helpers
-        /// <summary>
-        /// Delegate for Command functions.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="reader"></param>
-        public delegate void CmdDelegate(NetworkBehaviour obj, NetworkReader reader, NetworkConnectionToClient senderConnection);
-
-        protected class Invoker
-        {
-            public Type invokeClass;
-            public MirrorInvokeType invokeType;
-            public CmdDelegate invokeFunction;
-            public bool cmdIgnoreAuthority;
-
-            public bool AreEqual(Type invokeClass, MirrorInvokeType invokeType, CmdDelegate function)
-            {
-                return (this.invokeClass == invokeClass &&
-                     this.invokeType == invokeType &&
-                     invokeFunction == function);
-            }
-        }
-
-        public struct CommandInfo
-        {
-            public bool ignoreAuthority;
-        }
-
-        static readonly Dictionary<int, Invoker> cmdHandlerDelegates = new Dictionary<int, Invoker>();
-
-        /// <summary>
-        /// helper function register a Command/Rpc/SyncEvent delegate
-        /// </summary>
-        /// <param name="invokeClass"></param>
-        /// <param name="cmdName"></param>
-        /// <param name="invokerType"></param>
-        /// <param name="func"></param>
-        /// <param name="cmdIgnoreAuthority"></param>
-        /// <returns>remote function hash</returns>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        internal static int RegisterDelegate(Type invokeClass, string cmdName, MirrorInvokeType invokerType, CmdDelegate func, bool cmdIgnoreAuthority = false)
-        {
-            // type+func so Inventory.RpcUse != Equipment.RpcUse
-            int cmdHash = GetMethodHash(invokeClass, cmdName);
-
-            if (CheckIfDeligateExists(invokeClass, invokerType, func, cmdHash))
-                return cmdHash;
-
-            Invoker invoker = new Invoker
-            {
-                invokeType = invokerType,
-                invokeClass = invokeClass,
-                invokeFunction = func,
-                cmdIgnoreAuthority = cmdIgnoreAuthority,
-            };
-
-            cmdHandlerDelegates[cmdHash] = invoker;
-
-            if (logger.LogEnabled())
-            {
-                string ingoreAuthorityMessage = invokerType == MirrorInvokeType.Command ? $" IgnoreAuthority:{cmdIgnoreAuthority}" : "";
-                logger.Log($"RegisterDelegate hash: {cmdHash} invokerType: {invokerType} method: {func.GetMethodName()}{ingoreAuthorityMessage}");
-            }
-
-            return cmdHash;
-        }
-
-        static bool CheckIfDeligateExists(Type invokeClass, MirrorInvokeType invokerType, CmdDelegate func, int cmdHash)
-        {
-            if (cmdHandlerDelegates.ContainsKey(cmdHash))
-            {
-                // something already registered this hash
-                Invoker oldInvoker = cmdHandlerDelegates[cmdHash];
-                if (oldInvoker.AreEqual(invokeClass, invokerType, func))
-                {
-                    // it's all right,  it was the same function
-                    return true;
-                }
-
-                logger.LogError($"Function {oldInvoker.invokeClass}.{oldInvoker.invokeFunction.GetMethodName()} and {invokeClass}.{func.GetMethodName()} have the same hash.  Please rename one of them");
-            }
-
-            return false;
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void RegisterCommandDelegate(Type invokeClass, string cmdName, CmdDelegate func, bool ignoreAuthority)
-        {
-            RegisterDelegate(invokeClass, cmdName, MirrorInvokeType.Command, func, ignoreAuthority);
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void RegisterRpcDelegate(Type invokeClass, string rpcName, CmdDelegate func)
-        {
-            RegisterDelegate(invokeClass, rpcName, MirrorInvokeType.ClientRpc, func);
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void RegisterEventDelegate(Type invokeClass, string eventName, CmdDelegate func)
-        {
-            RegisterDelegate(invokeClass, eventName, MirrorInvokeType.SyncEvent, func);
-        }
-
-        // we need a way to clean up delegates after tests
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [System.Obsolete("Removing all delegates will cause problems with other tests as their hashs can not be re-added without reloading scripts", true)]
-        internal static void ClearDelegates()
-        {
-            cmdHandlerDelegates.Clear();
-        }
-
-        /// <summary>
-        /// We need this in order to clean up tests
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        internal static void RemoveDelegates(int hash)
-        {
-            cmdHandlerDelegates.Remove(hash);
-        }
-
-        static bool GetInvokerForHash(int cmdHash, MirrorInvokeType invokeType, out Invoker invoker)
-        {
-            if (cmdHandlerDelegates.TryGetValue(cmdHash, out invoker) && invoker != null && invoker.invokeType == invokeType)
-            {
-                return true;
-            }
-
-            // debug message if not found, or null, or mismatched type
-            // (no need to throw an error, an attacker might just be trying to
-            //  call an cmd with an rpc's hash)
-            if (logger.LogEnabled()) logger.Log("GetInvokerForHash hash:" + cmdHash + " not found");
-
-            return false;
-        }
-
-        // InvokeCmd/Rpc/SyncEventDelegate can all use the same function here
-        internal bool InvokeHandlerDelegate(int cmdHash, MirrorInvokeType invokeType, NetworkReader reader, NetworkConnectionToClient senderConnection = null)
-        {
-            if (GetInvokerForHash(cmdHash, invokeType, out Invoker invoker) && invoker.invokeClass.IsInstanceOfType(this))
-            {
-                currentSender = senderConnection;
-                invoker.invokeFunction(this, reader, senderConnection);
-                currentSender = null;
-                return true;
-            }
-            return false;
-        }
-
-        internal CommandInfo GetCommandInfo(int cmdHash)
-        {
-            if (GetInvokerForHash(cmdHash, MirrorInvokeType.Command, out Invoker invoker) && invoker.invokeClass.IsInstanceOfType(this))
-            {
-                return new CommandInfo
-                {
-                    ignoreAuthority = invoker.cmdIgnoreAuthority
-                };
-            }
-            return default;
-        }
-
-        [Obsolete("Use NetworkBehaviour.GetDelegate instead.")]
-        public static CmdDelegate GetRpcHandler(int cmdHash) => GetDelegate(cmdHash);
-
-        /// <summary>
-        /// Gets the handler function for a given hash
-        /// Can be used by profilers and debuggers
-        /// </summary>
-        /// <param name="cmdHash">rpc function hash</param>
-        /// <returns>The function delegate that will handle the command</returns>
-        public static CmdDelegate GetDelegate(int cmdHash)
-        {
-            if (cmdHandlerDelegates.TryGetValue(cmdHash, out Invoker invoker))
-            {
-                return invoker.invokeFunction;
-            }
-            return null;
-        }
-
-        #endregion
-
-        #region Helpers
-
         // helper function for [SyncVar] GameObjects.
         // IMPORTANT: keep as 'protected', not 'internal', otherwise Weaver
         //            can't resolve it
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        // TODO make this static and adjust weaver to find it
         protected bool SyncVarGameObjectEqual(GameObject newGameObject, uint netIdField)
         {
             uint newNetId = 0;
@@ -557,7 +316,7 @@ namespace Mirror
                     newNetId = identity.netId;
                     if (newNetId == 0)
                     {
-                        logger.LogWarning("SetSyncVarGameObject GameObject " + newGameObject + " has a zero netId. Maybe it is not spawned yet?");
+                        Debug.LogWarning("SetSyncVarGameObject GameObject " + newGameObject + " has a zero netId. Maybe it is not spawned yet?");
                     }
                 }
             }
@@ -566,10 +325,10 @@ namespace Mirror
         }
 
         // helper function for [SyncVar] GameObjects.
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        // dirtyBit is a mask like 00010
         protected void SetSyncVarGameObject(GameObject newGameObject, ref GameObject gameObjectField, ulong dirtyBit, ref uint netIdField)
         {
-            if (getSyncVarHookGuard(dirtyBit))
+            if (GetSyncVarHookGuard(dirtyBit))
                 return;
 
             uint newNetId = 0;
@@ -581,12 +340,12 @@ namespace Mirror
                     newNetId = identity.netId;
                     if (newNetId == 0)
                     {
-                        logger.LogWarning("SetSyncVarGameObject GameObject " + newGameObject + " has a zero netId. Maybe it is not spawned yet?");
+                        Debug.LogWarning("SetSyncVarGameObject GameObject " + newGameObject + " has a zero netId. Maybe it is not spawned yet?");
                     }
                 }
             }
 
-            if (logger.LogEnabled()) logger.Log("SetSyncVar GameObject " + GetType().Name + " bit [" + dirtyBit + "] netfieldId:" + netIdField + "->" + newNetId);
+            // Debug.Log("SetSyncVar GameObject " + GetType().Name + " bit [" + dirtyBit + "] netfieldId:" + netIdField + "->" + newNetId);
             SetDirtyBit(dirtyBit);
             // assign new one on the server, and in case we ever need it on client too
             gameObjectField = newGameObject;
@@ -595,7 +354,6 @@ namespace Mirror
 
         // helper function for [SyncVar] GameObjects.
         // -> ref GameObject as second argument makes OnDeserialize processing easier
-        [EditorBrowsable(EditorBrowsableState.Never)]
         protected GameObject GetSyncVarGameObject(uint netId, ref GameObject gameObjectField)
         {
             // server always uses the field
@@ -606,7 +364,7 @@ namespace Mirror
 
             // client always looks up based on netId because objects might get in and out of range
             // over and over again, which shouldn't null them forever
-            if (NetworkIdentity.spawned.TryGetValue(netId, out NetworkIdentity identity) && identity != null)
+            if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity identity) && identity != null)
                 return gameObjectField = identity.gameObject;
             return null;
         }
@@ -614,7 +372,6 @@ namespace Mirror
         // helper function for [SyncVar] NetworkIdentities.
         // IMPORTANT: keep as 'protected', not 'internal', otherwise Weaver
         //            can't resolve it
-        [EditorBrowsable(EditorBrowsableState.Never)]
         protected bool SyncVarNetworkIdentityEqual(NetworkIdentity newIdentity, uint netIdField)
         {
             uint newNetId = 0;
@@ -623,7 +380,7 @@ namespace Mirror
                 newNetId = newIdentity.netId;
                 if (newNetId == 0)
                 {
-                    logger.LogWarning("SetSyncVarNetworkIdentity NetworkIdentity " + newIdentity + " has a zero netId. Maybe it is not spawned yet?");
+                    Debug.LogWarning("SetSyncVarNetworkIdentity NetworkIdentity " + newIdentity + " has a zero netId. Maybe it is not spawned yet?");
                 }
             }
 
@@ -632,10 +389,10 @@ namespace Mirror
         }
 
         // helper function for [SyncVar] NetworkIdentities.
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        // dirtyBit is a mask like 00010
         protected void SetSyncVarNetworkIdentity(NetworkIdentity newIdentity, ref NetworkIdentity identityField, ulong dirtyBit, ref uint netIdField)
         {
-            if (getSyncVarHookGuard(dirtyBit))
+            if (GetSyncVarHookGuard(dirtyBit))
                 return;
 
             uint newNetId = 0;
@@ -644,11 +401,11 @@ namespace Mirror
                 newNetId = newIdentity.netId;
                 if (newNetId == 0)
                 {
-                    logger.LogWarning("SetSyncVarNetworkIdentity NetworkIdentity " + newIdentity + " has a zero netId. Maybe it is not spawned yet?");
+                    Debug.LogWarning("SetSyncVarNetworkIdentity NetworkIdentity " + newIdentity + " has a zero netId. Maybe it is not spawned yet?");
                 }
             }
 
-            if (logger.LogEnabled()) logger.Log("SetSyncVarNetworkIdentity NetworkIdentity " + GetType().Name + " bit [" + dirtyBit + "] netIdField:" + netIdField + "->" + newNetId);
+            // Debug.Log("SetSyncVarNetworkIdentity NetworkIdentity " + GetType().Name + " bit [" + dirtyBit + "] netIdField:" + netIdField + "->" + newNetId);
             SetDirtyBit(dirtyBit);
             netIdField = newNetId;
             // assign new one on the server, and in case we ever need it on client too
@@ -657,7 +414,6 @@ namespace Mirror
 
         // helper function for [SyncVar] NetworkIdentities.
         // -> ref GameObject as second argument makes OnDeserialize processing easier
-        [EditorBrowsable(EditorBrowsableState.Never)]
         protected NetworkIdentity GetSyncVarNetworkIdentity(uint netId, ref NetworkIdentity identityField)
         {
             // server always uses the field
@@ -668,90 +424,127 @@ namespace Mirror
 
             // client always looks up based on netId because objects might get in and out of range
             // over and over again, which shouldn't null them forever
-            NetworkIdentity.spawned.TryGetValue(netId, out identityField);
+            NetworkClient.spawned.TryGetValue(netId, out identityField);
             return identityField;
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        protected bool SyncVarNetworkBehaviourEqual<T>(T newBehaviour, NetworkBehaviourSyncVar syncField) where T : NetworkBehaviour
+        {
+            uint newNetId = 0;
+            int newComponentIndex = 0;
+            if (newBehaviour != null)
+            {
+                newNetId = newBehaviour.netId;
+                newComponentIndex = newBehaviour.ComponentIndex;
+                if (newNetId == 0)
+                {
+                    Debug.LogWarning("SetSyncVarNetworkIdentity NetworkIdentity " + newBehaviour + " has a zero netId. Maybe it is not spawned yet?");
+                }
+            }
+
+            // netId changed?
+            return syncField.Equals(newNetId, newComponentIndex);
+        }
+
+        // helper function for [SyncVar] NetworkIdentities.
+        // dirtyBit is a mask like 00010
+        protected void SetSyncVarNetworkBehaviour<T>(T newBehaviour, ref T behaviourField, ulong dirtyBit, ref NetworkBehaviourSyncVar syncField) where T : NetworkBehaviour
+        {
+            if (GetSyncVarHookGuard(dirtyBit))
+                return;
+
+            uint newNetId = 0;
+            int componentIndex = 0;
+            if (newBehaviour != null)
+            {
+                newNetId = newBehaviour.netId;
+                componentIndex = newBehaviour.ComponentIndex;
+                if (newNetId == 0)
+                {
+                    Debug.LogWarning($"{nameof(SetSyncVarNetworkBehaviour)} NetworkIdentity " + newBehaviour + " has a zero netId. Maybe it is not spawned yet?");
+                }
+            }
+
+            syncField = new NetworkBehaviourSyncVar(newNetId, componentIndex);
+
+            SetDirtyBit(dirtyBit);
+
+            // assign new one on the server, and in case we ever need it on client too
+            behaviourField = newBehaviour;
+
+            // Debug.Log($"SetSyncVarNetworkBehaviour NetworkIdentity {GetType().Name} bit [{dirtyBit}] netIdField:{oldField}->{syncField}");
+        }
+
+        // helper function for [SyncVar] NetworkIdentities.
+        // -> ref GameObject as second argument makes OnDeserialize processing easier
+        protected T GetSyncVarNetworkBehaviour<T>(NetworkBehaviourSyncVar syncNetBehaviour, ref T behaviourField) where T : NetworkBehaviour
+        {
+            // server always uses the field
+            if (isServer)
+            {
+                return behaviourField;
+            }
+
+            // client always looks up based on netId because objects might get in and out of range
+            // over and over again, which shouldn't null them forever
+            if (!NetworkClient.spawned.TryGetValue(syncNetBehaviour.netId, out NetworkIdentity identity))
+            {
+                return null;
+            }
+
+            behaviourField = identity.NetworkBehaviours[syncNetBehaviour.componentIndex] as T;
+            return behaviourField;
+        }
+
+        // backing field for sync NetworkBehaviour
+        public struct NetworkBehaviourSyncVar : IEquatable<NetworkBehaviourSyncVar>
+        {
+            public uint netId;
+            // limited to 255 behaviours per identity
+            public byte componentIndex;
+
+            public NetworkBehaviourSyncVar(uint netId, int componentIndex) : this()
+            {
+                this.netId = netId;
+                this.componentIndex = (byte)componentIndex;
+            }
+
+            public bool Equals(NetworkBehaviourSyncVar other)
+            {
+                return other.netId == netId && other.componentIndex == componentIndex;
+            }
+
+            public bool Equals(uint netId, int componentIndex)
+            {
+                return this.netId == netId && this.componentIndex == componentIndex;
+            }
+
+            public override string ToString()
+            {
+                return $"[netId:{netId} compIndex:{componentIndex}]";
+            }
+        }
+
         protected bool SyncVarEqual<T>(T value, ref T fieldValue)
         {
             // newly initialized or changed value?
             return EqualityComparer<T>.Default.Equals(value, fieldValue);
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        // dirtyBit is a mask like 00010
         protected void SetSyncVar<T>(T value, ref T fieldValue, ulong dirtyBit)
         {
-            if (logger.LogEnabled()) logger.Log("SetSyncVar " + GetType().Name + " bit [" + dirtyBit + "] " + fieldValue + "->" + value);
+            // Debug.Log("SetSyncVar " + GetType().Name + " bit [" + dirtyBit + "] " + fieldValue + "->" + value);
             SetDirtyBit(dirtyBit);
             fieldValue = value;
         }
-        #endregion
 
-        /// <summary>
-        /// Used to set the behaviour as dirty, so that a network update will be sent for the object.
-        /// these are masks, not bit numbers, ie. 0x004 not 2
-        /// </summary>
-        /// <param name="dirtyBit">Bit mask to set.</param>
-        public void SetDirtyBit(ulong dirtyBit)
-        {
-            syncVarDirtyBits |= dirtyBit;
-        }
-
-        /// <summary>
-        /// This clears all the dirty bits that were set on this script by SetDirtyBits();
-        /// <para>This is automatically invoked when an update is sent for this object, but can be called manually as well.</para>
-        /// </summary>
-        public void ClearAllDirtyBits()
-        {
-            lastSyncTime = Time.time;
-            syncVarDirtyBits = 0L;
-
-            // flush all unsynchronized changes in syncobjects
-            // note: don't use List.ForEach here, this is a hot path
-            //   List.ForEach: 432b/frame
-            //   for: 231b/frame
-            for (int i = 0; i < syncObjects.Count; ++i)
-            {
-                syncObjects[i].Flush();
-            }
-        }
-
-        bool AnySyncObjectDirty()
-        {
-            // note: don't use Linq here. 1200 networked objects:
-            //   Linq: 187KB GC/frame;, 2.66ms time
-            //   for: 8KB GC/frame; 1.28ms time
-            for (int i = 0; i < syncObjects.Count; ++i)
-            {
-                if (syncObjects[i].IsDirty)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        internal bool IsDirty()
-        {
-            if (Time.time - lastSyncTime >= syncInterval)
-            {
-                return syncVarDirtyBits != 0L || AnySyncObjectDirty();
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Virtual function to override to send custom serialization data. The corresponding function to send serialization data is OnDeserialize().
-        /// </summary>
-        /// <remarks>
-        /// <para>The initialState flag is useful to differentiate between the first time an object is serialized and when incremental updates can be sent. The first time an object is sent to a client, it must include a full state snapshot, but subsequent updates can save on bandwidth by including only incremental changes. Note that SyncVar hook functions are not called when initialState is true, only for incremental updates.</para>
-        /// <para>If a class has SyncVars, then an implementation of this function and OnDeserialize() are added automatically to the class. So a class that has SyncVars cannot also have custom serialization functions.</para>
-        /// <para>The OnSerialize function should return true to indicate that an update should be sent. If it returns true, then the dirty bits for that script are set to zero, if it returns false then the dirty bits are not changed. This allows multiple changes to a script to be accumulated over time and sent when the system is ready, instead of every frame.</para>
-        /// </remarks>
-        /// <param name="writer">Writer to use to write to the stream.</param>
-        /// <param name="initialState">If this is being called to send initial state.</param>
-        /// <returns>True if data was written.</returns>
+        /// <summary>Override to do custom serialization (instead of SyncVars/SyncLists). Use OnDeserialize too.</summary>
+        // if a class has syncvars, then OnSerialize/OnDeserialize are added
+        // automatically.
+        //
+        // initialState is true for full spawns, false for delta syncs.
+        //   note: SyncVar hooks are only called when inital=false
         public virtual bool OnSerialize(NetworkWriter writer, bool initialState)
         {
             bool objectWritten = false;
@@ -771,12 +564,7 @@ namespace Mirror
             return objectWritten || syncVarWritten;
         }
 
-
-        /// <summary>
-        /// Virtual function to override to receive custom serialization data. The corresponding function to send serialization data is OnSerialize().
-        /// </summary>
-        /// <param name="reader">Reader to read from the stream.</param>
-        /// <param name="initialState">True if being sent initial state.</param>
+        /// <summary>Override to do custom deserialization (instead of SyncVars/SyncLists). Use OnSerialize too.</summary>
         public virtual void OnDeserialize(NetworkReader reader, bool initialState)
         {
             if (initialState)
@@ -791,12 +579,12 @@ namespace Mirror
             DeserializeSyncVars(reader, initialState);
         }
 
-        // Don't rename. Weaver uses this exact function name.
-        public virtual bool SerializeSyncVars(NetworkWriter writer, bool initialState)
+        // USED BY WEAVER
+        protected virtual bool SerializeSyncVars(NetworkWriter writer, bool initialState)
         {
             return false;
 
-            // SyncVar are writen here in subclass
+            // SyncVar are written here in subclass
 
             // if initialState
             //   write all SyncVars
@@ -805,8 +593,8 @@ namespace Mirror
             //   write dirty SyncVars
         }
 
-        // Don't rename. Weaver uses this exact function name.
-        public virtual void DeserializeSyncVars(NetworkReader reader, bool initialState)
+        // USED BY WEAVER
+        protected virtual void DeserializeSyncVars(NetworkReader reader, bool initialState)
         {
             // SyncVars are read here in subclass
 
@@ -815,20 +603,6 @@ namespace Mirror
             // else
             //   read syncVarDirtyBits
             //   read dirty SyncVars
-        }
-
-        internal ulong DirtyObjectBits()
-        {
-            ulong dirtyObjects = 0;
-            for (int i = 0; i < syncObjects.Count; i++)
-            {
-                SyncObject syncObject = syncObjects[i];
-                if (syncObject.IsDirty)
-                {
-                    dirtyObjects |= 1UL << i;
-                }
-            }
-            return dirtyObjects;
         }
 
         public bool SerializeObjectsAll(NetworkWriter writer)
@@ -847,12 +621,13 @@ namespace Mirror
         {
             bool dirty = false;
             // write the mask
-            writer.WritePackedUInt64(DirtyObjectBits());
+            writer.WriteULong(syncObjectDirtyBits);
             // serializable objects, such as synclists
             for (int i = 0; i < syncObjects.Count; i++)
             {
+                // check dirty mask at nth bit
                 SyncObject syncObject = syncObjects[i];
-                if (syncObject.IsDirty)
+                if ((syncObjectDirtyBits & (1UL << i)) != 0)
                 {
                     syncObject.OnSerializeDelta(writer);
                     dirty = true;
@@ -872,9 +647,10 @@ namespace Mirror
 
         internal void DeSerializeObjectsDelta(NetworkReader reader)
         {
-            ulong dirty = reader.ReadPackedUInt64();
+            ulong dirty = reader.ReadULong();
             for (int i = 0; i < syncObjects.Count; i++)
             {
+                // check dirty mask at nth bit
                 SyncObject syncObject = syncObjects[i];
                 if ((dirty & (1UL << i)) != 0)
                 {
@@ -891,61 +667,25 @@ namespace Mirror
             }
         }
 
-        // Deprecated 04/20/2020
-        /// <summary>
-        /// Obsolete: Use <see cref="OnStopClient()">OnStopClient()</see> instead
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Override OnStopClient() instead")]
-        public virtual void OnNetworkDestroy() { }
+        /// <summary>Like Start(), but only called on server and host.</summary>
+        public virtual void OnStartServer() {}
 
-        /// <summary>
-        /// This is invoked on clients when the server has caused this object to be destroyed.
-        /// <para>This can be used as a hook to invoke effects or do client specific cleanup.</para>
-        /// </summary>
-        public virtual void OnStopClient()
-        {
-#pragma warning disable CS0618 // Type or member is obsolete
-            // backwards compatibility
-            OnNetworkDestroy();
-#pragma warning restore CS0618 // Type or member is obsolete
-        }
+        /// <summary>Stop event, only called on server and host.</summary>
+        public virtual void OnStopServer() {}
 
-        /// <summary>
-        /// This is invoked for NetworkBehaviour objects when they become active on the server.
-        /// <para>This could be triggered by NetworkServer.Listen() for objects in the scene, or by NetworkServer.Spawn() for objects that are dynamically created.</para>
-        /// <para>This will be called for objects on a "host" as well as for object on a dedicated server.</para>
-        /// </summary>
-        public virtual void OnStartServer() { }
+        /// <summary>Like Start(), but only called on client and host.</summary>
+        public virtual void OnStartClient() {}
 
-        /// <summary>
-        /// Invoked on the server when the object is unspawned
-        /// <para>Useful for saving object data in persistant storage</para>
-        /// </summary>
-        public virtual void OnStopServer() { }
+        /// <summary>Stop event, only called on client and host.</summary>
+        public virtual void OnStopClient() {}
 
-        /// <summary>
-        /// Called on every NetworkBehaviour when it is activated on a client.
-        /// <para>Objects on the host have this function called, as there is a local client on the host. The values of SyncVars on object are guaranteed to be initialized correctly with the latest state from the server when this function is called on the client.</para>
-        /// </summary>
-        public virtual void OnStartClient() { }
+        /// <summary>Like Start(), but only called on client and host for the local player object.</summary>
+        public virtual void OnStartLocalPlayer() {}
 
-        /// <summary>
-        /// Called when the local player object has been set up.
-        /// <para>This happens after OnStartClient(), as it is triggered by an ownership message from the server. This is an appropriate place to activate components or functionality that should only be active for the local player, such as cameras and input.</para>
-        /// </summary>
-        public virtual void OnStartLocalPlayer() { }
+        /// <summary>Like Start(), but only called for objects the client has authority over.</summary>
+        public virtual void OnStartAuthority() {}
 
-        /// <summary>
-        /// This is invoked on behaviours that have authority, based on context and <see cref="NetworkIdentity.hasAuthority">NetworkIdentity.hasAuthority</see>.
-        /// <para>This is called after <see cref="OnStartServer">OnStartServer</see> and before <see cref="OnStartClient">OnStartClient.</see></para>
-        /// <para>When <see cref="NetworkIdentity.AssignClientAuthority">AssignClientAuthority</see> is called on the server, this will be called on the client that owns the object. When an object is spawned with <see cref="NetworkServer.Spawn">NetworkServer.Spawn</see> with a NetworkConnection parameter included, this will be called on the client that owns the object.</para>
-        /// </summary>
-        public virtual void OnStartAuthority() { }
-
-        /// <summary>
-        /// This is invoked on behaviours when authority is removed.
-        /// <para>When NetworkIdentity.RemoveClientAuthority is called on the server, this will be called on the client that owns the object.</para>
-        /// </summary>
-        public virtual void OnStopAuthority() { }
+        /// <summary>Stop event, only called for objects the client has authority over.</summary>
+        public virtual void OnStopAuthority() {}
     }
 }

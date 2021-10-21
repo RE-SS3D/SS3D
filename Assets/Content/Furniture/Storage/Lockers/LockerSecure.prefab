@@ -12,8 +12,6 @@ GameObject:
   - component: {fileID: 5649368739873476284}
   - component: {fileID: 3491127253892038410}
   - component: {fileID: 7187836497830633180}
-  - component: {fileID: 7156493490212423846}
-  - component: {fileID: 4663871330398109238}
   m_Layer: 14
   m_Name: LockerDoor
   m_TagString: Untagged
@@ -28,7 +26,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1187284634159131357}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.256905, y: 0.8407, z: 0.2583}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -96,40 +94,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.4809304, y: 1.5629163, z: 0.09296769}
   m_Center: {x: -0.25684312, y: 0.0006606579, z: -0.00045208633}
---- !u!114 &7156493490212423846
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1187284634159131357}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
---- !u!114 &4663871330398109238
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1187284634159131357}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
 --- !u!1 &2518288170112121279
 GameObject:
   m_ObjectHideFlags: 0
@@ -141,8 +105,6 @@ GameObject:
   - component: {fileID: 439414536271836042}
   - component: {fileID: 8929508831394641467}
   - component: {fileID: 8593928708533880225}
-  - component: {fileID: 2132914308416373669}
-  - component: {fileID: 2309828676942278108}
   m_Layer: 14
   m_Name: LockerDoorLock
   m_TagString: Untagged
@@ -212,40 +174,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &2132914308416373669
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2518288170112121279}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
---- !u!114 &2309828676942278108
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2518288170112121279}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
 --- !u!1 &2736350153294575479
 GameObject:
   m_ObjectHideFlags: 0
@@ -258,8 +186,6 @@ GameObject:
   - component: {fileID: 6519191594370435264}
   - component: {fileID: 8089250908804255039}
   - component: {fileID: 6538407160183515828}
-  - component: {fileID: 8460467522893431941}
-  - component: {fileID: 5039700166277464281}
   m_Layer: 14
   m_Name: LockerLock
   m_TagString: Untagged
@@ -274,7 +200,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2736350153294575479}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -341,40 +267,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.09149597, y: 0.22393996, z: 0.28642678}
   m_Center: {x: -0.29023173, y: 0.84999895, z: 0.1568953}
---- !u!114 &8460467522893431941
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2736350153294575479}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
---- !u!114 &5039700166277464281
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2736350153294575479}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
 --- !u!1 &2876708453869312076
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,12 +283,11 @@ GameObject:
   - component: {fileID: 2313279728372933186}
   - component: {fileID: 226357803256970257}
   - component: {fileID: 8390364960802322756}
-  - component: {fileID: 9070210520109077429}
-  - component: {fileID: 2520167261024532551}
-  - component: {fileID: -8913688814251431353}
-  - component: {fileID: 8292858669515769004}
-  - component: {fileID: 8628883032725803104}
-  - component: {fileID: 1656061045202297066}
+  - component: {fileID: 6789977180281552830}
+  - component: {fileID: 6769492389543985728}
+  - component: {fileID: 2332770887244154971}
+  - component: {fileID: 5268824920572218968}
+  - component: {fileID: 959800382168891740}
   m_Layer: 0
   m_Name: LockerSecure
   m_TagString: Untagged
@@ -434,7 +325,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 0c883e26a8fe3b6428667bdaf906cc9a
   hasSpawned: 0
 --- !u!114 &5797838942515745206
 MonoBehaviour:
@@ -451,9 +343,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!33 &8184669867232619282
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -549,7 +452,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.63288033, y: 1.7198707, z: 0.55178964}
   m_Center: {x: 0.000000044703484, y: 0.8598699, z: 0.0024448484}
---- !u!114 &9070210520109077429
+--- !u!114 &6789977180281552830
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -558,33 +461,32 @@ MonoBehaviour:
   m_GameObject: {fileID: 2876708453869312076}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Secure Locker
-  Text: Stores stuff.
-  MaxDistance: 0
---- !u!114 &2520167261024532551
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2876708453869312076}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
-  StorageType: 0
-  Pile: 0
-  OnlyStoreWhenOpen: 1
-  MaxDistance: 1.5
-  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
---- !u!114 &-8913688814251431353
+  attachedContainer: {fileID: 6769492389543985728}
+  containerSync: {fileID: 2332770887244154971}
+  containerInteractive: {fileID: 5268824920572218968}
+  containerUi: {fileID: 0}
+  openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
+  takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
+  storeIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
+  viewIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
+  attachmentOffset: {x: 0, y: 0, z: 0}
+  containerName: locker
+  onlyStoreWhenOpen: 1
+  openWhenContainerViewed: 0
+  size: {x: 4, y: 8}
+  hideItems: 1
+  attachItems: 1
+  startFilter: {fileID: 0}
+  initialized: 1
+  maxDistance: 5
+  isOpenable: 1
+  isInteractive: 1
+  hasUi: 1
+  hasCustomInteraction: 0
+--- !u!114 &6769492389543985728
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -596,25 +498,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HideItems: 1
-  AttachItems: 1
-  AttachmentOffset: {x: 0, y: 0.5, z: 0}
---- !u!114 &8292858669515769004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2876708453869312076}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AttachedContainer: {fileID: -8913688814251431353}
-  Size: {x: 4, y: 8}
-  StartFilter: {fileID: 0}
---- !u!114 &8628883032725803104
+  containerDescriptor: {fileID: 6789977180281552830}
+--- !u!114 &2332770887244154971
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -628,7 +513,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
---- !u!114 &1656061045202297066
+--- !u!114 &5268824920572218968
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -637,11 +522,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 2876708453869312076}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3ca34599d24491183415a2fdc4fc033, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CheckObserversInterval: 1
-  AttachedContainer: {fileID: 0}
+  syncMode: 0
+  syncInterval: 0.1
+  OpenIcon: {fileID: 0}
+  containerDescriptor: {fileID: 6789977180281552830}
+--- !u!114 &959800382168891740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876708453869312076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisplayName: Secure locker
+  Text: Stores stuff
+  MaxDistance: 0
 --- !u!1 &5007033570441933088
 GameObject:
   m_ObjectHideFlags: 0
@@ -653,8 +555,6 @@ GameObject:
   - component: {fileID: 5853932283510933203}
   - component: {fileID: 6374220681041953136}
   - component: {fileID: 5670544077083442192}
-  - component: {fileID: 2592951851105433910}
-  - component: {fileID: 3795129234429139735}
   m_Layer: 14
   m_Name: LockerLockLight
   m_TagString: Untagged
@@ -723,37 +623,3 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &2592951851105433910
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5007033570441933088}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
---- !u!114 &3795129234429139735
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5007033570441933088}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
