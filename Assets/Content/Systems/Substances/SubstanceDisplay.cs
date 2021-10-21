@@ -116,6 +116,12 @@ namespace SS3D.Content.Systems.Substances
         [ClientRpc]
         private void RpcUpdateDisplay(Vector3 position, Vector3 scale, Color color, float relativeVolume)
         {
+            // Ensure this is initialised.
+            if (meshRenderer == null)
+            {
+                Start();
+            }
+            
             Transform trans = DisplayObject.transform;
             trans.localPosition = position;
             trans.localScale = scale;
