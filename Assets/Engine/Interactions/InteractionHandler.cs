@@ -4,8 +4,10 @@ using System.Linq;
 using Mirror;
 using SS3D.Engine.Inventory;
 using SS3D.Engine.Inventory.Extensions;
+using SS3D.Engine.Examine;
 using UnityEngine;
 using UnityEngine.EventSystems;
+ 
 
 namespace SS3D.Engine.Interactions
 {
@@ -24,14 +26,22 @@ namespace SS3D.Engine.Interactions
         private GameObject menuPrefab = null;
 
         private Camera camera;
+        private CompositeItemSelector selector;
+        private GameObject lastGameObjectPointed;
 
         private void Start()
         {
             camera = CameraManager.singleton.playerCamera;
+            selector = camera.GetComponent<CompositeItemSelector>();
         }
 
         public void Update()
         {
+            if (selector.CurrentExaminable != null)
+            {
+                lastGameObjectPointed = selector.CurrentExaminable;
+            }
+
             // Ensure that mouse isn't over ui (game objects aren't tracked by the eventsystem, so ispointer would return false
             if (!isLocalPlayer || camera == null || EventSystem.current.IsPointerOverGameObject())
             {
@@ -47,13 +57,12 @@ namespace SS3D.Engine.Interactions
                 }
 
                 // Run the most prioritised action
-                var ray = camera.ScreenPointToRay(Input.mousePosition);
-                var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+                var viableInteractions = GetViableInteractions(out InteractionEvent interactionEvent);
 
                 if (viableInteractions.Count > 0)
                 {
                     interactionEvent.Target = viableInteractions[0].Target;
-                    CmdRunInteraction(ray, 0, viableInteractions[0].Interaction.GetName(interactionEvent));
+                    CmdRunInteraction(0, viableInteractions[0].Interaction.GetName(interactionEvent));
                 }
 
             }
@@ -78,8 +87,7 @@ namespace SS3D.Engine.Interactions
                 }
                 else
                 {
-                    var ray = camera.ScreenPointToRay(Input.mousePosition);
-                    var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+                    var viableInteractions = GetViableInteractions(out InteractionEvent interactionEvent);
                     if (viableInteractions.Select(x => x.Interaction).ToList().Count > 0)
                     {
                         // Create a menu that will run the given action when clicked
@@ -91,7 +99,7 @@ namespace SS3D.Engine.Interactions
                         activeMenu.Interactions = viableInteractions.Select(x => x.Interaction).ToList();
                         activeMenu.onSelect = interaction =>
                         {
-                            CmdRunInteraction(ray, viableInteractions.FindIndex(x => x.Interaction == interaction),
+                            CmdRunInteraction(viableInteractions.FindIndex(x => x.Interaction == interaction),
                                 interaction.GetName(interactionEvent));
                         };
                     }
@@ -229,9 +237,9 @@ namespace SS3D.Engine.Interactions
          * </param>
          */
         [Command]
-        private void CmdRunInteraction(Ray ray, int index, string name)
+        private void CmdRunInteraction(int index, string name)
         {
-            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+            List<InteractionEntry> viableInteractions = GetViableInteractions(out InteractionEvent interactionEvent);
             if (index >= viableInteractions.Count)
             {
                 Debug.LogError($"Interaction received from client {gameObject.name} can not occur! Server-client misalignment.");
@@ -249,7 +257,7 @@ namespace SS3D.Engine.Interactions
             InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
             if (chosenEntry.Interaction.CreateClient(interactionEvent) != null)
             {
-                RpcExecuteClientInteraction(ray, index, name, reference.Id);
+                RpcExecuteClientInteraction(index, name, reference.Id);
             }
             
             // TODO: Keep track of interactions for cancellation
@@ -259,9 +267,9 @@ namespace SS3D.Engine.Interactions
         /// Confirms an interaction issued by a client
         /// </summary>
         [ClientRpc]
-        private void RpcExecuteClientInteraction(Ray ray, int index, string name, int referenceId)
+        private void RpcExecuteClientInteraction(int index, string name, int referenceId)
         {
-            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+            List<InteractionEntry> viableInteractions = GetViableInteractions(out InteractionEvent interactionEvent);
             if (index >= viableInteractions.Count)
             {
                 Debug.LogWarning($"Interaction received from server can not occur! Server-client misalignment on object {gameObject.name}.", this);
@@ -284,7 +292,7 @@ namespace SS3D.Engine.Interactions
         /// <param name="ray">The ray to use in ray casting</param>
         /// <param name="interactionEvent">The produced interaction event</param>
         /// <returns>A list of possible interactions</returns>
-        private List<InteractionEntry> GetViableInteractions(Ray ray, out InteractionEvent interactionEvent)
+        private List<InteractionEntry> GetViableInteractions(out InteractionEvent interactionEvent)
         {
             // Get source that's currently interacting (eg. hand, tool)
             IInteractionSource source = GetActiveInteractionSource();
@@ -295,17 +303,17 @@ namespace SS3D.Engine.Interactions
             }
             
             List<IInteractionTarget> targets = new List<IInteractionTarget>();
-            // Raycast to find target game object
+
+            // Raycast to find interaction point
             Vector3 point = Vector3.zero;
-            if (Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask, QueryTriggerInteraction.Ignore))
+            var ray = camera.ScreenPointToRay(Input.mousePosition);
+            if(Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask, QueryTriggerInteraction.Ignore))
             {
                 point = hit.point;
-                GameObject targetGo = hit.transform.gameObject;
-                targets = GetTargetsFromGameObject(source, targetGo);
+                targets = GetTargetsFromGameObject(source, lastGameObjectPointed);
             }
-            
-            interactionEvent = new InteractionEvent(source, targets[0], point);
 
+            interactionEvent = new InteractionEvent(source, targets[0], point);
             return GetInteractionsFromTargets(source, targets, interactionEvent);
         }
 

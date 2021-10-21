@@ -467,6 +467,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 6769492389543985728}
   containerSync: {fileID: 2332770887244154971}
   containerInteractive: {fileID: 5268824920572218968}
+  containerItemDisplay: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
   takeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
@@ -477,7 +478,7 @@ MonoBehaviour:
   onlyStoreWhenOpen: 1
   openWhenContainerViewed: 0
   size: {x: 4, y: 8}
-  hideItems: 1
+  hideItems: 0
   attachItems: 1
   startFilter: {fileID: 0}
   initialized: 1
@@ -486,6 +487,9 @@ MonoBehaviour:
   isInteractive: 1
   hasUi: 1
   hasCustomInteraction: 0
+  hasCustomDisplay: 0
+  displays: []
+  numberDisplay: 0
 --- !u!114 &6769492389543985728
 MonoBehaviour:
   m_ObjectHideFlags: 0
