@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using SS3D.Engine.FOV;
 
 namespace SS3D.Engine.FOV.Editor
 {
@@ -29,8 +30,8 @@ namespace SS3D.Engine.FOV.Editor
             GUIStyle labelStyle = new GUIStyle {fontSize = 14};
             var viewPoints = fov.viewPoints;
 
-            Vector3 viewAngleA = fov.DirectionFromAngle(-viewConeWidthProp.floatValue / 2, false);
-            Vector3 viewAngleB = fov.DirectionFromAngle(viewConeWidthProp.floatValue / 2, false);
+            Vector3 viewAngleA = FieldOfView.DirectionFromAngle(-viewConeWidthProp.floatValue / 2, false);
+            Vector3 viewAngleB = FieldOfView.DirectionFromAngle(viewConeWidthProp.floatValue / 2, false);
 
             var center = fov.target.position + detectionOffsetProp.vector3Value;
 
@@ -51,7 +52,7 @@ namespace SS3D.Engine.FOV.Editor
             style.normal.textColor = Color.red;
            
             Handles.Label(viewPoints[0], "0", style);
-            for (int i = 1; i < fov.viewPointsIndex; i++)
+            for (int i = 1; i < fov.GetViewPointsIndex(); i++)
             {
                 Handles.Label(viewPoints[i], i.ToString(), style);
                 Handles.DrawLine(viewPoints[i], center);

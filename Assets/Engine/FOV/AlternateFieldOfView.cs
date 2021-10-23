@@ -6,7 +6,7 @@ using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace SS3D.Engine.FOV
+namespace SS3D.Engine.FOVAlt
 {
     public class AlternateFieldOfView : MonoBehaviour
     {

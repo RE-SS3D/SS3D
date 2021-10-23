@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using Mirror;
 using Unity.Collections;
 using Unity.Jobs;
-using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -58,21 +57,68 @@ namespace SS3D.Engine.FOV
         private Mesh viewMesh;
 
         const int MAX_VERTICES = 800;
-        
+
         [NonSerialized]
         public NativeArray<Vector3> viewPoints;
-        [NonSerialized]
-        public int viewPointsIndex;
-        
+
         // Stores triangles for mesh
         private NativeArray<ushort> triangles;
         // Buffer for view cast batching
-        private ViewCastInfo[] viewCastResults;
+        private NativeArray<ViewCastInfo> viewCastResults;
         // Buffer for view cast angles
-        private float[] angleBuffer;
-        
-        static ProfilerMarker meshPerformanceMarker = new ProfilerMarker("FieldOfView.Mesh");
-        static ProfilerMarker pointsPerformanceMarker = new ProfilerMarker("FieldOfView.ViewPoints");
+        private NativeArray<float> angleBuffer;
+
+        private FovSettings fovSettings;
+        private NativeArray<RaycastHit> hits;
+        private NativeArray<RaycastCommand> commands;
+        private NativeArray<int> viewPointsIndex;
+        private JobHandle finalJobHandle;
+
+        public int GetViewPointsIndex()
+        {
+            return viewPointsIndex[0];
+        }
+
+        private void Start()
+        {
+            Initialize();
+        }
+
+        private void Update()
+        {
+            // Field of View should not update before player spawn.
+            if (!target) return;
+
+            // Ensure the FOV follows the player
+            transform.position = target.transform.position;
+
+            // Allocate any NativeArrays required for our jobs
+            PerformTemporaryNativeArrayAllocations();
+
+            // Schedule the jobs (to be completed in LateUpdate)
+            ScheduleMeshCalculationJobs();
+        }
+
+        private void LateUpdate()
+        {
+            if (!target) return;
+
+            // Complete and post-process the jobs
+            CompleteMeshCalculationJobs();
+
+            // Dispose of NativeArrays to prevent memory leak
+            PerformTemporaryNativeArrayDisposals();
+        }
+
+        private void OnDestroy()
+        {
+            viewMesh.Clear();
+            viewPoints.Dispose();
+            triangles.Dispose();
+            angleBuffer.Dispose();
+            viewCastResults.Dispose();
+            viewPointsIndex.Dispose();
+        }
 
         private void OnEnable()
         {
@@ -84,149 +130,268 @@ namespace SS3D.Engine.FOV
             fog.SetActive(false);
         }
 
-        private void Start()
+        private void PerformTemporaryNativeArrayAllocations()
+        {
+            hits = new NativeArray<RaycastHit>(angleBuffer.Length, Allocator.TempJob);
+            commands = new NativeArray<RaycastCommand>(angleBuffer.Length, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+        }
+
+        private void PerformTemporaryNativeArrayDisposals()
+        {
+            hits.Dispose();
+            commands.Dispose();
+        }
+
+        private void Initialize()
         {
             // Only run when graphics are present
             // TODO: Only run on client
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
             {
                 Destroy(gameObject);
+                return;
             }
-            
+
+            // Wrap up the FOV settings so we can pass to the Job System conveniently
+            fovSettings = new FovSettings(meshResolution, viewConeWidth, viewRange, edgeDistanceThreshold, edgeResolveIterations, obstacleMask);
+
             viewMeshFilter = GetComponent<MeshFilter>();
 
             viewMesh = new Mesh();
             viewMesh.name = "View Mesh";
             viewMeshFilter.mesh = viewMesh;
 
-            int maxViewPoints = (int) (viewConeWidth * meshResolution) * 3 + 1;
+            int maxViewPoints = (int)(fovSettings.viewConeWidth * fovSettings.meshResolution) * 3 + 1;
             viewPoints = new NativeArray<Vector3>(maxViewPoints + 1, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             triangles = new NativeArray<ushort>((maxViewPoints + 1) * 3, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             for (ushort i = 0; i < maxViewPoints - 2; i++)
             {
                 triangles[i * 3] = 0;
-                triangles[i * 3 + 1] = unchecked((ushort) (i + 1u));
-                triangles[i * 3 + 2] = unchecked((ushort) (i + 2u));
+                triangles[i * 3 + 1] = unchecked((ushort)(i + 1u));
+                triangles[i * 3 + 2] = unchecked((ushort)(i + 2u));
             }
-            
-            viewCastResults = new ViewCastInfo[Mathf.RoundToInt(viewConeWidth * meshResolution) + 1];
-            angleBuffer = new float[viewCastResults.Length];
+
+            viewCastResults = new NativeArray<ViewCastInfo>(Mathf.RoundToInt(fovSettings.viewConeWidth * fovSettings.meshResolution) + 1, Allocator.Persistent);
+            angleBuffer = new NativeArray<float>(viewCastResults.Length, Allocator.Persistent);
+            viewPointsIndex = new NativeArray<int>(1, Allocator.Persistent);
         }
 
-        private void OnDestroy()
-        {
-            viewMesh.Clear();
-            viewPoints.Dispose();
-            triangles.Dispose();
-        }
 
-        private void Update()
+        private void ScheduleMeshCalculationJobs()
         {
-            if(!target) return;
-            transform.position = target.transform.position;
-            DrawFieldOfView();
-        }
-
-        public Vector3 DirectionFromAngle(float angleInDegrees, bool angleIsGlobal)
-        {
-            if (!angleIsGlobal)
+            PrepareForRaycastJob prepareForRaycastJob = new PrepareForRaycastJob
             {
-                angleInDegrees += transform.eulerAngles.y;
-            }
-            
-            var rotation = Quaternion.AngleAxis(angleInDegrees, Vector3.up);
-            return rotation * Vector3.forward;
+                fovSettings = fovSettings,
+                origin = target.transform.position,
+                angles = angleBuffer,
+                commands = commands
+            };
+            JobHandle prepareForRaycastHandle = prepareForRaycastJob.Schedule();
+
+            JobHandle performRaycastHandle = RaycastCommand.ScheduleBatch(commands, hits, 32, prepareForRaycastHandle);
+
+            FillResultsArrayJob fillResultsArrayJob = new FillResultsArrayJob
+            {
+                fovSettings = fovSettings,
+                origin = target.transform.position,
+                hits = hits,
+                angles = angleBuffer,
+                viewCastResults = viewCastResults
+            };
+            JobHandle fillResultsArrayHandle = fillResultsArrayJob.Schedule(performRaycastHandle);
+
+            CalculateViewPointsJob calculateViewPointsJob = new CalculateViewPointsJob
+            {
+                fovSettings = fovSettings,
+                origin = target.transform.position,
+                viewCastResults = viewCastResults,
+                viewPointsIndex = viewPointsIndex,
+                viewPoints = viewPoints
+            };
+            JobHandle calculateViewPointsHandle = calculateViewPointsJob.Schedule(fillResultsArrayHandle);
+
+            finalJobHandle = calculateViewPointsHandle;
         }
 
-        public void DrawFieldOfView()
+        private void CompleteMeshCalculationJobs()
         {
-            pointsPerformanceMarker.Begin();
-            CalculateViewPoints();
-            pointsPerformanceMarker.End();
 
-            meshPerformanceMarker.Begin();
-
-            int triangleCount = (viewPointsIndex - 2) * 3;
+            finalJobHandle.Complete();
+            int vpIndex = viewPointsIndex[0];
+            int triangleCount = (vpIndex - 2) * 3;
             viewPoints[0] = transform.InverseTransformPoint(target.transform.position);
-            Vector3[] vertices = new Vector3[viewPointsIndex];
-            for(int i = 1; i < viewPointsIndex; i++) vertices[i] = transform.InverseTransformPoint(viewPoints[i]);
-            viewMesh.SetVertexBufferParams(viewPointsIndex, new VertexAttributeDescriptor(VertexAttribute.Position));
-            viewMesh.SetVertexBufferData(vertices, 0, 0, viewPointsIndex);
+            Vector3[] vertices = new Vector3[vpIndex];
+            for (int i = 1; i < vpIndex; i++) vertices[i] = transform.InverseTransformPoint(viewPoints[i]);
+            viewMesh.SetVertexBufferParams(vpIndex, new VertexAttributeDescriptor(VertexAttribute.Position));
+            viewMesh.SetVertexBufferData(vertices, 0, 0, vpIndex);
             viewMesh.SetIndexBufferParams(triangleCount, IndexFormat.UInt16);
             viewMesh.SetIndexBufferData(triangles, 0, 0, triangleCount);
             viewMesh.subMeshCount = 1;
             viewMesh.SetSubMesh(0, new SubMeshDescriptor(0, triangleCount));
-            
-            meshPerformanceMarker.End();
         }
 
-        public void CalculateViewPoints()
+        /// <summary>
+        /// This stores the FOV settings in a single struct, allowing for convenient passing to the Job System.
+        /// </summary>
+        public struct FovSettings
         {
-            int stepCount = Mathf.RoundToInt(viewConeWidth * meshResolution);
-            float stepAngleSize = viewConeWidth / stepCount;
-            float halfCone = viewConeWidth / 2;
+            public float meshResolution;
+            public float viewConeWidth;
+            public float viewRange;
+            public float edgeDistanceThreshold;
+            public int edgeResolveIterations;
+            public LayerMask obstacleMask;
 
-            // Resize when changed in editor
-            if (viewCastResults.Length < stepCount)
+            public FovSettings(float meshResolution, float viewConeWidth, float viewRange, float edgeDistanceThreshold, int edgeResolveIterations, LayerMask obstacleMask)
             {
-                Array.Resize(ref viewCastResults, stepCount + 1);
-                Array.Resize(ref angleBuffer, stepCount + 1);
+                this.meshResolution = meshResolution;
+                this.viewConeWidth = viewConeWidth;
+                this.viewRange = viewRange;
+                this.edgeDistanceThreshold = edgeDistanceThreshold;
+                this.edgeResolveIterations = edgeResolveIterations;
+                this.obstacleMask = obstacleMask;
             }
+        }
 
-            // Set required angles
-            for (var i = 0; i <= stepCount; i++)
-            {
-                angleBuffer[i] = halfCone + stepAngleSize * i;
-            }
-            
-            // Perform raycast batch
-            ViewCastBatch(angleBuffer, viewCastResults);
-            
-            viewPointsIndex = 1;
-            ViewCastInfo oldViewCast = new ViewCastInfo();
-            for (int i = 0; i <= stepCount; i++)
-            {
-                ViewCastInfo newViewCast = viewCastResults[i];
+        #region Job Definitions
 
-                bool edgeDistanceThresholdExceeded =
-                    Mathf.Abs(oldViewCast.Distance - newViewCast.Distance) > edgeDistanceThreshold;
-                if (oldViewCast.Hit != newViewCast.Hit ||
-                    (oldViewCast.Hit && newViewCast.Hit && oldViewCast.Normal != newViewCast.Normal &&
-                     edgeDistanceThresholdExceeded))
+        private struct CalculateViewPointsJob : IJob
+        {
+            public FovSettings fovSettings;
+            public Vector3 origin;
+            [ReadOnly] public NativeArray<ViewCastInfo> viewCastResults;
+            public NativeArray<int> viewPointsIndex;
+            public NativeArray<Vector3> viewPoints;
+
+            public void Execute()
+            {
+                int index = 1;
+                ViewCastInfo oldViewCast = new ViewCastInfo();
+                int stepCount = Mathf.RoundToInt(fovSettings.viewConeWidth * fovSettings.meshResolution);
+                for (int i = 0; i < stepCount; i++)
                 {
-                    EdgeInfo edge = FindEdge(oldViewCast, newViewCast);
-                    if (edge.PointA != Vector3.zero)
+                    ViewCastInfo newViewCast = viewCastResults[i];
+                    bool edgeDistanceThresholdExceeded =
+                        Mathf.Abs(oldViewCast.Distance - newViewCast.Distance) > fovSettings.edgeDistanceThreshold;
+                    if (oldViewCast.Hit != newViewCast.Hit ||
+                        (oldViewCast.Hit && newViewCast.Hit && oldViewCast.Normal != newViewCast.Normal &&
+                         edgeDistanceThresholdExceeded))
                     {
-                        viewPoints[viewPointsIndex] = edge.PointA;
-                        viewPointsIndex++;
+                        EdgeInfo edge = FindEdge(oldViewCast, newViewCast, fovSettings, origin);
+                        if (edge.PointA != Vector3.zero)
+                        {
+                            viewPoints[index] = edge.PointA;
+                            index++;
+                        }
+                        if (edge.PointB != Vector3.zero)
+                        {
+                            viewPoints[index] = edge.PointB;
+                            index++;
+                        }
                     }
-                    if (edge.PointB != Vector3.zero)
-                    {
-                        viewPoints[viewPointsIndex] = edge.PointB;
-                        viewPointsIndex++;
-                    }
+
+                    viewPoints[index] = newViewCast.Point;
+                    index++;
+                    oldViewCast = newViewCast;
                 }
 
-                viewPoints[viewPointsIndex] = newViewCast.Point;
-                viewPointsIndex++;
-                oldViewCast = newViewCast;
+                viewPointsIndex[0] = index;
             }
         }
 
-        private EdgeInfo FindEdge(ViewCastInfo minViewCast, ViewCastInfo maxViewCast)
+        private struct PrepareForRaycastJob : IJob
+        {
+            public FovSettings fovSettings;
+            public Vector3 origin;
+            public NativeArray<float> angles;
+            public NativeArray<RaycastCommand> commands;
+
+
+            public void Execute()
+            {
+                int stepCount = Mathf.RoundToInt(fovSettings.viewConeWidth * fovSettings.meshResolution);
+                float stepAngleSize = fovSettings.viewConeWidth / stepCount;
+                float halfCone = fovSettings.viewConeWidth / 2;
+
+                // Set the angles. TODO: only set this in Start(), as it doesn't change.
+                for (int i = 0; i <= stepCount; i++)
+                {
+                    angles[i] = halfCone + stepAngleSize * i;
+                }
+
+                // Create Raycast commands
+                for (int i = 0; i < angles.Length; i++)
+                {
+                    commands[i] = new RaycastCommand(origin, DirectionFromAngle(angles[i]), fovSettings.viewRange, fovSettings.obstacleMask);
+                }
+            }
+        }
+
+        private struct FillResultsArrayJob : IJob
+        {
+            public FovSettings fovSettings;
+            public Vector3 origin;
+            [ReadOnly] public NativeArray<RaycastHit> hits;
+            [ReadOnly] public NativeArray<float> angles;
+            public NativeArray<ViewCastInfo> viewCastResults;
+
+            public void Execute()
+            {
+                for (int i = 0; i < hits.Length; i++)
+                {
+                    RaycastHit hit = hits[i];
+
+                    if (hit.collider)
+                    {
+                        // There was a hit! Use the hit point.
+                        viewCastResults[i] = new ViewCastInfo(true, hit.point, hit.distance, angles[i], hit.normal);
+                    }
+                    else
+                    {
+                        // We didn't hit anything. Calculate the point at the required angle and distance.
+                        viewCastResults[i] = new ViewCastInfo(false,
+                            origin + DirectionFromAngle(angles[i]) * fovSettings.viewRange,
+                            fovSettings.viewRange,
+                            angles[i],
+                            hit.normal);
+                    }
+                }
+            }
+
+        }
+
+
+        #endregion
+
+        public static Vector3 DirectionFromAngle(float angleInDegrees, bool angleIsGlobal = true)
+        {
+            // TODO: Fix the below disaster... It will cause chaos in the editor...
+
+            /*
+            if (!angleIsGlobal)
+            {
+                angleInDegrees += transform.eulerAngles.y;
+            }
+            */
+
+            var rotation = Quaternion.AngleAxis(angleInDegrees, Vector3.up);
+            return rotation * Vector3.forward;
+        }
+
+        private static EdgeInfo FindEdge(ViewCastInfo minViewCast, ViewCastInfo maxViewCast, FovSettings fovSettings, Vector3 origin)
         {
             float minAngle = minViewCast.Angle;
             float maxAngle = maxViewCast.Angle;
             Vector3 minPoint = Vector3.zero;
             Vector3 maxPoint = Vector3.zero;
 
-            for (int i = 0; i < edgeResolveIterations; i++)
+            for (int i = 0; i < fovSettings.edgeResolveIterations; i++)
             {
                 float angle = (minAngle + maxAngle) / 2;
-                ViewCastInfo newViewCast = ViewCast(angle);
+                ViewCastInfo newViewCast = ViewCast(angle, fovSettings, origin);
 
                 bool edgeDistanceThresholdExceeded =
-                    Mathf.Abs(minViewCast.Distance - newViewCast.Distance) > edgeDistanceThreshold;
+                    Mathf.Abs(minViewCast.Distance - newViewCast.Distance) > fovSettings.edgeDistanceThreshold;
                 if (newViewCast.Hit == minViewCast.Hit && !edgeDistanceThresholdExceeded)
                 {
                     minAngle = angle;
@@ -242,97 +407,56 @@ namespace SS3D.Engine.FOV
             return new EdgeInfo(minPoint, maxPoint);
         }
 
-        private void ViewCastBatch(float[] angles, ViewCastInfo[] resultArray)
+        private static ViewCastInfo ViewCast(float globalAngle, FovSettings fovSettings, Vector3 origin)
         {
-            if (resultArray.Length < angles.Length)
-            {
-                throw new ArgumentException("Results can't be smaller than angles", nameof(resultArray));
-            }
-            
-            // Allocate arrays for raycast data
-            var hits = new NativeArray<RaycastHit>(angles.Length, Allocator.TempJob);
-            var commands = new NativeArray<RaycastCommand>(angles.Length, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-            
-            Vector3 origin = target.transform.position;
+            Vector3 dir = DirectionFromAngle(globalAngle);
 
-            // Create raycast commands
-            for (var i = 0; i < angles.Length; i++)
-            {
-                commands[i] = new RaycastCommand(origin, DirectionFromAngle(angles[i], true), viewRange, obstacleMask);
-            }
-
-            // Schedule raycasts
-            JobHandle handle = RaycastCommand.ScheduleBatch(commands, hits, 1);
-            // Wait for the raycasting to complete
-            handle.Complete();
-            
-            // Fill results array
-            for (var i = 0; i < hits.Length; i++)
-            {
-                RaycastHit hit = hits[i];
-                // Collider is only valid if hit (yes, this is in the docs)
-                if (hit.collider)
-                {
-                    resultArray[i] = new ViewCastInfo(true, hit.point, hit.distance, angles[i], hit.normal);
-                }
-                else
-                {
-                    resultArray[i] = new ViewCastInfo(false, 
-                        origin + DirectionFromAngle(angles[i], true) * viewRange,
-                        viewRange,
-                        angles[i],
-                        hit.normal);
-                }
-            }
-            
-            // Dispose raycast data
-            hits.Dispose();
-            commands.Dispose();
-        }
-        
-        private ViewCastInfo ViewCast(float globalAngle)
-        {
-            Vector3 dir = DirectionFromAngle(globalAngle, true);
-
-            if (Physics.Raycast(target.transform.position, dir, out var hit, viewRange, obstacleMask))
+            if (Physics.Raycast(origin, dir, out var hit, fovSettings.viewRange, fovSettings.obstacleMask))
             {
                 return new ViewCastInfo(true, hit.point, hit.distance,
                     globalAngle,
                     hit.normal);
             }
 
-            return new ViewCastInfo(false, target.transform.position + dir * viewRange, viewRange,
+            return new ViewCastInfo(false, origin + dir * fovSettings.viewRange, fovSettings.viewRange,
                 globalAngle, hit.normal);
         }
 
-        public struct EdgeInfo
+    }
+
+
+
+    public struct EdgeInfo
+    {
+        public Vector3 PointA;
+        public Vector3 PointB;
+
+        public EdgeInfo(Vector3 pointA, Vector3 pointB)
         {
-            public Vector3 PointA;
-            public Vector3 PointB;
-
-            public EdgeInfo(Vector3 pointA, Vector3 pointB)
-            {
-                PointA = pointA;
-                PointB = pointB;
-            }
-        }
-
-        public struct ViewCastInfo
-        {
-            public bool Hit;
-            public Vector3 Point;
-            public float Distance;
-            public float Angle;
-            public Vector3 Normal;
-
-            public ViewCastInfo(bool hit, Vector3 point, float distance, float angle, Vector3 normal)
-            {
-                Hit = hit;
-                Point = point;
-                Distance = distance;
-                Angle = angle;
-                Normal = normal;
-            }
+            PointA = pointA;
+            PointB = pointB;
         }
     }
+
+    public struct ViewCastInfo
+    {
+        public bool Hit;
+        public Vector3 Point;
+        public float Distance;
+        public float Angle;
+        public Vector3 Normal;
+
+        public ViewCastInfo(bool hit, Vector3 point, float distance, float angle, Vector3 normal)
+        {
+            Hit = hit;
+            Point = point;
+            Distance = distance;
+            Angle = angle;
+            Normal = normal;
+        }
+    }
+
+
+
+
 }

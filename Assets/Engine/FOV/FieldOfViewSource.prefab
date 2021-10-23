@@ -227,7 +227,7 @@ GameObject:
   - component: {fileID: 3468469970063270511}
   - component: {fileID: 382526290782759054}
   m_Layer: 9
-  m_Name: Field of View Source
+  m_Name: FieldOfViewSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -303,7 +303,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7634952110745879786}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a78f1bcb0b2ed6641aa29766ee037de6, type: 3}
   m_Name: 
