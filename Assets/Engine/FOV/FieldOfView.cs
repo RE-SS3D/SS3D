@@ -74,6 +74,8 @@ namespace SS3D.Engine.FOV
         private NativeArray<int> viewPointsIndex;
         private JobHandle finalJobHandle;
 
+        private bool performLateUpdate = false;
+
         public int GetViewPointsIndex()
         {
             return viewPointsIndex[0];
@@ -87,7 +89,7 @@ namespace SS3D.Engine.FOV
         private void Update()
         {
             // Field of View should not update before player spawn.
-            if (!target) return;
+            if (!target) return s;
 
             // Ensure the FOV follows the player
             transform.position = target.transform.position;
@@ -97,11 +99,15 @@ namespace SS3D.Engine.FOV
 
             // Schedule the jobs (to be completed in LateUpdate)
             ScheduleMeshCalculationJobs();
+
+            performLateUpdate = true;
         }
 
         private void LateUpdate()
         {
-            if (!target) return;
+            if (!performLateUpdate) return;
+
+            performLateUpdate = false;
 
             // Complete and post-process the jobs
             CompleteMeshCalculationJobs();
