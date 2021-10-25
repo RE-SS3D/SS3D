@@ -33,6 +33,11 @@ namespace SS3D.Engine.Tiles
         /// </summary>
         private const float TILE_SIZE = 1.0f;
 
+        /// <summary>
+        /// The tolerance threshold for identifying a tile object at a position.
+        /// </summary>
+        private const float POSITION_TOLERANCE = 0.05f;
+
         private Dictionary<Vector2Int, TileChunk> chunks;
         public int ChunkCount { get => chunks.Count; }
         public bool IsMain { get; set; }
@@ -566,7 +571,7 @@ namespace SS3D.Engine.Tiles
                 var child = layerObjectTransform.GetChild(i);
 
                 // There can be small offsets in height for some objects like overlays, so use only X and Z
-                if (child.position.x == position.x && child.position.z == position.z)
+                if ((Math.Abs(child.position.x - position.x) < POSITION_TOLERANCE) && (Math.Abs(child.position.z - position.z) < POSITION_TOLERANCE))
                 {
                     if (sameTile && !child.name.Contains("_" + subLayerIndex))
                         continue;
