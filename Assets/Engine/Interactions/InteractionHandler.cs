@@ -6,6 +6,7 @@ using SS3D.Engine.Inventory;
 using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using SS3D.Engine.Examine;
 
 namespace SS3D.Engine.Interactions
 {
@@ -24,14 +25,22 @@ namespace SS3D.Engine.Interactions
         private GameObject menuPrefab = null;
 
         private Camera camera;
+        private CompositeItemSelector selector;
+        private GameObject lastGameObjectPointed;
 
         private void Start()
         {
             camera = CameraManager.singleton.playerCamera;
+            selector = camera.GetComponent<CompositeItemSelector>();
         }
 
         public void Update()
         {
+            if (selector.CurrentExaminable != null)
+            {
+                lastGameObjectPointed = selector.CurrentExaminable;
+            }
+
             // Ensure that mouse isn't over ui (game objects aren't tracked by the eventsystem, so ispointer would return false
             if (!isLocalPlayer || camera == null || EventSystem.current.IsPointerOverGameObject())
             {
@@ -300,8 +309,7 @@ namespace SS3D.Engine.Interactions
             if (Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask, QueryTriggerInteraction.Ignore))
             {
                 point = hit.point;
-                GameObject targetGo = hit.transform.gameObject;
-                targets = GetTargetsFromGameObject(source, targetGo);
+                targets = GetTargetsFromGameObject(source, lastGameObjectPointed);
             }
             
             interactionEvent = new InteractionEvent(source, targets[0], point);
