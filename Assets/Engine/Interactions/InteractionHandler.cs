@@ -36,9 +36,9 @@ namespace SS3D.Engine.Interactions
 
         public void Update()
         {
-            if (selector.CurrentExaminable != null)
+            if (selector.CurrentSelectable != null)
             {
-                lastGameObjectPointed = selector.CurrentExaminable;
+                lastGameObjectPointed = selector.CurrentSelectable;
             }
 
             // Ensure that mouse isn't over ui (game objects aren't tracked by the eventsystem, so ispointer would return false

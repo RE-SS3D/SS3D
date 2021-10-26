@@ -1,9 +1,11 @@
-﻿namespace SS3D.Engine.Interactions
+﻿using SS3D.Engine.Examine;
+
+namespace SS3D.Engine.Interactions
 {
     /// <summary>
     /// A target which can be interacted with
     /// </summary>
-    public interface IInteractionTarget
+    public interface IInteractionTarget : ISelectable
     {
         /// <summary>
         /// Generates possible interactions (not checked for CanExecute)

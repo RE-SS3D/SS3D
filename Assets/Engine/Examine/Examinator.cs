@@ -81,7 +81,7 @@ namespace SS3D.Engine.Examine
                 lastCameraRotation = rotation;
                 CalculateExamine();
                 // Update examinable right away (information might have changed)
-                OnExaminableChanged(selector.CurrentExaminable);
+                OnExaminableChanged(selector.CurrentSelectable);
             }
         }
 
@@ -100,6 +100,8 @@ namespace SS3D.Engine.Examine
 	        {
 		        // If it's over something, get all the assosciated data and update the UI.
 		        IExaminable[] examinables = examinable.GetComponents<IExaminable>();
+                if (examinables == null) return;
+
 		        UpdateExamine(examinables);
 	        }
 	        else

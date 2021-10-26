@@ -20,14 +20,14 @@ namespace SS3D.Engine.Examine
         public delegate void ExaminableChangedHandler(GameObject examinable);
 
         // The currently hovered examinable
-        public GameObject CurrentExaminable
+        public GameObject CurrentSelectable
         {
-            get => currentExaminable;
+            get => currentSelectable;
             private set
             {
-                GameObject oldExaminable = currentExaminable;
-                currentExaminable = value;
-                if (oldExaminable != currentExaminable)
+                GameObject oldSelectable = currentSelectable;
+                currentSelectable = value;
+                if (oldSelectable != currentSelectable && (currentSelectable == null || currentSelectable.GetComponent<IExaminable>() != null))
                 {
                     OnExaminableChanged();
                 }
@@ -41,7 +41,7 @@ namespace SS3D.Engine.Examine
         private Texture2D readbackTexture;
 
         // Keeps track of examinable objects
-        private ExaminableIdentifiers identifiers;
+        private SelectableIdentifiers identifiers;
 
         // Indicate whether mouse is currently over the UI
         private bool mouseOverUI;
@@ -50,11 +50,11 @@ namespace SS3D.Engine.Examine
         private bool shouldRender;
         private bool isRendering;
         private RaycastHit[] raycastHits;
-        private GameObject currentExaminable;
+        private GameObject currentSelectable;
 
         public void Start()
         {
-            identifiers = new ExaminableIdentifiers();
+            identifiers = new SelectableIdentifiers();
             raycastHits = new RaycastHit[32];
             FitRenderTexture();
             readbackTexture = new Texture2D(1, 1, renderTexture.graphicsFormat, TextureCreationFlags.None);
@@ -122,11 +122,11 @@ namespace SS3D.Engine.Examine
                 Color pixel = readbackTexture.GetPixel(0, 0);
                 if (pixel.a < 1)
                 {
-                    CurrentExaminable = null;
+                    CurrentSelectable = null;
                     return;
                 }
 
-                CurrentExaminable = identifiers.FindExaminable(pixel);
+                CurrentSelectable = identifiers.FindSelectable(pixel);
             }
             finally
             {
@@ -165,7 +165,7 @@ namespace SS3D.Engine.Examine
             {
                 // The cursor is over the UI. If the UI is examinable, this will override objects in the game world.
                 mouseOverUI = true;
-                CurrentExaminable = null;
+                CurrentSelectable = null;
 
                 // Get a list of all the UI elements under the cursor
                 var pointerEventData = new PointerEventData(EventSystem.current) {position = Input.mousePosition};
@@ -178,7 +178,7 @@ namespace SS3D.Engine.Examine
                     ISlotProvider slot = hit.gameObject.GetComponent<ISlotProvider>();
                     if (slot != null)
                     {
-                        CurrentExaminable = slot.GetCurrentGameObjectInSlot();
+                        CurrentSelectable = slot.GetCurrentGameObjectInSlot();
                         return;
                     }
                 }
@@ -207,25 +207,25 @@ namespace SS3D.Engine.Examine
                 if (tileObject)
                 {
                     // Add examinables for all tile objects
-                    AddExaminablesForTile(tileObject);
+                    AddSelectablesForTile(tileObject);
                     continue;
                 }
-                AddExaminablesRecursive(hitObject);
+                AddSelectablesRecursive(hitObject);
             }
 
             // We want to render at the next opportunity
             shouldRender = true;
         }
 
-        private void AddExaminablesRecursive(GameObject gameObject, IExaminable current = null)
+        private void AddSelectablesRecursive(GameObject gameObject, ISelectable current = null)
         {
             if (!gameObject.activeInHierarchy)
             {
                 return;
             }
 
-            IExaminable old = current;
-            current = gameObject.GetComponent<IExaminable>();
+            ISelectable old = current;
+            current = gameObject.GetComponent<ISelectable>();
 
             if (current == null)
             {
@@ -234,12 +234,12 @@ namespace SS3D.Engine.Examine
             else if (old != current)
             {
                 GameObject examinable = ((MonoBehaviour) current).gameObject;
-                if (identifiers.HasExaminable(examinable))
+                if (identifiers.HasSelectable(examinable))
                 {
                     return;
                 }
 
-                identifiers.AddExaminable(examinable);
+                identifiers.AddSelectable(examinable);
             }
 
             if (current != null)
@@ -265,11 +265,11 @@ namespace SS3D.Engine.Examine
             int childCount = objectTransform.childCount;
             for (var i = 0; i < childCount; i++)
             {
-                AddExaminablesRecursive(objectTransform.GetChild(i).gameObject, current);
+                AddSelectablesRecursive(objectTransform.GetChild(i).gameObject, current);
             }
         }
 
-        private void AddExaminablesForTile(PlacedTileObject tile)
+        private void AddSelectablesForTile(PlacedTileObject tile)
         {
             // Get the chunk and chunk position for the tile
             var tileMap = tile.GetComponentInParent<TileMap>();
@@ -291,7 +291,7 @@ namespace SS3D.Engine.Examine
                 {
                     if (placedObject)
                     {
-                        AddExaminablesRecursive(placedObject.gameObject);
+                        AddSelectablesRecursive(placedObject.gameObject);
                     }
                 }
             }
@@ -299,16 +299,16 @@ namespace SS3D.Engine.Examine
 
         protected virtual void OnExaminableChanged()
         {
-            ExaminableChanged?.Invoke(currentExaminable);
+            ExaminableChanged?.Invoke(currentSelectable);
         }
 
-        class ExaminableIdentifiers
+        class SelectableIdentifiers
         {
             private const byte ColorDistance = 10;
             private static readonly int ShaderColorId = Shader.PropertyToID("_Color");
 
             private readonly Material material = new Material(Shader.Find("Unlit/Color"));
-            private readonly Dictionary<Color32, GameObject> examinables = new Dictionary<Color32, GameObject>();
+            private readonly Dictionary<Color32, GameObject> selectables = new Dictionary<Color32, GameObject>();
 
             private readonly Dictionary<GameObject, MaterialPropertyBlock> materialProperties =
                 new Dictionary<GameObject, MaterialPropertyBlock>();
@@ -320,19 +320,19 @@ namespace SS3D.Engine.Examine
 
             public void Clear()
             {
-                examinables.Clear();
+                selectables.Clear();
                 materialProperties.Clear();
                 meshes.Clear();
             }
 
-            public bool HasExaminable(GameObject examinable)
+            public bool HasSelectable(GameObject examinable)
             {
-                return examinables.ContainsValue(examinable);
+                return selectables.ContainsValue(examinable);
             }
 
             public bool HasGameObject(GameObject gameObject)
             {
-                if (HasExaminable(gameObject))
+                if (HasSelectable(gameObject))
                 {
                     return true;
                 }
@@ -348,15 +348,15 @@ namespace SS3D.Engine.Examine
                 return false;
             }
 
-            public void AddExaminable(GameObject examinable)
+            public void AddSelectable(GameObject examinable)
             {
-                if (HasExaminable(examinable))
+                if (HasSelectable(examinable))
                 {
                     return;
                 }
 
                 Color color;
-                if (examinables.Count >= colors.Count)
+                if (selectables.Count >= colors.Count)
                 {
                     color = AllocateColor();
                     MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
@@ -365,15 +365,15 @@ namespace SS3D.Engine.Examine
                 }
                 else
                 {
-                    color = colors[examinables.Count];
+                    color = colors[selectables.Count];
                 }
 
-                examinables.Add(color, examinable);
+                selectables.Add(color, examinable);
             }
 
-            public GameObject FindExaminable(Color color)
+            public GameObject FindSelectable(Color color)
             {
-                examinables.TryGetValue(color, out GameObject value);
+                selectables.TryGetValue(color, out GameObject value);
                 return value;
             }
 
@@ -386,7 +386,7 @@ namespace SS3D.Engine.Examine
                 }
 
                 Color32? color = null;
-                foreach (KeyValuePair<Color32, GameObject> pair in examinables)
+                foreach (KeyValuePair<Color32, GameObject> pair in selectables)
                 {
                     if (pair.Value == examinable)
                     {
