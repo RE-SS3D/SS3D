@@ -310,10 +310,19 @@ public class ContainerDescriptorEditor : Editor
     {
         SerializedProperty sp = serializedObject.FindProperty("containerInteractive");
         GameObject networkedParent = GetParentNetworkIdentity(containerDescriptor.gameObject);
-        sp.objectReferenceValue = networkedParent.AddComponent<ContainerInteractive>();
+        if (networkedParent != null)
+        {
+            sp.objectReferenceValue = networkedParent.AddComponent<ContainerInteractive>();
+        }
+        else
+        {
+            sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerInteractive>();
+        }
+
         serializedObject.ApplyModifiedProperties();
         containerDescriptor.containerInteractive.containerDescriptor = containerDescriptor;
     }
+
 
     private void RemoveInteractive()
     {
@@ -352,15 +361,25 @@ public class ContainerDescriptorEditor : Editor
         {
             SerializedProperty sp = serializedObject.FindProperty("containerSync");
             GameObject g = GetParentNetworkIdentity(containerDescriptor.gameObject);
-            sp.objectReferenceValue = g.AddComponent<ContainerSync>();
-            serializedObject.ApplyModifiedProperties();           
+
+            if (g != null)
+            {
+                sp.objectReferenceValue = g.AddComponent<ContainerSync>();
+            }
+            else
+            {
+                sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerSync>();
+            }
+
+            serializedObject.ApplyModifiedProperties();
         }
         
     }
 
     private GameObject GetParentNetworkIdentity(GameObject g)
     {
-        return g.GetComponentInParent<NetworkIdentity>().gameObject;
+        var networkIdentity = g.GetComponentInParent<NetworkIdentity>();
+        return networkIdentity ? networkIdentity.gameObject : null;
     }
 
     private void RemoveSync()
