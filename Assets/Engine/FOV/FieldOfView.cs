@@ -12,11 +12,6 @@ namespace SS3D.Engine.FOV
     [RequireComponent(typeof(MeshFilter))]
     public class FieldOfView : MonoBehaviour
     {
-        [SerializeField]
-        public bool showDebug;
-
-        [SerializeField]
-        private GameObject fog;
 
         [SerializeField]
         public Transform target = null;
@@ -128,12 +123,12 @@ namespace SS3D.Engine.FOV
 
         private void OnEnable()
         {
-            fog.SetActive(true);
+            //fog.SetActive(true);
         }
 
         private void OnDisable()
         {
-            fog.SetActive(false);
+            //fog.SetActive(false);
         }
 
         private void PerformTemporaryNativeArrayAllocations()
@@ -177,7 +172,7 @@ namespace SS3D.Engine.FOV
                 triangles[i * 3 + 2] = unchecked((ushort)(i + 2u));
             }
 
-            viewCastResults = new NativeArray<ViewCastInfo>(3 * Mathf.RoundToInt(fovSettings.viewConeWidth * fovSettings.meshResolution) + 1, Allocator.Persistent);
+            viewCastResults = new NativeArray<ViewCastInfo>(Mathf.RoundToInt(fovSettings.viewConeWidth * fovSettings.meshResolution) + 1, Allocator.Persistent);
             angleBuffer = new NativeArray<float>(viewCastResults.Length, Allocator.Persistent);
             viewPointsIndex = new NativeArray<int>(1, Allocator.Persistent);
         }
@@ -193,8 +188,9 @@ namespace SS3D.Engine.FOV
                 commands = commands
             };
             JobHandle prepareForRaycastHandle = prepareForRaycastJob.Schedule();
+            prepareForRaycastHandle.Complete();  // For some reason it crashes Unity if we don't complete this job first, despite the dependency being listed below...
 
-            JobHandle performRaycastHandle = RaycastCommand.ScheduleBatch(commands, hits, 1, prepareForRaycastHandle);
+            JobHandle performRaycastHandle = RaycastCommand.ScheduleBatch(commands, hits, 128, prepareForRaycastHandle);
 
             FillResultsArrayJob fillResultsArrayJob = new FillResultsArrayJob
             {
