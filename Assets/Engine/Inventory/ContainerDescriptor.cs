@@ -5,6 +5,7 @@ using SS3D.Engine.Inventory.UI;
 using UnityEngine.Assertions;
 using Mirror;
 using SS3D.Content;
+using SS3D.Engine.Examine;
 
 namespace SS3D.Engine.Inventory
 {
@@ -17,7 +18,7 @@ namespace SS3D.Engine.Inventory
     /// needs to acces them directly, not through accessors or properties. ContainerDescriptorEditor should be declared as friend of 
     /// ContainerDescriptor and most attributes should be private.
     /// </summary>
-    public class ContainerDescriptor : MonoBehaviour
+    public class ContainerDescriptor : MonoBehaviour, ISelectable
     {
         // References toward all container related scripts.
         public AttachedContainer attachedContainer;
@@ -98,7 +99,7 @@ namespace SS3D.Engine.Inventory
         private float CheckObserversInterval = 1f;
 
         private float lastObserverCheck;
-        
+
         public void Awake()
         {
             // create a new container of Size size
