@@ -325,10 +325,18 @@ namespace SS3D.Engine.Interactions
         /// <returns>A list of all valid interaction targets</returns>
         private List<IInteractionTarget> GetTargetsFromGameObject(IInteractionSource source, GameObject gameObject)
         {
+           
             List<IInteractionTarget> targets = new List<IInteractionTarget>();
             // Get all target components which are not disabled and the source can interact with
             targets.AddRange(gameObject.GetComponents<IInteractionTarget>().Where(x =>
                 (x as MonoBehaviour)?.enabled != false && source.CanInteractWithTarget(x)));
+
+            ContainerDescriptor containerDescriptor = gameObject.GetComponent<ContainerDescriptor>();
+            if (containerDescriptor != null && containerDescriptor.isInteractive)
+            {
+                targets.Add(containerDescriptor.containerInteractive);
+            }
+
             if (targets.Count < 1)
             {
                 targets.Add(new InteractionTargetGameObject(gameObject));
