@@ -252,6 +252,8 @@ namespace SS3D
             SceneManager.SetActiveScene(GetSelectedScene());
             Debug.Log("New active scene set " + SceneManager.GetActiveScene().name);
 
+            TileManager.Instance.Reinitialize();
+
             if (RoundManager.singleton.IsRoundStarted)
             {
                 ServerLobbyUIHelper.singleton.ChangeEmbarkText();
