@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+﻿/*using UnityEditor;
 using UnityEngine;
 using SS3D.Engine.FOV;
 
@@ -59,4 +59,4 @@ namespace SS3D.Engine.FOV.Editor
             }
         }
     }
-}
+}*/

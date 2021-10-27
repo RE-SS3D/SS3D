@@ -89,7 +89,7 @@ namespace SS3D.Engine.FOV
         private void Update()
         {
             // Field of View should not update before player spawn.
-            if (!target) return s;
+            if (!target) return;
 
             // Ensure the FOV follows the player
             transform.position = target.transform.position;
@@ -177,7 +177,7 @@ namespace SS3D.Engine.FOV
                 triangles[i * 3 + 2] = unchecked((ushort)(i + 2u));
             }
 
-            viewCastResults = new NativeArray<ViewCastInfo>(Mathf.RoundToInt(fovSettings.viewConeWidth * fovSettings.meshResolution) + 1, Allocator.Persistent);
+            viewCastResults = new NativeArray<ViewCastInfo>(3 * Mathf.RoundToInt(fovSettings.viewConeWidth * fovSettings.meshResolution) + 1, Allocator.Persistent);
             angleBuffer = new NativeArray<float>(viewCastResults.Length, Allocator.Persistent);
             viewPointsIndex = new NativeArray<int>(1, Allocator.Persistent);
         }
@@ -194,7 +194,7 @@ namespace SS3D.Engine.FOV
             };
             JobHandle prepareForRaycastHandle = prepareForRaycastJob.Schedule();
 
-            JobHandle performRaycastHandle = RaycastCommand.ScheduleBatch(commands, hits, 32, prepareForRaycastHandle);
+            JobHandle performRaycastHandle = RaycastCommand.ScheduleBatch(commands, hits, 1, prepareForRaycastHandle);
 
             FillResultsArrayJob fillResultsArrayJob = new FillResultsArrayJob
             {
@@ -276,6 +276,7 @@ namespace SS3D.Engine.FOV
                 int stepCount = Mathf.RoundToInt(fovSettings.viewConeWidth * fovSettings.meshResolution);
                 for (int i = 0; i < stepCount; i++)
                 {
+                    /*
                     ViewCastInfo newViewCast = viewCastResults[i];
                     bool edgeDistanceThresholdExceeded =
                         Mathf.Abs(oldViewCast.Distance - newViewCast.Distance) > fovSettings.edgeDistanceThreshold;
@@ -296,9 +297,12 @@ namespace SS3D.Engine.FOV
                         }
                     }
 
-                    viewPoints[index] = newViewCast.Point;
+                    */
+                    viewPoints[index] = viewCastResults[i].Point;///////////////
+                    //viewPoints[index] = newViewCast.Point;
+
                     index++;
-                    oldViewCast = newViewCast;
+                    //oldViewCast = newViewCast;
                 }
 
                 viewPointsIndex[0] = index;
@@ -328,7 +332,7 @@ namespace SS3D.Engine.FOV
                 // Create Raycast commands
                 for (int i = 0; i < angles.Length; i++)
                 {
-                    commands[i] = new RaycastCommand(origin, DirectionFromAngle(angles[i]), fovSettings.viewRange, fovSettings.obstacleMask);
+                    commands[i] = new RaycastCommand(origin, DirectionFromAngle(angles[i]), fovSettings.viewRange, fovSettings.obstacleMask, 1);
                 }
             }
         }
@@ -343,11 +347,12 @@ namespace SS3D.Engine.FOV
 
             public void Execute()
             {
+                Vector3 zero = Vector3.zero;
                 for (int i = 0; i < hits.Length; i++)
                 {
                     RaycastHit hit = hits[i];
 
-                    if (hit.collider)
+                    if (hit.point != zero)
                     {
                         // There was a hit! Use the hit point.
                         viewCastResults[i] = new ViewCastInfo(true, hit.point, hit.distance, angles[i], hit.normal);
