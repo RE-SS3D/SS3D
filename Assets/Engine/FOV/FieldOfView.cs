@@ -51,13 +51,11 @@ namespace SS3D.Engine.FOV
         private MeshFilter viewMeshFilter;
         private Mesh viewMesh;
 
-        const int MAX_VERTICES = 800;
-
         [NonSerialized]
         public NativeArray<Vector3> viewPoints;
 
         // Stores triangles for mesh
-        private NativeArray<ushort> triangles;
+        private int[] triangles;
         // Buffer for view cast batching
         private NativeArray<ViewCastInfo> viewCastResults;
         // Buffer for view cast angles
@@ -115,7 +113,6 @@ namespace SS3D.Engine.FOV
         {
             viewMesh.Clear();
             viewPoints.Dispose();
-            triangles.Dispose();
             angleBuffer.Dispose();
             viewCastResults.Dispose();
             viewPointsIndex.Dispose();
@@ -157,24 +154,44 @@ namespace SS3D.Engine.FOV
             fovSettings = new FovSettings(meshResolution, viewConeWidth, viewRange, edgeDistanceThreshold, edgeResolveIterations, obstacleMask);
 
             viewMeshFilter = GetComponent<MeshFilter>();
-
             viewMesh = new Mesh();
             viewMesh.name = "View Mesh";
             viewMeshFilter.mesh = viewMesh;
 
-            int maxViewPoints = (int)(fovSettings.viewConeWidth * fovSettings.meshResolution) * 3 + 1;
-            viewPoints = new NativeArray<Vector3>(maxViewPoints + 1, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-            triangles = new NativeArray<ushort>((maxViewPoints + 1) * 3, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-            for (ushort i = 0; i < maxViewPoints - 2; i++)
+            int numberOfAngles = (int)(fovSettings.viewConeWidth * fovSettings.meshResolution);
+
+            int maxViewPoints = numberOfAngles * 3;
+            viewPoints = new NativeArray<Vector3>(maxViewPoints, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+
+            // Triangles in the mesh will never change - only the positions of the vertices.
+            triangles = new int[numberOfAngles * 12];
+
+            // Just trust me on this. It works out in the end.
+            for (int i = 0; i < numberOfAngles; i++)
             {
-                triangles[i * 3] = 0;
-                triangles[i * 3 + 1] = unchecked((ushort)(i + 1u));
-                triangles[i * 3 + 2] = unchecked((ushort)(i + 2u));
+                int[] data = GetTriangleVertexIndices(3*i, numberOfAngles * 12);
+                for (int j = 0; j < 6; j++)
+                {
+                    triangles[i + j] = data[j];
+                    triangles[i + j + 6] = data[j] + 1;
+                }
             }
 
             viewCastResults = new NativeArray<ViewCastInfo>(Mathf.RoundToInt(fovSettings.viewConeWidth * fovSettings.meshResolution) + 1, Allocator.Persistent);
             angleBuffer = new NativeArray<float>(viewCastResults.Length, Allocator.Persistent);
             viewPointsIndex = new NativeArray<int>(1, Allocator.Persistent);
+        }
+
+        private int[] GetTriangleVertexIndices(int initial, int mod)
+        {
+            int[] result = new int[6];
+            result[0] = initial % mod;
+            result[1] = (initial + 3) % mod;
+            result[2] = (initial + 1) % mod;
+            result[3] = (initial + 1) % mod;
+            result[4] = (initial + 3) % mod;
+            result[5] = (initial + 4) % mod;
+            return result;
         }
 
 
