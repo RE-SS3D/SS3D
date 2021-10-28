@@ -132,7 +132,7 @@ MonoBehaviour:
   InteractionName: Dispense
   substances:
   - Water
-  amount: 250
+  amount: 300
   useMillilitres: 1
 --- !u!114 &9055692276633119394
 MonoBehaviour:
