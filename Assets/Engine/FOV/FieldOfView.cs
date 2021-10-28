@@ -64,15 +64,13 @@ namespace SS3D.Engine.FOV
         private FovSettings fovSettings;
         private NativeArray<RaycastHit> hits;
         private NativeArray<RaycastCommand> commands;
-        private NativeArray<int> viewPointsIndex;
         private JobHandle finalJobHandle;
 
         private bool performLateUpdate = false;
 
-        public int GetViewPointsIndex()
-        {
-            return viewPointsIndex[0];
-        }
+        private const float FOG_CEILING = 2.1f;
+        private const float FOG_FLOOR = -1.5f;
+
 
         private void Start()
         {
@@ -115,7 +113,6 @@ namespace SS3D.Engine.FOV
             viewPoints.Dispose();
             angleBuffer.Dispose();
             viewCastResults.Dispose();
-            viewPointsIndex.Dispose();
         }
 
         private void OnEnable()
@@ -169,17 +166,22 @@ namespace SS3D.Engine.FOV
             // Just trust me on this. It works out in the end.
             for (int i = 0; i < numberOfAngles; i++)
             {
-                int[] data = GetTriangleVertexIndices(3*i, numberOfAngles * 12);
+                int[] data = GetTriangleVertexIndices(3*i, numberOfAngles * 3);
                 for (int j = 0; j < 6; j++)
                 {
-                    triangles[i + j] = data[j];
-                    triangles[i + j + 6] = data[j] + 1;
+                    triangles[12 * i + j] = data[j];
+                    triangles[12 * i + j + 6] = data[j] + 1;
                 }
             }
 
-            viewCastResults = new NativeArray<ViewCastInfo>(Mathf.RoundToInt(fovSettings.viewConeWidth * fovSettings.meshResolution) + 1, Allocator.Persistent);
-            angleBuffer = new NativeArray<float>(viewCastResults.Length, Allocator.Persistent);
-            viewPointsIndex = new NativeArray<int>(1, Allocator.Persistent);
+            viewCastResults = new NativeArray<ViewCastInfo>(numberOfAngles, Allocator.Persistent);
+
+            angleBuffer = new NativeArray<float>(numberOfAngles, Allocator.Persistent);
+            float step = 360f / numberOfAngles;
+            for (int i = 0; i < angleBuffer.Length; i++)
+            {
+                angleBuffer[i] = i * step;
+            }
         }
 
         private int[] GetTriangleVertexIndices(int initial, int mod)
@@ -223,8 +225,8 @@ namespace SS3D.Engine.FOV
             {
                 fovSettings = fovSettings,
                 origin = target.transform.position,
+                angles = angleBuffer,
                 viewCastResults = viewCastResults,
-                viewPointsIndex = viewPointsIndex,
                 viewPoints = viewPoints
             };
             JobHandle calculateViewPointsHandle = calculateViewPointsJob.Schedule(fillResultsArrayHandle);
@@ -236,14 +238,18 @@ namespace SS3D.Engine.FOV
         {
 
             finalJobHandle.Complete();
-            int vpIndex = viewPointsIndex[0];
-            int triangleCount = (vpIndex - 2) * 3;
-            viewPoints[0] = transform.InverseTransformPoint(target.transform.position);
-            Vector3[] vertices = new Vector3[vpIndex];
-            for (int i = 1; i < vpIndex; i++) vertices[i] = transform.InverseTransformPoint(viewPoints[i]);
-            viewMesh.SetVertexBufferParams(vpIndex, new VertexAttributeDescriptor(VertexAttribute.Position));
-            viewMesh.SetVertexBufferData(vertices, 0, 0, vpIndex);
-            viewMesh.SetIndexBufferParams(triangleCount, IndexFormat.UInt16);
+            int triangleCount = triangles.Length;
+            Vector3[] vertices = new Vector3[viewPoints.Length];
+
+            // Surely I can jobify this too.
+            for (int i = 0; i < viewPoints.Length; i++)
+            {
+                vertices[i] = transform.InverseTransformPoint(viewPoints[i]);
+            }
+
+            viewMesh.SetVertexBufferParams(vertices.Length, new VertexAttributeDescriptor(VertexAttribute.Position));
+            viewMesh.SetVertexBufferData(vertices, 0, 0, vertices.Length);
+            viewMesh.SetIndexBufferParams(triangleCount, IndexFormat.UInt32);
             viewMesh.SetIndexBufferData(triangles, 0, 0, triangleCount);
             viewMesh.subMeshCount = 1;
             viewMesh.SetSubMesh(0, new SubMeshDescriptor(0, triangleCount));
@@ -278,47 +284,30 @@ namespace SS3D.Engine.FOV
         {
             public FovSettings fovSettings;
             public Vector3 origin;
+            [ReadOnly] public NativeArray<float> angles;
             [ReadOnly] public NativeArray<ViewCastInfo> viewCastResults;
-            public NativeArray<int> viewPointsIndex;
             public NativeArray<Vector3> viewPoints;
 
             public void Execute()
             {
-                int index = 1;
-                ViewCastInfo oldViewCast = new ViewCastInfo();
-                int stepCount = Mathf.RoundToInt(fovSettings.viewConeWidth * fovSettings.meshResolution);
-                for (int i = 0; i < stepCount; i++)
+
+                // Cycle through all the points we returned from our Raycasts.
+                for (int i = 0; i < viewCastResults.Length; i++)
                 {
-                    /*
-                    ViewCastInfo newViewCast = viewCastResults[i];
-                    bool edgeDistanceThresholdExceeded =
-                        Mathf.Abs(oldViewCast.Distance - newViewCast.Distance) > fovSettings.edgeDistanceThreshold;
-                    if (oldViewCast.Hit != newViewCast.Hit ||
-                        (oldViewCast.Hit && newViewCast.Hit && oldViewCast.Normal != newViewCast.Normal &&
-                         edgeDistanceThresholdExceeded))
-                    {
-                        EdgeInfo edge = FindEdge(oldViewCast, newViewCast, fovSettings, origin);
-                        if (edge.PointA != Vector3.zero)
-                        {
-                            viewPoints[index] = edge.PointA;
-                            index++;
-                        }
-                        if (edge.PointB != Vector3.zero)
-                        {
-                            viewPoints[index] = edge.PointB;
-                            index++;
-                        }
-                    }
+                    // For each Raycast hit, we need three vertices.
+                    Vector3 point = viewCastResults[i].Point;
 
-                    */
-                    viewPoints[index] = viewCastResults[i].Point;///////////////
-                    //viewPoints[index] = newViewCast.Point;
+                    // This one is the point of our outer circle - well beyond view range.
+                    Vector3 outerPoint = origin + DirectionFromAngle(angles[i]) * (fovSettings.viewRange + 10f);
+                    viewPoints[3 * i] = new Vector3(outerPoint.x, FOG_CEILING, outerPoint.z);
 
-                    index++;
-                    //oldViewCast = newViewCast;
+                    // This one is the one we actually hit - either by hitting a collider, or hitting the max view range.
+                    viewPoints[3 * i + 1] = new Vector3(point.x, FOG_CEILING, point.z);
+
+                    // This one is vertically below the one we hit, so that it appears as a volume rather that a plane with gaps.
+                    viewPoints[3 * i + 2] = new Vector3(point.x, FOG_FLOOR, point.z);
+
                 }
-
-                viewPointsIndex[0] = index;
             }
         }
 
@@ -332,16 +321,6 @@ namespace SS3D.Engine.FOV
 
             public void Execute()
             {
-                int stepCount = Mathf.RoundToInt(fovSettings.viewConeWidth * fovSettings.meshResolution);
-                float stepAngleSize = fovSettings.viewConeWidth / stepCount;
-                float halfCone = fovSettings.viewConeWidth / 2;
-
-                // Set the angles. TODO: only set this in Start(), as it doesn't change.
-                for (int i = 0; i <= stepCount; i++)
-                {
-                    angles[i] = halfCone + stepAngleSize * i;
-                }
-
                 // Create Raycast commands
                 for (int i = 0; i < angles.Length; i++)
                 {
@@ -389,76 +368,9 @@ namespace SS3D.Engine.FOV
 
         public static Vector3 DirectionFromAngle(float angleInDegrees, bool angleIsGlobal = true)
         {
-            // TODO: Fix the below disaster... It will cause chaos in the editor...
-
-            /*
-            if (!angleIsGlobal)
-            {
-                angleInDegrees += transform.eulerAngles.y;
-            }
-            */
 
             var rotation = Quaternion.AngleAxis(angleInDegrees, Vector3.up);
             return rotation * Vector3.forward;
-        }
-
-        private static EdgeInfo FindEdge(ViewCastInfo minViewCast, ViewCastInfo maxViewCast, FovSettings fovSettings, Vector3 origin)
-        {
-            float minAngle = minViewCast.Angle;
-            float maxAngle = maxViewCast.Angle;
-            Vector3 minPoint = Vector3.zero;
-            Vector3 maxPoint = Vector3.zero;
-
-            for (int i = 0; i < fovSettings.edgeResolveIterations; i++)
-            {
-                float angle = (minAngle + maxAngle) / 2;
-                ViewCastInfo newViewCast = ViewCast(angle, fovSettings, origin);
-
-                bool edgeDistanceThresholdExceeded =
-                    Mathf.Abs(minViewCast.Distance - newViewCast.Distance) > fovSettings.edgeDistanceThreshold;
-                if (newViewCast.Hit == minViewCast.Hit && !edgeDistanceThresholdExceeded)
-                {
-                    minAngle = angle;
-                    minPoint = newViewCast.Point;
-                }
-                else
-                {
-                    maxAngle = angle;
-                    maxPoint = newViewCast.Point;
-                }
-            }
-
-            return new EdgeInfo(minPoint, maxPoint);
-        }
-
-        private static ViewCastInfo ViewCast(float globalAngle, FovSettings fovSettings, Vector3 origin)
-        {
-            Vector3 dir = DirectionFromAngle(globalAngle);
-
-            if (Physics.Raycast(origin, dir, out var hit, fovSettings.viewRange, fovSettings.obstacleMask))
-            {
-                return new ViewCastInfo(true, hit.point, hit.distance,
-                    globalAngle,
-                    hit.normal);
-            }
-
-            return new ViewCastInfo(false, origin + dir * fovSettings.viewRange, fovSettings.viewRange,
-                globalAngle, hit.normal);
-        }
-
-    }
-
-
-
-    public struct EdgeInfo
-    {
-        public Vector3 PointA;
-        public Vector3 PointB;
-
-        public EdgeInfo(Vector3 pointA, Vector3 pointB)
-        {
-            PointA = pointA;
-            PointB = pointB;
         }
     }
 
@@ -479,8 +391,5 @@ namespace SS3D.Engine.FOV
             Normal = normal;
         }
     }
-
-
-
 
 }
