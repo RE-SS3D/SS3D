@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: Cables
+  m_Name: FancyCarpetRed
   m_EditorClassIdentifier: 
-  layer: 3
-  nameString: Cables
-  genericType: cable
-  specificType: 
-  prefab: {fileID: 2802364579275783218, guid: 92d3eb280886ba74cb1e19f4e01669a7, type: 3}
+  layer: 2
+  nameString: FancyCarpetRed
+  genericType: floor
+  specificType: carpet
+  prefab: {fileID: 3591147544166670882, guid: 9b8a1328991fc2846bc55a3d9a82e5c0, type: 3}
   width: 1
   height: 1

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2802364579275783218
+--- !u!1 &8036950609662249464
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,26 +8,27 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4823056202419996052}
-  - component: {fileID: -7727686409064562107}
-  - component: {fileID: -1074477776341974781}
-  - component: {fileID: -4998431523760016775}
-  - component: {fileID: -6127819692382853065}
-  - component: {fileID: 2024332583390401554}
+  - component: {fileID: 2376404236429841947}
+  - component: {fileID: 6583449581753452249}
+  - component: {fileID: 6984099654956712234}
+  - component: {fileID: 3608857327747406091}
+  - component: {fileID: 4978950379207847613}
+  - component: {fileID: -2535380303791209004}
+  - component: {fileID: -7245858325371128762}
   m_Layer: 0
-  m_Name: Cables
+  m_Name: Sofa
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4823056202419996052
+--- !u!4 &2376404236429841947
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2802364579275783218}
+  m_GameObject: {fileID: 8036950609662249464}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -35,37 +36,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-7727686409064562107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2802364579275783218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
---- !u!33 &-1074477776341974781
+--- !u!33 &6583449581753452249
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2802364579275783218}
-  m_Mesh: {fileID: -8711453034529356013, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
---- !u!23 &-4998431523760016775
+  m_GameObject: {fileID: 8036950609662249464}
+  m_Mesh: {fileID: 6884837643016181351, guid: 3c1014759531000428709024fae2fc62, type: 3}
+--- !u!23 &6984099654956712234
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2802364579275783218}
+  m_GameObject: {fileID: 8036950609662249464}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 1
@@ -98,28 +83,57 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &-6127819692382853065
+--- !u!65 &3608857327747406091
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8036950609662249464}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.75, z: 0.7127434}
+  m_Center: {x: 0, y: 0.375, z: -0.051104248}
+--- !u!114 &4978950379207847613
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2802364579275783218}
+  m_GameObject: {fileID: 8036950609662249464}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: High-Voltage Cable
+  DisplayName: Sofa
   Text: 
   MaxDistance: 0
---- !u!114 &2024332583390401554
+--- !u!114 &-2535380303791209004
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2802364579275783218}
+  m_GameObject: {fileID: 8036950609662249464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
+--- !u!114 &-7245858325371128762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8036950609662249464}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3d4c17829cf718f419146d93c0826f22, type: 3}
@@ -130,12 +144,12 @@ MonoBehaviour:
   selectedAdjacencyType: 0
   CrossConnectAllowed: 0
   simpleAdjacency:
-    o: {fileID: -8711453034529356013, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-    u: {fileID: -1590738978952025886, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-    i: {fileID: -2043613833257120371, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-    l: {fileID: -9081922812702010850, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-    t: {fileID: -5358326586770029455, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-    x: {fileID: -8228826546953468662, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+    o: {fileID: 0}
+    u: {fileID: 0}
+    i: {fileID: 0}
+    l: {fileID: 0}
+    t: {fileID: 0}
+    x: {fileID: 0}
   advancedAdjacency:
     o: {fileID: 0}
     u: {fileID: 0}

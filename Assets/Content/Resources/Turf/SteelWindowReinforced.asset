@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: Cables
+  m_Name: SteelWindowReinforced
   m_EditorClassIdentifier: 
-  layer: 3
-  nameString: Cables
-  genericType: cable
+  layer: 2
+  nameString: SteelWindowReinforced
+  genericType: wall
   specificType: 
-  prefab: {fileID: 2802364579275783218, guid: 92d3eb280886ba74cb1e19f4e01669a7, type: 3}
+  prefab: {fileID: 3591147544166670882, guid: 6e6257fcfea4f46418ac01d93fd37115, type: 3}
   width: 1
   height: 1
