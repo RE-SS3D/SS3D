@@ -1,35 +1,13 @@
 ﻿using UnityEngine;
 using Mirror;
 using SS3D.Engine.Chat;
-using System.Numerics;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
+using UnityEngine.EventSystems;
 
 namespace SS3D.Content.Systems.Player
 {
-    /// <summary>
-    /// <para><b>
-    /// Controls the movement for humanoid characters
-    /// </b></para>
-    ///
-    /// <para>
-    /// This handles input for the humanoids, it supports humanoids that have <i><b>the same rigging</b></i>
-    /// as the human model and <i><b>the same animator</b></i>.
-    /// </para>
-    /// 
-    /// <para>
-    /// Uses vertical and horizontal input for directions and has a toggle for running.
-    /// </para>
-    ///
-    /// <para>
-    /// <i> TO DO: make a global speed param </i>
-    /// </para>
-    /// <para>
-    /// This script is a SS3D classic, it has been created long ago and will forever be here
-    /// </para>
-    /// 
-    /// </summary>
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
     public class HumanoidMovementController : NetworkBehaviour
@@ -44,18 +22,15 @@ namespace SS3D.Content.Systems.Player
 
         private Animator characterAnimator;
         private CharacterController characterController;
-        private Camera camera;
+        private new Camera camera;
 
         // Current movement the player is making.
         private Vector2 currentMovement = new Vector2();
-        // Input
         private Vector2 intendedMovement = new Vector2();
-        // Result of processed input and forces
         public Vector3 absoluteMovement = new Vector3();
 
         private bool isWalking = false;
-        
-        // Required to detect if player is typing and stop accepting movement input
+        //Required to detect if player is typing and stop accepting movement input
         private ChatRegister chatRegister;
 
         [SerializeField]
@@ -73,20 +48,14 @@ namespace SS3D.Content.Systems.Player
 
         void Update()
         {
-            // Must be the local player, or they cannot move
+
+            //Must be the local player, or they cannot move
             if (!isLocalPlayer)
             {
                 return;
             }
 
-            // Ignore movement controls when typing in chat
-            if (chatRegister.ChatWindow != null && chatRegister.ChatWindow.PlayerIsTyping())
-            {
-                currentMovement.Set(0, 0);
-                return;
-            }
-
-            if (Input.GetButtonDown("Toggle Run"))
+            if (Input.GetButtonDown("Toggle Run") && EventSystem.current.currentSelectedGameObject == null)
             {
                 isWalking = !isWalking;
             }
@@ -97,9 +66,20 @@ namespace SS3D.Content.Systems.Player
             float x = Input.GetAxisRaw("Horizontal");
             float y = Input.GetAxisRaw("Vertical");
 
+            //Ignore movement controls when typing in chat
+            if (chatRegister.ChatWindows.Count > 0 && EventSystem.current.currentSelectedGameObject != null)
+            {
+                intendedMovement = new Vector2(0, 0);
+            }
             // Smoothly transition to next intended movement
-            intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
+            else
+            {
+                intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
+            }
+            
             currentMovement = Vector2.MoveTowards(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 5f, 3) / 5));
+            var movement = Vector3.zero;
+
             // Move the player
             if (currentMovement != Vector2.zero)
             {
@@ -108,57 +88,48 @@ namespace SS3D.Content.Systems.Player
                 currentMovement.y * Vector3.Cross(camera.transform.right, Vector3.up).normalized +
                 currentMovement.x * Vector3.Cross(Vector3.up, camera.transform.forward).normalized;
 
-                // if there's input
                 if (intendedMovement != Vector2.zero)
                 {
                    
-                    // Move.
-                    // Whenever we move we also readjust the player's direction to the direction they are running in.
+                    // Move. Whenever we move we also readjust the player's direction to the direction they are running in.
                     characterController.Move((absoluteMovement + Physics.gravity * Time.deltaTime) * (Time.deltaTime / 3.5f));
 
-                    // interpolation
-                    transform.rotation = Quaternion.Slerp(
-                        transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 10);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 10);
                 }
-                
-                // if we aren't pressing anything we slowly stop
                 if (intendedMovement == Vector2.zero)
                 {
                     absoluteMovement = Vector3.Lerp(absoluteMovement, Vector3.zero, Time.deltaTime * 5);
                 }
-                
-                // actually moves
-                characterController.Move(absoluteMovement * Time.deltaTime);
+
+                movement = absoluteMovement * Time.deltaTime;
             }
-            
+
+            characterController.Move(movement);
+
             // animation Speed is a proportion of maximum runSpeed, and we smoothly transitions the speed with the Lerp
             float currentSpeed = characterAnimator.GetFloat("Speed");
-            // interpolation
-            float newSpeed = Mathf.LerpUnclamped(
-                currentSpeed, currentMovement.magnitude / runSpeed , Time.deltaTime * (isWalking ? walkSpeed : runSpeed) * 3);
-            
-            // updates the animator's "Speed" parameter
+            float controllerSpeed = Mathf.Clamp01(characterController.velocity.magnitude / runSpeed);
+
+            float newSpeed = Mathf.Lerp(currentSpeed, controllerSpeed, Time.deltaTime * 15);
+
             characterAnimator.SetFloat("Speed", newSpeed);
 
-            // makes sure we are in the right height
             ForceHeightLevel();
         }
 
         private void ForceHeightLevel()
-        { 
-            transform.position = new Vector3(transform.position.x, heightOffGround, transform.position.z);
+        {
+                transform.position = new Vector3(transform.position.x, heightOffGround, transform.position.z);
         }
 
         private void LateUpdate()
         {
-            // Must be the local player to animate through here
+            //Must be the local player to animate through here
             if (!isLocalPlayer)
             {
                 return;
             }
 
-            // U    pdates IK
-            // TODO: Make this into the new Animation System
             foreach (SimpleBodyPartLookAt part in LookAt)
             {
                 part.MoveTarget();

@@ -94,7 +94,6 @@ GameObject:
   - component: {fileID: -9091612087525422286}
   - component: {fileID: 2031896096572235386}
   - component: {fileID: 7848135095644858374}
-  - component: {fileID: 8392549313795139085}
   m_Layer: 0
   m_Name: SeedProcessor
   m_TagString: Untagged
@@ -228,17 +227,3 @@ MonoBehaviour:
   DisplayName: Seed Processor
   Text: Grinds plants to remove their seeds.
   MaxDistance: 0
---- !u!114 &8392549313795139085
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1769453492926099347}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0

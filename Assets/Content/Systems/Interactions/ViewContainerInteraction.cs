@@ -10,6 +10,13 @@ namespace SS3D.Content.Systems.Interactions
         public Sprite icon;
 
         public float MaxDistance { get; set; }
+
+        public ContainerDescriptor containerDescriptor;
+
+        public ViewContainerInteraction(ContainerDescriptor containerDescriptor)
+        {
+            this.containerDescriptor = containerDescriptor;
+        }
         
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
@@ -18,7 +25,7 @@ namespace SS3D.Content.Systems.Interactions
 
         public string GetName(InteractionEvent interactionEvent)
         {
-            return "View Container";
+            return "View " + containerDescriptor.containerName;
         }
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
@@ -33,7 +40,7 @@ namespace SS3D.Content.Systems.Interactions
                 return false;
             }
 
-            var container = interactionEvent.Target.GetComponent<AttachedContainer>();
+            var container = containerDescriptor.attachedContainer;
             if (container == null)
             {
                 return false;
@@ -55,7 +62,7 @@ namespace SS3D.Content.Systems.Interactions
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             var inventory = interactionEvent.Source.GetComponentInTree<Inventory>();
-            var attachedContainer = interactionEvent.Target.GetComponent<AttachedContainer>();
+            var attachedContainer = containerDescriptor.attachedContainer;
             
             inventory.OpenContainer(attachedContainer);
 

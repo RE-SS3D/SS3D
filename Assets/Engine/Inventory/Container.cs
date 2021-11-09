@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -458,10 +458,12 @@ namespace SS3D.Engine.Inventory
         public void Dump()
         {
             Item[] oldItems = items.Select(x => x.Item).ToArray();
-            while (items.Count > 0)
+            for (int i = 0; i < oldItems.Length; i++)
             {
-                items[0].Item.Container = null;
+                oldItems[i].Container = null;
             }
+            items.Clear();
+
             LastModification = Time.time;
             OnContainerChanged(oldItems, ContainerChangeType.Remove);
         }
@@ -472,10 +474,11 @@ namespace SS3D.Engine.Inventory
         public void Destroy()
         {
             Item[] oldItems = items.Select(x => x.Item).ToArray();
-            while (items.Count > 0)
+            foreach (var item in items)
             {
-                items[0].Item.Destroy();
+                item.Item.Destroy();
             }
+            items.Clear();
 
             LastModification = Time.time;
             OnContainerChanged(oldItems, ContainerChangeType.Remove);

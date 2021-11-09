@@ -19,17 +19,6 @@ namespace SS3D.Engine.Atmospherics
         protected PipeObject[] atmosNeighbours = { null, null, null, null };
         public PipeLayer layer;
 
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
 
         public void SetTileNeighbour(TileObject neighbour, int index)
         {
@@ -38,6 +27,7 @@ namespace SS3D.Engine.Atmospherics
 
         public virtual void SetAtmosNeighbours()
         {
+            /*
             int i = 0;
             foreach (TileObject tile in tileNeighbours)
             {
@@ -52,6 +42,7 @@ namespace SS3D.Engine.Atmospherics
                 }
                 i++;
             }
+            */
         }
 
     }

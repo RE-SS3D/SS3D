@@ -21,7 +21,7 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
 		
 
 	// the container inside the bin
-        public Container container;
+        public ContainerDescriptor containerDescriptor;
 
 	// is the bin dumping trash right now?
         public bool busy = false;
@@ -30,8 +30,9 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
 
         public float range;
 
-		public void Start()
+		public void Awake()
 		{
+            containerDescriptor = gameObject.GetComponent<ContainerDescriptor>();
 			// Populate requirements for this item to be examined.
 			requirements = new ReqPermitExamine(gameObject);
 			requirements = new ReqMaxRange(requirements, 0f);
@@ -124,10 +125,10 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics.DisposalBin
         {
             List<IInteraction> interactions = new List<IInteraction>();
             
-            StoreInteraction storeInteraction = new StoreInteraction();
+            StoreInteraction storeInteraction = new StoreInteraction(containerDescriptor);
 
 	    // Sets the interaction range
-            ViewContainerInteraction view = new ViewContainerInteraction { MaxDistance = range };
+            ViewContainerInteraction view = new ViewContainerInteraction(containerDescriptor){ MaxDistance = range };
             DisposeInteraction disposeInteraction = new DisposeInteraction();
 
 	    // if we arent purging something already, we create the interactions

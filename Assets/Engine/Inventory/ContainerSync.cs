@@ -44,7 +44,7 @@ namespace SS3D.Engine.Inventory
             }
             
             Containers.Clear();
-            GetComponentsInChildren(false, Containers);
+            Containers = GetComponentsInChildren<AttachedContainer>(false).ToList();
             if (NetworkServer.active)
             {
                 SubscribeToContainers();
@@ -169,6 +169,13 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
+            // This prevents handler errors when TargetSyncContainer is called before the Start() method
+            // is executed. For example, this can occur for the player character on a client.
+            if (Containers.Count == 0)
+            {
+                UpdateContainers();
+            }
+
             Containers[containerId].Container.Reconcile(container);
         }
 
@@ -206,6 +213,37 @@ namespace SS3D.Engine.Inventory
 
             var accessibleContainer = Containers[containerId];
             accessibleContainer.Container.MoveItemsUnchecked(items);
+        }
+
+        private void OnValidate()
+        {
+                RemoveUselessContainerSync(this.gameObject);
+        }  
+
+        private void RemoveUselessContainerSync(GameObject gameObject)
+        {
+            #if UNITY_EDITOR
+            var containerSync = gameObject.GetComponent<ContainerSync>();
+            var children = gameObject.GetComponentsInChildren<Transform>();
+            foreach (Transform child in children)
+            {
+                if (child == gameObject.transform)
+                    continue;
+
+                var containerSyncToRemove = child.GetComponent<ContainerSync>();
+                UnityEditor.EditorApplication.delayCall += () =>
+                {
+                    if (Application.isEditor && containerSync != null && containerSyncToRemove != null)
+                    {
+                        Debug.Log("On object " + child.gameObject.name + ", remove containerSync because a containerSync script is already on a parent");
+                        DestroyImmediate(containerSyncToRemove, true);
+                    }               
+                };
+                     
+
+                RemoveUselessContainerSync(child.gameObject);
+            }
+            #endif
         }
     }
 }

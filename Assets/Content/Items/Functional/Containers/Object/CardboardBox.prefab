@@ -45,13 +45,13 @@ GameObject:
   - component: {fileID: 6925736849406537146}
   - component: {fileID: 3012029890608275350}
   - component: {fileID: 8955583334864001881}
-  - component: {fileID: 3937623309233931808}
   - component: {fileID: 8026662465185345548}
   - component: {fileID: 7389511661425851685}
   - component: {fileID: 5631262523184873709}
-  - component: {fileID: 3581126248657120137}
-  - component: {fileID: 9174613476979565480}
-  - component: {fileID: 4236927728003344161}
+  - component: {fileID: 7290004085322476989}
+  - component: {fileID: 2701883316079781727}
+  - component: {fileID: 3461519149272235498}
+  - component: {fileID: 3734325509069202337}
   m_Layer: 16
   m_Name: CardboardBox
   m_TagString: Untagged
@@ -190,26 +190,6 @@ MonoBehaviour:
   bulkSize: 3
   traits: []
   Size: {x: 5, y: 4}
---- !u!114 &3937623309233931808
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8155353539727309456}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
-  StorageType: 0
-  Pile: 0
-  OnlyStoreWhenOpen: 0
-  MaxDistance: 1.5
-  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
 --- !u!114 &8026662465185345548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,7 +242,70 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &3581126248657120137
+--- !u!114 &7290004085322476989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8155353539727309456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 2701883316079781727}
+  containerSync: {fileID: 0}
+  containerInteractive: {fileID: 3461519149272235498}
+  containerUi: {fileID: 0}
+  openIcon: {fileID: 0}
+  takeIcon: {fileID: 0}
+  storeIcon: {fileID: 0}
+  viewIcon: {fileID: 0}
+  attachmentOffset: {x: 0, y: 0, z: 0}
+  containerName: container
+  onlyStoreWhenOpen: 0
+  openWhenContainerViewed: 0
+  size: {x: 0, y: 0}
+  hideItems: 1
+  attachItems: 1
+  startFilter: {fileID: 0}
+  initialized: 1
+  maxDistance: 5
+  isOpenable: 0
+  isInteractive: 1
+  hasUi: 0
+  hasCustomInteraction: 0
+--- !u!114 &2701883316079781727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8155353539727309456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDescriptor: {fileID: 7290004085322476989}
+--- !u!114 &3461519149272235498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8155353539727309456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  OpenIcon: {fileID: 0}
+  containerDescriptor: {fileID: 7290004085322476989}
+--- !u!114 &3734325509069202337
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -276,33 +319,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
---- !u!114 &9174613476979565480
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8155353539727309456}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HideItems: 1
-  AttachItems: 1
-  AttachmentOffset: {x: 0, y: 0, z: 0}
---- !u!114 &4236927728003344161
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8155353539727309456}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AttachedContainer: {fileID: 9174613476979565480}
-  Size: {x: 4, y: 3}
-  StartFilter: {fileID: 0}

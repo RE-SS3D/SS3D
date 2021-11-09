@@ -4,9 +4,9 @@ using UnityEngine;
 using SS3D.Engine.Server.Login.Data;
 using SS3D.Engine.Server.Login.Networking;
 using SS3D.Engine.Server.Round;
+using SS3D;
     
     using System.Net;
-using SS3D.Engine.Database;
 using Telepathy;
 using UnityEngine.SceneManagement;
     using UnityEngine.UI;
@@ -41,13 +41,16 @@ using UnityEngine.SceneManagement;
     {
         public static LoginNetworkManager singleton { get; private set; }
 
+        // Allows for updating the server numbers when players connect / disconnect.
+        public event System.Action ClientNumbersUpdated;
+
         // Warmup time until round starts
         [Range(3, 3600)]
         [SerializeField] int warmupTime;
         /**
          * Information about the login server sent to the client.
          */
-        public class LoginServerMessage : MessageBase
+        public struct LoginServerMessage : NetworkMessage
         {
             // If null, then no 
             public string serverAddress;
@@ -56,7 +59,7 @@ using UnityEngine.SceneManagement;
         /**
          * Information about the player's chosen character sent from client to server
          */
-        public class CharacterSelectMessage : MessageBase
+        public struct CharacterSelectMessage : NetworkMessage
         {
             public CharacterResponse character;
         }
@@ -110,19 +113,19 @@ using UnityEngine.SceneManagement;
             {
                 if (singleton != null)
                 {
-                    logger.LogWarning("Multiple NetworkManagers detected in the scene. Only one NetworkManager can exist at a time. The duplicate NetworkManager will be destroyed.");
+                    Debug.LogWarning("Multiple NetworkManagers detected in the scene. Only one NetworkManager can exist at a time. The duplicate NetworkManager will be destroyed.");
                     Destroy(gameObject);
 
                     // Return false to not allow collision-destroyed second instance to continue.
                     return false;
                 }
-                logger.Log("NetworkManager created singleton (DontDestroyOnLoad)");
+                Debug.Log("NetworkManager created singleton (DontDestroyOnLoad)");
                 singleton = this;
                 if (Application.isPlaying) DontDestroyOnLoad(gameObject);
             }
             else
             {
-                logger.Log("NetworkManager created singleton (ForScene)");
+                Debug.Log("NetworkManager created singleton (ForScene)");
                 singleton = this;
             }
 
@@ -132,10 +135,11 @@ using UnityEngine.SceneManagement;
 
             return true;
         }
-        
+
         /// <summary>
         /// Initial server setup
         /// </summary>
+        [Server]
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -147,6 +151,7 @@ using UnityEngine.SceneManagement;
         /// Server setup after round restart
         /// </summary>
         /// <param name="sceneName"></param>
+        [Server]
         public override void OnServerSceneChanged(string sceneName)
         {
             base.OnServerSceneChanged(sceneName);
@@ -157,6 +162,7 @@ using UnityEngine.SceneManagement;
             UpdateLoadingScreen(false);
         }
 
+        [Client]
         public override void OnStartClient()
         {
             base.OnStartClient();
@@ -164,6 +170,7 @@ using UnityEngine.SceneManagement;
             NetworkClient.RegisterHandler<LoginServerMessage>(OnLoginDataMessage, false);
         }
 
+        [Server]
         private void SetupServerManagers()
         {
             roundManager = GameObject.FindObjectOfType<RoundManager>();
@@ -205,6 +212,7 @@ using UnityEngine.SceneManagement;
         /**
          * Step 1: When the player connects, the server sends info about the login server to the client.
          */
+        [Server]
         public override void OnServerConnect(NetworkConnection conn)
         {
             base.OnServerConnect(conn);
@@ -213,11 +221,15 @@ using UnityEngine.SceneManagement;
 
             // Must always send a message, so the client knows if they should spawn through the login server or not
             conn.Send(new LoginServerMessage() {serverAddress = userMustLogin ? loginServerAddress : null});
+
+            // Ensure the display gets updated.
+            StartCoroutine(UpdatePlayerCountDelayed());
         }
 
         /**
          * Once the client establishes a connection, it immediately tells the server to add them as a player
          */
+        [Client]
         public override void OnClientConnect(NetworkConnection conn)
         {
             if (clientLoadedScene)
@@ -226,7 +238,13 @@ using UnityEngine.SceneManagement;
                 Debug.LogWarning("The Login system does not support having a separate Online Scene yet!");
                 return;
             }
-            ClientScene.AddPlayer(conn);
+
+            if (!NetworkClient.ready)
+            {
+                NetworkClient.Ready();
+            }
+
+            NetworkClient.AddPlayer();
         }
 
         /**
@@ -236,28 +254,63 @@ using UnityEngine.SceneManagement;
          */
         public override void OnServerAddPlayer(NetworkConnection conn)
         {
-            LocalDatabaseManager database = LocalDatabaseManager.singleton;
-
             Debug.Log("OnServerAddPlayer");
 
-            GameObject soulInstance = Instantiate(soulPrefab);
-            
-            NetworkServer.AddPlayerForConnection(conn, soulInstance);
-
-            Soul soul = soulInstance.GetComponent<Soul>();
-            database.userDatabaseObject.SaveUser(soul.ckey);
-            database.characterDatabaseObject.GetAllCharacterData();
+            if (!SceneLoaderManager.singleton.CommencedLoadingMap)
+            {
+                // There is no map loaded. This is the default condition.
+                GameObject soul = Instantiate(soulPrefab);
+                NetworkServer.AddPlayerForConnection(conn, soul);
+                //GameObject player = Instantiate(playerDummyPrefab);
+                //NetworkServer.AddPlayerForConnection(conn, player);
+            }
+            else
+            {
+                // A map has already been loaded when the client joins.
+                StartCoroutine(OnServerAddPlayerDelayed(conn));
+            }
         }
+
+        private IEnumerator OnServerAddPlayerDelayed(NetworkConnection conn)
+        {
+            // Wait until the server has loaded the scene itself.
+            while (!SceneLoaderManager.singleton.IsSelectedMapLoaded())
+                yield return null;
+
+            // Let the client know that the server has loaded the map.
+            SceneLoaderManager.singleton.TargetInvokeMapLoaded(conn);
+
+            // Wait for that to go through
+            yield return new WaitForEndOfFrame();
+
+            // Send client message to load the scene.
+            conn.Send(SceneLoaderManager.singleton.GenerateSceneMessage());
+
+            // Wait for that to go through
+            yield return new WaitForEndOfFrame();
+
+            // Now make the soul.
+            GameObject soul = Instantiate(soulPrefab);
+            NetworkServer.AddPlayerForConnection(conn, soul);
+
+            // Wait for that to go through
+            yield return new WaitForEndOfFrame();
+            // Let the client know that the server has loaded the map.
+            SceneLoaderManager.singleton.TargetSetActiveScene(conn);
+        }
+
+
 
         /**
          * The client receives the message informing them of the Login Server,
          * Uses this to start the player's character select process
          */
-        private void OnLoginDataMessage(NetworkConnection conn, LoginServerMessage message)
+        [Client]
+        private void OnLoginDataMessage(LoginServerMessage message)
         {
             if (message.serverAddress == null)
             {
-                SpawnPlayerWithoutLoginServer(conn);
+                SpawnPlayerWithoutLoginServer(NetworkClient.connection);
                 return;
             }
 
@@ -265,13 +318,14 @@ using UnityEngine.SceneManagement;
             // If successful, hand over control to the LoginManager, telling it to call SpawnPlayerWithLoginServer when
             // the user has chosen their player.
             loginManager.UpdateApiAddress(message.serverAddress,
-                character => SpawnPlayerWithLoginServer(conn, character));
+                character => SpawnPlayerWithLoginServer(NetworkClient.connection, character));
             loginManager.ApiHeartbeat(BeginLoginProcedure);
         }
 
         /**
          * Once the player has selected a character, the client tells the server of the chosen character.
          */
+        [Client]
         private void SpawnPlayerWithLoginServer(NetworkConnection conn, CharacterResponse characterResponse)
         {
             conn.Send(new CharacterSelectMessage {character = characterResponse});
@@ -280,10 +334,10 @@ using UnityEngine.SceneManagement;
         /**
          * If the client is told that the login server doesn't exist, we build them a John Doe.
          */
+        [Client]
         private CharacterResponse SpawnPlayerWithoutLoginServer(NetworkConnection conn)
         {
-            CharacterResponse characterResponse = new CharacterResponse();
-            characterResponse.name = "John Doe";
+            CharacterResponse characterResponse = GetDefaultCharacter();
             conn.Send(new CharacterSelectMessage {character = characterResponse});
             return characterResponse;
         }
@@ -291,6 +345,7 @@ using UnityEngine.SceneManagement;
         /**
          * If the client sends a CharacterSelect, we log them in with that character.
          */
+        [Server]
         private void OnCharacterSelectMessage(NetworkConnection conn, CharacterSelectMessage characterSelection)
         {
             if (!IsPlayerPrefabValid(conn))
@@ -300,11 +355,24 @@ using UnityEngine.SceneManagement;
 
             //StartCoroutine(SpawnPlayerAfterRoundStart(conn, characterSelection));
         }
-        
+      
+        /// <summary>
+        /// Returns a character with the default configuration. This can be called on client and server.
+        /// </summary>
+        /// <returns></returns>
+        private CharacterResponse GetDefaultCharacter()
+        {
+            CharacterResponse character = new CharacterResponse();
+            character.name = "John Doe";
+            return character;
+        }
+
+
+        [Server]
         public void SpawnPlayerAfterRoundStart(NetworkConnection conn)
         {
-            Debug.LogError(conn.address);
-            CharacterResponse character = SpawnPlayerWithoutLoginServer(conn);
+
+            CharacterResponse character = GetDefaultCharacter();
 
             Debug.Log("Spawning player after round start " + "conn: " + conn.address + " character: " + character.name);
             //Something has gone horribly wrong
@@ -334,7 +402,7 @@ using UnityEngine.SceneManagement;
             yield return new WaitUntil(() => roundManager.IsRoundStarted);
 
             //Something has gone horribly wrong
-            if (characterSelection?.character == null) throw new Exception("Could not read character data");
+            if (characterSelection.character == null) throw new Exception("Could not read character data");
 
             // Spawn player based on their character choices
             Transform startPos = GetStartPosition();
@@ -350,6 +418,7 @@ using UnityEngine.SceneManagement;
             NetworkServer.AddPlayerForConnection(conn, player);
         }
 
+        [Server]
         private bool IsPlayerPrefabValid(NetworkConnection conn)
         {
             if (playerPrefab == null)
@@ -374,6 +443,7 @@ using UnityEngine.SceneManagement;
             return true;
         }
         
+        [Client]
         public override void OnClientChangeScene(string newSceneName, SceneOperation sceneOperation, bool customHandling)
         {
             base.OnClientChangeScene(newSceneName, sceneOperation, customHandling);
@@ -381,6 +451,7 @@ using UnityEngine.SceneManagement;
             UpdateLoadingScreen(true);
         }
 
+        [Server]
         public override void OnServerChangeScene(string newSceneName)
         {
             base.OnServerChangeScene(newSceneName);
@@ -388,6 +459,7 @@ using UnityEngine.SceneManagement;
             UpdateLoadingScreen(true);
         }
         
+        [Client]
         public override void OnClientSceneChanged(NetworkConnection conn)
         {
             base.OnClientSceneChanged(conn);
@@ -400,5 +472,26 @@ using UnityEngine.SceneManagement;
             if (loadingScreen != null)
                 loadingScreen?.SetActive(state);
         }
+
+        [Server]
+        // Ensures that as clients disconnect, the client numbers are updated.
+        public override void OnServerDisconnect(NetworkConnection conn)
+        {
+            base.OnServerDisconnect(conn);
+            ClientNumbersUpdated?.Invoke();
+
+        }
+
+        [Server]
+        private IEnumerator UpdatePlayerCountDelayed()
+        {
+            // Wait until the end of frame (so that the event has been subscribed to)
+            yield return new WaitForEndOfFrame();
+
+            // Fire the event
+            ClientNumbersUpdated?.Invoke();
+
+        }
+
     }
 }
