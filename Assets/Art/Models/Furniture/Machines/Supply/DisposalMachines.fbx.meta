@@ -1,7 +1,7 @@
 fileFormatVersion: 2
-guid: 7b17d139e50e2eb428fa937613b3a830
+guid: d3fe67b9a87344841ae7b1d45dae1ddd
 ModelImporter:
-  serializedVersion: 19300
+  serializedVersion: 19301
   internalIDToNameTable: []
   externalObjects:
   - first:
@@ -13,11 +13,6 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Palette05 Emission
-    second: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Palette05.001
     second: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
   materials:
     materialImportMode: 1
@@ -58,6 +53,7 @@ ModelImporter:
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    fileIdsGeneration: 2
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
