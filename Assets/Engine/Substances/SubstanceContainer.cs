@@ -11,7 +11,7 @@ namespace SS3D.Engine.Substances
     /// <summary>
     /// Stores substances
     /// </summary>
-    public class SubstanceContainer : InteractionTargetBehaviour
+    public class SubstanceContainer : InteractionTargetNetworkBehaviour
     {
         /// <summary>
         /// A list of all substances in this container
@@ -30,12 +30,19 @@ namespace SS3D.Engine.Substances
         /// <summary>
         /// The filled volume in ml
         /// </summary>
-        public float CurrentVolume => Substances.Sum(x => x.Moles * x.Substance.MillilitersPerMole);
+        public float CurrentVolume => currentVolume;
+
+        [SyncVar]
+        private float currentVolume;
 
         /// <summary>
         /// The remaining volume in milliliters that fit in this container
         /// </summary>
-        public float RemainingVolume => Volume - CurrentVolume;
+        public float RemainingVolume => remainingVolume;
+
+        [SyncVar]
+        private float remainingVolume;
+
         /// <summary>
         /// Multiplier to convert moles in this container to volume
         /// </summary>
@@ -80,11 +87,12 @@ namespace SS3D.Engine.Substances
             {
                 Substances = new List<SubstanceEntry>();
             }
+            RecalculateAndSyncVolume();
         }
 
         public bool IsEmpty()
         {
-            return Substances.Count < 1;
+            return currentVolume == 0f;
         }
 
         public bool CanTransfer()
@@ -130,6 +138,8 @@ namespace SS3D.Engine.Substances
                 entry.Moles += moles;
                 Substances[index] = entry;
             }
+
+            RecalculateAndSyncVolume();
         }
 
         /// <summary>
@@ -169,6 +179,7 @@ namespace SS3D.Engine.Substances
                 entry.Moles = newAmount;
                 Substances[index] = entry;
             }
+            RecalculateAndSyncVolume();
         }
 
         /// <summary>
@@ -243,6 +254,8 @@ namespace SS3D.Engine.Substances
                     Substances[i] = entry;
                 }
             }
+
+            RecalculateAndSyncVolume();
         }
 
         /// <summary>
@@ -279,6 +292,16 @@ namespace SS3D.Engine.Substances
         public void MarkDirty()
         {
             OnContentsChanged();
+        }
+
+        /// <summary>
+        /// Recalculates the current and remaining volume of the container.
+        /// Because these variables are SyncVar, they will propagate to the client.
+        /// </summary>
+        private void RecalculateAndSyncVolume()
+        {
+            currentVolume = Substances.Sum(x => x.Moles * x.Substance.MillilitersPerMole);
+            remainingVolume = Volume - currentVolume;
         }
 
         protected virtual void OnContentsChanged()
