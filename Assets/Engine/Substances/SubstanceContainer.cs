@@ -73,6 +73,7 @@ namespace SS3D.Engine.Substances
         /// <summary>
         /// Is the container locked?
         /// </summary>
+        [SyncVar]
         public bool Locked;
         
         public delegate void OnContentChanged(SubstanceContainer container);
@@ -81,13 +82,16 @@ namespace SS3D.Engine.Substances
 
         [SerializeField] private List<SubstanceEntry> substances;
 
-        private void Awake()
+        private void Start()
         {
             if (Substances.Count < 1)
             {
                 Substances = new List<SubstanceEntry>();
             }
-            RecalculateAndSyncVolume();
+            if (isServer)
+            {
+                RecalculateAndSyncVolume();
+            }
         }
 
         public bool IsEmpty()
@@ -115,6 +119,7 @@ namespace SS3D.Engine.Substances
         /// </summary>
         /// <param name="substance">The substance to add</param>
         /// <param name="moles">How many moles should be added</param>
+        [Server]
         public void AddSubstance(Substance substance, float moles)
         {
             if (!CanTransfer())
@@ -147,6 +152,7 @@ namespace SS3D.Engine.Substances
         /// </summary>
         /// <param name="substance">The desired substance</param>
         /// <param name="moles">The desired amount</param>
+        [Server]
         public bool ContainsSubstance(Substance substance, float moles = 0.0001f)
         {
             return Substances.FirstOrDefault(x => x.Substance == substance).Moles >= moles;
@@ -157,6 +163,7 @@ namespace SS3D.Engine.Substances
         /// </summary>
         /// <param name="substance">The substance to remove</param>
         /// <param name="moles">The amount of substance</param>
+        [Server]
         public void RemoveSubstance(Substance substance, float moles = float.MaxValue)
         {
             if (!CanTransfer()) 
@@ -194,6 +201,7 @@ namespace SS3D.Engine.Substances
         /// Removes moles from the container
         /// </summary>
         /// <param name="moles">The amount of moles</param>
+        [Server]
         public void RemoveMoles(float moles)
         {
             var totalMoles = Substances.Sum(x => x.Moles);
@@ -228,6 +236,7 @@ namespace SS3D.Engine.Substances
         /// </summary>
         /// <param name="other">The other container</param>
         /// <param name="moles">The moles to transfer</param>
+        [Server]
         public void TransferMoles(SubstanceContainer other, float moles)
         {
             var totalMoles = Substances.Sum(x => x.Moles);
@@ -263,6 +272,7 @@ namespace SS3D.Engine.Substances
         /// </summary>
         /// <param name="other">The other container</param>
         /// <param name="milliliters">How many milliliters to transfer</param>
+        [Server]
         public void TransferVolume(SubstanceContainer other, float milliliters)
         {
             TransferMoles(other, milliliters / MolesToVolume);
@@ -273,6 +283,7 @@ namespace SS3D.Engine.Substances
         /// </summary>
         /// <param name="substance">The substance to look for</param>
         /// <returns>The index or -1 if it is not found</returns>
+        [Server]
         public int IndexOfSubstance(Substance substance)
         {
             for (int i = 0; i < Substances.Count; i++)
@@ -289,6 +300,7 @@ namespace SS3D.Engine.Substances
         /// <summary>
         /// Informs the system that the contents of this container have changed
         /// </summary>
+        [Server]
         public void MarkDirty()
         {
             OnContentsChanged();
@@ -298,12 +310,14 @@ namespace SS3D.Engine.Substances
         /// Recalculates the current and remaining volume of the container.
         /// Because these variables are SyncVar, they will propagate to the client.
         /// </summary>
+        [Server]
         private void RecalculateAndSyncVolume()
         {
             currentVolume = Substances.Sum(x => x.Moles * x.Substance.MillilitersPerMole);
             remainingVolume = Volume - currentVolume;
         }
 
+        [Server]
         protected virtual void OnContentsChanged()
         {
             SubstanceRegistry.Current.ProcessContainer(this);
