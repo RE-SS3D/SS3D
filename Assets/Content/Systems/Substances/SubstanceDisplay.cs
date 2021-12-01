@@ -96,7 +96,7 @@ namespace SS3D.Content.Systems.Substances
 
             //trans.localPosition = Vector3.Lerp(EmptyPosition, FullPosition, Mathf.Min(relativeVolume, 1));
             //trans.localScale = new Vector3(ScaleX.Evaluate(relativeVolume), ScaleY.Evaluate(relativeVolume), ScaleZ.Evaluate(relativeVolume));
-            //RpcUpdateDisplay(trans.localPosition, trans.localScale, newColor);
+            RpcUpdateDisplay(trans.localPosition, trans.localScale, newColor, relativeVolume);
         }
 
         private Color CalculateColor()
@@ -114,12 +114,20 @@ namespace SS3D.Content.Systems.Substances
         }
 
         [ClientRpc]
-        private void RpcUpdateDisplay(Vector3 position, Vector3 scale, Color color)
+        private void RpcUpdateDisplay(Vector3 position, Vector3 scale, Color color, float relativeVolume)
         {
+            // Ensure this is initialised.
+            if (meshRenderer == null)
+            {
+                Start();
+            }
+            
             Transform trans = DisplayObject.transform;
             trans.localPosition = position;
             trans.localScale = scale;
-            meshRenderer.material.color = color;
+            meshRenderer.material.SetFloat("_FillAmount", relativeVolume);
+            meshRenderer.material.SetColor("_Tint", color);
+            meshRenderer.material.SetColor("_TopColor", color);
         }
     }
 }
