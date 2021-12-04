@@ -25951,6 +25951,11 @@ PrefabInstance:
       propertyPath: examineCamera
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5184501620461349551, guid: 5b47bfba5e38174439c06cc062db1ac3,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 5385572284957260653, guid: 5b47bfba5e38174439c06cc062db1ac3,
         type: 3}
       propertyPath: m_Name

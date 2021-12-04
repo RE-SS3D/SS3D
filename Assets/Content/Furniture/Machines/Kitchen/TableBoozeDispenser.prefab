@@ -221,9 +221,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9feeb703d0314349836b03dcc586d5b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InteractionName: 
-  Substance: Vodka
-  Moles: 0.43103448
+  InteractionName: Dispense
+  substances:
+  - Vodka
+  - Kahlua
+  - Gin
+  - Cognac
+  - Rum
+  - Whisky
+  - Absinthe
+  amount: 30
+  useMillilitres: 1
 --- !u!114 &-1809232113325138168
 MonoBehaviour:
   m_ObjectHideFlags: 0
