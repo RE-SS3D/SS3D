@@ -139,23 +139,23 @@ namespace SS3D.Engine.Tiles.Connections
                         break;
                     case 1:
                         mesh = xSingle;
-                        rotation = TileHelper.AngleBetween(Direction.South, diagonals.GetOnlyPositive());
+                        rotation = TileHelper.AngleBetween(Direction.North, diagonals.GetOnlyPositive());
                         break;
                     case 2:
                         if (diagonals.north == diagonals.south)
                         {
                             mesh = xOpposite;
-                            rotation = TileHelper.AngleBetween(Orientation.Horizontal, diagonals.GetFirstOrientation());
+                            rotation = TileHelper.AngleBetween(Orientation.Vertical, diagonals.GetFirstOrientation());
                         }
                         else
                         {
                             mesh = xSide;
-                            rotation = TileHelper.AngleBetween(Direction.SouthEast, diagonals.GetCornerDirection());
+                            rotation = TileHelper.AngleBetween(Direction.NorthWest, diagonals.GetCornerDirection());
                         }
                         break;
                     case 3:
                         mesh = xTriple;
-                        rotation = TileHelper.AngleBetween(Direction.North, diagonals.GetOnlyNegative());
+                        rotation = TileHelper.AngleBetween(Direction.East, diagonals.GetOnlyNegative());
                         break;
                     default:
                         mesh = xQuad;
