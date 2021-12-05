@@ -78,13 +78,14 @@ namespace SS3D.Engine.Tiles.Connections
                 {
                     mesh = uNorth;
                     orientation = OffsetOrientation.uNorth;
+                    rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
                 }
                 else
                 {
                     mesh = uSouth;
                     orientation = OffsetOrientation.uSouth;
+                    rotation = TileHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyPositive());
                 }
-                rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
             }
             else if (cardinalInfo.IsI())
             {
@@ -95,12 +96,12 @@ namespace SS3D.Engine.Tiles.Connections
             else if (cardinalInfo.IsL())
             {
                 Direction sides = cardinalInfo.GetCornerDirection();
-                mesh = sides == Direction.NorthEast ? lNE
-                    : sides == Direction.SouthEast ? lSE
-                    : sides == Direction.SouthWest ? lSW
-                    : lNW;
+                mesh = sides == Direction.NorthEast ? lNW
+                    : sides == Direction.SouthEast ? lNE
+                    : sides == Direction.SouthWest ? lSE
+                    : lSW;
 
-                orientation = sides == Direction.NorthEast ? OffsetOrientation.lNE
+                orientation = sides == Direction.NorthEast ? OffsetOrientation.lNW
                     : sides == Direction.SouthEast ? OffsetOrientation.lSE
                     : sides == Direction.SouthWest ? OffsetOrientation.lSW
                     : OffsetOrientation.lNW;
@@ -110,10 +111,10 @@ namespace SS3D.Engine.Tiles.Connections
             else if (cardinalInfo.IsT())
             {
                 Direction notside = cardinalInfo.GetOnlyNegative();
-                mesh = notside == Direction.North ? tSWE
-                    : notside == Direction.East ? tNSW
-                    : notside == Direction.South ? tNEW
-                    : tNSE;
+                mesh = notside == Direction.North ? tNSE
+                    : notside == Direction.East ? tSWE
+                    : notside == Direction.South ? tNSW
+                    : tNEW;
 
                 orientation = notside == Direction.North ? OffsetOrientation.tSWE
                     : notside == Direction.East ? OffsetOrientation.tNSW
