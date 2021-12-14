@@ -170,7 +170,7 @@ InputManager:
     descriptiveName: Drop the item currently held in the active hand
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: g
+    positiveButton: q
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1
@@ -186,7 +186,7 @@ InputManager:
     descriptiveName: Toggles between running and walking
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: y
+    positiveButton: caps lock
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -492,7 +492,7 @@ InputManager:
     negativeButton: 
     positiveButton: 
     altNegativeButton: 
-    altPositiveButton: z
+    altPositiveButton: f
     gravity: 1000
     dead: 0.001
     sensitivity: 1000
@@ -523,6 +523,54 @@ InputManager:
     descriptiveNegativeName: 
     negativeButton: 
     positiveButton: left shift
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: 0.001
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 0
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Toggle Internal Clothing
+    descriptiveName: Collapse and expand the internal clothing UI.
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: '`'
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: 0.001
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 0
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Toggle Chat
+    descriptiveName: Collapse and expand the chat window.
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: c
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: 0.001
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 0
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Focus Chat
+    descriptiveName: Focus the text area on the chat window.
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: t
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000

@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
+using SS3D.Content;
 using UnityEngine;
+using SS3D.Engine.Examine;
+
 
 namespace SS3D.Engine.Inventory
 {
@@ -12,29 +15,19 @@ namespace SS3D.Engine.Inventory
     public class AttachedContainer : MonoBehaviour
     {
         /// <summary>
-        /// If items should be hidden
-        /// </summary>
-        public bool HideItems = true;
-        /// <summary>
-        /// If items should be attached as children
-        /// </summary>
-        public bool AttachItems = true;
-        /// <summary>
-        /// The local position of attached items
-        /// </summary>
-        public Vector3 AttachmentOffset = Vector3.zero;
-        /// <summary>
         /// The creatures looking at this container
         /// </summary>
-        public HashSet<Creature> Observers = new HashSet<Creature>();
+        public HashSet<Entity> Observers = new HashSet<Entity>();
+
+        [HideInInspector] public ContainerDescriptor containerDescriptor;
 
         private Container container;
 
-        public delegate void ObserverHandler(AttachedContainer container, Creature observer);
+        public delegate void ObserverHandler(AttachedContainer container, Entity observer);
         
         public event EventHandler<Item> ItemAttached;
         public event EventHandler<Item> ItemDetached;
-        public event ObserverHandler NewObserver; 
+        public event ObserverHandler NewObserver;
         
         /// <summary>
         /// The container that is attached
@@ -44,6 +37,33 @@ namespace SS3D.Engine.Inventory
         {
             get => container;
             set => UpdateContainer(value);
+        }
+
+        /// <summary>
+        /// Return the name of the Object as defined by the Examine System. 
+        /// <remarks> If multiple classes implement the Interface IExaminable
+        /// and have an ExamineType equal to SIMPLE_TEXT, it returns the first name encountered. </remarks>
+        /// </summary>
+        public string GetName()
+        {
+            String Name;
+
+            //Gets all components on this object implementing the interface IExaminable
+            var iExaminables = GetComponents<IExaminable>();
+            //Go through each components until one has a ExamineType equal to SIMPLE_TEXT and is not an empty string, then returns the name linked to it.
+            foreach (IExaminable iExaminable in iExaminables)
+            {
+               if (iExaminable.GetData().GetExamineType() == ExamineType.SIMPLE_TEXT)
+                {
+                    DataNameDescription DataName = (DataNameDescription)(iExaminable.GetData());
+                    Name = DataName.GetName();
+                    if (Name != "")
+                    {
+                        return Name;
+                    }
+                }
+            }
+            return null;
         }
 
         public static AttachedContainer CreateEmpty(GameObject gameObject, Vector2Int size, IEnumerable<Filter> filters = null)
@@ -72,7 +92,7 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         /// <param name="observer">The creature which observes</param>
         /// <returns>True if the creature was not already observing this container</returns>
-        public bool AddObserver(Creature observer)
+        public bool AddObserver(Entity observer)
         {
             bool newObserver = Observers.Add(observer);
             if (newObserver)
@@ -86,7 +106,7 @@ namespace SS3D.Engine.Inventory
         /// Removes an observer
         /// </summary>
         /// <param name="observer">The observer to remove</param>
-        public void RemoveObserver(Creature observer)
+        public void RemoveObserver(Entity observer)
         {
             Observers.Remove(observer);
         }
@@ -106,7 +126,7 @@ namespace SS3D.Engine.Inventory
             ItemDetached?.Invoke(this, e);
         }
         
-        protected virtual void OnNewObserver(Creature e)
+        protected virtual void OnNewObserver(Entity e)
         {
             NewObserver?.Invoke(this, e);
         }
@@ -139,17 +159,17 @@ namespace SS3D.Engine.Inventory
                     {
                         item.Freeze();
                         // Make invisible
-                        if (HideItems)
+                        if (containerDescriptor.hideItems)
                         {
                             item.SetVisibility(false);
                         }
 
                         // Attach to container
-                        if (AttachItems)
+                        if (containerDescriptor.attachItems)
                         {
                             Transform itemTransform = item.transform;
                             itemTransform.SetParent(transform, false);
-                            itemTransform.localPosition = AttachmentOffset;
+                            itemTransform.localPosition = containerDescriptor.attachmentOffset;
                             OnItemAttached(item);
                         }
                     }
@@ -162,7 +182,7 @@ namespace SS3D.Engine.Inventory
                     {
                         item.Unfreeze();
                         // Restore visibility
-                        if (HideItems)
+                        if (containerDescriptor.hideItems)
                         {
                             item.SetVisibility(true);
                         }

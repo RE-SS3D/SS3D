@@ -9,12 +9,20 @@ using UnityEngine;
 
 namespace SS3D.Content.Items.Cosmetic
 {
+    // a boombox plays music, thats it
+
+    // TODO: Needs a good rework, not necessary, but has some weird naming going on
     [RequireComponent(typeof(AudioSource))]
     public class Boombox : InteractionTargetNetworkBehaviour, IToggleable
     {
+	// musics? wonder if there was another word for it, sons, sonds, sonids uhmmm
         [SerializeField]
         private AudioClip[] musics;
         private AudioSource audioSource;
+
+	// is it playing music
+
+        [SyncVar]
         public bool radioOn;
         public int currentMusic;
 
@@ -160,7 +168,7 @@ namespace SS3D.Content.Items.Cosmetic
             return radioOn;
         }
 
-        public override IInteraction[] GenerateInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = new List<IInteraction>(2)
             {

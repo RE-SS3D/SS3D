@@ -12,9 +12,8 @@ GameObject:
   - component: {fileID: -7727686409064562107}
   - component: {fileID: -1074477776341974781}
   - component: {fileID: -4998431523760016775}
-  - component: {fileID: 2183948917681095833}
-  - component: {fileID: 346119420360410449}
   - component: {fileID: -6127819692382853065}
+  - component: {fileID: 2024332583390401554}
   m_Layer: 0
   m_Name: Cables
   m_TagString: Untagged
@@ -59,7 +58,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2802364579275783218}
-  m_Mesh: {fileID: -679329047418097435, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+  m_Mesh: {fileID: -8711453034529356013, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
 --- !u!23 &-4998431523760016775
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -99,38 +98,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &2183948917681095833
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2802364579275783218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fb7ede8181b28b4082944d5e44dd86e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  volume: 1
---- !u!114 &346119420360410449
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2802364579275783218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 961b31fd1d838b9418d00d2675f3a9ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: cable
-  o: {fileID: -679329047418097435, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-  c: {fileID: -4403951118889893994, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-  i: {fileID: 6962330169804267351, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-  l: {fileID: 6774450340924162456, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-  t: {fileID: 5669457327597319449, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
-  x: {fileID: 3877080433169946520, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
 --- !u!114 &-6127819692382853065
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,3 +113,59 @@ MonoBehaviour:
   DisplayName: High-Voltage Cable
   Text: 
   MaxDistance: 0
+--- !u!114 &2024332583390401554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2802364579275783218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d4c17829cf718f419146d93c0826f22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  selectedAdjacencyType: 0
+  CrossConnectAllowed: 0
+  simpleAdjacency:
+    o: {fileID: -8711453034529356013, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+    u: {fileID: -1590738978952025886, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+    i: {fileID: -2043613833257120371, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+    l: {fileID: -9081922812702010850, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+    t: {fileID: -5358326586770029455, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+    x: {fileID: -8228826546953468662, guid: 3e69413026bf051418bf84fec0ce5919, type: 3}
+  advancedAdjacency:
+    o: {fileID: 0}
+    u: {fileID: 0}
+    i: {fileID: 0}
+    lNone: {fileID: 0}
+    lSingle: {fileID: 0}
+    tNone: {fileID: 0}
+    tSingleRight: {fileID: 0}
+    tSingleLeft: {fileID: 0}
+    tDouble: {fileID: 0}
+    xNone: {fileID: 0}
+    xSingle: {fileID: 0}
+    xSide: {fileID: 0}
+    xOpposite: {fileID: 0}
+    xTriple: {fileID: 0}
+    xQuad: {fileID: 0}
+    viewObstacles: []
+    opaque: 0
+  offsetAdjacency:
+    o: {fileID: 0}
+    uNorth: {fileID: 0}
+    uSouth: {fileID: 0}
+    i: {fileID: 0}
+    lNE: {fileID: 0}
+    lNW: {fileID: 0}
+    lSE: {fileID: 0}
+    lSW: {fileID: 0}
+    tNEW: {fileID: 0}
+    tNSW: {fileID: 0}
+    tNSE: {fileID: 0}
+    tSWE: {fileID: 0}
+    x: {fileID: 0}
+  EditorblockedConnections: 0

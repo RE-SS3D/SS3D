@@ -17,13 +17,13 @@ namespace SS3D.Engine.Server.Round
     {
         public static RoundManager singleton { get; private set; }
 
-        private bool warmingUp;
+        [SyncVar] private bool warmingUp;
         [SerializeField] private int warmupTimeSeconds = 5;
         [SerializeField] private int roundTimeSeconds = 300;
         private Coroutine warmupCoroutine;     
         
         private int timerSeconds = 0;
-        private bool started = false;
+        [SyncVar] private bool started = false;
         private Coroutine tickCoroutine;
 
         public static event System.Action ServerWarmupStarted;
@@ -36,74 +36,107 @@ namespace SS3D.Engine.Server.Round
         public bool IsRoundStarted => started;
         public bool IsOnWarmup => warmingUp;
 
-        private void Start()
+        private void Awake()
         {
             InitializeSingleton();
         }
         
         public void StartWarmup()
         {
+            // These activities will happen both on the server and client.
             gameObject.SetActive(true);
+            StopAllCoroutines();
             timerSeconds = warmupTimeSeconds;
-            warmupCoroutine = StartCoroutine(TickWarmup());
-
-            warmingUp = true;
             ServerWarmupStarted?.Invoke();
+
+            // Only do SyncVar assignments, tick coroutine and the RPC on the server.
+            if (isServer)
+            {
+                started = false;
+                warmingUp = true;
+                warmupCoroutine = StartCoroutine(TickWarmup());
+                RpcStartWarmup();
+            }
+
+
+        }
+
+        [ClientRpc]
+        private void RpcStartWarmup()
+        {
+            // Prevent from running again on server
+            if (isServer) return;
+            StartWarmup();
         }
 
         [ContextMenu("Start Round")]
         public void StartRound()
         {
-            
+            // These activities will happen both on the server and client.
             gameObject.SetActive(true);
-            started = true;
-            warmingUp = false;
-            tickCoroutine = StartCoroutine(Tick());
 
             Debug.Log("Round Started");
             ServerRoundStarted?.Invoke();
-            RpcStartRound();
+
+            // Only do SyncVar assignments, tick coroutine and the RPC on the server.
+            if (isServer)
+            {
+                started = true;
+                warmingUp = false;
+                StopCoroutine(warmupCoroutine);
+                tickCoroutine = StartCoroutine("Tick");
+                RpcStartRound();
+            }
         }
 
         [ClientRpc]
         public void RpcStartRound()
         {
-            gameObject.SetActive(true);
-            started = true;
-            tickCoroutine = StartCoroutine(Tick());
-
-            Debug.Log("Round Started");
-            ServerRoundStarted?.Invoke();
+            if (isServer) return;
+            StartRound();
         }
 
         public void EndRound()
         {
             if (!isServer) return;
-            
+
             // if the round didn't even start we cancel the warmup
             if (warmingUp)
             {
                 warmingUp = false;
                 StopCoroutine(warmupCoroutine);
-
-                return;
             }
-            
+
             started = false;
             ServerRoundEnded?.Invoke();
             
             StopCoroutine(tickCoroutine);
-            
+            SceneLoaderManager.singleton.UnloadSelectedMap();
+
             RpcEndRound();
         }
 
+        [ClientRpc]
         public void RpcEndRound()
         {
+            if (isServer) return;
+            // if the round didn't even start we cancel the warmup
+            if (warmingUp)
+            {
+                warmingUp = false;
+                StopCoroutine(warmupCoroutine);
+            }
+
             started = false;
             ServerRoundEnded?.Invoke();
+
+            StopCoroutine(tickCoroutine);
+            SceneLoaderManager.singleton.UnloadSelectedMap();
+
             StopCoroutine(tickCoroutine);
         }
         
+        // Ignore this for now
         public void RestartRound()
         {
             if (!isServer)
@@ -111,14 +144,6 @@ namespace SS3D.Engine.Server.Round
                 return;
             }
 
-            StopCoroutine(tickCoroutine);
-            //NetworkManager.singleton.ServerChangeScene(SceneManager.GetActiveScene().name);
-            
-            CameraManager.singleton.playerCamera.gameObject.SetActive(false);
-            CameraManager.singleton.lobbyCamera.gameObject.SetActive(true);
-            
-            SceneLoaderManager.singleton.UnloadSelectedMap();
-            
             if (started) EndRound();
             
             ServerRoundRestarted?.Invoke();
@@ -139,15 +164,14 @@ namespace SS3D.Engine.Server.Round
 
         private IEnumerator Tick()
         {
-            while (timerSeconds < roundTimeSeconds)
+            while (started)
             {
                 UpdateClock(GetTimerTextSeconds());
                 timerSeconds++;
                 yield return new WaitForSeconds(1);
             }
-            
-            Debug.Log("Restarting Round");
-            RestartRound();
+            Debug.Log("Coroutine running while round is not started, IsRoundStarted: " + started);
+            //RestartRound();
         }
 
         [Server]
@@ -182,8 +206,13 @@ namespace SS3D.Engine.Server.Round
 
         void InitializeSingleton()
         {
-            if (singleton != null) Destroy(gameObject);
-            singleton = this;
+            if (singleton != null && singleton != this) { 
+                Destroy(gameObject);
+            }
+            else
+            {
+                singleton = this;   
+            }
         }
     }
 }

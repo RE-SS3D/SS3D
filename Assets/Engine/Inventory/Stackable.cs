@@ -9,6 +9,16 @@ namespace SS3D.Engine.Inventory
     {
         public int maxStack;
         public int amountInStack;
+		private IExamineRequirement requirements;
+
+		public void Start()
+		{
+			// Populate requirements for this item to be examined.
+			requirements = new ReqPermitExamine(gameObject);
+			requirements = new ReqMaxRange(requirements, 2.0f);  // Amount in stack only visible from 2 metres.
+			requirements = new ReqObstacleCheck(requirements);
+
+		}		
 
         private void OnValidate()
         {
@@ -25,19 +35,16 @@ namespace SS3D.Engine.Inventory
             {
                 amountInStack = maxStack;
             }
-            
         }
 
-        public bool CanExamine(GameObject _) => true;
-
-        public string GetDescription(GameObject _)
-        {
-            return $"{amountInStack} in stack";
-        }
+		public IExamineData GetData()
+		{
+			return new DataNameDescription("", $"{amountInStack} in stack");
+		}
 		
-        public virtual string GetName(GameObject examinator)
-        {
-            return gameObject.name;
-        }		
+		public IExamineRequirement GetRequirements()
+		{
+			return requirements;
+		}
     }
 }

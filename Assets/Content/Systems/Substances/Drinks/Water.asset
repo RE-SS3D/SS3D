@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Water
   m_EditorClassIdentifier: 
-  Id: water
+  Id: Water
   Color: {r: 0.5887772, g: 0.8425822, b: 0.9528302, a: 0.09803922}
   MillilitersPerMole: 18

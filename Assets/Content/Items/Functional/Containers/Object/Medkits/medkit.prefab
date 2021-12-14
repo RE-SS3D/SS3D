@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 7197267929087900581}
   - component: {fileID: 7025247159963221394}
   - component: {fileID: 2103335400371539285}
+  - component: {fileID: 8738350563900843021}
   m_Layer: 16
-  m_Name: Medkit Back
+  m_Name: MedkitBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25,12 +26,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2221121822154186424}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 7385895525476329529}
-  m_RootOrder: 0
+  m_Father: {fileID: 8833760637642068360}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7025247159963221394
 MeshFilter:
@@ -39,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2221121822154186424}
-  m_Mesh: {fileID: 8590920847809384813, guid: 07e12283d6d3aa149b2e8f7e046a7ee9, type: 3}
+  m_Mesh: {fileID: 6432961967870269468, guid: 07e12283d6d3aa149b2e8f7e046a7ee9, type: 3}
 --- !u!23 &2103335400371539285
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -79,6 +80,19 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &8738350563900843021
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2221121822154186424}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.44196975, y: 0.400064, z: 0.103822276}
+  m_Center: {x: -0.000000037252903, y: 0.20003188, z: 0.051910758}
 --- !u!1 &2570544868114083117
 GameObject:
   m_ObjectHideFlags: 0
@@ -90,8 +104,9 @@ GameObject:
   - component: {fileID: 7385895525476329529}
   - component: {fileID: 1462698143497783154}
   - component: {fileID: 7791039897351842816}
+  - component: {fileID: 8702990020495146248}
   m_Layer: 16
-  m_Name: Medkit Front
+  m_Name: MedkitFront
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -104,14 +119,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2570544868114083117}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 7197267929087900581}
+  m_Children: []
   m_Father: {fileID: 8833760637642068360}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!33 &1462698143497783154
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -119,7 +133,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2570544868114083117}
-  m_Mesh: {fileID: -50406276987591651, guid: 07e12283d6d3aa149b2e8f7e046a7ee9, type: 3}
+  m_Mesh: {fileID: 6432961967870269468, guid: 07e12283d6d3aa149b2e8f7e046a7ee9, type: 3}
 --- !u!23 &7791039897351842816
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -159,6 +173,49 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &8702990020495146248
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2570544868114083117}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.44196975, y: 0.400064, z: 0.103822276}
+  m_Center: {x: -0.000000037252903, y: 0.20003188, z: 0.051910758}
+--- !u!1 &4170437253070132392
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4606947075117889058}
+  m_Layer: 16
+  m_Name: Attachment Alt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4606947075117889058
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4170437253070132392}
+  m_LocalRotation: {x: -0.049325276, y: -0.7053843, z: -0.049325276, w: 0.7053843}
+  m_LocalPosition: {x: -0.015, y: 0.385, z: -0.028}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8833760637642068360}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: -8, y: -90, z: 0}
 --- !u!1 &5533951594911835035
 GameObject:
   m_ObjectHideFlags: 0
@@ -172,13 +229,13 @@ GameObject:
   - component: {fileID: 2081909342595332650}
   - component: {fileID: 1358342656361913515}
   - component: {fileID: 2884915648782529247}
-  - component: {fileID: 5566088737813539549}
   - component: {fileID: -4852994001289131144}
   - component: {fileID: -1870075213136584881}
   - component: {fileID: -396234361631906964}
-  - component: {fileID: 9161483684867981696}
-  - component: {fileID: 419110437451335257}
   - component: {fileID: 2029440566035240053}
+  - component: {fileID: 5204622176857302734}
+  - component: {fileID: 6707174422823836613}
+  - component: {fileID: 7738501091738870602}
   m_Layer: 16
   m_Name: medkit
   m_TagString: Untagged
@@ -198,7 +255,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7385895525476329529}
+  - {fileID: 7197267929087900581}
   - {fileID: 6311512130502363032}
+  - {fileID: 4606947075117889058}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -245,8 +304,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.46467456, y: 0.3965913, z: 0.21859482}
-  m_Center: {x: 0.000000014901161, y: 0.20483476, z: -0.000000014901161}
+  m_Size: {x: 0.44142753, y: 0.39903837, z: 0.20880657}
+  m_Center: {x: -0.0006117523, y: 0.19994059, z: 0.0012235194}
 --- !u!114 &2884915648782529247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -261,33 +320,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: medkit
+  ItemId: Medkit
   Name: Medkit
   Volume: 55
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5533951594911835035}
   attachmentPoint: {fileID: 6311512130502363032}
+  attachmentPointAlt: {fileID: 4606947075117889058}
   bulkSize: 3
   traits: []
-  Size: {x: 0, y: 0}
---- !u!114 &5566088737813539549
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533951594911835035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  OpenIcon: {fileID: 21300000, guid: ce4cb1c9f32561c4db2ae13a08e28987, type: 3}
-  OnlyStoreWhenOpen: 1
-  MaxDistance: 1.5
-  viewContainerIcon: {fileID: 21300000, guid: 0f4328c69a4a89541a87f2482052e497, type: 3}
+  Size: {x: 4, y: 3}
 --- !u!114 &-4852994001289131144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -301,7 +343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DisplayName: 
-  Text: Can store several medications.
+  Text: Stores medical supplies.
   MaxDistance: 0
 --- !u!95 &-1870075213136584881
 Animator:
@@ -340,34 +382,6 @@ MonoBehaviour:
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
---- !u!114 &9161483684867981696
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533951594911835035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HideItems: 1
-  AttachItems: 1
---- !u!114 &419110437451335257
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533951594911835035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa364422073946a1badbfa66a349361d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AttachedContainer: {fileID: 9161483684867981696}
-  Size: {x: 5, y: 2}
 --- !u!114 &2029440566035240053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -382,6 +396,70 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+--- !u!114 &5204622176857302734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 6707174422823836613}
+  containerSync: {fileID: 0}
+  containerInteractive: {fileID: 7738501091738870602}
+  customInteractionScript: {fileID: 0}
+  containerUi: {fileID: 0}
+  openIcon: {fileID: 0}
+  takeIcon: {fileID: 0}
+  storeIcon: {fileID: 0}
+  viewIcon: {fileID: 0}
+  attachmentOffset: {x: 0, y: 0, z: 0}
+  containerName: medkit
+  onlyStoreWhenOpen: 1
+  openWhenContainerViewed: 1
+  size: {x: 2, y: 6}
+  hideItems: 1
+  attachItems: 1
+  startFilter: {fileID: 11400000, guid: 5572ae1accf16524084603dcd0cb0559, type: 2}
+  initialized: 1
+  maxDistance: 5
+  containerType: 0
+  isOpenable: 0
+  isInteractive: 1
+  hasCustomInteraction: 0
+--- !u!114 &6707174422823836613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDescriptor: {fileID: 5204622176857302734}
+--- !u!114 &7738501091738870602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533951594911835035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  OpenIcon: {fileID: 0}
+  containerDescriptor: {fileID: 5204622176857302734}
 --- !u!1 &8066562249021099569
 GameObject:
   m_ObjectHideFlags: 0
@@ -405,10 +483,10 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8066562249021099569}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.402, z: 0}
+  m_LocalRotation: {x: -0.049325276, y: 0.7053843, z: 0.049325276, w: 0.7053843}
+  m_LocalPosition: {x: 0.015, y: 0.385, z: -0.028}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8833760637642068360}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: -8, y: 90, z: 0}

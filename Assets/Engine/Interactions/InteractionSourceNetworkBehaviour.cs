@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
+using Mirror.RemoteCalls;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -108,11 +109,11 @@ namespace SS3D.Engine.Interactions
         }
         
 
-        public virtual void CreateInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        public virtual void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
             foreach (var extension in GetComponents<IInteractionSourceExtension>())
             {
-                extension.CreateInteractions(targets, interactions);
+                extension.GenerateInteractionsFromSource(targets, interactions);
             }
         }
 
@@ -139,7 +140,7 @@ namespace SS3D.Engine.Interactions
                     CancelInteraction(instance.Reference);
                 }
             }
-            interactions.Add(new InteractionInstance(interaction, interactionEvent, reference, currentSender));
+            interactions.Add(new InteractionInstance(interaction, interactionEvent, reference, RemoteCallHelper.currentSender));
 
             return reference;
         }

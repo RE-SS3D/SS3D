@@ -42,7 +42,7 @@ namespace SS3D.Engine.Atmospherics
 
     public static class Gas
     {
-        // Gass constants
+        // Gas constants
         public const float dt = 0.1f;               // Delta time
         public const float gasConstant = 8.314f;    // Universal gas constant
         public const float drag = 0.95f;            // Fluid drag, slows down flux so that gases don't infinitely slosh

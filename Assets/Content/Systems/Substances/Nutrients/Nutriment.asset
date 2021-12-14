@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: Nutriment
   m_EditorClassIdentifier: 
-  Id: nutriment
+  Id: Nutriment
   Color: {r: 0.6226415, g: 0.41970104, b: 0.26726595, a: 0.78431374}
   MillilitersPerMole: 200

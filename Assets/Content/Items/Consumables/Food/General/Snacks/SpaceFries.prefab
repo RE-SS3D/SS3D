@@ -249,7 +249,7 @@ GameObject:
   - component: {fileID: 5999137967569285005}
   - component: {fileID: 3012126040346778293}
   m_Layer: 16
-  m_Name: SpaceFry_Bucket
+  m_Name: SpaceFryBucket
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -276,7 +276,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1981292704717548731}
-  m_Mesh: {fileID: 4656003408690788550, guid: fa751386abffe74478748c3cd476f8c8, type: 3}
+  m_Mesh: {fileID: -3742663175943518150, guid: fa751386abffe74478748c3cd476f8c8, type: 3}
 --- !u!23 &3012126040346778293
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -951,16 +951,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  ItemId: fries_space
+  ItemId: SpaceFries
   Name: Space Fries
   Volume: 10
-  container: {fileID: 0}
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 5910432035244984084}
   attachmentPoint: {fileID: 3364807335985548268}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 76dd1a5ac7fd55d428ed789d29c15f9c, type: 2}
+  Size: {x: 0, y: 0}
 --- !u!114 &8656329211243488448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -973,7 +974,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: Fried potato slices.
+  DisplayName: 
+  Text: A bucket of fried potato slices.
   MaxDistance: 0
 --- !u!114 &1982316591228338259
 MonoBehaviour:

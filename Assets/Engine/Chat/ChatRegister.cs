@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
@@ -17,22 +17,29 @@ namespace SS3D.Engine.Chat
         [SerializeField] private List<String> restrictedChannels = new List<String>(){"System"};
         [SerializeField] private List<ChatMessage> messages = new List<ChatMessage>();
 
-        private ChatWindow chatWindow;
+        private List<ChatWindow> chatWindows;
 
         public List<string> RestrictedChannels => restrictedChannels;
-        public ChatWindow ChatWindow => chatWindow;
+        public List<ChatWindow> ChatWindows => chatWindows;
 
         private void Start()
         {
             if (!isLocalPlayer) return;
-
+            chatWindows = new List<ChatWindow>();
             CreateChatWindow(new ChatTabData("All", chatChannels.GetChannels(), false, null), null, Vector2.zero);
         }
 
         [Command]
         public void CmdSendMessage(ChatMessage chatMessage)
         {
-            if(restrictedChannels.Contains(chatMessage.Channel.Name)) return;
+            if (restrictedChannels.Contains(chatMessage.Channel.Name)) return;
+            else
+            {
+                // Tags should be escaped only in unrestricted channels thus preserving the ability
+                // to stylize in restricted channels.
+                chatMessage.Text = chatMessage.Text.Replace("<", "<nobr><</nobr>");
+            }
+
             
             chatMessage.Sender = gameObject.name;
             //TODO: this could be avoided if chat messages were stored on some centrally networked object and each client would pull from them. I could not get it to work though.
@@ -75,13 +82,13 @@ namespace SS3D.Engine.Chat
             }
             else
             {
-                chatWindow = Instantiate(chatWindowPrefab);
+                chatWindows.Add(Instantiate(chatWindowPrefab));
                 if (position != Vector2.zero)
                 {
-                    chatWindow.transform.position = position;
+                    chatWindows[chatWindows.Count - 1].transform.position = position;
                 }
 
-                chatWindow.Init(tabData, this);
+                chatWindows[chatWindows.Count - 1].Init(tabData, this);
             }
         }
         
@@ -92,7 +99,16 @@ namespace SS3D.Engine.Chat
 
         private void UpdateMessages()
         {
-            chatWindow.UpdateMessages();
+            foreach (ChatWindow chatWindow in chatWindows)
+            {
+                chatWindow.UpdateMessages();
+            }
+        }
+
+        public void DeleteChatWindow(ChatWindow chatWindow)
+        {
+            chatWindows.Remove(chatWindow);
+            Destroy(chatWindow.gameObject);
         }
     }
 }

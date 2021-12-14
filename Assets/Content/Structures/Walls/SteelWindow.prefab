@@ -1,0 +1,196 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3591147544166670882
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4751264288399655126}
+  - component: {fileID: 5423264426121296638}
+  - component: {fileID: 6696866361892651655}
+  - component: {fileID: 37166840573251760}
+  - component: {fileID: -9092067648406139768}
+  - component: {fileID: -5158962192135165528}
+  - component: {fileID: 3330295668819918514}
+  m_Layer: 0
+  m_Name: SteelWindow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4751264288399655126
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &5423264426121296638
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Mesh: {fileID: 3274458310347382516, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+--- !u!23 &6696866361892651655
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+  - {fileID: 2100000, guid: d4200162d183d4b4380ec26627333490, type: 2}
+  - {fileID: 2100000, guid: b16864a2572634c4ca3ef9ab752bb66f, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!65 &37166840573251760
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.0000002, y: 2, z: 1}
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &-9092067648406139768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisplayName: Steel Window
+  Text: 
+  MaxDistance: 0
+--- !u!114 &-5158962192135165528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
+--- !u!114 &3330295668819918514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3591147544166670882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d4c17829cf718f419146d93c0826f22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  selectedAdjacencyType: 1
+  CrossConnectAllowed: 1
+  simpleAdjacency:
+    o: {fileID: 0}
+    u: {fileID: 0}
+    i: {fileID: 0}
+    l: {fileID: 0}
+    t: {fileID: 0}
+    x: {fileID: 0}
+  advancedAdjacency:
+    o: {fileID: 3274458310347382516, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    u: {fileID: -2386277492448864069, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    i: {fileID: 7851800869649837082, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    lNone: {fileID: 3036478118444458756, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    lSingle: {fileID: -7520999549492685149, guid: 9c0b392ffb24ca248a002fe36b08bae8,
+      type: 3}
+    tNone: {fileID: 4316153222534331770, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    tSingleRight: {fileID: -2373201021303292270, guid: 9c0b392ffb24ca248a002fe36b08bae8,
+      type: 3}
+    tSingleLeft: {fileID: -5526968282480679555, guid: 9c0b392ffb24ca248a002fe36b08bae8,
+      type: 3}
+    tDouble: {fileID: 7177493924763890835, guid: 9c0b392ffb24ca248a002fe36b08bae8,
+      type: 3}
+    xNone: {fileID: 5184318669476194142, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    xSingle: {fileID: 7490967795634479640, guid: 9c0b392ffb24ca248a002fe36b08bae8,
+      type: 3}
+    xSide: {fileID: -6991883699467689764, guid: 9c0b392ffb24ca248a002fe36b08bae8,
+      type: 3}
+    xOpposite: {fileID: 3567030015444977119, guid: 9c0b392ffb24ca248a002fe36b08bae8,
+      type: 3}
+    xTriple: {fileID: 1638017743534044391, guid: 9c0b392ffb24ca248a002fe36b08bae8,
+      type: 3}
+    xQuad: {fileID: -4646627001110862441, guid: 9c0b392ffb24ca248a002fe36b08bae8,
+      type: 3}
+    viewObstacles: []
+    opaque: 0
+  offsetAdjacency:
+    o: {fileID: 0}
+    uNorth: {fileID: 0}
+    uSouth: {fileID: 0}
+    i: {fileID: 0}
+    lNE: {fileID: 0}
+    lNW: {fileID: 0}
+    lSE: {fileID: 0}
+    lSW: {fileID: 0}
+    tNEW: {fileID: 0}
+    tNSW: {fileID: 0}
+    tNSE: {fileID: 0}
+    tSWE: {fileID: 0}
+    x: {fileID: 0}
+  EditorblockedConnections: 0

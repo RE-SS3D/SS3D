@@ -7,6 +7,8 @@ using UnityEngine.Assertions;
 
 namespace SS3D.Engine.Atmospherics
 {
+    // This handles ragdolling by atmos wind, which I think should be moved elsewhere
+    // makes the player ragdoll when there's strong wind
     [RequireComponent(typeof(HumanRagdoll))]
     public class AtmosRagdoll : MonoBehaviour
     {
@@ -32,7 +34,7 @@ namespace SS3D.Engine.Atmospherics
             ragdoll = GetComponent<HumanRagdoll>();
             tileManager = FindObjectOfType<TileManager>();
             Assert.IsNotNull(tileManager);
-            origin = tileManager.Origin;
+            // origin = tileManager.Origin;
         }
 
         void Update()
@@ -53,13 +55,13 @@ namespace SS3D.Engine.Atmospherics
                 {
                     lastX = x;
                     lastY = y;
-                    atmosObject = tileManager.GetTile((int) (x - origin.x), (int) (y - origin.z))?.atmos;
+                    // atmosObject = tileManager.GetTile((int) (x - origin.x), (int) (y - origin.z))?.atmos;
                 }
 
                 // Check velocity
                 if (atmosObject != null)
                 {
-                    ApplyVelocity(atmosObject.GetVelocity());
+                    // ApplyVelocity(atmosObject.GetVelocity());
                 }
             }
         }

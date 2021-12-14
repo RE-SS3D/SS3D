@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using Mirror;
 using SS3D.Engine.Chat;
-using System.Numerics;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
+using UnityEngine.EventSystems;
 
 namespace SS3D.Content.Systems.Player
 {
@@ -22,7 +22,7 @@ namespace SS3D.Content.Systems.Player
 
         private Animator characterAnimator;
         private CharacterController characterController;
-        private Camera camera;
+        private new Camera camera;
 
         // Current movement the player is making.
         private Vector2 currentMovement = new Vector2();
@@ -55,14 +55,7 @@ namespace SS3D.Content.Systems.Player
                 return;
             }
 
-            //Ignore movement controls when typing in chat
-            if (chatRegister.ChatWindow != null && chatRegister.ChatWindow.PlayerIsTyping())
-            {
-                currentMovement.Set(0, 0);
-                return;
-            }
-
-            if (Input.GetButtonDown("Toggle Run"))
+            if (Input.GetButtonDown("Toggle Run") && EventSystem.current.currentSelectedGameObject == null)
             {
                 isWalking = !isWalking;
             }
@@ -73,9 +66,20 @@ namespace SS3D.Content.Systems.Player
             float x = Input.GetAxisRaw("Horizontal");
             float y = Input.GetAxisRaw("Vertical");
 
+            //Ignore movement controls when typing in chat
+            if (chatRegister.ChatWindows.Count > 0 && EventSystem.current.currentSelectedGameObject != null)
+            {
+                intendedMovement = new Vector2(0, 0);
+            }
             // Smoothly transition to next intended movement
-            intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
+            else
+            {
+                intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
+            }
+            
             currentMovement = Vector2.MoveTowards(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 5f, 3) / 5));
+            var movement = Vector3.zero;
+
             // Move the player
             if (currentMovement != Vector2.zero)
             {
@@ -96,11 +100,18 @@ namespace SS3D.Content.Systems.Player
                 {
                     absoluteMovement = Vector3.Lerp(absoluteMovement, Vector3.zero, Time.deltaTime * 5);
                 }
-                characterController.Move(absoluteMovement * Time.deltaTime);
+
+                movement = absoluteMovement * Time.deltaTime;
             }
+
+            characterController.Move(movement);
+
             // animation Speed is a proportion of maximum runSpeed, and we smoothly transitions the speed with the Lerp
             float currentSpeed = characterAnimator.GetFloat("Speed");
-            float newSpeed = Mathf.LerpUnclamped(currentSpeed, currentMovement.magnitude / runSpeed , Time.deltaTime * (isWalking ? walkSpeed : runSpeed) * 3);
+            float controllerSpeed = Mathf.Clamp01(characterController.velocity.magnitude / runSpeed);
+
+            float newSpeed = Mathf.Lerp(currentSpeed, controllerSpeed, Time.deltaTime * 15);
+
             characterAnimator.SetFloat("Speed", newSpeed);
 
             ForceHeightLevel();

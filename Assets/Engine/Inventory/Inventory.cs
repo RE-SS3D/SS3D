@@ -2,6 +2,7 @@ using System;
 using Mirror;
 using System.Collections.Generic;
 using System.Linq;
+using SS3D.Content;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Inventory.Extensions;
 using UnityEngine;
@@ -40,7 +41,7 @@ namespace SS3D.Engine.Inventory
             float time = Time.time;
             if (time > nextAccessCheck)
             {
-                var creature = GetComponent<Creature>();
+                var creature = GetComponent<Entity>();
                 for (var i = 0; i < openedContainers.Count; i++)
                 {
                     AttachedContainer attachedContainer = openedContainers[i];
@@ -53,6 +54,15 @@ namespace SS3D.Engine.Inventory
 
                 nextAccessCheck = time + 0.5f;
             }
+        }
+
+        /// <summary>
+        /// Use it to switch between active hands.
+        /// </summary>
+        /// <param name="container">This AttachedContainer should be the hand to activate.</param>
+        public void ActivateHand(AttachedContainer container)
+        {
+            Hands.SetActiveHand(container);
         }
 
         /// <summary>
@@ -185,7 +195,7 @@ namespace SS3D.Engine.Inventory
                 return;
             }
 
-            var creature = GetComponent<Creature>();
+            var creature = GetComponent<Entity>();
             if (creature == null || !creature.CanInteract(attachedContainer.gameObject))
             {
                 return;
@@ -199,8 +209,9 @@ namespace SS3D.Engine.Inventory
         /// </summary>
         public void OpenContainer(AttachedContainer container)
         {
-            container.AddObserver(GetComponent<Creature>());
+            container.AddObserver(GetComponent<Entity>());
             openedContainers.Add(container);
+            SetOpenState(container, true);
             NetworkConnection client = connectionToClient;
             if (client != null)
             {
@@ -215,6 +226,8 @@ namespace SS3D.Engine.Inventory
         {
             if (openedContainers.Remove(container))
             {
+                Debug.Log("client call remove");
+                SetOpenState(container, false);
                 NetworkConnection client = connectionToClient;
                 if (client != null)
                 {
@@ -263,13 +276,40 @@ namespace SS3D.Engine.Inventory
         [TargetRpc]
         private void TargetOpenContainer(NetworkConnection target, AttachedContainer container)
         {
-            OnContainerOpened(container);
+            OnContainerOpened(container);        
         }
-        
+
+        /// <summary>
+        /// On containers having OpenWhenContainerViewed set true, this set the containers state appropriately.
+        /// If the container is viewed by another entity, it's already opened, and therefore it does nothing.
+        /// If this entity is the first to view it, it trigger the open animation of the object.
+        /// If the entity is the last to view it, it closes the container.
+        /// </summary>
+        /// <param name="container"> The container viewed by this entity.</param>
+        /// <param name="state"> The state to set in the container, true is opened and false is closed.</param>
+        [Server]
+        private void SetOpenState(AttachedContainer container, bool state)
+        {
+            if (container.containerDescriptor.openWhenContainerViewed)
+            {
+                Entity currentObserver = GetComponent<Entity>(); 
+            foreach (Entity observer in container.Observers)
+            {
+                // checks if the container is already viewed by another entity
+                if (observer.Hands.Inventory.HasContainer(container) && observer != currentObserver)
+                {              
+                    return;
+                }
+            }
+            container.containerDescriptor.containerInteractive.setOpenState(state);
+            }
+        }
+
+
         [TargetRpc]
         private void TargetCloseContainer(NetworkConnection target, AttachedContainer container)
         {
-            OnContainerClosed(container);
+            OnContainerClosed(container);    
         }
 
         /**
