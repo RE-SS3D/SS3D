@@ -1,4 +1,5 @@
 ﻿using SS3D.Engine.Tiles;
+using SS3D.Engine.Tiles.Connections;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -316,6 +317,14 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.R)
             {
                 selectedDir = TileHelper.GetNextDir(selectedDir);
+
+                // Cannot rotate if an Adjacency Connector is present
+                if (ghostObject.GetComponent<IAdjacencyConnector>() != null)
+                {
+                    selectedDir = Direction.North;
+                    Debug.LogWarning("Tried to rotate an object that has an adjacency connector. Defaulting to North.");
+                }
+
                 ghostObject.transform.rotation = Quaternion.Euler(0, TileHelper.GetRotationAngle(selectedDir), 0);
             }
 
