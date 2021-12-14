@@ -149,12 +149,12 @@ namespace SS3D.Content.Structures.Fixtures
             // Door may have rotated in the editor
             doorDirection = GetComponent<PlacedTileObject>().GetDirection();
             Direction outFacing = TileHelper.GetNextDir(doorDirection);
-                
+
             bool isPresent = adjacents.Adjacent(outFacing) == 1;
-            CreateWallCaps(isPresent, outFacing);
+            CreateWallCaps(isPresent, TileHelper.GetOpposite(outFacing));
 
             isPresent = adjacents.Adjacent(TileHelper.GetOpposite(outFacing)) == 1;
-            CreateWallCaps(isPresent, TileHelper.GetOpposite(outFacing));
+            CreateWallCaps(isPresent, outFacing);
         }
 
         private void ValidateChildren()
