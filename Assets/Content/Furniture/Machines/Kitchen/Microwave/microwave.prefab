@@ -60,7 +60,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: f4ce32acbfd8b564b8f991806cf67769
   hasSpawned: 0
 --- !u!114 &3096095831774564904
 MonoBehaviour:
@@ -77,9 +78,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!33 &7378502613818069388
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -366,6 +378,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 5055055840736840480}
   containerSync: {fileID: 0}
   containerInteractive: {fileID: 2622024214267529593}
+  containerItemDisplay: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -385,6 +398,9 @@ MonoBehaviour:
   isInteractive: 1
   hasUi: 1
   hasCustomInteraction: 0
+  hasCustomDisplay: 0
+  displays: []
+  numberDisplay: 0
 --- !u!114 &5055055840736840480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -458,7 +474,6 @@ GameObject:
   - component: {fileID: 1904681422242535889}
   - component: {fileID: 3590185774197269497}
   - component: {fileID: 5344617163524279920}
-  - component: {fileID: 3882256163096065417}
   m_Layer: 14
   m_Name: MicrowaveDoor
   m_TagString: Untagged
@@ -528,16 +543,3 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &3882256163096065417
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6704569312823119817}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.46840656, y: 0.4195372, z: 0.07090191}
-  m_Center: {x: -0.23, y: 0.000000037252903, z: 0.0071481643}

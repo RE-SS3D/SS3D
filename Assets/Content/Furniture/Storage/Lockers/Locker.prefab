@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1290862293046061209}
   - component: {fileID: 5649368739873476284}
   - component: {fileID: 3491127253892038410}
-  - component: {fileID: 7187836497830633180}
   m_Layer: 14
   m_Name: LockerDoor
   m_TagString: Untagged
@@ -80,19 +79,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &7187836497830633180
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1187284634159131357}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.4809304, y: 1.5629163, z: 0.09296769}
-  m_Center: {x: -0.25684312, y: 0.0006606579, z: -0.00045208633}
 --- !u!1 &2876708453869312076
 GameObject:
   m_ObjectHideFlags: 0
@@ -307,6 +293,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 459396616207099591}
   containerSync: {fileID: 5428126529737719714}
   containerInteractive: {fileID: 595497627058202982}
+  containerItemDisplay: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -326,6 +313,9 @@ MonoBehaviour:
   isInteractive: 1
   hasUi: 1
   hasCustomInteraction: 0
+  hasCustomDisplay: 0
+  displays: []
+  numberDisplay: 0
 --- !u!114 &459396616207099591
 MonoBehaviour:
   m_ObjectHideFlags: 0
