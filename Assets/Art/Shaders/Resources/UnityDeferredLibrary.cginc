@@ -171,8 +171,6 @@ void UnityDeferredCalculateLightParams (
         float att = dot(tolight, tolight) * _LightPos.w;
         atten *= tex2D (_LightTextureB0, att.rr).r;
 
-        atten = min(atten * atten, 0.2);
-
         atten *= UnityDeferredComputeShadow (wpos, fadeDist, uv);
 
     // directional light case
