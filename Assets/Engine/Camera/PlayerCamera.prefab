@@ -45,7 +45,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3289291878229147654}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
@@ -124,7 +124,7 @@ MonoBehaviour:
   volumeTrigger: {fileID: 3289291878229147677}
   volumeLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 9553687
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 1
   antialiasingMode: 3
@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sharedProfile: {fileID: 11400000, guid: ae1cfeacc4e7ea74fa76aad23a44eebb, type: 2}
+  sharedProfile: {fileID: 11400000, guid: 5b44ecd1900b0eb418ef3238b1c87d36, type: 2}
   isGlobal: 1
   blendDistance: 0
   weight: 1
@@ -199,7 +199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationCount: 4
-  stepCount: 16
+  stepCount: 8
   radius: 3.5
   expStart: 1
   expFactor: 1.05
