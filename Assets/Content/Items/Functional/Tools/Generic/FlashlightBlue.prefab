@@ -68,7 +68,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 781dd9024aaa53444bc3deeaa9708fbb
   hasSpawned: 0
 --- !u!65 &8371882450930850212
 BoxCollider:
@@ -143,9 +144,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!1 &3531470905858699050
 GameObject:
   m_ObjectHideFlags: 0
@@ -189,8 +201,8 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 0.9811321, g: 0.962701, b: 0.7358491, a: 1}
-  m_Intensity: 1.5
-  m_Range: 5
+  m_Intensity: 3
+  m_Range: 7
   m_SpotAngle: 90
   m_InnerSpotAngle: 1
   m_CookieSize: 10

@@ -291,7 +291,6 @@ GameObject:
   - component: {fileID: 1143501564299038576}
   - component: {fileID: 2621842397224039768}
   - component: {fileID: 6889282342120757457}
-  - component: {fileID: 2328583508320183080}
   m_Layer: 14
   m_Name: FridgeDoor
   m_TagString: Untagged
@@ -360,16 +359,3 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &2328583508320183080
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5240830354732226920}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.91609585, y: 1.7028121, z: 0.18759535}
-  m_Center: {x: 0.44432867, y: 0.0014936328, z: 0.06708368}
