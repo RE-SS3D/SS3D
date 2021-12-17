@@ -63,13 +63,14 @@ Shader "Unlit/ItemPreview"
                 float3 lightVector = (float3(-0.258, 0.22, 0.966));
 
                 float NdotL = dot(i.worldNormal, lightVector);
-                float light = (smoothstep(0, 0.75, NdotL) * 0.7 + 0.3);
+                float light = (smoothstep(0, 0.75, NdotL) * 0.525 + 0.475);
+                float4 shadow = float4(0,0,0.04f,0) * (1 - light);
 
 
 //                float4 rimDot = (1 - dot(viewDir, i.worldNormal));
 //                rimDot = (rimDot * rimDot * rimDot) * 0.15;
 
-                fixed3 color =+ texColor.rgb * light + emission;
+                fixed3 color = texColor.rgb * light + shadow + emission;
                 fixed4 outcolor;
                 outcolor.rgb = color.rgb;
                 outcolor.a = texColor.a;
