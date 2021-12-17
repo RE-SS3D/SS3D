@@ -98,7 +98,7 @@ Material:
     - _DistortionEnabled: 1
     - _DistortionStrength: 4.8
     - _DistortionStrengthScaled: 0.48000002
-    - _DstBlend: 10
+    - _DstBlend: 0
     - _Emission: -26.74
     - _EmissionEnabled: 1
     - _EnableExternalAlpha: 0
@@ -110,7 +110,7 @@ Material:
     - _InvFade: 1
     - _LightingEnabled: 0
     - _Metallic: 0
-    - _Mode: 6
+    - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _QueueOffset: 0
@@ -121,11 +121,11 @@ Material:
     - _SoftParticlesFarFadeDistance: 1
     - _SoftParticlesNearFadeDistance: 0
     - _SpecularHighlights: 0
-    - _SrcBlend: 2
+    - _SrcBlend: 1
     - _Surface: 1
     - _UVSec: 0
     - _WorkflowMode: 0
-    - _ZWrite: 0
+    - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 0.85882354}
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
