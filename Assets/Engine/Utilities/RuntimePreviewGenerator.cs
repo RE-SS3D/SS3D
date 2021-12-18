@@ -374,9 +374,15 @@ namespace SS3D.Engine.Utilities
 
 				renderCamera.targetTexture = null;
 
-				result = new Texture2D(width, height, m_backgroundColor.a < 1f ? TextureFormat.RGBA32 : TextureFormat.RGB24, false);
-				result.ReadPixels(new Rect(0, 0, width, height), 0, 0, false);
+				int textureLimitBackup = QualitySettings.masterTextureLimit; //workaround for mipmap generation;
+				QualitySettings.masterTextureLimit = 0;
+	
+				result = new Texture2D(width, height, m_backgroundColor.a < 1f ? TextureFormat.RGBA32 : TextureFormat.RGB24, true);
+				result.ReadPixels(new Rect(0, 0, width, height), 0, 0, true);
+				result.filterMode = FilterMode.Trilinear;
 				result.Apply(false, m_markTextureNonReadable);
+	
+				QualitySettings.masterTextureLimit = textureLimitBackup;
 
 				RenderTexture.active = temp;
 				RenderTexture.ReleaseTemporary(renderTex);
