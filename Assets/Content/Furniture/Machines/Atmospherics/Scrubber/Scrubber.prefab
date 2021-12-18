@@ -159,7 +159,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: be5174cd6c3daf64a9739aff0f747a91
   hasSpawned: 0
 --- !u!23 &3409554715360446247
 MeshRenderer:
@@ -181,6 +182,7 @@ MeshRenderer:
   m_Materials:
   - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  - {fileID: 2100000, guid: 511da6e1a29c59846921641dc69e46db, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
