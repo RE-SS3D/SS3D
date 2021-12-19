@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using SS3D.Engine.Tiles;
 
-namespace SS3D.Engine.Tiles.Connections
+namespace SS3D.Engine.Tile.TileRework.Connections
 {
     /// <summary>
     /// Bitmap used for calculating and storing adjacencies.
@@ -19,26 +17,13 @@ namespace SS3D.Engine.Tiles.Connections
 
             public CardinalInfo(byte bitmap)
             {
-                north = Adjacent(bitmap, Direction.North);
-                east = Adjacent(bitmap, Direction.East);
-                south = Adjacent(bitmap, Direction.South);
-                west = Adjacent(bitmap, Direction.West);
+                north = AdjacencyShapeResolver.Adjacent(bitmap, Direction.North);
+                east = AdjacencyShapeResolver.Adjacent(bitmap, Direction.East);
+                south = AdjacencyShapeResolver.Adjacent(bitmap, Direction.South);
+                west = AdjacencyShapeResolver.Adjacent(bitmap, Direction.West);
 
                 numConnections = north + east + south + west;
             }
-
-            // Checks if there are no cardinal connections
-            public bool IsO() => numConnections == 0;
-            // Checks for one connection
-            public bool IsU() => numConnections == 1;
-            // Checks for two opposite connections
-            public bool IsI() => numConnections == 2 && north == south;
-            // Checks for two adjacent connections
-            public bool IsL() => numConnections == 2 && north != south;
-            // Checks for three connections
-            public bool IsT() => numConnections == 3;
-            // Checks for four connections
-            public bool IsX() => numConnections == 4;
 
             /**
              * Gets the direction of the only positive connection.
@@ -76,7 +61,6 @@ namespace SS3D.Engine.Tiles.Connections
                 return south > 0 ? east > 0 ? Direction.SouthEast : Direction.SouthWest : west > 0 ? Direction.NorthWest : Direction.NorthEast;
             }
 
-            
             /**
              * Gets Vertical if north or south are connected, otherwise gets horizontal
              */
@@ -84,6 +68,12 @@ namespace SS3D.Engine.Tiles.Connections
             public Orientation GetFirstOrientation()
             {
                 return (Orientation)(east | west | (1 - (north | south)));
+            }
+
+            public override string ToString()
+            {
+                return
+                    $"North: {north}, East: {east}, South: {south}, West: {west}, Connection count: {numConnections}";
             }
         }
 
@@ -99,11 +89,6 @@ namespace SS3D.Engine.Tiles.Connections
             output |= (byte)((value ? 1 : 0) << (int)direction);
 
             return output;
-        }
-
-        public static int Adjacent(byte bitmap, Direction direction)
-        {
-            return (bitmap >> (int)direction) & 0x1;
         }
 
         public byte Connections { get; set; } = 0;
@@ -138,7 +123,7 @@ namespace SS3D.Engine.Tiles.Connections
          */
         public int Adjacent(Direction direction)
         {
-            return Adjacent(Connections, direction);
+            return AdjacencyShapeResolver.Adjacent(Connections, direction);
         }
     }
 }

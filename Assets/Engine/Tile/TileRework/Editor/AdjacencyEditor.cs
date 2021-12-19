@@ -1,9 +1,9 @@
-﻿using SS3D.Engine.Tiles.Connections;
-using System;
+﻿using SS3D.Engine.Tile.TileRework.Connections;
+using SS3D.Engine.Tiles;
 using UnityEditor;
 using UnityEngine;
 
-namespace SS3D.Engine.Tiles.Editor.TileMapEditor
+namespace SS3D.Engine.Tile.TileRework.Editor
 {
     /// <summary>
     /// Custom editor used for setting blocked connections.
@@ -106,7 +106,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
-                result[(int)direction] = AdjacencyBitmap.Adjacent(bitmap, direction) != 0;
+                result[(int)direction] = AdjacencyShapeResolver.Adjacent(bitmap, direction) != 0;
             }
 
             return result;
