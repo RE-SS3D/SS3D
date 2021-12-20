@@ -61,15 +61,6 @@ namespace SS3D.Engine.Tile.TileRework.Connections
                 return south > 0 ? east > 0 ? Direction.SouthEast : Direction.SouthWest : west > 0 ? Direction.NorthWest : Direction.NorthEast;
             }
 
-            /**
-             * Gets Vertical if north or south are connected, otherwise gets horizontal
-             */
-            
-            public Orientation GetFirstOrientation()
-            {
-                return (Orientation)(east | west | (1 - (north | south)));
-            }
-
             public override string ToString()
             {
                 return

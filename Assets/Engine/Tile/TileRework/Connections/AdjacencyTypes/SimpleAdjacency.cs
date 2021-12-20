@@ -45,7 +45,7 @@ namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
                     break;
                 case AdjacencyShape.I:
                     mesh = i;
-                    rotation = TileHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
+                    rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.north == 1 ? Direction.North : Direction.East);
                     break;
                 case AdjacencyShape.L:
                     mesh = l;
