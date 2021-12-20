@@ -4,7 +4,7 @@ using UnityEngine;
 using SS3D.Engine.Inventory;
 using SS3D.Content.Furniture.Storage;
 using SS3D.Engine.Interactions;
-
+using Mirror;
 using System.Collections.Generic;
 
 [CustomEditor(typeof(ContainerDescriptor))]
@@ -65,14 +65,17 @@ public class ContainerDescriptorEditor : Editor
             HandleOnlyStoreWhenOpen(onlyStoreWhenOpen);       
         }
         else if(containerDescriptor.hasUi)
-        {  
-            // check if the gameObject has a open animation
-            foreach (AnimatorControllerParameter controllerParameter in containerDescriptor.gameObject.GetComponent<Animator>().parameters)
+        {
+            var animator = containerDescriptor.gameObject.GetComponent<Animator>();
+            if (animator != null)
             {
-                if (controllerParameter.name == "Open")
+                foreach (AnimatorControllerParameter controllerParameter in containerDescriptor.gameObject.GetComponent<Animator>().parameters)
                 {
-                    bool openWhenContainerViewed = EditorGUILayout.Toggle(new GUIContent("open when container viewed", "Set if the open animation should run when the container UI is opened"), containerDescriptor.openWhenContainerViewed);
-                    HandleOpenWhenContainerViewed(openWhenContainerViewed);
+                    if (controllerParameter.name == "Open")
+                    {
+                        bool openWhenContainerViewed = EditorGUILayout.Toggle(new GUIContent("open when container viewed", "Set if the open animation should run when the container UI is opened"), containerDescriptor.openWhenContainerViewed);
+                        HandleOpenWhenContainerViewed(openWhenContainerViewed);
+                    }
                 }
             }      
         }
@@ -304,7 +307,15 @@ public class ContainerDescriptorEditor : Editor
     private void AddInteractive()
     {
         SerializedProperty sp = serializedObject.FindProperty("containerInteractive");
-        sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerInteractive>();
+        GameObject networkedParent = GetParentNetworkIdentity(containerDescriptor.gameObject);
+        if (networkedParent != null)
+        {
+            sp.objectReferenceValue = networkedParent.AddComponent<ContainerInteractive>();
+        }
+        else
+        {
+            sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerInteractive>();
+        }
         serializedObject.ApplyModifiedProperties();
         containerDescriptor.containerInteractive.containerDescriptor = containerDescriptor;
     }
@@ -341,13 +352,30 @@ public class ContainerDescriptorEditor : Editor
 
     private void AddSync()
     {
-        if(containerDescriptor.gameObject.GetComponent<ContainerSync>() == null)
+        // put the containersync on the highest game object in the hierarchy with a network identity
+        if (containerDescriptor.gameObject.GetComponentInParent<ContainerSync>() == null)
         {
             SerializedProperty sp = serializedObject.FindProperty("containerSync");
-            sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerSync>();
-            serializedObject.ApplyModifiedProperties();           
+            GameObject g = GetParentNetworkIdentity(containerDescriptor.gameObject);
+
+            if (g != null)
+            {
+                sp.objectReferenceValue = g.AddComponent<ContainerSync>();
+            }
+            else
+            {
+                sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerSync>();
+            }
+
+            serializedObject.ApplyModifiedProperties();
         }
         
+    }
+
+    private GameObject GetParentNetworkIdentity(GameObject g)
+    {
+        var networkIdentity = g.GetComponentInParent<NetworkIdentity>();
+        return networkIdentity ? networkIdentity.gameObject : null;
     }
 
     private void RemoveSync()
@@ -359,6 +387,8 @@ public class ContainerDescriptorEditor : Editor
             if (containerDescriptors != null && containerDescriptors.Length == 0)
             {
                 DestroyImmediate(g.GetComponent<ContainerSync>());
+                GameObject networkedParent = GetParentNetworkIdentity(g);
+                DestroyImmediate(networkedParent.GetComponent<ContainerSync>());
             }
         }
     }
