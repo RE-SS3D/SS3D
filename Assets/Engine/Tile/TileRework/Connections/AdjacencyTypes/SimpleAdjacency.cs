@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using SS3D.Engine.Tiles;
+using SS3D.Engine.Tiles.Connections;
 using UnityEngine;
 
-namespace SS3D.Engine.Tiles.Connections
+namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
 {
     /// <summary>
     /// Adjacency type used for objects that do not require complex connections.
@@ -33,30 +33,36 @@ namespace SS3D.Engine.Tiles.Connections
             float rotation = 0.0f;
             Mesh mesh;
 
-            if (cardinalInfo.IsO())
-                mesh = o;
-            else if (cardinalInfo.IsU())
+            AdjacencyShape shape = AdjacencyShapeResolver.GetSimpleShape(cardinalInfo);
+            switch (shape)
             {
-                mesh = u;
-                rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
+                case AdjacencyShape.O:
+                    mesh = o;
+                    break;
+                case AdjacencyShape.U:
+                    mesh = u;
+                    rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
+                    break;
+                case AdjacencyShape.I:
+                    mesh = i;
+                    rotation = TileHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
+                    break;
+                case AdjacencyShape.L:
+                    mesh = l;
+                    rotation = TileHelper.AngleBetween(Direction.NorthEast, cardinalInfo.GetCornerDirection());
+                    break;
+                case AdjacencyShape.T:
+                    mesh = t;
+                    rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyNegative());
+                    break;
+                case AdjacencyShape.X:
+                    mesh = x;
+                    break;
+                default:
+                    Debug.LogError($"Received unexpected shape from simple shape resolver: {shape}");
+                    mesh = o;
+                    break;
             }
-            else if (cardinalInfo.IsI())
-            {
-                mesh = i;
-                rotation = TileHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
-            }
-            else if (cardinalInfo.IsL())
-            {
-                mesh = l;
-                rotation = TileHelper.AngleBetween(Direction.NorthEast, cardinalInfo.GetCornerDirection());
-            }
-            else if (cardinalInfo.IsT())
-            {
-                mesh = t;
-                rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyNegative());
-            }
-            else // Must be X
-                mesh = x;
 
             return new MeshDirectionInfo { mesh = mesh, rotation = rotation };
         }

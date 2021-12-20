@@ -1,9 +1,10 @@
 ﻿using Mirror;
-using System.Collections;
-using System.Collections.Generic;
+using SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes;
+using SS3D.Engine.Tiles;
+using SS3D.Engine.Tiles.Connections;
 using UnityEngine;
 
-namespace SS3D.Engine.Tiles.Connections
+namespace SS3D.Engine.Tile.TileRework.Connections
 {
     /// <summary>
     /// Main adjacency connector class that should fulfill the majority of the use cases. This class ensures that similar objects will have their meshes seamlessly connect to each other.
@@ -233,7 +234,7 @@ namespace SS3D.Engine.Tiles.Connections
                 // Check for specific
                 isConnected &= (placedObject.GetSpecificType() == specificType || specificType == "");
 
-                isConnected &= (AdjacencyBitmap.Adjacent(blockedConnections, dir) == 0);
+                isConnected &= (AdjacencyShapeResolver.Adjacent(blockedConnections, dir) == 0);
             }
             bool isUpdated = adjacents.UpdateDirection(dir, isConnected, true);
             SyncAdjacentConnections(adjacents.Connections, adjacents.Connections);
