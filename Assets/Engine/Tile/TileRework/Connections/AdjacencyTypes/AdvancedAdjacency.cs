@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using SS3D.Engine.Tile.TileRework.Connections;
+using SS3D.Engine.Tiles;
+using SS3D.Engine.Tiles.Connections;
 using UnityEngine;
 
-namespace SS3D.Engine.Tiles.Connections
+namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
 {
     /// <summary>
     /// Adjacency type used for objects that do require complex connections.
@@ -72,7 +71,7 @@ namespace SS3D.Engine.Tiles.Connections
                     break;
                 case AdjacencyShape.I:
                     mesh = i;
-                    rotation = TileHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
+                    rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.north == 1 ? Direction.North : Direction.East);
                     break;
                 case AdjacencyShape.LNone:
                     mesh = lNone;
@@ -107,7 +106,7 @@ namespace SS3D.Engine.Tiles.Connections
                     break;
                 case AdjacencyShape.XOpposite:
                     mesh = xOpposite;
-                    rotation = TileHelper.AngleBetween(Orientation.Vertical, diagonals.GetFirstOrientation());
+                    rotation = TileHelper.AngleBetween(Direction.North, diagonals.north == 1 ? Direction.North : Direction.East);
                     break;
                 case AdjacencyShape.XSide:
                     mesh = xSide;

@@ -40,12 +40,6 @@ namespace SS3D.Engine.Tiles
         NorthWest = 7,
     }
 
-    public enum Orientation
-    {
-        Vertical = 0, // North-South
-        Horizontal = 1 // East-West
-    }
-
     public static class TileHelper
     {
         private static TileLayer[] tileLayers;
@@ -115,11 +109,6 @@ namespace SS3D.Engine.Tiles
         public static float AngleBetween(Direction from, Direction to)
         {
             return ((int)to - (int)from) * 45.0f;
-        }
-
-        public static float AngleBetween(Orientation from, Orientation to)
-        {
-            return ((int)to - (int)from) * 90.0f;
         }
 
         public static Direction GetRelativeDirection(Direction to, Direction from)
