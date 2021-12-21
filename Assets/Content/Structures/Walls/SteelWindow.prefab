@@ -96,8 +96,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.0000002, y: 2, z: 1}
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Size: {x: 1.0000002, y: 2.582883, z: 1}
+  m_Center: {x: 0, y: 1.2914414, z: 0}
 --- !u!114 &-9092067648406139768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,7 +127,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: d5d073d01dd3c1f4cbe43fb3128c89e4
   hasSpawned: 0
 --- !u!114 &3330295668819918514
 MonoBehaviour:
