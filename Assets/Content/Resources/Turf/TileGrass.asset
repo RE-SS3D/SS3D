@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: TileGrass
   m_EditorClassIdentifier: 
-  layer: 10
+  layer: 2
   nameString: TileGrass
-  genericType: 
+  genericType: floor
   specificType: 
   prefab: {fileID: 6767447678079105841, guid: 501391c27a7f94c4d8c937f00a9ceb9f, type: 3}
   width: 1
