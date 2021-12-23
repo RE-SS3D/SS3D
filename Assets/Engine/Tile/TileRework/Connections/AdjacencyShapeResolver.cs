@@ -8,9 +8,9 @@ namespace SS3D.Engine.Tile.TileRework.Connections
     /// </summary>
     public static class AdjacencyShapeResolver
     {
-        public static AdjacencyShape GetSimpleShape(AdjacencyBitmap.CardinalInfo cardinalInfo)
+        public static AdjacencyShape GetSimpleShape(AdjacencyMap adjacencyMap)
         {
-            int connectionCount = cardinalInfo.numConnections;
+            int connectionCount = adjacencyMap.GetCardinalConnectionCount();
             if (connectionCount == 0)
             {
                 return AdjacencyShape.O;
@@ -24,7 +24,7 @@ namespace SS3D.Engine.Tile.TileRework.Connections
             //When two connections, checks if they're opposite or adjacent
             if (connectionCount == 2)
             {
-                return cardinalInfo.north == cardinalInfo.south ? AdjacencyShape.I : AdjacencyShape.L;
+                return adjacencyMap.HasConnection(Direction.North) == adjacencyMap.HasConnection(Direction.South) ? AdjacencyShape.I : AdjacencyShape.L;
             }
 
             if (connectionCount == 3)
@@ -32,140 +32,147 @@ namespace SS3D.Engine.Tile.TileRework.Connections
                 return AdjacencyShape.T;
             }
 
-            if (cardinalInfo.numConnections == 4)
+            if (connectionCount == 4)
             {
                 return AdjacencyShape.X;
             }
 
-            Debug.LogError($"Could not resolve Simple Adjacency Shape for given Cardinal Info - {cardinalInfo}");
+            Debug.LogError($"Could not resolve Simple Adjacency Shape for given Adjacency Map - {adjacencyMap}");
             return AdjacencyShape.O;
         }
-
-        //TODO: Simplify when diagonal support for CardinalInfo is added. Probably will be able to get rid of all the bitfields
-        public static AdjacencyShape GetAdvancedShape(AdjacencyBitmap.CardinalInfo cardinalInfo, byte connections)
+        
+        public static AdjacencyShape GetAdvancedShape(AdjacencyMap adjacencyMap)
         {
-            int connectionCount = cardinalInfo.numConnections;
-            if (connectionCount == 0)
+            int cardinalConnectionCount = adjacencyMap.GetCardinalConnectionCount();
+            int diagonalConnectionCount = adjacencyMap.GetDiagonalConnectionCount();
+            if (cardinalConnectionCount == 0)
             {
                 return AdjacencyShape.O;
             }
 
-            if (connectionCount == 1)
+            if (cardinalConnectionCount == 1)
             {
                 return AdjacencyShape.U;
             }
 
             //When two connections and they're opposite
-            if (connectionCount == 2 && cardinalInfo.north == cardinalInfo.south)
+            if (cardinalConnectionCount == 2 && adjacencyMap.HasConnection(Direction.North) == adjacencyMap.HasConnection(Direction.South))
             {
                 return AdjacencyShape.I;
             }
 
             //When two connections and they're adjacent
-            if (connectionCount == 2 && cardinalInfo.north != cardinalInfo.south)
+            if (cardinalConnectionCount == 2 && adjacencyMap.HasConnection(Direction.North) != adjacencyMap.HasConnection(Direction.South))
             {
-                // Determine lSolid or lCorner by finding whether the area between the two connections is filled
-                // We check for if any of the following bitfields matches the connection bitfield
-                // N+NE+E = 0/1/2, E+SE+S = 2/3/4, S+SW+W = 4/5/6, W+NW+N = 6/7/0
-                bool isFilled = (connections & 0b00000111) == 0b00000111 ||
-                                (connections & 0b00011100) == 0b00011100 ||
-                                (connections & 0b01110000) == 0b01110000 ||
-                                (connections & 0b11000001) == 0b11000001;
+                //Determine lSolid or lCorner by finding whether the area between the two connections is filled
+                //We check for if any of the following adjacency maps matches
+                //N+NE+E, E+SE+S, S+SW+W, W+NW+N
+                bool isFilled = adjacencyMap.HasConnection(Direction.North) &&
+                                 adjacencyMap.HasConnection(Direction.NorthEast) &&
+                                 adjacencyMap.HasConnection(Direction.East) ||
+                                adjacencyMap.HasConnection(Direction.East) &&
+                                 adjacencyMap.HasConnection(Direction.SouthEast) &&
+                                 adjacencyMap.HasConnection(Direction.South) ||
+                                adjacencyMap.HasConnection(Direction.South) &&
+                                 adjacencyMap.HasConnection(Direction.SouthWest) &&
+                                 adjacencyMap.HasConnection(Direction.West) ||
+                                adjacencyMap.HasConnection(Direction.West) &&
+                                 adjacencyMap.HasConnection(Direction.NorthWest) &&
+                                 adjacencyMap.HasConnection(Direction.North);
+                
                 return isFilled ? AdjacencyShape.LSingle : AdjacencyShape.LNone;
             }
 
-            if (connectionCount == 3)
+            if (cardinalConnectionCount == 3)
             {
-                // We make another bitfield (noticing a pattern?). 0x0 means no fills, 0x1 means right corner filled, 0x2 means left corner filled,
+                int hasNorth = adjacencyMap.HasConnection(Direction.North) ? 1 : 0;
+                int hasNorthEast = adjacencyMap.HasConnection(Direction.NorthEast) ? 1 : 0;
+                int hasEast = adjacencyMap.HasConnection(Direction.East) ? 1 : 0;
+                int hasSouthEast = adjacencyMap.HasConnection(Direction.SouthEast) ? 1 : 0;
+                int hasSouth = adjacencyMap.HasConnection(Direction.South) ? 1 : 0;
+                int hasSouthWest = adjacencyMap.HasConnection(Direction.SouthWest) ? 1 : 0;
+                int hasWest = adjacencyMap.HasConnection(Direction.West) ? 1 : 0;
+                int hasNorthWest = adjacencyMap.HasConnection(Direction.NorthWest) ? 1 : 0;
+                //TODO: Someone smarter than me needs to refactor the bitwise comparison for this piece. I couldn't figure it out. Hats off to original author.
+                // We make another bitfield. 0x0 means no fills, 0x1 means right corner filled, 0x2 means left corner filled,
                 // therefore both corners filled = 0x3.
-                int corners = ((1 - cardinalInfo.north) * 2 | (1 - cardinalInfo.east)) *
-                              Adjacent(connections, Direction.SouthWest)
-                              + ((1 - cardinalInfo.east) * 2 | (1 - cardinalInfo.south)) *
-                              Adjacent(connections, Direction.NorthWest)
-                              + ((1 - cardinalInfo.south) * 2 | (1 - cardinalInfo.west)) *
-                              Adjacent(connections, Direction.NorthEast)
-                              + ((1 - cardinalInfo.west) * 2 | (1 - cardinalInfo.north)) *
-                              Adjacent(connections, Direction.SouthEast);
+                int corners = ((1 - hasNorth) * 2 | (1 - hasEast)) * hasSouthWest
+                              + ((1 - hasEast) * 2 | (1 - hasSouth)) * hasNorthWest
+                              + ((1 - hasSouth) * 2 | (1 - hasWest)) * hasNorthEast
+                              + ((1 - hasWest) * 2 | (1 - hasNorth)) * hasSouthEast;
                 return corners == 0 ? AdjacencyShape.TNone
                     : corners == 1 ? AdjacencyShape.TSingleLeft
                     : corners == 2 ? AdjacencyShape.TSingleRight
                     : AdjacencyShape.TDouble;
             }
 
-            //This sneaky piece of code uses the cardinal info to store diagonals by rotating everything -45 degrees
-            //NE -> N, SW -> S, etc.
-            var diagonals = new AdjacencyBitmap.CardinalInfo((byte) (connections >> 1));
-
-            switch (diagonals.numConnections)
+            switch (diagonalConnectionCount)
             {
                 case 0:
                     return AdjacencyShape.XNone;
                 case 1:
                     return AdjacencyShape.XSingle;
                 case 2:
-                    return diagonals.north == diagonals.south ? AdjacencyShape.XOpposite : AdjacencyShape.XSide;
+                    return adjacencyMap.HasConnection(Direction.NorthEast) == adjacencyMap.HasConnection(Direction.SouthWest) ? 
+                        AdjacencyShape.XOpposite : AdjacencyShape.XSide;
                 case 3:
                     return AdjacencyShape.XTriple;
                 case 4:
                     return AdjacencyShape.XQuad;
                 default:
                     Debug.LogError(
-                        $"Could not resolve Advanced Adjacency Shape for given Cardinal Info - {cardinalInfo} and Connections map - {connections}");
+                        $"Could not resolve Advanced Adjacency Shape for given Adjacency Map - {adjacencyMap}");
                     return AdjacencyShape.XQuad;
             }
         }
 
-        public static AdjacencyShape GetOffsetShape(AdjacencyBitmap.CardinalInfo cardinalInfo)
+        public static AdjacencyShape GetOffsetShape(AdjacencyMap adjacencyMap)
         {
-            int connectionCount = cardinalInfo.numConnections;
-            if (connectionCount == 0)
+            int cardinalConnectionCount = adjacencyMap.GetCardinalConnectionCount();
+            if (cardinalConnectionCount == 0)
             {
                 return AdjacencyShape.O;
             }
             
-            if (connectionCount == 1)
+            if (cardinalConnectionCount == 1)
             {
-                return cardinalInfo.north > 0 || cardinalInfo.east > 0 ? AdjacencyShape.UNorth : AdjacencyShape.USouth;
+                return adjacencyMap.HasConnection(Direction.North) || adjacencyMap.HasConnection(Direction.East) ? 
+                    AdjacencyShape.UNorth : AdjacencyShape.USouth;
             }
             
             //When two connections and they're opposite
-            if (connectionCount == 2 && cardinalInfo.north == cardinalInfo.south)
+            if (cardinalConnectionCount == 2 && adjacencyMap.HasConnection(Direction.North) == adjacencyMap.HasConnection(Direction.South))
             {
                 return AdjacencyShape.I;
             }
             
             //When two connections and they're adjacent
-            if (connectionCount == 2 && cardinalInfo.north != cardinalInfo.south)
+            if (cardinalConnectionCount == 2 && adjacencyMap.HasConnection(Direction.North) != adjacencyMap.HasConnection(Direction.South))
             {
-                Direction sides = cardinalInfo.GetCornerDirection();
-                return sides == Direction.NorthEast ? AdjacencyShape.LNorthWest
-                    : sides == Direction.SouthEast ? AdjacencyShape.LNorthEast
-                    : sides == Direction.SouthWest ? AdjacencyShape.LSouthEast
+                Direction diagonal = adjacencyMap.GetDirectionBetweenTwoConnections();
+                return diagonal == Direction.NorthEast ? AdjacencyShape.LNorthWest
+                    : diagonal == Direction.SouthEast ? AdjacencyShape.LNorthEast
+                    : diagonal == Direction.SouthWest ? AdjacencyShape.LSouthEast
                     : AdjacencyShape.LSouthWest;
             }
 
-            if (connectionCount == 3)
+            if (cardinalConnectionCount == 3)
             {
-                Direction notside = cardinalInfo.GetOnlyNegative();
-                return notside == Direction.North ? AdjacencyShape.TNorthSouthEast
-                    : notside == Direction.East ? AdjacencyShape.TSouthWestEast
-                    : notside == Direction.South ? AdjacencyShape.TNorthSouthWest
+                Direction missingConnection = adjacencyMap.GetSingleNonConnection();
+                return missingConnection == Direction.North ? AdjacencyShape.TNorthSouthEast
+                    : missingConnection == Direction.East ? AdjacencyShape.TSouthWestEast
+                    : missingConnection == Direction.South ? AdjacencyShape.TNorthSouthWest
                     : AdjacencyShape.TNorthEastWest;
             }
 
-            if (connectionCount == 4)
+            if (cardinalConnectionCount == 4)
             {
                 return AdjacencyShape.X;
             }
             
             Debug.LogError(
-                $"Could not resolve Offset Adjacency Shape for given Cardinal Info - {cardinalInfo}");
+                $"Could not resolve Offset Adjacency Shape for given Adjacency Map - {adjacencyMap}");
             return AdjacencyShape.X;
-        }
-
-        public static int Adjacent(byte bitmap, Direction direction)
-        {
-            return (bitmap >> (int) direction) & 0x1;
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using SS3D.Engine.Tiles;
-using SS3D.Engine.Tiles.Connections;
 using UnityEngine;
 
 namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
@@ -50,16 +49,12 @@ namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
         public GameObject[] viewObstacles;
         public bool opaque;
 
-        public MeshDirectionInfo GetMeshAndDirection(AdjacencyBitmap adjacents)
+        public MeshDirectionInfo GetMeshAndDirection(AdjacencyMap adjacencyMap)
         {
-            var cardinalInfo = adjacents.GetCardinalInfo();
-
             float rotation = 0.0f;
             Mesh mesh;
 
-            AdjacencyShape shape = AdjacencyShapeResolver.GetAdvancedShape(cardinalInfo, adjacents.Connections);
-            //TODO: remove once CardinalInfo diagonals implemented
-            var diagonals = new AdjacencyBitmap.CardinalInfo((byte)(adjacents.Connections >> 1));
+            AdjacencyShape shape = AdjacencyShapeResolver.GetAdvancedShape(adjacencyMap);
             switch (shape)
             {
                 case AdjacencyShape.O:
@@ -67,54 +62,60 @@ namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
                     break;
                 case AdjacencyShape.U:
                     mesh = u;
-                    rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleConnection());
                     break;
                 case AdjacencyShape.I:
                     mesh = i;
-                    rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.north == 1 ? Direction.North : Direction.East);
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.HasConnection(Direction.North) ? Direction.North : Direction.East);
                     break;
                 case AdjacencyShape.LNone:
                     mesh = lNone;
-                    rotation = TileHelper.AngleBetween(Direction.NorthEast, cardinalInfo.GetCornerDirection());
+                    rotation = TileHelper.AngleBetween(Direction.NorthEast, adjacencyMap.GetDirectionBetweenTwoConnections());
                     break;
                 case AdjacencyShape.LSingle:
                     mesh = lSingle;
-                    rotation = TileHelper.AngleBetween(Direction.NorthEast, cardinalInfo.GetCornerDirection());
+                    rotation = TileHelper.AngleBetween(Direction.NorthEast, adjacencyMap.GetDirectionBetweenTwoConnections());
                     break;
                 case AdjacencyShape.TNone:
                     mesh = tNone;
-                    rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyNegative());
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection());
                     break;
                 case AdjacencyShape.TSingleLeft:
                     mesh = tSingleLeft;
-                    rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyNegative());
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection());
                     break;
                 case AdjacencyShape.TSingleRight:
                     mesh = tSingleRight;
-                    rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyNegative());
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection());
                     break;
                 case AdjacencyShape.TDouble:
                     mesh = tDouble;
-                    rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyNegative());
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection());
                     break;
                 case AdjacencyShape.XNone:
                     mesh = xNone;
                     break;
                 case AdjacencyShape.XSingle:
                     mesh = xSingle;
-                    rotation = TileHelper.AngleBetween(Direction.North, diagonals.GetOnlyPositive());
+                    Direction connectingDiagonal = adjacencyMap.GetSingleConnection(false);
+                    rotation = connectingDiagonal == Direction.NorthEast ? 0f :
+                        connectingDiagonal == Direction.SouthEast ? 90f :
+                        connectingDiagonal == Direction.SouthWest ? 180f : -90f;
                     break;
                 case AdjacencyShape.XOpposite:
                     mesh = xOpposite;
-                    rotation = TileHelper.AngleBetween(Direction.North, diagonals.north == 1 ? Direction.North : Direction.East);
+                    rotation = adjacencyMap.HasConnection(Direction.NorthEast) ? 0f : 90f;
                     break;
                 case AdjacencyShape.XSide:
                     mesh = xSide;
-                    rotation = TileHelper.AngleBetween(Direction.NorthWest, diagonals.GetCornerDirection());
+                    rotation = TileHelper.AngleBetween(Direction.NorthWest, adjacencyMap.GetDirectionBetweenTwoConnections(false)) - 45f;
                     break;
                 case AdjacencyShape.XTriple:
                     mesh = xTriple;
-                    rotation = TileHelper.AngleBetween(Direction.East, diagonals.GetOnlyNegative());
+                    Direction nonConnectingDiagonal = adjacencyMap.GetSingleNonConnection(false);
+                    rotation = nonConnectingDiagonal == Direction.NorthEast ? -90f :
+                        nonConnectingDiagonal == Direction.SouthEast ? 0f :
+                        nonConnectingDiagonal == Direction.SouthWest ? 90f : 180f;
                     break;
                 case AdjacencyShape.XQuad:
                     mesh = xQuad;
@@ -172,7 +173,7 @@ namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
                 }
             }
 
-            return new MeshDirectionInfo { mesh = mesh, rotation = rotation };
+            return new MeshDirectionInfo { Mesh = mesh, Rotation = rotation };
         }
     }
 }

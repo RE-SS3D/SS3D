@@ -11,10 +11,11 @@ namespace SS3D.Engine.Tiles
     public class TileObjectSO : ScriptableObject
     {
         public TileLayer layer;
-
+        
         [Tooltip("A name for the object. Make sure it is unique.")]
         public string nameString;
 
+        //TODO: Replace genericType and specificType with enums as we need to perform operations on them in logic. Need to update all SO's and make sure tilemap editor does not break.
         [Tooltip("Specify the generic type. Used for finding matching adjacencies.")]
         public string genericType;
 
