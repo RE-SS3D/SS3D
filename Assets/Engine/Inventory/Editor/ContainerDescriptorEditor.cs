@@ -363,14 +363,15 @@ public class ContainerDescriptorEditor : Editor
 
     private void RemoveSync()
     {
-        GameObject g = Selection.activeGameObject;
-        if(g != null)
+        GameObject gameObject = Selection.activeGameObject;
+        if(gameObject != null)
         {
-            var containerDescriptors = g.GetComponents<ContainerDescriptor>();
-            if (containerDescriptors != null && containerDescriptors.Length == 0)
+            var containerDescriptorsInParent = gameObject.GetComponentsInParent<ContainerDescriptor>();
+            var containerDescriptorsInChildren = gameObject.GetComponentsInChildren<ContainerDescriptor>();
+            if (containerDescriptorsInParent != null && containerDescriptorsInChildren != null && containerDescriptorsInChildren.Length == 0 && containerDescriptorsInParent.Length == 0)
             {
-                DestroyImmediate(g.GetComponent<ContainerSync>());
-                GameObject networkedParent = GetParentNetworkIdentity(g);
+                DestroyImmediate(gameObject.GetComponent<ContainerSync>());
+                GameObject networkedParent = GetParentNetworkIdentity(gameObject);
                 DestroyImmediate(networkedParent.GetComponent<ContainerSync>());
             }
         }
