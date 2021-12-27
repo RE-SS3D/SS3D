@@ -71,11 +71,10 @@ public class ContainerDescriptorEditor : Editor
             {
                 foreach (AnimatorControllerParameter controllerParameter in containerDescriptor.gameObject.GetComponent<Animator>().parameters)
                 {
-                    if (controllerParameter.name == "Open")
-                    {
-                        bool openWhenContainerViewed = EditorGUILayout.Toggle(new GUIContent("open when container viewed", "Set if the open animation should run when the container UI is opened"), containerDescriptor.openWhenContainerViewed);
-                        HandleOpenWhenContainerViewed(openWhenContainerViewed);
-                    }
+                    if (controllerParameter.name != "Open") { continue; }
+
+                    bool openWhenContainerViewed = EditorGUILayout.Toggle(new GUIContent("open when container viewed", "Set if the open animation should run when the container UI is opened"), containerDescriptor.openWhenContainerViewed);
+                    HandleOpenWhenContainerViewed(openWhenContainerViewed);
                 }
             }      
         }
@@ -308,14 +307,7 @@ public class ContainerDescriptorEditor : Editor
     {
         SerializedProperty sp = serializedObject.FindProperty("containerInteractive");
         GameObject networkedParent = GetParentNetworkIdentity(containerDescriptor.gameObject);
-        if (networkedParent != null)
-        {
-            sp.objectReferenceValue = networkedParent.AddComponent<ContainerInteractive>();
-        }
-        else
-        {
-            sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerInteractive>();
-        }
+        sp.objectReferenceValue = networkedParent != null ? networkedParent.AddComponent<ContainerInteractive>() : containerDescriptor.gameObject.AddComponent<ContainerInteractive>();
         serializedObject.ApplyModifiedProperties();
         containerDescriptor.containerInteractive.containerDescriptor = containerDescriptor;
     }
@@ -356,17 +348,8 @@ public class ContainerDescriptorEditor : Editor
         if (containerDescriptor.gameObject.GetComponentInParent<ContainerSync>() == null)
         {
             SerializedProperty sp = serializedObject.FindProperty("containerSync");
-            GameObject g = GetParentNetworkIdentity(containerDescriptor.gameObject);
-
-            if (g != null)
-            {
-                sp.objectReferenceValue = g.AddComponent<ContainerSync>();
-            }
-            else
-            {
-                sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerSync>();
-            }
-
+            GameObject gameObject = GetParentNetworkIdentity(containerDescriptor.gameObject);
+            sp.objectReferenceValue = gameObject != null ? gameObject.AddComponent<ContainerSync>() : containerDescriptor.gameObject.AddComponent<ContainerSync>();
             serializedObject.ApplyModifiedProperties();
         }
         
