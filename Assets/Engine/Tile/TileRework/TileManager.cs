@@ -3,11 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SS3D.Engine.Tile.TileRework;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static SS3D.Engine.Tiles.TileMap;
-using static SS3D.Engine.Tiles.TileRestrictions;
+using static SS3D.Engine.Tile.TileRework.TileRestrictions;
 
 namespace SS3D.Engine.Tiles
 {
@@ -43,7 +44,7 @@ namespace SS3D.Engine.Tiles
         public bool IsInitialized { get; private set; }
         public static event System.Action TileManagerLoaded;
 
-        private static TileObjectSO[] tileObjectSOs;
+        private static TileObjectSo[] tileObjectSOs;
         private string saveFileName = "tilemaps";
 
         private List<TileMap> mapList;
@@ -68,13 +69,13 @@ namespace SS3D.Engine.Tiles
                 // Finding all TileObjectSOs differs whether we are in the editor or playing
 #if UNITY_EDITOR
                 // We have to ensure that all objects used are loaded beforehand
-                string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(TileObjectSO)));
+                string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(TileObjectSo)));
 
-                List<TileObjectSO> listTileObjectSO = new List<TileObjectSO>();
+                List<TileObjectSo> listTileObjectSO = new List<TileObjectSo>();
                 for (int i = 0; i < guids.Length; i++)
                 {
                     string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
-                    listTileObjectSO.Add(AssetDatabase.LoadAssetAtPath<TileObjectSO>(assetPath));
+                    listTileObjectSO.Add(AssetDatabase.LoadAssetAtPath<TileObjectSo>(assetPath));
                 }
                 tileObjectSOs = listTileObjectSO.ToArray();
 #else
@@ -213,7 +214,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="tileObjectSO"></param>
         /// <param name="position"></param>
         /// <param name="dir"></param>
-        public void SetTileObject(TileMap map, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public void SetTileObject(TileMap map, int subLayerIndex, TileObjectSo tileObjectSO, Vector3 position, Direction dir)
         {
             if (CanBuild(map, subLayerIndex, tileObjectSO, position, dir, false))
                 map.SetTileObject(subLayerIndex, tileObjectSO, position, dir);
@@ -225,7 +226,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="tileObjectSO"></param>
         /// <param name="position"></param>
         /// <param name="dir"></param>
-        public void SetTileObject(TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public void SetTileObject(TileObjectSo tileObjectSO, Vector3 position, Direction dir)
         {
             if (tileObjectSO.layer == TileLayer.HighWallMount || tileObjectSO.layer == TileLayer.LowWallMount)
                 Debug.LogError("Simplified function SetTileObject() is used. Do not use this function with layers where a sub index is required!");
@@ -267,7 +268,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="position"></param>
         /// <param name="dir"></param>
         /// <returns></returns>
-        public bool CanBuild(TileMap selectedMap, int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir, bool overrideAllowed)
+        public bool CanBuild(TileMap selectedMap, int subLayerIndex, TileObjectSo tileObjectSO, Vector3 position, Direction dir, bool overrideAllowed)
         {
             bool canBuild = true;
             foreach (TileMap map in mapList)
@@ -301,7 +302,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="position"></param>
         /// <param name="dir"></param>
         /// <returns></returns>
-        public bool CanBuild(TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public bool CanBuild(TileObjectSo tileObjectSO, Vector3 position, Direction dir)
         {
             if (tileObjectSO.layer == TileLayer.HighWallMount || tileObjectSO.layer == TileLayer.LowWallMount)
                 Debug.LogError("Simplified function CanBuild() is used. Do not use this function with layers where a sub index is required!");
@@ -339,9 +340,9 @@ namespace SS3D.Engine.Tiles
         /// </summary>
         /// <param name="tileObjectSOName"></param>
         /// <returns></returns>
-        public TileObjectSO GetTileObjectSO(string tileObjectSOName)
+        public TileObjectSo GetTileObjectSO(string tileObjectSOName)
         {
-            TileObjectSO tileObjectSO = tileObjectSOs.FirstOrDefault(tileObject => tileObject.nameString == tileObjectSOName);
+            TileObjectSo tileObjectSO = tileObjectSOs.FirstOrDefault(tileObject => tileObject.nameString == tileObjectSOName);
             if (tileObjectSO == null)
                 Debug.LogError("TileObjectSO was not found: " + tileObjectSOName);
             return tileObjectSO;
@@ -384,7 +385,7 @@ namespace SS3D.Engine.Tiles
         {
             if (tileObjectSOs == null)
             {
-                tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
+                tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSo>();
             }
 
             if (softLoad)

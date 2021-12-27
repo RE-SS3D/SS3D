@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
+using SS3D.Engine.Tile.TileRework;
 using SS3D.Engine.Tile.TileRework.Connections;
 using SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes;
 using SS3D.Engine.Tiles;
@@ -8,8 +9,8 @@ namespace SS3D.Tests
 {
     public class AdjacencyShapeResolverTest
     {
-        private readonly AdjacencyData existingConnection = new AdjacencyData("", "", true);
-        private readonly AdjacencyData missingConnection = new AdjacencyData("", "", false);
+        private readonly AdjacencyData existingConnection = new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, true);
+        private readonly AdjacencyData missingConnection = new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, false);
 
         [Test]
         public void SimpleShapeShouldReturn0WhenNoConnections()

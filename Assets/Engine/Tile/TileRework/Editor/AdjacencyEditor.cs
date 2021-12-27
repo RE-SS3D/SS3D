@@ -88,7 +88,7 @@ namespace SS3D.Engine.Tile.TileRework.Editor
                             // Set their opposite side blocked
                             AdjacencyMap adjacencyMap = new AdjacencyMap();
                             adjacencyMap.DeserializeFromByte((byte)neighbourProperty.intValue);
-                            adjacencyMap.SetConnection(TileHelper.GetOpposite((Direction) i), new AdjacencyData("", "", blocked[i]));
+                            adjacencyMap.SetConnection(TileHelper.GetOpposite((Direction) i), new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, blocked[i]));
                             neighbourProperty.intValue = adjacencyMap.SerializeToByte();
 
                             // Apply the changes
@@ -122,7 +122,7 @@ namespace SS3D.Engine.Tile.TileRework.Editor
             AdjacencyMap adjacencyMap = new AdjacencyMap();
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
-                adjacencyMap.SetConnection(direction, new AdjacencyData("", "", blocked[(int)direction]));
+                adjacencyMap.SetConnection(direction, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, blocked[(int)direction]));
             }
 
             return adjacencyMap.SerializeToByte();

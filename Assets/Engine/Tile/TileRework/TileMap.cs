@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SS3D.Engine.Tile.TileRework;
 using UnityEditor;
 using UnityEngine;
-using static SS3D.Engine.Tiles.TileRestrictions;
+using static SS3D.Engine.Tile.TileRework.TileRestrictions;
 
 namespace SS3D.Engine.Tiles
 {
@@ -202,7 +203,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="position">World position to place the object</param>
         /// <param name="dir">Direction the object is facing</param>
         /// <returns></returns>
-        public bool CanBuild(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir, CheckRestrictions checkRestrictions)
+        public bool CanBuild(int subLayerIndex, TileObjectSo tileObjectSO, Vector3 position, Direction dir, CheckRestrictions checkRestrictions)
         {
             // Get the right chunk
             TileChunk chunk = GetOrCreateChunk(position);
@@ -260,7 +261,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="tileObjectSO">Object to place</param>
         /// <param name="position">World position to place the object</param>
         /// <param name="dir">Direction the object is facing</param
-        public void SetTileObject(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public void SetTileObject(int subLayerIndex, TileObjectSo tileObjectSO, Vector3 position, Direction dir)
         {
             TileLayer layer = tileObjectSO.layer;
             GameObject layerObject = GetOrCreateLayerObject(layer);
@@ -315,7 +316,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="placedObject"></param>
         /// <param name="position"></param>
         /// <param name="dir"></param>
-        public void LoadTileObject(int subLayerIndex, TileObjectSO tileObjectSO, PlacedTileObject placedObject, Vector3 position, Direction dir)
+        public void LoadTileObject(int subLayerIndex, TileObjectSo tileObjectSO, PlacedTileObject placedObject, Vector3 position, Direction dir)
         {
             TileLayer layer = tileObjectSO.layer;
             GameObject layerObject = GetOrCreateLayerObject(layer);
@@ -526,7 +527,7 @@ namespace SS3D.Engine.Tiles
                         {
                             if (softLoad)
                             {
-                                TileObjectSO tileObjectSO = tileManager.GetTileObjectSO(objectName);
+                                TileObjectSo tileObjectSO = tileManager.GetTileObjectSO(objectName);
 
                                 // Find the object and set it up again...
                                 Vector3 position = TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SS3D.Content.Systems.Interactions;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Interactions.Extensions;
+using SS3D.Engine.Tile.TileRework;
 using SS3D.Engine.Tiles;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ public class TurfConstructionInteraction : ConstructionInteraction
     /// <summary>
     /// The turf to construct
     /// </summary>
-    public TileObjectSO ObjectToConstruct;
+    public TileObjectSo ObjectToConstruct;
     /// <summary>
     /// If the turf can be constructed if there already is a turf
     /// </summary>
