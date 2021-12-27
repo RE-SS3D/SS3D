@@ -6,7 +6,7 @@ namespace SS3D.Content.Creatures.Human
     // This adds a button in the editor to test ragdolling
     #if UNITY_EDITOR
     [CustomEditor(typeof(HumanRagdoll))]
-    public class RigidBodyInspector : Editor
+    public class RigidBodyInspector : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
