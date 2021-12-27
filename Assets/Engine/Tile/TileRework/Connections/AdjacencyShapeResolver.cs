@@ -65,7 +65,7 @@ namespace SS3D.Engine.Tile.TileRework.Connections
             if (cardinalConnectionCount == 2 && adjacencyMap.HasConnection(Direction.North) != adjacencyMap.HasConnection(Direction.South))
             {
                 //Determine lSolid or lCorner by finding whether the area between the two connections is filled
-                //We check for if any of the following adjacency maps matches
+                //We check if any of the following adjacency maps matches
                 //N+NE+E, E+SE+S, S+SW+W, W+NW+N
                 bool isFilled = adjacencyMap.HasConnection(Direction.North) &&
                                  adjacencyMap.HasConnection(Direction.NorthEast) &&

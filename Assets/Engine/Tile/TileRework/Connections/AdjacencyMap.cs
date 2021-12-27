@@ -96,11 +96,6 @@ namespace SS3D.Engine.Tile.TileRework.Connections
 
             return changed;
         }
-        
-        public void SetConnections(AdjacencyData[] newConnections)
-        {
-            connections = newConnections;
-        }
 
         private List<Direction> GetAdjacencies(bool cardinal)
         {
