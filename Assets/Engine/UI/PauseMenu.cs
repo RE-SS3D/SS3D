@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using SS3D.Engine.Server.Mirror;
 using SS3D.Engine.Server.Round;
 using TMPro;
 using UnityEngine;
@@ -16,7 +17,7 @@ public class PauseMenu : NetworkBehaviour
     {
         if (animator == null)
             animator = GetComponent<Animator>();
-        networkManager = LoginNetworkManager.singleton;
+        networkManager = LoginNetworkManager.LoginSingleton;
 
         // turned off for now, I need a better solution for that
         //RoundManager.ServerRoundEnded += ForceToggleOff;
@@ -24,7 +25,7 @@ public class PauseMenu : NetworkBehaviour
     
     void Update() 
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && !CameraManager.singleton.playerCamera.gameObject.activeSelf && RoundManager.singleton.IsRoundStarted) 
+        if (Input.GetKeyDown(KeyCode.Escape) && !CameraManager.singleton.playerCamera.gameObject.activeSelf && RoundManager.Singleton.IsRoundStarted) 
         {
             Toggle();
         }

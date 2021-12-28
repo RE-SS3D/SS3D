@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using SS3D.Engine.Inventory;
@@ -23,17 +22,17 @@ namespace SS3D.Engine.Interactions
         [SerializeField]
         private GameObject menuPrefab = null;
 
-        private Camera camera;
+        private Camera playerCamera;
 
         private void Start()
         {
-            camera = CameraManager.singleton.playerCamera;
+            playerCamera = CameraManager.singleton.playerCamera;
         }
 
         public void Update()
         {
             // Ensure that mouse isn't over ui (game objects aren't tracked by the eventsystem, so ispointer would return false
-            if (!isLocalPlayer || camera == null || EventSystem.current.IsPointerOverGameObject())
+            if (!isLocalPlayer || playerCamera == null || EventSystem.current.IsPointerOverGameObject())
             {
                 return;
             }
@@ -47,7 +46,7 @@ namespace SS3D.Engine.Interactions
                 }
 
                 // Run the most prioritised action
-                var ray = camera.ScreenPointToRay(Input.mousePosition);
+                var ray = playerCamera.ScreenPointToRay(Input.mousePosition);
                 var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
 
                 if (viableInteractions.Count > 0)
@@ -78,7 +77,7 @@ namespace SS3D.Engine.Interactions
                 }
                 else
                 {
-                    var ray = camera.ScreenPointToRay(Input.mousePosition);
+                    var ray = playerCamera.ScreenPointToRay(Input.mousePosition);
                     var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
                     if (viableInteractions.Select(x => x.Interaction).ToList().Count > 0)
                     {

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using SS3D.Engine.Server.Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,7 +19,7 @@ public class MainLobbyButtonHelper : MonoBehaviour
 
     private void Start()
     {
-        networkManager = LoginNetworkManager.singleton;
+        networkManager = LoginNetworkManager.LoginSingleton;
         player = LocalPlayerManager.singleton;
 		Debug.Log("player.name = " + player.name);
     }

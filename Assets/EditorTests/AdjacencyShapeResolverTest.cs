@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
 using NUnit.Framework;
 using SS3D.Engine.Tile.TileRework;
 using SS3D.Engine.Tile.TileRework.Connections;
 using SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes;
 using SS3D.Engine.Tiles;
 
-namespace SS3D.Tests
+namespace SS3D.EditorTests
 {
     public class AdjacencyShapeResolverTest
     {

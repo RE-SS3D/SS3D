@@ -11,6 +11,13 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+      - name: Cache library
+        uses: actions/cache@v2
+        with:
+          path: SS3D/Library
+          key: Library-SS3D
+          restore-keys: |
+            Library-SS3D
       - name: Run tests
         uses: game-ci/unity-test-runner@v2
         env:

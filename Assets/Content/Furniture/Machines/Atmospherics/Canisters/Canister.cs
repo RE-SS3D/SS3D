@@ -20,7 +20,7 @@ namespace SS3D.Content.Furniture.Machines.Atmospherics {
 
 	// The gas that is stored in this object, currently it only stores one
 	// TODO: When we have gas mixing, we need to update this to a list
-        [SerializeField] AtmosGasses gas = AtmosGasses.Oxygen;
+        //[SerializeField] AtmosGasses gas = AtmosGasses.Oxygen;
 
 	// The pressure the gas leaks when the valve is open
         [Range(0f, 20f)]

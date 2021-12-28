@@ -19,9 +19,9 @@ namespace SS3D.Content.Items.Functional.Tools
 
         private MeshRenderer meshRenderer;
 
-        public void Start()
+        public override void Start()
         {
-            meshRenderer = this.prefab.GetComponent<MeshRenderer>();
+            meshRenderer = prefab.GetComponent<MeshRenderer>();
             meshRenderer.material = light.enabled ? materialOn : materialOff;
         }
 

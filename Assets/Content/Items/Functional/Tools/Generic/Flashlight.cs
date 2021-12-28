@@ -20,7 +20,7 @@ namespace SS3D.Content.Items.Functional.Tools
         public GameObject bulbObject;
         private MeshRenderer meshRenderer;
 
-        public void Start() 
+        public override void Start() 
         {
             meshRenderer = bulbObject.GetComponent<MeshRenderer>();
             meshRenderer.material = (light.enabled ? bulbMaterialOn : bulbMaterialOff);

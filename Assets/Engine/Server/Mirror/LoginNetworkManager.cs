@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections;
-using UnityEngine;
+using Mirror;
 using SS3D.Engine.Server.Login.Data;
 using SS3D.Engine.Server.Login.Networking;
 using SS3D.Engine.Server.Round;
-using SS3D;
-    
-    using System.Net;
-using Telepathy;
-using UnityEngine.SceneManagement;
-    using UnityEngine.UI;
+using UnityEngine;
 
-    namespace Mirror
+namespace SS3D.Engine.Server.Mirror
 {
     /// <summary>
     /// Custom implementation of Network manager to accomodate requiring the player to login before spawning them.
@@ -39,7 +34,7 @@ using UnityEngine.SceneManagement;
     /// </summary>
     public class LoginNetworkManager : NetworkManager
     {
-        public static LoginNetworkManager singleton { get; private set; }
+        public static LoginNetworkManager LoginSingleton { get; private set; }
 
         // Allows for updating the server numbers when players connect / disconnect.
         public event System.Action ClientNumbersUpdated;
@@ -50,10 +45,10 @@ using UnityEngine.SceneManagement;
         /**
          * Information about the login server sent to the client.
          */
-        public struct LoginServerMessage : NetworkMessage
+        private struct LoginServerMessage : NetworkMessage
         {
             // If null, then no 
-            public string serverAddress;
+            public string ServerAddress;
         }
 
         /**
@@ -61,7 +56,7 @@ using UnityEngine.SceneManagement;
          */
         public struct CharacterSelectMessage : NetworkMessage
         {
-            public CharacterResponse character;
+            public CharacterResponse Character;
         }
 
         // LOGIN STUFF
@@ -107,11 +102,11 @@ using UnityEngine.SceneManagement;
         
         bool InitializeSingleton()
         {
-            if (singleton != null && singleton == this) return true;
+            if (LoginSingleton != null && LoginSingleton == this) return true;
             
             if (dontDestroyOnLoad)
             {
-                if (singleton != null)
+                if (LoginSingleton != null)
                 {
                     Debug.LogWarning("Multiple NetworkManagers detected in the scene. Only one NetworkManager can exist at a time. The duplicate NetworkManager will be destroyed.");
                     Destroy(gameObject);
@@ -120,13 +115,13 @@ using UnityEngine.SceneManagement;
                     return false;
                 }
                 Debug.Log("NetworkManager created singleton (DontDestroyOnLoad)");
-                singleton = this;
+                LoginSingleton = this;
                 if (Application.isPlaying) DontDestroyOnLoad(gameObject);
             }
             else
             {
                 Debug.Log("NetworkManager created singleton (ForScene)");
-                singleton = this;
+                LoginSingleton = this;
             }
 
             // set active transport AFTER setting singleton.
@@ -157,7 +152,7 @@ using UnityEngine.SceneManagement;
             base.OnServerSceneChanged(sceneName);
             SetupServerManagers();
             NetworkServer.SendToAll(new LoginServerMessage
-                {serverAddress = hasLoginServer ? loginServerAddress : null});
+                {ServerAddress = hasLoginServer ? loginServerAddress : null});
             
             UpdateLoadingScreen(false);
         }
@@ -220,7 +215,7 @@ using UnityEngine.SceneManagement;
             bool userMustLogin = useLoginSystem && hasLoginServer;
 
             // Must always send a message, so the client knows if they should spawn through the login server or not
-            conn.Send(new LoginServerMessage() {serverAddress = userMustLogin ? loginServerAddress : null});
+            conn.Send(new LoginServerMessage() {ServerAddress = userMustLogin ? loginServerAddress : null});
 
             // Ensure the display gets updated.
             StartCoroutine(UpdatePlayerCountDelayed());
@@ -308,7 +303,7 @@ using UnityEngine.SceneManagement;
         [Client]
         private void OnLoginDataMessage(LoginServerMessage message)
         {
-            if (message.serverAddress == null)
+            if (message.ServerAddress == null)
             {
                 SpawnPlayerWithoutLoginServer(NetworkClient.connection);
                 return;
@@ -317,7 +312,7 @@ using UnityEngine.SceneManagement;
             // Update our login server to match theirs. Attempt to connect.
             // If successful, hand over control to the LoginManager, telling it to call SpawnPlayerWithLoginServer when
             // the user has chosen their player.
-            loginManager.UpdateApiAddress(message.serverAddress,
+            loginManager.UpdateApiAddress(message.ServerAddress,
                 character => SpawnPlayerWithLoginServer(NetworkClient.connection, character));
             loginManager.ApiHeartbeat(BeginLoginProcedure);
         }
@@ -328,7 +323,7 @@ using UnityEngine.SceneManagement;
         [Client]
         private void SpawnPlayerWithLoginServer(NetworkConnection conn, CharacterResponse characterResponse)
         {
-            conn.Send(new CharacterSelectMessage {character = characterResponse});
+            conn.Send(new CharacterSelectMessage {Character = characterResponse});
         }
 
         /**
@@ -338,7 +333,7 @@ using UnityEngine.SceneManagement;
         private CharacterResponse SpawnPlayerWithoutLoginServer(NetworkConnection conn)
         {
             CharacterResponse characterResponse = GetDefaultCharacter();
-            conn.Send(new CharacterSelectMessage {character = characterResponse});
+            conn.Send(new CharacterSelectMessage {Character = characterResponse});
             return characterResponse;
         }
 
@@ -402,14 +397,14 @@ using UnityEngine.SceneManagement;
             yield return new WaitUntil(() => roundManager.IsRoundStarted);
 
             //Something has gone horribly wrong
-            if (characterSelection.character == null) throw new Exception("Could not read character data");
+            if (characterSelection.Character == null) throw new Exception("Could not read character data");
 
             // Spawn player based on their character choices
             Transform startPos = GetStartPosition();
             GameObject player = startPos != null
                 ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
                 : Instantiate(playerPrefab);
-            player.name = characterSelection.character.name;
+            player.name = characterSelection.Character.name;
             
             // NetworkServer.ReplacePlayerForConnection(conn, player);
             //Destroy dummy player

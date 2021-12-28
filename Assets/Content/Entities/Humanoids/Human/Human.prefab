@@ -397,7 +397,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  UiPrefab: {fileID: 2314586001921844144, guid: 154a0c29195b80444b97161cca7b2308,
+  uiPrefab: {fileID: 2314586001921844144, guid: 154a0c29195b80444b97161cca7b2308,
     type: 3}
   selector: {fileID: 0}
 --- !u!114 &1045010266948518310
@@ -1683,7 +1683,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84c1d3aa47bd44d4780f6026f6973d57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 0}
+  bodyPartCamera: {fileID: 0}
   target: {fileID: 4674694871559829712}
   currentRot: {x: 0, y: 0, z: 0, w: 0}
   minRotationLimit: -50

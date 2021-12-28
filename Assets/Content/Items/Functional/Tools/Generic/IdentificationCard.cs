@@ -44,7 +44,7 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 		private string MugshotPath;
 		private Sprite Mugshot;
 		
-		public void Start()
+		public override void Start()
 		{
 			// Ensure random numbers initialised.
 			EnsureInit();
@@ -74,19 +74,19 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 			}
 		}
 		
-		public void OnStartServer()
+		public override void OnStartServer()
 		{
 			EnsureInit();
 			base.OnStartServer();
 		}
 		
-		public void OnStartClient()
+		public override void OnStartClient()
 		{
 			EnsureInit();
 			base.OnStartClient();
 		}	
 
-		public void Awake()
+		public new void Awake()
 		{
 			EnsureInit();
 			base.Awake();
@@ -95,12 +95,8 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
 		// Make sure the random numbers have been generated before we try using the SyncVar.
 		private void EnsureInit()
 		{
-			if (initialCharacterID == 0);
-			{
-				
-				// Change the arguments here to generate different people.
-				initialCharacterID = UnityEngine.Random.Range(7, 11);
-			}
+			// Change the arguments here to generate different people.
+			initialCharacterID = initialCharacterID == 0 ? UnityEngine.Random.Range(7, 11) : initialCharacterID;
 		}
 
 		private void SyncIDCardDetails(int oldCharacter, int newCharacter)

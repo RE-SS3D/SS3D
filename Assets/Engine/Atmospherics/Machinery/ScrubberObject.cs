@@ -44,7 +44,7 @@ namespace SS3D.Engine.Atmospherics
         private PipeObject connectedPipe;
         private TileObject[] tileNeighbours = { null, null, null, null };
         private AtmosObject[] atmosNeighbours = { null, null, null, null };
-        private AtmosObject input = null;
+        //private AtmosObject input = null;
 
         private AtmosGasses[] atmosGasses = (AtmosGasses[])Enum.GetValues(typeof(AtmosGasses));
 
@@ -82,8 +82,8 @@ namespace SS3D.Engine.Atmospherics
 
         public void Step()
         {
-            int numOfTiles = 0;
             bool scrubActive = false;
+            /*int numOfTiles = 0;
 
             switch (range)
             {
@@ -94,7 +94,7 @@ namespace SS3D.Engine.Atmospherics
                     numOfTiles = 5;
                     break;
             }
-            /*
+            
             if (deviceActive)
             {
                 // We loop 1 or 5 times based on the range setting

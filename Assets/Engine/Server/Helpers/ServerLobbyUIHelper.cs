@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using SS3D.Engine.Server.Mirror;
 using SS3D.Engine.Server.Round;
 using SS3D.Engine.Tiles;
 using TMPro;
@@ -68,7 +69,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && RoundManager.singleton.IsRoundStarted)
+        if (Input.GetKeyDown(KeyCode.Escape) && RoundManager.Singleton.IsRoundStarted)
         {
             Toggle();
         }
@@ -88,7 +89,7 @@ public class ServerLobbyUIHelper : NetworkBehaviour
     public void CmdRequestEmbark(NetworkConnectionToClient sender = null)
     {
         // Spawns the player
-        LoginNetworkManager.singleton.SpawnPlayerAfterRoundStart(sender);
+        LoginNetworkManager.LoginSingleton.SpawnPlayerAfterRoundStart(sender);
     }  
 
     // Updates the embark text status according to the round status (starting, started, stopped)

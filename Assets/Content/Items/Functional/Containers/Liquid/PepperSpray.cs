@@ -61,7 +61,7 @@ namespace SS3D.Content.Items.Functional.Weapons
         }
 
         [SerializeField] private AudioClip spraySound = null;
-        [SerializeField] private ParticleSystem particleSystem;
+        [SerializeField] private ParticleSystem particles;
         [SerializeField] private float cooldownInSeconds;
 
         public Sprite useIcon;
@@ -81,7 +81,7 @@ namespace SS3D.Content.Items.Functional.Weapons
             base.Update();
             if (justSprayed)
             {
-                particleSystem.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                particles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
                 justSprayed = false;
             }
         }
@@ -95,7 +95,7 @@ namespace SS3D.Content.Items.Functional.Weapons
         private void Spray()
         {
             lastSprayTime = Time.time;
-            particleSystem.Play();
+            particles.Play();
             if (audioSource != null)
             {
                 audioSource.PlayOneShot(spraySound);
@@ -108,7 +108,7 @@ namespace SS3D.Content.Items.Functional.Weapons
         private void RpcSpray()
         {
             lastSprayTime = Time.time;
-            particleSystem.Play();
+            particles.Play();
             if (audioSource != null)
             {
                 audioSource.PlayOneShot(spraySound);

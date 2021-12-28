@@ -3,8 +3,6 @@ using System.Collections;
 using Mirror;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace SS3D.Engine.Server.Round
 {
@@ -15,11 +13,10 @@ namespace SS3D.Engine.Server.Round
     /// </summary>
     public class RoundManager : NetworkBehaviour
     {
-        public static RoundManager singleton { get; private set; }
+        public static RoundManager Singleton { get; private set; }
 
         [SyncVar] private bool warmingUp;
         [SerializeField] private int warmupTimeSeconds = 5;
-        [SerializeField] private int roundTimeSeconds = 300;
         private Coroutine warmupCoroutine;     
         
         private int timerSeconds = 0;
@@ -206,12 +203,12 @@ namespace SS3D.Engine.Server.Round
 
         void InitializeSingleton()
         {
-            if (singleton != null && singleton != this) { 
+            if (Singleton != null && Singleton != this) { 
                 Destroy(gameObject);
             }
             else
             {
-                singleton = this;   
+                Singleton = this;   
             }
         }
     }

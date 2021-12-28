@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Mirror;
+using SS3D.Content.Systems.Player.IK;
 using SS3D.Engine.Chat;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;

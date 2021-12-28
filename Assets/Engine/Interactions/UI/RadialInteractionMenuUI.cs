@@ -27,7 +27,7 @@ namespace SS3D.Engine.Interactions.UI
         public TextMeshProUGUI interactionName;
 		public TextMeshProUGUI interactionNameAltPosition;
 
-        private Camera camera;
+        private Camera playerCamera;
         
         [HideInInspector]
         public float mouseAngle;
@@ -80,7 +80,7 @@ namespace SS3D.Engine.Interactions.UI
 
         private void Start()
         {
-            camera = CameraManager.singleton.playerCamera;
+            playerCamera = CameraManager.singleton.playerCamera;
             
             petalsManager = GetComponent<PetalsManager>();
             petalsManager.contextMenu = this;
@@ -188,12 +188,12 @@ namespace SS3D.Engine.Interactions.UI
 
         public bool Appear(Vector2 screenPos, float scale, PetalFolder spawnFolder)
         {
-            if (camera == null) camera = CameraManager.singleton.playerCamera;
+            if (playerCamera == null) playerCamera = CameraManager.singleton.playerCamera;
             //Debug.Log("appear called");
             //this.transform.position
             if (menuAnimator.GetBool("Visible") == true)
                 return (false);
-            transform.position = camera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 1));
+            transform.position = playerCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 1));
             folder = spawnFolder;
             if (spawnFolder != null)
             {

@@ -10,9 +10,9 @@ namespace SS3D.Engine.Examine
     /// </summary>
     public class Examinator : NetworkBehaviour
     {
-        public GameObject UiPrefab;
+        public GameObject uiPrefab;
 
-        private Camera camera;
+        private Camera playerCamera;
         
         private GameObject uiInstance;
 		private ExamineUI examineUi;
@@ -42,12 +42,12 @@ namespace SS3D.Engine.Examine
 			updateFrequency = 1f / MIN_UPDATES_PER_SECOND;
 			updateTimer = 0f;
 
-            camera = CameraManager.singleton.playerCamera;
-            selector = camera.GetComponent<CompositeItemSelector>();
+            playerCamera = CameraManager.singleton.playerCamera;
+            selector = playerCamera.GetComponent<CompositeItemSelector>();
             selector.ExaminableChanged += OnExaminableChanged;
 	        
-	        Assert.IsNotNull(UiPrefab);
-            uiInstance = Instantiate(UiPrefab);
+	        Assert.IsNotNull(uiPrefab);
+            uiInstance = Instantiate(uiPrefab);
             examineUi = uiInstance.GetComponent<ExamineUI>();
             
         }
@@ -66,8 +66,8 @@ namespace SS3D.Engine.Examine
 			updateTimer += Time.deltaTime;
             Vector3 mousePosition = Input.mousePosition;
             Vector2 position = new Vector2(mousePosition.x, mousePosition.y);
-            Vector3 cameraPos = camera.transform.position;
-            Quaternion rotation = camera.transform.rotation;
+            Vector3 cameraPos = playerCamera.transform.position;
+            Quaternion rotation = playerCamera.transform.rotation;
 
 			// If anything has changed too much, we need to recalculate what object we are looking at.
 			if ((Vector2.Distance(position, lastMousePosition) > 1) ||
@@ -113,7 +113,7 @@ namespace SS3D.Engine.Examine
 		/// the cursor is over.
         private void CalculateExamine()
         {
-            if (camera == null)
+            if (playerCamera == null)
             {
                 return;
             }

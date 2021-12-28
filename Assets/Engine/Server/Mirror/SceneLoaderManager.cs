@@ -193,12 +193,12 @@ namespace SS3D
             // if selected map is not the currently loaded map
             if (IsSelectedMapLoaded() && selectedMap != name)
             {
-                if (RoundManager.singleton.IsOnWarmup || RoundManager.singleton.IsRoundStarted)
+                if (RoundManager.Singleton.IsOnWarmup || RoundManager.Singleton.IsRoundStarted)
                 {
                     startRoundButton.interactable = true;
                     startRoundButtonText.text = "start round";
                     startRoundImage.color = MaterialChanger.GetColor(MaterialChanger.Palette01.green);
-                    RoundManager.singleton.EndRound();
+                    RoundManager.Singleton.EndRound();
                 }
                 
                 UnloadSelectedMap();
@@ -254,7 +254,7 @@ namespace SS3D
 
             TileManager.Instance.Reinitialize();
 
-            if (RoundManager.singleton.IsRoundStarted)
+            if (RoundManager.Singleton.IsRoundStarted)
             {
                 ServerLobbyUIHelper.singleton.ChangeEmbarkText();
             }
@@ -268,7 +268,7 @@ namespace SS3D
 	//
         public void HandleRoundButton()
         {
-            RoundManager roundManager = RoundManager.singleton;
+            RoundManager roundManager = RoundManager.Singleton;
 
             if (roundManager.IsOnWarmup || roundManager.IsRoundStarted)
             {

@@ -39,7 +39,7 @@ namespace SS3D.Engine.Inventory
         
         public AttachedContainer FindContainer()
         {
-            if (NetworkIdentity.spawned.TryGetValue(SyncNetworkId, out NetworkIdentity identity))
+            if (NetworkServer.spawned.TryGetValue(SyncNetworkId, out NetworkIdentity identity))
             {
                 var sync = identity.gameObject.GetComponent<ContainerSync>();
                 if (sync == null)

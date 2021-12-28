@@ -52,7 +52,7 @@ namespace SS3D.Content.Items.Functional.Tools
 
         public void OnEnable()
         {
-            hotFlame.enableEmission = false;
+            hotFlame.Stop();
         }
 
         [ClientRpc]
@@ -79,7 +79,6 @@ namespace SS3D.Content.Items.Functional.Tools
 
         public void Toggle()
         {
-            hotFlame.enableEmission = !hotFlame.enableEmission;
             if (hotFlame.isEmitting)
             {
                 hotFlame.Stop();

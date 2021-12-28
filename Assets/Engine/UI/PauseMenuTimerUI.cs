@@ -21,7 +21,7 @@ namespace SS3D.UI
 
         private void Start()
         {
-            roundManager = RoundManager.singleton;
+            roundManager = RoundManager.Singleton;
             
             // why do we subscribe UI class to server events?
             // doesn't make much sense
