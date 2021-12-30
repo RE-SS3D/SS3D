@@ -1,26 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SS3D.Engine.Tiles;
 using UnityEngine;
 
-namespace SS3D.Engine.Tiles
+namespace SS3D.Engine.Tile.TileRework
 {
     /// <summary>
     /// Scriptable object that should be used for every tile object.
     /// </summary>
-    [CreateAssetMenu(fileName = "TileObjectSO", menuName = "TileMap/TileObjectSO", order = 0)]
-    public class TileObjectSO : ScriptableObject
+    [CreateAssetMenu(fileName = "TileObjectSo", menuName = "TileMap/TileObjectSo", order = 0)]
+    public class TileObjectSo : ScriptableObject
     {
         public TileLayer layer;
         
         [Tooltip("A name for the object. Make sure it is unique.")]
         public string nameString;
-
-        //TODO: Replace genericType and specificType with enums as we need to perform operations on them in logic. Need to update all SO's and make sure tilemap editor does not break.
+        
         [Tooltip("Specify the generic type. Used for finding matching adjacencies.")]
-        public string genericType;
+        public TileObjectGenericType genericType;
 
         [Tooltip("Specify the specific type. Used for setting which generics can connect (e.g. wooden tables only connect to each other).")]
-        public string specificType;
+        public TileObjectSpecificType specificType;
 
         public GameObject prefab;
         public int width = 1;

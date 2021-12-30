@@ -1,4 +1,5 @@
-﻿using SS3D.Engine.Tile.TileRework.Connections;
+﻿using SS3D.Engine.Tile.TileRework;
+using SS3D.Engine.Tile.TileRework.Connections;
 using SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes;
 using SS3D.Engine.Tiles;
 using SS3D.Engine.Tiles.Connections;
@@ -90,9 +91,9 @@ namespace SS3D.Content.Structures.Doors
         private bool UpdateSingleConnection(Direction direction, PlacedTileObject placedObject)
         {
             SetPerpendicularBlocked(true);
-            bool isConnected = (placedObject && placedObject.HasAdjacencyConnector() && placedObject.GetGenericType() == "wall");
+            bool isConnected = (placedObject && placedObject.HasAdjacencyConnector() && placedObject.GetGenericType() == TileObjectGenericType.Wall);
 
-            return adjacencyMap.SetConnection(direction, new AdjacencyData("", "", isConnected));
+            return adjacencyMap.SetConnection(direction, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
         }
 
         /// <summary>

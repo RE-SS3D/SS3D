@@ -18,14 +18,14 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         public AdjacencyMap()
         {
             connections = new [] {
-                new AdjacencyData ("", "", false),
-                new AdjacencyData ("", "", false),
-                new AdjacencyData ("", "", false),
-                new AdjacencyData ("", "", false),
-                new AdjacencyData ("", "", false),
-                new AdjacencyData ("", "", false),
-                new AdjacencyData ("", "", false),
-                new AdjacencyData ("", "", false),
+                new AdjacencyData (TileObjectGenericType.None, TileObjectSpecificType.None, false),
+                new AdjacencyData (TileObjectGenericType.None, TileObjectSpecificType.None, false),
+                new AdjacencyData (TileObjectGenericType.None, TileObjectSpecificType.None, false),
+                new AdjacencyData (TileObjectGenericType.None, TileObjectSpecificType.None, false),
+                new AdjacencyData (TileObjectGenericType.None, TileObjectSpecificType.None, false),
+                new AdjacencyData (TileObjectGenericType.None, TileObjectSpecificType.None, false),
+                new AdjacencyData (TileObjectGenericType.None, TileObjectSpecificType.None, false),
+                new AdjacencyData (TileObjectGenericType.None, TileObjectSpecificType.None, false),
             };
         }
 
@@ -113,7 +113,7 @@ namespace SS3D.Engine.Tile.TileRework.Connections
             AdjacencyData[] adjacencyData = new AdjacencyData[8];
             for (int i = 0; i < bits.Length; i++)
             {
-                adjacencyData[i] = new AdjacencyData("", "", bits[i]);
+                adjacencyData[i] = new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, bits[i]);
             }
 
             connections = adjacencyData;

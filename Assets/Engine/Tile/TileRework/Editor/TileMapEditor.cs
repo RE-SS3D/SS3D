@@ -3,6 +3,7 @@ using SS3D.Engine.Tiles.Connections;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using SS3D.Engine.Tile.TileRework;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,9 +22,9 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
         private string searchString = "";
         private Vector2 scrollPositionTile;
         private Vector2 scrollPositionSelection;
-        private List<TileObjectSO> assetList = new List<TileObjectSO>();
+        private List<TileObjectSo> assetList = new List<TileObjectSo>();
         private List<GUIContent> assetIcons = new List<GUIContent>();
-        private List<TileObjectSO> assetDisplayList = new List<TileObjectSO>();
+        private List<TileObjectSo> assetDisplayList = new List<TileObjectSo>();
         private List<GUIContent> assetDisplayIcons = new List<GUIContent>();
         private int assetIndex;
         private bool loadingTextures = false;
@@ -46,7 +47,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
         private double lastPlacementTime;
         private bool deleteTiles = false;
         private TileLayer selectedLayer;
-        private TileObjectSO selectedObjectSO;
+        private TileObjectSo selectedObjectSO;
         private bool enablePlacement = false;
         private Direction selectedDir = Direction.North;
         private GameObject ghostObject;
@@ -615,12 +616,12 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
             assetList.Clear();
             assetIcons.Clear();
 
-            string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(TileObjectSO)));
+            string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(TileObjectSo)));
 
             for (int i = 0; i < guids.Length; i++)
             {
                 string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
-                TileObjectSO asset = AssetDatabase.LoadAssetAtPath<TileObjectSO>(assetPath);
+                TileObjectSo asset = AssetDatabase.LoadAssetAtPath<TileObjectSo>(assetPath);
 
                 Texture2D texture;
                 texture = AssetPreview.GetAssetPreview(asset.prefab);

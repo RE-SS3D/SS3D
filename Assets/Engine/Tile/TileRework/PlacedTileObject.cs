@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using Mirror;
+using SS3D.Engine.Tiles;
 using SS3D.Engine.Tiles.Connections;
-using UnityEditor;
+using UnityEngine;
 
-namespace SS3D.Engine.Tiles
+namespace SS3D.Engine.Tile.TileRework
 {
     /// <summary>
     /// Class that is attached to every GameObject placed on the TileMap. 
@@ -33,7 +32,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="dir"></param>
         /// <param name="tileObjectSO"></param>
         /// <returns></returns>
-        public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSO tileObjectSO)
+        public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSO)
         {
 
             GameObject placedGameObject = EditorAndRuntime.InstantiatePrefab(tileObjectSO.prefab);
@@ -60,7 +59,7 @@ namespace SS3D.Engine.Tiles
             return placedObject;
         }
 
-        private TileObjectSO tileObjectSO;
+        private TileObjectSo tileObjectSO;
         private Vector2Int origin;
         private Direction dir;
         private IAdjacencyConnector adjacencyConnector;
@@ -71,7 +70,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="tileObjectSO"></param>
         /// <param name="origin"></param>
         /// <param name="dir"></param>
-        public void Setup(TileObjectSO tileObjectSO, Vector2Int origin, Direction dir)
+        public void Setup(TileObjectSo tileObjectSO, Vector2Int origin, Direction dir)
         {
             this.tileObjectSO = tileObjectSO;
             this.origin = origin;
@@ -147,20 +146,24 @@ namespace SS3D.Engine.Tiles
                 adjacencyConnector.UpdateSingle(dir, placedNeighbour);
         }
 
-        public string GetGenericType()
+        public TileObjectGenericType GetGenericType()
         {
             if (tileObjectSO != null)
+            {
                 return tileObjectSO.genericType;
-            else
-                return string.Empty;
+            }
+
+            return TileObjectGenericType.None;
         }
 
-        public string GetSpecificType()
+        public TileObjectSpecificType GetSpecificType()
         {
             if (tileObjectSO != null)
+            {
                 return tileObjectSO.specificType;
-            else
-                return string.Empty;
+            }
+
+            return TileObjectSpecificType.None;
         }
 
         public string GetName()

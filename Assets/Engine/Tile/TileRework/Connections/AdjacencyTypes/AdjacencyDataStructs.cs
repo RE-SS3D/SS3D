@@ -16,15 +16,15 @@ namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
     /// </summary>
     public struct AdjacencyData
     {
-        public AdjacencyData(string genericType, string specificType, bool exists)
+        public AdjacencyData(TileObjectGenericType genericType, TileObjectSpecificType specificType, bool exists)
         {
             GenericType = genericType;
             SpecificType = specificType;
             Exists = exists;
         }
 
-        public string GenericType;
-        public string SpecificType;
+        public TileObjectGenericType GenericType;
+        public TileObjectSpecificType SpecificType;
         public bool Exists;
 
         public override bool Equals(object other)

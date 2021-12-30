@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SS3D.Engine.Tile.TileRework;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
      */
     public class TileDragHandler
     {
-        public TileDragHandler(TileManager tileManager, TileMapEditor mapEditor, TileMap map, int subLayerIndex, TileObjectSO tileObjectSO, Direction selectedDir, Vector3Int snappedPosition)
+        public TileDragHandler(TileManager tileManager, TileMapEditor mapEditor, TileMap map, int subLayerIndex, TileObjectSo tileObjectSO, Direction selectedDir, Vector3Int snappedPosition)
         {
             this.tileManager = tileManager;
             this.mapEditor = mapEditor;
@@ -227,7 +228,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
         private readonly TileMapEditor mapEditor;
         private readonly TileMap map;
         private readonly int subLayerIndex;
-        private readonly TileObjectSO tileObjectSO;
+        private readonly TileObjectSo tileObjectSO;
         private readonly Direction selectedDir;
         private readonly Vector3Int startPosition;
         private Vector3Int curPosition;
