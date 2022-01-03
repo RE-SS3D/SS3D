@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 10
   nameString: Shadowshroom
-  genericType: plant
-  specificType: 
+  genericType: 2
+  specificType: 0
   prefab: {fileID: 8757431509704750092, guid: c1d6c9fa433b16e46b2a7a60ee876677, type: 3}
   width: 1
   height: 1

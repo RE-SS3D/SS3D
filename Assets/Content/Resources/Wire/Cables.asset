@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 3
   nameString: Cables
-  genericType: cable
-  specificType: 
+  genericType: 11
+  specificType: 0
   prefab: {fileID: 2802364579275783218, guid: 92d3eb280886ba74cb1e19f4e01669a7, type: 3}
   width: 1
   height: 1
