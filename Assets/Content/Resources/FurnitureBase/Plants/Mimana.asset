@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 10
   nameString: Mimana
-  genericType: plant
-  specificType: 
+  genericType: 2
+  specificType: 0
   prefab: {fileID: 8757431509704750092, guid: 7f6e55bace55a4b45a6e92e9e55664b4, type: 3}
   width: 1
   height: 1

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 10
   nameString: AmbrosiaVulgaris
-  genericType: plant
-  specificType: 
+  genericType: 2
+  specificType: 0
   prefab: {fileID: 612889519444900947, guid: fa1ebd6884058ae43aa2e54b24de026f, type: 3}
   width: 1
   height: 1

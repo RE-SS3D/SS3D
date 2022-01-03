@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 2
   nameString: FancyCarpetRed
-  genericType: floor
-  specificType: carpet
+  genericType: 9
+  specificType: 5
   prefab: {fileID: 3591147544166670882, guid: 9b8a1328991fc2846bc55a3d9a82e5c0, type: 3}
   width: 1
   height: 1

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 10
   nameString: DinerBooth
-  genericType: booth
-  specificType: 
+  genericType: 5
+  specificType: 0
   prefab: {fileID: 8036950609662249464, guid: cb350e6bc218ee640a999561841f8306, type: 3}
   width: 1
   height: 1

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 10
   nameString: MeatWheat
-  genericType: plant
-  specificType: 
+  genericType: 2
+  specificType: 0
   prefab: {fileID: 8757431509704750092, guid: 0d422a47b06117b4eb317a821c57b927, type: 3}
   width: 1
   height: 1

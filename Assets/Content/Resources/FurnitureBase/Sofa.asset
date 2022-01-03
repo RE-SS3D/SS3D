@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 10
   nameString: Sofa
-  genericType: sofa
-  specificType: 
+  genericType: 6
+  specificType: 0
   prefab: {fileID: 8036950609662249464, guid: d9c3fdfe3e319e049a5a8b2989868084, type: 3}
   width: 1
   height: 1

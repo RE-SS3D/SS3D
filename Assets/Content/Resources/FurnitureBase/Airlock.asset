@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 10
   nameString: Airlock
-  genericType: wall
-  specificType: 
+  genericType: 3
+  specificType: 0
   prefab: {fileID: 1917799960222321674, guid: 8a78eb8d1c4b8874bada82a70bb176b0, type: 3}
   width: 1
   height: 1
