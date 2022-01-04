@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using SS3D.Engine.Tile.TileRework;
+﻿using SS3D.Engine.Tile.TileRework;
 using UnityEditor;
 using UnityEngine;
 
-namespace SS3D.Engine.Tiles.Editor.TileMapEditor
+namespace SS3D.Editor.TileMap
 {
     public class TileObjectMigrator : MonoBehaviour
     {

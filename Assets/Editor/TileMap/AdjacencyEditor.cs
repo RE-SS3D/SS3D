@@ -1,10 +1,11 @@
-﻿using SS3D.Engine.Tile.TileRework.Connections;
+﻿using SS3D.Engine.Tile.TileRework;
+using SS3D.Engine.Tile.TileRework.Connections;
 using SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes;
 using SS3D.Engine.Tiles;
 using UnityEditor;
 using UnityEngine;
 
-namespace SS3D.Engine.Tile.TileRework.Editor
+namespace SS3D.Editor.TileMap
 {
     /// <summary>
     /// Custom editor used for setting blocked connections.
@@ -70,7 +71,7 @@ namespace SS3D.Engine.Tile.TileRework.Editor
                 {
                     // Get the PlacedTileObject and map
                     var placedObject = connector.gameObject.GetComponent<PlacedTileObject>();
-                    TileMap map = connector.gameObject.GetComponentInParent<TileMap>();
+                    Engine.Tiles.TileMap map = connector.gameObject.GetComponentInParent<Engine.Tiles.TileMap>();
 
                     // Get all neighbours
                     var neighbourObjects = map.GetNeighbourObjects(placedObject.GetLayer(), 0, placedObject.transform.position);

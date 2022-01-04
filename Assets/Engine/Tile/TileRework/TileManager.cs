@@ -79,8 +79,8 @@ namespace SS3D.Engine.Tiles
                 }
                 tileObjectSOs = listTileObjectSO.ToArray();
 #else
-                Resources.LoadAll<TileObjectSO>("");
-                tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSO>();
+                Resources.LoadAll<TileObjectSo>("");
+                tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSo>();
 #endif
 
                 LoadAll(true);
