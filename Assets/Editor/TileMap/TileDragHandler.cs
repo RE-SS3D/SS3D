@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using SS3D.Engine.Tile.TileRework;
+using SS3D.Engine.Tiles;
 using UnityEditor;
 using UnityEngine;
 
-namespace SS3D.Engine.Tiles.Editor.TileMapEditor
+namespace SS3D.Editor.TileMap
 {
     /**
      * Handles creating a dragging rect and converting that into real tiles in the scene.
      */
     public class TileDragHandler
     {
-        public TileDragHandler(TileManager tileManager, TileMapEditor mapEditor, TileMap map, int subLayerIndex, TileObjectSo tileObjectSO, Direction selectedDir, Vector3Int snappedPosition)
+        public TileDragHandler(TileManager tileManager, TileMapEditor mapEditor, Engine.Tiles.TileMap map, int subLayerIndex, TileObjectSo tileObjectSO, Direction selectedDir, Vector3Int snappedPosition)
         {
             this.tileManager = tileManager;
             this.mapEditor = mapEditor;
@@ -29,7 +30,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
         private GameObject CreateGhost()
         {
-            GameObject ghostObject = EditorAndRuntime.InstantiatePrefab(tileObjectSO.prefab);
+            GameObject ghostObject = (GameObject)PrefabUtility.InstantiatePrefab(tileObjectSO.prefab);
             ghostObject.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             ghostObject.name = "Ghost object";
             ghostObject.tag = "EditorOnly";
@@ -226,7 +227,7 @@ namespace SS3D.Engine.Tiles.Editor.TileMapEditor
 
         private readonly TileManager tileManager;
         private readonly TileMapEditor mapEditor;
-        private readonly TileMap map;
+        private readonly Engine.Tiles.TileMap map;
         private readonly int subLayerIndex;
         private readonly TileObjectSo tileObjectSO;
         private readonly Direction selectedDir;
