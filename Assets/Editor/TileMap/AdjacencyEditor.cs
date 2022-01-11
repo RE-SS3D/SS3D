@@ -1,9 +1,11 @@
-﻿using SS3D.Engine.Tile.TileRework.Connections;
+﻿using SS3D.Engine.Tile.TileRework;
+using SS3D.Engine.Tile.TileRework.Connections;
+using SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes;
 using SS3D.Engine.Tiles;
 using UnityEditor;
 using UnityEngine;
 
-namespace SS3D.Engine.Tile.TileRework.Editor
+namespace SS3D.Editor.TileMap
 {
     /// <summary>
     /// Custom editor used for setting blocked connections.
@@ -11,6 +13,7 @@ namespace SS3D.Engine.Tile.TileRework.Editor
     [CustomEditor(typeof(MultiAdjacencyConnector))]
     public class AdjacencyEditor : UnityEditor.Editor
     {
+        //TODO: This can be refactored to be Dictionary<Direction, bool>, which would eliminate the need for conversions when working with AdjacencyMap
         private bool[] blocked = new bool[8];
         private bool showAdjacencyOptions = true;
 
@@ -68,7 +71,7 @@ namespace SS3D.Engine.Tile.TileRework.Editor
                 {
                     // Get the PlacedTileObject and map
                     var placedObject = connector.gameObject.GetComponent<PlacedTileObject>();
-                    TileMap map = connector.gameObject.GetComponentInParent<TileMap>();
+                    Engine.Tiles.TileMap map = connector.gameObject.GetComponentInParent<Engine.Tiles.TileMap>();
 
                     // Get all neighbours
                     var neighbourObjects = map.GetNeighbourObjects(placedObject.GetLayer(), 0, placedObject.transform.position);
@@ -84,7 +87,10 @@ namespace SS3D.Engine.Tile.TileRework.Editor
                             SerializedProperty neighbourProperty = serializedNeighbourConnector.FindProperty("EditorblockedConnections");
 
                             // Set their opposite side blocked
-                            neighbourProperty.intValue = AdjacencyBitmap.SetDirection((byte)neighbourProperty.intValue, TileHelper.GetOpposite((Direction)i), blocked[i]);
+                            AdjacencyMap adjacencyMap = new AdjacencyMap();
+                            adjacencyMap.DeserializeFromByte((byte)neighbourProperty.intValue);
+                            adjacencyMap.SetConnection(TileHelper.GetOpposite((Direction) i), new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, blocked[i]));
+                            neighbourProperty.intValue = adjacencyMap.SerializeToByte();
 
                             // Apply the changes
                             serializedNeighbourConnector.ApplyModifiedProperties();
@@ -106,7 +112,7 @@ namespace SS3D.Engine.Tile.TileRework.Editor
 
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
-                result[(int)direction] = AdjacencyShapeResolver.Adjacent(bitmap, direction) != 0;
+                result[(int)direction] = ((bitmap >> (int) direction) & 0x1) != 0;
             }
 
             return result;
@@ -114,14 +120,13 @@ namespace SS3D.Engine.Tile.TileRework.Editor
 
         private byte SetBitmap(bool[] items)
         {
-            byte result = new byte();
-
+            AdjacencyMap adjacencyMap = new AdjacencyMap();
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
-                result = AdjacencyBitmap.SetDirection(result, direction, blocked[(int)direction]);
+                adjacencyMap.SetConnection(direction, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, blocked[(int)direction]));
             }
 
-            return result;
+            return adjacencyMap.SerializeToByte();
         }
     }
 }

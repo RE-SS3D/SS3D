@@ -3,6 +3,7 @@ using System.Linq;
 using SS3D.Content.Systems.Interactions;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Inventory;
+using SS3D.Engine.Tile.TileRework;
 using SS3D.Engine.Tiles;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
         public GameObject LoadingBarPrefab;
 
 	// nope
-        public TileObjectSO ObjectToConstruct;
+        public TileObjectSo ObjectToConstruct;
         public Direction ObjectDirection;
         public float Delay;
         public LayerMask ObstacleMask;

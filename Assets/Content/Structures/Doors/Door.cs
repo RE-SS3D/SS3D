@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using System;
+﻿using SS3D.Engine.Tile.TileRework;
 using SS3D.Engine.Tile.TileRework.Connections;
-using UnityEditor;
+using SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes;
 using SS3D.Engine.Tiles;
 using SS3D.Engine.Tiles.Connections;
+using UnityEngine;
 
-namespace SS3D.Content.Structures.Fixtures
+namespace SS3D.Content.Structures.Doors
 {
     public class Door : MonoBehaviour, IAdjacencyConnector
     {
@@ -16,7 +16,7 @@ namespace SS3D.Content.Structures.Fixtures
         };
 
         /** <summary>Based on peculiarities of the model, the appropriate position of the wall cap</summary> */
-        private const float WALL_CAP_DISTANCE_FROM_CENTRE = -1.0f;
+        private const float WALL_CAP_DISTANCE_FROM_CENTRE = 0f;
 
         // As is the standard in the rest of the code, wallCap should face east.
         [SerializeField]
@@ -24,23 +24,23 @@ namespace SS3D.Content.Structures.Fixtures
 
         [SerializeField]
         private DoorType doorType;
-
-        private Direction doorDirection;
+        
         private TileMap map;
+        private PlacedTileObject placedTileObject;
 
         private void OnEnable()
         {
             // Note: 'Should' already be validated by the point the game starts.
             // So the only purpose is when loading map from scene to correctly load children.
             ValidateChildren();
-
-            doorDirection = GetComponent<PlacedTileObject>().GetDirection();
         }
 
         public void CleanAdjacencies()
         {
             if (!map)
+            {
                 map = GetComponentInParent<TileMap>();
+            }
 
             SetPerpendicularBlocked(false);
 
@@ -91,9 +91,9 @@ namespace SS3D.Content.Structures.Fixtures
         private bool UpdateSingleConnection(Direction direction, PlacedTileObject placedObject)
         {
             SetPerpendicularBlocked(true);
-            bool isConnected = (placedObject && placedObject.HasAdjacencyConnector() && placedObject.GetGenericType() == "wall");
+            bool isConnected = (placedObject && placedObject.HasAdjacencyConnector() && placedObject.GetGenericType() == TileObjectGenericType.Wall);
 
-            return adjacents.UpdateDirection(direction, isConnected, true);
+            return adjacencyMap.SetConnection(direction, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace SS3D.Content.Structures.Fixtures
         private void SetPerpendicularBlocked(bool isBlocked)
         {
             // Door can have rotated in the time between
-            doorDirection = GetComponent<PlacedTileObject>().GetDirection();
+            Direction doorDirection = GetDoorDirection();
             if (map == null)
                 return;
                 // map = GetComponentInParent<TileMap>();
@@ -148,13 +148,12 @@ namespace SS3D.Content.Structures.Fixtures
                 return;
 
             // Door may have rotated in the editor
-            doorDirection = GetComponent<PlacedTileObject>().GetDirection();
-            Direction outFacing = TileHelper.GetNextDir(doorDirection);
+            Direction outFacing = TileHelper.GetNextDir(GetDoorDirection());
 
-            bool isPresent = adjacents.Adjacent(outFacing) == 1;
+            bool isPresent = adjacencyMap.HasConnection(outFacing);
             CreateWallCaps(isPresent, TileHelper.GetOpposite(outFacing));
 
-            isPresent = adjacents.Adjacent(TileHelper.GetOpposite(outFacing)) == 1;
+            isPresent = adjacencyMap.HasConnection(TileHelper.GetOpposite(outFacing));
             CreateWallCaps(isPresent, outFacing);
         }
 
@@ -186,7 +185,8 @@ namespace SS3D.Content.Structures.Fixtures
         private GameObject SpawnWallCap(Direction direction)
         {
             var wallCap = EditorAndRuntime.InstantiatePrefab(wallCapPrefab, transform);
-
+            Direction doorDirection = GetDoorDirection();
+            
             Direction cardinalDirectionInput = TileHelper.GetRelativeDirection(direction, doorDirection);
             var cardinal = TileHelper.ToCardinalVector(cardinalDirectionInput);
             var rotation = TileHelper.AngleBetween(direction, doorDirection);
@@ -198,8 +198,18 @@ namespace SS3D.Content.Structures.Fixtures
             return wallCap;
         }
 
+        private Direction GetDoorDirection()
+        {
+            if (placedTileObject == null)
+            {
+                placedTileObject = GetComponent<PlacedTileObject>();
+            }
+
+            return placedTileObject.GetDirection();
+        }
+
         // WallCap gameobjects, North, East, South, West. Null if not present.
         private GameObject[] wallCaps = new GameObject[4];
-        private AdjacencyBitmap adjacents = new AdjacencyBitmap();
+        private AdjacencyMap adjacencyMap = new AdjacencyMap();
     }
 }

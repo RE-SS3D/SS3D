@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 10
   nameString: ChapelPew
-  genericType: pew
-  specificType: 
+  genericType: 4
+  specificType: 0
   prefab: {fileID: 8036950609662249464, guid: 7f12c690436c54845a7f126a4adb17c7, type: 3}
   width: 1
   height: 1

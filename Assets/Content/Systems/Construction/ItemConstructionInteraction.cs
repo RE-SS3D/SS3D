@@ -4,11 +4,12 @@ using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Tiles;
 using System.Collections;
 using System.Collections.Generic;
+using SS3D.Engine.Tile.TileRework;
 using UnityEngine;
 
 public class ItemConstructionInteraction : ConstructionInteraction
 {
-    public TileObjectSO ObjectToConstruct;
+    public TileObjectSo ObjectToConstruct;
     public Direction ObjectDirection;
 
     public override string GetName(InteractionEvent interactionEvent)

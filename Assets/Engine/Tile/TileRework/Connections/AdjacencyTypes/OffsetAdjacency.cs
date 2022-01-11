@@ -1,6 +1,5 @@
 ﻿using System;
 using SS3D.Engine.Tiles;
-using SS3D.Engine.Tiles.Connections;
 using UnityEngine;
 
 namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
@@ -57,16 +56,13 @@ namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
 
         private OffsetOrientation orientation;
 
-        public MeshDirectionInfo GetMeshAndDirection(AdjacencyBitmap adjacents)
+        public MeshDirectionInfo GetMeshAndDirection(AdjacencyMap adjacencyMap)
         {
-            // Count number of connections along cardinal (which is all that we use atm)
-            var cardinalInfo = adjacents.GetCardinalInfo();
-
             // Determine rotation and mesh specially for every single case.
             float rotation = 0.0f;
             Mesh mesh;
 
-            AdjacencyShape shape = AdjacencyShapeResolver.GetOffsetShape(cardinalInfo);
+            AdjacencyShape shape = AdjacencyShapeResolver.GetOffsetShape(adjacencyMap);
             switch (shape)
             {
                 case AdjacencyShape.O:
@@ -76,17 +72,17 @@ namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
                 case AdjacencyShape.UNorth:
                     mesh = uNorth;
                     orientation = OffsetOrientation.uNorth;
-                    rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleConnection());
                     break;
                 case AdjacencyShape.USouth:
                     mesh = uSouth;
                     orientation = OffsetOrientation.uSouth;
-                    rotation = TileHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyPositive());
+                    rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.GetSingleNonConnection());
                     break;
                 case AdjacencyShape.I:
                     mesh = i;
                     orientation = OffsetOrientation.i;
-                    rotation = TileHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.HasConnection(Direction.North) ? Direction.North : Direction.East);
                     break;
                 case AdjacencyShape.LNorthWest:
                     mesh = lNW;
@@ -139,7 +135,7 @@ namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
                     break;
             }
 
-            return new MeshDirectionInfo { mesh = mesh, rotation = rotation };
+            return new MeshDirectionInfo { Mesh = mesh, Rotation = rotation };
         }
     }
 }

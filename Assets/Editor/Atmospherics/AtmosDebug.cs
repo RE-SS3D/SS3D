@@ -1,11 +1,8 @@
-﻿using SS3D.Engine.Tiles;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace SS3D.Engine.Atmospherics
+namespace SS3D.Editor.Atmospherics
 {
     // TODO, move to editors
     public class AtmosDebug : EditorWindow

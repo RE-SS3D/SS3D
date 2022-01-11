@@ -20,13 +20,13 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         /// A type that specifies to which objects to connect to. Must be set if cross connect is used.
         /// </summary>
         [Tooltip("Generic ID that adjacent objects must be to count. If empty, any id is accepted.")]
-        private string genericType;
+        private TileObjectGenericType genericType;
 
         /// <summary>
         /// Specific ID to differentiate objects when the generic is the same.
         /// </summary>
         [Tooltip("Specific ID to differentiate objects when the generic is the same.")]
-        private string specificType;
+        private TileObjectSpecificType specificType;
 
         /// <summary>
         /// Bool that determines if objects on different layers are allowed to connect to each other.
@@ -57,7 +57,7 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         public byte EditorblockedConnections;
         public byte BlockedConnections => blockedConnections;
 
-        private AdjacencyBitmap adjacents;
+        private AdjacencyMap adjacencyMap;
         private MeshFilter filter;
 
         public void Awake()
@@ -74,16 +74,31 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         private void EnsureInit()
         {
             if (!this)
+            {
                 return;
+            }
 
-            if (adjacents == null)
-                adjacents = new AdjacencyBitmap();
+            if (adjacencyMap == null)
+            {
+                adjacencyMap = new AdjacencyMap();
+            }
 
             if (!filter)
+            {
                 filter = GetComponent<MeshFilter>();
+            }
 
-            genericType = GetComponent<PlacedTileObject>()?.GetGenericType();
-            specificType = GetComponent<PlacedTileObject>()?.GetSpecificType();
+            PlacedTileObject placedTileObject = GetComponent<PlacedTileObject>();
+            if (placedTileObject == null)
+            {
+                genericType = TileObjectGenericType.None;
+                specificType = TileObjectSpecificType.None;
+            }
+            else
+            {
+                genericType = placedTileObject.GetGenericType();
+                specificType = placedTileObject.GetSpecificType();
+            }
         }
 
         /// <summary>
@@ -95,7 +110,7 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         {
             EnsureInit();
             adjacentConnections = newConnections;
-            adjacents.Connections = adjacentConnections;
+            adjacencyMap.DeserializeFromByte(adjacentConnections);
             UpdateMeshAndDirection();
         }
 
@@ -173,7 +188,9 @@ namespace SS3D.Engine.Tile.TileRework.Connections
             }
 
             if (changed)
+            {
                 UpdateMeshAndDirection();
+            }
         }
 
         /// <summary>
@@ -189,7 +206,9 @@ namespace SS3D.Engine.Tile.TileRework.Connections
             }
 
             if (changed)
+            {
                 UpdateMeshAndDirection();
+            }
         }
 
         /// <summary>
@@ -227,23 +246,26 @@ namespace SS3D.Engine.Tile.TileRework.Connections
 
                 // If cross connect is allowed, we only allow it to connect when the object type matches the connector type
                 if (CrossConnectAllowed)
-                    isConnected &= (placedObject.GetGenericType() == genericType && genericType != "");
+                {
+                    isConnected &= placedObject.GetGenericType() == genericType && genericType != TileObjectGenericType.None;
+                }
                 else
-                    isConnected &= (placedObject.GetGenericType() == genericType || genericType == null);
+                {
+                    isConnected &= placedObject.GetGenericType() == genericType || genericType == TileObjectGenericType.None;
+                }
 
                 // Check for specific
-                isConnected &= (placedObject.GetSpecificType() == specificType || specificType == "");
+                isConnected &= placedObject.GetSpecificType() == specificType || specificType == TileObjectSpecificType.None;
 
-                isConnected &= (AdjacencyShapeResolver.Adjacent(blockedConnections, dir) == 0);
+                 
+                isConnected &= ((blockedConnections >> (int) dir) & 0x1) == 0;
             }
-            bool isUpdated = adjacents.UpdateDirection(dir, isConnected, true);
-            SyncAdjacentConnections(adjacents.Connections, adjacents.Connections);
+            bool isUpdated = adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
+            byte connections = adjacencyMap.SerializeToByte();
+            SyncAdjacentConnections(connections, connections);
 
             // Cross connect will override adjacents for other layers, so return isConnected instead.
-            if (CrossConnectAllowed)
-                return isConnected;
-            else
-                return isUpdated;
+            return CrossConnectAllowed ? isConnected : isUpdated;
         }
 
         /// <summary>
@@ -253,10 +275,10 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         /// <param name="value"></param>
         public void SetBlockedDirection(Direction dir, bool value)
         {
-            byte result = AdjacencyBitmap.SetDirection(blockedConnections, dir, value);
-            SyncBlockedConnections(blockedConnections, result);
+            adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, value));
+            SyncBlockedConnections(blockedConnections, adjacencyMap.SerializeToByte());
             EditorblockedConnections = BlockedConnections;
-            adjacents.UpdateDirection(dir, !value, true);
+            adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, !value));
             UpdateMeshAndDirection();
         }
 
@@ -277,22 +299,24 @@ namespace SS3D.Engine.Tile.TileRework.Connections
             switch (selectedAdjacencyType)
             {
                 case AdjacencyType.Simple:
-                    info = simpleAdjacency.GetMeshAndDirection(adjacents);
+                    info = simpleAdjacency.GetMeshAndDirection(adjacencyMap);
                     break;
                 case AdjacencyType.Advanced:
-                    info = advancedAdjacency.GetMeshAndDirection(adjacents);
+                    info = advancedAdjacency.GetMeshAndDirection(adjacencyMap);
                     break;
                 case AdjacencyType.Offset:
-                    info = offsetAdjacency.GetMeshAndDirection(adjacents);
+                    info = offsetAdjacency.GetMeshAndDirection(adjacencyMap);
                     break;
             }
 
             if (filter == null)
+            {
                 filter = GetComponent<MeshFilter>();
+            }
 
-            filter.mesh = info.mesh;
+            filter.mesh = info.Mesh;
 
-            transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, info.rotation, transform.localRotation.eulerAngles.z);
+            transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, info.Rotation, transform.localRotation.eulerAngles.z);
         }
 
         /// <summary>

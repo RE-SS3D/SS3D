@@ -8,6 +8,7 @@ using SS3D.Engine.Interactions;
 using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Inventory;
 using SS3D.Engine.Inventory.Extensions;
+using SS3D.Engine.Tile.TileRework;
 using SS3D.Engine.Tiles;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -211,7 +212,7 @@ namespace SS3D.Content.Systems.Construction
             public float buildTime;
             
             // Turf data
-            public TileObjectSO ObjectToConstruct;
+            public TileObjectSo ObjectToConstruct;
             // public bool constructOverTurf;
 
             public ConstructionUiData ToUi(string materialName)

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 2
   nameString: SteelGirder
-  genericType: wall
-  specificType: 
+  genericType: 3
+  specificType: 0
   prefab: {fileID: 5989834269598487349, guid: 60695978170ac0c48af8fd7ac2c0a43c, type: 3}
   width: 1
   height: 1
