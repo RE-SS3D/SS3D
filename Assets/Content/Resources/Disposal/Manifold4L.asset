@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 4
   nameString: Manifold4L
-  genericType: 
-  specificType: 
+  genericType: 0
+  specificType: 0
   prefab: {fileID: 1381773157775214163, guid: b6511528502689241b2a5e8b6dc7bc42, type: 3}
   width: 1
   height: 1

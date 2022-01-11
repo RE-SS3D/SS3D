@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using SS3D.Engine.Tiles;
 using UnityEngine;
 
-namespace SS3D.Engine.Tiles.Connections
+namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
 {
     /// <summary>
     /// Adjacency type used for objects that do require complex connections.
@@ -50,128 +49,131 @@ namespace SS3D.Engine.Tiles.Connections
         public GameObject[] viewObstacles;
         public bool opaque;
 
-        public MeshDirectionInfo GetMeshAndDirection(AdjacencyBitmap adjacents)
+        public MeshDirectionInfo GetMeshAndDirection(AdjacencyMap adjacencyMap)
         {
-            var cardinalInfo = adjacents.GetCardinalInfo();
-
             float rotation = 0.0f;
             Mesh mesh;
-            if (cardinalInfo.IsO())
+
+            AdjacencyShape shape = AdjacencyShapeResolver.GetAdvancedShape(adjacencyMap);
+            switch (shape)
             {
-                mesh = o;
+                case AdjacencyShape.O:
+                    mesh = o;
+                    break;
+                case AdjacencyShape.U:
+                    mesh = u;
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleConnection());
+                    break;
+                case AdjacencyShape.I:
+                    mesh = i;
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.HasConnection(Direction.North) ? Direction.North : Direction.East);
+                    break;
+                case AdjacencyShape.LNone:
+                    mesh = lNone;
+                    rotation = TileHelper.AngleBetween(Direction.NorthEast, adjacencyMap.GetDirectionBetweenTwoConnections());
+                    break;
+                case AdjacencyShape.LSingle:
+                    mesh = lSingle;
+                    rotation = TileHelper.AngleBetween(Direction.NorthEast, adjacencyMap.GetDirectionBetweenTwoConnections());
+                    break;
+                case AdjacencyShape.TNone:
+                    mesh = tNone;
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection());
+                    break;
+                case AdjacencyShape.TSingleLeft:
+                    mesh = tSingleLeft;
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection());
+                    break;
+                case AdjacencyShape.TSingleRight:
+                    mesh = tSingleRight;
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection());
+                    break;
+                case AdjacencyShape.TDouble:
+                    mesh = tDouble;
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleNonConnection());
+                    break;
+                case AdjacencyShape.XNone:
+                    mesh = xNone;
+                    break;
+                case AdjacencyShape.XSingle:
+                    mesh = xSingle;
+                    Direction connectingDiagonal = adjacencyMap.GetSingleConnection(false);
+                    rotation = connectingDiagonal == Direction.NorthEast ? 0f :
+                        connectingDiagonal == Direction.SouthEast ? 90f :
+                        connectingDiagonal == Direction.SouthWest ? 180f : -90f;
+                    break;
+                case AdjacencyShape.XOpposite:
+                    mesh = xOpposite;
+                    rotation = adjacencyMap.HasConnection(Direction.NorthEast) ? 0f : 90f;
+                    break;
+                case AdjacencyShape.XSide:
+                    mesh = xSide;
+                    rotation = TileHelper.AngleBetween(Direction.NorthWest, adjacencyMap.GetDirectionBetweenTwoConnections(false)) - 45f;
+                    break;
+                case AdjacencyShape.XTriple:
+                    mesh = xTriple;
+                    Direction nonConnectingDiagonal = adjacencyMap.GetSingleNonConnection(false);
+                    rotation = nonConnectingDiagonal == Direction.NorthEast ? -90f :
+                        nonConnectingDiagonal == Direction.SouthEast ? 0f :
+                        nonConnectingDiagonal == Direction.SouthWest ? 90f : 180f;
+                    break;
+                case AdjacencyShape.XQuad:
+                    mesh = xQuad;
+                    break;
+                default:
+                    Debug.LogError($"Received unexpected shape from advanced shape resolver: {shape}");
+                    mesh = o;
+                    break;
             }
-            else if (cardinalInfo.IsU())
+
+            //If someone knows of a more elegant way to do the same without switching the same variable twice, I'd like to hear it :)
+            if (opaque)
             {
-                mesh = u;
-                rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
-
-                if (opaque)
+                switch (shape)
                 {
-                    viewObstacles[0].SetActive(false);
-                    viewObstacles[1].SetActive(false);
-                    viewObstacles[2].SetActive(true);
-                    viewObstacles[3].SetActive(false);
-                }
-            }
-            else if (cardinalInfo.IsI())
-            {
-                mesh = i;
-                rotation = TileHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
-
-                if (opaque)
-                {
-                    viewObstacles[0].SetActive(false);
-                    viewObstacles[1].SetActive(false);
-                    viewObstacles[2].SetActive(true);
-                    viewObstacles[3].SetActive(true);
-                }
-            }
-            else if (cardinalInfo.IsL())
-            {
-                // Determine lSolid or lCorner by finding whether the area between the two connections is filled
-                // We check for if any of the following bitfields matches the connection bitfield
-                // N+NE+E = 0/1/2, E+SE+S = 2/3/4, S+SW+W = 4/5/6, W+NW+N = 6/7/0
-                bool isFilled = (adjacents.Connections & 0b00000111) == 0b00000111 || (adjacents.Connections & 0b00011100) == 0b00011100 || (adjacents.Connections & 0b01110000) == 0b01110000 || (adjacents.Connections & 0b11000001) == 0b11000001;
-                mesh = isFilled ? lSingle : lNone;
-                rotation = TileHelper.AngleBetween(Direction.NorthEast, cardinalInfo.GetCornerDirection());
-
-                if (opaque)
-                {
-                    viewObstacles[0].SetActive(false);
-                    viewObstacles[1].SetActive(true);
-                    viewObstacles[2].SetActive(true);
-                    viewObstacles[3].SetActive(false);
-                }
-            }
-            else if (cardinalInfo.IsT())
-            {
-                // We make another bitfield (noticing a pattern?). 0x0 means no fills, 0x1 means right corner filled, 0x2 means left corner filled,
-                // therefore both corners filled = 0x3.
-                int corners = ((1 - cardinalInfo.north) * 2 | (1 - cardinalInfo.east)) * adjacents.Adjacent(Direction.SouthWest)
-                            + ((1 - cardinalInfo.east) * 2 | (1 - cardinalInfo.south)) * adjacents.Adjacent(Direction.NorthWest)
-                            + ((1 - cardinalInfo.south) * 2 | (1 - cardinalInfo.west)) * adjacents.Adjacent(Direction.NorthEast)
-                            + ((1 - cardinalInfo.west) * 2 | (1 - cardinalInfo.north)) * adjacents.Adjacent(Direction.SouthEast);
-                mesh = corners == 0 ? tNone
-                    : corners == 1 ? tSingleLeft
-                    : corners == 2 ? tSingleRight
-                    : tDouble;
-
-                rotation = TileHelper.AngleBetween(Direction.South, cardinalInfo.GetOnlyNegative());
-
-                if (opaque)
-                {
-                    viewObstacles[0].SetActive(true);
-                    viewObstacles[1].SetActive(true);
-                    viewObstacles[2].SetActive(true);
-                    viewObstacles[3].SetActive(corners >= 3);
-                }
-            }
-            else
-            {
-                // This sneaky piece of code uses the cardinal info to store diagonals by rotating everything -45 degrees
-                // NE -> N, SW -> S, etc.
-                var diagonals = new AdjacencyBitmap.CardinalInfo((byte)(adjacents.Connections >> 1));
-
-                switch (diagonals.numConnections)
-                {
-                    case 0:
-                        mesh = xNone;
+                    case AdjacencyShape.U:
+                        viewObstacles[0].SetActive(false);
+                        viewObstacles[1].SetActive(false);
+                        viewObstacles[2].SetActive(true);
+                        viewObstacles[3].SetActive(false);
                         break;
-                    case 1:
-                        mesh = xSingle;
-                        rotation = TileHelper.AngleBetween(Direction.South, diagonals.GetOnlyPositive());
+                    case AdjacencyShape.I:
+                        viewObstacles[0].SetActive(false);
+                        viewObstacles[1].SetActive(false);
+                        viewObstacles[2].SetActive(true);
+                        viewObstacles[3].SetActive(true);
                         break;
-                    case 2:
-                        if (diagonals.north == diagonals.south)
-                        {
-                            mesh = xOpposite;
-                            rotation = TileHelper.AngleBetween(Orientation.Horizontal, diagonals.GetFirstOrientation());
-                        }
-                        else
-                        {
-                            mesh = xSide;
-                            rotation = TileHelper.AngleBetween(Direction.SouthEast, diagonals.GetCornerDirection());
-                        }
+                    case AdjacencyShape.LNone:
+                    case AdjacencyShape.LSingle:
+                        viewObstacles[0].SetActive(false);
+                        viewObstacles[1].SetActive(true);
+                        viewObstacles[2].SetActive(true);
+                        viewObstacles[3].SetActive(false);
                         break;
-                    case 3:
-                        mesh = xTriple;
-                        rotation = TileHelper.AngleBetween(Direction.North, diagonals.GetOnlyNegative());
+                    case AdjacencyShape.TNone:
+                    case AdjacencyShape.TSingleLeft:
+                    case AdjacencyShape.TSingleRight:
+                        viewObstacles[0].SetActive(true);
+                        viewObstacles[1].SetActive(true);
+                        viewObstacles[2].SetActive(false);
+                        viewObstacles[3].SetActive(true);
                         break;
-                    default:
-                        mesh = xQuad;
+                    case AdjacencyShape.TDouble:
+                    case AdjacencyShape.XNone:
+                    case AdjacencyShape.XSingle:
+                    case AdjacencyShape.XOpposite:
+                    case AdjacencyShape.XSide:
+                    case AdjacencyShape.XTriple:
+                    case AdjacencyShape.XQuad:
+                        viewObstacles[0].SetActive(true);
+                        viewObstacles[1].SetActive(true);
+                        viewObstacles[2].SetActive(true);
+                        viewObstacles[3].SetActive(true);
                         break;
-
-                }
-                if (opaque)
-                {
-                    viewObstacles[0].SetActive(true);
-                    viewObstacles[1].SetActive(true);
-                    viewObstacles[2].SetActive(true);
-                    viewObstacles[3].SetActive(true);
                 }
             }
 
-            return new MeshDirectionInfo { mesh = mesh, rotation = rotation };
+            return new MeshDirectionInfo { Mesh = mesh, Rotation = rotation };
         }
     }
 }

@@ -25,6 +25,8 @@ namespace SS3D.Engine.Inventory.UI
         private Vector3 startMousePosition;
         private Vector3 startPosition;
         private Image slotImage;
+        private Outline outlineInner;
+        private Outline outlineOuter;
 
 
         public IContainable Item
@@ -49,6 +51,19 @@ namespace SS3D.Engine.Inventory.UI
         public void Start()
         {
             slotImage = GetComponent<Image>();
+            
+            if(!outlineInner)
+            {
+                outlineInner = ItemImage.gameObject.AddComponent<Outline>();
+                outlineInner.effectColor = new Color(0, 0, 0, 0.4f);
+                outlineInner.effectDistance = new Vector2(0.6f, 0.6f);
+            }
+            if(!outlineOuter)
+            {
+                outlineInner = ItemImage.gameObject.AddComponent<Outline>();
+                outlineInner.effectColor = new Color(0, 0, 0, 0.2f);
+                outlineInner.effectDistance = new Vector2(0.8f, 0.8f);
+            }
             if (containable != null)
             {
                 UpdateDisplay(containable.Container.AttachedTo.containerDescriptor.PercentageFull);

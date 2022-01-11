@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 10
   nameString: AmbrosiaGaia
-  genericType: plant
-  specificType: 
+  genericType: 2
+  specificType: 0
   prefab: {fileID: 5091107218957857814, guid: e4e35157d2824334c91b2e53faface6f, type: 3}
   width: 1
   height: 1

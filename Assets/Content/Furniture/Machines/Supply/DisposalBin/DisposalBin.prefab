@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1198456887731256720}
   - component: {fileID: 4096261820528976148}
   - component: {fileID: 3218971402796315495}
-  - component: {fileID: 1034187669133064040}
+  - component: {fileID: -3340811993635338980}
   - component: {fileID: 520195712975217115}
   - component: {fileID: 4265221962216021434}
   - component: {fileID: 7091454980463605699}
@@ -103,7 +103,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -3528517176324620534, guid: 7b17d139e50e2eb428fa937613b3a830, type: 3}
+  m_Mesh: {fileID: -3528517176324620534, guid: d3fe67b9a87344841ae7b1d45dae1ddd, type: 3}
   m_Bones: []
   m_BlendShapeWeights:
   - 0
@@ -112,8 +112,8 @@ SkinnedMeshRenderer:
     m_Center: {x: 0, y: 0.3963973, z: 0}
     m_Extent: {x: 0.35719532, y: 0.39639634, z: 0.31298673}
   m_DirtyAABB: 0
---- !u!64 &1034187669133064040
-MeshCollider:
+--- !u!65 &-3340811993635338980
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -122,10 +122,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -3528517176324620534, guid: 7b17d139e50e2eb428fa937613b3a830, type: 3}
+  serializedVersion: 2
+  m_Size: {x: 0.79790473, y: 0.9721931, z: 0.71258056}
+  m_Center: {x: 0.0015465617, y: 0.4860975, z: 0.0030931234}
 --- !u!95 &520195712975217115
 Animator:
   serializedVersion: 3
@@ -272,6 +271,7 @@ MonoBehaviour:
   attachedContainer: {fileID: 8612291807989782038}
   containerSync: {fileID: 0}
   containerInteractive: {fileID: 4101614852433351623}
+  containerItemDisplay: {fileID: 0}
   containerUi: {fileID: 0}
   openIcon: {fileID: 0}
   takeIcon: {fileID: 0}
@@ -291,6 +291,9 @@ MonoBehaviour:
   isInteractive: 1
   hasUi: 1
   hasCustomInteraction: 1
+  hasCustomDisplay: 0
+  displays: []
+  numberDisplay: 0
 --- !u!114 &8612291807989782038
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428,7 +431,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 1621385239999769365, guid: 7b17d139e50e2eb428fa937613b3a830, type: 3}
+  m_Mesh: {fileID: 1621385239999769365, guid: d3fe67b9a87344841ae7b1d45dae1ddd, type: 3}
   m_Bones: []
   m_BlendShapeWeights:
   - 100
@@ -525,7 +528,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -3778202032775401742, guid: 7b17d139e50e2eb428fa937613b3a830, type: 3}
+  m_Mesh: {fileID: -3778202032775401742, guid: d3fe67b9a87344841ae7b1d45dae1ddd, type: 3}
   m_Bones: []
   m_BlendShapeWeights:
   - 100

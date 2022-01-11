@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -3158576899531344565}
   - component: {fileID: 5542861277348029082}
   m_Layer: 0
-  m_Name: 4 Layer Manifold
+  m_Name: Manifold4L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -50,7 +50,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: b6511528502689241b2a5e8b6dc7bc42
   hasSpawned: 0
 --- !u!33 &4960790609789451106
 MeshFilter:
@@ -59,7 +60,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1381773157775214163}
-  m_Mesh: {fileID: -2840394648335986679, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  m_Mesh: {fileID: -6727584598385292593, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
 --- !u!23 &1111533559529162776
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -143,3 +144,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 3
   volume: 0.1
+  manifoldType: 0

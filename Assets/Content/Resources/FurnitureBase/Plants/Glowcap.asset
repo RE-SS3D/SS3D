@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 10
   nameString: Glowcap
-  genericType: plant
-  specificType: 
+  genericType: 2
+  specificType: 0
   prefab: {fileID: 8757431509704750092, guid: aff1849e835c89b48b4e488f3a29062d, type: 3}
   width: 1
   height: 1

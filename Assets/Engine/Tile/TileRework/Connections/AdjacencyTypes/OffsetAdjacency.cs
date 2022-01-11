@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using SS3D.Engine.Tiles;
 using UnityEngine;
 
-namespace SS3D.Engine.Tiles.Connections
+namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
 {
     /// <summary>
     /// Adjacency type used for objects that are not centred on a tile. Examples that use this are pipes (not the middle layer)
@@ -27,7 +26,6 @@ namespace SS3D.Engine.Tiles.Connections
             tSWE,
             x
         }
-
 
         [Tooltip("A mesh where no edges are connected")]
         public Mesh o;
@@ -58,79 +56,86 @@ namespace SS3D.Engine.Tiles.Connections
 
         private OffsetOrientation orientation;
 
-        public MeshDirectionInfo GetMeshAndDirection(AdjacencyBitmap adjacents)
+        public MeshDirectionInfo GetMeshAndDirection(AdjacencyMap adjacencyMap)
         {
-            // Count number of connections along cardinal (which is all that we use atm)
-            var cardinalInfo = adjacents.GetCardinalInfo();
-
             // Determine rotation and mesh specially for every single case.
             float rotation = 0.0f;
             Mesh mesh;
 
-            if (cardinalInfo.IsO())
+            AdjacencyShape shape = AdjacencyShapeResolver.GetOffsetShape(adjacencyMap);
+            switch (shape)
             {
-                mesh = o;
-                orientation = OffsetOrientation.o;
-            }
-            else if (cardinalInfo.IsU())
-            {
-                if (cardinalInfo.north > 0 || cardinalInfo.east > 0)
-                {
+                case AdjacencyShape.O:
+                    mesh = o;
+                    orientation = OffsetOrientation.o;
+                    break;
+                case AdjacencyShape.UNorth:
                     mesh = uNorth;
                     orientation = OffsetOrientation.uNorth;
-                }
-                else
-                {
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleConnection());
+                    break;
+                case AdjacencyShape.USouth:
                     mesh = uSouth;
                     orientation = OffsetOrientation.uSouth;
-                }
-                rotation = TileHelper.AngleBetween(Direction.North, cardinalInfo.GetOnlyPositive());
+                    rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.GetSingleNonConnection());
+                    break;
+                case AdjacencyShape.I:
+                    mesh = i;
+                    orientation = OffsetOrientation.i;
+                    rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.HasConnection(Direction.North) ? Direction.North : Direction.East);
+                    break;
+                case AdjacencyShape.LNorthWest:
+                    mesh = lNW;
+                    orientation = OffsetOrientation.lNW;
+                    rotation = 90;
+                    break;
+                case AdjacencyShape.LNorthEast:
+                    mesh = lNE;
+                    orientation = OffsetOrientation.lSE;
+                    rotation = 90;
+                    break;
+                case AdjacencyShape.LSouthEast:
+                    mesh = lSE;
+                    orientation = OffsetOrientation.lSW;
+                    rotation = 90;
+                    break;
+                case AdjacencyShape.LSouthWest:
+                    mesh = lSW;
+                    orientation = OffsetOrientation.lNW;
+                    rotation = 90;
+                    break;
+                case AdjacencyShape.TNorthSouthEast:
+                    mesh = tNSE;
+                    orientation = OffsetOrientation.tSWE;
+                    rotation = 90;
+                    break;
+                case AdjacencyShape.TSouthWestEast:
+                    mesh = tSWE;
+                    orientation = OffsetOrientation.tNSW;
+                    rotation = 90;
+                    break;
+                case AdjacencyShape.TNorthSouthWest:
+                    mesh = tNSW;
+                    orientation = OffsetOrientation.tNEW;
+                    rotation = 90;
+                    break;
+                case AdjacencyShape.TNorthEastWest:
+                    mesh = tNEW;
+                    orientation = OffsetOrientation.tNSE;
+                    rotation = 90;
+                    break;
+                case AdjacencyShape.X:
+                    mesh = x;
+                    orientation = OffsetOrientation.x;
+                    rotation = 90;
+                    break;
+                default:
+                    Debug.LogError($"Received unexpected shape from offset shape resolver: {shape}");
+                    mesh = o;
+                    break;
             }
-            else if (cardinalInfo.IsI())
-            {
-                mesh = i;
-                orientation = OffsetOrientation.i;
-                rotation = TileHelper.AngleBetween(Orientation.Vertical, cardinalInfo.GetFirstOrientation());
-            }
-            else if (cardinalInfo.IsL())
-            {
-                Direction sides = cardinalInfo.GetCornerDirection();
-                mesh = sides == Direction.NorthEast ? lNE
-                    : sides == Direction.SouthEast ? lSE
-                    : sides == Direction.SouthWest ? lSW
-                    : lNW;
 
-                orientation = sides == Direction.NorthEast ? OffsetOrientation.lNE
-                    : sides == Direction.SouthEast ? OffsetOrientation.lSE
-                    : sides == Direction.SouthWest ? OffsetOrientation.lSW
-                    : OffsetOrientation.lNW;
-
-                rotation = 90;
-            }
-            else if (cardinalInfo.IsT())
-            {
-                Direction notside = cardinalInfo.GetOnlyNegative();
-                mesh = notside == Direction.North ? tSWE
-                    : notside == Direction.East ? tNSW
-                    : notside == Direction.South ? tNEW
-                    : tNSE;
-
-                orientation = notside == Direction.North ? OffsetOrientation.tSWE
-                    : notside == Direction.East ? OffsetOrientation.tNSW
-                    : notside == Direction.South ? OffsetOrientation.tNEW
-                    : OffsetOrientation.tNSE;
-
-                rotation = 90;
-            }
-            else // Must be X
-            {
-                mesh = x;
-                orientation = OffsetOrientation.x;
-
-                rotation = 90;
-            }
-
-            return new MeshDirectionInfo { mesh = mesh, rotation = rotation };
+            return new MeshDirectionInfo { Mesh = mesh, Rotation = rotation };
         }
     }
 }
