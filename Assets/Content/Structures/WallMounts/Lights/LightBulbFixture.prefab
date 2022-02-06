@@ -42,9 +42,9 @@ Light:
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
-  m_Range: 6
+  m_Color: {r: 0.9687333, g: 1, b: 0.8537736, a: 1}
+  m_Intensity: 1.5
+  m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -409,7 +409,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 31f4ed4647b63ed49a8f4ad1d0c5c99a
   hasSpawned: 0
 --- !u!114 &7846543073528734464
 MonoBehaviour:

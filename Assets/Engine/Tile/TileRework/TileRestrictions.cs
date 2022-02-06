@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SS3D.Engine.Tiles;
 using UnityEngine;
 
-namespace SS3D.Engine.Tiles
+namespace SS3D.Engine.Tile.TileRework
 {
    
 
@@ -34,7 +34,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="tileObjectSO"></param>
         /// <param name="dir"></param>
         /// <returns></returns>
-        public static bool CanBuild(TileMap map, Vector3 position, int subLayerIndex, TileObjectSO tileObjectSO, Direction dir)
+        public static bool CanBuild(TileMap map, Vector3 position, int subLayerIndex, TileObjectSo tileObjectSO, Direction dir)
         {
             TileManager tileManager = TileManager.Instance;
             TileLayer placedLayer = tileObjectSO.layer;
@@ -54,25 +54,33 @@ namespace SS3D.Engine.Tiles
                 (placedLayer == TileLayer.LowWallMount || placedLayer == TileLayer.HighWallMount))
                 return false;
 
-            if (placedLayer == TileLayer.LowWallMount || placedLayer == TileLayer.HighWallMount)
-                if (!CanBuildWallAttachment(map, position, tileObjectSO, dir))
-                    return false;
-
-            // No furniture inside walls
-            if (placedLayer == TileLayer.FurnitureBase || placedLayer == TileLayer.FurnitureTop ||
-                placedLayer == TileLayer.Overlay)
+            switch (placedLayer)
             {
-                TileObject wallObject = map.GetTileObject(TileLayer.Turf, position);
-                if (!wallObject.IsCompletelyEmpty() && wallObject.GetPlacedObject(0).GetGenericType().Contains("wall"))
+                case TileLayer.LowWallMount:
+                case TileLayer.HighWallMount:
+                {
+                    if (!CanBuildWallAttachment(map, position, tileObjectSO, dir))
+                    {
+                        return false;
+                    }
+                    break;
+                }
+                // No furniture inside walls
+                case TileLayer.FurnitureBase:
+                case TileLayer.FurnitureTop:
+                case TileLayer.Overlay:
+                {
+                    TileObject wallObject = map.GetTileObject(TileLayer.Turf, position);
+                    if (!wallObject.IsCompletelyEmpty() && wallObject.GetPlacedObject(0).GetGenericType() == TileObjectGenericType.Wall)
+                        return false;
+                    break;
+                }
+                // No walls on furniture
+                case TileLayer.Turf when tileObjectSO.genericType == TileObjectGenericType.Wall && (!tileObjects[(int)TileLayer.FurnitureBase].IsCompletelyEmpty() ||
+                    !tileObjects[(int)TileLayer.FurnitureTop].IsCompletelyEmpty() ||
+                    !tileObjects[(int)TileLayer.Overlay].IsCompletelyEmpty()):
                     return false;
             }
-
-            // No walls on furniture
-            if (placedLayer == TileLayer.Turf && tileObjectSO.genericType.Contains("wall") &&
-                (!tileObjects[(int)TileLayer.FurnitureBase].IsCompletelyEmpty() ||
-                 !tileObjects[(int)TileLayer.FurnitureTop].IsCompletelyEmpty() ||
-                 !tileObjects[(int)TileLayer.Overlay].IsCompletelyEmpty()))
-                return false;
 
 
             return true;
@@ -86,11 +94,11 @@ namespace SS3D.Engine.Tiles
         /// <param name="wallAttachment"></param>
         /// <param name="dir"></param>
         /// <returns></returns>
-        private static bool CanBuildWallAttachment(TileMap map, Vector3 position, TileObjectSO wallAttachment, Direction dir)
+        private static bool CanBuildWallAttachment(TileMap map, Vector3 position, TileObjectSo wallAttachment, Direction dir)
         {
             TileObject wallObject = map.GetTileObject(TileLayer.Turf, position);
             // Cannot build when there isn't a wall
-            if (wallObject.IsCompletelyEmpty() || !wallObject.GetPlacedObject(0).GetGenericType().Contains("wall"))
+            if (wallObject.IsCompletelyEmpty() || wallObject.GetPlacedObject(0).GetGenericType() != TileObjectGenericType.Wall)
                 return false;
 
             // No low wall mounts on windows
@@ -99,7 +107,7 @@ namespace SS3D.Engine.Tiles
 
             // Cannot build wall mount if it collides with the next wall
             PlacedTileObject[] adjacentObjects = map.GetNeighbourObjects(TileLayer.Turf, 0, position);
-            if (adjacentObjects[(int)dir] && adjacentObjects[(int)dir].GetGenericType().Contains("wall"))
+            if (adjacentObjects[(int)dir] && adjacentObjects[(int)dir].GetGenericType() == TileObjectGenericType.Wall)
                 return false;
 
             return true;
@@ -113,7 +121,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="plenumAttachment"></param>
         /// <param name="dir"></param>
         /// <returns></returns>
-        private static bool CanBuildOnPlenum(TileMap map, Vector3 position, TileObjectSO plenumAttachment, Direction dir)
+        private static bool CanBuildOnPlenum(TileMap map, Vector3 position, TileObjectSo plenumAttachment, Direction dir)
         {
             TileObject plenumObject = map.GetTileObject(TileLayer.Plenum, position);
 

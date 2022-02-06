@@ -4,7 +4,9 @@
         "Mirror.CompilerSymbols",
         "Ninja.WebSockets",
         "Unity.Addressables",
-        "Unity.ResourceManager"
+        "Unity.ResourceManager",
+        "Telepathy",
+        "kcp2k"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

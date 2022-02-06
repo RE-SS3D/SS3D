@@ -1,7 +1,7 @@
 ﻿using System;
 using SS3D.Engine.Substances;
 using UnityEditor;
-
+/*
 namespace SS3D.Content.Furniture.Generic
 {
     #if UNITY_EDITOR
@@ -54,4 +54,4 @@ namespace SS3D.Content.Furniture.Generic
         }
     }
     #endif
-}
+}*/

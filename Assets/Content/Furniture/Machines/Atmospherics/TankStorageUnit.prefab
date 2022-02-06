@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5791212146875250473}
-  - component: {fileID: 7275455165246744443}
   - component: {fileID: 8926886091107077377}
   - component: {fileID: 7786279809998984}
   m_Layer: 14
@@ -33,22 +32,6 @@ Transform:
   m_Father: {fileID: 6026025742385093068}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7275455165246744443
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1673974766239670577}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!33 &8926886091107077377
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -112,7 +95,6 @@ GameObject:
   - component: {fileID: 2928619056195421076}
   - component: {fileID: 6947381346998146940}
   - component: {fileID: 3959135070748397564}
-  - component: {fileID: 1866690735240689045}
   m_Layer: 0
   m_Name: TankStorageUnit
   m_TagString: Untagged
@@ -149,7 +131,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 91f1a8eac4e64b84cb01c2c58935013d
   hasSpawned: 0
 --- !u!33 &3194732610623029108
 MeshFilter:
@@ -244,9 +227,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!114 &3959135070748397564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,17 +256,3 @@ MonoBehaviour:
   DisplayName: Tank Storage Unit
   Text: Stores oxygen and plasma tanks.
   MaxDistance: 0
---- !u!114 &1866690735240689045
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7348721911392627679}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0

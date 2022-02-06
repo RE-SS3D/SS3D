@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 2
   nameString: TileWood
-  genericType: floor
-  specificType: 
+  genericType: 9
+  specificType: 0
   prefab: {fileID: 6767447678079105841, guid: 49f2097d4710d114a89821d9164dfce2, type: 3}
   width: 1
   height: 1

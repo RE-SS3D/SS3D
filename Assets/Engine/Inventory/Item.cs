@@ -125,7 +125,7 @@ namespace SS3D.Engine.Inventory
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
             RuntimePreviewGenerator.OrthographicMode = true;
 
-            Texture2D texture = RuntimePreviewGenerator.GenerateModelPreview(this.transform, 128, 128, false);
+            Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform, Shader.Find("Unlit/ItemPreview"), null, 128, 128, false);
             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
             sprite.name = transform.name;
         }

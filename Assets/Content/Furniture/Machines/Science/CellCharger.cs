@@ -9,7 +9,7 @@ using UnityEngine.Assertions;
 public class CellCharger : NetworkBehaviour
 {
     // Visual container for the cell to be put in
-    public AttachedContainer AttachedContainer;
+    public ContainerDescriptor containerDescriptor;
     public MeshRenderer wiresMeshRenderer;
     [SerializeField]private BlinkingLight redLight;
     [SerializeField]private BlinkingLight orangeLight;
@@ -21,13 +21,13 @@ public class CellCharger : NetworkBehaviour
 
     private void Start()
     {
-        Assert.IsNotNull(AttachedContainer);
+        Assert.IsNotNull(containerDescriptor);
 
-        AttachedContainer.Container.ContentsChanged += (_, items, type) =>
+        containerDescriptor.attachedContainer.Container.ContentsChanged += (_, items, type) =>
         {
             // Power cell does not attach to match wires
             // wiresMeshRenderer.enabled = !AttachedContainer.Container.Empty; 
-            if (AttachedContainer.Container.Empty)
+            if (containerDescriptor.attachedContainer.Container.Empty)
             {
                 // Cell Charger is empty
                 if (isServer)
@@ -41,7 +41,7 @@ public class CellCharger : NetworkBehaviour
                 // (this prevents the delay between putting a battery in and seeing the lights change)
                 if (isServer)
                 {
-                    foreach (Item item in AttachedContainer.Container.Items)
+                    foreach (Item item in containerDescriptor.attachedContainer.Container.Items)
                     {
                         IChargeable chargeable = item.GetComponent<IChargeable>();
                         if (chargeable != null) UpdateLights(chargeable.GetPowerPercentage());
@@ -70,7 +70,7 @@ public class CellCharger : NetworkBehaviour
     // Recharges the current cell that is placed on it
     private void Recharge()
     {
-        foreach (Item item in AttachedContainer.Container.Items)
+        foreach (Item item in containerDescriptor.attachedContainer.Container.Items)
         {
             IChargeable chargeable = item.GetComponent<IChargeable>();
             if (chargeable != null)
