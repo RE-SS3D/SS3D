@@ -14,6 +14,8 @@ namespace SS3D.Editor.AssetManagement
 {
     public class AssetScanner : EditorWindow
     {
+        AddressableAssetSettings aaSettings = AddressableAssetSettingsDefaultObject.Settings;
+
         [MenuItem("RE:SS3D Editor Tools/Asset Scanner")]
         public static void ShowWindow()
         {
@@ -39,21 +41,19 @@ namespace SS3D.Editor.AssetManagement
             
             DirectoryInfo root = new DirectoryInfo("Assets/");
             FileTreeRecur(root);
+
+            aaSettings.SetDirty(AddressableAssetSettings.ModificationEvent.BatchModification, null, true, true);   
         }
 
         void ClearAddressables()
         {
-            AddressableAssetSettings aaSettings = AddressableAssetSettingsDefaultObject.Settings;
             AddressableAssetGroup group = aaSettings.FindGroup("Autoscanned");
-
             List<AddressableAssetEntry> removeEntries = group.entries.ToList();
 
             foreach(AddressableAssetEntry entry in removeEntries)
             {
-                aaSettings.RemoveAssetEntry(entry.guid);
+                aaSettings.RemoveAssetEntry(entry.guid, false);
             }
-
-            aaSettings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryRemoved, removeEntries, true);        
         }
 
         void FileTreeRecur(DirectoryInfo directory)
@@ -69,7 +69,7 @@ namespace SS3D.Editor.AssetManagement
                 string relativePath = "Assets/"+ GetRelativePath(file.FullName, rootpath);
                 if(AssetDatabase.AssetPathToGUID(relativePath) != null && !blacklist.Any(relativePath.Contains))
                 {
-                    TryAddAddressable(relativePath);
+                    TryAddAddressable(relativePath, false);
                 }
             }
 
@@ -94,7 +94,7 @@ namespace SS3D.Editor.AssetManagement
             return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace('/', '/'));
         }
 
-        public static void TryAddAddressable(string path)
+        public static void TryAddAddressable(string path, bool postEvent = true)
         {
             AddressableAssetSettings aaSettings = AddressableAssetSettingsDefaultObject.Settings;
             if(aaSettings == null) return;
@@ -104,11 +104,10 @@ namespace SS3D.Editor.AssetManagement
             var entry = aaSettings.FindAssetEntry(AssetDatabase.AssetPathToGUID(path));
             if(entry == null)
             {
-                entry = aaSettings.CreateOrMoveEntry(AssetDatabase.AssetPathToGUID(path), group);
-                aaSettings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);
+                entry = aaSettings.CreateOrMoveEntry(AssetDatabase.AssetPathToGUID(path), group, false, postEvent);
             }
 
-            entry.SetAddress(path.Replace("Assets/",""));
+            entry.SetAddress(path.Replace("Assets/",""), postEvent);
         }
         public static void TryRemoveAddressable(string path)
         {
