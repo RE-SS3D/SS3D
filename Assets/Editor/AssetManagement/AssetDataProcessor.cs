@@ -7,6 +7,8 @@ using UnityEditor;
 using System.Linq;
 using System.IO;
 
+using SS3D.Editor.AssetManagement;
+
 public class AssetDataProcessor : AssetPostprocessor
 {
     static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)

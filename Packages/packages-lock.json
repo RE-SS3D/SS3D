@@ -12,6 +12,15 @@
       "source": "builtin",
       "dependencies": {}
     },
+    "com.unity.addressables": {
+      "version": "1.1.10",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.scriptablebuildpipeline": "1.5.2"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.ads": {
       "version": "3.7.5",
       "depth": 0,
@@ -116,6 +125,13 @@
         "com.unity.render-pipelines.core": "7.3.1",
         "com.unity.shadergraph": "7.3.1"
       },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.scriptablebuildpipeline": {
+      "version": "1.5.2",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.shadergraph": {

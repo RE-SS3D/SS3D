@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Mirror
 {
@@ -1029,6 +1030,14 @@ namespace Mirror
                 return true;
             }
 
+            AssetReference asset = new AssetReference(message.assetId.ToString("N"));
+
+            if (asset.RuntimeKeyIsValid() && message.sceneId == 0)
+            {
+                SpawnAddressable(message, asset);
+                return false;
+            }
+
             if (message.assetId == Guid.Empty && message.sceneId == 0)
             {
                 Debug.LogError($"OnSpawn message with netId '{message.netId}' has no AssetId or sceneId");
@@ -1050,6 +1059,14 @@ namespace Mirror
         {
             spawned.TryGetValue(netid, out NetworkIdentity localObject);
             return localObject;
+        }
+
+        static void SpawnAddressable(SpawnMessage msg, AssetReference asset)
+        {
+            asset.InstantiateAsync(msg.position, msg.rotation).Completed += op =>
+            {
+                ApplySpawnPayload(op.Result.GetComponent<NetworkIdentity>(), msg);
+            };
         }
 
         static NetworkIdentity SpawnPrefab(SpawnMessage message)
