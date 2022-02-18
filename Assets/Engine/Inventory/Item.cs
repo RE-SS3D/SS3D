@@ -47,6 +47,36 @@ namespace SS3D.Engine.Inventory
         [Tooltip("The size of the item inside a container")]
         public Vector2Int Size;
         
+
+        //vvv collision noise variables vvv
+        [ContextMenuItem("Destroy Audio Sources", "DestroyAudioSources")]
+        [Header("Collision Noises Setup")]
+        [Tooltip("Does this item have collision noises?")]
+        public bool makesCollisionNoises = false;
+        [Range(0f, 1f)]
+        [Tooltip("How loud sounds will play when colliding.")]
+        public float collisionVolume = 0.7f;
+        [Tooltip("How fast this object must hit another in order to make a light impact sound.")]
+        public float lightImpactVelocity = 1;
+        [Tooltip("Does this object make a different sound being struck at a high velocity?")]
+        public bool useHardImpactSounds = false;
+        [Tooltip("How fast this object must hit another in order to make a hard impact sound.")]
+        public float hardImpactVelocity = 7.5f;
+        [Tooltip("This object's audio source.")]
+        [ContextMenuItem("Quick-add audio source", "GenerateAudioSource")]
+        public AudioSource audioSource;
+        [Tooltip("Do we need a second audio source just in case this object collides rapidly?")]
+        public bool useBackupAudioSource;
+        [Tooltip("Backup audio source used for playing collision sounds in rapid succession.")]
+        [ContextMenuItem("Quick-add audio source", "GenerateBackupAudioSource")]
+        public AudioSource backupAudioSource;
+        [Tooltip("List of possible sounds that will play when this object collides lightly.")]
+        public AudioClip[] lightImpactSounds;
+        [Tooltip("List of possible sounds that will play when this object collides heavily.")]
+        public AudioClip[] hardImpactSounds;
+        //^^^ end of collision noise variables ^^^
+
+
         private Stackable stack;
         private Container container;
         private FrozenItem frozenItem;
@@ -116,6 +146,61 @@ namespace SS3D.Engine.Inventory
                 GenerateNewIcon();
             }
         }
+
+    //vvv collision noise code vvv
+    void OnCollisionEnter(Collision other) {
+        //Yeah, nested if statements, just trust me here bro.
+            //Only execute this code if we're supposed to make collision noises.
+            if(makesCollisionNoises){
+                //Check if there are any oddities with the configuration of the collision sounds.
+                if(!(lightImpactVelocity > hardImpactVelocity) && !(useHardImpactSounds && hardImpactSounds == null) && !(lightImpactSounds == null) && !(audioSource == null) && !(useBackupAudioSource && backupAudioSource == null))
+                {
+                //This section checks if we're using hard or light impact sounds, and assigns it to the best available audio source.
+                    if(useHardImpactSounds && other.relativeVelocity.magnitude > hardImpactVelocity){
+                        if(useBackupAudioSource && audioSource.isPlaying && !backupAudioSource.isPlaying){
+                            backupAudioSource.PlayOneShot(PickSound(hardImpactSounds), collisionVolume);
+                        }
+                        else if(!audioSource.isPlaying){
+                            audioSource.PlayOneShot(PickSound(hardImpactSounds), collisionVolume);
+                        }
+                    }
+                    else if(other.relativeVelocity.magnitude > lightImpactVelocity){
+                        if(useBackupAudioSource && audioSource.isPlaying && !backupAudioSource.isPlaying){
+                            backupAudioSource.PlayOneShot(PickSound(lightImpactSounds), collisionVolume);
+                        }
+                        else if(!audioSource.isPlaying){
+                            audioSource.PlayOneShot(PickSound(lightImpactSounds), collisionVolume);
+                        }
+                    }
+                }
+                else{
+                    //Logs a warning if there's any oddities in the configuration of collision sounds.
+                    Debug.LogWarning("<color=red>Woops!</color> " + gameObject.name + " is trying to play a collision sound but can't. Make sure the Item script's is configured correctly.");
+                }
+            }
+    }
+        
+    public AudioClip PickSound(AudioClip[] availableSounds){
+        //Pick a clip from the supplied array and return it
+        AudioClip currentClip = availableSounds[UnityEngine.Random.Range(0, availableSounds.Length)];
+        return currentClip;
+    }
+    private void GenerateAudioSource(){
+        audioSource = gameObject.AddComponent(typeof(AudioSource)) as AudioSource;
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 1f;
+    }
+    private void GenerateBackupAudioSource(){
+        backupAudioSource = gameObject.AddComponent(typeof(AudioSource)) as AudioSource;
+        backupAudioSource.playOnAwake = false;
+        backupAudioSource.spatialBlend = 1f;
+    }
+    [ContextMenu("Remove Audio Sources")]
+    private void DestroyAudioSources(){
+        DestroyImmediate(backupAudioSource, true);
+        DestroyImmediate(audioSource, true);
+    }
+    //^^^ collision noise code ^^^
 
 	// TODO: Improve this
 	// we have this to generate icons at start, I do not know how bad it is for performance
