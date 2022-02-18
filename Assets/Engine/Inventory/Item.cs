@@ -148,52 +148,57 @@ namespace SS3D.Engine.Inventory
         }
 
     //vvv collision noise code vvv
+    private void OnValidate()
+    {
+        //Throw a warning if collision noises are enabled, but the user configured it retardedly.
+        if(makesCollisionNoises && ((lightImpactVelocity > hardImpactVelocity) || (useHardImpactSounds && hardImpactSounds == null) || (lightImpactSounds == null) || (audioSource == null) || (useBackupAudioSource && backupAudioSource == null)))
+        {
+            Debug.LogWarning("<color=red>Woops!</color> " + gameObject.name + " is configured to make collision sounds, but cannot. Make sure the Item script is configured correctly.");
+            makesCollisionNoises = false;
+        }
+    }
+
     void OnCollisionEnter(Collision other) {
-        //Yeah, nested if statements, just trust me here bro.
-            //Only execute this code if we're supposed to make collision noises.
+        //Only execute this code if we're supposed to make collision noises.
             if(makesCollisionNoises){
-                //Check if there are any oddities with the configuration of the collision sounds.
-                if(!(lightImpactVelocity > hardImpactVelocity) && !(useHardImpactSounds && hardImpactSounds == null) && !(lightImpactSounds == null) && !(audioSource == null) && !(useBackupAudioSource && backupAudioSource == null))
-                {
-                //This section checks if we're using hard or light impact sounds, and assigns it to the best available audio source.
-                    if(useHardImpactSounds && other.relativeVelocity.magnitude > hardImpactVelocity){
-                        if(useBackupAudioSource && audioSource.isPlaying && !backupAudioSource.isPlaying){
-                            backupAudioSource.PlayOneShot(PickSound(hardImpactSounds), collisionVolume);
-                        }
-                        else if(!audioSource.isPlaying){
-                            audioSource.PlayOneShot(PickSound(hardImpactSounds), collisionVolume);
-                        }
-                    }
-                    else if(other.relativeVelocity.magnitude > lightImpactVelocity){
-                        if(useBackupAudioSource && audioSource.isPlaying && !backupAudioSource.isPlaying){
-                            backupAudioSource.PlayOneShot(PickSound(lightImpactSounds), collisionVolume);
-                        }
-                        else if(!audioSource.isPlaying){
-                            audioSource.PlayOneShot(PickSound(lightImpactSounds), collisionVolume);
-                        }
-                    }
+                if(useHardImpactSounds && other.relativeVelocity.magnitude > hardImpactVelocity){
+                    PlayCollisionSound(hardImpactSounds);
                 }
-                else{
-                    //Logs a warning if there's any oddities in the configuration of collision sounds.
-                    Debug.LogWarning("<color=red>Woops!</color> " + gameObject.name + " is trying to play a collision sound but can't. Make sure the Item script's is configured correctly.");
+                else if(other.relativeVelocity.magnitude > lightImpactVelocity){
+                    PlayCollisionSound(lightImpactSounds);
                 }
             }
     }
-        
+    public void PlayCollisionSound(AudioClip[] soundPool)
+    {
+        //Take the supplied clip and play it through the best available audio source
+        if(useBackupAudioSource && audioSource.isPlaying && !backupAudioSource.isPlaying){
+            backupAudioSource.PlayOneShot(PickSound(soundPool), collisionVolume);
+        }
+        else if(!audioSource.isPlaying){
+            audioSource.PlayOneShot(PickSound(soundPool), collisionVolume);
+        }
+    }
     public AudioClip PickSound(AudioClip[] availableSounds){
         //Pick a clip from the supplied array and return it
         AudioClip currentClip = availableSounds[UnityEngine.Random.Range(0, availableSounds.Length)];
         return currentClip;
     }
     private void GenerateAudioSource(){
-        audioSource = gameObject.AddComponent(typeof(AudioSource)) as AudioSource;
-        audioSource.playOnAwake = false;
-        audioSource.spatialBlend = 1f;
+        if(audioSource == null)
+        {
+            audioSource = gameObject.AddComponent(typeof(AudioSource)) as AudioSource;
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 1f;           
+        }
     }
     private void GenerateBackupAudioSource(){
-        backupAudioSource = gameObject.AddComponent(typeof(AudioSource)) as AudioSource;
-        backupAudioSource.playOnAwake = false;
-        backupAudioSource.spatialBlend = 1f;
+        if (backupAudioSource == null)
+        {
+            backupAudioSource = gameObject.AddComponent(typeof(AudioSource)) as AudioSource;
+            backupAudioSource.playOnAwake = false;
+            backupAudioSource.spatialBlend = 1f;          
+        }
     }
     [ContextMenu("Remove Audio Sources")]
     private void DestroyAudioSources(){
