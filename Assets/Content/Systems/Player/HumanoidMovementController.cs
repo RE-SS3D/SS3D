@@ -13,53 +13,102 @@ namespace SS3D.Content.Systems.Player
     public class HumanoidMovementController : NetworkBehaviour
     {
         public const float ACCELERATION = 25f;
-
+        
+        [Header("Movement Settings")]
         // The base speed at which the given character can move
         [SyncVar] public float runSpeed = 5f;
-
         // The base speed for the character when walking. To disable walkSpeed, set it to runSpeed
         [SyncVar] public float walkSpeed = 2f;
-
-        private Animator characterAnimator;
-        private CharacterController characterController;
-        private new Camera camera;
+        [SerializeField] private AnimationCurve _movementCurve;
+        [SerializeField] private float _movementCurveMultiplier;
 
         // Current movement the player is making.
-        private Vector2 currentMovement = new Vector2();
-        private Vector2 intendedMovement = new Vector2();
-        public Vector3 absoluteMovement = new Vector3();
+        [Header("Movement Vectors")]
+        private Vector2 _currentMovement = new Vector2();
+        private Vector2 _intendedMovement = new Vector2();
+        private Vector3 _absoluteMovement = new Vector3();
+
+        public Vector3 AbsoluteMovement => _absoluteMovement;
 
         private bool isWalking = false;
         //Required to detect if player is typing and stop accepting movement input
         private ChatRegister chatRegister;
 
-        [SerializeField]
-        private float heightOffGround = 0.1f;
-
+        [Header("Other")]
+        [SerializeField] private float heightOffGround = 0.1f;
         [SerializeField] SimpleBodyPartLookAt[] LookAt;
+        
+        private Animator characterAnimator;
+        private CharacterController characterController;
+        private new Camera camera;
 
         private void Start()
+        {
+            Setup();
+        }
+
+        private void Setup()
         {
             characterController = GetComponent<CharacterController>();
             characterAnimator = GetComponent<Animator>();
             chatRegister = GetComponent<ChatRegister>();
             camera = CameraManager.singleton.playerCamera; 
         }
-
-        void Update()
+        
+        private void FixedUpdate()
         {
-
             //Must be the local player, or they cannot move
             if (!isLocalPlayer)
-            {
                 return;
-            }
 
+            ProcessToggleRun();
+            ProcessCharacterMovementRefactor();
+            ForceHeightLevel();
+        }
+
+        private void ProcessToggleRun()
+        {
             if (Input.GetButtonDown("Toggle Run") && EventSystem.current.currentSelectedGameObject == null)
-            {
                 isWalking = !isWalking;
-            }
+        }
 
+        private void ProcessCharacterMovementRefactor()
+        {
+            float x = Input.GetAxisRaw("Horizontal");
+            float y = Input.GetAxisRaw("Vertical");
+
+            Vector2 input = new Vector2(x, y).normalized;
+            float velocity = (isWalking ? walkSpeed : runSpeed);
+
+            bool isMovementBlockedByUi = (chatRegister.ChatWindows.Count > 0 && EventSystem.current.currentSelectedGameObject != null);
+            _intendedMovement = isMovementBlockedByUi ? Vector2.zero : input;
+
+            if (input.magnitude > 0)
+                _currentMovement = Vector2.MoveTowards(_currentMovement, _intendedMovement, _movementCurve.Evaluate(Time.deltaTime * (_movementCurveMultiplier * velocity)));
+            else
+            {
+                _currentMovement = Vector2.MoveTowards(_currentMovement, _intendedMovement, _movementCurve.Evaluate(Time.deltaTime * (Mathf.Pow(_movementCurveMultiplier, 2) * velocity)));
+            }
+            
+            _absoluteMovement =
+                _currentMovement.y * Vector3.Cross(camera.transform.right, Vector3.up).normalized +
+                _currentMovement.x * Vector3.Cross(Vector3.up, camera.transform.forward).normalized;
+            
+            if (_absoluteMovement.magnitude > 0)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_absoluteMovement), Time.deltaTime * 10);
+            
+            characterController.Move(_absoluteMovement);
+            
+            float currentAnimatorSpeed = characterAnimator.GetFloat("Speed");
+            float controllerSpeed = Mathf.Clamp01(_currentMovement.magnitude);
+
+            float newSpeed = Mathf.Lerp(currentAnimatorSpeed, controllerSpeed, Time.deltaTime * (_movementCurve.Evaluate(Time.deltaTime) * 15));
+
+            characterAnimator.SetFloat("Speed", newSpeed);
+        }
+        
+        private void ProcessCharacterMovement()
+        {
             // TODO: Implement gravity and grabbing
             // Calculate next movement
             // The vector is not normalized to allow for the input having potential rise and fall times
@@ -68,53 +117,45 @@ namespace SS3D.Content.Systems.Player
 
             //Ignore movement controls when typing in chat
             if (chatRegister.ChatWindows.Count > 0 && EventSystem.current.currentSelectedGameObject != null)
-            {
-                intendedMovement = new Vector2(0, 0);
-            }
-            // Smoothly transition to next intended movement
+                _intendedMovement = new Vector2(0, 0);
             else
-            {
-                intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
-            }
+                _intendedMovement = new Vector2(x, y).normalized * (isWalking ? walkSpeed : runSpeed);
             
-            currentMovement = Vector2.MoveTowards(currentMovement, intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 5f, 3) / 5));
+            _currentMovement = Vector2.MoveTowards(_currentMovement, _intendedMovement, Time.deltaTime * (Mathf.Pow(ACCELERATION / 5f, 3) / 5));
+            
             var movement = Vector3.zero;
 
             // Move the player
-            if (currentMovement != Vector2.zero)
+            if (_currentMovement != Vector2.zero)
             {
                 // Determine the absolute movement by aligning input to the camera's looking direction
-                absoluteMovement =
-                currentMovement.y * Vector3.Cross(camera.transform.right, Vector3.up).normalized +
-                currentMovement.x * Vector3.Cross(Vector3.up, camera.transform.forward).normalized;
+                _absoluteMovement =
+                    _currentMovement.y * Vector3.Cross(camera.transform.right, Vector3.up).normalized +
+                    _currentMovement.x * Vector3.Cross(Vector3.up, camera.transform.forward).normalized;
 
-                if (intendedMovement != Vector2.zero)
+                if (_intendedMovement != Vector2.zero)
                 {
-                   
                     // Move. Whenever we move we also readjust the player's direction to the direction they are running in.
-                    characterController.Move((absoluteMovement + Physics.gravity * Time.deltaTime) * (Time.deltaTime / 3.5f));
-
-                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(absoluteMovement), Time.deltaTime * 10);
+                    characterController.Move((_absoluteMovement + Physics.gravity * Time.deltaTime) * (Time.deltaTime / 3.5f));
+                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_absoluteMovement), Time.deltaTime * 10);
                 }
-                if (intendedMovement == Vector2.zero)
+                if (_intendedMovement == Vector2.zero)
                 {
-                    absoluteMovement = Vector3.Lerp(absoluteMovement, Vector3.zero, Time.deltaTime * 5);
+                    _absoluteMovement = Vector3.Lerp(_absoluteMovement, Vector3.zero, Time.deltaTime * 5);
                 }
 
-                movement = absoluteMovement * Time.deltaTime;
+                movement = _absoluteMovement * Time.deltaTime;
             }
 
             characterController.Move(movement);
 
             // animation Speed is a proportion of maximum runSpeed, and we smoothly transitions the speed with the Lerp
-            float currentSpeed = characterAnimator.GetFloat("Speed");
+            float currentAnimatorSpeed = characterAnimator.GetFloat("Speed");
             float controllerSpeed = Mathf.Clamp01(characterController.velocity.magnitude / runSpeed);
 
-            float newSpeed = Mathf.Lerp(currentSpeed, controllerSpeed, Time.deltaTime * 15);
+            float newSpeed = Mathf.Lerp(currentAnimatorSpeed, controllerSpeed, Time.deltaTime * 15);
 
             characterAnimator.SetFloat("Speed", newSpeed);
-
-            ForceHeightLevel();
         }
 
         private void ForceHeightLevel()

@@ -80,9 +80,7 @@ public class SimpleBodyPartLookAt : MonoBehaviour
 
     public Vector3 GetMousePosition(bool changeYAxis)
     {
-        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-        Vector3 mousePos = ray.origin - ray.direction * (ray.origin.y / ray.direction.y);
-        mousePos = new Vector3(mousePos.x, changeYAxis ? mousePos.y : transform.position.y, mousePos.z);
+        
 
         return mousePos;
     }

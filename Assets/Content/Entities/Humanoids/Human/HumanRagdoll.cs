@@ -164,7 +164,7 @@ namespace SS3D.Content.Creatures.Human
             Vector3 movement = Vector3.zero;
             if (movementController != null)
             {
-                movement = movementController.absoluteMovement;
+                movement = movementController.AbsoluteMovement;
             }
             
             // For each rigid body in the ragdoll
