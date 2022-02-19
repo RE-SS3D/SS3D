@@ -10,9 +10,11 @@ using UnityEngine;
 
 namespace SS3D.Engine.Atmospherics
 {
+    
     // [ExecuteAlways]
     public class AtmosManager : MonoBehaviour
     {
+        /*
         // Test
         public Turf floor;
         public enum ViewType { Pressure, Content, Temperature, Combined, Wind };
@@ -767,5 +769,6 @@ namespace SS3D.Engine.Atmospherics
             }
 
         }
+        */
     }
 }

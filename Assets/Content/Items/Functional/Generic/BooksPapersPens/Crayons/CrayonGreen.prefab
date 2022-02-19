@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 7910296348410097481}
   - component: {fileID: -872997292792617948}
   - component: {fileID: -4686216604784746079}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: CrayonGreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -4,6 +4,7 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace SS3D.Engine.Chat
 {
@@ -24,17 +25,34 @@ namespace SS3D.Engine.Chat
 
         public ChatRegister ChatRegister => chatRegister;
 
-        private void Update()
-        {
-            UpdateChatFocus();
-        }
-
         public void Init(ChatTabData tabData, ChatRegister chatRegister)
         {
             this.chatRegister = chatRegister;
 
             AddTab(tabData);
             LoadChannelSelector(tabData);
+        }
+
+        public RectTransform GetTabRow()
+        {
+            return tabRow;
+        }
+
+        public int GetTabCount()
+        {
+            return tabRow.childCount;
+        }
+
+        /// <summary>
+        /// Enables all tabs to be interactable.
+        /// </summary>
+        public void EnableAllTabs()
+        {
+            Button[] buttons = tabRow.GetComponentsInChildren<Button>();
+            foreach (Button button in buttons)
+            {
+                button.interactable = true;
+            }
         }
 
         private void LoadChannelSelector(ChatTabData tabData)
@@ -47,7 +65,7 @@ namespace SS3D.Engine.Chat
 
                 channelDropDown.options.Add(
                     new TMP_Dropdown.OptionData(
-                        string.Format("<color=#{0}>[{1}]</color>", 
+                        string.Format("<color=#{0}>[{1}]</color>",
                             ColorUtility.ToHtmlStringRGBA(channel.Color),
                             channel.Abbreviation)
                     )
@@ -55,11 +73,51 @@ namespace SS3D.Engine.Chat
             }
         }
 
-        public void AddTab(ChatTabData tabData)
+        public ChatTab AddTab(ChatTabData tabData)
         {
             ChatTab chatTab = Instantiate(chatTabPrefab, tabRow);
             chatTab.Init(tabData, this);
             LoadTab(chatTab.Data);
+
+            SelectTab(chatTab.gameObject);
+            return chatTab;
+        }
+
+        /// <summary>
+        /// Selects the given tab. Enables all other buttons in row, disables the selected one, and refreshes the channel dropdown.
+        /// </summary>
+        /// <param name="selectedButton">The button of the tab to be selected.</param>
+        public void SelectTab(GameObject selectedTab)
+        {
+            EnableAllTabs();
+            Button selectedButton = selectedTab.GetComponent<Button>();
+            selectedButton.interactable = false;
+            LoadTab(selectedTab.GetComponent<ChatTab>().GetChatTabData());
+            channelDropDown.value = 0;
+            channelDropDown.RefreshShownValue();
+        }
+        public void SelectNextTab(GameObject selectedTab)
+        {
+            EnableAllTabs();
+
+            // Get the next button that isn't the one given
+            Button[] buttons = tabRow.GetComponentsInChildren<Button>();
+            Button selectedButton = selectedTab.GetComponent<Button>();
+            int index = 0;
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                if (buttons[i] != selectedButton)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            buttons[index].interactable = false;
+
+            // Update the selected channel
+            LoadTab(buttons[index].gameObject.GetComponent<ChatTab>().GetChatTabData());
+            channelDropDown.value = 0;
+            channelDropDown.RefreshShownValue();
         }
 
         public void UpdateMessages()
@@ -69,7 +127,7 @@ namespace SS3D.Engine.Chat
 
         private void LoadTabChatLog(ChatTabData tabData)
         {
-            List<ChatMessage> relevantMessages = chatRegister.GetRelevantMessages(tabData); 
+            List<ChatMessage> relevantMessages = chatRegister.GetRelevantMessages(tabData);
             StringBuilder sb = new StringBuilder();
             foreach (ChatMessage message in relevantMessages)
             {
@@ -92,7 +150,7 @@ namespace SS3D.Engine.Chat
             }
 
             ChatTab newTab = tabRow.GetChild(0).GetComponent<ChatTab>();
-        
+
             if (newTab)
             {
                 LoadTab(newTab.Data);
@@ -110,13 +168,13 @@ namespace SS3D.Engine.Chat
         {
             if (currentTabData.Removable)
             {
-                if (tabRow.childCount <= 1)
+                if (tabRow.childCount < 2)
                 {
-                    Destroy(gameObject);
+                    chatRegister.DeleteChatWindow(this);
                     return;
                 }
-
                 Destroy(currentTabData.Tab.gameObject);
+                SelectNextTab(currentTabData.Tab.gameObject);
                 StartCoroutine(UpdateCurrentDataTabNextFrame());
             }
         }
@@ -134,12 +192,13 @@ namespace SS3D.Engine.Chat
             {
                 return;
             }
-        
+
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.Channel = currentTabData.Channels[channelDropDown.value];
             chatMessage.Text = text;
             inputField.text = "";
-            if(chatRegister.RestrictedChannels.Contains(chatMessage.Channel.Name)){
+            if (chatRegister.RestrictedChannels.Contains(chatMessage.Channel.Name))
+            {
                 return; //do not allow talking in restricted channels
             }
 
@@ -148,34 +207,30 @@ namespace SS3D.Engine.Chat
 
         public void OnDrag(PointerEventData eventData)
         {
-            RectTransform moveTransform = (RectTransform) transform;
-            moveTransform.position += (Vector3) eventData.delta;
+            RectTransform moveTransform = (RectTransform)transform;
+            moveTransform.position += (Vector3)eventData.delta;
         }
 
         public bool PlayerIsTyping()
         {
-            return EventSystem.current.currentSelectedGameObject == inputField.gameObject;
+            return (EventSystem.current.currentSelectedGameObject != null);
         }
 
-        private void UpdateChatFocus()
+        public void FinishTyping()
         {
-            //Make sure player is pressing submit
-            if (!Input.GetButtonDown("Submit"))
+            if ((Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter)))
             {
-                return;
+                SendMessage();
             }
-        
-            //Focus chat window
-            if (!PlayerIsTyping())
-            {
-                inputField.ActivateInputField();
-                return;
-            }
-        
-            //Send message and unfocus
-            SendMessage();
-            inputField.DeactivateInputField(true);
+
             EventSystem.current.SetSelectedGameObject(null);
+
+        }
+        public void FocusInputField()
+        {
+            inputField.Select();
+
         }
     }
+
 }

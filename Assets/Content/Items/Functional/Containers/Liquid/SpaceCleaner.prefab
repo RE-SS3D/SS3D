@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5004082379764397309}
   - component: {fileID: 1957319808741603226}
   - component: {fileID: -7566760913663884944}
+  - component: {fileID: 4973789996448933127}
   - component: {fileID: -3256944718675993303}
   - component: {fileID: 573895585660513253}
   m_Layer: 16
@@ -163,6 +164,21 @@ MonoBehaviour:
   particleSystem: {fileID: 2414233150983122931}
   cooldownInSeconds: 3
   useIcon: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
+--- !u!114 &4973789996448933127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 482575724292013721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisplayName: 
+  Text: 
+  MaxDistance: 0
 --- !u!114 &-3256944718675993303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -470,6 +486,11 @@ PrefabInstance:
         type: 3}
       propertyPath: playOnAwake
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4068288819870881742, guid: 7fc08e70e0552eb4da30f809aadf8666,
+        type: 3}
+      propertyPath: looping
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9146105795711067569, guid: 7fc08e70e0552eb4da30f809aadf8666,
         type: 3}

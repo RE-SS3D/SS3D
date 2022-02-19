@@ -5,6 +5,7 @@ using Mirror;
 using SS3D.Content.Systems.Interactions;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Inventory;
+using SS3D.Engine.Tile.TileRework;
 using SS3D.Engine.Tiles;
 
 namespace SS3D.Content.Items.Functional.Tools
@@ -21,13 +22,13 @@ namespace SS3D.Content.Items.Functional.Tools
         [SerializeField]
 
 	// for the temporary construction stuff
-        private Turf commonWall = null;
+        private TileObjectSo commonWall = null;
         [SerializeField]
-        private Turf reinforcedWall = null;
+        private TileObjectSo reinforcedWall = null;
         [SerializeField]
-        private Turf commonFloor = null;
+        private TileObjectSo commonFloor = null;
         [SerializeField]
-        private Turf reinforcedFloor = null;
+        private TileObjectSo reinforcedFloor = null;
 
 	// the prefab for the loading bar that is spawned when we start an interaction
         public GameObject LoadingBarPrefab;
@@ -38,14 +39,14 @@ namespace SS3D.Content.Items.Functional.Tools
         public Sprite turnOnIcon;
         public Sprite constructIcon;
 
-        private Dictionary<Turf, Turf> reinforceDict;
+        private Dictionary<TileObjectSo, TileObjectSo> reinforceDict;
 
         public bool CanIgnite => GetState();
 
         public override void Start()
         {
             base.Start();
-            reinforceDict = new Dictionary<Turf, Turf> {{commonWall, reinforcedWall}, {commonFloor, reinforcedFloor}};
+            reinforceDict = new Dictionary<TileObjectSo, TileObjectSo> {{commonWall, reinforcedWall}, {commonFloor, reinforcedFloor}};
             GenerateNewIcon();
         }
 
@@ -96,6 +97,7 @@ namespace SS3D.Content.Items.Functional.Tools
 
         public override void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
+            /*
             base.GenerateInteractionsFromSource(targets, interactions);
             interactions.Insert(0, new InteractionEntry(targets[0], new WelderConstructionInteraction
             {
@@ -104,6 +106,7 @@ namespace SS3D.Content.Items.Functional.Tools
                 Delay = Delay,
                 icon = constructIcon
             }));
+            */
         }
 
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)

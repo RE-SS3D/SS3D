@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4388924432850350342}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: SpotBunBottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 2639106088368138811}
   - component: {fileID: 5724715175755310457}
   - component: {fileID: 6381813175095173843}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: BurgerTomato2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -119,7 +119,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6195555561593361832}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: SpotTomato1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -152,7 +152,7 @@ GameObject:
   - component: {fileID: 8000030145252074656}
   - component: {fileID: 2824296570273252965}
   - component: {fileID: 1938296893674977789}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: BurgerLettuce
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -261,7 +261,7 @@ GameObject:
   - component: {fileID: 9038882716649618989}
   - component: {fileID: 961662840267246857}
   - component: {fileID: 8168042231525917890}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: BurgerBeefPatty
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -338,7 +338,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7337032461317420221}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: SpotBunTop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -369,7 +369,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 542109237975265166}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: SpotTomato2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -402,7 +402,7 @@ GameObject:
   - component: {fileID: 807827400804385613}
   - component: {fileID: 8530277838511021665}
   - component: {fileID: 8003655138622447175}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: BurgerBunTop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -484,11 +484,12 @@ GameObject:
   - component: {fileID: 7791846414544141746}
   - component: {fileID: -6088219533532539652}
   - component: {fileID: -1324343675257478698}
+  - component: {fileID: 2207691779935123816}
   - component: {fileID: -2125000103491059414}
   - component: {fileID: -1264511703301651573}
   - component: {fileID: -3446352185899483227}
-  m_Layer: 0
-  m_Name: Burgerr
+  m_Layer: 16
+  m_Name: Burger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -531,7 +532,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: bcee802a82bdc784da519bdd13ba89cf
   hasSpawned: 0
 --- !u!54 &-4753945205209015175
 Rigidbody:
@@ -578,9 +580,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!114 &-1324343675257478698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -605,6 +618,21 @@ MonoBehaviour:
   bulkSize: 1
   traits: []
   Size: {x: 0, y: 0}
+--- !u!114 &2207691779935123816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3404165180986230772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d174b721ba45d285a8f164a519c314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisplayName: 
+  Text: 
+  MaxDistance: 0
 --- !u!114 &-2125000103491059414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -754,7 +782,7 @@ GameObject:
   - component: {fileID: 830042652570889061}
   - component: {fileID: 5553865329626094848}
   - component: {fileID: 3285024082437774970}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: BurgerTomato3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -833,7 +861,7 @@ GameObject:
   - component: {fileID: 7820978942406468323}
   - component: {fileID: 8042921687781379307}
   - component: {fileID: 4675335055731222091}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: BurgerTomato1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -910,7 +938,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7685306211516432503}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: SpotTomato3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -941,7 +969,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3177997163721798384}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: SpotLettuce
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -972,7 +1000,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4431669345889215749}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: SpotCheese
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1003,7 +1031,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2262973658857715732}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: SpotPatty
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1036,7 +1064,7 @@ GameObject:
   - component: {fileID: 8477373642654368678}
   - component: {fileID: 2792796100538670144}
   - component: {fileID: 2887438803412958737}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: BurgerBunBottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1115,7 +1143,7 @@ GameObject:
   - component: {fileID: 5358875811623547661}
   - component: {fileID: 8994855042560601177}
   - component: {fileID: 5380211033577029782}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: BurgerCheese
   m_TagString: Untagged
   m_Icon: {fileID: 0}

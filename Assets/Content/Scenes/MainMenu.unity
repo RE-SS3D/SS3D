@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.0052985516, g: 0.00091136165, b: 0.0049261176, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -304,19 +304,40 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}
+      propertyPath: loginManagerPrefab
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
+        type: 3}
       propertyPath: spawnPrefabs.Array.size
-      value: 51
+      value: 52
       objectReference: {fileID: 0}
     - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}
       propertyPath: spawnPrefabs.Array.data[50]
       value: 
-      objectReference: {fileID: 663577658416813456, guid: 908972f0badbb2d4e9b6e8bf8e6cd8ac,
+      objectReference: {fileID: 3591147544166670882, guid: 45d13347efae0f54882e0e56dd770bb1,
         type: 3}
+    - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.data[51]
+      value: 
+      objectReference: {fileID: 3879826479501069436, guid: 5e8a02c5ce0073644ac01bdb55d72a70,
+        type: 3}
+    - target: {fileID: 6976582009294150633, guid: 8fae6473a9524504fb4453411967b0e2,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.data[52]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6976582009294150638, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}
       propertyPath: m_Name
       value: Network Manager
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976582009294150639, guid: 8fae6473a9524504fb4453411967b0e2,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6976582009294150639, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}
@@ -335,6 +356,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6976582009294150639, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976582009294150639, guid: 8fae6473a9524504fb4453411967b0e2,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
@@ -347,16 +373,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976582009294150639, guid: 8fae6473a9524504fb4453411967b0e2,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976582009294150639, guid: 8fae6473a9524504fb4453411967b0e2,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6976582009294150639, guid: 8fae6473a9524504fb4453411967b0e2,
         type: 3}
@@ -1700,6 +1716,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Padding: {x: 0, y: 0, z: 0, w: 0}
+  m_Softness: {x: 0, y: 0}
 --- !u!222 &6095344383649891985
 CanvasRenderer:
   m_ObjectHideFlags: 0

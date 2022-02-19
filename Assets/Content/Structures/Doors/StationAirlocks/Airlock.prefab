@@ -217,8 +217,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 1.2592393, z: 1}
+  m_Center: {x: 0, y: 0.12961909, z: 0}
 --- !u!1 &1917799960222321674
 GameObject:
   m_ObjectHideFlags: 0
@@ -235,7 +235,6 @@ GameObject:
   - component: {fileID: 1594027951419558492}
   - component: {fileID: 5702311699610938402}
   - component: {fileID: 7510031232805575769}
-  - component: {fileID: 3185846043739148174}
   m_Layer: 0
   m_Name: Airlock
   m_TagString: Untagged
@@ -269,8 +268,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.9, z: 0.5}
-  m_Center: {x: 0, y: 0.93, z: 0}
+  m_Size: {x: 1, y: 2.4604917, z: 0.5}
+  m_Center: {x: 0, y: 1.2102458, z: 0}
 --- !u!114 &3681807840096108581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -283,8 +282,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 159a9ad506a2d794d80a59383b84ac83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
   wallCapPrefab: {fileID: 5532353597398885135, guid: 1257cb58aa84aeb48a09c63963a02e38,
     type: 3}
   doorType: 0
@@ -481,20 +478,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &3185846043739148174
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1917799960222321674}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
 --- !u!1 &4803013556368833953
 GameObject:
   m_ObjectHideFlags: 0

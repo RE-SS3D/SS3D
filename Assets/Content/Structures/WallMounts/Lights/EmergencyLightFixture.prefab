@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 313226461210813974}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.7413, z: 0.3452}
+  m_LocalPosition: {x: 0, y: 2.291, z: 0.3452}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4641455671585560411}
@@ -385,7 +385,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8808820507163946139}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.7416, z: 0.3436}
+  m_LocalPosition: {x: 0, y: 2.291, z: 0.3436}
   m_LocalScale: {x: 0.9, y: 1, z: 1}
   m_Children:
   - {fileID: 7338236216276321471}
@@ -469,7 +469,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5486237152387613914}
   - component: {fileID: -5483626464106783721}
-  - component: {fileID: 4210036883970617636}
   - component: {fileID: 5034072719782870709}
   - component: {fileID: -1648229310630695525}
   - component: {fileID: -809169823751194735}
@@ -509,22 +508,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: dc4f5ad807a3a2f4797e542e72e9f9fd
   hasSpawned: 0
---- !u!114 &4210036883970617636
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8824907131049981641}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
 --- !u!65 &5034072719782870709
 BoxCollider:
   m_ObjectHideFlags: 0

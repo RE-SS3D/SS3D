@@ -49,10 +49,19 @@ namespace SS3D.Content.Systems.Interactions
             {
                 return false;
             }
-            if (provider.GameObject.GetComponent<SubstanceContainer>() == null)
+
+            SubstanceContainer container = provider.GameObject.GetComponent<SubstanceContainer>();
+            if (container == null)
             {
                 return false;
             }
+
+            // You cannot dispense to a container that is already full.
+            if (container.RemainingVolume < 0.01f)
+            {
+                return false;
+            }
+
             return CanInteractCallback.Invoke(interactionEvent);
         }
 

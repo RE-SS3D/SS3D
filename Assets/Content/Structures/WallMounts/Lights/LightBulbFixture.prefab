@@ -42,9 +42,9 @@ Light:
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
-  m_Range: 6
+  m_Color: {r: 0.9687333, g: 1, b: 0.8537736, a: 1}
+  m_Intensity: 1.5
+  m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -343,7 +343,6 @@ GameObject:
   - component: {fileID: 5486237152387613914}
   - component: {fileID: 5034072719782870709}
   - component: {fileID: -1648229310630695525}
-  - component: {fileID: -2312561482214671454}
   - component: {fileID: 709808169560035747}
   - component: {fileID: 7846543073528734464}
   m_Layer: 0
@@ -396,20 +395,6 @@ MonoBehaviour:
   DisplayName: Light Bulb Fixture
   Text: 
   MaxDistance: 0
---- !u!114 &-2312561482214671454
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8824907131049981641}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
 --- !u!114 &709808169560035747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -424,7 +409,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 31f4ed4647b63ed49a8f4ad1d0c5c99a
   hasSpawned: 0
 --- !u!114 &7846543073528734464
 MonoBehaviour:

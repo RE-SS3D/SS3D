@@ -8,14 +8,14 @@ namespace SS3D.Engine.Networking
     {
         public static void WriteNetworkedContainerReference(this NetworkWriter writer, NetworkedContainerReference container)
         {
-            writer.WritePackedUInt32(container.SyncNetworkId);
-            writer.WritePackedUInt32(container.ContainerIndex);
+            writer.WriteUInt(container.SyncNetworkId);
+            writer.WriteUInt(container.ContainerIndex);
         }
         
         public static NetworkedContainerReference ReadNetworkedContainerReference(this NetworkReader reader)
         {
-            uint networkId = reader.ReadPackedUInt32();
-            uint index = reader.ReadPackedUInt32();
+            uint networkId = reader.ReadUInt();
+            uint index = reader.ReadUInt();
             return new NetworkedContainerReference
             {
                 SyncNetworkId = networkId,

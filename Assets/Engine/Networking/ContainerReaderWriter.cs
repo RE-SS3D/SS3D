@@ -12,7 +12,7 @@ namespace SS3D.Engine.Networking
             writer.WriteVector2Int(container.Size);
             var items = container.StoredItems;
             int itemCount = items.Count;
-            writer.WriteUInt16((ushort) itemCount);
+            writer.WriteUInt((ushort) itemCount);
             for (var i = 0; i < itemCount; i++)
             {
                 writer.WriteStoredItem(items[i]);
@@ -22,7 +22,7 @@ namespace SS3D.Engine.Networking
         public static Container ReadContainer(this NetworkReader reader)
         {
             Vector2Int size = reader.ReadVector2Int();
-            ushort count = reader.ReadUInt16();
+            ushort count = (ushort) reader.ReadUInt();
             var container = new Container {Size = size};
             container.StoredItems.Capacity = count;
             for (var i = 0; i < count; i++)

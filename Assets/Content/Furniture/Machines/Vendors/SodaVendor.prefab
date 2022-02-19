@@ -48,7 +48,6 @@ GameObject:
   - component: {fileID: 3294617668968618146}
   - component: {fileID: 2566576608268049575}
   - component: {fileID: -2780369696669274638}
-  - component: {fileID: 6692794325200270153}
   m_Layer: 0
   m_Name: SodaVendor
   m_TagString: Untagged
@@ -86,7 +85,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 9fd241cdcd240f1419e8934a62659dc7
   hasSpawned: 0
 --- !u!33 &7659295148442304583
 MeshFilter:
@@ -304,9 +304,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!114 &-2780369696669274638
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -322,20 +333,6 @@ MonoBehaviour:
   DisplayName: Robust Softdrinks
   Text: Dispenses sodas.
   MaxDistance: 0
---- !u!114 &6692794325200270153
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2586569897008141548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
 --- !u!1 &5847245816668003842
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,7 +342,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1603339719467419674}
-  - component: {fileID: 2515590063637420104}
   - component: {fileID: 4466475318321639986}
   - component: {fileID: 5045467192024244155}
   - component: {fileID: 4165396700439340098}
@@ -370,22 +366,6 @@ Transform:
   m_Father: {fileID: 1566705410263836415}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2515590063637420104
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5847245816668003842}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!33 &4466475318321639986
 MeshFilter:
   m_ObjectHideFlags: 0

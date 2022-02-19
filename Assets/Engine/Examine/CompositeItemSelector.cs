@@ -1,437 +1,455 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using SS3D.Engine.Tile.TileRework;
+using SS3D.Engine.Tiles;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
-using SS3D.Engine.Inventory;
-using SS3D.Engine.Inventory.UI;
+using UnityEngine.Experimental.Rendering;
+using UnityEngine.Rendering;
 
 
 namespace SS3D.Engine.Examine
 {
     /// <summary>
     /// For composite GameObjects composed of multiple Examinable GameObjects, this script allows
-	/// us to return specifically which subordinate GameObject the cursor is over.
+    /// us to return specifically which subordinate GameObject the cursor is over.
     /// </summary>
-	public class CompositeItemSelector : MonoBehaviour
+    public class CompositeItemSelector : MonoBehaviour
     {
-	    public Camera cam;
-		public Material singleColourMaterial;
-		
-		// Data structures to store our mesh and colour affiliations
-		private List<MeshColourAffiliation> meshes;
-		private List<ExaminableColourAffiliation> examinables;
-		private List<GameObject> tiles;
-		private Stack<Color> colours;
-		
-		// Single pixel texture simply used to read the pixel colour under the mouse
-		private Texture2D tex;
-		
-		// Single pixel rectangle used to transfer the pixel from the RenderTexture to the Texture2D.
-		private Rect imageArea;
-		
-		// The hidden texture used to render our targeted meshes. Needs to have identical resolution to screen.
-		public RenderTexture rt;
-		
-		// This is how the Examinator gets access to the actual Examinable
-		private GameObject currentExaminable;
-		
-		// Components of our unique colours
-		private float rValue;
-		private float gValue;
-		private float bValue;
-		private float decrement;
-		private float tolerance;
-		
-		// Screen resolution
-		private int recordedScreenWidth;
-		private int recordedScreenHeight;
-				
-		// Indicate whether mouse is currently over the UI
-		private bool mouseOverUI;
-				
-		public void Start()
-		{
-			cam = CameraManager.singleton.examineCamera;
-			tex = new Texture2D(1, 1);
-			mouseOverUI = false;
-		}
+        public event ExaminableChangedHandler ExaminableChanged;
 
-		public void OnPostRender()
-		{
-			
-			// Don't bother with all of this work if the mouse is over the user interface.
-			// If it is over the interface, we should already have a reference to the object
-			// stored in currentExaminable.
-			if (mouseOverUI)
-			{
-				return;
-			}
-			
-			// If the window size has changed, amend the RenderTexture correspondingly.
-			ResizeTexturesIfRequired();
-			
-			// Render all of our meshes to the invisible RenderTexture
-			foreach (MeshColourAffiliation mesh in meshes)
-			{
-				singleColourMaterial.mainTexture = mesh.GetTexture();
-				singleColourMaterial.SetVector("colour", mesh.GetColour());
-				singleColourMaterial.SetPass(0);
-				UnityEngine.Graphics.DrawMeshNow(mesh.GetMesh(), mesh.GetTransform().position, mesh.GetTransform().rotation);
-			}
-				
-			// Test the colour of the pixel where our cursor is
-			int currentX = (int) Input.mousePosition.x;
-			int currentY = (int) Input.mousePosition.y;
+        public delegate void ExaminableChangedHandler(GameObject examinable);
 
-			// If it's within the screen boundaries...
-			if (currentX >= 0 && currentY >= 0 && currentX < Screen.width && currentY < Screen.height)
-			{
-				// Copy the pixel to our Texture2D, so we can read its colour.
-				imageArea = new Rect(currentX, Screen.height - currentY - 1, 1, 1); // Note well: y increases downwards for Struct, but upwards for Screen coordinates. Thanks Unity.
-				tex.ReadPixels(imageArea, 0, 0, false);
-				Color point = tex.GetPixel(0, 0);
-				bool hit = false;
-				
-				// Check the unique colour of each Examinable, to see if it corresponds to the colour at the cursor. 
-				foreach (ExaminableColourAffiliation examinable in examinables)
-				{
-					//if (point == examinable.GetColour())
-					if (matchesColour(point, examinable.GetColour()))	
-					{
-						currentExaminable = examinable.GetExaminable();
-						hit = true;
-					}
-				}					
-			}
-			else
-			{
-				currentExaminable = null;
-			}
-		}
-		
-		
-		/// This function checks to see if the colour is 'close enough' to one of our recorded
-		/// colours. We can't just use Equals, because rounding errors can make it unreliable.
-		private bool matchesColour(Color colour1, Color colour2)
-		{
-			if (Math.Abs(colour1.r - colour2.r) > tolerance) return false;
-			if (Math.Abs(colour1.g - colour2.g) > tolerance) return false;
-			if (Math.Abs(colour1.b - colour2.b) > tolerance) return false;
-			return true;
-			
-		}
-		
-		
-		/// This is how the Examinator actually returns the Object.
-		public GameObject GetCurrentExaminable(){
-			return currentExaminable;
-		}
-		
-		
-		public void CalculateSelectedGameObject()
-		{
-			
-			// Identify if mouse is over the user interface, or over objects in the game world.
-			if (EventSystem.current.IsPointerOverGameObject())
-			{
-				
-				// The cursor is over the UI. If the UI is examinable, this will override objects in the game world.
-				mouseOverUI = true;
-				currentExaminable = null;
+        // The currently hovered examinable
+        public GameObject CurrentExaminable
+        {
+            get => currentExaminable;
+            private set
+            {
+                GameObject oldExaminable = currentExaminable;
+                currentExaminable = value;
+                if (oldExaminable != currentExaminable)
+                {
+                    OnExaminableChanged();
+                }
+            }
+        }
 
-				// Get a list of all the UI elements under the cursor
-				var pointerEventData = new PointerEventData(EventSystem.current) {position = Input.mousePosition};
-				List<RaycastResult> UIhits = new List<RaycastResult>();
-				EventSystem.current.RaycastAll(pointerEventData, UIhits);			
-				
-				// Get the UI to give us the GameObject that a slot is displaying.
-				foreach (var hit in UIhits)
-				{
-					ISlotProvider slot = hit.gameObject.GetComponent<ISlotProvider>();
-					if (slot != null)
-					{
-						currentExaminable = slot.GetCurrentGameObjectInSlot();
-					}
-				}
-			}
-			else
-			{
-				mouseOverUI = false;
-			}
-			
+        // The texture the GPU renders to
+        private RenderTexture renderTexture;
+
+        // The texture that will store the data we extract
+        private Texture2D readbackTexture;
+
+        // Keeps track of examinable objects
+        private ExaminableIdentifiers identifiers;
+
+        // Indicate whether mouse is currently over the UI
+        private bool mouseOverUI;
+
+        // Confirms whether we need to render the image during OnPostRender.
+        private bool shouldRender;
+        private bool isRendering;
+        private RaycastHit[] raycastHits;
+        private GameObject currentExaminable;
+
+        public void Start()
+        {
+            identifiers = new ExaminableIdentifiers();
+            raycastHits = new RaycastHit[32];
+            FitRenderTexture();
+            readbackTexture = new Texture2D(1, 1, renderTexture.graphicsFormat, TextureCreationFlags.None);
+            Camera.onPreRender += OnAnyPreRender;
+        }
+
+        private void OnDestroy()
+        {
+            Camera.onPreRender -= OnAnyPreRender;
+            renderTexture.Release();
+        }
+
+        private void OnAnyPreRender(Camera cam)
+        {
+            if (isRendering || !shouldRender || mouseOverUI)
+            {
+                return;
+            }
+
+            if (cam != CameraManager.singleton.playerCamera)
+            {
+                return;
+            }
+
+            FitRenderTexture();
+
+            int mouseX = (int) Input.mousePosition.x;
+            int mouseY = (int) Input.mousePosition.y;
+
+            if (mouseX < 0 || mouseY < 0 || mouseX + 1 > renderTexture.width ||
+                mouseY + 1 > renderTexture.height)
+            {
+                return;
+            }
+
+            isRendering = true;
+
+            var buffer = new CommandBuffer();
+            buffer.SetViewMatrix(cam.worldToCameraMatrix);
+            buffer.SetProjectionMatrix(cam.projectionMatrix);
+            buffer.SetRenderTarget(new RenderTargetIdentifier(renderTexture));
+            buffer.ClearRenderTarget(true, true, Color.clear);
+            identifiers.AddCommands(buffer);
+            buffer.RequestAsyncReadback(renderTexture, 0, mouseX, 1,
+                mouseY, 1, 0, 1, OnCompleteReadback);
+
+            Graphics.ExecuteCommandBuffer(buffer);
+        }
+
+        private void OnCompleteReadback(AsyncGPUReadbackRequest request)
+        {
+            try
+            {
+                if (request.hasError)
+                {
+                    Debug.LogError("Error in examine GPU readback");
+                    return;
+                }
+
+                shouldRender = false;
+
+                readbackTexture.LoadRawTextureData(request.GetData<byte>());
+                readbackTexture.Apply();
+
+                Color pixel = readbackTexture.GetPixel(0, 0);
+                if (pixel.a < 1)
+                {
+                    CurrentExaminable = null;
+                    return;
+                }
+
+                CurrentExaminable = identifiers.FindExaminable(pixel);
+            }
+            finally
+            {
+                isRendering = false;
+            }
+        }
+
+        private void FitRenderTexture()
+        {
+            int width = Screen.width;
+            int height = Screen.height;
+
+            bool recreate = false;
+            if (renderTexture && (renderTexture.width != width || renderTexture.height != height))
+            {
+                renderTexture.Release();
+                recreate = true;
+            }
+
+            if (!renderTexture || recreate)
+            {
+                renderTexture = new RenderTexture(width, height, 16);
+            }
+        }
+
+        public void CalculateSelectedGameObject()
+        {
+            // Ensure we don't update information while still processing a frame
+            if (isRendering)
+            {
+                return;
+            }
+            
+            // Identify if mouse is over the user interface, or over objects in the game world.
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                // The cursor is over the UI. If the UI is examinable, this will override objects in the game world.
+                mouseOverUI = true;
+                CurrentExaminable = null;
+
+                // Get a list of all the UI elements under the cursor
+                var pointerEventData = new PointerEventData(EventSystem.current) {position = Input.mousePosition};
+                List<RaycastResult> UIhits = new List<RaycastResult>();
+                EventSystem.current.RaycastAll(pointerEventData, UIhits);
+
+                // Get the UI to give us the GameObject that a slot is displaying.
+                foreach (var hit in UIhits)
+                {
+                    ISlotProvider slot = hit.gameObject.GetComponent<ISlotProvider>();
+                    if (slot != null)
+                    {
+                        CurrentExaminable = slot.GetCurrentGameObjectInSlot();
+                        return;
+                    }
+                }
+
+                return;
+            }
+
+            mouseOverUI = false;
+            identifiers.Clear();
+
             // Raycast to cursor position. Need to get all possible hits, because the initial hit may have gaps through which we can see other Examinables
-            Ray ray = cam.ScreenPointToRay(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
-			RaycastHit[] hits = Physics.RaycastAll(ray, 200f);
+            Ray ray = CameraManager.singleton.playerCamera.ScreenPointToRay(new Vector2(Input.mousePosition.x,
+                Input.mousePosition.y));
+            int rayCount = Physics.SphereCastNonAlloc(ray, 0.1f, raycastHits, 100f);
 
-			// Convert the RaycastHits to GameObjects
-			GameObject[] gameObjects = new GameObject[hits.Length];
-			for (int i = 0; i < hits.Length; i++)
-			{
-				gameObjects[i] = hits[i].transform.gameObject;
-			}
+            // Record examinables and meshes for each hit object
+            for (int i = 0; i < rayCount; i++)
+            {
+                GameObject hitObject = raycastHits[i].transform.gameObject;
+                if (identifiers.HasGameObject(hitObject))
+                {
+                    continue;
+                }
+                // Check if we hit a tile
+                var tileObject = hitObject.GetComponent<PlacedTileObject>();
+                if (tileObject)
+                {
+                    // Add examinables for all tile objects
+                    AddExaminablesForTile(tileObject);
+                    continue;
+                }
+                AddExaminablesRecursive(hitObject);
+            }
 
-			// Store the meshes of these GameObjects in our data structure, so that they can be rendered off-screen later.
-			AddMeshesToLists(gameObjects);
-		}
-			
-		/// Amends the render texture to be the same size as the screen, so the coordinates are mapped correctly.
-		private void ResizeTexturesIfRequired(){
-			
-			// If textures don't currently exist, create them at the correct size.
-			if (recordedScreenWidth != Screen.width || recordedScreenHeight != Screen.height)	
-			{
-				cam.targetTexture = null;
-				rt.Release();
-				rt = new RenderTexture(Screen.width, Screen.height, 16);
-				cam.targetTexture = rt;
+            // We want to render at the next opportunity
+            shouldRender = true;
+        }
 
-				recordedScreenWidth = Screen.width;
-				recordedScreenHeight = Screen.height;
-			}
-		}
-		
-		
-		/// This method simply uses the next available unique colour by decrementing the RGB values.
-		private void ChangeToNextColour(){
-			if (rValue < 0.0f)
-			{
-				return;
-			}
-			bValue -= decrement;
-			if (bValue < 0.0f)
-			{
-				bValue = 1.0f;
-				gValue -= decrement;
-				if (gValue < 0.0f)
-				{
-					gValue = 1.0f;
-					rValue -= decrement;
-					if (rValue < 0.0f){
-						Debug.LogError("CompositeItemSelector: Too many colours cycled through.");
-						DisableCamera();
-					}
-				}
-				
-			}
-		}
-		
-		/// This method returns the root GameObject 
-		private GameObject GetAncestor (GameObject descendant)
-		{
-			// This statement is very bad - need to confirm standard GameObject hierarchy...
-			while (descendant.transform.parent != null && descendant.transform.parent.name != "TileMap" && descendant.transform.parent.name != "Objects" && descendant.transform.parent.name != "InventoryUI Rework Beep")
-			{
-				descendant = descendant.transform.parent.gameObject;
-			}
-			return descendant;
-		}
-		
-		/// This method enables the camera and establishes our data structures.
-		private void EnableCamera(){
-			if (cam == null)
-				cam = CameraManager.singleton.examineCamera;
-			if (!cam.enabled)
-			{
-				
-				// Enable the Camera component
-				cam.enabled = true;
-				
-				// Establish our collections
-				meshes = new List<MeshColourAffiliation>();
-				examinables = new List<ExaminableColourAffiliation>();
-				tiles = new List<GameObject>();
-				colours = new Stack<Color>();
-				
-				// Reset the colours
-				rValue = 1.0f;
-				gValue = 1.0f;
-				bValue = 1.0f;
-				decrement = 0.05f;
-				tolerance = decrement / 4.0f;
-				
-				
-				// Record the screen resolution
-				recordedScreenWidth = Screen.width;
-				recordedScreenHeight = Screen.height;
-				
-				// Establish the renderTexture
-				rt = new RenderTexture(Screen.width, Screen.height, 16);
-				cam.targetTexture = rt;
-			}
-		}
-		
-		/// This method disables the camera and removes our expensive data structures
-		/// so that they can be reclaimed by garbage collection.
-		public void DisableCamera()
-		{
-			// Turn off the camera
-			cam.enabled = false;
-			
-			// Empty our collections
-			meshes = null;
-			examinables = null;
-			tiles = null;
-			colours = null;
-			
-			//rt = null;
-			currentExaminable = null;
-		}
-		
-		/// This method adds all of the objects targeted by the RaycastAll to the
-		/// mesh and colour lists.
-		public void AddMeshesToLists(GameObject[] allHitObjects)
-		{
-			GameObject ancestor;
-			bool alreadyInList;
-			EnableCamera();
-			foreach (GameObject obj in allHitObjects)
-			{
-				// Check to see if the GameObject is already recorded
-				alreadyInList = false;
-				ancestor = GetAncestor(obj);
-				foreach (GameObject tile in tiles)
-				{
-					if (ancestor == tile)
-					{
-						alreadyInList = true;
-					}
-				}
-				// If not already recorded, record it!
-				if (!alreadyInList)
-				{
-					colours.Push(new Color(rValue, gValue, bValue, 1.0f));
-					AddChildToLists(ancestor.transform);
-					tiles.Add(ancestor);
-				}
-				
-			}
-		}
-	
-		/// This method calls recursively to find all descendants of a GameObject. If
-		/// they have meshes to render, and/or are Examinable, they are recorded in our
-		/// meshes and examinables lists.
-		private void AddChildToLists(Transform child)
-		{		
-			// Don't record the mesh if the child is disabled!
-			if (child.gameObject.activeSelf == false)
-			{
-				return;
-			}
-			
-			// Determine whether the GameObject has a mesh or is Examinable
-			MeshFilter mf = child.gameObject.GetComponent<MeshFilter>();
-			SkinnedMeshRenderer smr = child.gameObject.GetComponent<SkinnedMeshRenderer>();
-			
-			IExaminable examinable = child.gameObject.GetComponent<IExaminable>();
-			
-			// If examinable, create a unique colour to affiliate the examinable with. All non-
-			// examinable children will also be affiliated with this colour.
-			if (examinable != null)
-			{
-				ChangeToNextColour();
-				colours.Push(new Color(rValue, gValue, bValue, 1.0f));
-				examinables.Add(new ExaminableColourAffiliation(child.gameObject, colours.Peek(), child.gameObject.name));
-			}
-			
-			// If mesh exists, record the colour affiliation of it 
-			if (mf != null && child.gameObject.GetComponent<Renderer>().enabled)
-			{
-				meshes.Add(new MeshColourAffiliation(mf.mesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
-			}
-			if (smr != null && smr.sharedMesh != null && child.gameObject.GetComponent<Renderer>().enabled)
-			{
-				meshes.Add(new MeshColourAffiliation(smr.sharedMesh, colours.Peek(), child, child.gameObject.GetComponent<Renderer>().material.mainTexture));
-			}
-			
-			// Recursively call this method on each child
-			for (int i = 0; i < child.childCount; i++)
-			{
-				AddChildToLists(child.GetChild(i));
-			}
-			
-			// This object and all children have been affiliated with the colour. Remove it.
-			if (examinable != null)
-			{
-				colours.Pop();
-			}
-			
-		}
-	
-		/// This class is used to link particular meshes to the colour used to represent them
-		/// with the CompositeItemSelector render texture. It is possible for multiple meshes
-		/// to be affiliated with the same colour (for example, the meshes are all subordinate
-		/// to an Examinable GameObject, without any of them being individually Examinable)
-		private class MeshColourAffiliation
-		{
-			private Mesh mesh;
-			private Color colour;
-			private Transform transform;
-			private Texture texture;
-			
-			public MeshColourAffiliation(Mesh mesh, Color colour, Transform transform, Texture texture)
-			{
-				this.mesh = mesh;
-				this.colour = colour;
-				this.transform = transform;
-				this.texture = texture;
-			}
-			
-			public Mesh GetMesh()
-			{
-				return mesh;
-			}
-			
-			public Color GetColour()
-			{
-				return colour;
-			}
-			
-			public Transform GetTransform()
-			{
-				return transform;
-			}			
-			
-			public Texture GetTexture(){
-				return texture;
-			}
-			
-		}
-		
-		/// This class is used to link Examinable GameObjects to the colour used to represent
-		/// them. There should be a 1:1 correlation between colours and Examinable GameObjects.
-		/// Each Examinable will have one or more associated meshes, all of which share its colour.
-		private class ExaminableColourAffiliation
-		{
-			private GameObject examinable;
-			private Color colour;
-			private string name;
-			
-			public ExaminableColourAffiliation(GameObject examinable, Color colour, string name)
-			{
-				this.examinable = examinable;
-				this.colour = colour;
-				this.name = name;
-			}
-			
-			public GameObject GetExaminable()
-			{
-				return examinable;
-			}
-			
-			public Color GetColour()
-			{
-				return colour;
-			}
-			
-			public string GetName()
-			{
-				return name;
-			}
-			
-			
-			
-		}
-	}
+        private void AddExaminablesRecursive(GameObject gameObject, IExaminable current = null)
+        {
+            if (!gameObject.activeInHierarchy)
+            {
+                return;
+            }
+
+            IExaminable old = current;
+            current = gameObject.GetComponent<IExaminable>();
+
+            if (current == null)
+            {
+                current = old;
+            }
+            else if (old != current)
+            {
+                GameObject examinable = ((MonoBehaviour) current).gameObject;
+                if (identifiers.HasExaminable(examinable))
+                {
+                    return;
+                }
+
+                identifiers.AddExaminable(examinable);
+            }
+
+            if (current != null)
+            {
+                var meshFilter = gameObject.GetComponent<MeshFilter>();
+                if (meshFilter)
+                {
+                    identifiers.AddMesh(meshFilter.sharedMesh, gameObject, ((MonoBehaviour) current).gameObject);
+                }
+                else
+                {
+                    var meshRenderer = gameObject.GetComponent<SkinnedMeshRenderer>();
+                    if (meshRenderer)
+                    {
+                        var mesh = new Mesh();
+                        meshRenderer.BakeMesh(mesh);
+                        identifiers.AddMesh(mesh, gameObject, ((MonoBehaviour) current).gameObject);
+                    }
+                }
+            }
+
+            Transform objectTransform = gameObject.transform;
+            int childCount = objectTransform.childCount;
+            for (var i = 0; i < childCount; i++)
+            {
+                AddExaminablesRecursive(objectTransform.GetChild(i).gameObject, current);
+            }
+        }
+
+        private void AddExaminablesForTile(PlacedTileObject tile)
+        {
+            // Get the chunk and chunk position for the tile
+            var tileMap = tile.GetComponentInParent<TileMap>();
+            Vector3 worldPosition = tile.transform.position;
+            Vector2Int chunkKey = tileMap.GetKey(worldPosition);
+            TileChunk tileChunk = tileMap.GetChunk(chunkKey);
+            Vector2Int tileOffset = tileChunk.GetXY(worldPosition);
+            // Get the placed objects for all tile layers and add their examinables
+            TileLayer[] tileLayers = TileHelper.GetTileLayers();
+            foreach (TileLayer layer in tileLayers)
+            {
+                TileObject tileObject = tileChunk.GetTileObject(layer, tileOffset.x, tileOffset.y);
+                if (tileObject == null)
+                {
+                    continue;
+                }
+                PlacedTileObject[] placedObjects = tileObject.GetAllPlacedObjects();
+                foreach (PlacedTileObject placedObject in placedObjects)
+                {
+                    if (placedObject)
+                    {
+                        AddExaminablesRecursive(placedObject.gameObject);
+                    }
+                }
+            }
+        }
+
+        protected virtual void OnExaminableChanged()
+        {
+            ExaminableChanged?.Invoke(currentExaminable);
+        }
+
+        class ExaminableIdentifiers
+        {
+            private const byte ColorDistance = 10;
+            private static readonly int ShaderColorId = Shader.PropertyToID("_Color");
+
+            private readonly Material material = new Material(Shader.Find("Unlit/Color"));
+            private readonly Dictionary<Color32, GameObject> examinables = new Dictionary<Color32, GameObject>();
+
+            private readonly Dictionary<GameObject, MaterialPropertyBlock> materialProperties =
+                new Dictionary<GameObject, MaterialPropertyBlock>();
+
+            private readonly List<Tuple<Mesh, GameObject>> meshes = new List<Tuple<Mesh, GameObject>>();
+            private readonly List<Color32> colors = new List<Color32>();
+            private readonly List<MaterialPropertyBlock> propertyBlocks = new List<MaterialPropertyBlock>();
+
+
+            public void Clear()
+            {
+                examinables.Clear();
+                materialProperties.Clear();
+                meshes.Clear();
+            }
+
+            public bool HasExaminable(GameObject examinable)
+            {
+                return examinables.ContainsValue(examinable);
+            }
+
+            public bool HasGameObject(GameObject gameObject)
+            {
+                if (HasExaminable(gameObject))
+                {
+                    return true;
+                }
+
+                foreach (Tuple<Mesh, GameObject> pair in meshes)
+                {
+                    if (gameObject == pair.Item2)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            public void AddExaminable(GameObject examinable)
+            {
+                if (HasExaminable(examinable))
+                {
+                    return;
+                }
+
+                Color color;
+                if (examinables.Count >= colors.Count)
+                {
+                    color = AllocateColor();
+                    MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+                    propertyBlock.SetColor(ShaderColorId, color);
+                    propertyBlocks.Add(propertyBlock);
+                }
+                else
+                {
+                    color = colors[examinables.Count];
+                }
+
+                examinables.Add(color, examinable);
+            }
+
+            public GameObject FindExaminable(Color color)
+            {
+                examinables.TryGetValue(color, out GameObject value);
+                return value;
+            }
+
+            public void AddMesh(Mesh mesh, GameObject obj, GameObject examinable)
+            {
+                var tuple = new Tuple<Mesh, GameObject>(mesh, obj);
+                if (meshes.Contains(tuple))
+                {
+                    return;
+                }
+
+                Color32? color = null;
+                foreach (KeyValuePair<Color32, GameObject> pair in examinables)
+                {
+                    if (pair.Value == examinable)
+                    {
+                        color = pair.Key;
+                        break;
+                    }
+                }
+
+                if (color == null)
+                {
+                    return;
+                }
+
+                int colorIndex = colors.IndexOf(color.Value);
+                materialProperties.Add(obj, propertyBlocks[colorIndex]);
+                meshes.Add(tuple);
+            }
+
+            public void AddCommands(CommandBuffer buffer)
+            {
+                foreach (Tuple<Mesh, GameObject> filter in meshes)
+                {
+                    Mesh mesh = filter.Item1;
+                    if (!mesh)
+                    {
+                        return;
+                    }
+
+                    MaterialPropertyBlock propertyBlock = materialProperties[filter.Item2];
+                    for (var i = 0; i < mesh.subMeshCount; i++)
+                    {
+                        buffer.DrawMesh(mesh, filter.Item2.transform.localToWorldMatrix, material, i, 0,
+                            propertyBlock);
+                    }
+                }
+            }
+
+            private Color32 AllocateColor()
+            {
+                Color32 lastColor = colors.Count == 0 ? new Color32(255, 255, 255, 255) : colors[colors.Count - 1];
+                Color32 newColor = lastColor;
+                if (newColor.r >= ColorDistance)
+                {
+                    newColor.r -= ColorDistance;
+                }
+                else if (newColor.g >= ColorDistance)
+                {
+                    newColor.g -= ColorDistance;
+                }
+                else if (newColor.b >= ColorDistance)
+                {
+                    newColor.g -= ColorDistance;
+                }
+                else
+                {
+                    Debug.LogWarning("Examinable selector ran out of colors, misreads will occur!");
+                }
+
+                colors.Add(newColor);
+
+                return newColor;
+            }
+        }
+    }
 }

@@ -8,6 +8,7 @@ using SS3D.Engine.Interactions;
 using SS3D.Engine.Interactions.Extensions;
 using SS3D.Engine.Inventory;
 using SS3D.Engine.Inventory.Extensions;
+using SS3D.Engine.Tile.TileRework;
 using SS3D.Engine.Tiles;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -25,7 +26,7 @@ namespace SS3D.Content.Systems.Construction
 
         private Item item;
         private ListMenu constructionMenu;
-        private TileObject selectedTile;
+        private PlacedTileObject selectedTile;
 
         private void Start()
         {
@@ -45,7 +46,7 @@ namespace SS3D.Content.Systems.Construction
         private void OpenConstruction(InteractionEvent interactionEvent, InteractionReference arg2)
         {
             // Set selected tile to build on
-            var tile = interactionEvent.Target.GetComponent<Transform>().parent.GetComponent<TileObject>();
+            var tile = interactionEvent.Target.GetComponent<Transform>().parent.GetComponent<PlacedTileObject>();
             if (tile == selectedTile)
             {
                 return;
@@ -105,7 +106,7 @@ namespace SS3D.Content.Systems.Construction
             CmdConstruct(entry.transform.GetSiblingIndex());
         }
 
-        [Command(ignoreAuthority = true)]
+        [Command(requiresAuthority = false)]
         public void CmdConstruct(int index, NetworkConnectionToClient client = null)
         {
             // Check if sending player is holding 
@@ -115,15 +116,27 @@ namespace SS3D.Content.Systems.Construction
             }
             
             Construction construction = constructions[index];
-            TileDefinition tile = selectedTile.Tile;
+            // TileDefinition tile = selectedTile.Tile;
 
             IInteraction interaction;
 
+            if (construction.ObjectToConstruct)
+            {
+                interaction = new ItemConstructionInteraction
+                {
+                    ObjectToConstruct = construction.ObjectToConstruct,
+                    LoadingBarPrefab = loadingBarPrefab,
+                    Delay = construction.buildTime,
+                    ObstacleMask = obstacleMask
+                };
+            }
+
+            /*
             if (construction.turf)
             {
                 interaction = new TurfConstructionInteraction
                 {
-                    Turf = construction.turf,
+                    ObjectToConstruct = construction.turf,
                     ConstructIfTurf = construction.constructOverTurf,
                     LoadingBarPrefab = loadingBarPrefab,
                     Delay = construction.buildTime,
@@ -144,6 +157,7 @@ namespace SS3D.Content.Systems.Construction
                     ObstacleMask = obstacleMask
                 };
             }
+            */
             else
             {
                 Debug.LogError("Construction does not have a turf or fixture to construct");
@@ -171,7 +185,7 @@ namespace SS3D.Content.Systems.Construction
         {
             if (interactionEvent.Target is IGameObjectProvider provider)
             {
-                return provider.GameObject.GetComponentInParent<TileObject>();
+                return provider.GameObject.GetComponentInParent<PlacedTileObject>();
             }
 
             return false;
@@ -198,15 +212,8 @@ namespace SS3D.Content.Systems.Construction
             public float buildTime;
             
             // Turf data
-            public Turf turf;
-            public bool constructOverTurf;
-            
-            // Fixture data
-            public Fixture fixture;
-            public FixtureType type;
-            public TileFixtureLayers tileLayer;
-            public WallFixtureLayers wallLayer;
-            public FloorFixtureLayers floorLayer;
+            public TileObjectSo ObjectToConstruct;
+            // public bool constructOverTurf;
 
             public ConstructionUiData ToUi(string materialName)
             {

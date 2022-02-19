@@ -24,6 +24,7 @@ namespace SS3D
         public static event System.Action mapLoaded;
 
         // Select map that will be loaded or is loaded
+        [Scene]
         [SerializeField] [SyncVar] private String selectedMap;
 
 	// All the maps that are possible to be loaded
@@ -41,6 +42,8 @@ namespace SS3D
 
 	// the dropdown that should be with the possible maps
         [SerializeField] private TMP_Dropdown mapSelectionDropdown;
+
+        public bool CommencedLoadingMap { get; private set; }
 
         private void Awake()
         {
@@ -61,14 +64,24 @@ namespace SS3D
             };
 
             startRoundButton.onClick.AddListener(delegate { HandleRoundButton(); });
-            LoadMapList();
+        }
+
+        private void Start()
+        {
+            // Run LoadMapList() to populate the map list on the server.
+            if (isServer)
+            {
+                LoadMapList();
+            }
         }
 
 	// Here we load the selected map
         public void LoadMapScene()
         {
-            if (IsSelectedMapLoaded()) return;
+            // Only allow the administrator to click this button once!
+            if (CommencedLoadingMap) return;
 
+            CommencedLoadingMap = true;
             loadSceneButtonText.text = "loading...";
             
             mapLoaded?.Invoke();
@@ -77,11 +90,18 @@ namespace SS3D
             SceneManager.LoadSceneAsync(selectedMap, LoadSceneMode.Additive);
             StartCoroutine(SetActiveScene(selectedMap));
 
-            TileManager.tileManagerLoaded += UnlockRoundStart;
+            TileManager.TileManagerLoaded += UnlockRoundStart;
         }
 
         [ClientRpc]
         private void RpcInvokeMapLoaded()
+        {
+            if (isServer) return;
+            mapLoaded?.Invoke();
+        }
+
+        [TargetRpc]
+        public void TargetInvokeMapLoaded(NetworkConnection conn)
         {
             if (isServer) return;
             mapLoaded?.Invoke();
@@ -97,20 +117,28 @@ namespace SS3D
             startRoundButton.interactable = true;
 
 	    // creates a message for the clients that tell them to load the selected scene
-            SceneMessage msg = new SceneMessage
-            {
-                sceneName = selectedMap,
-                sceneOperation = SceneOperation.LoadAdditive
-            };
+            SceneMessage msg = GenerateSceneMessage();
 
 	    // sends said message to all clients
             NetworkServer.SendToAll(msg);
         }
 
+        public SceneMessage GenerateSceneMessage()
+        {
+            SceneMessage msg = new SceneMessage
+            {
+                sceneName = selectedMap,
+                sceneOperation = SceneOperation.LoadAdditive
+            };
+            return msg;
+        }
+
 	// Updates map list in the dropdown using the map list
-	// TODO: Update the map list via Server
         public void LoadMapList()
         {
+            // Prevent map list from loading on clients.
+            if (!isServer) return;
+
             List<TMP_Dropdown.OptionData> mapList = new List<TMP_Dropdown.OptionData>();
 
             foreach (string map in maps)
@@ -122,14 +150,6 @@ namespace SS3D
             mapSelectionDropdown.options = mapList;
             selectedMap = mapList[0].text;
             
-            RpcLoadMapList(maps);
-        }
-
-        [ClientRpc]
-        private void RpcLoadMapList(string[] mapList)
-        {
-            maps = mapList;
-            selectedMap = mapList[0];
         }
 
         public bool IsSelectedMapLoaded()
@@ -191,7 +211,7 @@ namespace SS3D
             }
         }
 
-        [Command(ignoreAuthority = true)]
+        [Command(requiresAuthority = false)]
         public void CmdSetSelectedMap(string scene)
         {
             selectedMap = scene;
@@ -220,6 +240,23 @@ namespace SS3D
             {
                 SceneManager.SetActiveScene(GetSelectedScene());
                 Debug.Log("New active scene set " + SceneManager.GetActiveScene().name);
+            }
+        }
+
+        [TargetRpc]
+        public void TargetSetActiveScene(NetworkConnection conn)
+        {
+            if (isServer) return;
+
+            Debug.Log("Setting new active scene: " + selectedMap);
+            SceneManager.SetActiveScene(GetSelectedScene());
+            Debug.Log("New active scene set " + SceneManager.GetActiveScene().name);
+
+            TileManager.Instance.Reinitialize();
+
+            if (RoundManager.singleton.IsRoundStarted)
+            {
+                ServerLobbyUIHelper.singleton.ChangeEmbarkText();
             }
         }
 

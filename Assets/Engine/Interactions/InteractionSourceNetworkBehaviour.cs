@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
+using Mirror.RemoteCalls;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -139,7 +140,7 @@ namespace SS3D.Engine.Interactions
                     CancelInteraction(instance.Reference);
                 }
             }
-            interactions.Add(new InteractionInstance(interaction, interactionEvent, reference, currentSender));
+            interactions.Add(new InteractionInstance(interaction, interactionEvent, reference, RemoteCallHelper.currentSender));
 
             return reference;
         }

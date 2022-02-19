@@ -21,6 +21,7 @@ namespace SS3D.Engine.Atmospherics
 
         public void Step()
         {
+            /*
             if (atmosNeighbour)
             {
                 if (atmosNeighbour.GetTotalMoles() > 0.1f)
@@ -34,6 +35,7 @@ namespace SS3D.Engine.Atmospherics
                     }
                 }
             }
+            */
         }
     }
 }

@@ -5,6 +5,7 @@ using SS3D.Engine.Tiles;
 
 namespace SS3D.Content.Systems.Construction
 {
+    /*
     public class FixtureConstructionInteraction : ConstructionInteraction
     {
         /// <summary>
@@ -125,4 +126,5 @@ namespace SS3D.Content.Systems.Construction
             }
         }
     }
+    */
 }

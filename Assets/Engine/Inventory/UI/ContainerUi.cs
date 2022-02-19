@@ -40,6 +40,8 @@ namespace SS3D.Engine.Inventory.UI
                 return;
             }
 
+            container.AttachedTo.containerDescriptor.containerUi = this;
+
             Vector2Int size = container.Size;
             var rectTransform = Grid.GetComponent<RectTransform>();
             Vector2 gridDimensions = Grid.GetGridDimensions();

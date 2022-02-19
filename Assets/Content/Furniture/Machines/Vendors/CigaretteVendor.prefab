@@ -39,7 +39,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5778174032221221414}
-  - component: {fileID: 7248875121770996340}
   - component: {fileID: 8902523492035168270}
   - component: {fileID: 32967740200445319}
   - component: {fileID: 9204918293919080062}
@@ -64,22 +63,6 @@ Transform:
   m_Father: {fileID: 6038773036230548675}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7248875121770996340
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1681409769638552638}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!33 &8902523492035168270
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -251,7 +234,6 @@ GameObject:
   - component: {fileID: 1650163529337778107}
   - component: {fileID: 5522326736482285483}
   - component: {fileID: 8716617303496286320}
-  - component: {fileID: 8775825468216933142}
   m_Layer: 0
   m_Name: CigaretteVendor
   m_TagString: Untagged
@@ -291,7 +273,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 1bf0c4148eaa7a545a3d54711e21f4d1
   hasSpawned: 0
 --- !u!33 &3187226968987351675
 MeshFilter:
@@ -505,9 +488,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!114 &8716617303496286320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -523,20 +517,6 @@ MonoBehaviour:
   DisplayName: Poke N' Toke
   Text: Dispenses smoking paraphernalia.
   MaxDistance: 0
---- !u!114 &8775825468216933142
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7319846706112917200}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca62035673670df44b63025dcc079a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileState:
-    rotation: 0
 --- !u!1 &9139902570717850779
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,7 +526,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8615217185219957086}
-  - component: {fileID: 3915293906204376245}
   - component: {fileID: 5341548928929840328}
   - component: {fileID: 2463290690161719472}
   - component: {fileID: 2883166973879690658}
@@ -571,22 +550,6 @@ Transform:
   m_Father: {fileID: 6038773036230548675}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3915293906204376245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9139902570717850779}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!33 &5341548928929840328
 MeshFilter:
   m_ObjectHideFlags: 0

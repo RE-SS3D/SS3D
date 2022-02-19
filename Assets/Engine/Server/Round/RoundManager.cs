@@ -23,9 +23,8 @@ namespace SS3D.Engine.Server.Round
         // manager that handles the current round's gamemode
         public GamemodeManager gamemodeManager;
         // WARMUP
-        
         // is it starting up?
-        private bool warmingUp;
+        [SyncVar] private bool warmingUp;    
         // how much time we will wait until the round starts
         [SerializeField] private int warmupTimeSeconds = 5;
         // how much time the round will last, hopefully we can disable this
@@ -46,7 +45,8 @@ namespace SS3D.Engine.Server.Round
         // how much time the round is on for
         private int timerSeconds = 0;
         // has the round started
-        private bool started = false;
+        [SyncVar] private bool started = false;
+    
         // the coroutine that counts how much time has passed since round start
         private Coroutine tickCoroutine;
 
@@ -93,35 +93,30 @@ namespace SS3D.Engine.Server.Round
         // WARMUP - START - END
         public void StartWarmup()
         {
+            // These activities will happen both on the server and client.
             gameObject.SetActive(true);
-
-            started = false;
             StopAllCoroutines();
-            
             timerSeconds = warmupTimeSeconds;
-
-            warmupCoroutine = StartCoroutine(TickWarmup());
-
-            warmingUp = true;
             ServerWarmupStarted?.Invoke();
-            RpcStartWarmup();
+
+            // Only do SyncVar assignments, tick coroutine and the RPC on the server.
+            if (isServer)
+            {
+                started = false;
+                warmingUp = true;
+                warmupCoroutine = StartCoroutine(TickWarmup());
+                RpcStartWarmup();
+            }
+
+
         }
         
         [ClientRpc]
         private void RpcStartWarmup()
         {
+            // Prevent from running again on server
             if (isServer) return;
-            gameObject.SetActive(true);
-
-            started = false;
-            StopAllCoroutines();
-            
-            timerSeconds = warmupTimeSeconds;
-
-            warmupCoroutine = StartCoroutine(TickWarmup());
-
-            warmingUp = true;
-            ServerWarmupStarted?.Invoke();
+            StartWarmup();
         }
 
         // Asks the server to start the round
@@ -135,23 +130,26 @@ namespace SS3D.Engine.Server.Round
         [ContextMenu("Start Round")]
         public void StartRound()
         {
+            // These activities will happen both on the server and client.
             gameObject.SetActive(true);
-            started = true;
-            warmingUp = false;
-            
-            StopCoroutine(warmupCoroutine);
-            
-            tickCoroutine = StartCoroutine("Tick");
 
             Debug.Log("Round Started");
             ServerRoundStarted?.Invoke();
-            
             SpawnReadyPlayers();
             
             // handles setting up the gamemode and objectives
             GamemodeManager.singleton.InitiateGamemode();
             
             RpcStartRound();
+            // Only do SyncVar assignments, tick coroutine and the RPC on the server.
+            if (isServer)
+            {
+                started = true;
+                warmingUp = false;
+                StopCoroutine(warmupCoroutine);
+                tickCoroutine = StartCoroutine("Tick");
+                RpcStartRound();
+            }
         }
 
         public void SpawnReadyPlayers()
@@ -165,17 +163,7 @@ namespace SS3D.Engine.Server.Round
         public void RpcStartRound()
         {
             if (isServer) return;
-            
-            gameObject.SetActive(true);
-            started = true;
-            warmingUp = false;
-            
-            if (warmupCoroutine != null) StopCoroutine(warmupCoroutine); 
-            
-            tickCoroutine = StartCoroutine("Tick");
-            
-            Debug.Log("Round Started");
-            ServerRoundStarted?.Invoke();
+            StartRound();
         }
 
         [Command(ignoreAuthority = true)]

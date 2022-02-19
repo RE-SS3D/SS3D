@@ -3,6 +3,7 @@ using System.Linq;
 using SS3D.Content.Systems.Interactions;
 using SS3D.Engine.Interactions;
 using SS3D.Engine.Inventory;
+using SS3D.Engine.Tile.TileRework;
 using SS3D.Engine.Tiles;
 using UnityEngine;
 
@@ -14,7 +15,8 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
         public GameObject LoadingBarPrefab;
 
 	// nope
-        public FurnitureFloorFixture TableToConstruct;
+        public TileObjectSo ObjectToConstruct;
+        public Direction ObjectDirection;
         public float Delay;
         public LayerMask ObstacleMask;
 
@@ -23,12 +25,13 @@ namespace SS3D.Content.Items.Functional.Tools.Generic
         public override void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
             base.GenerateInteractionsFromSource(targets, interactions);
-            interactions.Insert(0, new InteractionEntry(targets[0], new TableConstructionInteraction
-            {       TableToConstruct = TableToConstruct, 
+            interactions.Insert(0, new InteractionEntry(targets[0], new ItemConstructionInteraction
+            {       ObjectToConstruct = ObjectToConstruct, 
                 Delay = Delay, 
                 LoadingBarPrefab = LoadingBarPrefab,
                 icon = constructIcon,
-                ObstacleMask = ObstacleMask
+                ObstacleMask = ObstacleMask,
+                ObjectDirection = ObjectDirection
             }));
         }
     }

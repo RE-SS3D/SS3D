@@ -1,5 +1,6 @@
 ﻿using SS3D.Engine.Interactions;
 using SS3D.Engine.Interactions.Extensions;
+using SS3D.Engine.Tile.TileRework;
 using SS3D.Engine.Tiles;
 using UnityEngine;
 
@@ -7,13 +8,12 @@ namespace SS3D.Content.Systems.Interactions
 {
     public class WallConstructionInteraction : ConstructionInteraction
     {
-        public Turf WallToConstruct { get; set; }
-        public Turf FloorToConstruct { get; set; }
+        public TileObjectSo WallToConstruct { get; set; }
 
         public override string GetName(InteractionEvent interactionEvent)
         {
-            TileObject tileObject = (interactionEvent.Target as IGameObjectProvider)?.GameObject?.GetComponentInParent<TileObject>();
-            if (tileObject != null && tileObject.Tile.turf != null && tileObject.Tile.turf.isWall)
+            PlacedTileObject tileObject = (interactionEvent.Target as IGameObjectProvider)?.GameObject?.GetComponentInParent<PlacedTileObject>();
+            if (tileObject != null && tileObject.GetGenericType() == TileObjectGenericType.Wall)
             {
                 return "Deconstruct";
             }
@@ -28,7 +28,7 @@ namespace SS3D.Content.Systems.Interactions
                 return false;
             }
 
-            return !TargetTile.Tile.fixtures.floorFixtureDefinition.IsEmpty();
+            return true;
         }
 
         public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
@@ -39,26 +39,18 @@ namespace SS3D.Content.Systems.Interactions
         protected override void StartDelayed(InteractionEvent interactionEvent)
         {
             var targetBehaviour = (IGameObjectProvider) interactionEvent.Target;
-            TileManager tileManager = Object.FindObjectOfType<TileManager>();
-            TileObject targetTile = targetBehaviour.GameObject.GetComponentInParent<TileObject>();
-            var tile = targetTile.Tile;
+            TileManager tileManager = TileManager.Instance;
+            PlacedTileObject targetPlacedObject = targetBehaviour.GameObject.GetComponentInParent<PlacedTileObject>();
+            // var tile = targetPlacedObject.Tile;
 
             // Deconstruct
-            if (tile.turf?.isWall == true)
+            if (targetPlacedObject != null && targetPlacedObject.GetGenericType() == TileObjectGenericType.Wall)
             {
-                tile.turf = null;
+                tileManager.ClearTileObject(TileLayer.Turf, targetPlacedObject.transform.position);
             }
             else // Construct
-                tile.turf = WallToConstruct;
+                tileManager.SetTileObject(WallToConstruct, targetPlacedObject.transform.position, Direction.South);
 
-            // TODO: Change rotation from defaulting to North
-            tile.fixtures.SetFloorFixtureAtLayer(null, FloorFixtureLayers.FurnitureFixtureMain);
-            FixturesContainer.ValidateFixtures(tile);
-
-            // TODO: Make an easier way of doing this.
-            tile.subStates = new object[2];
-
-            tileManager.UpdateTile(targetTile.transform.position, tile);
         }
     }
 }
