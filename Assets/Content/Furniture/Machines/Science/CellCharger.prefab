@@ -41,7 +41,6 @@ GameObject:
   - component: {fileID: 5322946387488369706}
   - component: {fileID: 6176185148404739310}
   - component: {fileID: 6010454467478718981}
-  - component: {fileID: 3807200671825095934}
   - component: {fileID: 244226616592630479}
   m_Layer: 16
   m_Name: LightRed
@@ -111,22 +110,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &3807200671825095934
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3179022951402566217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!114 &244226616592630479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,7 +137,6 @@ GameObject:
   - component: {fileID: 702275998351232320}
   - component: {fileID: 5294062514949821067}
   - component: {fileID: 1795052318411532482}
-  - component: {fileID: 4293110429199180547}
   - component: {fileID: 7671464048650236875}
   m_Layer: 16
   m_Name: LightGreen
@@ -224,22 +206,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &4293110429199180547
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4236031646399032868}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!114 &7671464048650236875
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -267,8 +233,6 @@ GameObject:
   - component: {fileID: 8019329335886334122}
   - component: {fileID: 3011894308048141432}
   - component: {fileID: 6935684457514274430}
-  - component: {fileID: 2774170276901758112}
-  - component: {fileID: 2176262813411891688}
   m_Layer: 16
   m_Name: Wires
   m_TagString: Untagged
@@ -337,40 +301,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &2774170276901758112
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4905540878136422180}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
---- !u!114 &2176262813411891688
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4905540878136422180}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
 --- !u!1 &7379402310911795287
 GameObject:
   m_ObjectHideFlags: 0
@@ -382,7 +312,6 @@ GameObject:
   - component: {fileID: 8133904838974236859}
   - component: {fileID: 3643472593813451672}
   - component: {fileID: 6701105107252381315}
-  - component: {fileID: 7191891896024946561}
   - component: {fileID: 113541125418561162}
   m_Layer: 16
   m_Name: LightYellow
@@ -452,22 +381,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &7191891896024946561
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7379402310911795287}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!114 &113541125418561162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -495,7 +408,6 @@ GameObject:
   - component: {fileID: 1330699497544353379}
   - component: {fileID: 1788293126082429076}
   - component: {fileID: 4103514581983840934}
-  - component: {fileID: 5716048363174968557}
   - component: {fileID: 4418909824230124800}
   m_Layer: 16
   m_Name: LightOrange
@@ -565,22 +477,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &5716048363174968557
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8200383930962710012}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!114 &4418909824230124800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -709,7 +605,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 5ca05c587e67f2b4f9c758b5560a4b94
   hasSpawned: 0
 --- !u!64 &5933801264861911075
 MeshCollider:
@@ -756,9 +653,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!95 &-5812287283981547438
 Animator:
   serializedVersion: 3

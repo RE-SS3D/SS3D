@@ -159,7 +159,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 4a6e454385bdafc4397215d2c4b1f8f0
   hasSpawned: 0
 --- !u!114 &2931438746872202070
 MonoBehaviour:
@@ -181,6 +182,7 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 66026a73b54c5814aa62ed061b556bbd, type: 3}
   prefab: {fileID: 4211937047174720197}
   attachmentPoint: {fileID: 7158166286147809824}
+  attachmentPointAlt: {fileID: 0}
   bulkSize: 2
   traits:
   - {fileID: 11400000, guid: 08c4bae5b95cea146826e467131ec146, type: 2}

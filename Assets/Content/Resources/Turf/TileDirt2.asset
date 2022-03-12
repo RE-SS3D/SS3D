@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 2
   nameString: TileDirt2
-  genericType: floor
-  specificType: 
+  genericType: 9
+  specificType: 0
   prefab: {fileID: 6767447678079105841, guid: 93a060d37adff304d890e38c4258df7a, type: 3}
   width: 1
   height: 1

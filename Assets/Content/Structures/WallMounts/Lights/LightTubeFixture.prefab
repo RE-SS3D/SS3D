@@ -77,7 +77,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: c55902540cde02c46bf6378d28265566
   hasSpawned: 0
 --- !u!114 &211638627342979835
 MonoBehaviour:
@@ -203,7 +204,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5932893972892348327}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.781, z: 0.338}
+  m_LocalPosition: {x: 0, y: 1.786, z: 0.3559}
   m_LocalScale: {x: 1, y: 1, z: 1.9071}
   m_Children: []
   m_Father: {fileID: 1205637206350596522}
@@ -221,8 +222,8 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
-  m_Range: 8
+  m_Intensity: 2
+  m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10

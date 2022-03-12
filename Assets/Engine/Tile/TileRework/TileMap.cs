@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SS3D.Engine.Tile.TileRework;
 using UnityEditor;
 using UnityEngine;
-using static SS3D.Engine.Tiles.TileRestrictions;
+using static SS3D.Engine.Tile.TileRework.TileRestrictions;
 
 namespace SS3D.Engine.Tiles
 {
@@ -32,6 +33,11 @@ namespace SS3D.Engine.Tiles
         /// The size of each tile.
         /// </summary>
         private const float TILE_SIZE = 1.0f;
+
+        /// <summary>
+        /// The tolerance threshold for identifying a tile object at a position.
+        /// </summary>
+        private const float POSITION_TOLERANCE = 0.05f;
 
         private Dictionary<Vector2Int, TileChunk> chunks;
         public int ChunkCount { get => chunks.Count; }
@@ -92,6 +98,16 @@ namespace SS3D.Engine.Tiles
         }
 
         /// <summary>
+        /// Get a chunk for the passed chunk key
+        /// </summary>
+        /// <param name="chunkKey">The key for the chunk</param>
+        public TileChunk GetChunk(Vector2Int chunkKey)
+        {
+            chunks.TryGetValue(chunkKey, out TileChunk value);
+            return value;
+        }
+
+        /// <summary>
         /// Create a new chunk.
         /// </summary>
         /// <param name="chunkKey">Unique key to use</param>
@@ -136,7 +152,7 @@ namespace SS3D.Engine.Tiles
         /// </summary>
         /// <param name="worldPosition"></param>
         /// <returns></returns>
-        private Vector2Int GetKey(Vector3 worldPosition)
+        public Vector2Int GetKey(Vector3 worldPosition)
         {
             int x = (int)Math.Floor(worldPosition.x / CHUNK_SIZE);
             int y = (int)Math.Floor(worldPosition.z / CHUNK_SIZE);
@@ -187,7 +203,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="position">World position to place the object</param>
         /// <param name="dir">Direction the object is facing</param>
         /// <returns></returns>
-        public bool CanBuild(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir, CheckRestrictions checkRestrictions)
+        public bool CanBuild(int subLayerIndex, TileObjectSo tileObjectSO, Vector3 position, Direction dir, CheckRestrictions checkRestrictions)
         {
             // Get the right chunk
             TileChunk chunk = GetOrCreateChunk(position);
@@ -245,7 +261,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="tileObjectSO">Object to place</param>
         /// <param name="position">World position to place the object</param>
         /// <param name="dir">Direction the object is facing</param
-        public void SetTileObject(int subLayerIndex, TileObjectSO tileObjectSO, Vector3 position, Direction dir)
+        public void SetTileObject(int subLayerIndex, TileObjectSo tileObjectSO, Vector3 position, Direction dir)
         {
             TileLayer layer = tileObjectSO.layer;
             GameObject layerObject = GetOrCreateLayerObject(layer);
@@ -300,7 +316,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="placedObject"></param>
         /// <param name="position"></param>
         /// <param name="dir"></param>
-        public void LoadTileObject(int subLayerIndex, TileObjectSO tileObjectSO, PlacedTileObject placedObject, Vector3 position, Direction dir)
+        public void LoadTileObject(int subLayerIndex, TileObjectSo tileObjectSO, PlacedTileObject placedObject, Vector3 position, Direction dir)
         {
             TileLayer layer = tileObjectSO.layer;
             GameObject layerObject = GetOrCreateLayerObject(layer);
@@ -511,7 +527,7 @@ namespace SS3D.Engine.Tiles
                         {
                             if (softLoad)
                             {
-                                TileObjectSO tileObjectSO = tileManager.GetTileObjectSO(objectName);
+                                TileObjectSo tileObjectSO = tileManager.GetTileObjectSO(objectName);
 
                                 // Find the object and set it up again...
                                 Vector3 position = TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition);
@@ -556,7 +572,7 @@ namespace SS3D.Engine.Tiles
                 var child = layerObjectTransform.GetChild(i);
 
                 // There can be small offsets in height for some objects like overlays, so use only X and Z
-                if (child.position.x == position.x && child.position.z == position.z)
+                if ((Math.Abs(child.position.x - position.x) < POSITION_TOLERANCE) && (Math.Abs(child.position.z - position.z) < POSITION_TOLERANCE))
                 {
                     if (sameTile && !child.name.Contains("_" + subLayerIndex))
                         continue;

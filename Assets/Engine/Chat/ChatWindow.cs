@@ -35,7 +35,8 @@ namespace SS3D.Engine.Chat
             ToggleChatWindowUI(); // Hide window by default
         }
 
-        public RectTransform GetTabRow() {
+        public RectTransform GetTabRow()
+        {
             return tabRow;
         }
 
@@ -66,7 +67,7 @@ namespace SS3D.Engine.Chat
 
                 channelDropDown.options.Add(
                     new TMP_Dropdown.OptionData(
-                        string.Format("<color=#{0}>[{1}]</color>", 
+                        string.Format("<color=#{0}>[{1}]</color>",
                             ColorUtility.ToHtmlStringRGBA(channel.Color),
                             channel.Abbreviation)
                     )
@@ -128,7 +129,7 @@ namespace SS3D.Engine.Chat
 
         private void LoadTabChatLog(ChatTabData tabData)
         {
-            List<ChatMessage> relevantMessages = chatRegister.GetRelevantMessages(tabData); 
+            List<ChatMessage> relevantMessages = chatRegister.GetRelevantMessages(tabData);
             StringBuilder sb = new StringBuilder();
             foreach (ChatMessage message in relevantMessages)
             {
@@ -151,7 +152,7 @@ namespace SS3D.Engine.Chat
             }
 
             ChatTab newTab = tabRow.GetChild(0).GetComponent<ChatTab>();
-        
+
             if (newTab)
             {
                 LoadTab(newTab.Data);
@@ -222,15 +223,12 @@ namespace SS3D.Engine.Chat
                 return;
             }
 
-            //Add the no parse tag so users can't edit their text
-            StringBuilder newText = new StringBuilder();
-            newText.Append("<noparse>").Append(text).Append("</noparse>");
-
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.Channel = currentTabData.Channels[channelDropDown.value];
-            chatMessage.Text = newText.ToString();
+            chatMessage.Text = text;
             inputField.text = "";
-            if(chatRegister.RestrictedChannels.Contains(chatMessage.Channel.Name)){
+            if (chatRegister.RestrictedChannels.Contains(chatMessage.Channel.Name))
+            {
                 return; //do not allow talking in restricted channels
             }
 
@@ -239,8 +237,8 @@ namespace SS3D.Engine.Chat
 
         public void OnDrag(PointerEventData eventData)
         {
-            RectTransform moveTransform = (RectTransform) transform;
-            moveTransform.position += (Vector3) eventData.delta;
+            RectTransform moveTransform = (RectTransform)transform;
+            moveTransform.position += (Vector3)eventData.delta;
         }
 
         public bool PlayerIsTyping()
@@ -250,7 +248,8 @@ namespace SS3D.Engine.Chat
 
         public void FinishTyping()
         {
-            if ((Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter)) ) {
+            if ((Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter)))
+            {
                 SendMessage();
             }
 
@@ -260,7 +259,7 @@ namespace SS3D.Engine.Chat
         public void FocusInputField()
         {
             inputField.Select();
-        
+
         }
     }
 

@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 65105116360639626}
   - component: {fileID: 4432888557401662878}
-  - component: {fileID: 3092347979293745945}
   - component: {fileID: 8136077423948845529}
   m_Layer: 0
   m_Name: VentFan
@@ -41,22 +40,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 45880962284446276}
   m_Mesh: {fileID: -226446435696246503, guid: d23a461ee9945884db81c671412cd707, type: 3}
---- !u!114 &3092347979293745945
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 45880962284446276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!23 &8136077423948845529
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -156,7 +139,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: bb2ccbe283c7a7d459f283a7483e04b9
   hasSpawned: 0
 --- !u!23 &3409554715360446247
 MeshRenderer:
@@ -178,6 +162,7 @@ MeshRenderer:
   m_Materials:
   - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
   - {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  - {fileID: 2100000, guid: 511da6e1a29c59846921641dc69e46db, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

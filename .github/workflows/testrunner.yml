@@ -1,0 +1,32 @@
+#https://game.ci/docs/github/test-runner
+name: Run Tests
+on: [push, workflow_dispatch]
+jobs:
+  run_tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Run tests
+        uses: game-ci/unity-test-runner@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Notify discord if tests fail
+        uses: rjstone/discord-webhook-notify@v1
+        if: failure()
+        with:
+          severity: error
+          details: Test runner failed!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Upload test results
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Test results
+          path: artifacts

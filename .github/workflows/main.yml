@@ -1,0 +1,59 @@
+#https://game.ci/docs/github/builder
+name: Automated Build
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  build:
+    name: Build for ${{ matrix.targetPlatform }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        targetPlatform:
+          #- StandaloneOSX
+          #- StandaloneWindows
+          - StandaloneWindows64
+          #- StandaloneLinux64
+    steps:
+      - name: Checkout project code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Get version tag
+        id: tag_name
+        run: |
+          echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+      - name: Make build
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          buildName: RESS3D-${{ steps.tag_name.outputs.SOURCE_TAG }}
+          targetPlatform: ${{ matrix.targetPlatform }}
+      - name: Create new release from tag
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: Release ${{ steps.tag_name.outputs.SOURCE_TAG }}
+          tag_name: ${{ steps.tag_name.outputs.SOURCE_TAG }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Install zip
+        uses: montudor/action-zip@v1
+      - name: Archive build
+        run: zip -qq -r RESS3D-${{ steps.tag_name.outputs.SOURCE_TAG }}.zip build/${{ matrix.targetPlatform }}
+        working-directory: /home/runner/work/SS3D/SS3D
+      - name: Add build arhive to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /home/runner/work/SS3D/SS3D/RESS3D-${{ steps.tag_name.outputs.SOURCE_TAG }}.zip
+          asset_name: RESS3D-${{ steps.tag_name.outputs.SOURCE_TAG }}.zip
+          asset_content_type: application/zip

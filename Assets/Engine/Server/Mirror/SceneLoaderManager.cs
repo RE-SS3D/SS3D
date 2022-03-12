@@ -211,7 +211,7 @@ namespace SS3D
             }
         }
 
-        [Command(ignoreAuthority = true)]
+        [Command(requiresAuthority = false)]
         public void CmdSetSelectedMap(string scene)
         {
             selectedMap = scene;
@@ -251,6 +251,8 @@ namespace SS3D
             Debug.Log("Setting new active scene: " + selectedMap);
             SceneManager.SetActiveScene(GetSelectedScene());
             Debug.Log("New active scene set " + SceneManager.GetActiveScene().name);
+
+            TileManager.Instance.Reinitialize();
 
             if (RoundManager.singleton.IsRoundStarted)
             {

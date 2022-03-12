@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 10
   nameString: Glowshroom
-  genericType: plant
-  specificType: 
+  genericType: 2
+  specificType: 0
   prefab: {fileID: 8757431509704750092, guid: 77341584f36c27348b6c272ab2cbe6cd, type: 3}
   width: 1
   height: 1

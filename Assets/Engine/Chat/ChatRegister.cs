@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
@@ -32,7 +32,14 @@ namespace SS3D.Engine.Chat
         [Command]
         public void CmdSendMessage(ChatMessage chatMessage)
         {
-            if(restrictedChannels.Contains(chatMessage.Channel.Name)) return;
+            if (restrictedChannels.Contains(chatMessage.Channel.Name)) return;
+            else
+            {
+                // Tags should be escaped only in unrestricted channels thus preserving the ability
+                // to stylize in restricted channels.
+                chatMessage.Text = chatMessage.Text.Replace("<", "<nobr><</nobr>");
+            }
+
             
             chatMessage.Sender = gameObject.name;
             //TODO: this could be avoided if chat messages were stored on some centrally networked object and each client would pull from them. I could not get it to work though.
