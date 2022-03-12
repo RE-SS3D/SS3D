@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4008623169192863623}
   - component: {fileID: 8999495644529346004}
   - component: {fileID: 4983719359491253607}
+  - component: {fileID: 8583401914446730203}
   m_Layer: 0
   m_Name: fridge
   m_TagString: Untagged
@@ -235,7 +236,7 @@ MonoBehaviour:
   storeIcon: {fileID: 0}
   viewIcon: {fileID: 0}
   attachmentOffset: {x: 0, y: 0, z: 0}
-  containerName: fridge
+  containerName: Fridge
   onlyStoreWhenOpen: 1
   openWhenContainerViewed: 0
   size: {x: 4, y: 8}
@@ -243,10 +244,10 @@ MonoBehaviour:
   attachItems: 1
   startFilter: {fileID: 0}
   initialized: 1
-  maxDistance: 5
+  maxDistance: 1
   isOpenable: 1
   isInteractive: 1
-  hasUi: 0
+  hasUi: 1
   hasCustomInteraction: 0
   hasCustomDisplay: 0
   displays: []
@@ -280,6 +281,22 @@ MonoBehaviour:
   syncInterval: 0.1
   OpenIcon: {fileID: 0}
   containerDescriptor: {fileID: 4008623169192863623}
+--- !u!114 &8583401914446730203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4214221335928705926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  OpenIcon: {fileID: 0}
+  containerDescriptor: {fileID: 4541624218573257149}
 --- !u!1 &5240830354732226920
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,6 +308,8 @@ GameObject:
   - component: {fileID: 1143501564299038576}
   - component: {fileID: 2621842397224039768}
   - component: {fileID: 6889282342120757457}
+  - component: {fileID: 4541624218573257149}
+  - component: {fileID: 8167116886218433833}
   m_Layer: 14
   m_Name: FridgeDoor
   m_TagString: Untagged
@@ -359,3 +378,54 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &4541624218573257149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5240830354732226920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachedContainer: {fileID: 8167116886218433833}
+  containerSync: {fileID: 0}
+  containerInteractive: {fileID: 8583401914446730203}
+  containerItemDisplay: {fileID: 0}
+  containerUi: {fileID: 0}
+  openIcon: {fileID: 0}
+  takeIcon: {fileID: 0}
+  storeIcon: {fileID: 0}
+  viewIcon: {fileID: 0}
+  attachmentOffset: {x: 0, y: 0, z: 0}
+  containerName: Fridge Door
+  onlyStoreWhenOpen: 1
+  openWhenContainerViewed: 0
+  size: {x: 3, y: 4}
+  hideItems: 1
+  attachItems: 1
+  startFilter: {fileID: 0}
+  initialized: 1
+  maxDistance: 1
+  isOpenable: 1
+  isInteractive: 1
+  hasUi: 1
+  hasCustomInteraction: 0
+  hasCustomDisplay: 0
+  displays: []
+  numberDisplay: 0
+--- !u!114 &8167116886218433833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5240830354732226920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDescriptor: {fileID: 4541624218573257149}
