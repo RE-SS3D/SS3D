@@ -33,7 +33,7 @@ namespace Content.Systems.Player.IK
         }
 
 #if UNITY_EDITOR
-        // This class is resposable of displaying the bools properly. Values are hardcoded for lack of better means. (Currently unused)
+        // This class is responsible for displaying the bools properly. Values are hardcoded for lack of better means. (Currently unused)
         //[CustomPropertyDrawer(typeof(Limits))]
         private class LimitsUIE : PropertyDrawer
         {
