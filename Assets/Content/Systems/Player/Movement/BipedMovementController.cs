@@ -1,10 +1,10 @@
 ﻿using System;
 using Mirror;
+using SS3D.Content.Systems.Player.Movement;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Vector2 = UnityEngine.Vector2;
 
-namespace SS3D.Content.Systems.Player.Movement
+namespace Content.Systems.Player.Movement
 {
     /// <summary>
     /// Controls the movement for biped characters that use the same armature
@@ -15,6 +15,8 @@ namespace SS3D.Content.Systems.Player.Movement
     [RequireComponent(typeof(Animator))]
     public class BipedMovementController : NetworkBehaviour
     {
+        public event Action<float> AnimationSpeedChanged;
+
         [Header("Components")] 
         [SerializeField] private CharacterController characterController;
 
@@ -40,10 +42,13 @@ namespace SS3D.Content.Systems.Player.Movement
         [SerializeField] private Transform movementTarget;
         [SerializeField] private Transform mousePositionTransform;
         [SerializeField] private Transform mouseDirectionTransform;
-        
-        public event Action<float> AnimationSpeedChanged;
+
+        [Header("Debug Info")] 
+        [SerializeField] private Vector3 _absoluteMovement;
 
         private new Camera camera;
+
+        public Vector3 AbsoluteMovement => _absoluteMovement; 
 
         private void Start()
         {
@@ -114,7 +119,9 @@ namespace SS3D.Content.Systems.Player.Movement
             targetMovement = Vector3.Lerp(targetMovement, newTargetMovement, Time.deltaTime * lerpMultiplier);
 
             Vector3 resultingMovement = targetMovement + transform.position;
-            movementTarget.position = resultingMovement;
+            _absoluteMovement = resultingMovement;
+
+            movementTarget.position = _absoluteMovement;
         }
 
         /// <summary>

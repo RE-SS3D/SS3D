@@ -1,4 +1,6 @@
 ﻿using System;
+using Content.Systems.Player;
+using Content.Systems.Player.Movement;
 using Mirror;
 using SS3D.Content.Systems.Player;
 using SS3D.Engine.Inventory;
@@ -38,7 +40,7 @@ namespace SS3D.Content.Creatures.Human
         // The characters' hands, if they exist.
         private Hands hands;
 
-        private HumanoidMovementController movementController;
+        private BipedMovementController movementController;
         private CharacterController characterController;
 
         void Start()
@@ -160,7 +162,7 @@ namespace SS3D.Content.Creatures.Human
             BodyEnabled = enabled;
 
             // Get absolute character movement
-            movementController = movementController != null ? movementController : GetComponent<HumanoidMovementController>();
+            movementController = movementController != null ? movementController : GetComponent<BipedMovementController>();
             Vector3 movement = Vector3.zero;
             if (movementController != null)
             {
