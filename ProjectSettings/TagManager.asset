@@ -3,10 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - MainCanvas
-  - PlayerCamera
-  - ChatWindow
+  tags: []
   layers:
   - Default
   - TransparentFX
@@ -16,22 +13,22 @@ TagManager:
   - UI
   - 
   - 
-  - View Obstacle
-  - Field of View Mask
-  - FovFx
   - 
   - 
   - 
-  - IgnorePlayerCollision
-  - Player
-  - Item
   - 
   - 
   - 
-  - Render Texture Mask
   - 
   - 
-  - Character Preview
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 

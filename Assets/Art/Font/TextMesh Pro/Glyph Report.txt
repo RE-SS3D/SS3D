@@ -1,0 +1,15 @@
+Font: Geo  Style: Regular
+Point Size: 228   SP/PD Ratio: 2.2%
+
+Characters included: 96/99
+Missing characters: 3
+Excluded characters: 0
+
+Characters missing from font file:
+----------------------------------------
+ID: 8203	Hex: 200B	Char [​]
+ID: 8230	Hex: 2026	Char […]
+ID: 9633	Hex: 25A1	Char [□]
+
+Characters excluded from packing:
+----------------------------------------
