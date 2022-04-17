@@ -2,7 +2,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-
+using SS3D.Core;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -13,7 +13,7 @@ namespace UDiscord
     public class DiscordManager : DiscordBehaviour
     {
         #region Settings
-        public static DiscordManager App; void Awake() { App = this;}
+        public static DiscordManager App;
         public long Discord_AppID;
         public string Discord_SteamID;
         public bool Discord_Stay = false;
@@ -30,11 +30,29 @@ namespace UDiscord
 
         #region Start/Update
 
-        void Start()
+        private void Awake()
         {
-            if(Discord_Start) OnConnect.AddListener(CallDiscord); OnConnect?.Invoke();
+            App = this;
         }
-        void Update()
+
+        private void Start()
+        {
+            ApplicationStateManager applicationStateManager = ApplicationStateManager.Instance;
+
+            bool disableDiscordIntegration = applicationStateManager.DisableDiscordIntegration;
+            if (disableDiscordIntegration)
+            {
+                Destroy(gameObject);
+            }
+
+            if (Discord_Start)
+            {
+                OnConnect.AddListener(CallDiscord);
+            }
+            OnConnect?.Invoke();
+        }
+
+        private void Update()
         {
             discord.RunCallbacks();
         }
@@ -163,7 +181,7 @@ namespace UDiscord
             discord = new UDiscord(Discord_AppID , (UInt64)CreateFlags.Default);
 
             var activityManager = discord.GetActivityManager();
-            var LobbyManager = discord.GetLobbyManager();
+            var lobbyManager = discord.GetLobbyManager();
 
             var activity = new Activity 
             {
