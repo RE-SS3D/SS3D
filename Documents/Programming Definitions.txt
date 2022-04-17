@@ -1,9 +1,8 @@
 Programming Definitions & Important notes
 - Always ask the lead programmer if you're in doubt.
 - Remember, we gotta network stuff.
-- Use variableName for true private variables (don't have the [SerializedField] tag).
-- Use _variableName for private variables with the [SerializedField] tag.
-- Use VariableName for public variables.
+- Use _variableName for private variables.
+- Use VariableName for public, const and static variables.
 - Never use underscores.
 - Never use abbreviated variables, except (if any missing or you'd like to suggest one please contact the lead programmer): 
     i, j, rb, ui, gui, id, x, y, z, args, config.

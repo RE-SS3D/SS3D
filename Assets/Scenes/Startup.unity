@@ -1039,7 +1039,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _networkHelper: {fileID: 1628220427}
-  _skipIntro: 0
+  _skipIntro: 1
+  _disableDiscordIntegration: 0
   _testingClientInEditor: 0
   _testingServerOnlyInEditor: 0
 --- !u!1 &1628220425
@@ -1085,7 +1086,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c05cbdf20b74dacbc886660386d2919, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  applicationStateManager: {fileID: 1607392373}
 --- !u!1 &1665034328
 GameObject:
   m_ObjectHideFlags: 0
