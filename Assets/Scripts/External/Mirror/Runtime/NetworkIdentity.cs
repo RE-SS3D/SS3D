@@ -35,7 +35,7 @@ namespace Mirror
     // NetworkIdentity.Awake initializes all NetworkComponents.
     // let's make sure it's always called before their Awake's.
     [DefaultExecutionOrder(-1)]
-    [AddComponentMenu("Network/NetworkIdentity")]
+    [AddComponentMenu("Network/Network Identity")]
     [HelpURL("https://mirror-networking.gitbook.io/docs/components/network-identity")]
     public sealed class NetworkIdentity : MonoBehaviour
     {
@@ -88,17 +88,13 @@ namespace Mirror
         /// <summary>True if this object exists on a client that is not also acting as a server.</summary>
         public bool isClientOnly => isClient && !isServer;
 
-        /// <summary>True if this object is the authoritative player object on the client.</summary>
-        // Determined at runtime. For most objects, authority is held by the server.
-        // For objects that had their authority set by AssignClientAuthority on
-        // the server, this will be true on the client that owns the object. NOT
-        // on other clients.
+        /// <summary>True on client if that component has been assigned to the client. E.g. player, pets, henchmen.</summary>
         public bool hasAuthority { get; internal set; }
 
         /// <summary>The set of network connections (players) that can see this object.</summary>
         // note: null until OnStartServer was called. this is necessary for
         //       SendTo* to work properly in server-only mode.
-        public Dictionary<int, NetworkConnection> observers;
+        public Dictionary<int, NetworkConnectionToClient> observers;
 
         /// <summary>The unique network Id of this object (unique at runtime).</summary>
         public uint netId { get; internal set; }
@@ -118,6 +114,7 @@ namespace Mirror
         internal bool destroyCalled;
 
         /// <summary>Client's network connection to the server. This is only valid for player objects on the client.</summary>
+        // TODO change to NetworkConnectionToServer, but might cause some breaking
         public NetworkConnection connectionToServer { get; internal set; }
 
         /// <summary>Server's network connection to the client. This is only valid for client-owned objects (including the Player object) on the server.</summary>
@@ -249,21 +246,35 @@ namespace Mirror
         static readonly Dictionary<ulong, NetworkIdentity> sceneIds =
             new Dictionary<ulong, NetworkIdentity>();
 
+        // reset only client sided statics.
+        // don't touch server statics when calling StopClient in host mode.
+        // https://github.com/vis2k/Mirror/issues/2954
+        internal static void ResetClientStatics()
+        {
+            previousLocalPlayer = null;
+            clientAuthorityCallback = null;
+        }
+
+        internal static void ResetServerStatics()
+        {
+            nextNetworkId = 1;
+        }
+
         // RuntimeInitializeOnLoadMethod -> fast playmode without domain reload
         // internal so it can be called from NetworkServer & NetworkClient
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         internal static void ResetStatics()
         {
-            nextNetworkId = 1;
-            clientAuthorityCallback = null;
-            previousLocalPlayer = null;
+            // reset ALL statics
+            ResetClientStatics();
+            ResetServerStatics();
         }
 
         /// <summary>Gets the NetworkIdentity from the sceneIds dictionary with the corresponding id</summary>
         public static NetworkIdentity GetSceneIdentity(ulong id) => sceneIds[id];
 
         // used when adding players
-        internal void SetClientOwner(NetworkConnection conn)
+        internal void SetClientOwner(NetworkConnectionToClient conn)
         {
             // do nothing if it already has an owner
             if (connectionToClient != null && conn != connectionToClient)
@@ -273,7 +284,7 @@ namespace Mirror
             }
 
             // otherwise set the owner connection
-            connectionToClient = (NetworkConnectionToClient)conn;
+            connectionToClient = conn;
         }
 
         static uint nextNetworkId = 1;
@@ -283,7 +294,7 @@ namespace Mirror
         public static void ResetNextNetworkId() => nextNetworkId = 1;
 
         /// <summary>The delegate type for the clientAuthorityCallback.</summary>
-        public delegate void ClientAuthorityCallback(NetworkConnection conn, NetworkIdentity identity, bool authorityState);
+        public delegate void ClientAuthorityCallback(NetworkConnectionToClient conn, NetworkIdentity identity, bool authorityState);
 
         /// <summary> A callback that can be populated to be notified when the client-authority state of objects changes.</summary>
         public static event ClientAuthorityCallback clientAuthorityCallback;
@@ -635,7 +646,7 @@ namespace Mirror
             }
 
             netId = GetNextNetworkId();
-            observers = new Dictionary<int, NetworkConnection>();
+            observers = new Dictionary<int, NetworkConnectionToClient>();
 
             //Debug.Log($"OnStartServer {this} NetId:{netId} SceneId:{sceneId:X}");
 
@@ -757,7 +768,7 @@ namespace Mirror
         // ownership change due to sync to owner feature.
         // Without this static, the second time we get the spawn message we
         // would call OnStartLocalPlayer again on the same object
-        static NetworkIdentity previousLocalPlayer = null;
+        internal static NetworkIdentity previousLocalPlayer = null;
         internal void OnStartLocalPlayer()
         {
             if (previousLocalPlayer == this)
@@ -776,6 +787,26 @@ namespace Mirror
                 try
                 {
                     comp.OnStartLocalPlayer();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e, comp);
+                }
+            }
+        }
+
+        internal void OnStopLocalPlayer()
+        {
+            foreach (NetworkBehaviour comp in NetworkBehaviours)
+            {
+                // an exception in OnStopLocalPlayer should be caught, so that
+                // one component's exception doesn't stop all other components
+                // from being initialized
+                // => this is what Unity does for Start() etc. too.
+                //    one exception doesn't stop all the other Start() calls!
+                try
+                {
+                    comp.OnStopLocalPlayer();
                 }
                 catch (Exception e)
                 {
@@ -929,9 +960,13 @@ namespace Mirror
         // IMPORTANT: int tick avoids floating point inaccuracy over days/weeks
         internal NetworkIdentitySerialization GetSerializationAtTick(int tick)
         {
-            // reserialize if tick is different than last changed.
+            // only rebuild serialization once per tick. reuse otherwise.
+            // except for tests, where Time.frameCount never increases.
+            // so during tests, we always rebuild.
+            // (otherwise [SyncVar] changes would never be serialized in tests)
+            //
             // NOTE: != instead of < because int.max+1 overflows at some point.
-            if (lastSerialization.tick != tick)
+            if (lastSerialization.tick != tick || !Application.isPlaying)
             {
                 // reset
                 lastSerialization.ownerWriter.Position = 0;
@@ -941,6 +976,27 @@ namespace Mirror
                 OnSerializeAllSafely(false,
                                      lastSerialization.ownerWriter,
                                      lastSerialization.observersWriter);
+
+                // clear dirty bits for the components that we serialized.
+                // previously we did this in NetworkServer.BroadcastToConnection
+                // for every connection, for every entity.
+                // but we only serialize each entity once, right here in this
+                // 'lastSerialization.tick != tick' scope.
+                // so only do it once.
+                //
+                // NOTE: not in OnSerializeAllSafely as that should only do one
+                //       thing: serialize data.
+                //
+                //
+                // NOTE: DO NOT clear ALL component's dirty bits, because
+                //       components can have different syncIntervals and we
+                //       don't want to reset dirty bits for the ones that were
+                //       not synced yet.
+                //
+                // NOTE: this used to be very important to avoid ever growing
+                //       SyncList changes if they had no observers, but we've
+                //       added SyncObject.isRecording since.
+                ClearDirtyComponentsDirtyBits();
 
                 // set tick
                 lastSerialization.tick = tick;
@@ -1015,53 +1071,30 @@ namespace Mirror
         }
 
         // Helper function to handle Command/Rpc
-        internal void HandleRemoteCall(int componentIndex, int functionHash, MirrorInvokeType invokeType, NetworkReader reader, NetworkConnectionToClient senderConnection = null)
+        internal void HandleRemoteCall(byte componentIndex, int functionHash, RemoteCallType remoteCallType, NetworkReader reader, NetworkConnectionToClient senderConnection = null)
         {
             // check if unity object has been destroyed
             if (this == null)
             {
-                Debug.LogWarning($"{invokeType} [{functionHash}] received for deleted object [netId={netId}]");
+                Debug.LogWarning($"{remoteCallType} [{functionHash}] received for deleted object [netId={netId}]");
                 return;
             }
 
             // find the right component to invoke the function on
-            if (componentIndex < 0 || componentIndex >= NetworkBehaviours.Length)
+            if (componentIndex >= NetworkBehaviours.Length)
             {
                 Debug.LogWarning($"Component [{componentIndex}] not found for [netId={netId}]");
                 return;
             }
 
             NetworkBehaviour invokeComponent = NetworkBehaviours[componentIndex];
-            if (!RemoteCallHelper.InvokeHandlerDelegate(functionHash, invokeType, reader, invokeComponent, senderConnection))
+            if (!RemoteProcedureCalls.Invoke(functionHash, remoteCallType, reader, invokeComponent, senderConnection))
             {
-                Debug.LogError($"Found no receiver for incoming {invokeType} [{functionHash}] on {gameObject.name}, the server and client should have the same NetworkBehaviour instances [netId={netId}].");
+                Debug.LogError($"Found no receiver for incoming {remoteCallType} [{functionHash}] on {gameObject.name}, the server and client should have the same NetworkBehaviour instances [netId={netId}].");
             }
         }
 
-        // Runs on server
-        internal CommandInfo GetCommandInfo(int componentIndex, int cmdHash)
-        {
-            // check if unity object has been destroyed
-            if (this == null)
-            {
-                // error can be logged later
-                return default;
-            }
-
-            // find the right component to invoke the function on
-            if (0 <= componentIndex && componentIndex < NetworkBehaviours.Length)
-            {
-                NetworkBehaviour invokeComponent = NetworkBehaviours[componentIndex];
-                return RemoteCallHelper.GetCommandInfo(cmdHash, invokeComponent);
-            }
-            else
-            {
-                // error can be logged later
-                return default;
-            }
-        }
-
-        internal void AddObserver(NetworkConnection conn)
+        internal void AddObserver(NetworkConnectionToClient conn)
         {
             if (observers == null)
             {
@@ -1117,7 +1150,7 @@ namespace Mirror
         {
             if (observers != null)
             {
-                foreach (NetworkConnection conn in observers.Values)
+                foreach (NetworkConnectionToClient conn in observers.Values)
                 {
                     conn.RemoveFromObserving(this, true);
                 }
@@ -1134,7 +1167,7 @@ namespace Mirror
         // Authority can be removed with RemoveClientAuthority. Only one client
         // can own an object at any time. This does not need to be called for
         // player objects, as their authority is setup automatically.
-        public bool AssignClientAuthority(NetworkConnection conn)
+        public bool AssignClientAuthority(NetworkConnectionToClient conn)
         {
             if (!isServer)
             {
@@ -1251,6 +1284,10 @@ namespace Mirror
 
         // Clear only dirty component's dirty bits. ignores components which
         // may be dirty but not ready to be synced yet (because of syncInterval)
+        //
+        // NOTE: this used to be very important to avoid ever
+        //       growing SyncList changes if they had no observers,
+        //       but we've added SyncObject.isRecording since.
         internal void ClearDirtyComponentsDirtyBits()
         {
             foreach (NetworkBehaviour comp in NetworkBehaviours)

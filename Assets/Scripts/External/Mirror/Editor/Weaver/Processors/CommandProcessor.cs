@@ -13,7 +13,7 @@ namespace Mirror.Weaver
                 NetworkWriter networkWriter = new NetworkWriter();
                 networkWriter.Write(thrusting);
                 networkWriter.WritePackedUInt32((uint)spin);
-                base.SendCommandInternal(cmdName, networkWriter, cmdName);
+                base.SendCommandInternal(cmdName, networkWriter, channel);
             }
 
             public void CallCmdThrust(float thrusting, int spin)
@@ -38,23 +38,20 @@ namespace Mirror.Weaver
             NetworkBehaviourProcessor.WriteSetupLocals(worker, weaverTypes);
 
             // NetworkWriter writer = new NetworkWriter();
-            NetworkBehaviourProcessor.WriteCreateWriter(worker, weaverTypes);
+            NetworkBehaviourProcessor.WriteGetWriter(worker, weaverTypes);
 
             // write all the arguments that the user passed to the Cmd call
             if (!NetworkBehaviourProcessor.WriteArguments(worker, writers, Log, md, RemoteCallType.Command, ref WeavingFailed))
                 return null;
 
-            string cmdName = md.Name;
             int channel = commandAttr.GetField("channel", 0);
             bool requiresAuthority = commandAttr.GetField("requiresAuthority", true);
 
             // invoke internal send and return
             // load 'base.' to call the SendCommand function with
             worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Ldtoken, td);
-            // invokerClass
-            worker.Emit(OpCodes.Call, weaverTypes.getTypeFromHandleReference);
-            worker.Emit(OpCodes.Ldstr, cmdName);
+            // pass full function name to avoid ClassA.Func <-> ClassB.Func collisions
+            worker.Emit(OpCodes.Ldstr, md.FullName);
             // writer
             worker.Emit(OpCodes.Ldloc_0);
             worker.Emit(OpCodes.Ldc_I4, channel);
@@ -62,7 +59,7 @@ namespace Mirror.Weaver
             worker.Emit(requiresAuthority ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
             worker.Emit(OpCodes.Call, weaverTypes.sendCommandInternal);
 
-            NetworkBehaviourProcessor.WriteRecycleWriter(worker, weaverTypes);
+            NetworkBehaviourProcessor.WriteReturnWriter(worker, weaverTypes);
 
             worker.Emit(OpCodes.Ret);
             return cmd;
@@ -81,7 +78,9 @@ namespace Mirror.Weaver
         */
         public static MethodDefinition ProcessCommandInvoke(WeaverTypes weaverTypes, Readers readers, Logger Log, TypeDefinition td, MethodDefinition method, MethodDefinition cmdCallFunc, ref bool WeavingFailed)
         {
-            MethodDefinition cmd = new MethodDefinition(Weaver.InvokeRpcPrefix + method.Name,
+            string cmdName = Weaver.GenerateMethodName(Weaver.InvokeRpcPrefix, method);
+
+            MethodDefinition cmd = new MethodDefinition(cmdName,
                 MethodAttributes.Family | MethodAttributes.Static | MethodAttributes.HideBySig,
                 weaverTypes.Import(typeof(void)));
 

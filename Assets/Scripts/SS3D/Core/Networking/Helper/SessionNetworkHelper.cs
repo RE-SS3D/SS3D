@@ -36,7 +36,7 @@ namespace SS3D.Core.Networking.Helper
             IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
             eventService?.AddListener<ServerConnectionUIHelper.RetryButtonClicked>(InitiateNetworkSession);
             
-            _networkManager = NetworkManager.Singleton;
+            _networkManager = NetworkManager.singleton;
         }
 
         // Gets the command line arguments from the executable, for example: "-server=localhost"
@@ -107,7 +107,9 @@ namespace SS3D.Core.Networking.Helper
             ProcessCommandLineArgs();
 
             if (_networkManager == null)
-                _networkManager = NetworkManager.Singleton;
+            {
+                _networkManager = NetworkManager.singleton;
+            }
 
             if (_isHost)
             {

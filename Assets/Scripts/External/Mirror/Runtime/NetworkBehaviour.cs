@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Mirror.RemoteCalls;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Mirror
@@ -44,18 +44,18 @@ namespace Mirror
         /// <summary>True if this object is on the client-only, not host.</summary>
         public bool isClientOnly => netIdentity.isClientOnly;
 
-        /// <summary>This returns true if this object is the authoritative version of the object in the distributed network application.</summary>
-        // keeping this ridiculous summary as a reminder of a time long gone...
+        /// <summary>True on client if that component has been assigned to the client. E.g. player, pets, henchmen.</summary>
         public bool hasAuthority => netIdentity.hasAuthority;
 
         /// <summary>The unique network Id of this object (unique at runtime).</summary>
         public uint netId => netIdentity.netId;
 
         /// <summary>Client's network connection to the server. This is only valid for player objects on the client.</summary>
+        // TODO change to NetworkConnectionToServer, but might cause some breaking
         public NetworkConnection connectionToServer => netIdentity.connectionToServer;
 
         /// <summary>Server's network connection to the client. This is only valid for player objects on the server.</summary>
-        public NetworkConnection connectionToClient => netIdentity.connectionToClient;
+        public NetworkConnectionToClient connectionToClient => netIdentity.connectionToClient;
 
         // SyncLists, SyncSets, etc.
         protected readonly List<SyncObject> syncObjects = new List<SyncObject>();
@@ -187,14 +187,15 @@ namespace Mirror
             syncObject.IsRecording = () => netIdentity.observers?.Count > 0;
         }
 
-        protected void SendCommandInternal(Type invokeClass, string cmdName, NetworkWriter writer, int channelId, bool requiresAuthority = true)
+        // pass full function name to avoid ClassA.Func <-> ClassB.Func collisions
+        protected void SendCommandInternal(string functionFullName, NetworkWriter writer, int channelId, bool requiresAuthority = true)
         {
             // this was in Weaver before
             // NOTE: we could remove this later to allow calling Cmds on Server
             //       to avoid Wrapper functions. a lot of people requested this.
             if (!NetworkClient.active)
             {
-                Debug.LogError($"Command Function {cmdName} called without an active client.");
+                Debug.LogError($"Command Function {functionFullName} called without an active client.");
                 return;
             }
 
@@ -213,7 +214,7 @@ namespace Mirror
             // local players can always send commands, regardless of authority, other objects must have authority.
             if (!(!requiresAuthority || isLocalPlayer || hasAuthority))
             {
-                Debug.LogWarning($"Trying to send command for object without authority. {invokeClass}.{cmdName}");
+                Debug.LogWarning($"Trying to send command for object without authority. {functionFullName}");
                 return;
             }
 
@@ -234,7 +235,7 @@ namespace Mirror
                 netId = netId,
                 componentIndex = (byte)ComponentIndex,
                 // type+func so Inventory.RpcUse != Equipment.RpcUse
-                functionHash = RemoteCallHelper.GetMethodHash(invokeClass, cmdName),
+                functionHash = functionFullName.GetStableHashCode(),
                 // segment to avoid reader allocations
                 payload = writer.ToArraySegment()
             };
@@ -247,19 +248,20 @@ namespace Mirror
             NetworkClient.connection.Send(message, channelId);
         }
 
-        protected void SendRPCInternal(Type invokeClass, string rpcName, NetworkWriter writer, int channelId, bool includeOwner)
+        // pass full function name to avoid ClassA.Func <-> ClassB.Func collisions
+        protected void SendRPCInternal(string functionFullName, NetworkWriter writer, int channelId, bool includeOwner)
         {
             // this was in Weaver before
             if (!NetworkServer.active)
             {
-                Debug.LogError($"RPC Function {rpcName} called on Client.");
+                Debug.LogError($"RPC Function {functionFullName} called on Client.");
                 return;
             }
 
             // This cannot use NetworkServer.active, as that is not specific to this object.
             if (!isServer)
             {
-                Debug.LogWarning($"ClientRpc {rpcName} called on un-spawned object: {name}");
+                Debug.LogWarning($"ClientRpc {functionFullName} called on un-spawned object: {name}");
                 return;
             }
 
@@ -269,7 +271,7 @@ namespace Mirror
                 netId = netId,
                 componentIndex = (byte)ComponentIndex,
                 // type+func so Inventory.RpcUse != Equipment.RpcUse
-                functionHash = RemoteCallHelper.GetMethodHash(invokeClass, rpcName),
+                functionHash = functionFullName.GetStableHashCode(),
                 // segment to avoid reader allocations
                 payload = writer.ToArraySegment()
             };
@@ -277,17 +279,18 @@ namespace Mirror
             NetworkServer.SendToReadyObservers(netIdentity, message, includeOwner, channelId);
         }
 
-        protected void SendTargetRPCInternal(NetworkConnection conn, Type invokeClass, string rpcName, NetworkWriter writer, int channelId)
+        // pass full function name to avoid ClassA.Func <-> ClassB.Func collisions
+        protected void SendTargetRPCInternal(NetworkConnection conn, string functionFullName, NetworkWriter writer, int channelId)
         {
             if (!NetworkServer.active)
             {
-                Debug.LogError($"TargetRPC {rpcName} called when server not active");
+                Debug.LogError($"TargetRPC {functionFullName} called when server not active");
                 return;
             }
 
             if (!isServer)
             {
-                Debug.LogWarning($"TargetRpc {rpcName} called on {name} but that object has not been spawned or has been unspawned");
+                Debug.LogWarning($"TargetRpc {functionFullName} called on {name} but that object has not been spawned or has been unspawned");
                 return;
             }
 
@@ -300,13 +303,13 @@ namespace Mirror
             // if still null
             if (conn is null)
             {
-                Debug.LogError($"TargetRPC {rpcName} was given a null connection, make sure the object has an owner or you pass in the target connection");
+                Debug.LogError($"TargetRPC {functionFullName} was given a null connection, make sure the object has an owner or you pass in the target connection");
                 return;
             }
 
             if (!(conn is NetworkConnectionToClient))
             {
-                Debug.LogError($"TargetRPC {rpcName} requires a NetworkConnectionToClient but was given {conn.GetType().Name}");
+                Debug.LogError($"TargetRPC {functionFullName} requires a NetworkConnectionToClient but was given {conn.GetType().Name}");
                 return;
             }
 
@@ -316,12 +319,145 @@ namespace Mirror
                 netId = netId,
                 componentIndex = (byte)ComponentIndex,
                 // type+func so Inventory.RpcUse != Equipment.RpcUse
-                functionHash = RemoteCallHelper.GetMethodHash(invokeClass, rpcName),
+                functionHash = functionFullName.GetStableHashCode(),
                 // segment to avoid reader allocations
                 payload = writer.ToArraySegment()
             };
 
             conn.Send(message, channelId);
+        }
+
+        // move the [SyncVar] generated property's .set into C# to avoid much IL
+        //
+        //   public int health = 42;
+        //
+        //   public int Networkhealth
+        //   {
+        //       get
+        //       {
+        //           return health;
+        //       }
+        //       [param: In]
+        //       set
+        //       {
+        //           if (!NetworkBehaviour.SyncVarEqual(value, ref health))
+        //           {
+        //               int oldValue = health;
+        //               SetSyncVar(value, ref health, 1uL);
+        //               if (NetworkServer.localClientActive && !GetSyncVarHookGuard(1uL))
+        //               {
+        //                   SetSyncVarHookGuard(1uL, value: true);
+        //                   OnChanged(oldValue, value);
+        //                   SetSyncVarHookGuard(1uL, value: false);
+        //               }
+        //           }
+        //       }
+        //   }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void GeneratedSyncVarSetter<T>(T value, ref T field, ulong dirtyBit, Action<T, T> OnChanged)
+        {
+            if (!SyncVarEqual(value, ref field))
+            {
+                T oldValue = field;
+                SetSyncVar(value, ref field, dirtyBit);
+
+                // call hook (if any)
+                if (OnChanged != null)
+                {
+                    // in host mode, setting a SyncVar calls the hook directly.
+                    // in client-only mode, OnDeserialize would call it.
+                    // we use hook guard to protect against deadlock where hook
+                    // changes syncvar, calling hook again.
+                    if (NetworkServer.localClientActive && !GetSyncVarHookGuard(dirtyBit))
+                    {
+                        SetSyncVarHookGuard(dirtyBit, true);
+                        OnChanged(oldValue, value);
+                        SetSyncVarHookGuard(dirtyBit, false);
+                    }
+                }
+            }
+        }
+
+        // GameObject needs custom handling for persistence via netId.
+        // has one extra parameter.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void GeneratedSyncVarSetter_GameObject(GameObject value, ref GameObject field, ulong dirtyBit, Action<GameObject, GameObject> OnChanged, ref uint netIdField)
+        {
+            if (!SyncVarGameObjectEqual(value, netIdField))
+            {
+                GameObject oldValue = field;
+                SetSyncVarGameObject(value, ref field, dirtyBit, ref netIdField);
+
+                // call hook (if any)
+                if (OnChanged != null)
+                {
+                    // in host mode, setting a SyncVar calls the hook directly.
+                    // in client-only mode, OnDeserialize would call it.
+                    // we use hook guard to protect against deadlock where hook
+                    // changes syncvar, calling hook again.
+                    if (NetworkServer.localClientActive && !GetSyncVarHookGuard(dirtyBit))
+                    {
+                        SetSyncVarHookGuard(dirtyBit, true);
+                        OnChanged(oldValue, value);
+                        SetSyncVarHookGuard(dirtyBit, false);
+                    }
+                }
+            }
+        }
+
+        // NetworkIdentity needs custom handling for persistence via netId.
+        // has one extra parameter.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void GeneratedSyncVarSetter_NetworkIdentity(NetworkIdentity value, ref NetworkIdentity field, ulong dirtyBit, Action<NetworkIdentity, NetworkIdentity> OnChanged, ref uint netIdField)
+        {
+            if (!SyncVarNetworkIdentityEqual(value, netIdField))
+            {
+                NetworkIdentity oldValue = field;
+                SetSyncVarNetworkIdentity(value, ref field, dirtyBit, ref netIdField);
+
+                // call hook (if any)
+                if (OnChanged != null)
+                {
+                    // in host mode, setting a SyncVar calls the hook directly.
+                    // in client-only mode, OnDeserialize would call it.
+                    // we use hook guard to protect against deadlock where hook
+                    // changes syncvar, calling hook again.
+                    if (NetworkServer.localClientActive && !GetSyncVarHookGuard(dirtyBit))
+                    {
+                        SetSyncVarHookGuard(dirtyBit, true);
+                        OnChanged(oldValue, value);
+                        SetSyncVarHookGuard(dirtyBit, false);
+                    }
+                }
+            }
+        }
+
+        // NetworkBehaviour needs custom handling for persistence via netId.
+        // has one extra parameter.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void GeneratedSyncVarSetter_NetworkBehaviour<T>(T value, ref T field, ulong dirtyBit, Action<T, T> OnChanged, ref NetworkBehaviourSyncVar netIdField)
+            where T : NetworkBehaviour
+        {
+            if (!SyncVarNetworkBehaviourEqual(value, netIdField))
+            {
+                T oldValue = field;
+                SetSyncVarNetworkBehaviour(value, ref field, dirtyBit, ref netIdField);
+
+                // call hook (if any)
+                if (OnChanged != null)
+                {
+                    // in host mode, setting a SyncVar calls the hook directly.
+                    // in client-only mode, OnDeserialize would call it.
+                    // we use hook guard to protect against deadlock where hook
+                    // changes syncvar, calling hook again.
+                    if (NetworkServer.localClientActive && !GetSyncVarHookGuard(dirtyBit))
+                    {
+                        SetSyncVarHookGuard(dirtyBit, true);
+                        OnChanged(oldValue, value);
+                        SetSyncVarHookGuard(dirtyBit, false);
+                    }
+                }
+            }
         }
 
         // helper function for [SyncVar] GameObjects.
@@ -410,6 +546,253 @@ namespace Mirror
 
             // netId changed?
             return newNetId == netIdField;
+        }
+
+        // move the [SyncVar] generated OnDeserialize C# to avoid much IL.
+        //
+        // before:
+        //  public override void DeserializeSyncVars(NetworkReader reader, bool initialState)
+        //  {
+        //      base.DeserializeSyncVars(reader, initialState);
+        //      if (initialState)
+        //      {
+        //          int num = health;
+        //          Networkhealth = reader.ReadInt();
+        //          if (!NetworkBehaviour.SyncVarEqual(num, ref health))
+        //          {
+        //              OnChanged(num, health);
+        //          }
+        //          return;
+        //      }
+        //      long num2 = (long)reader.ReadULong();
+        //      if ((num2 & 1L) != 0L)
+        //      {
+        //          int num3 = health;
+        //          Networkhealth = reader.ReadInt();
+        //          if (!NetworkBehaviour.SyncVarEqual(num3, ref health))
+        //          {
+        //              OnChanged(num3, health);
+        //          }
+        //      }
+        //  }
+        //
+        // after:
+        //
+        //  public override void DeserializeSyncVars(NetworkReader reader, bool initialState)
+        //  {
+        //      base.DeserializeSyncVars(reader, initialState);
+        //      if (initialState)
+        //      {
+        //          GeneratedSyncVarDeserialize(reader, ref health, null, reader.ReadInt());
+        //          return;
+        //      }
+        //      long num = (long)reader.ReadULong();
+        //      if ((num & 1L) != 0L)
+        //      {
+        //          GeneratedSyncVarDeserialize(reader, ref health, null, reader.ReadInt());
+        //      }
+        //  }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void GeneratedSyncVarDeserialize<T>(ref T field, Action<T, T> OnChanged, T value)
+        {
+            T previous = field;
+            field = value;
+
+            // any hook? then call if changed.
+            if (OnChanged != null && !SyncVarEqual(previous, ref field))
+            {
+                OnChanged(previous, field);
+            }
+        }
+
+        // move the [SyncVar] generated OnDeserialize C# to avoid much IL.
+        //
+        // before:
+        //   public override void DeserializeSyncVars(NetworkReader reader, bool initialState)
+        //   {
+        //       base.DeserializeSyncVars(reader, initialState);
+        //       if (initialState)
+        //       {
+        //           uint __targetNetId = ___targetNetId;
+        //           GameObject networktarget = Networktarget;
+        //           ___targetNetId = reader.ReadUInt();
+        //           if (!NetworkBehaviour.SyncVarEqual(__targetNetId, ref ___targetNetId))
+        //           {
+        //               OnChangedNB(networktarget, Networktarget);
+        //           }
+        //           return;
+        //       }
+        //       long num = (long)reader.ReadULong();
+        //       if ((num & 1L) != 0L)
+        //       {
+        //           uint __targetNetId2 = ___targetNetId;
+        //           GameObject networktarget2 = Networktarget;
+        //           ___targetNetId = reader.ReadUInt();
+        //           if (!NetworkBehaviour.SyncVarEqual(__targetNetId2, ref ___targetNetId))
+        //           {
+        //               OnChangedNB(networktarget2, Networktarget);
+        //           }
+        //       }
+        //   }
+        //
+        // after:
+        //   public override void DeserializeSyncVars(NetworkReader reader, bool initialState)
+        //   {
+        //       base.DeserializeSyncVars(reader, initialState);
+        //       if (initialState)
+        //       {
+        //           GeneratedSyncVarDeserialize_GameObject(reader, ref target, OnChangedNB, ref ___targetNetId);
+        //           return;
+        //       }
+        //       long num = (long)reader.ReadULong();
+        //       if ((num & 1L) != 0L)
+        //       {
+        //           GeneratedSyncVarDeserialize_GameObject(reader, ref target, OnChangedNB, ref ___targetNetId);
+        //       }
+        //   }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void GeneratedSyncVarDeserialize_GameObject(ref GameObject field, Action<GameObject, GameObject> OnChanged, NetworkReader reader, ref uint netIdField)
+        {
+            uint previousNetId = netIdField;
+            GameObject previousGameObject = field;
+            netIdField = reader.ReadUInt();
+
+            // get the new GameObject now that netId field is set
+            field = GetSyncVarGameObject(netIdField, ref field);
+
+            // any hook? then call if changed.
+            if (OnChanged != null && !SyncVarEqual(previousNetId, ref netIdField))
+            {
+                OnChanged(previousGameObject, field);
+            }
+        }
+
+        // move the [SyncVar] generated OnDeserialize C# to avoid much IL.
+        //
+        // before:
+        //   public override void DeserializeSyncVars(NetworkReader reader, bool initialState)
+        //   {
+        //       base.DeserializeSyncVars(reader, initialState);
+        //       if (initialState)
+        //       {
+        //           uint __targetNetId = ___targetNetId;
+        //           NetworkIdentity networktarget = Networktarget;
+        //           ___targetNetId = reader.ReadUInt();
+        //           if (!NetworkBehaviour.SyncVarEqual(__targetNetId, ref ___targetNetId))
+        //           {
+        //               OnChangedNI(networktarget, Networktarget);
+        //           }
+        //           return;
+        //       }
+        //       long num = (long)reader.ReadULong();
+        //       if ((num & 1L) != 0L)
+        //       {
+        //           uint __targetNetId2 = ___targetNetId;
+        //           NetworkIdentity networktarget2 = Networktarget;
+        //           ___targetNetId = reader.ReadUInt();
+        //           if (!NetworkBehaviour.SyncVarEqual(__targetNetId2, ref ___targetNetId))
+        //           {
+        //               OnChangedNI(networktarget2, Networktarget);
+        //           }
+        //       }
+        //   }
+        //
+        // after:
+        //
+        //   public override void DeserializeSyncVars(NetworkReader reader, bool initialState)
+        //   {
+        //       base.DeserializeSyncVars(reader, initialState);
+        //       if (initialState)
+        //       {
+        //           GeneratedSyncVarDeserialize_NetworkIdentity(reader, ref target, OnChangedNI, ref ___targetNetId);
+        //           return;
+        //       }
+        //       long num = (long)reader.ReadULong();
+        //       if ((num & 1L) != 0L)
+        //       {
+        //           GeneratedSyncVarDeserialize_NetworkIdentity(reader, ref target, OnChangedNI, ref ___targetNetId);
+        //       }
+        //   }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void GeneratedSyncVarDeserialize_NetworkIdentity(ref NetworkIdentity field, Action<NetworkIdentity, NetworkIdentity> OnChanged, NetworkReader reader, ref uint netIdField)
+        {
+            uint previousNetId = netIdField;
+            NetworkIdentity previousIdentity = field;
+            netIdField = reader.ReadUInt();
+
+            // get the new NetworkIdentity now that netId field is set
+            field = GetSyncVarNetworkIdentity(netIdField, ref field);
+
+            // any hook? then call if changed.
+            if (OnChanged != null && !SyncVarEqual(previousNetId, ref netIdField))
+            {
+                OnChanged(previousIdentity, field);
+            }
+        }
+
+        // move the [SyncVar] generated OnDeserialize C# to avoid much IL.
+        //
+        // before:
+        //
+        //   public override void DeserializeSyncVars(NetworkReader reader, bool initialState)
+        //   {
+        //       base.DeserializeSyncVars(reader, initialState);
+        //       if (initialState)
+        //       {
+        //           NetworkBehaviourSyncVar __targetNetId = ___targetNetId;
+        //           Tank networktarget = Networktarget;
+        //           ___targetNetId = reader.ReadNetworkBehaviourSyncVar();
+        //           if (!NetworkBehaviour.SyncVarEqual(__targetNetId, ref ___targetNetId))
+        //           {
+        //               OnChangedNB(networktarget, Networktarget);
+        //           }
+        //           return;
+        //       }
+        //       long num = (long)reader.ReadULong();
+        //       if ((num & 1L) != 0L)
+        //       {
+        //           NetworkBehaviourSyncVar __targetNetId2 = ___targetNetId;
+        //           Tank networktarget2 = Networktarget;
+        //           ___targetNetId = reader.ReadNetworkBehaviourSyncVar();
+        //           if (!NetworkBehaviour.SyncVarEqual(__targetNetId2, ref ___targetNetId))
+        //           {
+        //               OnChangedNB(networktarget2, Networktarget);
+        //           }
+        //       }
+        //   }
+        //
+        // after:
+        //
+        //   public override void DeserializeSyncVars(NetworkReader reader, bool initialState)
+        //   {
+        //       base.DeserializeSyncVars(reader, initialState);
+        //       if (initialState)
+        //       {
+        //           GeneratedSyncVarDeserialize_NetworkBehaviour(reader, ref target, OnChangedNB, ref ___targetNetId);
+        //           return;
+        //       }
+        //       long num = (long)reader.ReadULong();
+        //       if ((num & 1L) != 0L)
+        //       {
+        //           GeneratedSyncVarDeserialize_NetworkBehaviour(reader, ref target, OnChangedNB, ref ___targetNetId);
+        //       }
+        //   }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void GeneratedSyncVarDeserialize_NetworkBehaviour<T>(ref T field, Action<T, T> OnChanged, NetworkReader reader, ref NetworkBehaviourSyncVar netIdField)
+            where T : NetworkBehaviour
+        {
+            NetworkBehaviourSyncVar previousNetId = netIdField;
+            T previousBehaviour = field;
+            netIdField = reader.ReadNetworkBehaviourSyncVar();
+
+            // get the new NetworkBehaviour now that netId field is set
+            field = GetSyncVarNetworkBehaviour(netIdField, ref field);
+
+            // any hook? then call if changed.
+            if (OnChanged != null && !SyncVarEqual(previousNetId, ref netIdField))
+            {
+                OnChanged(previousBehaviour, field);
+            }
         }
 
         // helper function for [SyncVar] NetworkIdentities.
@@ -698,6 +1081,9 @@ namespace Mirror
 
         /// <summary>Like Start(), but only called on client and host for the local player object.</summary>
         public virtual void OnStartLocalPlayer() {}
+
+        /// <summary>Stop event, but only called on client and host for the local player object.</summary>
+        public virtual void OnStopLocalPlayer() {}
 
         /// <summary>Like Start(), but only called for objects the client has authority over.</summary>
         public virtual void OnStartAuthority() {}
