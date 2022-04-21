@@ -1051,7 +1051,7 @@ namespace UDiscord
             var res = Methods.RunCallbacks(MethodsPtr);
             if (res != Result.Ok)
             {
-                throw new ResultException(res);
+                //      throw new ResultException(res);
             }
         }
 

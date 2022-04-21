@@ -16,9 +16,9 @@ namespace SS3D.Core.Networking.Helper
     /// </summary>
     public sealed class SessionNetworkHelper : MonoBehaviour
     {
-        [SerializeField] private ApplicationStateManager applicationStateManager; 
-        
+        private ApplicationStateManager _applicationStateManager;
         private NetworkManager _networkManager;
+
         private List<string> _commandLineArgs;
         
         private bool _isHost;
@@ -28,6 +28,7 @@ namespace SS3D.Core.Networking.Helper
         private void Awake()
         {
             Setup();
+            ProcessCommandLineArgs();
         }
         
         private void Setup()
@@ -36,6 +37,7 @@ namespace SS3D.Core.Networking.Helper
             IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
             eventService?.AddListener<ServerConnectionUIHelper.RetryButtonClicked>(InitiateNetworkSession);
             
+            _applicationStateManager = ApplicationStateManager.Instance;
             _networkManager = NetworkManager.singleton;
         }
 
@@ -58,7 +60,7 @@ namespace SS3D.Core.Networking.Helper
         {
             if (Application.isEditor)
             {
-                _isHost = !applicationStateManager.TestingClientInEditor;
+                _isHost = !_applicationStateManager.TestingClientInEditor;
                 _ip = "localhost";
                 _ckey = "editorUser";
                 Debug.Log($"[{typeof(SessionNetworkHelper)}] - Testing application on the editor as {_ckey}");
@@ -88,8 +90,14 @@ namespace SS3D.Core.Networking.Helper
 
                     if (arg.Contains(CommandLineArgs.SkipIntro))
                     {
-                        ApplicationStateManager.Instance.SetSkipIntro(true);
+                        _applicationStateManager.SetSkipIntro(true);
                         Debug.Log($"[{typeof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.SkipIntro} - {true}");
+                    }
+
+                    if (arg.Contains(CommandLineArgs.DisableDiscordIntegration))
+                    {
+                        _applicationStateManager.SetSkipIntro(true);
+                        Debug.Log($"[{typeof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.DisableDiscordIntegration} - {true}");
                     }
                 }
 
@@ -104,8 +112,6 @@ namespace SS3D.Core.Networking.Helper
         /// </summary>
         public void InitiateNetworkSession()
         {
-            ProcessCommandLineArgs();
-
             if (_networkManager == null)
             {
                 _networkManager = NetworkManager.singleton;

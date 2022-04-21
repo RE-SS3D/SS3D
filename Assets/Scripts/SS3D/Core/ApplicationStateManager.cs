@@ -21,11 +21,13 @@ namespace SS3D.Core
 
         [Header("Settings")] 
         [SerializeField] private bool _skipIntro;
+        [SerializeField] private bool _disableDiscordIntegration;
 
         [Header("Test Cases")]
         [SerializeField] private bool _testingClientInEditor;
         [SerializeField] private bool _testingServerOnlyInEditor;
 
+        public bool DisableDiscordIntegration => _disableDiscordIntegration;
         public bool SkipIntro => _skipIntro;
         public bool TestingClientInEditor => _testingClientInEditor;
         public bool TestingServerOnlyInEditor => _testingServerOnlyInEditor;
@@ -80,6 +82,11 @@ namespace SS3D.Core
         public void SetSkipIntro(bool state)
         {
             _skipIntro = state;
+        }
+
+        public void SetDisableDiscordIntegration(bool state)
+        {
+            _disableDiscordIntegration = state;
         }
     }
 }
