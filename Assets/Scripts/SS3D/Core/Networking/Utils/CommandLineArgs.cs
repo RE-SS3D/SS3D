@@ -1,7 +1,9 @@
 namespace SS3D.Core.Networking.Utils
 {
     /// <summary>
-    /// Stores all the constants for CMD arguments for easy access and readability   
+    /// Stores all the constants for CMD arguments for easy access and readability
+    ///
+    /// For bool args simply add the arg 
     /// </summary>
     public static class CommandLineArgs
     {
@@ -30,5 +32,10 @@ namespace SS3D.Core.Networking.Utils
         /// Skips the intro
         /// </summary>
         public const string SkipIntro = "-skipintro";
+        /// <summary>
+        /// Bool.
+        /// Disables the discord integration
+        /// </summary>
+        public const string DisableDiscordIntegration = "-disablediscordintegration";
     }
 }

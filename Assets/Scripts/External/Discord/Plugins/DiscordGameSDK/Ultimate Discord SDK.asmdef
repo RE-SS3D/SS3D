@@ -1,7 +1,9 @@
 {
     "name": "UltimateDiscordSDK",
     "rootNamespace": "UDiscord",
-    "references": [],
+    "references": [
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

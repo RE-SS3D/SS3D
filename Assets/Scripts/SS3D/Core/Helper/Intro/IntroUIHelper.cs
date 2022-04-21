@@ -47,8 +47,9 @@ namespace SS3D.Core.Helper.Intro
             {
                 _introUiFade.DOFade(0, _fadeOutDuration).SetDelay(_splashScreenFreezeDuration).OnComplete(() =>
                 {
-                    _connectionUiFade.DOFade(1, _fadeInDuration);
-                }).OnComplete(ApplicationStateManager.Instance.InitializeApplication);
+                    ApplicationStateManager.Instance.InitializeApplication();
+                    _connectionUiFade.DOFade(1, _fadeInDuration).SetDelay(2);
+                });
             }).SetEase(Ease.InCubic);
         }
     }
