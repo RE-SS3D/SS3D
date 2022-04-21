@@ -7,7 +7,7 @@ namespace Mirror.Authenticators
     /// An authenticator that disconnects connections if they don't
     /// authenticate within a specified time limit.
     /// </summary>
-    [AddComponentMenu("Network/Authenticators/TimeoutAuthenticator")]
+    [AddComponentMenu("Network/ Authenticators/Timeout Authenticator")]
     public class TimeoutAuthenticator : NetworkAuthenticator
     {
         public NetworkAuthenticator authenticator;
@@ -41,7 +41,7 @@ namespace Mirror.Authenticators
             authenticator.OnStopClient();
         }
 
-        public override void OnServerAuthenticate(NetworkConnection conn)
+        public override void OnServerAuthenticate(NetworkConnectionToClient conn)
         {
             authenticator.OnServerAuthenticate(conn);
             if (timeout > 0)

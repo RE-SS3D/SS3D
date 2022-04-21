@@ -41,7 +41,7 @@ namespace SS3D.Core.Networking.PlayerControl
         /// </summary>
         /// <param name="userAuthorizationMessage">struct containing the ckey and the connection that sent it</param>
         [Server]
-        public void HandleAuthorizePlayer(NetworkConnection conn, UserAuthorizationMessage userAuthorizationMessage)
+        public void HandleAuthorizePlayer(NetworkConnectionToClient conn, UserAuthorizationMessage userAuthorizationMessage)
         {
             string ckey = userAuthorizationMessage.Ckey;
 

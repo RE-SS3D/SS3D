@@ -62,12 +62,12 @@ namespace SS3D.Core.Networking.UI_Helper
         {
             _quitButton.onClick.AddListener(Application.Quit);
             _retryButton.onClick.AddListener(OnRetryButtonPressed);
-            KcpConnection.ConnectionFailed += OnServerConnectionFailed;
+
+            SpessmanNetworkManager.OnClientStopped += OnServerConnectionFailed;
         }
 
         private void UnsubscribeFromEvents()
         {
-            KcpConnection.ConnectionFailed -= OnServerConnectionFailed;
         }
         
         private void UpdateMessageText(string message)

@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace Mirror
 {
-    [Serializable] public class UnityEventNetworkConnection : UnityEvent<NetworkConnection> {}
+    [Serializable] public class UnityEventNetworkConnection : UnityEvent<NetworkConnectionToClient> {}
 
     /// <summary>Base class for implementing component-based authentication during the Connect phase</summary>
     [HelpURL("https://mirror-networking.gitbook.io/docs/components/network-authenticators")]
@@ -26,14 +26,14 @@ namespace Mirror
         public virtual void OnStopServer() {}
 
         /// <summary>Called on server from OnServerAuthenticateInternal when a client needs to authenticate</summary>
-        public abstract void OnServerAuthenticate(NetworkConnection conn);
+        public virtual void OnServerAuthenticate(NetworkConnectionToClient conn) {}
 
-        protected void ServerAccept(NetworkConnection conn)
+        protected void ServerAccept(NetworkConnectionToClient conn)
         {
             OnServerAuthenticated.Invoke(conn);
         }
 
-        protected void ServerReject(NetworkConnection conn)
+        protected void ServerReject(NetworkConnectionToClient conn)
         {
             conn.Disconnect();
         }
@@ -45,7 +45,7 @@ namespace Mirror
         public virtual void OnStopClient() {}
 
         /// <summary>Called on client from OnClientAuthenticateInternal when a client needs to authenticate</summary>
-        public abstract void OnClientAuthenticate();
+        public virtual void OnClientAuthenticate() {}
 
         protected void ClientAccept()
         {

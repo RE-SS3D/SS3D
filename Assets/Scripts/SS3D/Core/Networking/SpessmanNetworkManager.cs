@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Coimbra;
 using Mirror;
@@ -14,8 +15,26 @@ namespace SS3D.Core.Networking
     /// </summary>
     public sealed class SpessmanNetworkManager : NetworkManager
     {
-        public override void OnServerDisconnect(NetworkConnection conn)
+        public new static SpessmanNetworkManager singleton;
+
+        public static event Action OnClientStopped;
+
+        public override void Awake()
+        {    
+            base.Awake();
+
+            if (singleton != null) singleton = this;
+        }
+
+        public override void OnStopClient()
         {
+            base.OnStopClient();
+
+            OnClientStopped?.Invoke();
+        }
+
+        public override void OnServerDisconnect(NetworkConnectionToClient conn)
+        { 
             Debug.Log($"[{typeof(SpessmanNetworkManager)}] - Client {conn.address} disconnected");
 
             NetworkIdentity[] ownedObjects = new NetworkIdentity[conn.clientOwnedObjects.Count];

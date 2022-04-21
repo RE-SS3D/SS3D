@@ -7,7 +7,7 @@ namespace Mirror
     /// <para>The RoomPrefab object of the NetworkRoomManager must have this component on it. This component holds basic room player data required for the room to function. Game specific data for room players can be put in other components on the RoomPrefab or in scripts derived from NetworkRoomPlayer.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    [AddComponentMenu("Network/NetworkRoomPlayer")]
+    [AddComponentMenu("Network/Network Room Player")]
     [HelpURL("https://mirror-networking.gitbook.io/docs/components/network-room-player")]
     public class NetworkRoomPlayer : NetworkBehaviour
     {
@@ -43,7 +43,7 @@ namespace Mirror
         /// </summary>
         public void Start()
         {
-            if (NetworkManager.Singleton is NetworkRoomManager room)
+            if (NetworkManager.singleton is NetworkRoomManager room)
             {
                 // NetworkRoomPlayer object must be set to DontDestroyOnLoad along with NetworkRoomManager
                 // in server and all clients, otherwise it will be respawned in the game scene which would
@@ -64,7 +64,7 @@ namespace Mirror
 
         public virtual void OnDisable()
         {
-            if (NetworkClient.active && NetworkManager.Singleton is NetworkRoomManager room)
+            if (NetworkClient.active && NetworkManager.singleton is NetworkRoomManager room)
             {
                 // only need to call this on client as server removes it before object is destroyed
                 room.roomSlots.Remove(this);
@@ -81,7 +81,7 @@ namespace Mirror
         public void CmdChangeReadyState(bool readyState)
         {
             readyToBegin = readyState;
-            NetworkRoomManager room = NetworkManager.Singleton as NetworkRoomManager;
+            NetworkRoomManager room = NetworkManager.singleton as NetworkRoomManager;
             if (room != null)
             {
                 room.ReadyStatusChanged();
@@ -133,7 +133,7 @@ namespace Mirror
             if (!showRoomGUI)
                 return;
 
-            NetworkRoomManager room = NetworkManager.Singleton as NetworkRoomManager;
+            NetworkRoomManager room = NetworkManager.singleton as NetworkRoomManager;
             if (room)
             {
                 if (!room.showRoomGUI)
