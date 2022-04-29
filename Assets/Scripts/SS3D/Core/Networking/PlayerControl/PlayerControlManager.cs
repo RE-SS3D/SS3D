@@ -17,14 +17,6 @@ namespace SS3D.Core.Networking.PlayerControl
 
         private readonly SyncList<Soul> _serverSouls = new SyncList<Soul>();
 
-        [Serializable]
-        public struct PlayerLeftServer
-        {
-            public Soul Soul;
-
-            public PlayerLeftServer(Soul soul) { Soul = soul; }
-        }
-
         private void Awake()
         {
             SubscribeToEvents();

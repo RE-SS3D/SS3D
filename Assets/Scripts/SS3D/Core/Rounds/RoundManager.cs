@@ -13,22 +13,22 @@ namespace SS3D.Core.Rounds
     /// </summary>
     public class RoundManager : NetworkBehaviour
     {
-        public static RoundManager singleton { get; private set; }
-
-        // TODO: Use the ServiceLocator for these
         public static event Action WarmupStarted;
         public static event Action RoundStarted;
         public static event Action<int> OnTick;
 
         [Header("Round Stats")] 
-        [SyncVar(hook = "SetRoundState")] [SerializeField] private RoundStates _roundState;
+        [SyncVar(hook = "SetRoundState")] 
+        [SerializeField] private RoundStates _roundState;
         // How much time has passed
-        [SyncVar(hook = "SetCurrentTimerSeconds")] [SerializeField] private int _currentTimerSeconds = 0;
+        [SyncVar(hook = "SetCurrentTimerSeconds")] 
+        [SerializeField] private int _currentTimerSeconds = 0;
         // How many seconds until the round ends
         [SerializeField] private int _roundTotalSeconds = 300;
 
         [Header("Warmup")]
         // How many seconds of warmup
+        [SyncVar(hook = "SetWarmupTimer")] 
         [SerializeField] private int _warmupTimerSeconds = 5;
 
         private Coroutine _warmupCoroutine;
@@ -38,34 +38,11 @@ namespace SS3D.Core.Rounds
         public bool RoundStarting => _roundState == RoundStates.Starting;
         public bool OnWarmup => _roundState == RoundStates.WarmingUp;
 
-        private void Awake()
-        {
-            InitializeSingleton();
-        }
-
-        /// <summary>
-        /// Used by Mirror to sync the round state
-        /// </summary>
-        private void SetRoundState(RoundStates oldState, RoundStates newState)
-        {
-            _roundState = newState;
-            Debug.Log($"[{typeof(RoundManager)}] - Round state updated: [{newState}]");
-        }
-
-        /// <summary>
-        /// Used by Mirror to sync the round timer
-        /// </summary>
-        private void SetCurrentTimerSeconds(int oldSeconds, int newSeconds)
-        {
-            _currentTimerSeconds = newSeconds;
-            Debug.Log($"[{typeof(RoundManager)}] - Round timer updated: [{newSeconds}]");
-        }
-
         /// <summary>
         /// Server method to start the warmup
         /// </summary>
         [Server]
-        public void HandleStartWarmup()
+        public void ServerStartWarmup()
         {
             if (!isServer)
             {
@@ -155,21 +132,31 @@ namespace SS3D.Core.Rounds
             return timer;
         }
 
-        public void SetWarmupTime(int newTime)
+        /// <summary>
+        /// Used by Mirror to sync the round state
+        /// </summary>
+        private void SetRoundState(RoundStates oldState, RoundStates newState)
         {
-            _warmupTimerSeconds = newTime;
+            _roundState = newState;
+            Debug.Log($"[{typeof(RoundManager)}] - Round state updated: [{newState}]");
         }
 
-        private void InitializeSingleton()
+        /// <summary>
+        /// Used by Mirror to sync the round timer
+        /// </summary>
+        private void SetCurrentTimerSeconds(int oldSeconds, int newSeconds)
         {
-            if (singleton != null && singleton != this)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                singleton = this;
-            }
+            _currentTimerSeconds = newSeconds;
+            Debug.Log($"[{typeof(RoundManager)}] - Round timer updated: [{newSeconds}]");
+        }
+
+        /// <summary>
+        /// Used by Mirror to sync the warmuo timer
+        /// </summary>
+        /// <param name="newTime"></param>
+        public void SetWarmupTimer(int oldTime, int newTime)
+        {
+            _warmupTimerSeconds = newTime;
         }
     }
 }                               

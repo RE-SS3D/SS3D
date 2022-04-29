@@ -12,3 +12,4 @@ Programming Definitions & Important notes
 - Document everything you can, the idea is: anyone with beginner understanding of code should read and understand the code,
 knowledge is everything and we got to provide that to newcomers and instruct them. This is the way.
 - Don't leave Debug.Logs, and always remove unused commented code.
+- Do not touch other people's code, if you're not directly working with it.
