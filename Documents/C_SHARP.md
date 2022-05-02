@@ -303,7 +303,7 @@ All braces get their own line as it is a C# convention:
 ```csharp
 class MyClass {
     void DoSomething() {
-        if (someTest) {
+        if (_someTest) {
           // ...
         } else {
           // ...
@@ -319,7 +319,7 @@ class MyClass
 {
     void DoSomething()
     {
-        if (someTest)
+        if (_someTest)
         {
           // ...
         }
@@ -337,21 +337,21 @@ irrespective of the number of lines required.
 **BAD:**
 
 ```csharp
-if (someTest)
+if (_someTest)
     doSomething();  
 
-if (someTest) doSomethingElse();
+if (_someTest) doSomethingElse();
 ```
 
 **GOOD:**
 
 ```csharp
-if (someTest) 
+if (_someTest) 
 {
     DoSomething();
 }  
 
-if (someTest)
+if (_someTest)
 {
     DoSomethingElse();
 }
@@ -365,7 +365,7 @@ If the `default` case is an unexpected value, it is encouraged to log and return
 **BAD**  
   
 ```csharp
-switch (variable) 
+switch (_variable) 
 {
     case 1:
         break;
@@ -379,7 +379,7 @@ switch (variable)
 **GOOD**  
   
 ```csharp
-switch (variable) 
+switch (_variable) 
 {
     case 1:
         break;
@@ -391,7 +391,7 @@ switch (variable)
 **BETTER**  
   
 ```csharp
-switch (variable) 
+switch (_variable) 
 {
     case 1:
         break;
@@ -410,13 +410,13 @@ Use US English spelling.
 **BAD:**
 
 ```csharp
-string colour = "red";
+string _colour = "red";
 ```
 
 **GOOD:**
 
 ```csharp
-string color = "red";
+string _color = "red";
 ```
 
 The exception here is `MonoBehaviour` as that's what the class is actually called.
@@ -433,7 +433,7 @@ Avoid throwing exceptions. Instead log and error. Methods returning values shoul
 ```csharp
 public List<Transform> FindAThing(int arg){
     ...
-    if (notFound) {
+    if (_notFound) {
         throw new NotFoundException();
     }
 }
@@ -443,7 +443,7 @@ public List<Transform> FindAThing(int arg){
 ```csharp
 public List<Transform> FindAThing(int arg){
     ...
-    if (notFound) {
+    if (_notFound) {
         Debug.LogError("Thing not found");
         return null;
     }
@@ -476,16 +476,16 @@ Expect people to set the fields in the inspector and log warnings if they don't.
 
 **BAD:**
 ```csharp
-private GameObject someMember;
+private GameObject _someMember;
 
 private void Start() {
-    someMember = GameObject.Find("ObjectName");
+    _someMember = GameObject.Find("ObjectName");
 }
 ```
 
 **GOOD:**
 ```csharp
-public GameObject someMember;
+public GameObject _someMember;
 ```
 
 ### RequireComponent
@@ -496,10 +496,10 @@ Prefer RequireComponent and GetComponent over AddComponent. Having the component
 ```csharp
 public class : MonoBehaviour
 {
-    private AudioSource audioSource;
+    private AudioSource _audioSource;
 
     private void Start() {
-        audioSource = gameObject.AddCompenent<AudioSource>();
+        _audioSource = gameObject.AddCompenent<AudioSource>();
     }
 }
 ```
@@ -509,10 +509,10 @@ public class : MonoBehaviour
 [RequireComponent(typeof(AudioSource))]
 public class : MonoBehaviour
 {
-    private AudioSource audioSource;
+    private AudioSource _audioSource;
 
     private void Start() {
-        audioSource = GetCompenent<AudioSource>();
+        _audioSource = GetCompenent<AudioSource>();
     }
 }
 ```
@@ -525,11 +525,11 @@ Sometimes it's just nice to see them for debugging, even if we don't change them
 
 **OKAY:**
 ```csharp
-public GameObject someMember;
+public GameObject SomeMember;
 ```
 
 **BETTER:**
 ```csharp
-[SerializeField] private GameObject someMember;
+[SerializeField] private GameObject _someMember;
 public GameObject SomeMember => someMember;
 ```
