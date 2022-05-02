@@ -58,7 +58,7 @@ com.ress3dclient.scripts.structures
 **GOOD**:
 
 ```csharp
-Structures.Door
+SS3D.Core.Structures.Door
 ```
 
 ### Classes & Interfaces
@@ -78,23 +78,23 @@ For example:
 ```csharp
 public class MyClass 
 {
-    public int publicField;
-    private int packagePrivate;
-    private int myPrivate;
-    protected int myProtected;
+    public int PublicField;
+    private int _packagePrivate;
+    private int _myPrivate;
+    protected int _myProtected;
 }
 ```
 
 **BAD:**
 
 ```csharp
-private int _myPrivateVariable
+private int myPrivateVariable
 ```
 
 **GOOD:**
 
 ```csharp
-private int myPrivateVariable
+private int _myPrivateVariable
 ```
 
 Static fields are the exception and should be written in **PascalCase**:
