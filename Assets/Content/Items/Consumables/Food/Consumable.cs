@@ -31,6 +31,7 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
     public bool destroyObject;
     
     // This handles the eating sounds
+    //TODO: Switch to AudioManager.Instance.PlayAudioSource(...) instead of needing an AudioSource for each consumable.
     public AudioSource audio;
     public AudioClip[] sounds;
 
@@ -58,6 +59,8 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
         if (target == null) target = origin;
         audio = target.transform.GetComponent<AudioSource>();
 
+        
+        
         if (!audio.isPlaying && content.TotalMoles > 0)
         {
             // Gets player's audio source
@@ -186,6 +189,7 @@ public class Consumable : InteractionTargetNetworkBehaviour, IInteractionSourceE
         }
         protected override void StartDelayed(InteractionEvent interactionEvent)
         {
+            //TODO: Make this not crash the game.
             GameObject source = interactionEvent.Source?.GetComponentInTree<Entity>().gameObject;
             GameObject target = interactionEvent.Target.GetComponent<Transform>().gameObject;            
             Consumable itemInHand = source.GetComponent<Consumable>();

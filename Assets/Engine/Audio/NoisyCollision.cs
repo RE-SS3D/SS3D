@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using Mirror;
-using SS3D.Engine.Audio.Networking;
 
-public class NoisyCollision : NetworkBehaviour
+public class NoisyCollision : MonoBehaviour
 {
 
     //Variables!!! Wow!
@@ -50,17 +49,7 @@ public class NoisyCollision : NetworkBehaviour
     // Send an event to the server that says we need an audio source.
     public void PlayCollisionSound(AudioClip[] soundPool)
     {
-        RequestAudioSourceAdvanced audioSourceRequest = new RequestAudioSourceAdvanced()
-        {
-            clipName = PickSound(soundPool).name,
-            position = gameObject.transform.position,
-            parent = null,
-            volume = collisionVolume,
-            pitch = 1f,
-            minRange = 1f,
-            maxRange = 500f
-        };
-        NetworkServer.SendToAll(audioSourceRequest);
+        AudioManager.Instance.PlayAudioSource(PickSound(soundPool), gameObject.transform.position, null, collisionVolume, 1f, 1f, 500f);
     }
     
     public AudioClip PickSound(AudioClip[] availableSounds){

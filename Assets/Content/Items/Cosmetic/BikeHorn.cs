@@ -9,7 +9,6 @@ using UnityEngine;
 
 namespace SS3D.Content.Items.Cosmetic
 {
-    [RequireComponent(typeof(AudioSource))]
     public class BikeHorn : Item
     {
         private class HonkInteraction : IInteraction
@@ -74,26 +73,37 @@ namespace SS3D.Content.Items.Cosmetic
         public override void Start()
         {
             base.Start();
-            audioSource = GetComponent<AudioSource>();
-            GenerateNewIcon(); 
+            GenerateNewIcon();
         }
 
         private bool IsHonking()
         {
-            return audioSource.isPlaying;
+            //If we have an audio source and it's playing, return true. Otherwise, return false. (A new audio source will be claimed.)
+            if (audioSource != null)
+            {
+                return audioSource.isPlaying;  
+            }
+            else
+            {
+                return false;
+            }
         }
 
         [Server]
         private void Honk()
         {
-            audioSource.PlayOneShot(honkSound);
+            //Grab a specific instance of an audio source so we can tell if it's playing our honk sound still.
+            audioSource = AudioManager.Instance.FindAvailableAudioSource();
+            var thisObject = gameObject;
+            AudioManager.Instance.PlayAudioSourceSpecific(audioSource, honkSound, thisObject.transform.position, thisObject,0.7f, 1f, 1f, 500f);
             RpcPlayHonk();
         }
 
         [ClientRpc]
         private void RpcPlayHonk()
         {
-            audioSource.PlayOneShot(honkSound);
+            var thisObject = gameObject;
+            AudioManager.Instance.PlayAudioSource(honkSound, gameObject);
         }
         
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)

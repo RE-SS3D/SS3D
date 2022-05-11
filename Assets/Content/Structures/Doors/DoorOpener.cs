@@ -20,7 +20,6 @@ namespace SS3D.Content.Structures.Fixtures
      *      probably be stored in the same place as wires and other state?
      */
     [RequireComponent(typeof(Collider))]
-    [RequireComponent(typeof(AudioSource))]
     [RequireComponent(typeof(Animator))]
     public class DoorOpener : Openable
     {
@@ -36,8 +35,6 @@ namespace SS3D.Content.Structures.Fixtures
 
         private int playersInTrigger; // Server Only
         private Coroutine closeTimer; // Server Only
-
-        private AudioSource audioSource;
 
         // Interaction stuff
 
@@ -57,7 +54,10 @@ namespace SS3D.Content.Structures.Fixtures
         /// <param name="clipType">"open" or "close"</param>
         public void PlaySound(string clipType)
         {
-            audioSource.PlayOneShot(clipType == "open" ? openSound : closeSound);
+            AudioClip audioClip;
+            audioClip = clipType == "open" ? openSound : closeSound;
+            
+            AudioManager.Instance.PlayAudioSource(audioClip, gameObject.transform.position);
         }
 
         // Overriding (non-interesting) methods
@@ -71,7 +71,6 @@ namespace SS3D.Content.Structures.Fixtures
         public override void Start()
         {
             base.Start();
-            audioSource = GetComponent<AudioSource>();
             animator = GetComponent<Animator>();
 
             // TODO: Sometime when we're not using a shitty networker

@@ -65,14 +65,12 @@ namespace SS3D.Content.Items.Functional.Weapons
         [SerializeField] private float cooldownInSeconds;
 
         public Sprite useIcon;
-        private AudioSource audioSource;
         private float lastSprayTime;
         private bool justSprayed;
 
         public override void Start()
         {
             base.Start();
-            audioSource = GetComponent<AudioSource>();
             GenerateNewIcon();
         }
 
@@ -96,10 +94,7 @@ namespace SS3D.Content.Items.Functional.Weapons
         {
             lastSprayTime = Time.time;
             particleSystem.Play();
-            if (audioSource != null)
-            {
-                audioSource.PlayOneShot(spraySound);
-            }
+            AudioManager.Instance.PlayAudioSource(spraySound, gameObject);
             justSprayed = true;
             RpcSpray();
         }
@@ -109,10 +104,7 @@ namespace SS3D.Content.Items.Functional.Weapons
         {
             lastSprayTime = Time.time;
             particleSystem.Play();
-            if (audioSource != null)
-            {
-                audioSource.PlayOneShot(spraySound);
-            }
+            AudioManager.Instance.PlayAudioSource(spraySound, gameObject);
             justSprayed = true;
         }
 
