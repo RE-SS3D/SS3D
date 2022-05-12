@@ -114,7 +114,7 @@ namespace SS3D.Content.Items.Cosmetic
         private void EmitSound(AudioSource specificSource)
         {
             GameObject thisObject = gameObject;
-            AudioManager.Instance.PlayAudioSourceSpecific(audioSource, honkSound, thisObject.transform.position, thisObject, 0.7f, Random.Range(0.9f, 1.1f));
+            AudioManager.Instance.PlayAudioSourceSpecific(specificSource, honkSound, thisObject.transform.position, thisObject, 0.7f, Random.Range(0.9f, 1.1f));
         }
         
     }
