@@ -26,6 +26,9 @@ namespace SS3D.Content.Systems.Player
         // The object to follow
         public GameObject target = null;
 
+        //The listener game object
+        public GameObject listener = null;
+
         // field of view object
         public FieldOfView fieldOfView = null;
 
@@ -137,6 +140,12 @@ namespace SS3D.Content.Systems.Player
             distance = Mathf.Clamp(distance - zoom, MIN_DISTANCE, MAX_DISTANCE);
             angle = (angle + angleDelta) % 360f;
             vAngle = Mathf.Clamp(vAngle + vAngleDelta, MIN_VERTICAL_ANGLE, MAX_VERTICAL_ANGLE);
+            
+            //Set listener to the position of the target
+            if (listener != null && target != null)
+            {
+                listener.transform.position = target.transform.position;
+            }
         }
 
         /**
