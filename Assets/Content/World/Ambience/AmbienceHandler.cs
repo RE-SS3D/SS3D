@@ -8,15 +8,15 @@ public class AmbienceHandler : MonoBehaviour
     
     //TODO: Change this based on how much air is in the room.
     [Tooltip("How much air is in the room. This effects the volume of the audio sources.")]
-    [Range(0f,1f)]public float air = 1;
+    [Range(0f,1f)] public float air = 1;
     //TODO: Change this based on air flow in the room.
     [Tooltip("How windy the air is in the area. This effects how the air sounds.")]
     [Range(0f, 1f)] public float windiness;
     //TODO: Change this based on area's power.
     [Tooltip("The amount of power in the area. Lower levels means quieter and deeper electrical humming.")]
-    [Range(0f, 1f)]public float power = 1;
+    [Range(0f, 1f)] public float power = 1;
     [Tooltip("What clip is currently being played by the ambient noise generator. You don't need to mess with this, just for debugging purposes.")] 
-    [SerializeField]private AudioClip nowPlaying;
+    [SerializeField] private AudioClip nowPlaying;
 
     [Header("Audio Source Setup")]
     
@@ -36,7 +36,7 @@ public class AmbienceHandler : MonoBehaviour
     [Tooltip("How often (in minutes) an ambient noise should attempt to play.")]
     public int ambientNoiseFrequency = 3;
     [Tooltip("How likely (percentage) it is that an ambient noise will play.")]
-    [Range(0,100)]public int ambientNoiseChance = 75;
+    [Range(0,100)] public int ambientNoiseChance = 75;
     //TODO: Create a way to get the environment to tell us what noises it makes. Would be useful for off-station or room-based ambience.
     [Tooltip("Sounds that will be made by the environment -- for example, general station noises.")]
     public AudioClip[] environmentNoises;
