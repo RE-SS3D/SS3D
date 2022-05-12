@@ -9,6 +9,12 @@ public class NoisyCollision : MonoBehaviour
     [Range(0f, 1f)]
     [Tooltip("How loud sounds will play when colliding.")]
     public float collisionVolume = 0.7f;
+    [Tooltip("The base pitch of the sound effect. Default is 1, lower pitch is 0, higher pitch is 2.")]
+    [Range(0,2)]public float basePitch = 1;
+    [Tooltip("How much lower pitch can the sound play?")]
+    [Range(0f,0.5f)]public float pitchModulationLow = 0;
+    [Tooltip("How much higher pitch can the sound play?")]
+    [Range(0f,0.5f)]public float pitchModulationHigh = 0;
     [Tooltip("How fast this object must hit another in order to make a light impact sound.")]
     public float lightImpactVelocity = 1;
     [Tooltip("Does this object make a different sound being struck at a high velocity?")]
@@ -19,6 +25,8 @@ public class NoisyCollision : MonoBehaviour
     public AudioClip[] lightImpactSounds;
     [Tooltip("List of possible sounds that will play when this object collides heavily.")]
     public AudioClip[] hardImpactSounds;
+
+    
     
     
     
@@ -49,7 +57,8 @@ public class NoisyCollision : MonoBehaviour
     // Send an event to the server that says we need an audio source.
     public void PlayCollisionSound(AudioClip[] soundPool)
     {
-        AudioManager.Instance.PlayAudioSource(PickSound(soundPool), gameObject.transform.position, null, collisionVolume, 1f, 1f, 500f);
+        float pitch = Random.Range(basePitch - pitchModulationLow, basePitch + pitchModulationHigh);
+        AudioManager.Instance.PlayAudioSource(PickSound(soundPool), gameObject.transform.position, null, collisionVolume, pitch);
     }
     
     public AudioClip PickSound(AudioClip[] availableSounds){
