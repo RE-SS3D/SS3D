@@ -5,51 +5,29 @@ using UnityEngine;
 
     public class AudioManager : MonoBehaviour
     {
-        
         //Welcome to the Singleton, baby.
         public static AudioManager Instance { get; private set; }
         
         [Tooltip("The audio source to be spawned.")]
         public GameObject audioSourcePrefab;
         [Tooltip("The number of audio sources to start out with.")]
-        public int minAudioSources = 10;
-        [Tooltip("The maximum number of audio sources before they are purged.")]
-        public int maxAudioSources = 50;
+        public int minAudioSources = 30;
+        [Tooltip("Any more than this will be considered too many audio sources.")]
+        public int maxAudioSources = 100;
+        [Tooltip("How often (in minutes) do we purge unused audio sources?")]
+        [SerializeField]private int purgeFrequency = 30;
         [Tooltip("The full list of audio sources -- just a helpful indicator of how many there are.")]
         public List<AudioSource> audioSources;
-        
+
         private void Awake()
         {
-            // We don't want duplicates because this is a motherfuckin' Singleton, baby.
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            InitializeSingleton();
         }
         
         private void Start()
         {
-            audioSources = new List<AudioSource>();
-            
-            //Instantiate the minimum number of audio sources.
-            for (int i = 0; i < minAudioSources; i++)
-            {
-                CreateNewAudioSource();
-            }
-        }
-
-        private void Update()
-        {
-            //Check if we've got too many damn audio sources.
-            if (audioSources.Count > maxAudioSources)
-            {
-                PurgeUnusedAudioSources();
-            }
+            CreateAudioSourceIndex();
+            StartCoroutine(PurgeCountdown());
         }
 
         /// <summary>
@@ -57,7 +35,7 @@ using UnityEngine;
         /// </summary>
         public void PlayAudioSource(AudioClip audioClip, Vector3 position)
         {
-            PlayAudioSource(audioClip, position, gameObject, 0.7f, 1f, 1f, 500f);
+            PlayAudioSource(audioClip, position, gameObject);
         }
 
         /// <summary>
@@ -65,14 +43,14 @@ using UnityEngine;
         /// </summary>
         public void PlayAudioSource(AudioClip audioClip, GameObject parent)
         {
-            PlayAudioSource(audioClip, parent.transform.position, parent, 0.7f, 1f, 1f, 500f);
+            PlayAudioSource(audioClip, parent.transform.position, parent);
         }
     
         /// <summary>
         /// Plays a sound clip at a position, parent, with specific volume, pitch, and ranges.
-        /// Default float values are 0.7f, 1f, 1f, and 500f respectively. 
+        /// Volume, pitch, and ranges are optional.
         /// </summary>
-        public void PlayAudioSource(AudioClip audioClip, Vector3 position, GameObject parent, float volume, float pitch, float minRange, float maxRange)
+        public void PlayAudioSource(AudioClip audioClip, Vector3 position, GameObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
             var audioSource = FindAvailableAudioSource();
             audioSource.gameObject.transform.position = position;
@@ -89,9 +67,9 @@ using UnityEngine;
 
         /// <summary>
         /// Plays a sound clip using a specific audio source at a position, parent, with specific volume, pitch, and ranges.
-        /// Default float values are 0.7f, 1f, 1f, and 500f respectively. 
+        /// Volume, pitch, and ranges are optional. 
         /// </summary>
-        public void PlayAudioSourceSpecific(AudioSource audioSource, AudioClip audioClip, Vector3 position, GameObject parent, float volume, float pitch, float minRange, float maxRange)
+        public void PlayAudioSourceSpecific(AudioSource audioSource, AudioClip audioClip, Vector3 position, GameObject parent, float volume = 0.7f, float pitch = 1f, float minRange = 1f, float maxRange = 500f)
         {
             audioSource.gameObject.transform.position = position;
             audioSource.clip = audioClip;
@@ -141,6 +119,20 @@ using UnityEngine;
         }
 
         /// <summary>
+        /// Creates a list of audio sources, and instantiates our minimum number.
+        /// </summary>
+        private void CreateAudioSourceIndex()
+        {
+            audioSources = new List<AudioSource>();
+            
+            //Instantiate the minimum number of audio sources.
+            for (int i = 0; i < minAudioSources; i++)
+            {
+                CreateNewAudioSource();
+            }
+        }
+        
+        /// <summary>
         /// Creates a new audio source and adds it to the list.
         /// </summary>
         private void CreateNewAudioSource()
@@ -157,12 +149,57 @@ using UnityEngine;
         {
             foreach (var source in audioSources)
             {
-                if (!source.isPlaying)
+                //Check that the audio source is idle, and we have more than our minimum number.
+                if (!source.isPlaying && audioSources.Count > minAudioSources)
                 {
                     audioSources.Remove(source);
                     Destroy(source.gameObject);
                 }
             }
+            //Restart purge countdown!
+            StartCoroutine(PurgeCountdown());
         }
+
+        /// <summary>
+        /// Makes a Singleton occur, and makes sure there's no others like it. Badass!
+        /// </summary>
+        private void InitializeSingleton()
+        {
+            // We don't want duplicates because this is a motherfuckin' Singleton, baby.
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
+        
+        /// <summary>
+        /// Waits a specific amount of time before purging unused audio sources.
+        /// </summary>
+        IEnumerator PurgeCountdown()
+        {
+            // We want our wait period in minutes, so multiply by 60.
+            yield return new WaitForSeconds(purgeFrequency * 60);
+            
+            //Before we purge them, do we have too many audio sources?
+            if (audioSources.Count > maxAudioSources)
+            {
+                // Now that it's time to purge them, eliminate all of those pesky audio sources.
+                Debug.Log(purgeFrequency + " minute(s) have elapsed. There are " + audioSources.Count + "/" + maxAudioSources + " audio sources in our list. Purging audio sources...");
+                PurgeUnusedAudioSources();
+                
+            }
+            else
+            {
+                // Now that it's time to purge them, eliminate all of those pesky audio sources.
+                Debug.Log(purgeFrequency + " minute(s) have elapsed. There are " + audioSources.Count + "/" + maxAudioSources + " audio sources in our list. No purge necessary.");
+                StartCoroutine(PurgeCountdown());
+            }
+        }
+        
     }
 

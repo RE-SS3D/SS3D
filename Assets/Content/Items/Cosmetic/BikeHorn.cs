@@ -78,8 +78,8 @@ namespace SS3D.Content.Items.Cosmetic
 
         private bool IsHonking()
         {
-            //If we have an audio source and it's playing, return true. Otherwise, return false. (A new audio source will be claimed.)
-            if (audioSource != null)
+            //If our audio source exists, and it's rigged up with our honk sound, and it's our child, check if it's playing. Otherwise, it's honkin' time.
+            if (audioSource != null && (audioSource.clip == honkSound) && (gameObject.transform == audioSource.transform.parent))
             {
                 return audioSource.isPlaying;  
             }
@@ -92,18 +92,16 @@ namespace SS3D.Content.Items.Cosmetic
         [Server]
         private void Honk()
         {
-            //Grab a specific instance of an audio source so we can tell if it's playing our honk sound still.
+            //Grab a specific instance of an audio source from our audio manager. This is used by the honker to determine if we are honkin'.
             audioSource = AudioManager.Instance.FindAvailableAudioSource();
-            var thisObject = gameObject;
-            AudioManager.Instance.PlayAudioSourceSpecific(audioSource, honkSound, thisObject.transform.position, thisObject,0.7f, 1f, 1f, 500f);
+            EmitSound(audioSource);
             RpcPlayHonk();
         }
 
         [ClientRpc]
         private void RpcPlayHonk()
         {
-            var thisObject = gameObject;
-            AudioManager.Instance.PlayAudioSource(honkSound, gameObject);
+            EmitSound(audioSource);
         }
         
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
@@ -112,5 +110,12 @@ namespace SS3D.Content.Items.Cosmetic
             list.Add(new HonkInteraction{ icon = useIcon });
             return list.ToArray();
         }
+
+        private void EmitSound(AudioSource specificSource)
+        {
+            GameObject thisObject = gameObject;
+            AudioManager.Instance.PlayAudioSourceSpecific(audioSource, honkSound, thisObject.transform.position, thisObject, 0.7f, Random.Range(0.9f, 1.1f));
+        }
+        
     }
 }
