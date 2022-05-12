@@ -195,7 +195,6 @@ using UnityEngine;
             }
             else
             {
-                // Now that it's time to purge them, eliminate all of those pesky audio sources.
                 Debug.Log(purgeFrequency + " minute(s) have elapsed. There are " + audioSources.Count + "/" + maxAudioSources + " audio sources in our list. No purge necessary.");
                 StartCoroutine(PurgeCountdown());
             }
