@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 5847905001523781538}
   - component: {fileID: 6672297322195662602}
   - component: {fileID: -6874481066319101183}
+  - component: {fileID: 7209802437613382571}
   m_Layer: 16
   m_Name: IronRod
   m_TagString: Untagged
@@ -83,7 +84,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 71820823db4ccc24090367fb8226e7f9
   hasSpawned: 0
 --- !u!33 &1676056732004415054
 MeshFilter:
@@ -215,6 +217,39 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+--- !u!114 &7209802437613382571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6648108891598995051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b28de396950d074a909c26000811ed2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collisionVolume: 0.5
+  basePitch: 0.8
+  pitchModulationLow: 0.2
+  pitchModulationHigh: 0.2
+  lightImpactVelocity: 3
+  useHardImpactSounds: 0
+  hardImpactVelocity: 7.5
+  lightImpactSounds:
+  - {fileID: 8300000, guid: d6c59d84a7d224b46af3b7cd87dac663, type: 3}
+  hardImpactSounds: []

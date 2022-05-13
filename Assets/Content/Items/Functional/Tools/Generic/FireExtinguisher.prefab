@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 1923794609448245394}
   - component: {fileID: -605181505711505002}
   - component: {fileID: -5943420256508800679}
+  - component: {fileID: 3667069986656813031}
   m_Layer: 16
   m_Name: FireExtinguisher
   m_TagString: Untagged
@@ -53,7 +54,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 8d26834cf1f10a44ea7313b419a8c87a
   hasSpawned: 0
 --- !u!33 &6690047953428623742
 MeshFilter:
@@ -186,9 +188,42 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+--- !u!114 &3667069986656813031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1717996044855867739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b28de396950d074a909c26000811ed2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collisionVolume: 0.5
+  basePitch: 0.4
+  pitchModulationLow: 0.1
+  pitchModulationHigh: 0.2
+  lightImpactVelocity: 2
+  useHardImpactSounds: 0
+  hardImpactVelocity: 7.5
+  lightImpactSounds:
+  - {fileID: 8300000, guid: d6c59d84a7d224b46af3b7cd87dac663, type: 3}
+  hardImpactSounds: []
 --- !u!1 &8571115657664396577
 GameObject:
   m_ObjectHideFlags: 0

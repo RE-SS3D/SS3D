@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 4405847134303785852}
   - component: {fileID: 7539245687581644723}
   - component: {fileID: 604021277079963610}
+  - component: {fileID: 7984834487890118487}
   m_Layer: 16
   m_Name: RollingPin
   m_TagString: Untagged
@@ -82,7 +83,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: a64c8c235237b904da5a95b725f53610
   hasSpawned: 0
 --- !u!33 &3370286985539976799
 MeshFilter:
@@ -200,3 +202,25 @@ MonoBehaviour:
   DisplayName: 
   Text: Bonk.
   MaxDistance: 0
+--- !u!114 &7984834487890118487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7333537291608176250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b28de396950d074a909c26000811ed2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collisionVolume: 0.7
+  basePitch: 0.5
+  pitchModulationLow: 0.2
+  pitchModulationHigh: 0.1
+  lightImpactVelocity: 2
+  useHardImpactSounds: 0
+  hardImpactVelocity: 7.5
+  lightImpactSounds:
+  - {fileID: 8300000, guid: d1c05c1962e46d24bb24a817c61de9e9, type: 3}
+  hardImpactSounds: []
