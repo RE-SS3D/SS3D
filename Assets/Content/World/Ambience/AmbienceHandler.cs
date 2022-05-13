@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class AmbienceHandler : MonoBehaviour
 {
@@ -43,8 +44,18 @@ public class AmbienceHandler : MonoBehaviour
     [Tooltip("Sounds that will play when the amount of air is equal to zero.")]
     public AudioClip[] spaceNoises;
 
-
-    private void Start()
+    [Header("Animator Stuff")] 
+    public Animator sfxAnimator;
+    [Tooltip("Value of lowpass cutoff in SFX mixer group. Attenuated by the animator.")]
+    [Range(480f, 22000f)] public float sfxLowPassCutoff = 22000f;
+    [Tooltip("Value of pitch boosting in SFX mixer group. Attenuated by the animator.")]
+    [Range(1f, 2f)] public float sfxPitchBoost = 1;
+    [Tooltip("Value of pitch shifting in SFX mixer group. Attenuated by the animator.")]
+    [Range(0.8f, 1f)] public float sfxPitchShift = 1;
+    [Tooltip("The mixer that we need to look at to grab our effects.")]
+    public AudioMixer masterMixer;
+    
+        private void Start()
     {
         if (ambientNoiseFrequency != 0)
         {
@@ -56,6 +67,7 @@ public class AmbienceHandler : MonoBehaviour
     {
         AttenuateWindSounds();
         AttenuatePowerSounds();
+        MuffleSFX();
     }
 
     /// <summary>
@@ -90,7 +102,18 @@ public class AmbienceHandler : MonoBehaviour
         electricalPlayer.volume = power * air;
         electricalPlayer.pitch = power;
     }
-
+    
+    
+    /// <summary>
+    /// Muffles SFX channel based on the amount of air.
+    /// </summary>
+    private void MuffleSFX()
+    {
+    sfxAnimator.SetFloat("air", air);
+    masterMixer.SetFloat("SFXcutoffFreq", sfxLowPassCutoff);
+    masterMixer.SetFloat("SFXlowEQgain", sfxPitchBoost);
+    masterMixer.SetFloat("SFXpitch", sfxPitchShift);
+    }
     
     /// <summary>
     /// Plays an ambient sound.
