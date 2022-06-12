@@ -1,6 +1,4 @@
-using System;
 using System.Linq;
-using Coimbra;
 using Mirror;
 using SS3D.Core.Networking.PlayerControl.Messages;
 using SS3D.Core.Systems.Entities;
@@ -15,7 +13,7 @@ namespace SS3D.Core.Networking.PlayerControl
     {
         [SerializeField] private GameObject _soulPrefab;
 
-        private readonly SyncList<Soul> _serverSouls = new SyncList<Soul>();
+        private readonly SyncList<Soul> _serverSouls = new();
 
         private void Awake()
         {
@@ -33,7 +31,7 @@ namespace SS3D.Core.Networking.PlayerControl
         /// </summary>
         /// <param name="userAuthorizationMessage">struct containing the ckey and the connection that sent it</param>
         [Server]
-        public void HandleAuthorizePlayer(NetworkConnection conn, UserAuthorizationMessage userAuthorizationMessage)
+        private void HandleAuthorizePlayer(NetworkConnection conn, UserAuthorizationMessage userAuthorizationMessage)
         {
             string ckey = userAuthorizationMessage.Ckey;
 
@@ -56,8 +54,8 @@ namespace SS3D.Core.Networking.PlayerControl
             }
             NetworkServer.AddPlayerForConnection(conn, match.gameObject);
 
-            UserJoinedServerMessage userJoinedServerMessage = new UserJoinedServerMessage(match.Ckey);
-            NetworkServer.SendToAll(userJoinedServerMessage);         
+            UserJoinedServerMessage userJoinedServerMessage = new(match.Ckey);
+            NetworkServer.SendToAll(userJoinedServerMessage);
 
             Debug.Log($"[{nameof(PlayerControlManager)}] - SERVER - Handle Authorize Player: {match.Ckey}");
         }

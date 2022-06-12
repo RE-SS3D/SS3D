@@ -10,13 +10,13 @@ namespace SS3D.Core.Networking.Lobby.UI_Helper
     /// <summary>
     /// Controls the player list in the lobby
     /// </summary>
-    public sealed class PlayerUsernameListUIHelper : MonoBehaviour
+    public sealed class PlayerUsernameListView : MonoBehaviour
     {
         // The UI element this is linked to
         [SerializeField] private Transform _root;
         
         // Username list, local list that is "networked" by the SyncList on LobbyManager
-        [SerializeField] private List<PlayerUsernameUIHelper> _playerUsernames;
+        [SerializeField] private List<PlayerUsernameView> _playerUsernames;
         
         // The username panel prefab
         [SerializeField] private GameObject _uiPrefab;
@@ -52,9 +52,9 @@ namespace SS3D.Core.Networking.Lobby.UI_Helper
             // adds the UI element and updates the text
             GameObject uiInstance = Instantiate(_uiPrefab, _root);
 
-            PlayerUsernameUIHelper playerUsernameUIHelper = uiInstance.GetComponent<PlayerUsernameUIHelper>();
-            playerUsernameUIHelper.UpdateNameText(data.Ckey);
-            _playerUsernames.Add(playerUsernameUIHelper);
+            PlayerUsernameView playerUsernameView = uiInstance.GetComponent<PlayerUsernameView>();
+            playerUsernameView.UpdateNameText(data.Ckey);
+            _playerUsernames.Add(playerUsernameView);
         }
         
         /// <summary>
@@ -64,8 +64,8 @@ namespace SS3D.Core.Networking.Lobby.UI_Helper
         /// <param name="data">A PlayerJoinedlobby event, that simply carries the Username</param>
         private void RemoveUsernameUI(object sender,  LobbyManager.UserLeftLobby data)
         {
-            PlayerUsernameUIHelper removedUsername = null;
-            foreach (PlayerUsernameUIHelper playerUsernameUI in _playerUsernames.Where(playerUsernameUI => playerUsernameUI.Name.Equals(data.Ckey)))
+            PlayerUsernameView removedUsername = null;
+            foreach (PlayerUsernameView playerUsernameUI in _playerUsernames.Where(playerUsernameUI => playerUsernameUI.Name.Equals(data.Ckey)))
             {
                 removedUsername = playerUsernameUI;
                 Destroy(playerUsernameUI.gameObject);

@@ -12,7 +12,7 @@ namespace SS3D.Core.Networking.Lobby
     public sealed class LobbyManager : NetworkBehaviour
     {
         // Current lobby players
-        private readonly SyncList<string> _players = new SyncList<string>();
+        private readonly SyncList<string> _players = new();
 
         [Serializable]
         public struct UserJoinedLobby
@@ -51,7 +51,7 @@ namespace SS3D.Core.Networking.Lobby
         /// <summary>
         /// Updates the lobby players on Start
         /// </summary>
-        public void SyncLobbyPlayers()
+        private void SyncLobbyPlayers()
         {
             foreach (string player in _players)
             {
@@ -61,7 +61,7 @@ namespace SS3D.Core.Networking.Lobby
         }
 
         [Server]
-        public void AddLobbyPlayer(UserJoinedServerMessage userJoinedServerMessage)
+        private void AddLobbyPlayer(UserJoinedServerMessage userJoinedServerMessage)
         {
               _players.Add(userJoinedServerMessage.Ckey);
 
@@ -70,7 +70,7 @@ namespace SS3D.Core.Networking.Lobby
         }
 
         [ClientRpc]
-        public void RpcAddLobbyPlayer(UserJoinedLobby userJoinedLobby)
+        private void RpcAddLobbyPlayer(UserJoinedLobby userJoinedLobby)
         {
             IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
             eventService?.Invoke(null, userJoinedLobby);
@@ -78,7 +78,7 @@ namespace SS3D.Core.Networking.Lobby
         }
 
         [Server]
-        public void RemoveLobbyPlayer(UserLeftServerMessage userLeftServerMessage)
+        private void RemoveLobbyPlayer(UserLeftServerMessage userLeftServerMessage)
         {
             _players.Remove(userLeftServerMessage.Ckey);
 
@@ -87,7 +87,7 @@ namespace SS3D.Core.Networking.Lobby
         }
 
         [ClientRpc]
-        public void RpcRemoveLobbyPlayer(UserLeftLobby userLeftLobby)
+        private void RpcRemoveLobbyPlayer(UserLeftLobby userLeftLobby)
         {
             IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
             eventService?.Invoke(null, userLeftLobby);

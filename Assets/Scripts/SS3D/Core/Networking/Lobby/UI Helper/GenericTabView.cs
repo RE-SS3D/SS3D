@@ -6,7 +6,7 @@ namespace SS3D.Core.Networking.Lobby.UI_Helper
     /// <summary>
     /// Generic class to manage a simple tab/panel UI
     /// </summary>
-    public sealed class GenericTabUIHelper : MonoBehaviour
+    public sealed class GenericTabView : MonoBehaviour
     {
         [SerializeField] private bool _active;
         [SerializeField] private Transform _panelUI;

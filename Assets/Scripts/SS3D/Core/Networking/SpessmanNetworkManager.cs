@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using Coimbra;
 using Mirror;
 using SS3D.Core.Networking.Helper;
@@ -14,6 +15,22 @@ namespace SS3D.Core.Networking
     /// </summary>
     public sealed class SpessmanNetworkManager : NetworkManager
     {
+        public static SpessmanNetworkManager Instance;
+
+        public override void Awake()
+        {
+            base.Awake();
+
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(this);
+            }
+        }
+
         public override void OnServerDisconnect(NetworkConnection conn)
         {
             Debug.Log($"[{nameof(SpessmanNetworkManager)}] - Client {conn.address} disconnected");

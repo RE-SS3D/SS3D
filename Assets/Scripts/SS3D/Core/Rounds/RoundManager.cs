@@ -61,7 +61,7 @@ namespace SS3D.Core.Rounds
             _roundState = RoundStates.WarmingUp;
             _warmupCoroutine = StartCoroutine(TickWarmup());
 
-            WarmupStartedMessage warmupStartedMessage = new WarmupStartedMessage();
+            WarmupStartedMessage warmupStartedMessage = new();
             NetworkServer.SendToAll(warmupStartedMessage);
         }
 

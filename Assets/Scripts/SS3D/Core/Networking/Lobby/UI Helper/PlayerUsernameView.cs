@@ -6,7 +6,7 @@ namespace SS3D.Core.Networking.Lobby.UI_Helper
     /// <summary>
     /// Simple Username ui element controller
     /// </summary>
-    public sealed class PlayerUsernameUIHelper : MonoBehaviour
+    public sealed class PlayerUsernameView : MonoBehaviour
     {
         [SerializeField] private TMP_Text _nameLabel;
 
