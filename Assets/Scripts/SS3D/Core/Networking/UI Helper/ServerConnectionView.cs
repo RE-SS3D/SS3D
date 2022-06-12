@@ -1,15 +1,9 @@
-using System;
-using System.Collections;
 using Coimbra;
 using DG.Tweening;
-using kcp2k;
-using Mirror;
-using SS3D.Data;
 using SS3D.Data.Messages;
 using SS3D.Utils;
 using TMPro;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 namespace SS3D.Core.Networking.UI_Helper
@@ -17,7 +11,7 @@ namespace SS3D.Core.Networking.UI_Helper
     /// <summary>
     /// Displays the process of connecting to a server on ui elements
     /// </summary>
-    public sealed class ServerConnectionUIHelper : MonoBehaviour
+    public sealed class ServerConnectionView : MonoBehaviour
     {
         [Header("Components")]
         [SerializeField] private GameObject _root;

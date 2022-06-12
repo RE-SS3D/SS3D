@@ -35,7 +35,7 @@ namespace SS3D.Core.Networking.Helper
         {
             // Uses the event service to listen to lobby events
             IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
-            eventService?.AddListener<ServerConnectionUIHelper.RetryButtonClicked>(InitiateNetworkSession);
+            eventService?.AddListener<ServerConnectionView.RetryButtonClicked>(InitiateNetworkSession);
             
             _applicationStateManager = ApplicationStateManager.Instance;
             _networkManager = NetworkManager.singleton;
@@ -96,7 +96,7 @@ namespace SS3D.Core.Networking.Helper
 
                     if (arg.Contains(CommandLineArgs.DisableDiscordIntegration))
                     {
-                        _applicationStateManager.SetSkipIntro(true);
+                        _applicationStateManager.SetDisableDiscordIntegration(true);
                         Debug.Log($"[{typeof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.DisableDiscordIntegration} - {true}");
                     }
                 }
@@ -131,7 +131,7 @@ namespace SS3D.Core.Networking.Helper
         }
         
         // Overload to match the event type
-        private void InitiateNetworkSession(object sender, ServerConnectionUIHelper.RetryButtonClicked e)
+        private void InitiateNetworkSession(object sender, ServerConnectionView.RetryButtonClicked e)
         {
             InitiateNetworkSession();
         }

@@ -1,5 +1,6 @@
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Core.Helper.Intro
 {
@@ -8,9 +9,10 @@ namespace SS3D.Core.Helper.Intro
     /// </summary>
     public sealed class IntroUIHelper : MonoBehaviour
     {
+        [FormerlySerializedAs("_introUiFade")]
         [Header("UI")]
-        [SerializeField] private CanvasGroup _introUiFade;
-        [SerializeField] private CanvasGroup _connectionUiFade;
+        [SerializeField] private CanvasGroup _introUiCanvasGroup;
+        [FormerlySerializedAs("_connectionUiFade")] [SerializeField] private CanvasGroup _connectionUiCanvasGroup;
         
         [Header("Settings")]
         [SerializeField] private float _fadeInDuration;
@@ -31,6 +33,8 @@ namespace SS3D.Core.Helper.Intro
             {
                 Destroy(_temporaryAudioSource);
                 ApplicationStateManager.Instance.InitializeApplication();
+                _introUiCanvasGroup.alpha = 0;
+                _connectionUiCanvasGroup.alpha = 1;
             }
             else
             {
@@ -41,14 +45,14 @@ namespace SS3D.Core.Helper.Intro
         // Please don't mess with this, its disgusting
         private void TurnOnConnectionUIAfterFade()
         {
-            _introUiFade.alpha = 0;
+            _introUiCanvasGroup.alpha = 0;
 
-            _introUiFade.DOFade(1, _fadeInDuration).SetEase(Ease.InExpo).OnComplete(() =>
+            _introUiCanvasGroup.DOFade(1, _fadeInDuration).SetEase(Ease.InExpo).OnComplete(() =>
             {
-                _introUiFade.DOFade(0, _fadeOutDuration).SetDelay(_splashScreenFreezeDuration).OnComplete(() =>
+                _introUiCanvasGroup.DOFade(0, _fadeOutDuration).SetDelay(_splashScreenFreezeDuration).OnComplete(() =>
                 {
                     ApplicationStateManager.Instance.InitializeApplication();
-                    _connectionUiFade.DOFade(1, _fadeInDuration).SetDelay(2);
+                    _connectionUiCanvasGroup.DOFade(1, _fadeInDuration).SetDelay(2);
                 });
             }).SetEase(Ease.InCubic);
         }

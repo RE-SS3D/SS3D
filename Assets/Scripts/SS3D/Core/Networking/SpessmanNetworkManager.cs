@@ -15,7 +15,7 @@ namespace SS3D.Core.Networking
     /// </summary>
     public sealed class SpessmanNetworkManager : NetworkManager
     {
-        public new static SpessmanNetworkManager singleton;
+        public static SpessmanNetworkManager Singleton;
 
         public static event Action OnClientStopped;
 
@@ -23,7 +23,7 @@ namespace SS3D.Core.Networking
         {    
             base.Awake();
 
-            if (singleton != null) singleton = this;
+            if (Singleton != null) Singleton = this;
         }
 
         public override void OnStopClient()
