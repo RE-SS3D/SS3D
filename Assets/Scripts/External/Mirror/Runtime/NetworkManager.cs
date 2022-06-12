@@ -12,7 +12,7 @@ namespace Mirror
     public enum NetworkManagerMode { Offline, ServerOnly, ClientOnly, Host }
 
     [DisallowMultipleComponent]
-    [AddComponentMenu("Network/NetworkManager")]
+    [AddComponentMenu("Network/Network Manager")]
     [HelpURL("https://mirror-networking.gitbook.io/docs/components/network-manager")]
     public class NetworkManager : MonoBehaviour
     {
@@ -97,7 +97,7 @@ namespace Mirror
         public static int startPositionIndex;
 
         /// <summary>The one and only NetworkManager</summary>
-        public static NetworkManager Singleton { get; private set; }
+        public static NetworkManager singleton { get; internal set; }
 
         /// <summary>Number of active player objects across all connections on the server.</summary>
         public int numPlayers => NetworkServer.connections.Count(kv => kv.Value.identity != null);
@@ -112,8 +112,7 @@ namespace Mirror
         /// <summary>True if the client loaded a new scene when connecting to the server.</summary>
         // This is set before OnClientConnect is called, so it can be checked
         // there to perform different logic if a scene load occurred.
-        [NonSerialized]
-        public bool clientLoadedScene;
+        protected bool clientLoadedScene;
 
         // helper enum to know if we started the networkmanager as server/client/host.
         // -> this is necessary because when StartHost changes server scene to
@@ -188,7 +187,7 @@ namespace Mirror
             // Don't allow collision-destroyed second instance to continue.
             if (!InitializeSingleton()) return;
 
-            Debug.Log($"[{typeof(NetworkManager)}] - We are using Mirror as our networking solution | mirror-networking.com | discord.gg/N9QVxbM");
+            Debug.Log("Mirror | mirror-networking.com | discord.gg/N9QVxbM");
 
             // Set the networkSceneName to prevent a scene reload
             // if client connection to server fails.
@@ -633,7 +632,7 @@ namespace Mirror
                 //Debug.Log("OnApplicationQuit: stopped server");
             }
 
-            // Call ResetStatics to reset statics and Singleton
+            // Call ResetStatics to reset statics and singleton
             ResetStatics();
         }
 
@@ -650,12 +649,12 @@ namespace Mirror
 
         bool InitializeSingleton()
         {
-            if (Singleton != null && Singleton == this)
+            if (singleton != null && singleton == this)
                 return true;
 
             if (dontDestroyOnLoad)
             {
-                if (Singleton != null)
+                if (singleton != null)
                 {
                     Debug.LogWarning("Multiple NetworkManagers detected in the scene. Only one NetworkManager can exist at a time. The duplicate NetworkManager will be destroyed.");
                     Destroy(gameObject);
@@ -663,8 +662,8 @@ namespace Mirror
                     // Return false to not allow collision-destroyed second instance to continue.
                     return false;
                 }
-                //Debug.Log("NetworkManager created Singleton (DontDestroyOnLoad)");
-                Singleton = this;
+                //Debug.Log("NetworkManager created singleton (DontDestroyOnLoad)");
+                singleton = this;
                 if (Application.isPlaying)
                 {
                     // Force the object to scene root, in case user made it a child of something
@@ -675,11 +674,11 @@ namespace Mirror
             }
             else
             {
-                //Debug.Log("NetworkManager created Singleton (ForScene)");
-                Singleton = this;
+                //Debug.Log("NetworkManager created singleton (ForScene)");
+                singleton = this;
             }
 
-            // set active transport AFTER setting Singleton.
+            // set active transport AFTER setting singleton.
             // so only if we didn't destroy ourselves.
             Transport.activeTransport = transport;
             return true;
@@ -711,14 +710,14 @@ namespace Mirror
                 NetworkClient.RegisterPrefab(prefab);
         }
 
-        // This is the only way to clear the Singleton, so another instance can be created.
+        // This is the only way to clear the singleton, so another instance can be created.
         // RuntimeInitializeOnLoadMethod -> fast playmode without domain reload
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void ResetStatics()
         {
-            // call StopHost if we have a Singleton
-            if (Singleton)
-                Singleton.StopHost();
+            // call StopHost if we have a singleton
+            if (singleton)
+                singleton.StopHost();
 
             // reset all statics
             startPositions.Clear();
@@ -728,7 +727,7 @@ namespace Mirror
             networkSceneName = string.Empty;
 
             // and finally (in case it isn't null already)...
-            Singleton = null;
+            singleton = null;
         }
 
         // virtual so that inheriting classes' OnDestroy() can call base.OnDestroy() too
@@ -1048,7 +1047,7 @@ namespace Mirror
         /// </summary>
         /// <param name="start">Transform to register.</param>
         // Static because it's called from NetworkStartPosition::Awake
-        // and Singleton may not exist yet
+        // and singleton may not exist yet
         public static void RegisterStartPosition(Transform start)
         {
             // Debug.Log($"RegisterStartPosition: {start.gameObject.name} {start.position}");
@@ -1063,7 +1062,7 @@ namespace Mirror
 
         /// <summary>Unregister a Transform from start positions.</summary>
         // Static because it's called from NetworkStartPosition::OnDestroy
-        // and Singleton may not exist yet
+        // and singleton may not exist yet
         public static void UnRegisterStartPosition(Transform start)
         {
             //Debug.Log($"UnRegisterStartPosition: {start.name} {start.position}");
@@ -1091,7 +1090,7 @@ namespace Mirror
             }
         }
 
-        void OnServerConnectInternal(NetworkConnection conn)
+        void OnServerConnectInternal(NetworkConnectionToClient conn)
         {
             //Debug.Log("NetworkManager.OnServerConnectInternal");
 
@@ -1109,7 +1108,7 @@ namespace Mirror
 
         // called after successful authentication
         // TODO do the NetworkServer.OnAuthenticated thing from x branch
-        void OnServerAuthenticated(NetworkConnection conn)
+        void OnServerAuthenticated(NetworkConnectionToClient conn)
         {
             //Debug.Log("NetworkManager.OnServerAuthenticated");
 
@@ -1126,13 +1125,13 @@ namespace Mirror
             OnServerConnect(conn);
         }
 
-        void OnServerReadyMessageInternal(NetworkConnection conn, ReadyMessage msg)
+        void OnServerReadyMessageInternal(NetworkConnectionToClient conn, ReadyMessage msg)
         {
             //Debug.Log("NetworkManager.OnServerReadyMessageInternal");
             OnServerReady(conn);
         }
 
-        void OnServerAddPlayerInternal(NetworkConnection conn, AddPlayerMessage msg)
+        void OnServerAddPlayerInternal(NetworkConnectionToClient conn, AddPlayerMessage msg)
         {
             //Debug.Log("NetworkManager.OnServerAddPlayer");
 
@@ -1231,11 +1230,11 @@ namespace Mirror
         }
 
         /// <summary>Called on the server when a new client connects.</summary>
-        public virtual void OnServerConnect(NetworkConnection conn) {}
+        public virtual void OnServerConnect(NetworkConnectionToClient conn) {}
 
         /// <summary>Called on the server when a client disconnects.</summary>
         // Called by NetworkServer.OnTransportDisconnect!
-        public virtual void OnServerDisconnect(NetworkConnection conn)
+        public virtual void OnServerDisconnect(NetworkConnectionToClient conn)
         {
             // by default, this function destroys the connection's player.
             // can be overwritten for cases like delayed logouts in MMOs to
@@ -1245,7 +1244,7 @@ namespace Mirror
         }
 
         /// <summary>Called on the server when a client is ready (= loaded the scene)</summary>
-        public virtual void OnServerReady(NetworkConnection conn)
+        public virtual void OnServerReady(NetworkConnectionToClient conn)
         {
             if (conn.identity == null)
             {
@@ -1257,7 +1256,7 @@ namespace Mirror
 
         /// <summary>Called on server when a client requests to add the player. Adds playerPrefab by default. Can be overwritten.</summary>
         // The default implementation for this function creates a new player object from the playerPrefab.
-        public virtual void OnServerAddPlayer(NetworkConnection conn)
+        public virtual void OnServerAddPlayer(NetworkConnectionToClient conn)
         {
             Transform startPos = GetStartPosition();
             GameObject player = startPos != null
@@ -1271,7 +1270,7 @@ namespace Mirror
         }
 
         /// <summary>Called on server when transport raises an exception. NetworkConnection may be null.</summary>
-        public virtual void OnServerError(NetworkConnection conn, Exception exception) {}
+        public virtual void OnServerError(NetworkConnectionToClient conn, Exception exception) {}
 
         /// <summary>Called from ServerChangeScene immediately before SceneManager.LoadSceneAsync is executed</summary>
         public virtual void OnServerChangeScene(string newSceneName) {}

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Mirror.Discovery
 {
     [DisallowMultipleComponent]
-    [AddComponentMenu("Network/NetworkDiscoveryHUD")]
+    [AddComponentMenu("Network/Network Discovery HUD")]
     [HelpURL("https://mirror-networking.gitbook.io/docs/components/network-discovery")]
     [RequireComponent(typeof(NetworkDiscovery))]
     public class NetworkDiscoveryHUD : MonoBehaviour
@@ -28,7 +28,7 @@ namespace Mirror.Discovery
 
         void OnGUI()
         {
-            if (NetworkManager.Singleton == null)
+            if (NetworkManager.singleton == null)
                 return;
 
             if (!NetworkClient.isConnected && !NetworkServer.active && !NetworkClient.active)
@@ -53,7 +53,7 @@ namespace Mirror.Discovery
             if (GUILayout.Button("Start Host"))
             {
                 discoveredServers.Clear();
-                NetworkManager.Singleton.StartHost();
+                NetworkManager.singleton.StartHost();
                 networkDiscovery.AdvertiseServer();
             }
 
@@ -61,7 +61,7 @@ namespace Mirror.Discovery
             if (GUILayout.Button("Start Server"))
             {
                 discoveredServers.Clear();
-                NetworkManager.Singleton.StartServer();
+                NetworkManager.singleton.StartServer();
                 networkDiscovery.AdvertiseServer();
             }
 
@@ -91,7 +91,7 @@ namespace Mirror.Discovery
             {
                 if (GUILayout.Button("Stop Host"))
                 {
-                    NetworkManager.Singleton.StopHost();
+                    NetworkManager.singleton.StopHost();
                     networkDiscovery.StopDiscovery();
                 }
             }
@@ -100,7 +100,7 @@ namespace Mirror.Discovery
             {
                 if (GUILayout.Button("Stop Client"))
                 {
-                    NetworkManager.Singleton.StopClient();
+                    NetworkManager.singleton.StopClient();
                     networkDiscovery.StopDiscovery();
                 }
             }
@@ -109,7 +109,7 @@ namespace Mirror.Discovery
             {
                 if (GUILayout.Button("Stop Server"))
                 {
-                    NetworkManager.Singleton.StopServer();
+                    NetworkManager.singleton.StopServer();
                     networkDiscovery.StopDiscovery();
                 }
             }
@@ -120,7 +120,7 @@ namespace Mirror.Discovery
         void Connect(ServerResponse info)
         {
             networkDiscovery.StopDiscovery();
-            NetworkManager.Singleton.StartClient(info.uri);
+            NetworkManager.singleton.StartClient(info.uri);
         }
 
         public void OnDiscoveredServer(ServerResponse info)

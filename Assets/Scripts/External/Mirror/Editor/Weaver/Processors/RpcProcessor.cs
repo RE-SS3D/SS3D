@@ -8,10 +8,10 @@ namespace Mirror.Weaver
     {
         public static MethodDefinition ProcessRpcInvoke(WeaverTypes weaverTypes, Writers writers, Readers readers, Logger Log, TypeDefinition td, MethodDefinition md, MethodDefinition rpcCallFunc, ref bool WeavingFailed)
         {
-            MethodDefinition rpc = new MethodDefinition(
-                Weaver.InvokeRpcPrefix + md.Name,
-                MethodAttributes.Family | MethodAttributes.Static | MethodAttributes.HideBySig,
-                weaverTypes.Import(typeof(void)));
+            string rpcName = Weaver.GenerateMethodName(Weaver.InvokeRpcPrefix, md);
+
+            MethodDefinition rpc = new MethodDefinition(rpcName, MethodAttributes.Family | MethodAttributes.Static | MethodAttributes.HideBySig,
+                                                        weaverTypes.Import(typeof(void)));
 
             ILProcessor worker = rpc.Body.GetILProcessor();
             Instruction label = worker.Create(OpCodes.Nop);
@@ -68,23 +68,20 @@ namespace Mirror.Weaver
             //worker.Emit(OpCodes.Ldstr, $"Call ClientRpc function {md.Name}");
             //worker.Emit(OpCodes.Call, WeaverTypes.logErrorReference);
 
-            NetworkBehaviourProcessor.WriteCreateWriter(worker, weaverTypes);
+            NetworkBehaviourProcessor.WriteGetWriter(worker, weaverTypes);
 
             // write all the arguments that the user passed to the Rpc call
             if (!NetworkBehaviourProcessor.WriteArguments(worker, writers, Log, md, RemoteCallType.ClientRpc, ref WeavingFailed))
                 return null;
 
-            string rpcName = md.Name;
             int channel = clientRpcAttr.GetField("channel", 0);
             bool includeOwner = clientRpcAttr.GetField("includeOwner", true);
 
             // invoke SendInternal and return
             // this
             worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Ldtoken, td);
-            // invokerClass
-            worker.Emit(OpCodes.Call, weaverTypes.getTypeFromHandleReference);
-            worker.Emit(OpCodes.Ldstr, rpcName);
+            // pass full function name to avoid ClassA.Func <-> ClassB.Func collisions
+            worker.Emit(OpCodes.Ldstr, md.FullName);
             // writer
             worker.Emit(OpCodes.Ldloc_0);
             worker.Emit(OpCodes.Ldc_I4, channel);
@@ -92,7 +89,7 @@ namespace Mirror.Weaver
             worker.Emit(includeOwner ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
             worker.Emit(OpCodes.Callvirt, weaverTypes.sendRpcInternal);
 
-            NetworkBehaviourProcessor.WriteRecycleWriter(worker, weaverTypes);
+            NetworkBehaviourProcessor.WriteReturnWriter(worker, weaverTypes);
 
             worker.Emit(OpCodes.Ret);
 

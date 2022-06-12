@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Mirror
 {
+    [AddComponentMenu("Network/ Interest Management/ Distance/Distance Interest Management")]
     public class DistanceInterestManagement : InterestManagement
     {
         [Tooltip("The maximum range that objects will be visible at. Add DistanceInterestManagementCustomRange onto NetworkIdentities for custom ranges.")]
@@ -16,8 +17,7 @@ namespace Mirror
         // helper function to get vis range for a given object, or default.
         int GetVisRange(NetworkIdentity identity)
         {
-            DistanceInterestManagementCustomRange custom = identity.GetComponent<DistanceInterestManagementCustomRange>();
-            return custom != null ? custom.visRange : visRange;
+            return identity.TryGetComponent(out DistanceInterestManagementCustomRange custom) ? custom.visRange : visRange;
         }
 
         [ServerCallback]
@@ -26,13 +26,13 @@ namespace Mirror
             lastRebuildTime = 0D;
         }
 
-        public override bool OnCheckObserver(NetworkIdentity identity, NetworkConnection newObserver)
+        public override bool OnCheckObserver(NetworkIdentity identity, NetworkConnectionToClient newObserver)
         {
             int range = GetVisRange(identity);
             return Vector3.Distance(identity.transform.position, newObserver.identity.transform.position) < range;
         }
 
-        public override void OnRebuildObservers(NetworkIdentity identity, HashSet<NetworkConnection> newObservers, bool initialize)
+        public override void OnRebuildObservers(NetworkIdentity identity, HashSet<NetworkConnectionToClient> newObservers)
         {
             // cache range and .transform because both call GetComponent.
             int range = GetVisRange(identity);

@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using Coimbra;
 using Mirror;
 using SS3D.Core.Networking.PlayerControl.Messages;
 using SS3D.Core.Systems.Entities;
@@ -13,7 +15,15 @@ namespace SS3D.Core.Networking.PlayerControl
     {
         [SerializeField] private GameObject _soulPrefab;
 
-        private readonly SyncList<Soul> _serverSouls = new();
+        private readonly SyncList<Soul> _serverSouls = new SyncList<Soul>();
+
+        [Serializable]
+        public struct PlayerLeftServer
+        {
+            public Soul Soul;
+
+            public PlayerLeftServer(Soul soul) { Soul = soul; }
+        }
 
         private void Awake()
         {
@@ -31,7 +41,7 @@ namespace SS3D.Core.Networking.PlayerControl
         /// </summary>
         /// <param name="userAuthorizationMessage">struct containing the ckey and the connection that sent it</param>
         [Server]
-        private void HandleAuthorizePlayer(NetworkConnection conn, UserAuthorizationMessage userAuthorizationMessage)
+        public void HandleAuthorizePlayer(NetworkConnectionToClient conn, UserAuthorizationMessage userAuthorizationMessage)
         {
             string ckey = userAuthorizationMessage.Ckey;
 
@@ -39,12 +49,12 @@ namespace SS3D.Core.Networking.PlayerControl
             foreach (Soul soul in _serverSouls.Where((soul) => soul.Ckey == ckey))
             {
                 match = soul;
-                Debug.Log($"[{nameof(PlayerControlManager)}] - SERVER - Soul match for {soul} found, reassigning to client");
+                Debug.Log($"[{typeof(PlayerControlManager)}] - SERVER - Soul match for {soul} found, reassigning to client");
             }
 
             if (match == null)
             {
-                Debug.Log($"[{nameof(PlayerControlManager)}] - SERVER - No Soul match for {ckey} found, creating a new one");
+                Debug.Log($"[{typeof(PlayerControlManager)}] - SERVER - No Soul match for {ckey} found, creating a new one");
 
                 match = Instantiate(_soulPrefab).GetComponent<Soul>();
                 match.SetCkey(string.Empty ,ckey);
@@ -54,10 +64,10 @@ namespace SS3D.Core.Networking.PlayerControl
             }
             NetworkServer.AddPlayerForConnection(conn, match.gameObject);
 
-            UserJoinedServerMessage userJoinedServerMessage = new(match.Ckey);
-            NetworkServer.SendToAll(userJoinedServerMessage);
+            UserJoinedServerMessage userJoinedServerMessage = new UserJoinedServerMessage(match.Ckey);
+            NetworkServer.SendToAll(userJoinedServerMessage);         
 
-            Debug.Log($"[{nameof(PlayerControlManager)}] - SERVER - Handle Authorize Player: {match.Ckey}");
+            Debug.Log($"[{typeof(PlayerControlManager)}] - SERVER - Handle Authorize Player: {match.Ckey}");
         }
     }
 }

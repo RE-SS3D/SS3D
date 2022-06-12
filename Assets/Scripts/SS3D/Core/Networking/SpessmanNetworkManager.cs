@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using Coimbra;
 using Mirror;
 using SS3D.Core.Networking.Helper;
@@ -15,49 +15,51 @@ namespace SS3D.Core.Networking
     /// </summary>
     public sealed class SpessmanNetworkManager : NetworkManager
     {
-        public static SpessmanNetworkManager Instance;
+        public new static SpessmanNetworkManager singleton;
+
+        public static event Action OnClientStopped;
 
         public override void Awake()
-        {
+        {    
             base.Awake();
 
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(this);
-            }
+            if (singleton != null) singleton = this;
         }
 
-        public override void OnServerDisconnect(NetworkConnection conn)
+        public override void OnStopClient()
         {
-            Debug.Log($"[{nameof(SpessmanNetworkManager)}] - Client {conn.address} disconnected");
+            base.OnStopClient();
+
+            OnClientStopped?.Invoke();
+        }
+
+        public override void OnServerDisconnect(NetworkConnectionToClient conn)
+        { 
+            Debug.Log($"[{typeof(SpessmanNetworkManager)}] - Client {conn.address} disconnected");
 
             NetworkIdentity[] ownedObjects = new NetworkIdentity[conn.clientOwnedObjects.Count];
             conn.clientOwnedObjects.CopyTo(ownedObjects);
 
             if (ownedObjects.Length == 0)
             {
-                Debug.LogError($"[{nameof(SpessmanNetworkManager)}] - No clientOwnedObjects were found, something is very wrong");
+                Debug.LogError($"[{typeof(SpessmanNetworkManager)}] - No clientOwnedObjects were found, something is very wrong");
                 return;
             }
 
             foreach (NetworkIdentity networkIdentity in ownedObjects)
             {
-                Debug.Log($"[{nameof(SpessmanNetworkManager)}] - Client {conn.address}'s owned object: {networkIdentity.name}");
+                Debug.Log($"[{typeof(SpessmanNetworkManager)}] - Client {conn.address}'s owned object: {networkIdentity.name}");
 
                 Soul soul = networkIdentity.GetComponent<Soul>();
                 if (soul == null)
                 {
-                    Debug.LogError($"[{nameof(SpessmanNetworkManager)}] - No Soul found in clientOwnedObjects, something is very wrong");
+                    Debug.LogError($"[{typeof(SpessmanNetworkManager)}] - No Soul found in clientOwnedObjects, something is very wrong");
                     return;
                 }
 
                 NetworkServer.RemovePlayerForConnection(conn, false);
                 NetworkServer.SendToAll(new UserLeftServerMessage(soul.Ckey));
-                Debug.Log($"[{nameof(SpessmanNetworkManager)}] - Invoking the player server left event: {soul.Ckey}");
+                Debug.Log($"[{typeof(SpessmanNetworkManager)}] - Invoking the player server left event: {soul.Ckey}");
             }
         }
     }
