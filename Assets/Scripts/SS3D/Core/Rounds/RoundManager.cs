@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Mirror;
+using SS3D.Core.Rounds.Messages;
 using UnityEngine;
 
 namespace SS3D.Core.Rounds
@@ -13,10 +14,6 @@ namespace SS3D.Core.Rounds
     /// </summary>
     public class RoundManager : NetworkBehaviour
     {
-        public static event Action WarmupStarted;
-        public static event Action RoundStarted;
-        public static event Action<int> OnTick;
-
         [Header("Round Stats")] 
         [SyncVar(hook = "SetRoundState")] 
         [SerializeField] private RoundStates _roundState;
@@ -38,11 +35,21 @@ namespace SS3D.Core.Rounds
         public bool RoundStarting => _roundState == RoundStates.Starting;
         public bool OnWarmup => _roundState == RoundStates.WarmingUp;
 
+        private void Start()
+        {
+            NetworkServer.RegisterHandler<RequestStartRoundMessage>(HandleRequestStartRound);
+        }
+
+        private void HandleRequestStartRound(NetworkConnection conn, RequestStartRoundMessage m)
+        {
+            ServerStartWarmup();
+        }
+
         /// <summary>
         /// Server method to start the warmup
         /// </summary>
         [Server]
-        public void ServerStartWarmup()
+        private void ServerStartWarmup()
         {
             if (!isServer)
             {
@@ -54,21 +61,12 @@ namespace SS3D.Core.Rounds
             _roundState = RoundStates.WarmingUp;
             _warmupCoroutine = StartCoroutine(TickWarmup());
 
-            WarmupStarted?.Invoke();
-        }
-
-        [ClientRpc] 
-        public void RpcHandleStartWarmup()
-        {
-            if (isServer)
-            {
-                return;
-            }
-            WarmupStarted?.Invoke();
+            WarmupStartedMessage warmupStartedMessage = new WarmupStartedMessage();
+            NetworkServer.SendToAll(warmupStartedMessage);
         }
 
         [Server]
-        public void HandleStartRound()
+        private void HandleStartRound()
         {
             _roundState = RoundStates.Starting;
             // These activities will happen both on the server and client.
@@ -83,8 +81,8 @@ namespace SS3D.Core.Rounds
             StopCoroutine(_warmupCoroutine);
             _tickCoroutine = StartCoroutine(Tick());
 
-            Debug.Log("Round Started");
-            RoundStarted?.Invoke();
+            Debug.Log($"[{nameof(RoundManager)}] - Round Started");
+            NetworkServer.SendToAll(new RoundStartedMessage());
         }
 
         private IEnumerator TickWarmup()
@@ -92,7 +90,7 @@ namespace SS3D.Core.Rounds
             while (_currentTimerSeconds > 0)
             {
                 UpdateClock(GetTimerSeconds());
-                Debug.Log("Round start timer:" + _currentTimerSeconds);
+                Debug.Log($"[{nameof(RoundManager)}] - Start timer: {_currentTimerSeconds}");
                 _currentTimerSeconds--;
                 yield return new WaitForSeconds(1);
             }
@@ -109,20 +107,21 @@ namespace SS3D.Core.Rounds
                 yield return new WaitForSeconds(1);
             }
 
-            Debug.Log($"[{typeof(RoundManager)}] - Coroutine running while round is not active");
+            Debug.Log($"[{nameof(RoundManager)}] - Coroutine running while round is not active");
         }
 
         [Server]
         private void UpdateClock(int time)
         {
-            OnTick?.Invoke(time);
-            RpcUpdateClientClocks(time);
+            OnTickMessage onTickMessage = new OnTickMessage(time);
+
+            NetworkServer.SendToAll(onTickMessage);
         }
 
         [ClientRpc]
         private void RpcUpdateClientClocks(int time)
         {
-            OnTick?.Invoke(time);
+            //OnTick?.Invoke(time);
         }
 
         private int GetTimerSeconds()
@@ -138,7 +137,7 @@ namespace SS3D.Core.Rounds
         private void SetRoundState(RoundStates oldState, RoundStates newState)
         {
             _roundState = newState;
-            Debug.Log($"[{typeof(RoundManager)}] - Round state updated: [{newState}]");
+            Debug.Log($"[{nameof(RoundManager)}] - Round state updated: [{newState}]");
         }
 
         /// <summary>
@@ -147,11 +146,11 @@ namespace SS3D.Core.Rounds
         private void SetCurrentTimerSeconds(int oldSeconds, int newSeconds)
         {
             _currentTimerSeconds = newSeconds;
-            Debug.Log($"[{typeof(RoundManager)}] - Round timer updated: [{newSeconds}]");
+            Debug.Log($"[{nameof(RoundManager)}] - Round timer updated: [{newSeconds}]");
         }
 
         /// <summary>
-        /// Used by Mirror to sync the warmuo timer
+        /// Used by Mirror to sync the warmup timer
         /// </summary>
         /// <param name="newTime"></param>
         public void SetWarmupTimer(int oldTime, int newTime)

@@ -41,12 +41,12 @@ namespace SS3D.Core.Networking.PlayerControl
             foreach (Soul soul in _serverSouls.Where((soul) => soul.Ckey == ckey))
             {
                 match = soul;
-                Debug.Log($"[{typeof(PlayerControlManager)}] - SERVER - Soul match for {soul} found, reassigning to client");
+                Debug.Log($"[{nameof(PlayerControlManager)}] - SERVER - Soul match for {soul} found, reassigning to client");
             }
 
             if (match == null)
             {
-                Debug.Log($"[{typeof(PlayerControlManager)}] - SERVER - No Soul match for {ckey} found, creating a new one");
+                Debug.Log($"[{nameof(PlayerControlManager)}] - SERVER - No Soul match for {ckey} found, creating a new one");
 
                 match = Instantiate(_soulPrefab).GetComponent<Soul>();
                 match.SetCkey(string.Empty ,ckey);
@@ -59,7 +59,7 @@ namespace SS3D.Core.Networking.PlayerControl
             UserJoinedServerMessage userJoinedServerMessage = new UserJoinedServerMessage(match.Ckey);
             NetworkServer.SendToAll(userJoinedServerMessage);         
 
-            Debug.Log($"[{typeof(PlayerControlManager)}] - SERVER - Handle Authorize Player: {match.Ckey}");
+            Debug.Log($"[{nameof(PlayerControlManager)}] - SERVER - Handle Authorize Player: {match.Ckey}");
         }
     }
 }
