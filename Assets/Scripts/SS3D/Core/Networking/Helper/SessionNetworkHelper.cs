@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
-using Mirror;
+using FishNet;
+using FishNet.Managing;
 using SS3D.Core.Networking.UI_Helper;
 using SS3D.Core.Networking.Utils;
 using UnityEngine;
@@ -38,7 +39,7 @@ namespace SS3D.Core.Networking.Helper
             eventService?.AddListener<ServerConnectionView.RetryButtonClicked>(InitiateNetworkSession);
             
             _applicationStateManager = ApplicationStateManager.Instance;
-            _networkManager = NetworkManager.singleton;
+            _networkManager = InstanceFinder.NetworkManager;
         }
 
         // Gets the command line arguments from the executable, for example: "-server=localhost"
@@ -114,19 +115,19 @@ namespace SS3D.Core.Networking.Helper
         {
             if (_networkManager == null)
             {
-                _networkManager = NetworkManager.singleton;
+                _networkManager = InstanceFinder.NetworkManager;
             }
 
             if (_isHost)
             {
                 Debug.Log($"[{typeof(SessionNetworkHelper)}] - Hosting a new server");
-                _networkManager.StartHost();
+                _networkManager.ServerManager.StartConnection();
             }
 
             else
             {
                 Debug.Log($"[{typeof(SessionNetworkHelper)}] - Joining to server {_ip} as {_ckey}");
-                _networkManager.StartClient(UriParser.TryParseIpAddress(_ip));
+                _networkManager.ClientManager.StartConnection(UriParser.TryParseIpAddress(_ip).ToString());
             }
         }
         

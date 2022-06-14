@@ -1,5 +1,7 @@
 using Coimbra;
 using DG.Tweening;
+using FishNet;
+using FishNet.Transporting;
 using SS3D.Data.Messages;
 using SS3D.Utils;
 using TMPro;
@@ -57,7 +59,7 @@ namespace SS3D.Core.Networking.UI_Helper
             _quitButton.onClick.AddListener(Application.Quit);
             _retryButton.onClick.AddListener(OnRetryButtonPressed);
 
-            SpessmanNetworkManager.OnClientStopped += OnServerConnectionFailed;
+            InstanceFinder.ServerManager.OnServerConnectionState += OnServerConnectionFailed;
         }
 
         private void UnsubscribeFromEvents()
@@ -94,8 +96,13 @@ namespace SS3D.Core.Networking.UI_Helper
             eventService?.Invoke(this, new RetryButtonClicked());
         }
         
-        private void OnServerConnectionFailed()
+        private void OnServerConnectionFailed(ServerConnectionStateArgs serverConnectionStateArgs)
         {
+            if (serverConnectionStateArgs.ConnectionState != LocalConnectionState.Stopped)
+            {
+                return;
+            }
+            
             _connectionFailed = true;
             _buttons.SetActive(true);
             _loadingIcon.gameObject.SetActive(false);

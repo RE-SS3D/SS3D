@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
-using Mirror;
-using SS3D.Core.Networking.PlayerControl.Messages;
 using UnityEngine;
 
 namespace SS3D.Core.Networking.Lobby.UI_Helper
@@ -32,8 +30,8 @@ namespace SS3D.Core.Networking.Lobby.UI_Helper
             // Uses the event service to listen to lobby events
             IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
             
-            eventService!.AddListener<LobbyManager.UserJoinedLobby>(AddUsernameUI);
-            eventService!.AddListener<LobbyManager.UserLeftLobby>(RemoveUsernameUI);
+            eventService!.AddListener<LobbySystem.UserJoinedLobby>(AddUsernameUI);
+            eventService!.AddListener<LobbySystem.UserLeftLobby>(RemoveUsernameUI);
         }
 
         /// <summary>
@@ -41,7 +39,7 @@ namespace SS3D.Core.Networking.Lobby.UI_Helper
         /// </summary>
         /// <param name="sender">Required by the ServiceLocator, unused in this function</param>
         /// <param name="data">A PlayerJoinedlobby event, that simply carries the Username</param>
-        public void AddUsernameUI(object sender, LobbyManager.UserJoinedLobby data)
+        public void AddUsernameUI(object sender, LobbySystem.UserJoinedLobby data)
         {
             // if this Username already exists we return
             if (_playerUsernames.Exists((player) => data.Ckey == player.Name))
@@ -62,7 +60,7 @@ namespace SS3D.Core.Networking.Lobby.UI_Helper
         /// </summary>
         /// <param name="sender">Required by the ServiceLocator, unused in this function</param>
         /// <param name="data">A PlayerJoinedlobby event, that simply carries the Username</param>
-        private void RemoveUsernameUI(object sender,  LobbyManager.UserLeftLobby data)
+        private void RemoveUsernameUI(object sender,  LobbySystem.UserLeftLobby data)
         {
             PlayerUsernameView removedUsername = null;
             foreach (PlayerUsernameView playerUsernameUI in _playerUsernames.Where(playerUsernameUI => playerUsernameUI.Name.Equals(data.Ckey)))

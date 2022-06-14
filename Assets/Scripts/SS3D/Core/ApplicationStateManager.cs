@@ -72,8 +72,8 @@ namespace SS3D.Core
             DOTween.Init();
             Debug.Log($"[{typeof(ApplicationStateManager)}] - Initializing essential systems");
         }
-        
-        public void InitializeNetworkSession() 
+
+        private void InitializeNetworkSession() 
         {
             _networkHelper.InitiateNetworkSession();
             Debug.Log($"[{typeof(ApplicationStateManager)}] - Initializing network session");

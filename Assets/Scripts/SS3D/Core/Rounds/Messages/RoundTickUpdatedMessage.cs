@@ -1,14 +1,14 @@
 using System;
-using Mirror;
+using FishNet.Broadcast;
 
 namespace SS3D.Core.Rounds.Messages
 {
    [Serializable]
-   public struct RoundTickMessage : NetworkMessage
+   public struct RoundTickUpdatedMessage : IBroadcast
    {
       public readonly int Seconds;
 
-      public RoundTickMessage(int seconds)
+      public RoundTickUpdatedMessage(int seconds)
       {
          Seconds = seconds;
       } 

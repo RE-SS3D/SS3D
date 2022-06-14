@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
-using Coimbra;
-using Mirror;
+using FishNet;
+using FishNet.Connection;
+using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Core.Networking.PlayerControl.Messages;
 using SS3D.Core.Systems.Entities;
 using UnityEngine;
@@ -15,6 +17,7 @@ namespace SS3D.Core.Networking.PlayerControl
     {
         [SerializeField] private GameObject _soulPrefab;
 
+        [SyncObject]
         private readonly SyncList<Soul> _serverSouls = new SyncList<Soul>();
 
         [Serializable]
@@ -32,7 +35,7 @@ namespace SS3D.Core.Networking.PlayerControl
 
         private void SubscribeToEvents()
         {
-            NetworkServer.RegisterHandler<UserAuthorizationMessage>(HandleAuthorizePlayer);
+            InstanceFinder.ServerManager.RegisterBroadcast<UserAuthorizationMessage>(HandleAuthorizePlayer);
         }
 
         /// <summary>
@@ -41,7 +44,7 @@ namespace SS3D.Core.Networking.PlayerControl
         /// </summary>
         /// <param name="userAuthorizationMessage">struct containing the ckey and the connection that sent it</param>
         [Server]
-        public void HandleAuthorizePlayer(NetworkConnectionToClient conn, UserAuthorizationMessage userAuthorizationMessage)
+        private void HandleAuthorizePlayer(NetworkConnection conn, UserAuthorizationMessage userAuthorizationMessage)
         {
             string ckey = userAuthorizationMessage.Ckey;
 
@@ -57,15 +60,17 @@ namespace SS3D.Core.Networking.PlayerControl
                 Debug.Log($"[{typeof(PlayerControlSystem)}] - SERVER - No Soul match for {ckey} found, creating a new one");
 
                 match = Instantiate(_soulPrefab).GetComponent<Soul>();
-                match.SetCkey(string.Empty ,ckey);
+                match.SetCkey(string.Empty ,ckey, true);
                 _serverSouls.Add(match);
 
-                NetworkServer.Spawn(match.gameObject);
+                InstanceFinder.ServerManager.Spawn(match.gameObject);
             }
-            NetworkServer.AddPlayerForConnection(conn, match.gameObject);
+
+            NetworkObject networkObject = match.gameObject.GetComponent<NetworkObject>();
+            networkObject.GiveOwnership(conn);
 
             UserJoinedServerMessage userJoinedServerMessage = new UserJoinedServerMessage(match.Ckey);
-            NetworkServer.SendToAll(userJoinedServerMessage);         
+            InstanceFinder.ServerManager.Broadcast(userJoinedServerMessage);         
 
             Debug.Log($"[{typeof(PlayerControlSystem)}] - SERVER - Handle Authorize Player: {match.Ckey}");
         }

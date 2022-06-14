@@ -1,8 +1,9 @@
-using System;
-using System.Collections.Generic;
-using Coimbra;
-using Mirror;
-using SS3D.Core.Networking.Helper;
+using System.Linq;
+using FishNet;
+using FishNet.Connection;
+using FishNet.Managing;
+using FishNet.Object;
+using FishNet.Transporting;
 using SS3D.Core.Networking.PlayerControl.Messages;
 using SS3D.Core.Systems.Entities;
 using UnityEngine;
@@ -13,32 +14,19 @@ namespace SS3D.Core.Networking
     /// A custom Network Manager to guarantee Mirror won't fuck our game with their base functions
     /// The changes should be minimal in relation to Mirror's
     /// </summary>
-    public sealed class SpessmanNetworkManager : NetworkManager
+    public sealed class SpessmanNetworkManager : MonoBehaviour
     {
-        public static SpessmanNetworkManager Singleton;
-
-        public static event Action OnClientStopped;
-
-        public override void Awake()
-        {    
-            base.Awake();
-
-            if (Singleton != null) Singleton = this;
-        }
-
-        public override void OnStopClient()
+        private void Start()
         {
-            base.OnStopClient();
-
-            OnClientStopped?.Invoke();
+            InstanceFinder.ServerManager.OnRemoteConnectionState += OnServerDisconnect;
         }
 
-        public override void OnServerDisconnect(NetworkConnectionToClient conn)
+        private void OnServerDisconnect(NetworkConnection conn, RemoteConnectionStateArgs remoteConnectionStateArgs)
         { 
-            Debug.Log($"[{typeof(SpessmanNetworkManager)}] - Client {conn.address} disconnected");
+            Debug.Log($"[{typeof(SpessmanNetworkManager)}] - Client {conn.GetAddress()} disconnected");
 
-            NetworkIdentity[] ownedObjects = new NetworkIdentity[conn.clientOwnedObjects.Count];
-            conn.clientOwnedObjects.CopyTo(ownedObjects);
+            NetworkObject[] ownedObjects = conn.Objects.ToArray();
+            
 
             if (ownedObjects.Length == 0)
             {
@@ -46,9 +34,9 @@ namespace SS3D.Core.Networking
                 return;
             }
 
-            foreach (NetworkIdentity networkIdentity in ownedObjects)
+            foreach (NetworkObject networkIdentity in ownedObjects)
             {
-                Debug.Log($"[{typeof(SpessmanNetworkManager)}] - Client {conn.address}'s owned object: {networkIdentity.name}");
+                Debug.Log($"[{typeof(SpessmanNetworkManager)}] - Client {conn.GetAddress()}'s owned object: {networkIdentity.name}");
 
                 Soul soul = networkIdentity.GetComponent<Soul>();
                 if (soul == null)
@@ -57,8 +45,8 @@ namespace SS3D.Core.Networking
                     return;
                 }
 
-                NetworkServer.RemovePlayerForConnection(conn, false);
-                NetworkServer.SendToAll(new UserLeftServerMessage(soul.Ckey));
+                networkIdentity.RemoveOwnership();
+                InstanceFinder.ServerManager.Broadcast(new UserLeftServerMessage(soul.Ckey));
                 Debug.Log($"[{typeof(SpessmanNetworkManager)}] - Invoking the player server left event: {soul.Ckey}");
             }
         }

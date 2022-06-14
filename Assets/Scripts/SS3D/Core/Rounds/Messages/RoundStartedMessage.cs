@@ -1,10 +1,10 @@
 using System;
-using Mirror;
+using FishNet.Broadcast;
 
 namespace SS3D.Core.Rounds.Messages
 {
     [Serializable]
-    public struct RoundStartedMessage : NetworkMessage
+    public struct RoundStartedMessage : IBroadcast
     {
     }
 }

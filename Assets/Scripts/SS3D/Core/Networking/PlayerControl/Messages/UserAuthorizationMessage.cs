@@ -1,5 +1,5 @@
 using System;
-using Mirror;
+using FishNet.Broadcast;
 
 namespace SS3D.Core.Networking.PlayerControl.Messages
 {
@@ -8,7 +8,7 @@ namespace SS3D.Core.Networking.PlayerControl.Messages
     /// TODO: Update this with actual access token and add validation in PlayerControlManager later
     /// </summary>
     [Serializable]
-    public struct UserAuthorizationMessage : NetworkMessage
+    public struct UserAuthorizationMessage : IBroadcast
     {
         public readonly string Ckey;
 

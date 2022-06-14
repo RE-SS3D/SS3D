@@ -6,7 +6,7 @@ namespace SS3D.Core.Rounds
     /// This is used to by the RoundManager to control the round state
     /// </summary>
     [Serializable]
-    public enum RoundStates
+    public enum RoundState
     {
         Stopped = 0,
         WarmingUp = 1,

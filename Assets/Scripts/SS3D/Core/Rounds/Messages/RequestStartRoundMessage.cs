@@ -1,5 +1,5 @@
 using System;
-using Mirror;
+using FishNet.Broadcast;
 
 namespace SS3D.Core.Rounds.Messages
 {
@@ -8,7 +8,7 @@ namespace SS3D.Core.Rounds.Messages
     /// TODO: Make this based on player permissions
     /// </summary>
     [Serializable]
-    public struct RequestStartRoundMessage : NetworkMessage
+    public struct RequestStartRoundMessage : IBroadcast
     {
     }
 }
