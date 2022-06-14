@@ -11,7 +11,7 @@ namespace SS3D.Core.Networking.PlayerControl
     /// <summary>
     /// Controls the player flux, when users want to authenticate, rejoin the game, leave the game
     /// </summary>
-    public sealed class PlayerControlManager : NetworkBehaviour
+    public sealed class PlayerControlSystem : NetworkBehaviour
     {
         [SerializeField] private GameObject _soulPrefab;
 
@@ -49,12 +49,12 @@ namespace SS3D.Core.Networking.PlayerControl
             foreach (Soul soul in _serverSouls.Where((soul) => soul.Ckey == ckey))
             {
                 match = soul;
-                Debug.Log($"[{typeof(PlayerControlManager)}] - SERVER - Soul match for {soul} found, reassigning to client");
+                Debug.Log($"[{typeof(PlayerControlSystem)}] - SERVER - Soul match for {soul} found, reassigning to client");
             }
 
             if (match == null)
             {
-                Debug.Log($"[{typeof(PlayerControlManager)}] - SERVER - No Soul match for {ckey} found, creating a new one");
+                Debug.Log($"[{typeof(PlayerControlSystem)}] - SERVER - No Soul match for {ckey} found, creating a new one");
 
                 match = Instantiate(_soulPrefab).GetComponent<Soul>();
                 match.SetCkey(string.Empty ,ckey);
@@ -67,7 +67,7 @@ namespace SS3D.Core.Networking.PlayerControl
             UserJoinedServerMessage userJoinedServerMessage = new UserJoinedServerMessage(match.Ckey);
             NetworkServer.SendToAll(userJoinedServerMessage);         
 
-            Debug.Log($"[{typeof(PlayerControlManager)}] - SERVER - Handle Authorize Player: {match.Ckey}");
+            Debug.Log($"[{typeof(PlayerControlSystem)}] - SERVER - Handle Authorize Player: {match.Ckey}");
         }
     }
 }

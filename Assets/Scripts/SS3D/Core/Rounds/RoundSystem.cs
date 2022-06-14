@@ -17,9 +17,11 @@ namespace SS3D.Core.Rounds
         [Header("Round Stats")] 
         [SyncVar(hook = "SetRoundState")] 
         [SerializeField] private RoundStates _roundState;
+        
         // How much time has passed
         [SyncVar(hook = "SetCurrentTimerSeconds")] 
-        [SerializeField] private int _currentTimerSeconds = 0;
+        [SerializeField] private int _currentTimerSeconds;
+        
         // How many seconds until the round ends
         [SerializeField] private int _roundTotalSeconds = 300;
 
@@ -58,7 +60,7 @@ namespace SS3D.Core.Rounds
 
             // Starts the warmup
             _currentTimerSeconds = _warmupTimerSeconds;
-            _roundState = RoundStates.WarmingUp;
+            UpdateRoundState(RoundStates.WarmingUp);
             _warmupCoroutine = StartCoroutine(TickWarmup());
 
             WarmupStartedMessage warmupStartedMessage = new();
@@ -68,7 +70,7 @@ namespace SS3D.Core.Rounds
         [Server]
         private void HandleStartRound()
         {
-            _roundState = RoundStates.Starting;
+            UpdateRoundState(RoundStates.Starting);
             // These activities will happen both on the server and client.
 
             // Only do SyncVar assignments, tick coroutine and the RPC on the server.
@@ -77,7 +79,7 @@ namespace SS3D.Core.Rounds
                 return;
             }
 
-            _roundState = RoundStates.Running;
+            UpdateRoundState(RoundStates.Running);
             StopCoroutine(_warmupCoroutine);
             _tickCoroutine = StartCoroutine(Tick());
 
@@ -131,12 +133,21 @@ namespace SS3D.Core.Rounds
             return timer;
         }
 
+        private void UpdateRoundState(RoundStates newState)
+        {
+            _roundState = newState;
+            
+            RoundStateUpdatedMessage roundStateUpdatedMessage = new RoundStateUpdatedMessage(newState);
+            NetworkServer.SendToAll(roundStateUpdatedMessage);
+        }
+        
         /// <summary>
         /// Used by Mirror to sync the round state
         /// </summary>
         private void SetRoundState(RoundStates oldState, RoundStates newState)
         {
             _roundState = newState;
+
             Debug.Log($"[{nameof(RoundManager)}] - Round state updated: [{newState}]");
         }
 
