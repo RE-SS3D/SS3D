@@ -22,7 +22,7 @@ namespace SS3D.Core.Helper.Intro
         [Header("Temporary")]
         [SerializeField] private AudioSource _temporaryAudioSource;
 
-        private void Awake()
+        private void Start()
         {
             Setup();
         }

@@ -51,7 +51,7 @@ namespace SS3D.Core.Networking.Helper
             }
             catch (Exception e)
             {
-                Debug.LogError($"[{typeof(SessionNetworkHelper)}] - GetCommandLineArgs: {e}");
+                Debug.LogError($"[{nameof(SessionNetworkHelper)}] - GetCommandLineArgs: {e}");
                 throw;
             }
         }
@@ -64,7 +64,7 @@ namespace SS3D.Core.Networking.Helper
                 _isHost = !_applicationStateManager.TestingClientInEditor;
                 _ip = "localhost";
                 _ckey = "editorUser";
-                Debug.Log($"[{typeof(SessionNetworkHelper)}] - Testing application on the editor as {_ckey}");
+                Debug.Log($"[{nameof(SessionNetworkHelper)}] - Testing application on the editor as {_ckey}");
             }
             else
             {
@@ -74,35 +74,35 @@ namespace SS3D.Core.Networking.Helper
                     if (arg.Contains(CommandLineArgs.Host))
                     {
                         _isHost = true;
-                        Debug.Log($"[{typeof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.Host} - is true");
+                        Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.Host} - is true");
                     }
                     
                     if (arg.Contains(CommandLineArgs.Ip))
                     {
                         _ip = arg.Replace(CommandLineArgs.Ip, "");
-                        Debug.Log($"[{typeof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.Ip} - {_ip}");
+                        Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.Ip} - {_ip}");
                     }
 
                     if (arg.Contains(CommandLineArgs.Ckey))
                     {
                         _ckey = arg.Replace(CommandLineArgs.Ckey, "");
-                        Debug.Log($"[{typeof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.Ckey} - {_ckey}");                        
+                        Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.Ckey} - {_ckey}");                        
                     }
 
                     if (arg.Contains(CommandLineArgs.SkipIntro))
                     {
                         _applicationStateManager.SetSkipIntro(true);
-                        Debug.Log($"[{typeof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.SkipIntro} - {true}");
+                        Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.SkipIntro} - {true}");
                     }
 
                     if (arg.Contains(CommandLineArgs.DisableDiscordIntegration))
                     {
                         _applicationStateManager.SetDisableDiscordIntegration(true);
-                        Debug.Log($"[{typeof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.DisableDiscordIntegration} - {true}");
+                        Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.DisableDiscordIntegration} - {true}");
                     }
                 }
 
-                Debug.Log($"[{typeof(SessionNetworkHelper)}] - Testing application on executable");
+                Debug.Log($"[{nameof(SessionNetworkHelper)}] - Testing application on executable");
             }
 
             LocalPlayerAccountManager.UpdateCkey(_ckey);
@@ -120,13 +120,13 @@ namespace SS3D.Core.Networking.Helper
 
             if (_isHost)
             {
-                Debug.Log($"[{typeof(SessionNetworkHelper)}] - Hosting a new server");
+                Debug.Log($"[{nameof(SessionNetworkHelper)}] - Hosting a new server");
                 _networkManager.ServerManager.StartConnection();
             }
 
             else
             {
-                Debug.Log($"[{typeof(SessionNetworkHelper)}] - Joining to server {_ip} as {_ckey}");
+                Debug.Log($"[{nameof(SessionNetworkHelper)}] - Joining to server {_ip} as {_ckey}");
                 _networkManager.ClientManager.StartConnection(UriParser.TryParseIpAddress(_ip).ToString());
             }
         }

@@ -40,7 +40,7 @@ namespace SS3D.Core
 
         public void InitializeApplication()
         {
-            Debug.Log($"[{typeof(ApplicationStateManager)}] - Initializing application");
+            Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing application");
 
             ProcessTestParams();
             InitializeNetworkSession();
@@ -64,19 +64,19 @@ namespace SS3D.Core
                 Instance = this;
             }
 
-            Debug.Log($"[{typeof(ApplicationStateManager)}] - Initializing Application State Manager singleton");
+            Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing Application State Manager singleton");
         }
 
         private void InitializeEssentialSystems()
         {
             DOTween.Init();
-            Debug.Log($"[{typeof(ApplicationStateManager)}] - Initializing essential systems");
+            Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing essential systems");
         }
 
         private void InitializeNetworkSession() 
         {
+            Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing network session");
             _networkHelper.InitiateNetworkSession();
-            Debug.Log($"[{typeof(ApplicationStateManager)}] - Initializing network session");
         }
 
         public void SetSkipIntro(bool state)
