@@ -46,7 +46,7 @@ namespace SS3D.Core.Systems.Entities
         {
             string ckey = LocalPlayerAccountManager.Ckey;
     
-            Debug.Log($"[{typeof(UnauthorizedPlayer)}] - OnStartLocalPlayer - Destroying temporary player for {ckey}");
+            Debug.Log($"[{nameof(UnauthorizedPlayer)}] - OnStartLocalPlayer - Destroying temporary player for {ckey}");
             
             NetworkObject.RemoveOwnership();
         }

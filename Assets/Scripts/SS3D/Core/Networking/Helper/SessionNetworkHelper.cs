@@ -4,6 +4,7 @@ using System.Linq;
 using Coimbra;
 using FishNet;
 using FishNet.Managing;
+using FishNet.Utility;
 using SS3D.Core.Networking.UI_Helper;
 using SS3D.Core.Networking.Utils;
 using UnityEngine;
@@ -23,9 +24,13 @@ namespace SS3D.Core.Networking.Helper
         private List<string> _commandLineArgs;
         
         private bool _isHost;
+        private bool _serverOnly;
         private string _ip;
         private string _ckey;
         
+        private const string EditorServerIP = "127.0.0.1";
+        private const string EditorServerUsername = "editorUser";
+
         private void Awake()
         {
             Setup();
@@ -36,7 +41,7 @@ namespace SS3D.Core.Networking.Helper
         {
             // Uses the event service to listen to lobby events
             IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
-            eventService?.AddListener<ServerConnectionView.RetryButtonClicked>(InitiateNetworkSession);
+            eventService?.AddListener<RetryServerConnectionEvent>(InitiateNetworkSession);
             
             _applicationStateManager = ApplicationStateManager.Instance;
             _networkManager = InstanceFinder.NetworkManager;
@@ -62,8 +67,9 @@ namespace SS3D.Core.Networking.Helper
             if (Application.isEditor)
             {
                 _isHost = !_applicationStateManager.TestingClientInEditor;
-                _ip = "localhost";
-                _ckey = "editorUser";
+                _ip = EditorServerIP;
+                _ckey = EditorServerUsername;
+                _serverOnly = _applicationStateManager.ServerOnly;
                 Debug.Log($"[{nameof(SessionNetworkHelper)}] - Testing application on the editor as {_ckey}");
             }
             else
@@ -100,6 +106,12 @@ namespace SS3D.Core.Networking.Helper
                         _applicationStateManager.SetDisableDiscordIntegration(true);
                         Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.DisableDiscordIntegration} - {true}");
                     }
+                    
+                    if (arg.Contains(CommandLineArgs.ServerOnly))
+                    {
+                        _applicationStateManager.SetServerOnly(true);
+                        Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.ServerOnly} - {true}");
+                    }
                 }
 
                 Debug.Log($"[{nameof(SessionNetworkHelper)}] - Testing application on executable");
@@ -118,21 +130,26 @@ namespace SS3D.Core.Networking.Helper
                 _networkManager = InstanceFinder.NetworkManager;
             }
 
-            if (_isHost)
+            if (_serverOnly)
+            {
+                Debug.Log($"[{nameof(SessionNetworkHelper)}] - Hosting a new headless server");
+                _networkManager.ServerManager.StartConnection();
+            }
+            else if (_isHost)
             {
                 Debug.Log($"[{nameof(SessionNetworkHelper)}] - Hosting a new server");
                 _networkManager.ServerManager.StartConnection();
+                _networkManager.ClientManager.StartConnection();
             }
-
             else
             {
-                Debug.Log($"[{nameof(SessionNetworkHelper)}] - Joining to server {_ip} as {_ckey}");
-                _networkManager.ClientManager.StartConnection(UriParser.TryParseIpAddress(_ip).ToString());
+                Debug.Log($"[{nameof(SessionNetworkHelper)}] - Joining server {_ip} as {_ckey}");
+                _networkManager.ClientManager.StartConnection();
             }
         }
         
         // Overload to match the event type
-        private void InitiateNetworkSession(object sender, ServerConnectionView.RetryButtonClicked e)
+        private void InitiateNetworkSession(object sender, RetryServerConnectionEvent e)
         {
             InitiateNetworkSession();
         }

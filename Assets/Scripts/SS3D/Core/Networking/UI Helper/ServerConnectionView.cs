@@ -2,6 +2,7 @@ using Coimbra;
 using DG.Tweening;
 using FishNet;
 using FishNet.Transporting;
+using FishNet.Transporting.Tugboat.Client;
 using SS3D.Data.Messages;
 using SS3D.Utils;
 using TMPro;
@@ -32,7 +33,6 @@ namespace SS3D.Core.Networking.UI_Helper
         
         [SerializeField] private TMP_Text _messageText;
 
-        public struct RetryButtonClicked {}
 
         private bool _connectionFailed;
         
@@ -59,7 +59,7 @@ namespace SS3D.Core.Networking.UI_Helper
             _quitButton.onClick.AddListener(Application.Quit);
             _retryButton.onClick.AddListener(OnRetryButtonPressed);
 
-            InstanceFinder.ServerManager.OnServerConnectionState += OnServerConnectionFailed;
+            InstanceFinder.ClientManager.OnClientConnectionState += OnServerConnectionFailed;
         }
 
         private void UnsubscribeFromEvents()
@@ -93,12 +93,12 @@ namespace SS3D.Core.Networking.UI_Helper
             
             // Uses the event service to listen to lobby events
             IEventService eventService = ServiceLocator.Shared.Get<IEventService>(); 
-            eventService?.Invoke(this, new RetryButtonClicked());
+            eventService?.Invoke(this, new RetryServerConnectionEvent());
         }
         
-        private void OnServerConnectionFailed(ServerConnectionStateArgs serverConnectionStateArgs)
+        private void OnServerConnectionFailed(ClientConnectionStateArgs clientConnectionStateArgs)
         {
-            if (serverConnectionStateArgs.ConnectionState != LocalConnectionState.Stopped)
+            if (clientConnectionStateArgs.ConnectionState != LocalConnectionState.Stopped)
             {
                 return;
             }

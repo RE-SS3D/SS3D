@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 55228102}
   - component: {fileID: 55228101}
   - component: {fileID: 55228104}
+  - component: {fileID: 55228105}
   m_Layer: 0
   m_Name: PlayerConnectionSystem
   m_TagString: Untagged
@@ -156,6 +157,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _networkBehaviours:
   - {fileID: 55228102}
+  - {fileID: 55228105}
   SceneTransformProperties:
     Position: {x: 36.949165, y: 29.343359, z: 93.586205}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
@@ -183,7 +185,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 55228101}
   _networkObjectCache: {fileID: 55228101}
-  _soulPrefab: {fileID: 562230263738288595, guid: 59f05e8a3a1d4b94eb5222aed605e260, type: 3}
+  _userPrefab: {fileID: 8203177977882359099, guid: 6ab4ce7059d374a4498481e1385c222e, type: 3}
 --- !u!4 &55228103
 Transform:
   m_ObjectHideFlags: 0
@@ -197,7 +199,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &55228104
 MonoBehaviour:
@@ -211,6 +213,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 748528fe61fbac44bb380645d676726c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &55228105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 55228100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: 55228101}
+  _networkObjectCache: {fileID: 55228101}
+  _overrideType: 3
+  _observerConditions:
+  - {fileID: 11400000, guid: 2033f54fd2794464bae08fa5a55c8996, type: 2}
 --- !u!1 &193002071
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,7 +290,6 @@ GameObject:
   - component: {fileID: 340427410}
   - component: {fileID: 340427413}
   - component: {fileID: 340427414}
-  - component: {fileID: 340427415}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -291,7 +310,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &340427413
 MonoBehaviour:
@@ -327,28 +346,6 @@ MonoBehaviour:
   _offlineScene: Assets/Scenes/Startup.unity
   _onlineScene: Assets/Scenes/Lobby.unity
   _replaceScenes: 0
---- !u!114 &340427415
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 340427409}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68828c85278210948b9d50a8db3aab74, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _authenticator: {fileID: 0}
-  SpawnPacking:
-    Position: 0
-    Rotation: 2
-    Scale: 2
-  _changeFrameRate: 1
-  _frameRate: 9999
-  _shareIds: 1
-  _startOnHeadless: 0
-  _limitClientMTU: 1
 --- !u!114 &487745583 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 487745583, guid: 83e602c09f6d862428c09d7503632bfd, type: 3}
@@ -540,7 +537,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &830207184 stripped
 MonoBehaviour:
@@ -951,7 +948,7 @@ Transform:
   m_Children:
   - {fileID: 1425655011}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1382736864
 MonoBehaviour:
@@ -1139,9 +1136,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _networkHelper: {fileID: 1628220427}
-  _skipIntro: 1
-  _disableDiscordIntegration: 0
-  _testingClientInEditor: 0
+  _testingSkipIntroInEditor: 1
+  _testingDisableDiscordIntegrationInEditor: 0
+  _testingClientInEditor: 1
   _testingServerOnlyInEditor: 0
 --- !u!1 &1628220425
 GameObject:

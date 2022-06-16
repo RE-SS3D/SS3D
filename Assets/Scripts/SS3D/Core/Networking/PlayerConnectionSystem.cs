@@ -6,6 +6,7 @@ using FishNet.Transporting;
 using SS3D.Core.Networking.PlayerControl.Messages;
 using SS3D.Core.Systems.Entities;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Core.Networking
 {
@@ -15,7 +16,7 @@ namespace SS3D.Core.Networking
     /// </summary>
     public sealed class PlayerConnectionSystem : NetworkBehaviour
     {
-        [SerializeField] private NetworkObject _soulPrefab;
+        [SerializeField] private NetworkObject _userPrefab;
 
         public void Awake()
         {
@@ -25,7 +26,7 @@ namespace SS3D.Core.Networking
 
         private void HandleServerConnection(ServerConnectionStateArgs serverConnectionStateArgs) { }
 
-        private void HandleRemoteConnectionState(NetworkConnection networkConnection, bool b)
+        private void HandleRemoteConnectionState(NetworkConnection networkConnection, bool asServer)
         {
             ProcessPlayerJoin(networkConnection);
         }
@@ -34,35 +35,35 @@ namespace SS3D.Core.Networking
         {
             Debug.Log($"[{nameof(PlayerConnectionSystem)}] - Player joined the server - {conn.ClientId} {conn.GetAddress()}");
             
-            NetworkObject soul = Instantiate(_soulPrefab, Vector3.zero, Quaternion.identity);
+            NetworkObject soul = Instantiate(_userPrefab, Vector3.zero, Quaternion.identity);
             InstanceFinder.ServerManager.Spawn(soul, conn);
         }
         
         private void ProcessPlayerDisconnect(NetworkConnection conn)
         {
-            Debug.Log($"[{typeof(PlayerConnectionSystem)}] - Client {conn.ClientId} {conn.GetAddress()} disconnected");
+            Debug.Log($"[{nameof(PlayerConnectionSystem)}] - Client {conn.ClientId} {conn.GetAddress()} disconnected");
             
             NetworkObject[] ownedObjects = conn.Objects.ToArray();
             if (ownedObjects.Length == 0)
             {
-                Debug.LogError($"[{typeof(PlayerConnectionSystem)}] - No clientOwnedObjects were found, something is very wrong");
+                Debug.LogError($"[{nameof(PlayerConnectionSystem)}] - No clientOwnedObjects were found, something is very wrong");
                 return;
             }
 
             foreach (NetworkObject networkIdentity in ownedObjects)
             {
-                Debug.Log($"[{typeof(PlayerConnectionSystem)}] - Client {conn.GetAddress()}'s owned object: {networkIdentity.name}");
-
+                Debug.Log($"[{nameof(PlayerConnectionSystem)}] - Client {conn.GetAddress()}'s owned object: {networkIdentity.name}");
+    
                 Soul soul = networkIdentity.GetComponent<Soul>();
                 if (soul == null)
                 {
-                    Debug.LogError($"[{typeof(PlayerConnectionSystem)}] - No Soul found in clientOwnedObjects, something is very wrong");
+                    Debug.LogError($"[{nameof(PlayerConnectionSystem)}] - No Soul found in clientOwnedObjects, something is very wrong");
                     return;
                 }
 
                 networkIdentity.RemoveOwnership();
                 InstanceFinder.ServerManager.Broadcast(new UserLeftServerMessage(soul.Ckey));
-                Debug.Log($"[{typeof(PlayerConnectionSystem)}] - Invoking the player server left event: {soul.Ckey}");
+                Debug.Log($"[{nameof(PlayerConnectionSystem)}] - Invoking the player server left event: {soul.Ckey}");
             }
         }
     }

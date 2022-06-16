@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: -3683743083778642796}
   - component: {fileID: 562230263738288595}
   - component: {fileID: 3486636391395698902}
+  - component: {fileID: 3363661164123955675}
   m_Layer: 0
   m_Name: Soul
   m_TagString: Untagged
@@ -63,6 +64,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _networkBehaviours:
   - {fileID: -3683743083778642796}
+  - {fileID: 3486636391395698902}
   SceneTransformProperties:
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
@@ -86,9 +88,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 562230263738288595}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 562230263738288595}
   _synchronizeParent: 0
   _packing:
     Position: 1
@@ -116,3 +118,17 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
+--- !u!114 &3363661164123955675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8103066686919155798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d331f979d46e8e4a9fc90070c596d44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultConditions:
+  - {fileID: 11400000, guid: 2033f54fd2794464bae08fa5a55c8996, type: 2}

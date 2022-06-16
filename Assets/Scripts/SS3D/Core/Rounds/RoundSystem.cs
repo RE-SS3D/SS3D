@@ -18,7 +18,6 @@ namespace SS3D.Core.Rounds
     /// </summary>
     public class RoundSystem : NetworkBehaviour
     {
-        [FormerlySerializedAs("_roundState")]
         [Header("Round Stats")] 
         [SyncVar(OnChange = "SetRoundState")] 
         [SerializeField] private RoundState roundState;
@@ -29,9 +28,9 @@ namespace SS3D.Core.Rounds
         
         // How many seconds until the round ends
         [SerializeField] private int _roundTotalSeconds = 300;
-
-        [Header("Warmup")]
+        
         // How many seconds of warmup
+        [Header("Warmup")]
         [SyncVar(OnChange = "SetWarmupTimer")] 
         [SerializeField] private int _warmupTimerSeconds = 5;
 
@@ -75,20 +74,24 @@ namespace SS3D.Core.Rounds
         [Server]
         private void HandleStartRound()
         {
-            UpdateRoundState(RoundState.Starting);
-            // These activities will happen both on the server and client.
-
             // Only do SyncVar assignments, tick coroutine and the RPC on the server.
             if (!IsServer)
             {
                 return;
             }
 
+            if (RoundRunning)
+            {
+                Debug.Log($"[{nameof(RoundSystem)}] - Can't start round as round is already running");
+                return;
+            }
+            
+            UpdateRoundState(RoundState.Starting);
+            // These activities will happen both on the server and client.
+
             UpdateRoundState(RoundState.Running);
             StopCoroutine(_warmupCoroutine);
             _tickCoroutine = StartCoroutine(Tick());
-
-            Debug.Log($"[{nameof(RoundSystem)}] - Round Started");
             
             InstanceFinder.ServerManager.Broadcast(new RoundStartedMessage());
         }
@@ -121,21 +124,20 @@ namespace SS3D.Core.Rounds
         [Server]
         private void UpdateClock(int time)
         {
-            RoundTickUpdatedMessage roundTickUpdatedMessage = new RoundTickUpdatedMessage(time);
-
+            if (!IsServer)
+            {
+                return;
+            }
+            
+            RoundTickUpdatedMessage roundTickUpdatedMessage = new(time);
             InstanceFinder.ServerManager.Broadcast(roundTickUpdatedMessage);
-        }
-
-        [ObserversRpc]
-        private void RpcUpdateClientClocks(int time)
-        {
-            //OnTick?.Invoke(time);
         }
 
         private int GetTimerSeconds()
         {
             TimeSpan timeSpan = TimeSpan.FromSeconds(_currentTimerSeconds);
             int timer = (int)timeSpan.TotalSeconds;
+            
             return timer;
         }
 
@@ -143,7 +145,9 @@ namespace SS3D.Core.Rounds
         {
             roundState = newState;
             
-            RoundStateUpdatedMessage roundStateUpdatedMessage = new RoundStateUpdatedMessage(newState);
+            Debug.Log($"[{nameof(RoundSystem)}] - Round state updated: [{newState}]");
+            
+            RoundStateUpdatedMessage roundStateUpdatedMessage = new(newState);
             InstanceFinder.ServerManager.Broadcast(roundStateUpdatedMessage);
         }
         
@@ -153,8 +157,6 @@ namespace SS3D.Core.Rounds
         private void SetRoundState(RoundState oldState, RoundState newState, bool AsServer)
         {
             roundState = newState;
-
-            Debug.Log($"[{nameof(RoundSystem)}] - Round state updated: [{newState}]");
         }
 
         /// <summary>

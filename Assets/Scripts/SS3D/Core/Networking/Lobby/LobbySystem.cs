@@ -69,7 +69,7 @@ namespace SS3D.Core.Networking.Lobby
               _players.Add(userJoinedServerMessage.Ckey);
 
               RpcAddLobbyPlayer(new UserJoinedLobby(userJoinedServerMessage.Ckey));
-              Debug.Log($"[{typeof(LobbySystem)}] - SERVER - Added player to lobby: {userJoinedServerMessage.Ckey}");
+              Debug.Log($"[{nameof(LobbySystem)}] - SERVER - Added player to lobby: {userJoinedServerMessage.Ckey}");
         }
 
         [ObserversRpc]
@@ -77,7 +77,7 @@ namespace SS3D.Core.Networking.Lobby
         {
             IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
             eventService?.Invoke(null, userJoinedLobby);
-            Debug.Log($"[{typeof(LobbySystem)}] - RPC - Added player to lobby: {userJoinedLobby.Ckey}");
+            Debug.Log($"[{nameof(LobbySystem)}] - RPC - Added player to lobby: {userJoinedLobby.Ckey}");
         }
 
         [Server]
@@ -86,7 +86,7 @@ namespace SS3D.Core.Networking.Lobby
             _players.Remove(userLeftServerMessage.Ckey);
 
             RpcRemoveLobbyPlayer(new UserLeftLobby(userLeftServerMessage.Ckey));
-            Debug.Log($"[{typeof(LobbySystem)}] - SERVER - Removed player from lobby: {userLeftServerMessage.Ckey}");
+            Debug.Log($"[{nameof(LobbySystem)}] - SERVER - Removed player from lobby: {userLeftServerMessage.Ckey}");
         }
 
         [ObserversRpc]
@@ -95,7 +95,7 @@ namespace SS3D.Core.Networking.Lobby
             IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
             eventService?.Invoke(null, userLeftLobby);
 
-            Debug.Log($"[{typeof(LobbySystem)}] - RPC - Removed player from lobby: {userLeftLobby.Ckey}");
+            Debug.Log($"[{nameof(LobbySystem)}] - RPC - Removed player from lobby: {userLeftLobby.Ckey}");
         }
     }
 }
