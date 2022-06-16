@@ -1,10 +1,8 @@
-using System;
 using System.Collections;
-using Coimbra;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace SS3D.Core.SceneManagement
+namespace SS3D.Core.Helper.SceneManagement
 {
     /// <summary>
     /// Persistent object that loads and unloads scenes

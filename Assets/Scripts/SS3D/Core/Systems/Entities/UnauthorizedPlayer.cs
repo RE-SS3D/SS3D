@@ -22,7 +22,7 @@ namespace SS3D.Core.Systems.Entities
         {
             string ckey = LocalPlayerAccountManager.Ckey;
 
-            bool testingServerOnlyInEditor = IsServer && ApplicationStateManager.Instance.TestingServerOnlyInEditor && Application.isEditor;
+            bool testingServerOnlyInEditor = IsServer && !IsHost && Application.isEditor;
             if (testingServerOnlyInEditor)
             {
                 return;

@@ -29,7 +29,7 @@ namespace SS3D.Core.Helper.Intro
 
         private void Setup()
         {
-            if (ApplicationStateManager.Instance.SkipIntro)
+            if (ApplicationStateManager.SkipIntro)
             {
                 Destroy(_temporaryAudioSource);
                 ApplicationStateManager.Instance.InitializeApplication();

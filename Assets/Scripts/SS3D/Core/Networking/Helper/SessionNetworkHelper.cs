@@ -4,11 +4,9 @@ using System.Linq;
 using Coimbra;
 using FishNet;
 using FishNet.Managing;
-using FishNet.Utility;
 using SS3D.Core.Networking.UI_Helper;
 using SS3D.Core.Networking.Utils;
 using UnityEngine;
-using UriParser = SS3D.Utils.UriParser;
 
 namespace SS3D.Core.Networking.Helper
 {
@@ -22,7 +20,7 @@ namespace SS3D.Core.Networking.Helper
         private NetworkManager _networkManager;
 
         private List<string> _commandLineArgs;
-        
+
         private bool _isHost;
         private bool _serverOnly;
         private string _ip;
@@ -66,10 +64,10 @@ namespace SS3D.Core.Networking.Helper
         {
             if (Application.isEditor)
             {
-                _isHost = !_applicationStateManager.TestingClientInEditor;
+                _isHost = ApplicationStateManager.IsHosting;
                 _ip = EditorServerIP;
                 _ckey = EditorServerUsername;
-                _serverOnly = _applicationStateManager.ServerOnly;
+                _serverOnly = ApplicationStateManager.ServerOnly;
                 Debug.Log($"[{nameof(SessionNetworkHelper)}] - Testing application on the editor as {_ckey}");
             }
             else
@@ -97,19 +95,19 @@ namespace SS3D.Core.Networking.Helper
 
                     if (arg.Contains(CommandLineArgs.SkipIntro))
                     {
-                        _applicationStateManager.SetSkipIntro(true);
+                        ApplicationStateManager.SetSkipIntro(true);
                         Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.SkipIntro} - {true}");
                     }
 
                     if (arg.Contains(CommandLineArgs.DisableDiscordIntegration))
                     {
-                        _applicationStateManager.SetDisableDiscordIntegration(true);
+                        ApplicationStateManager.SetDisableDiscordIntegration(true);
                         Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.DisableDiscordIntegration} - {true}");
                     }
                     
                     if (arg.Contains(CommandLineArgs.ServerOnly))
                     {
-                        _applicationStateManager.SetServerOnly(true);
+                        ApplicationStateManager.SetServerOnly(true);
                         Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.ServerOnly} - {true}");
                     }
                 }

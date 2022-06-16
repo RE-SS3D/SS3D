@@ -38,8 +38,8 @@ namespace SS3D.Core.Networking.Lobby.UI_Helper
         /// Adds the new Username to the player list
         /// </summary>
         /// <param name="sender">Required by the ServiceLocator, unused in this function</param>
-        /// <param name="data">A PlayerJoinedlobby event, that simply carries the Username</param>
-        public void AddUsernameUI(object sender, LobbySystem.UserJoinedLobby data)
+        /// <param name="data">A PlayerJoinedLobby event, that simply carries the Username</param>
+        private void AddUsernameUI(object sender, LobbySystem.UserJoinedLobby data)
         {
             // if this Username already exists we return
             if (_playerUsernames.Exists((player) => data.Ckey == player.Name))
@@ -59,7 +59,7 @@ namespace SS3D.Core.Networking.Lobby.UI_Helper
         /// Removes the player from the list based on the Username
         /// </summary>
         /// <param name="sender">Required by the ServiceLocator, unused in this function</param>
-        /// <param name="data">A PlayerJoinedlobby event, that simply carries the Username</param>
+        /// <param name="data">A PlayerJoinedLobby event, that simply carries the Username</param>
         private void RemoveUsernameUI(object sender,  LobbySystem.UserLeftLobby data)
         {
             PlayerUsernameView removedUsername = null;

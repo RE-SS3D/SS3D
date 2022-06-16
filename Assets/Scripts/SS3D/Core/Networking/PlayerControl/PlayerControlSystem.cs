@@ -42,6 +42,7 @@ namespace SS3D.Core.Networking.PlayerControl
         /// Used by the server to validate credentials and reassign souls to clients.
         /// TODO: Actual authentication
         /// </summary>
+        /// <param name="conn">Network connection</param>
         /// <param name="userAuthorizationMessage">struct containing the ckey and the connection that sent it</param>
         [Server]
         private void HandleAuthorizePlayer(NetworkConnection conn, UserAuthorizationMessage userAuthorizationMessage)

@@ -29,7 +29,7 @@ namespace SS3D.Core.Systems.Entities
         /// Used by Mirror Networking to update the variable and sync it across instances.
         /// This is also called by the server when the client enters the server to update his data
         /// </summary>
-        public void SetCkey(string oldCkey, string newCkey, bool AsServer)
+        public void SetCkey(string oldCkey, string newCkey, bool asServer)
         {
             Debug.Log($"[{nameof(Soul)}] - SyncVarHook - Updating player ckey");
             _ckey = newCkey; 

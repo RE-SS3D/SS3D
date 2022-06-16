@@ -4,7 +4,7 @@ using SS3D.Core.Rounds.Messages;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SS3D.Core.Lobby
+namespace SS3D.Core.Systems.Lobby.View
 {
     public class LobbyRoundView : NetworkBehaviour
     {
@@ -17,7 +17,7 @@ namespace SS3D.Core.Lobby
 
         private void HandleEmbarkButtonPressed()
         {
-            RequestStartRoundMessage requestStartRoundMessage = new RequestStartRoundMessage();
+            RequestStartRoundMessage requestStartRoundMessage = new();
             InstanceFinder.ClientManager.Broadcast(requestStartRoundMessage);
         }
     }

@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace SS3D.Core.Networking
 {
     /// <summary>

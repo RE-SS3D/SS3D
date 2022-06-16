@@ -37,9 +37,7 @@ namespace UDiscord
 
         private void Start()
         {
-            ApplicationStateManager applicationStateManager = ApplicationStateManager.Instance;
-
-            bool disableDiscordIntegration = applicationStateManager.DisableDiscordIntegration;
+            bool disableDiscordIntegration = ApplicationStateManager.DisableDiscordIntegration;
             if (disableDiscordIntegration)
             {
                 Destroy(gameObject);

@@ -6,7 +6,6 @@ using FishNet.Transporting;
 using SS3D.Core.Networking.PlayerControl.Messages;
 using SS3D.Core.Systems.Entities;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace SS3D.Core.Networking
 {
@@ -20,13 +19,19 @@ namespace SS3D.Core.Networking
 
         public void Awake()
         {
-            InstanceFinder.SceneManager.OnClientLoadedStartScenes += HandleRemoteConnectionState;
-            InstanceFinder.ServerManager.OnServerConnectionState += HandleServerConnection;
+            InstanceFinder.SceneManager.OnClientLoadedStartScenes += HandleClientLoadedStartScenes;
+            InstanceFinder.ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
         }
 
-        private void HandleServerConnection(ServerConnectionStateArgs serverConnectionStateArgs) { }
+        private void HandleRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs remoteConnectionStateArgs)
+        {
+            if (remoteConnectionStateArgs.ConnectionState == RemoteConnectionState.Stopped)
+            {
+                ProcessPlayerDisconnect(conn);
+            }
+        }
 
-        private void HandleRemoteConnectionState(NetworkConnection networkConnection, bool asServer)
+        private void HandleClientLoadedStartScenes(NetworkConnection networkConnection, bool asServer)
         {
             ProcessPlayerJoin(networkConnection);
         }

@@ -2,7 +2,6 @@ using Coimbra;
 using DG.Tweening;
 using FishNet;
 using FishNet.Transporting;
-using FishNet.Transporting.Tugboat.Client;
 using SS3D.Data.Messages;
 using SS3D.Utils;
 using TMPro;
@@ -16,10 +15,6 @@ namespace SS3D.Core.Networking.UI_Helper
     /// </summary>
     public sealed class ServerConnectionView : MonoBehaviour
     {
-        [Header("Components")]
-        [SerializeField] private GameObject _root;
-        [SerializeField] private UiFade _rootUiFade;
-    
         [Header("Loading Icon")]
         [SerializeField] private Transform _loadingIcon;
         [SerializeField] private Vector3 _loadingMovement = new Vector3(0, 0, -360);

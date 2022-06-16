@@ -1,7 +1,5 @@
-using System.ComponentModel;
 using DG.Tweening;
 using SS3D.Core.Networking.Helper;
-using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -24,17 +22,12 @@ namespace SS3D.Core
         [SerializeField] private bool _testingDisableDiscordIntegrationInEditor;
         [SerializeField] private bool _testingClientInEditor;
         [SerializeField] private bool _testingServerOnlyInEditor;
-        
-        [Header("Settings Debug")]
-        private bool _skipIntro;
-        private bool _disableDiscordIntegration;
-        private bool _serverOnly;
+        [SerializeField] private bool _testingHostInEditor;
 
-        public bool ServerOnly => _serverOnly;
-        public bool DisableDiscordIntegration => _disableDiscordIntegration;
-        public bool SkipIntro => _skipIntro;
-        public bool TestingClientInEditor => _testingClientInEditor;
-        public bool TestingServerOnlyInEditor => _testingServerOnlyInEditor;
+        public static bool IsHosting { get; private set; }
+        public static bool ServerOnly { get; private set; }
+        public static bool DisableDiscordIntegration { get; private set; }
+        public static bool SkipIntro { get; private set; }
 
         private void Awake()
         {
@@ -53,17 +46,19 @@ namespace SS3D.Core
         {
             if (Application.isEditor)
             {
-                _serverOnly = _testingServerOnlyInEditor;
-                _skipIntro = _testingSkipIntroInEditor;
-                _disableDiscordIntegration = _testingDisableDiscordIntegrationInEditor;
-                
+                IsHosting = _testingHostInEditor;
+                ServerOnly = _testingServerOnlyInEditor;
+                SkipIntro = _testingSkipIntroInEditor;
+                DisableDiscordIntegration = _testingDisableDiscordIntegrationInEditor;
+
                 return;
             }
 
-            _testingSkipIntroInEditor = false;
-            _testingDisableDiscordIntegrationInEditor = false;
-            _testingClientInEditor = false;
+            _testingHostInEditor = false;
             _testingServerOnlyInEditor = false;
+            _testingSkipIntroInEditor = false;
+            _testingClientInEditor = false;
+            _testingDisableDiscordIntegrationInEditor = false;
         }
 
         private void InitializeSingleton()
@@ -88,19 +83,19 @@ namespace SS3D.Core
             _networkHelper.InitiateNetworkSession();
         }
 
-        public void SetSkipIntro(bool state)
+        public static void SetSkipIntro(bool state)
         {
-            _skipIntro = state;
+            SkipIntro = state;
         }
 
-        public void SetDisableDiscordIntegration(bool state)
+        public static void SetDisableDiscordIntegration(bool state)
         {
-            _disableDiscordIntegration = state;
+            DisableDiscordIntegration = state;
         }
 
-        public void SetServerOnly(bool state)
+        public static void SetServerOnly(bool state)
         {
-            _serverOnly = state;
+            ServerOnly = state;
         }
     }
 }

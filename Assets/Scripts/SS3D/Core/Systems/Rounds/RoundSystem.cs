@@ -6,9 +6,8 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Rounds.Messages;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace SS3D.Core.Rounds
+namespace SS3D.Core.Systems.Rounds
 {
     /// <summary>
     ///   <para>
@@ -43,11 +42,22 @@ namespace SS3D.Core.Rounds
 
         private void Start()
         {
+            ServerSubscribeToEvents();
+        }
+        
+        [Server]
+        private void ServerSubscribeToEvents()
+        {
             InstanceFinder.ServerManager.RegisterBroadcast<RequestStartRoundMessage>(HandleRequestStartRound);
         }
 
         private void HandleRequestStartRound(NetworkConnection conn, RequestStartRoundMessage m)
         {
+            if (!conn.FirstObject.IsServer)
+            {
+                return;
+            }
+
             ServerStartWarmup();
         }
 
@@ -65,6 +75,7 @@ namespace SS3D.Core.Rounds
             // Starts the warmup
             _currentTimerSeconds = _warmupTimerSeconds;
             UpdateRoundState(RoundState.WarmingUp);
+            
             _warmupCoroutine = StartCoroutine(TickWarmup());
 
             WarmupStartedMessage warmupStartedMessage = new();
@@ -87,8 +98,7 @@ namespace SS3D.Core.Rounds
             }
             
             UpdateRoundState(RoundState.Starting);
-            // These activities will happen both on the server and client.
-
+            
             UpdateRoundState(RoundState.Running);
             StopCoroutine(_warmupCoroutine);
             _tickCoroutine = StartCoroutine(Tick());
@@ -96,6 +106,7 @@ namespace SS3D.Core.Rounds
             InstanceFinder.ServerManager.Broadcast(new RoundStartedMessage());
         }
 
+        [Server]
         private IEnumerator TickWarmup()
         {
             while (_currentTimerSeconds > 0)
@@ -109,8 +120,14 @@ namespace SS3D.Core.Rounds
             HandleStartRound();
         }
 
+        [Server]
         private IEnumerator Tick()
         {
+            if (!IsServer)
+            {
+                yield break;
+            }
+            
             while (RoundRunning)
             {
                 UpdateClock(GetTimerSeconds());
@@ -141,6 +158,7 @@ namespace SS3D.Core.Rounds
             return timer;
         }
 
+        [Server]
         private void UpdateRoundState(RoundState newState)
         {
             roundState = newState;
