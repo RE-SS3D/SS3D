@@ -401,8 +401,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e518b3b2a914fab4ab8de7bc8767d2ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _root: {fileID: 1160312072}
-  _rootUiFade: {fileID: 0}
   _loadingIcon: {fileID: 1160312071}
   _loadingMovement: {x: 0, y: 0, z: -360}
   _loadingIconAnimationDuration: 1
@@ -796,11 +794,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1042289194546887076, guid: 83e602c09f6d862428c09d7503632bfd, type: 3}
   m_PrefabInstance: {fileID: 1160312069}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1160312072 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1042289195677559625, guid: 83e602c09f6d862428c09d7503632bfd, type: 3}
-  m_PrefabInstance: {fileID: 1160312069}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1160312073 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5393264752809146195, guid: 83e602c09f6d862428c09d7503632bfd, type: 3}
@@ -1139,7 +1132,7 @@ MonoBehaviour:
   _testingSkipIntroInEditor: 1
   _testingDisableDiscordIntegrationInEditor: 0
   _testingClientInEditor: 1
-  _testingServerOnlyInEditor: 0
+  _testingServerInEditor: 1
 --- !u!1 &1628220425
 GameObject:
   m_ObjectHideFlags: 0

@@ -40,8 +40,10 @@ namespace SS3D.Core.Systems.Rounds
         public bool RoundStarting => roundState == RoundState.Starting;
         public bool OnWarmup => roundState == RoundState.WarmingUp;
 
-        private void Start()
+        public override void OnStartServer()
         {
+            base.OnStartServer();
+            
             ServerSubscribeToEvents();
         }
         
@@ -53,11 +55,6 @@ namespace SS3D.Core.Systems.Rounds
 
         private void HandleRequestStartRound(NetworkConnection conn, RequestStartRoundMessage m)
         {
-            if (!conn.FirstObject.IsServer)
-            {
-                return;
-            }
-
             ServerStartWarmup();
         }
 

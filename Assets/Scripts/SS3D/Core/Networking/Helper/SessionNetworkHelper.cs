@@ -16,9 +16,6 @@ namespace SS3D.Core.Networking.Helper
     /// </summary>
     public sealed class SessionNetworkHelper : MonoBehaviour
     {
-        private ApplicationStateManager _applicationStateManager;
-        private NetworkManager _networkManager;
-
         private List<string> _commandLineArgs;
 
         private bool _isHost;
@@ -40,9 +37,6 @@ namespace SS3D.Core.Networking.Helper
             // Uses the event service to listen to lobby events
             IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
             eventService?.AddListener<RetryServerConnectionEvent>(InitiateNetworkSession);
-            
-            _applicationStateManager = ApplicationStateManager.Instance;
-            _networkManager = InstanceFinder.NetworkManager;
         }
 
         // Gets the command line arguments from the executable, for example: "-server=localhost"
@@ -64,10 +58,10 @@ namespace SS3D.Core.Networking.Helper
         {
             if (Application.isEditor)
             {
-                _isHost = ApplicationStateManager.IsHosting;
+                _isHost = ApplicationStateManager.IsServer && ApplicationStateManager.IsClient;
                 _ip = EditorServerIP;
                 _ckey = EditorServerUsername;
-                _serverOnly = ApplicationStateManager.ServerOnly;
+                _serverOnly = ApplicationStateManager.IsServer && !ApplicationStateManager.IsClient;
                 Debug.Log($"[{nameof(SessionNetworkHelper)}] - Testing application on the editor as {_ckey}");
             }
             else
@@ -123,26 +117,28 @@ namespace SS3D.Core.Networking.Helper
         /// </summary>
         public void InitiateNetworkSession()
         {
-            if (_networkManager == null)
+            NetworkManager networkManager = InstanceFinder.NetworkManager;
+            if (networkManager == null)
             {
-                _networkManager = InstanceFinder.NetworkManager;
+                networkManager = InstanceFinder.NetworkManager;
+                InitiateNetworkSession();
             }
 
             if (_serverOnly)
             {
                 Debug.Log($"[{nameof(SessionNetworkHelper)}] - Hosting a new headless server");
-                _networkManager.ServerManager.StartConnection();
+                networkManager.ServerManager.StartConnection();
             }
             else if (_isHost)
             {
                 Debug.Log($"[{nameof(SessionNetworkHelper)}] - Hosting a new server");
-                _networkManager.ServerManager.StartConnection();
-                _networkManager.ClientManager.StartConnection();
+                networkManager.ServerManager.StartConnection();
+                networkManager.ClientManager.StartConnection();
             }
             else
             {
                 Debug.Log($"[{nameof(SessionNetworkHelper)}] - Joining server {_ip} as {_ckey}");
-                _networkManager.ClientManager.StartConnection();
+                networkManager.ClientManager.StartConnection(_ip);
             }
         }
         

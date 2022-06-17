@@ -21,11 +21,10 @@ namespace SS3D.Core
         [SerializeField] private bool _testingSkipIntroInEditor;
         [SerializeField] private bool _testingDisableDiscordIntegrationInEditor;
         [SerializeField] private bool _testingClientInEditor;
-        [SerializeField] private bool _testingServerOnlyInEditor;
-        [SerializeField] private bool _testingHostInEditor;
+        [SerializeField] private bool _testingServerInEditor;
 
-        public static bool IsHosting { get; private set; }
-        public static bool ServerOnly { get; private set; }
+        public static bool IsServer { get; private set; }
+        public static bool IsClient { get; private set; }
         public static bool DisableDiscordIntegration { get; private set; }
         public static bool SkipIntro { get; private set; }
 
@@ -46,16 +45,15 @@ namespace SS3D.Core
         {
             if (Application.isEditor)
             {
-                IsHosting = _testingHostInEditor;
-                ServerOnly = _testingServerOnlyInEditor;
+                IsClient = _testingClientInEditor;
+                IsServer = _testingServerInEditor;
                 SkipIntro = _testingSkipIntroInEditor;
                 DisableDiscordIntegration = _testingDisableDiscordIntegrationInEditor;
 
                 return;
             }
 
-            _testingHostInEditor = false;
-            _testingServerOnlyInEditor = false;
+            _testingServerInEditor = false;
             _testingSkipIntroInEditor = false;
             _testingClientInEditor = false;
             _testingDisableDiscordIntegrationInEditor = false;
@@ -95,7 +93,8 @@ namespace SS3D.Core
 
         public static void SetServerOnly(bool state)
         {
-            ServerOnly = state;
+            IsServer = state;
+            IsClient = !state;
         }
     }
 }

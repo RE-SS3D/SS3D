@@ -1,1 +1,1 @@
-start SS3D.exe -ip=localhost -ckey=john
+start SS3D.exe -ip=localhost -ckey=john -skipintro

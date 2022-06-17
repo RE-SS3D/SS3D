@@ -1,1 +1,1 @@
-start SS3D.exe -host -ckey=hostingUser
+start SS3D.exe -host -ckey=hostingUser -skipintro
