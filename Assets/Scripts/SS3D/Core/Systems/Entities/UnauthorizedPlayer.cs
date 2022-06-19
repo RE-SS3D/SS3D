@@ -20,7 +20,7 @@ namespace SS3D.Core.Systems.Entities
 
         private void Setup()
         {
-            string ckey = LocalPlayerAccountManager.Ckey;
+            string ckey = LocalPlayerAccountUtility.Ckey;
 
             bool testingServerOnlyInEditor = IsServer && !IsHost && Application.isEditor;
             if (testingServerOnlyInEditor)
@@ -44,7 +44,7 @@ namespace SS3D.Core.Systems.Entities
         [ServerRpc(RequireOwnership = false)]
         private void CmdRemoveConnectionAfterLogin()
         {
-            string ckey = LocalPlayerAccountManager.Ckey;
+            string ckey = LocalPlayerAccountUtility.Ckey;
     
             Debug.Log($"[{nameof(UnauthorizedPlayer)}] - OnStartLocalPlayer - Destroying temporary player for {ckey}");
             

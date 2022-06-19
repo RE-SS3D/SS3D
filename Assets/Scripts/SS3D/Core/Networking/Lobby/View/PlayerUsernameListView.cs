@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using Coimbra;
+using SS3D.Core.Networking.Lobby.Events;
 using UnityEngine;
 
-namespace SS3D.Core.Networking.Lobby.UI_Helper
+namespace SS3D.Core.Networking.Lobby.View
 {
     /// <summary>
     /// Controls the player list in the lobby
@@ -28,10 +28,10 @@ namespace SS3D.Core.Networking.Lobby.UI_Helper
         public void SubscribeToEvents()
         {
             // Uses the event service to listen to lobby events
-            IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
+            //IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
             
-            eventService!.AddListener<LobbySystem.UserJoinedLobby>(AddUsernameUI);
-            eventService!.AddListener<LobbySystem.UserLeftLobby>(RemoveUsernameUI);
+            //eventService!.AddListener<LobbySystem.UserJoinedLobby>(AddUsernameUI);
+            //eventService!.AddListener<LobbySystem.UserLeftLobby>(RemoveUsernameUI);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace SS3D.Core.Networking.Lobby.UI_Helper
         /// </summary>
         /// <param name="sender">Required by the ServiceLocator, unused in this function</param>
         /// <param name="data">A PlayerJoinedLobby event, that simply carries the Username</param>
-        private void AddUsernameUI(object sender, LobbySystem.UserJoinedLobby data)
+        private void AddUsernameUI(object sender, UserJoinedLobbyEvent data)
         {
             // if this Username already exists we return
             if (_playerUsernames.Exists((player) => data.Ckey == player.Name))
@@ -60,7 +60,7 @@ namespace SS3D.Core.Networking.Lobby.UI_Helper
         /// </summary>
         /// <param name="sender">Required by the ServiceLocator, unused in this function</param>
         /// <param name="data">A PlayerJoinedLobby event, that simply carries the Username</param>
-        private void RemoveUsernameUI(object sender,  LobbySystem.UserLeftLobby data)
+        private void RemoveUsernameUI(object sender,  UserLeftLobbyEvent data)
         {
             PlayerUsernameView removedUsername = null;
             foreach (PlayerUsernameView playerUsernameUI in _playerUsernames.Where(playerUsernameUI => playerUsernameUI.Name.Equals(data.Ckey)))

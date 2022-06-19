@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Coimbra;
 using FishNet;
 using FishNet.Managing;
 using SS3D.Core.Networking.UI_Helper;
@@ -35,8 +34,8 @@ namespace SS3D.Core.Networking.Helper
         private void Setup()
         {
             // Uses the event service to listen to lobby events
-            IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
-            eventService?.AddListener<RetryServerConnectionEvent>(InitiateNetworkSession);
+            //IEventService eventService = ServiceLocator.Get<IEventService>();
+            //eventService?.AddListener<RetryServerConnectionEvent>(InitiateNetworkSession);
         }
 
         // Gets the command line arguments from the executable, for example: "-server=localhost"
@@ -109,7 +108,7 @@ namespace SS3D.Core.Networking.Helper
                 Debug.Log($"[{nameof(SessionNetworkHelper)}] - Testing application on executable");
             }
 
-            LocalPlayerAccountManager.UpdateCkey(_ckey);
+            LocalPlayerAccountUtility.UpdateCkey(_ckey);
         }
 
         /// <summary>

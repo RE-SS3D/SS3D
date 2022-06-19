@@ -1,12 +1,11 @@
 using FishNet;
 using FishNet.Object;
-using SS3D.Core.Rounds;
 using SS3D.Core.Rounds.Messages;
 using SS3D.Core.Systems.Rounds;
 using TMPro;
 using UnityEngine;
 
-namespace SS3D.Core.Networking.Lobby.UI_Helper
+namespace SS3D.Core.Networking.Lobby.View
 {
     // Handles the lobby countdown view
     public class LobbyCountdownView : NetworkBehaviour

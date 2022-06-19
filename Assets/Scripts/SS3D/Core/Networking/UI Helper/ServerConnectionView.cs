@@ -1,4 +1,5 @@
-using Coimbra;
+using Coimbra.Services;
+using Coimbra.Services.Events;
 using DG.Tweening;
 using FishNet;
 using FishNet.Transporting;
@@ -86,9 +87,11 @@ namespace SS3D.Core.Networking.UI_Helper
             UpdateMessageText(ApplicationMessages.Network.ConnectingToServer);
             ProcessConnectingToServer();
             
+
+            //new RetryServerConnectionEvent().
             // Uses the event service to listen to lobby events
-            IEventService eventService = ServiceLocator.Shared.Get<IEventService>(); 
-            eventService?.Invoke(this, new RetryServerConnectionEvent());
+            //IEventService eventService = ServiceLocator.Get<IEventService>(); 
+            //eventService?.Invoke(this, new RetryServerConnectionEvent());
         }
         
         private void OnServerConnectionFailed(ClientConnectionStateArgs clientConnectionStateArgs)
