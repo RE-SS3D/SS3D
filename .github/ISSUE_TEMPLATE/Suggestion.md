@@ -1,11 +1,12 @@
 ---
 name: Suggestion
 about: Suggest a thing.
-title: "Suggestion Name"
+title: Suggestion Name
 labels: 'Type: Discussion (Suggestion)'
 assignees: ''
 
 ---
+
 <!-- The notes within these arrows are for you but can be deleted. -->
 
 ## Summary
