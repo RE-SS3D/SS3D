@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.coimbrastudios.core": "10.7.7",
+    "com.coimbrastudios.core": "10.8.1",
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
     "com.johannesmp.unityscenereference": "1.1.1",
     "com.unity.collab-proxy": "1.15.15",

@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.coimbrastudios.core": {
-      "version": "10.7.7",
+      "version": "10.8.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
