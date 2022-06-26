@@ -19,6 +19,8 @@ namespace SS3D.Core.Networking.PlayerControl
         [SyncObject]
         private readonly SyncList<Soul> _serverSouls = new();
 
+        public string GetSoulCkeyByConn(NetworkConnection conn) => _serverSouls.Where(soul => soul.Owner == conn).ToArray()[0].Ckey;
+
         private void Start()
         {
             SubscribeToEvents();

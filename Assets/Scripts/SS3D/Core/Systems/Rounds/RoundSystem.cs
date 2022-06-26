@@ -4,7 +4,10 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Core.Networking.PlayerControl;
 using SS3D.Core.Rounds.Messages;
+using SS3D.Core.Systems.Permissions;
+using SS3D.Core.Systems.Rounds.Messages;
 using UnityEngine;
 
 namespace SS3D.Core.Systems.Rounds
@@ -55,7 +58,20 @@ namespace SS3D.Core.Systems.Rounds
 
         private void HandleRequestStartRound(NetworkConnection conn, RequestStartRoundMessage m)
         {
-            ServerStartWarmup();
+            const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;
+
+            PlayerControlSystem playerControlSystem = GameSystems.PlayerControlSystem;
+            PermissionSystem permissionSystem = GameSystems.PermissionSystem;
+
+            string userCkey = playerControlSystem.GetSoulCkeyByConn(conn);
+            if (permissionSystem.GetUserPermission(userCkey) != requiredRole)
+            {
+                Debug.Log($"[{nameof(RoundSystem)}] - User {userCkey} doesn't have {requiredRole} permission");
+            }
+            else
+            {
+                ServerStartWarmup();   
+            }
         }
 
         /// <summary>

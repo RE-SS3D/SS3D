@@ -2,6 +2,7 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core.Rounds.Messages;
+using SS3D.Core.Systems.Rounds.Messages;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,11 +24,10 @@ namespace SS3D.Core.Systems.Lobby.View
 
         private void HandleEmbarkButtonPressed()
         {
-            CmdRequestStartRound();
+            RequestStartRound();
         }
 
-        [ServerRpc(RequireOwnership = false)]
-        private void CmdRequestStartRound(NetworkConnection conn = null)
+        private void RequestStartRound()
         {
             RequestStartRoundMessage requestStartRoundMessage = new();
             InstanceFinder.ClientManager.Broadcast(requestStartRoundMessage);

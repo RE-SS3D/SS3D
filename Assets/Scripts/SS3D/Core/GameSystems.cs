@@ -1,5 +1,7 @@
 ﻿using System;
+using SS3D.Core.Networking.PlayerControl;
 using SS3D.Core.Systems.Lobby;
+using SS3D.Core.Systems.Permissions;
 using SS3D.Core.Systems.Rounds;
 using Object = UnityEngine.Object;
 
@@ -9,6 +11,8 @@ namespace SS3D.Core
     {
         private static LobbySystem _lobbySystem;
         private static RoundSystem _roundSystem;
+        private static PermissionSystem _permissionSystem;
+        private static PlayerControlSystem _playerControlSystem;
 
         public static LobbySystem LobbySystem
         {
@@ -39,6 +43,38 @@ namespace SS3D.Core
                 }
 
                 return _roundSystem;
+            }
+        }
+
+        public static PermissionSystem PermissionSystem
+        {
+            get
+            {
+                if (_permissionSystem != null) { return _permissionSystem; }
+
+                _permissionSystem = Object.FindObjectOfType<PermissionSystem>();
+                if (_permissionSystem == null)
+                {
+                    throw new Exception($"[{nameof(GameSystems)}] - Couldn't find permission system");
+                }
+
+                return _permissionSystem;
+            }
+        }
+
+        public static PlayerControlSystem PlayerControlSystem
+        {
+            get
+            {
+                if (_playerControlSystem != null) { return _playerControlSystem; }
+
+                _playerControlSystem = Object.FindObjectOfType<PlayerControlSystem>();
+                if (_playerControlSystem == null)
+                {
+                    throw new Exception($"[{nameof(GameSystems)}] - Couldn't find player control system");
+                }
+
+                return _playerControlSystem;
             }
         }
     }

@@ -463,7 +463,6 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 246961641}
   _roundState: 0
   _currentTimerSeconds: 0
-  _roundTotalSeconds: 300
   _warmupTimerSeconds: 5
 --- !u!114 &246961641
 MonoBehaviour:
@@ -496,6 +495,50 @@ MonoBehaviour:
   - {fileID: 1747971347}
   - {fileID: 2038082477}
   - {fileID: 2057128681}
+--- !u!1 &474682041
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 474682043}
+  - component: {fileID: 474682042}
+  m_Layer: 0
+  m_Name: PermissionSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 2800000, guid: 36d731186d9f7df46a2eb76eaf32e9e2, type: 3}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &474682042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474682041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eec537a766a7b0e49878c6edbbcbc22c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &474682043
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474682041}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -662.0092, y: -384.96207, z: 137.6865}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1506918115}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &616353822
 GameObject:
   m_ObjectHideFlags: 0
@@ -620,10 +663,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6a5408bbe124b5a9eab2ce8a4dedac2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _assertAwake: 0
-  _activateOnSpawn: 0
-  _deactivateOnDespawn: 0
-  _deactivateOnInitializePrefab: 0
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 1747971347}
+  _networkObjectCache: {fileID: 1747971347}
   _root: {fileID: 1011821734}
   _playerUsernames: []
   _uiPrefab: {fileID: 2412237211694884709, guid: 90b8893c80d4fbd4a91e7bdcd36a4829, type: 3}
@@ -727,7 +769,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1892bb003da8aaf41a44fb7f08e7e9a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 0
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 1747971347}
   _networkObjectCache: {fileID: 1747971347}
   _embarkButton: {fileID: 1113205650761546343}
@@ -815,6 +857,7 @@ Transform:
   - {fileID: 2057128679}
   - {fileID: 616353823}
   - {fileID: 246961639}
+  - {fileID: 474682043}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -867,6 +910,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _networkBehaviours:
+  - {fileID: 618991012}
   - {fileID: 1081000819}
   - {fileID: 2038082476}
   SceneTransformProperties:
