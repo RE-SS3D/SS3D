@@ -19,7 +19,8 @@ namespace SS3D.Core.Networking.PlayerControl
         [SyncObject]
         private readonly SyncList<Soul> _serverSouls = new();
 
-        public string GetSoulCkeyByConn(NetworkConnection conn) => _serverSouls.Where(soul => soul.Owner == conn).ToArray()[0].Ckey;
+        public string GetSoulCkeyByConn(NetworkConnection conn) => _serverSouls.SingleOrDefault(soul => soul.Owner == conn)?.Ckey;
+        public Soul GetSoulByCkey(string ckey) => _serverSouls.SingleOrDefault(soul => soul.Ckey == ckey);
 
         private void Start()
         {
@@ -42,14 +43,13 @@ namespace SS3D.Core.Networking.PlayerControl
         {
             string ckey = userAuthorizationMessage.Ckey;
 
-            Soul match = null;
-            foreach (Soul soul in _serverSouls.Where((soul) => soul.Ckey == ckey))
-            {
-                match = soul;
-                Debug.Log($"[{nameof(PlayerControlSystem)}] - SERVER - Soul match for {soul} found, reassigning to client");
-            }
+            Soul match = GetSoulByCkey(ckey);
 
-            if (match == null)
+            if (match != null)
+            {
+                Debug.Log($"[{nameof(PlayerControlSystem)}] - SERVER - Soul match for {ckey} found, reassigning to client");
+            }
+            else
             {
                 Debug.Log($"[{nameof(PlayerControlSystem)}] - SERVER - No Soul match for {ckey} found, creating a new one");
 
@@ -63,7 +63,7 @@ namespace SS3D.Core.Networking.PlayerControl
             NetworkObject networkObject = match.gameObject.GetComponent<NetworkObject>();
             networkObject.GiveOwnership(conn);
 
-            UserJoinedServerMessage userJoinedServerMessage = new UserJoinedServerMessage(match.Ckey);
+            UserJoinedServerMessage userJoinedServerMessage = new(match.Ckey);
             InstanceFinder.ServerManager.Broadcast(userJoinedServerMessage);         
 
             Debug.Log($"[{nameof(PlayerControlSystem)}] - SERVER - Handle Authorize Player: {match.Ckey}");

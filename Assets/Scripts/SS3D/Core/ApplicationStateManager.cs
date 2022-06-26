@@ -19,7 +19,7 @@ namespace SS3D.Core
         [FormerlySerializedAs("_testingSkipIntro")]
         [Header("Test Cases")]
         [SerializeField] private bool _testingSkipIntroInEditor;
-        [SerializeField] private bool _testingDisableDiscordIntegrationInEditor;
+        [SerializeField] private bool _testingDiscordIntegrationInEditor;
         [SerializeField] private bool _testingClientInEditor;
         [SerializeField] private bool _testingServerInEditor;
 
@@ -48,7 +48,7 @@ namespace SS3D.Core
                 IsClient = _testingClientInEditor;
                 IsServer = _testingServerInEditor;
                 SkipIntro = _testingSkipIntroInEditor;
-                EnableDiscordIntegration = _testingDisableDiscordIntegrationInEditor;
+                EnableDiscordIntegration = _testingDiscordIntegrationInEditor;
 
                 return;
             }
@@ -56,7 +56,7 @@ namespace SS3D.Core
             _testingServerInEditor = false;
             _testingSkipIntroInEditor = false;
             _testingClientInEditor = false;
-            _testingDisableDiscordIntegrationInEditor = false;
+            _testingDiscordIntegrationInEditor = false;
         }
 
         private void InitializeSingleton()

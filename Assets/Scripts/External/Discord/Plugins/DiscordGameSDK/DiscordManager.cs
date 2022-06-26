@@ -42,6 +42,7 @@ namespace UDiscord
             if (!enableDiscordIntegration)
             {
                 gameObject.Destroy();
+                return;
             }
 
             if (Discord_Start)
