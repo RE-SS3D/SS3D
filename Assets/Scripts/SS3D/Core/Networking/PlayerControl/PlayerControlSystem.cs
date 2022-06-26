@@ -16,11 +16,12 @@ namespace SS3D.Core.Networking.PlayerControl
     {
         [SerializeField] private GameObject _soulPrefab;
 
+        // TODO: SyncVar because client admins will probably need these, we can later restrict them from the normal user with the permissions system
         [SyncObject]
         private readonly SyncList<Soul> _serverSouls = new();
 
         public string GetSoulCkeyByConn(NetworkConnection conn) => _serverSouls.SingleOrDefault(soul => soul.Owner == conn)?.Ckey;
-        public Soul GetSoulByCkey(string ckey) => _serverSouls.SingleOrDefault(soul => soul.Ckey == ckey);
+        private Soul GetSoulByCkey(string ckey) => _serverSouls.SingleOrDefault(soul => soul.Ckey == ckey);
 
         private void Start()
         {
