@@ -10,8 +10,7 @@ using UnityEngine;
 namespace SS3D.Core.Networking
 {
     /// <summary>
-    /// A custom Network Manager to guarantee Mirror won't fuck our game with their base functions
-    /// The changes should be minimal in relation to Mirror's
+    /// Controls the player flux
     /// </summary>
     public sealed class PlayerConnectionSystem : NetworkBehaviour
     {

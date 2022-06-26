@@ -183,7 +183,7 @@ namespace SS3D.Core.Systems.Rounds
         }
         
         /// <summary>
-        /// Used by Mirror to sync the round state
+        /// Used by FishNet to sync the round state
         /// </summary>
         private void SetRoundState(RoundState oldState, RoundState newState, bool AsServer)
         {
@@ -191,7 +191,7 @@ namespace SS3D.Core.Systems.Rounds
         }
 
         /// <summary>
-        /// Used by Mirror to sync the round timer
+        /// Used by FishNet to sync the round timer
         /// </summary>
         private void SetCurrentTimerSeconds(int oldSeconds, int newSeconds, bool AsServer)
         {
@@ -200,7 +200,7 @@ namespace SS3D.Core.Systems.Rounds
         }
 
         /// <summary>
-        /// Used by Mirror to sync the warmup timer
+        /// Used by FishNet to sync the warmup timer
         /// </summary>
         /// <param name="newTime"></param>
         public void SetWarmupTimer(int oldTime, int newTime, bool AsServer)
