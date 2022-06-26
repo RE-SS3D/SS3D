@@ -1,5 +1,3 @@
-using Coimbra.Services;
-using Coimbra.Services.Events;
 using DG.Tweening;
 using FishNet;
 using FishNet.Transporting;
@@ -60,6 +58,10 @@ namespace SS3D.Core.Networking.UI_Helper
 
         private void UnsubscribeFromEvents()
         {
+            _quitButton.onClick.RemoveListener(Application.Quit);
+            _retryButton.onClick.RemoveListener(OnRetryButtonPressed);
+
+            InstanceFinder.ClientManager.OnClientConnectionState -= OnServerConnectionFailed;
         }
         
         private void UpdateMessageText(string message)
@@ -86,12 +88,8 @@ namespace SS3D.Core.Networking.UI_Helper
             _loadingIcon.gameObject.SetActive(true);
             UpdateMessageText(ApplicationMessages.Network.ConnectingToServer);
             ProcessConnectingToServer();
-            
 
-            //new RetryServerConnectionEvent().
-            // Uses the event service to listen to lobby events
-            //IEventService eventService = ServiceLocator.Get<IEventService>(); 
-            //eventService?.Invoke(this, new RetryServerConnectionEvent());
+            new RetryServerConnectionEvent().Invoke(this);
         }
         
         private void OnServerConnectionFailed(ClientConnectionStateArgs clientConnectionStateArgs)
@@ -105,6 +103,7 @@ namespace SS3D.Core.Networking.UI_Helper
             _buttons.SetActive(true);
             _loadingIcon.gameObject.SetActive(false);
             _buttonsUiFade.ProcessFade();
+
             UpdateMessageText(ApplicationMessages.Network.ConnectionFailed);
         }
     }

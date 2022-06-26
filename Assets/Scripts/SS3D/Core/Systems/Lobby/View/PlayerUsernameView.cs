@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace SS3D.Core.Networking.Lobby.View
+namespace SS3D.Core.Systems.Lobby.View
 {
     /// <summary>
     /// Simple Username ui element controller

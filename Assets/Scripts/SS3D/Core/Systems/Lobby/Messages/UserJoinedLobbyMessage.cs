@@ -1,6 +1,6 @@
 ﻿using FishNet.Broadcast;
 
-namespace SS3D.Core.Networking.Lobby.Messages
+namespace SS3D.Core.Systems.Lobby.Messages
 {
     public struct UserJoinedLobbyMessage : IBroadcast
     {

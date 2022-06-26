@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SS3D.Core.Networking.Lobby.View
+namespace SS3D.Core.Systems.Lobby.View
 {
     /// <summary>
     /// Manages the lobby tabs

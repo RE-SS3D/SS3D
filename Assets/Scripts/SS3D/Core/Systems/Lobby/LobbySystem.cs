@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
-using Coimbra.Services;
 using FishNet;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using SS3D.Core.Networking.Lobby.Messages;
 using SS3D.Core.Networking.PlayerControl.Messages;
+using SS3D.Core.Systems.Lobby.Messages;
 using UnityEngine;
 
-namespace SS3D.Core.Networking.Lobby
+namespace SS3D.Core.Systems.Lobby
 {
     /// <summary>
     /// Manages all networked lobby stuff

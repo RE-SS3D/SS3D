@@ -1,17 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
-using Coimbra.Services;
 using FishNet;
-using SS3D.Core.Networking.Lobby.Messages;
+using FishNet.Object;
+using SS3D.Core.Systems.Lobby.Messages;
 using UnityEngine;
 
-namespace SS3D.Core.Networking.Lobby.View
+namespace SS3D.Core.Systems.Lobby.View
 {
     /// <summary>
     /// Controls the player list in the lobby
     /// </summary>
-    public sealed class PlayerUsernameListView : Actor
+    public sealed class PlayerUsernameListView : NetworkBehaviour
     {
         // The UI element this is linked to
         [SerializeField] private Transform _root;
@@ -22,10 +22,8 @@ namespace SS3D.Core.Networking.Lobby.View
         // The username panel prefab
         [SerializeField] private GameObject _uiPrefab;
 
-        protected override void OnSpawn()
+        private void Start()
         {
-            base.OnSpawn();
-
             Setup();
             SubscribeToEvents();
         }
@@ -63,12 +61,12 @@ namespace SS3D.Core.Networking.Lobby.View
         {
             LobbySystem lobby = GameSystems.LobbySystem;
 
-            List<string> lobbyPlayers = lobby!.CurrentLobbyPlayers();
+            List<string> lobbyPlayers = lobby.CurrentLobbyPlayers() != null ? lobby.CurrentLobbyPlayers() : new List<string>();
 
             foreach (string lobbyPlayer in lobbyPlayers)
             {
                 AddUsernameUI(lobbyPlayer);
-            } 
+            }
         }
 
         /// <summary>

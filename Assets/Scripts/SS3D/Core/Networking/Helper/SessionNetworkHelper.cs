@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Coimbra.Services.Events;
 using FishNet;
 using FishNet.Managing;
 using SS3D.Core.Networking.UI_Helper;
@@ -27,15 +28,13 @@ namespace SS3D.Core.Networking.Helper
 
         private void Awake()
         {
-            Setup();
+            AddEventListeners();
             ProcessCommandLineArgs();
         }
         
-        private void Setup()
+        private void AddEventListeners()
         {
-            // Uses the event service to listen to lobby events
-            //IEventService eventService = ServiceLocator.Get<IEventService>();
-            //eventService?.AddListener<RetryServerConnectionEvent>(InitiateNetworkSession);
+            RetryServerConnectionEvent.AddListener(InitiateNetworkSession);
         }
 
         // Gets the command line arguments from the executable, for example: "-server=localhost"
@@ -141,8 +140,12 @@ namespace SS3D.Core.Networking.Helper
             }
         }
         
-        // Overload to match the event type
-        private void InitiateNetworkSession(object sender, RetryServerConnectionEvent e)
+        /// <summary>
+        /// Overload to match the event type
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="retryServerConnectionEvent"></param>
+        private void InitiateNetworkSession(ref EventContext context, in RetryServerConnectionEvent retryServerConnectionEvent)
         {
             InitiateNetworkSession();
         }

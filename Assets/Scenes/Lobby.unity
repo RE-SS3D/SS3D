@@ -425,7 +425,7 @@ GameObject:
   - component: {fileID: 246961640}
   - component: {fileID: 246961641}
   m_Layer: 0
-  m_Name: RoundManager
+  m_Name: RoundSystem
   m_TagString: Untagged
   m_Icon: {fileID: 2800000, guid: d5ad4eb6e2beef74da33f196e75916ee, type: 3}
   m_NavMeshLayer: 0
@@ -458,14 +458,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77dbb4b5c7a63c8459e3b3bb8944571d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _assertAwake: 0
-  _activateOnSpawn: 0
-  _deactivateOnDespawn: 0
-  _deactivateOnInitializePrefab: 0
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 246961641}
   _networkObjectCache: {fileID: 246961641}
-  roundState: 0
+  _roundState: 0
   _currentTimerSeconds: 0
   _roundTotalSeconds: 300
   _warmupTimerSeconds: 5
@@ -512,7 +508,7 @@ GameObject:
   - component: {fileID: 616353824}
   - component: {fileID: 616353825}
   m_Layer: 0
-  m_Name: PlayerControlManager
+  m_Name: PlayerControlSystem
   m_TagString: Untagged
   m_Icon: {fileID: 2800000, guid: 4d92845251442a542933ea1c7502d8d9, type: 3}
   m_NavMeshLayer: 0
@@ -545,10 +541,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d16b1471984416d89a09ebc9e45af88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _assertAwake: 0
-  _activateOnSpawn: 0
-  _deactivateOnDespawn: 0
-  _deactivateOnInitializePrefab: 0
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 616353825}
   _networkObjectCache: {fileID: 616353825}
@@ -735,10 +727,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1892bb003da8aaf41a44fb7f08e7e9a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _assertAwake: 0
-  _activateOnSpawn: 0
-  _deactivateOnDespawn: 0
-  _deactivateOnInitializePrefab: 0
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1747971347}
   _networkObjectCache: {fileID: 1747971347}
@@ -1145,10 +1133,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 988dec00c80c53945b5516f8d81ee0f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _assertAwake: 0
-  _activateOnSpawn: 0
-  _deactivateOnDespawn: 0
-  _deactivateOnInitializePrefab: 0
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1747971347}
   _networkObjectCache: {fileID: 2038082477}
@@ -1196,7 +1180,7 @@ GameObject:
   - component: {fileID: 2057128680}
   - component: {fileID: 2057128681}
   m_Layer: 0
-  m_Name: LobbyManager
+  m_Name: LobbySystem
   m_TagString: Untagged
   m_Icon: {fileID: 2800000, guid: aed27587c9f72b648b5a0c3cc3a5247d, type: 3}
   m_NavMeshLayer: 0
@@ -1229,10 +1213,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6b0a2528732487ea2996fa924533a69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _assertAwake: 0
-  _activateOnSpawn: 0
-  _deactivateOnDespawn: 0
-  _deactivateOnInitializePrefab: 0
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 2057128681}
   _networkObjectCache: {fileID: 2057128681}

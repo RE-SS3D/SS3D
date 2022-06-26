@@ -19,15 +19,12 @@ namespace SS3D.Core.Systems.Rounds
     {
         [Header("Round Stats")] 
         [SyncVar(OnChange = "SetRoundState")] 
-        [SerializeField] private RoundState roundState;
+        [SerializeField] private RoundState _roundState;
         
         // How much time has passed
         [SyncVar(OnChange = "SetCurrentTimerSeconds")] 
         [SerializeField] private int _currentTimerSeconds;
-        
-        // How many seconds until the round ends
-        [SerializeField] private int _roundTotalSeconds = 300;
-        
+
         // How many seconds of warmup
         [Header("Warmup")]
         [SyncVar(OnChange = "SetWarmupTimer")] 
@@ -36,9 +33,12 @@ namespace SS3D.Core.Systems.Rounds
         private Coroutine _warmupCoroutine;
         private Coroutine _tickCoroutine;
 
-        public bool RoundRunning => roundState == RoundState.Running;
-        public bool RoundStarting => roundState == RoundState.Starting;
-        public bool OnWarmup => roundState == RoundState.WarmingUp;
+        public bool RoundRunning => _roundState == RoundState.Running;
+        public bool RoundStarting => _roundState == RoundState.Starting;
+        public bool OnWarmup => _roundState == RoundState.WarmingUp;
+
+        public RoundState RoundState => _roundState;
+        public int RoundTime => _currentTimerSeconds;
 
         public override void OnStartServer()
         {
@@ -158,7 +158,7 @@ namespace SS3D.Core.Systems.Rounds
         [Server]
         private void UpdateRoundState(RoundState newState)
         {
-            roundState = newState;
+            _roundState = newState;
             
             Debug.Log($"[{nameof(RoundSystem)}] - Round state updated: [{newState}]");
             
@@ -171,7 +171,7 @@ namespace SS3D.Core.Systems.Rounds
         /// </summary>
         private void SetRoundState(RoundState oldState, RoundState newState, bool AsServer)
         {
-            roundState = newState;
+            _roundState = newState;
         }
 
         /// <summary>
