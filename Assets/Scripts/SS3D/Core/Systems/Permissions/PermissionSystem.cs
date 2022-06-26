@@ -24,6 +24,11 @@ namespace SS3D.Core.Systems.Permissions
             return containsKey ? _userPermissions[ckey] : ServerRoleTypes.User;
         }
 
+        public void ChangeUserPermission(string ckey, ServerRoleTypes role)
+        {
+            // TODO: This
+        }
+
         private void Start()
         {
             LoadPermissions();
@@ -31,6 +36,8 @@ namespace SS3D.Core.Systems.Permissions
 
         private void LoadPermissions()
         {
+            CreatePermissionsFileIfNotExists();
+
             string[] lines = File.ReadAllLines(FullPermissionFilePath);
 
             foreach (string line in lines)
@@ -43,6 +50,15 @@ namespace SS3D.Core.Systems.Permissions
                 _userPermissions.Add(ckey, role);
 
                 Debug.Log($"[{nameof(PermissionSystem)}] - Found user permission {ckey} as {role}");
+            }
+        }
+
+        private static void CreatePermissionsFileIfNotExists()
+        {
+            if (!File.Exists(FullPermissionFilePath))
+            {
+                Debug.Log($"[{nameof(PermissionSystem)}] - Permissions file not found, creating a new one");
+                File.WriteAllText(FullPermissionFilePath, string.Empty);
             }
         }
     }

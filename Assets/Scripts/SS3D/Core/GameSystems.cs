@@ -7,6 +7,9 @@ using Object = UnityEngine.Object;
 
 namespace SS3D.Core
 {
+    /// <summary>
+    /// TODO: Automate this crap
+    /// </summary>
     public static class GameSystems
     {
         private static LobbySystem _lobbySystem;
