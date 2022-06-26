@@ -38,8 +38,8 @@ namespace UDiscord
 
         private void Start()
         {
-            bool disableDiscordIntegration = ApplicationStateManager.DisableDiscordIntegration;
-            if (disableDiscordIntegration)
+            bool enableDiscordIntegration = ApplicationStateManager.EnableDiscordIntegration;
+            if (!enableDiscordIntegration)
             {
                 gameObject.Destroy();
             }

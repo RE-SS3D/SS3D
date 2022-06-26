@@ -40,6 +40,6 @@ namespace SS3D.Core.Networking.Utils
         /// Bool.
         /// Disables the discord integration
         /// </summary>
-        public const string DisableDiscordIntegration = "-disablediscordintegration";
+        public const string EnableDiscordIntegration = "-disablediscordintegration";
     }
 }

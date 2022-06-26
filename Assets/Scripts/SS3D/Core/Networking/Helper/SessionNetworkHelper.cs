@@ -91,10 +91,10 @@ namespace SS3D.Core.Networking.Helper
                         Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.SkipIntro} - {true}");
                     }
 
-                    if (arg.Contains(CommandLineArgs.DisableDiscordIntegration))
+                    if (arg.Contains(CommandLineArgs.EnableDiscordIntegration))
                     {
-                        ApplicationStateManager.SetDisableDiscordIntegration(true);
-                        Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.DisableDiscordIntegration} - {true}");
+                        ApplicationStateManager.SetDiscordIntegration(true);
+                        Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.EnableDiscordIntegration} - {true}");
                     }
                     
                     if (arg.Contains(CommandLineArgs.ServerOnly))

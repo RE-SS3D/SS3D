@@ -25,7 +25,7 @@ namespace SS3D.Core
 
         public static bool IsServer { get; private set; }
         public static bool IsClient { get; private set; }
-        public static bool DisableDiscordIntegration { get; private set; }
+        public static bool EnableDiscordIntegration { get; private set; }
         public static bool SkipIntro { get; private set; }
 
         private void Awake()
@@ -48,7 +48,7 @@ namespace SS3D.Core
                 IsClient = _testingClientInEditor;
                 IsServer = _testingServerInEditor;
                 SkipIntro = _testingSkipIntroInEditor;
-                DisableDiscordIntegration = _testingDisableDiscordIntegrationInEditor;
+                EnableDiscordIntegration = _testingDisableDiscordIntegrationInEditor;
 
                 return;
             }
@@ -86,9 +86,9 @@ namespace SS3D.Core
             SkipIntro = state;
         }
 
-        public static void SetDisableDiscordIntegration(bool state)
+        public static void SetDiscordIntegration(bool state)
         {
-            DisableDiscordIntegration = state;
+            EnableDiscordIntegration = state;
         }
 
         public static void SetServerOnly(bool state)
