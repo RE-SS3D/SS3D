@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using SS3D.Core.Networking.Lobby.Events;
+using Coimbra;
+using Coimbra.Services;
+using FishNet;
+using SS3D.Core.Networking.Lobby.Messages;
 using UnityEngine;
 
 namespace SS3D.Core.Networking.Lobby.View
@@ -8,7 +11,7 @@ namespace SS3D.Core.Networking.Lobby.View
     /// <summary>
     /// Controls the player list in the lobby
     /// </summary>
-    public sealed class PlayerUsernameListView : MonoBehaviour
+    public sealed class PlayerUsernameListView : Actor
     {
         // The UI element this is linked to
         [SerializeField] private Transform _root;
@@ -19,19 +22,53 @@ namespace SS3D.Core.Networking.Lobby.View
         // The username panel prefab
         [SerializeField] private GameObject _uiPrefab;
 
-        private void Awake()
+        protected override void OnSpawn()
         {
+            base.OnSpawn();
+
+            Setup();
             SubscribeToEvents();
         }
 
-        // Generic method to agglomerate all event managing
-        public void SubscribeToEvents()
+        private void Setup()
         {
-            // Uses the event service to listen to lobby events
-            //IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
-            
-            //eventService!.AddListener<LobbySystem.UserJoinedLobby>(AddUsernameUI);
-            //eventService!.AddListener<LobbySystem.UserLeftLobby>(RemoveUsernameUI);
+            SyncLobbyPlayers();
+        }
+
+        // Generic method to agglomerate all event managing
+        private void SubscribeToEvents()
+        {
+            InstanceFinder.ClientManager.RegisterBroadcast<UserJoinedLobbyMessage>(HandleUserJoinedLobby);
+            InstanceFinder.ClientManager.RegisterBroadcast<UserLeftLobbyMessage>(HandleUserLeftLobby);
+        }
+
+        private void HandleUserLeftLobby(UserLeftLobbyMessage m)
+        {
+            string ckey = m.Ckey;
+
+            RemoveUsernameUI(ckey);
+        }
+
+        private void HandleUserJoinedLobby(UserJoinedLobbyMessage m)
+        {
+            string ckey = m.Ckey;
+
+            AddUsernameUI(ckey);
+        }
+
+        /// <summary>
+        /// Makes sure the players are shown correct with a late join
+        /// </summary>
+        private void SyncLobbyPlayers()
+        {
+            LobbySystem lobby = GameSystems.LobbySystem;
+
+            List<string> lobbyPlayers = lobby!.CurrentLobbyPlayers();
+
+            foreach (string lobbyPlayer in lobbyPlayers)
+            {
+                AddUsernameUI(lobbyPlayer);
+            } 
         }
 
         /// <summary>
@@ -39,10 +76,10 @@ namespace SS3D.Core.Networking.Lobby.View
         /// </summary>
         /// <param name="sender">Required by the ServiceLocator, unused in this function</param>
         /// <param name="data">A PlayerJoinedLobby event, that simply carries the Username</param>
-        private void AddUsernameUI(object sender, UserJoinedLobbyEvent data)
+        private void AddUsernameUI(string ckey)
         {
             // if this Username already exists we return
-            if (_playerUsernames.Exists((player) => data.Ckey == player.Name))
+            if (_playerUsernames.Exists((player) => ckey == player.Name))
             {
                 return;
             }
@@ -51,7 +88,7 @@ namespace SS3D.Core.Networking.Lobby.View
             GameObject uiInstance = Instantiate(_uiPrefab, _root);
 
             PlayerUsernameView playerUsernameView = uiInstance.GetComponent<PlayerUsernameView>();
-            playerUsernameView.UpdateNameText(data.Ckey);
+            playerUsernameView.UpdateNameText(ckey);
             _playerUsernames.Add(playerUsernameView);
         }
         
@@ -60,17 +97,18 @@ namespace SS3D.Core.Networking.Lobby.View
         /// </summary>
         /// <param name="sender">Required by the ServiceLocator, unused in this function</param>
         /// <param name="data">A PlayerJoinedLobby event, that simply carries the Username</param>
-        private void RemoveUsernameUI(object sender,  UserLeftLobbyEvent data)
+        private void RemoveUsernameUI(string ckey)
         {
             PlayerUsernameView removedUsername = null;
-            foreach (PlayerUsernameView playerUsernameUI in _playerUsernames.Where(playerUsernameUI => playerUsernameUI.Name.Equals(data.Ckey)))
+
+            foreach (PlayerUsernameView playerUsernameUI in _playerUsernames.Where(playerUsernameUI => playerUsernameUI.Name.Equals(ckey)))
             {
                 removedUsername = playerUsernameUI;
-                Destroy(playerUsernameUI.gameObject);
+                playerUsernameUI.gameObject.Destroy();
             }
 
             _playerUsernames.Remove(removedUsername);
-            Destroy(removedUsername != null ? removedUsername.gameObject : null);
+            removedUsername!.gameObject.Destroy();
         }
     }
 }

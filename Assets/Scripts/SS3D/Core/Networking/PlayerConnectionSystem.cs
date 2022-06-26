@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using FishNet;
 using FishNet.Connection;
@@ -17,7 +18,12 @@ namespace SS3D.Core.Networking
     {
         [SerializeField] private NetworkObject _userPrefab;
 
-        public void Awake()
+        private void Start()
+        {
+            AddEventListeners();
+        }
+
+        private void AddEventListeners()
         {
             InstanceFinder.SceneManager.OnClientLoadedStartScenes += HandleClientLoadedStartScenes;
             InstanceFinder.ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;

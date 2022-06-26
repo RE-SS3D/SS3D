@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using FishNet;
 using FishNet.Connection;
@@ -18,17 +17,9 @@ namespace SS3D.Core.Networking.PlayerControl
         [SerializeField] private GameObject _soulPrefab;
 
         [SyncObject]
-        private readonly SyncList<Soul> _serverSouls = new SyncList<Soul>();
+        private readonly SyncList<Soul> _serverSouls = new();
 
-        [Serializable]
-        public struct PlayerLeftServer
-        {
-            public Soul Soul;
-
-            public PlayerLeftServer(Soul soul) { Soul = soul; }
-        }
-
-        private void Awake()
+        private void Start()
         {
             SubscribeToEvents();
         }

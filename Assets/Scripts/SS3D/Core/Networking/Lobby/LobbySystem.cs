@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
+using Coimbra.Services;
 using FishNet;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using SS3D.Core.Networking.Lobby.Events;
+using SS3D.Core.Networking.Lobby.Messages;
 using SS3D.Core.Networking.PlayerControl.Messages;
 using UnityEngine;
 
@@ -13,48 +16,32 @@ namespace SS3D.Core.Networking.Lobby
     public sealed class LobbySystem : NetworkBehaviour
     {
         // Current lobby players
-        [SyncObject]
-        private readonly SyncList<string> _players = new();
+        [SyncObject] private readonly SyncList<string> _players = new();
 
-        private void Start()
-        {
-            SyncLobbyPlayers();
-        }
+        public List<string> CurrentLobbyPlayers() => _players.ToList();
 
         public override void OnStartClient()
         {
             base.OnStartClient();
-            InstanceFinder.ClientManager.RegisterBroadcast<UserJoinedServerMessage>(AddLobbyPlayer);
-            InstanceFinder.ClientManager.RegisterBroadcast<UserLeftServerMessage>(RemoveLobbyPlayer);
+
+            ClientAddEventListeners();
         }
 
-        /// <summary>
-        /// Updates the lobby players on Start
-        /// </summary>
-        private void SyncLobbyPlayers()
+        private void ClientAddEventListeners()
         {
-            foreach (string player in _players)
-            {
-                //IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
-                //eventService?.Invoke(null, new UserJoinedLobby(player));
-            }                                                                                   
+            InstanceFinder.ClientManager.RegisterBroadcast<UserJoinedServerMessage>(AddLobbyPlayer);
+            InstanceFinder.ClientManager.RegisterBroadcast<UserLeftServerMessage>(RemoveLobbyPlayer);
         }
 
         [Server]
         private void AddLobbyPlayer(UserJoinedServerMessage userJoinedServerMessage)
         {
-              _players.Add(userJoinedServerMessage.Ckey);
+            _players.Add(userJoinedServerMessage.Ckey);
 
-              RpcAddLobbyPlayer(new UserJoinedLobbyEvent(userJoinedServerMessage.Ckey));
-              Debug.Log($"[{nameof(LobbySystem)}] - SERVER - Added player to lobby: {userJoinedServerMessage.Ckey}");
-        }
+            UserJoinedLobbyMessage userJoinedLobbyMessage = new(userJoinedServerMessage.Ckey);
+            InstanceFinder.ServerManager.Broadcast(userJoinedLobbyMessage);
 
-        [ObserversRpc]
-        private void RpcAddLobbyPlayer(UserJoinedLobbyEvent userJoinedLobby)
-        {
-            //IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
-            //eventService?.Invoke(null, userJoinedLobby);
-            Debug.Log($"[{nameof(LobbySystem)}] - RPC - Added player to lobby: {userJoinedLobby.Ckey}");
+            Debug.Log($"[{nameof(LobbySystem)}] - SERVER - Added player to lobby: {userJoinedServerMessage.Ckey}");
         }
 
         [Server]
@@ -62,17 +49,10 @@ namespace SS3D.Core.Networking.Lobby
         {
             _players.Remove(userLeftServerMessage.Ckey);
 
-            RpcRemoveLobbyPlayer(new UserLeftLobbyEvent(userLeftServerMessage.Ckey));
+            UserLeftLobbyMessage userLeftLobbyMessage = new(userLeftServerMessage.Ckey);
+            InstanceFinder.ServerManager.Broadcast(userLeftLobbyMessage);
+
             Debug.Log($"[{nameof(LobbySystem)}] - SERVER - Removed player from lobby: {userLeftServerMessage.Ckey}");
-        }
-
-        [ObserversRpc]
-        private void RpcRemoveLobbyPlayer(UserLeftLobbyEvent userLeftLobby)
-        {
-            //IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
-            //eventService?.Invoke(null, userLeftLobby);
-
-            Debug.Log($"[{nameof(LobbySystem)}] - RPC - Removed player from lobby: {userLeftLobby.Ckey}");
         }
     }
 }

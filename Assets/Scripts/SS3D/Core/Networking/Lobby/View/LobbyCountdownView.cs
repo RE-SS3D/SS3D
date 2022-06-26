@@ -1,3 +1,4 @@
+using System;
 using FishNet;
 using FishNet.Object;
 using SS3D.Core.Rounds.Messages;
@@ -14,7 +15,7 @@ namespace SS3D.Core.Networking.Lobby.View
 
         private int _roundSeconds;
         private RoundState _roundState;
-        
+
         private void Start()
         {
             SubscribeToEvents();
