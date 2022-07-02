@@ -1,2 +1,2 @@
 john Administrator
-editorUser ServerOwner
+editorUser Administrator

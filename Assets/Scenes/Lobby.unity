@@ -1177,9 +1177,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 988dec00c80c53945b5516f8d81ee0f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 0
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 1747971347}
-  _networkObjectCache: {fileID: 2038082477}
+  _networkObjectCache: {fileID: 1747971347}
   _roundCountdownText: {fileID: 2004361237}
 --- !u!114 &2038082477
 MonoBehaviour:
@@ -1200,7 +1200,7 @@ MonoBehaviour:
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
-  _hasParentNetworkObjectAtEdit: 0
+  _hasParentNetworkObjectAtEdit: 1
   NetworkObserver: {fileID: 0}
   _prefabId: -1
   _scenePathHash: 952082934

@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using FishNet;
 using FishNet.Connection;
+using FishNet.Managing.Server;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Networking.PlayerControl;
@@ -10,6 +11,7 @@ using SS3D.Core.Rounds.Messages;
 using SS3D.Core.Systems.Permissions;
 using SS3D.Core.Systems.Rounds.Messages;
 using UnityEngine;
+using Channel = FishNet.Transporting.Channel;
 
 namespace SS3D.Core.Systems.Rounds
 {
@@ -40,6 +42,8 @@ namespace SS3D.Core.Systems.Rounds
         private CancellationTokenSource _warmupCancellationToken;
         private CancellationTokenSource _tickCancellationToken;
 
+        private ServerManager _serverManager;
+
         public bool RoundRunning => _roundState == RoundState.Running;
         public bool RoundStarting => _roundState == RoundState.Starting;
         public bool OnWarmup => _roundState == RoundState.WarmingUp;
@@ -50,6 +54,8 @@ namespace SS3D.Core.Systems.Rounds
         public override void OnStartServer()
         {
             base.OnStartServer();
+
+            _serverManager = InstanceFinder.ServerManager;
             
             ServerSubscribeToEvents();
         }
@@ -57,7 +63,7 @@ namespace SS3D.Core.Systems.Rounds
         [Server]
         private void ServerSubscribeToEvents()
         {
-            InstanceFinder.ServerManager.RegisterBroadcast<RequestStartRoundMessage>(HandleRequestStartRound);
+            _serverManager.RegisterBroadcast<RequestStartRoundMessage>(HandleRequestStartRound);
         }
 
         private void HandleRequestStartRound(NetworkConnection conn, RequestStartRoundMessage m)
@@ -93,11 +99,13 @@ namespace SS3D.Core.Systems.Rounds
             _currentTimerSeconds = _warmupTimerSeconds;
             UpdateRoundState(RoundState.WarmingUp);
 
-            _tickCancellationToken.Cancel();
+            _tickCancellationToken?.Cancel();
             _warmupCoroutine = ProcessWarmupTickCoroutine;
 
+            _warmupCoroutine.Invoke();
+
             WarmupStartedMessage warmupStartedMessage = new();
-            InstanceFinder.ServerManager.Broadcast(warmupStartedMessage);
+            _serverManager.Broadcast(warmupStartedMessage);
         }
 
         [Server]
@@ -119,10 +127,12 @@ namespace SS3D.Core.Systems.Rounds
             
             UpdateRoundState(RoundState.Running);
 
-            _warmupCancellationToken.Cancel();
+            _warmupCancellationToken?.Cancel();
             _tickCoroutine = ProcessTickCoroutine;
+
+            _tickCoroutine.Invoke();
             
-            InstanceFinder.ServerManager.Broadcast(new RoundStartedMessage());
+            _serverManager.Broadcast(new RoundStartedMessage());
         }
 
         [Server]
@@ -133,6 +143,7 @@ namespace SS3D.Core.Systems.Rounds
                 return;
             }
 
+            _warmupCancellationToken = new CancellationTokenSource();
             TimeSpan second = TimeSpan.FromSeconds(1);
 
             while (_currentTimerSeconds > 0)
@@ -141,7 +152,7 @@ namespace SS3D.Core.Systems.Rounds
                 _currentTimerSeconds--;
 
                 Debug.Log($"[{nameof(RoundSystem)}] - Start timer: {_currentTimerSeconds}");
-                await UniTask.Delay(second, true, PlayerLoopTiming.FixedUpdate, cancellationToken: _tickCancellationToken.Token);
+                await UniTask.Delay(second, true, PlayerLoopTiming.Update, cancellationToken: _warmupCancellationToken.Token);
             }
 
             HandleStartRound();
@@ -155,13 +166,14 @@ namespace SS3D.Core.Systems.Rounds
                 return;
             }
 
+            _tickCancellationToken = new CancellationTokenSource();
             TimeSpan second = TimeSpan.FromSeconds(1);
 
             while (RoundRunning)
             {
                 UpdateClock(GetTimerSeconds());
                 _currentTimerSeconds++;
-                await UniTask.Delay(second, true, PlayerLoopTiming.FixedUpdate, _warmupCancellationToken.Token);
+                await UniTask.Delay(second, true, PlayerLoopTiming.Update, _tickCancellationToken.Token);
             }
 
             Debug.Log($"[{nameof(RoundSystem)}] - Coroutine running while round is not active");
@@ -176,7 +188,7 @@ namespace SS3D.Core.Systems.Rounds
             }
             
             RoundTickUpdatedMessage roundTickUpdatedMessage = new(time);
-            InstanceFinder.ServerManager.Broadcast(roundTickUpdatedMessage);
+            _serverManager.Broadcast(roundTickUpdatedMessage, false);
         }
 
         private int GetTimerSeconds()
@@ -195,7 +207,7 @@ namespace SS3D.Core.Systems.Rounds
             Debug.Log($"[{nameof(RoundSystem)}] - Round state updated: [{newState}]");
             
             RoundStateUpdatedMessage roundStateUpdatedMessage = new(newState);
-            InstanceFinder.ServerManager.Broadcast(roundStateUpdatedMessage);
+            _serverManager.Broadcast(roundStateUpdatedMessage, false);
         }
     }
 }                               
