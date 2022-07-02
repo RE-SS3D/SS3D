@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
@@ -21,20 +22,23 @@ namespace SS3D.Core.Systems.Rounds
     public class RoundSystem : NetworkBehaviour
     {
         [Header("Round Stats")] 
-        [SyncVar(OnChange = "SetRoundState")] 
+        [SyncVar] 
         [SerializeField] private RoundState _roundState;
         
         // How much time has passed
-        [SyncVar(OnChange = "SetCurrentTimerSeconds")] 
+        [SyncVar] 
         [SerializeField] private int _currentTimerSeconds;
 
         // How many seconds of warmup
         [Header("Warmup")]
-        [SyncVar(OnChange = "SetWarmupTimer")] 
+        [SyncVar] 
         [SerializeField] private int _warmupTimerSeconds = 5;
 
-        private Coroutine _warmupCoroutine;
-        private Coroutine _tickCoroutine;
+        private Action _warmupCoroutine;
+        private Action _tickCoroutine;
+
+        private CancellationTokenSource _warmupCancellationToken;
+        private CancellationTokenSource _tickCancellationToken;
 
         public bool RoundRunning => _roundState == RoundState.Running;
         public bool RoundStarting => _roundState == RoundState.Starting;
@@ -88,8 +92,9 @@ namespace SS3D.Core.Systems.Rounds
             // Starts the warmup
             _currentTimerSeconds = _warmupTimerSeconds;
             UpdateRoundState(RoundState.WarmingUp);
-            
-            _warmupCoroutine = StartCoroutine(TickWarmup());
+
+            _tickCancellationToken.Cancel();
+            _warmupCoroutine = ProcessWarmupTickCoroutine;
 
             WarmupStartedMessage warmupStartedMessage = new();
             InstanceFinder.ServerManager.Broadcast(warmupStartedMessage);
@@ -113,39 +118,50 @@ namespace SS3D.Core.Systems.Rounds
             UpdateRoundState(RoundState.Starting);
             
             UpdateRoundState(RoundState.Running);
-            StopCoroutine(_warmupCoroutine);
-            _tickCoroutine = StartCoroutine(Tick());
+
+            _warmupCancellationToken.Cancel();
+            _tickCoroutine = ProcessTickCoroutine;
             
             InstanceFinder.ServerManager.Broadcast(new RoundStartedMessage());
         }
 
         [Server]
-        private IEnumerator TickWarmup()
+        private async void ProcessWarmupTickCoroutine()
         {
+            if (!IsServer)
+            {
+                return;
+            }
+
+            TimeSpan second = TimeSpan.FromSeconds(1);
+
             while (_currentTimerSeconds > 0)
             {
                 UpdateClock(GetTimerSeconds());
-                Debug.Log($"[{nameof(RoundSystem)}] - Start timer: {_currentTimerSeconds}");
                 _currentTimerSeconds--;
-                yield return new WaitForSeconds(1);
+
+                Debug.Log($"[{nameof(RoundSystem)}] - Start timer: {_currentTimerSeconds}");
+                await UniTask.Delay(second, true, PlayerLoopTiming.FixedUpdate, cancellationToken: _tickCancellationToken.Token);
             }
 
             HandleStartRound();
         }
 
         [Server]
-        private IEnumerator Tick()
+        private async void ProcessTickCoroutine()
         {
             if (!IsServer)
             {
-                yield break;
+                return;
             }
-            
+
+            TimeSpan second = TimeSpan.FromSeconds(1);
+
             while (RoundRunning)
             {
                 UpdateClock(GetTimerSeconds());
                 _currentTimerSeconds++;
-                yield return new WaitForSeconds(1);
+                await UniTask.Delay(second, true, PlayerLoopTiming.FixedUpdate, _warmupCancellationToken.Token);
             }
 
             Debug.Log($"[{nameof(RoundSystem)}] - Coroutine running while round is not active");
@@ -180,32 +196,6 @@ namespace SS3D.Core.Systems.Rounds
             
             RoundStateUpdatedMessage roundStateUpdatedMessage = new(newState);
             InstanceFinder.ServerManager.Broadcast(roundStateUpdatedMessage);
-        }
-        
-        /// <summary>
-        /// Used by FishNet to sync the round state
-        /// </summary>
-        private void SetRoundState(RoundState oldState, RoundState newState, bool AsServer)
-        {
-            _roundState = newState;
-        }
-
-        /// <summary>
-        /// Used by FishNet to sync the round timer
-        /// </summary>
-        private void SetCurrentTimerSeconds(int oldSeconds, int newSeconds, bool AsServer)
-        {
-            _currentTimerSeconds = newSeconds;
-            Debug.Log($"[{nameof(RoundSystem)}] - Round timer updated: [{newSeconds}]");
-        }
-
-        /// <summary>
-        /// Used by FishNet to sync the warmup timer
-        /// </summary>
-        /// <param name="newTime"></param>
-        public void SetWarmupTimer(int oldTime, int newTime, bool AsServer)
-        {
-            _warmupTimerSeconds = newTime;
         }
     }
 }                               
