@@ -82,6 +82,7 @@ namespace SS3D.Core.Networking.Helper
                     if (arg.Contains(CommandLineArgs.Ckey))
                     {
                         _ckey = arg.Replace(CommandLineArgs.Ckey, "");
+                        ApplicationStateManager.SetServerOnly(false);
                         Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.Ckey} - {_ckey}");                        
                     }
 

@@ -18,6 +18,7 @@ namespace SS3D.Core.Systems.Entities
             Setup();
         }
 
+        [Client]
         private void Setup()
         {
             string ckey = LocalPlayerAccountUtility.Ckey;
@@ -29,7 +30,7 @@ namespace SS3D.Core.Systems.Entities
             }
 
             CmdRemoveConnectionAfterLogin();
-            UserAuthorizationMessage userAuthorizationMessage = new UserAuthorizationMessage(ckey);
+            UserAuthorizationMessage userAuthorizationMessage = new(ckey);
             InstanceFinder.ClientManager.Broadcast(userAuthorizationMessage);
 
             CmdDestroyObjectAfterLogin();

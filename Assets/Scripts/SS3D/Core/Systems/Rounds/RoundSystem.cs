@@ -80,6 +80,7 @@ namespace SS3D.Core.Systems.Rounds
             }
             else
             {
+                Debug.Log($"[{nameof(RoundSystem)}] - User {userCkey} has started the round");
                 ServerStartWarmup();   
             }
         }

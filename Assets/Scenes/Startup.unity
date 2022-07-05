@@ -1130,7 +1130,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _networkHelper: {fileID: 1628220427}
   _testingSkipIntroInEditor: 1
-  _testingDisableDiscordIntegrationInEditor: 0
+  _testingDiscordIntegrationInEditor: 0
   _testingClientInEditor: 1
   _testingServerInEditor: 1
 --- !u!1 &1628220425

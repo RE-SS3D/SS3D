@@ -22,6 +22,7 @@ namespace SS3D.Core.Systems.Lobby.View
         private void Start()
         {
             SubscribeToEvents();
+
             UpdateRoundCountDownText();
         }
 

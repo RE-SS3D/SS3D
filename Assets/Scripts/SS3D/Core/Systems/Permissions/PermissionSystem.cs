@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FishNet.Object;
 using UnityEngine;
 using File = System.IO.File;
 using Path = System.IO.Path;
@@ -9,7 +10,7 @@ namespace SS3D.Core.Systems.Permissions
     /// <summary>
     /// TODO: Make a simple permission system based on a .txt file to avoid non-admins from starting a round
     /// </summary>
-    public class PermissionSystem : MonoBehaviour
+    public class PermissionSystem : NetworkBehaviour
     {
         private const string PermissionFilePath = "/Builds/Config/permissions.txt";
 
@@ -17,6 +18,7 @@ namespace SS3D.Core.Systems.Permissions
 
         private readonly Dictionary<string, ServerRoleTypes> _userPermissions = new();
 
+        [Server]
         public ServerRoleTypes GetUserPermission(string ckey)
         {
             bool containsKey = _userPermissions.ContainsKey(ckey);
@@ -24,16 +26,20 @@ namespace SS3D.Core.Systems.Permissions
             return containsKey ? _userPermissions[ckey] : ServerRoleTypes.User;
         }
 
+        [Server]
         public void ChangeUserPermission(string ckey, ServerRoleTypes role)
         {
             // TODO: This
         }
 
-        private void Start()
+        public override void OnStartServer()
         {
+            base.OnStartServer();
+
             LoadPermissions();
         }
 
+        [Server]
         private void LoadPermissions()
         {
             CreatePermissionsFileIfNotExists();
