@@ -19,8 +19,10 @@ namespace SS3D.Core.Systems.Lobby.View
 
         private RoundSystem _roundSystem;
 
-        private void Start()
+        public override void OnStartClient()
         {
+            base.OnStartClient();
+
             SubscribeToEvents();
 
             UpdateRoundCountDownText();

@@ -12,9 +12,10 @@ namespace SS3D.Core.Systems.Permissions
     /// </summary>
     public class PermissionSystem : NetworkBehaviour
     {
-        private const string PermissionFilePath = "/Builds/Config/permissions.txt";
+        private const string EditorPermissionFilePath = "/Builds/Config/permissions.txt";
+        private const string PermissionFilePath = "/Config/permissions.txt";
 
-        private static string FullPermissionFilePath => Path.GetFullPath(".") + PermissionFilePath;
+        private static string FullPermissionFilePath => Path.GetFullPath(".") + (Application.isEditor ? EditorPermissionFilePath : PermissionFilePath);
 
         private readonly Dictionary<string, ServerRoleTypes> _userPermissions = new();
 

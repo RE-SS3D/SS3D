@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
+using Cysharp.Threading.Tasks;
 using FishNet;
 using FishNet.Object;
 using SS3D.Core.Systems.Lobby.Messages;
@@ -22,8 +23,10 @@ namespace SS3D.Core.Systems.Lobby.View
         // The username panel prefab
         [SerializeField] private GameObject _uiPrefab;
 
-        private void Start()
+        public override void OnStartClient()
         {
+            base.OnStartClient();
+
             Setup();
             SubscribeToEvents();
         }
@@ -57,8 +60,10 @@ namespace SS3D.Core.Systems.Lobby.View
         /// <summary>
         /// Makes sure the players are shown correct with a late join
         /// </summary>
-        private void SyncLobbyPlayers()
+        private async void SyncLobbyPlayers()
         {
+            await UniTask.WaitUntil(() => GameSystems.LobbySystem != null);
+
             LobbySystem lobby = GameSystems.LobbySystem;
 
             List<string> lobbyPlayers = lobby.CurrentLobbyPlayers() != null ? lobby.CurrentLobbyPlayers() : new List<string>();

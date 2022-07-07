@@ -3,6 +3,7 @@ using SS3D.Core.Networking.PlayerControl;
 using SS3D.Core.Systems.Lobby;
 using SS3D.Core.Systems.Permissions;
 using SS3D.Core.Systems.Rounds;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Core
@@ -26,7 +27,7 @@ namespace SS3D.Core
                 _lobbySystem = Object.FindObjectOfType<LobbySystem>();
                 if (_lobbySystem == null)
                 {
-                    throw new Exception($"[{nameof(GameSystems)}] - Couldn't find lobby system");
+                    Debug.Log(new Exception($"[{nameof(GameSystems)}] - Couldn't find lobby system"));
                 }
 
                 return _lobbySystem;
@@ -42,7 +43,7 @@ namespace SS3D.Core
                 _roundSystem = Object.FindObjectOfType<RoundSystem>();
                 if (_roundSystem == null)
                 {
-                    throw new Exception($"[{nameof(GameSystems)}] - Couldn't find round system");
+                    Debug.Log(new Exception($"[{nameof(GameSystems)}] - Couldn't find round system"));
                 }
 
                 return _roundSystem;
@@ -58,7 +59,7 @@ namespace SS3D.Core
                 _permissionSystem = Object.FindObjectOfType<PermissionSystem>();
                 if (_permissionSystem == null)
                 {
-                    throw new Exception($"[{nameof(GameSystems)}] - Couldn't find permission system");
+                    Debug.Log(new Exception($"[{nameof(GameSystems)}] - Couldn't find permission system"));
                 }
 
                 return _permissionSystem;
@@ -74,7 +75,7 @@ namespace SS3D.Core
                 _playerControlSystem = Object.FindObjectOfType<PlayerControlSystem>();
                 if (_playerControlSystem == null)
                 {
-                    throw new Exception($"[{nameof(GameSystems)}] - Couldn't find player control system");
+                    Debug.Log(new Exception($"[{nameof(GameSystems)}] - Couldn't find player control system"));
                 }
 
                 return _playerControlSystem;
