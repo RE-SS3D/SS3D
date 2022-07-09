@@ -17,8 +17,9 @@ GameObject:
   - component: {fileID: 4289005210380653692}
   - component: {fileID: 138234506716581735}
   - component: {fileID: -7885728966543823944}
+  - component: {fileID: -5164590529681784102}
   m_Layer: 16
-  m_Name: Rag
+  m_Name: rag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -61,7 +62,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: f0b46690da49c3341a381a6e039846b2
   hasSpawned: 0
 --- !u!23 &6105431656835690033
 MeshRenderer:
@@ -185,9 +187,42 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+--- !u!114 &-5164590529681784102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 830238684080913657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b28de396950d074a909c26000811ed2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collisionVolume: 0.7
+  basePitch: 0.6
+  pitchModulationLow: 0
+  pitchModulationHigh: 0.1
+  lightImpactVelocity: 2.5
+  useHardImpactSounds: 0
+  hardImpactVelocity: 7.5
+  lightImpactSounds:
+  - {fileID: 8300000, guid: b7599f4794edadf46bc16b7fe36b8920, type: 3}
+  hardImpactSounds: []
 --- !u!1 &7829194241878246079
 GameObject:
   m_ObjectHideFlags: 0

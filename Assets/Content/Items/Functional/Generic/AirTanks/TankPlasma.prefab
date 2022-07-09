@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3475563472136029373}
   - component: {fileID: 6911354805868887126}
   - component: {fileID: 3233389379969371138}
+  - component: {fileID: -6599890853325272896}
   m_Layer: 16
   m_Name: TankPlasma
   m_TagString: Untagged
@@ -53,7 +54,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 9400c9dde71c2d34583f6d241e0bae55
   hasSpawned: 0
 --- !u!33 &8529479845543259473
 MeshFilter:
@@ -185,9 +187,45 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+--- !u!114 &-6599890853325272896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4422134463688631668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b28de396950d074a909c26000811ed2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collisionVolume: 0.7
+  basePitch: 0.5
+  pitchModulationLow: 0
+  pitchModulationHigh: 0
+  lightImpactVelocity: 2
+  useHardImpactSounds: 0
+  hardImpactVelocity: 7.5
+  lightImpactSounds:
+  - {fileID: 8300000, guid: 1a34c805f84be3b4caac14d7de790607, type: 3}
+  - {fileID: 8300000, guid: 8d93fdf9dcada204a952e29213f0293f, type: 3}
+  - {fileID: 8300000, guid: b315c4abdef36244fb211c5f643d411a, type: 3}
+  - {fileID: 8300000, guid: f00c6b5a098e84b4b87d80d23b4f295a, type: 3}
+  hardImpactSounds: []
 --- !u!1 &6664104611422101774
 GameObject:
   m_ObjectHideFlags: 0

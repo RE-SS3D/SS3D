@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 8032169772387072461}
   - component: {fileID: -136060627623003926}
   - component: {fileID: -5431605415766148546}
+  - component: {fileID: 7991365068228314635}
   m_Layer: 16
   m_Name: Milk
   m_TagString: Untagged
@@ -56,7 +57,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 059e373358426444ea6a0cb596031e3a
   hasSpawned: 0
 --- !u!33 &1433232570289746873
 MeshFilter:
@@ -150,9 +152,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!114 &6162823455628302933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,6 +217,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   Volume: 300
   Temperature: 0
   Locked: 0
@@ -332,6 +347,28 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &7991365068228314635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6405106075082308508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b28de396950d074a909c26000811ed2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collisionVolume: 0.7
+  basePitch: 0.6
+  pitchModulationLow: 0
+  pitchModulationHigh: 0.1
+  lightImpactVelocity: 2.5
+  useHardImpactSounds: 0
+  hardImpactVelocity: 7.5
+  lightImpactSounds:
+  - {fileID: 8300000, guid: b7599f4794edadf46bc16b7fe36b8920, type: 3}
+  hardImpactSounds: []
 --- !u!1 &7351586078410128835
 GameObject:
   m_ObjectHideFlags: 0

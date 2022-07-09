@@ -24,6 +24,7 @@ namespace SS3D.Content.Furniture.Machines.Vendors
         /// <summary>
         /// The items in this vendor
         /// </summary>
+
         public VendorItem[] Stock
         {
             get => stock;
@@ -33,8 +34,12 @@ namespace SS3D.Content.Furniture.Machines.Vendors
 
 	// The stock that this vendor has, all it's products
         private VendorItem[] stock;
+    
 
-        private AudioSource audioSource;
+        ///<summary>
+        /// The sound that is made when the vending machine dispenses.
+        /// </summary>
+        [SerializeField] private AudioClip vendingSound;
 
 	// A vendor item is a way to catalog what the machine has or hasnt
 	// TODO: Add the item icon or name once we have a proper UI for it
@@ -47,11 +52,6 @@ namespace SS3D.Content.Furniture.Machines.Vendors
             public uint Stock;
 	    // how much it costs, 0 if its free, remember to make the check later
             public int Price;
-        }
-
-        private void Start()
-        {
-            audioSource = GetComponent<AudioSource>();
         }
 
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
@@ -100,11 +100,9 @@ namespace SS3D.Content.Furniture.Machines.Vendors
                 body.velocity = transform.TransformDirection(EjectionVelocity);
             }
             
-            // Play audio cue
-            if (audioSource != null)
-            {
-                audioSource.Play();
-            }
+            //Play the vending machine sound here, at the vending machine!
+            AudioManager.Instance.PlayAudioSource(vendingSound,gameObject.transform.position);
+            
         }
     }
 }

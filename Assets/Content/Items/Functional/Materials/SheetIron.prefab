@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: -7903885912747747283}
   - component: {fileID: 771746120960806568}
   - component: {fileID: 1935660105904761792}
+  - component: {fileID: -6688740177651249724}
   m_Layer: 16
   m_Name: SheetIron
   m_TagString: Untagged
@@ -55,7 +56,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 4cb99cf2fee96f944abbacc51b0b701c
   hasSpawned: 0
 --- !u!33 &3018501208082612454
 MeshFilter:
@@ -135,9 +137,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!65 &4180117066415140293
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -231,23 +244,34 @@ MonoBehaviour:
   - name: Metal Table
     amount: 1
     buildTime: 1
-    turf: {fileID: 0}
-    constructOverTurf: 0
-    fixture: {fileID: 11400000, guid: d18bc2f440bef034988c0016380c09bc, type: 2}
-    type: 2
-    tileLayer: 0
-    wallLayer: 0
-    floorLayer: 4
+    ObjectToConstruct: {fileID: 0}
   - name: Wall Girder
     amount: 2
     buildTime: 2
-    turf: {fileID: 11400000, guid: 018a3ae07e0731044a7b4df2a554fa75, type: 2}
-    constructOverTurf: 1
-    fixture: {fileID: 0}
-    type: 0
-    tileLayer: 0
-    wallLayer: 0
-    floorLayer: 0
+    ObjectToConstruct: {fileID: 0}
+--- !u!114 &-6688740177651249724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125681683583715523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b28de396950d074a909c26000811ed2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collisionVolume: 0.8
+  basePitch: 1
+  pitchModulationLow: 0.2
+  pitchModulationHigh: 0.1
+  lightImpactVelocity: 2
+  useHardImpactSounds: 1
+  hardImpactVelocity: 8
+  lightImpactSounds:
+  - {fileID: 8300000, guid: 3cd350866d2be174584b9acd88c39bc6, type: 3}
+  hardImpactSounds:
+  - {fileID: 8300000, guid: 8614cc03edfb35140ba2913d0d94ac4f, type: 3}
 --- !u!1 &8648817992091836969
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,7 +9,6 @@ using UnityEngine;
 
 namespace SS3D.Content.Items.Cosmetic
 {
-    [RequireComponent(typeof(AudioSource))]
     public class ServiceBell : Item, IInteractionTarget
     {
         public Sprite interactionIcon;
@@ -70,26 +69,23 @@ namespace SS3D.Content.Items.Cosmetic
         }
         
         [SerializeField] private AudioClip bellSound = null;
-        private AudioSource audioSource;
 
         public override void Start()
         {
             base.Start();
-            audioSource = GetComponent<AudioSource>();
             GenerateNewIcon(); 
         }
 
         [Server]
         private void Bell()
         {
-            audioSource.PlayOneShot(bellSound);
-            RpcPlayBell();
+            AudioManager.Instance.PlayAudioSource(bellSound, gameObject);
         }
 
         [ClientRpc]
         private void RpcPlayBell()
         {
-            audioSource.PlayOneShot(bellSound);
+            AudioManager.Instance.PlayAudioSource(bellSound, gameObject);
         }
 
         public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
