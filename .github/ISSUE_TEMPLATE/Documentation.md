@@ -1,11 +1,12 @@
 ---
 name: Documentation
 about: Papers please.
-title: "Document Name"
+title: Document Name
 labels: 'Type: Documentation'
 assignees: ''
 
 ---
+
 <!-- The notes within these arrows are for you but can be deleted. -->
 
 ## Summary
