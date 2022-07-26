@@ -8,7 +8,11 @@ namespace SS3D.Core.Networking.Utils
     public static class CommandLineArgs
     {
         /// <summary>
-        /// The "-host" arg in the executable, should be followed by a bool.
+        /// The "-serveronly" arg in the executable
+        /// </summary>
+        public const string ServerOnly = "-serveronly";
+        /// <summary>
+        /// The "-host" arg in the executable
         /// </summary>
         public const string Host = "-host";
         /// <summary>
@@ -36,6 +40,6 @@ namespace SS3D.Core.Networking.Utils
         /// Bool.
         /// Disables the discord integration
         /// </summary>
-        public const string DisableDiscordIntegration = "-disablediscordintegration";
+        public const string EnableDiscordIntegration = "-enablediscordintegration";
     }
 }

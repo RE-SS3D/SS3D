@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Coimbra;
-using Mirror;
+using Coimbra.Services.Events;
+using FishNet;
+using FishNet.Managing;
 using SS3D.Core.Networking.UI_Helper;
 using SS3D.Core.Networking.Utils;
 using UnityEngine;
-using UriParser = SS3D.Utils.UriParser;
 
 namespace SS3D.Core.Networking.Helper
 {
@@ -16,29 +16,25 @@ namespace SS3D.Core.Networking.Helper
     /// </summary>
     public sealed class SessionNetworkHelper : MonoBehaviour
     {
-        private ApplicationStateManager _applicationStateManager;
-        private NetworkManager _networkManager;
-
         private List<string> _commandLineArgs;
-        
+
         private bool _isHost;
+        private bool _serverOnly;
         private string _ip;
         private string _ckey;
         
+        private const string EditorServerIP = "127.0.0.1";
+        private const string EditorServerUsername = "editorUser";
+
         private void Awake()
         {
-            Setup();
+            AddEventListeners();
             ProcessCommandLineArgs();
         }
         
-        private void Setup()
+        private void AddEventListeners()
         {
-            // Uses the event service to listen to lobby events
-            IEventService eventService = ServiceLocator.Shared.Get<IEventService>();
-            eventService?.AddListener<ServerConnectionUIHelper.RetryButtonClicked>(InitiateNetworkSession);
-            
-            _applicationStateManager = ApplicationStateManager.Instance;
-            _networkManager = NetworkManager.singleton;
+            RetryServerConnectionEvent.AddListener(InitiateNetworkSession);
         }
 
         // Gets the command line arguments from the executable, for example: "-server=localhost"
@@ -50,7 +46,7 @@ namespace SS3D.Core.Networking.Helper
             }
             catch (Exception e)
             {
-                Debug.LogError($"[{typeof(SessionNetworkHelper)}] - GetCommandLineArgs: {e}");
+                Debug.LogError($"[{nameof(SessionNetworkHelper)}] - GetCommandLineArgs: {e}");
                 throw;
             }
         }
@@ -60,10 +56,11 @@ namespace SS3D.Core.Networking.Helper
         {
             if (Application.isEditor)
             {
-                _isHost = !_applicationStateManager.TestingClientInEditor;
-                _ip = "localhost";
-                _ckey = "editorUser";
-                Debug.Log($"[{typeof(SessionNetworkHelper)}] - Testing application on the editor as {_ckey}");
+                _isHost = ApplicationStateManager.IsServer && ApplicationStateManager.IsClient;
+                _ip = EditorServerIP;
+                _ckey = EditorServerUsername;
+                _serverOnly = ApplicationStateManager.IsServer && !ApplicationStateManager.IsClient;
+                Debug.Log($"[{nameof(SessionNetworkHelper)}] - Testing application on the editor as {_ckey}");
             }
             else
             {
@@ -73,38 +70,45 @@ namespace SS3D.Core.Networking.Helper
                     if (arg.Contains(CommandLineArgs.Host))
                     {
                         _isHost = true;
-                        Debug.Log($"[{typeof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.Host} - is true");
+                        Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.Host} - is true");
                     }
                     
                     if (arg.Contains(CommandLineArgs.Ip))
                     {
                         _ip = arg.Replace(CommandLineArgs.Ip, "");
-                        Debug.Log($"[{typeof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.Ip} - {_ip}");
+                        Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.Ip} - {_ip}");
                     }
 
                     if (arg.Contains(CommandLineArgs.Ckey))
                     {
                         _ckey = arg.Replace(CommandLineArgs.Ckey, "");
-                        Debug.Log($"[{typeof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.Ckey} - {_ckey}");                        
+                        ApplicationStateManager.SetServerOnly(false);
+                        Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.Ckey} - {_ckey}");                        
                     }
 
                     if (arg.Contains(CommandLineArgs.SkipIntro))
                     {
-                        _applicationStateManager.SetSkipIntro(true);
-                        Debug.Log($"[{typeof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.SkipIntro} - {true}");
+                        ApplicationStateManager.SetSkipIntro(true);
+                        Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.SkipIntro} - {true}");
                     }
 
-                    if (arg.Contains(CommandLineArgs.DisableDiscordIntegration))
+                    if (arg.Contains(CommandLineArgs.EnableDiscordIntegration))
                     {
-                        _applicationStateManager.SetSkipIntro(true);
-                        Debug.Log($"[{typeof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.DisableDiscordIntegration} - {true}");
+                        ApplicationStateManager.SetDiscordIntegration(true);
+                        Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.EnableDiscordIntegration} - {true}");
+                    }
+                    
+                    if (arg.Contains(CommandLineArgs.ServerOnly))
+                    {
+                        ApplicationStateManager.SetServerOnly(true);
+                        Debug.Log($"[{nameof(SessionNetworkHelper)}] - Command args - {CommandLineArgs.ServerOnly} - {true}");
                     }
                 }
 
-                Debug.Log($"[{typeof(SessionNetworkHelper)}] - Testing application on executable");
+                Debug.Log($"[{nameof(SessionNetworkHelper)}] - Testing application on executable");
             }
 
-            LocalPlayerAccountManager.UpdateCkey(_ckey);
+            LocalPlayerAccountUtility.UpdateCkey(_ckey);
         }
 
         /// <summary>
@@ -112,26 +116,37 @@ namespace SS3D.Core.Networking.Helper
         /// </summary>
         public void InitiateNetworkSession()
         {
-            if (_networkManager == null)
+            NetworkManager networkManager = InstanceFinder.NetworkManager;
+            if (networkManager == null)
             {
-                _networkManager = NetworkManager.singleton;
+                networkManager = InstanceFinder.NetworkManager;
+                InitiateNetworkSession();
             }
 
-            if (_isHost)
+            if (_serverOnly)
             {
-                Debug.Log($"[{typeof(SessionNetworkHelper)}] - Hosting a new server");
-                _networkManager.StartHost();
+                Debug.Log($"[{nameof(SessionNetworkHelper)}] - Hosting a new headless server");
+                networkManager.ServerManager.StartConnection();
             }
-
+            else if (_isHost)
+            {
+                Debug.Log($"[{nameof(SessionNetworkHelper)}] - Hosting a new server");
+                networkManager.ServerManager.StartConnection();
+                networkManager.ClientManager.StartConnection();
+            }
             else
             {
-                Debug.Log($"[{typeof(SessionNetworkHelper)}] - Joining to server {_ip} as {_ckey}");
-                _networkManager.StartClient(UriParser.TryParseIpAddress(_ip));
+                Debug.Log($"[{nameof(SessionNetworkHelper)}] - Joining server {_ip} as {_ckey}");
+                networkManager.ClientManager.StartConnection(_ip);
             }
         }
         
-        // Overload to match the event type
-        private void InitiateNetworkSession(object sender, ServerConnectionUIHelper.RetryButtonClicked e)
+        /// <summary>
+        /// Overload to match the event type
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="retryServerConnectionEvent"></param>
+        private void InitiateNetworkSession(ref EventContext context, in RetryServerConnectionEvent retryServerConnectionEvent)
         {
             InitiateNetworkSession();
         }

@@ -1,0 +1,18 @@
+{
+    "name": "Unity.FishNet.Codegen",
+    "references": [
+        "FishNet.Runtime",
+        "FishNet.Codegen.Cecil"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

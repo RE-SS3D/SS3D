@@ -2,6 +2,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using Coimbra;
 using SS3D.Core;
 using UnityEngine;
 using UnityEngine.Events;
@@ -37,12 +38,11 @@ namespace UDiscord
 
         private void Start()
         {
-            ApplicationStateManager applicationStateManager = ApplicationStateManager.Instance;
-
-            bool disableDiscordIntegration = applicationStateManager.DisableDiscordIntegration;
-            if (disableDiscordIntegration)
+            bool enableDiscordIntegration = ApplicationStateManager.EnableDiscordIntegration;
+            if (!enableDiscordIntegration)
             {
-                Destroy(gameObject);
+                gameObject.Destroy();
+                return;
             }
 
             if (Discord_Start)

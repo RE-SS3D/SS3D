@@ -1,6 +1,5 @@
-using System;
-using Coimbra;
-using Mirror;
+using FishNet;
+using FishNet.Object;
 using SS3D.Core.Networking;
 using SS3D.Core.Networking.PlayerControl.Messages;
 using UnityEngine;
@@ -12,42 +11,41 @@ namespace SS3D.Core.Systems.Entities
     /// </summary>
     public sealed class UnauthorizedPlayer : NetworkBehaviour
     {
-        public override void OnStartLocalPlayer()
+        public override void OnStartClient()
         {
-            base.OnStartLocalPlayer();
+            base.OnStartClient();
+            
             Setup();
         }
 
+        [Client]
         private void Setup()
         {
-            string ckey = LocalPlayerAccountManager.Ckey;
+            string ckey = LocalPlayerAccountUtility.Ckey;
 
-            bool testingServerOnlyInEditor = isServer && ApplicationStateManager.Instance.TestingServerOnlyInEditor && Application.isEditor;
+            bool testingServerOnlyInEditor = IsServer && !IsHost && Application.isEditor;
             if (testingServerOnlyInEditor)
             {
                 return;
             }
 
-            CmdRemoveConnectionAfterLogin();
-            UserAuthorizationMessage userAuthorizationMessage = new UserAuthorizationMessage(ckey);
-            NetworkClient.Send(userAuthorizationMessage);
+            UserAuthorizationMessage userAuthorizationMessage = new(ckey);
+            InstanceFinder.ClientManager.Broadcast(userAuthorizationMessage);
 
+            CmdRemoveConnectionAfterLogin();
             CmdDestroyObjectAfterLogin();
         }
 
-        [Command(requiresAuthority = false)]
+        [ServerRpc(RequireOwnership = false)]
         private void CmdDestroyObjectAfterLogin()
         {
-            NetworkServer.Destroy(gameObject);
+            ServerManager.Despawn(gameObject);
         }
 
-        [Command(requiresAuthority = false)]
+        [ServerRpc(RequireOwnership = false)]
         private void CmdRemoveConnectionAfterLogin()
         {
-            string ckey = LocalPlayerAccountManager.Ckey;
-    
-            Debug.Log($"[{typeof(UnauthorizedPlayer)}] - OnStartLocalPlayer - Destroying temporary player for {ckey}");
-            NetworkServer.RemovePlayerForConnection(connectionToClient, false);
+            NetworkObject.RemoveOwnership();
         }
     }
 }

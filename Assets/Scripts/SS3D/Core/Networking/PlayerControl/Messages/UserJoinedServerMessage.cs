@@ -1,6 +1,6 @@
 using System;
-using Mirror;
-using UnityEngine;
+using FishNet.Broadcast;
+
 
 namespace SS3D.Core.Networking.PlayerControl.Messages
 {
@@ -8,7 +8,7 @@ namespace SS3D.Core.Networking.PlayerControl.Messages
     /// Fired when a user authenticates
     /// </summary>
     [Serializable]
-    public struct UserJoinedServerMessage : NetworkMessage
+    public struct UserJoinedServerMessage : IBroadcast
     {
         public readonly string Ckey;
 

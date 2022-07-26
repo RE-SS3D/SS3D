@@ -1,10 +1,7 @@
-using System;
 using DG.Tweening;
-using SS3D.Core.Networking;
 using SS3D.Core.Networking.Helper;
-using SS3D.Core.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace SS3D.Core
 {
@@ -19,42 +16,47 @@ namespace SS3D.Core
         [Header("Managers")]
         [SerializeField] private SessionNetworkHelper _networkHelper;
 
-        [Header("Settings")] 
-        [SerializeField] private bool _skipIntro;
-        [SerializeField] private bool _disableDiscordIntegration;
-
+        [FormerlySerializedAs("_testingSkipIntro")]
         [Header("Test Cases")]
+        [SerializeField] private bool _testingSkipIntroInEditor;
+        [SerializeField] private bool _testingDiscordIntegrationInEditor;
         [SerializeField] private bool _testingClientInEditor;
-        [SerializeField] private bool _testingServerOnlyInEditor;
+        [SerializeField] private bool _testingServerInEditor;
 
-        public bool DisableDiscordIntegration => _disableDiscordIntegration;
-        public bool SkipIntro => _skipIntro;
-        public bool TestingClientInEditor => _testingClientInEditor;
-        public bool TestingServerOnlyInEditor => _testingServerOnlyInEditor;
+        public static bool IsServer { get; private set; }
+        public static bool IsClient { get; private set; }
+        public static bool EnableDiscordIntegration { get; private set; }
+        public static bool SkipIntro { get; private set; }
 
         private void Awake()
         {
+            PreProcessTestParams();
             InitializeSingleton();
             InitializeEssentialSystems();
         }
 
         public void InitializeApplication()
         {
-            Debug.Log($"[{typeof(ApplicationStateManager)}] - Initializing application");
-
-            ProcessTestParams();
+            Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing application");
             InitializeNetworkSession();
         }
 
-        private void ProcessTestParams()
+        private void PreProcessTestParams()
         {
             if (Application.isEditor)
             {
+                IsClient = _testingClientInEditor;
+                IsServer = _testingServerInEditor;
+                SkipIntro = _testingSkipIntroInEditor;
+                EnableDiscordIntegration = _testingDiscordIntegrationInEditor;
+
                 return;
             }
 
+            _testingServerInEditor = false;
+            _testingSkipIntroInEditor = false;
             _testingClientInEditor = false;
-            _testingServerOnlyInEditor = false;
+            _testingDiscordIntegrationInEditor = false;
         }
 
         private void InitializeSingleton()
@@ -64,29 +66,35 @@ namespace SS3D.Core
                 Instance = this;
             }
 
-            Debug.Log($"[{typeof(ApplicationStateManager)}] - Initializing Application State Manager singleton");
+            Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing Application State Manager singleton");
         }
 
         private void InitializeEssentialSystems()
         {
             DOTween.Init();
-            Debug.Log($"[{typeof(ApplicationStateManager)}] - Initializing essential systems");
+            Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing essential systems");
         }
-        
-        public void InitializeNetworkSession() 
+
+        private void InitializeNetworkSession() 
         {
+            Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing network session");
             _networkHelper.InitiateNetworkSession();
-            Debug.Log($"[{typeof(ApplicationStateManager)}] - Initializing network session");
         }
 
-        public void SetSkipIntro(bool state)
+        public static void SetSkipIntro(bool state)
         {
-            _skipIntro = state;
+            SkipIntro = state;
         }
 
-        public void SetDisableDiscordIntegration(bool state)
+        public static void SetDiscordIntegration(bool state)
         {
-            _disableDiscordIntegration = state;
+            EnableDiscordIntegration = state;
+        }
+
+        public static void SetServerOnly(bool state)
+        {
+            IsServer = state;
+            IsClient = !state;
         }
     }
 }
