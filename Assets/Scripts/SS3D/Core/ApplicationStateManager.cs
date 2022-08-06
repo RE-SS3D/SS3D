@@ -1,5 +1,5 @@
 using DG.Tweening;
-using SS3D.Core.Networking.Helper;
+using UDiscord;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,10 +13,6 @@ namespace SS3D.Core
     {
         public static ApplicationStateManager Instance;
 
-        [Header("Managers")]
-        [SerializeField] private SessionNetworkHelper _networkHelper;
-
-        [FormerlySerializedAs("_testingSkipIntro")]
         [Header("Test Cases")]
         [SerializeField] private bool _testingSkipIntroInEditor;
         [SerializeField] private bool _testingDiscordIntegrationInEditor;
@@ -33,6 +29,12 @@ namespace SS3D.Core
             PreProcessTestParams();
             InitializeSingleton();
             InitializeEssentialSystems();
+            InitializeSubsystems();
+        }
+
+        private void InitializeSubsystems()
+        {
+            DiscordManager.Initialize();
         }
 
         public void InitializeApplication()
@@ -61,24 +63,24 @@ namespace SS3D.Core
 
         private void InitializeSingleton()
         {
+            Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing Application State Manager singleton");
+            
             if (Instance == null)
             {
                 Instance = this;
             }
-
-            Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing Application State Manager singleton");
         }
 
-        private void InitializeEssentialSystems()
+        private static void InitializeEssentialSystems()
         {
-            DOTween.Init();
             Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing essential systems");
+            DOTween.Init();
         }
 
-        private void InitializeNetworkSession() 
+        private static void InitializeNetworkSession() 
         {
             Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing network session");
-            _networkHelper.InitiateNetworkSession();
+            SessionNetworkHelper.InitiateNetworkSession();
         }
 
         public static void SetSkipIntro(bool state)

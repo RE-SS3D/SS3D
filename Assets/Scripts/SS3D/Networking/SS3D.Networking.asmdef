@@ -1,0 +1,20 @@
+{
+    "name": "SS3D.Networking",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:ca7dfa56d1d490249a5fe56aee92a13c",
+        "GUID:5a1d04ea9f45d71479179cbbf3ffe0a9",
+        "GUID:b763ff73a93a62c4ea128e32ed2cd0d6",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
