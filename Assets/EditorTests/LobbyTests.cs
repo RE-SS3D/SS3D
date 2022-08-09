@@ -1,10 +1,10 @@
 using NUnit.Framework;
 using UnityEditor.SceneManagement;
 using System.Reflection;
-using static DataSource;
 using UnityEngine;
 using System;
 using UnityEditor;
+using System.Text;
 
 public class LobbyTests
 {
@@ -18,14 +18,21 @@ public class LobbyTests
     /// All of the prefabs in the project.
     /// </summary>
     private GameObject[] allPrefabs;
+
+    /// <summary>
+    /// All of the MonoBehaviours in the current scene.
+    /// </summary>
+    private MonoBehaviour[] allMonoBehaviours;
+
     #endregion
 
     #region Test set up
-    [SetUp]
+    [OneTimeSetUp]
     public void SetUp()
     {
         EditorSceneManager.OpenScene(SCENE_PATH);
         LoadAllPrefabs();
+        LoadAllMonoBehaviours();
     }
 
     private void LoadAllPrefabs()
@@ -42,87 +49,141 @@ public class LobbyTests
             allPrefabs[i] = AssetDatabase.LoadAssetAtPath <GameObject>(AssetDatabase.GUIDToAssetPath(guids[i]));
         }
     }
+
+    private void LoadAllMonoBehaviours()
+    {
+        // Find all the Monobehaviours in the currently open scene
+        allMonoBehaviours = GameObject.FindObjectsOfType<MonoBehaviour>();
+    }
     #endregion
 
     #region Tests
+
     /// <summary>
-    /// Test to confirm that designated MonoBehaviours have required serialized fields initialized.
+    /// Test to confirm that MonoBehaviours have serialized fields (marked by NotNullAttribute) initialized.
     /// The purpose of this test is to prevent NullReferenceExceptions caused by failing to initialize MonoBehaviour fields.
     /// </summary>
-    /// <param name="data">VariableDetails listing the target class and associated variable details.</param>
-    [TestCaseSource(typeof(DataSource), nameof(DataSource.NullCheckData))]
-    public void SerializedFieldsAreNotNull(VariableDetails data)
+    [Test]
+    public void SpecifiedFieldsWithinSceneAreNotNull()
     {
-        // Arrange
-        FieldInfo field;
+
+        // ARRANGE
+        bool allRelevantFieldsHaveBeenSet = true;
         BindingFlags flags = GetBindingFlags();
-        var gameObjects = UnityEngine.Object.FindObjectsOfType(data.className);
+        StringBuilder sb = new StringBuilder();
 
-        // Act #1 - Get the fields from each tested script
-        foreach (string s in data.variableNames)
+        // ACT - Check each MonoBehaviour in the scene
+        foreach (MonoBehaviour mono in allMonoBehaviours)
         {
-            field = data.className.GetField(s, flags);
+            // Get all fields from the MonoBehaviour using reflection
+            Type monoType = mono.GetType();
+            FieldInfo[] objectFields = monoType.GetFields(flags);
 
-            // Assert #1: The tested script actually contains the fields you are testing for
-            Assert.IsNotNull(field, "{0} does not appear to have a field for {1}.", data.className.ToString(), s);
-
-            // Act #2 - Get the values of those fields from the GameObjects component
-            foreach (var gameObject in gameObjects)
+            // Check the fields to see if they have a NotNullAttribute
+            for (int i = 0; i < objectFields.Length; i++)
             {
-                field = data.className.GetField(s, flags);
+                NotNullAttribute attribute = Attribute.GetCustomAttribute(objectFields[i], typeof(NotNullAttribute)) as NotNullAttribute;
+                if (attribute != null)
+                {
+                    // Once we are here, we have found a MonoBehaviour field with a NotNullAttribute.
+                    // We now need to test the field to see if it is a value set.
+                    var fieldValue = objectFields[i].GetValue(mono);
 
-                // Assert #2: The GameObject component has a value set in the tested field.
-                Assert.IsNotNull(field.GetValue(gameObject), "{0} did not have {1} set.", gameObject.name, s);
+                    if (fieldValue == null || fieldValue.ToString() == "null")
+                    {
+                        // The test will fail, as the MonoBehaviour SHOULD have had some value in the required field, but DID NOT.
+                        // We are delaying the assertion so that all errors are identified in the console, rather than requiring the
+                        // test to be run multiple times (and only identifying a single breach each time).
+                        allRelevantFieldsHaveBeenSet = false;
+                        sb.Append($"-> Scene object '{mono.gameObject.name}' does not have {objectFields[i].Name} field set in {monoType.Name} script.\n");
+                    }
+                }
             }
         }
+
+        // ASSERT
+        Assert.IsTrue(allRelevantFieldsHaveBeenSet, sb.ToString());
     }
 
     /// <summary>
     /// Test to confirm that GameObjects within the tested scene are on the correct layers.
     /// The purpose of this test is to ensure layer-based collisions, raycasts, rendering etc function correctly.
     /// </summary>
-    /// <param name="data">MandatoryLayerForClass listing the target class and the layer it is required to be on.</param>
-    [TestCaseSource(typeof(DataSource), nameof(DataSource.MandatoryLayerCheckData))]
-    public void GameObjectsAreOnTheirMandatedLayers(MandatoryLayerForClass data)
+    [Test]
+    public void SpecifiedMonoBehavioursWithinSceneAreOnTheirMandatedLayers()
     {
-        // Arrange
-        var gameObjects = UnityEngine.Object.FindObjectsOfType(data.className);
 
-        // Act
-        foreach (var gameObject in gameObjects)
+        // ARRANGE
+        bool allRelevantMonoBehavioursAreOnTheRightLayer = true;
+        StringBuilder sb = new StringBuilder();
+
+        // ACT - Check each MonoBehaviour in the scene
+        foreach (MonoBehaviour mono in allMonoBehaviours)
         {
-            MonoBehaviour mb = gameObject as MonoBehaviour;
-            if (mb == null) continue;
-            bool correctLayer = mb.gameObject.layer == LayerMask.NameToLayer(data.layerName);
+            Type monoType = mono.GetType();
+            RequiredLayerAttribute attribute = Attribute.GetCustomAttribute(monoType, typeof(RequiredLayerAttribute)) as RequiredLayerAttribute;
+            if (attribute != null)
+            {
+                // Once we are here, we have found a MonoBehaviour with a RequiredLayerAttribute.
+                // We now need to test the GameObject to see if it is on the layer that is mandated.
 
-            // Assert: The GameObject is on the correct layer.
-            Assert.IsTrue(correctLayer, "{0} (of type <{1}>) is not on {2} layer.", mb.gameObject.name, data.className.Name, data.layerName);
+                if (mono.gameObject.layer != LayerMask.NameToLayer(attribute.layer))
+                {
+                    // The test will fail, as the GameObject SHOULD have had been on a specific layer, but WAS NOT.
+                    // We are delaying the assertion so that all errors are identified in the console, rather than requiring the
+                    // test to be run multiple times (and only identifying a single breach each time).
+                    allRelevantMonoBehavioursAreOnTheRightLayer = false;
+                    sb.Append($"-> {monoType.Name} script requires scene object '{mono.gameObject.name}' to be on {attribute.layer} layer, but it was on {LayerMask.LayerToName(mono.gameObject.layer)} layer.\n");
+                }
+            }
         }
+
+        // ASSERT
+        Assert.IsTrue(allRelevantMonoBehavioursAreOnTheRightLayer, sb.ToString());
     }
 
     /// <summary>
     /// Test to confirm that prefabs within the project are on the correct layers.
     /// The purpose of this is to ensure that any prefabs instantiated at runtime are added to the correct layer.
     /// </summary>
-    /// <param name="data">MandatoryLayerForClass listing the target class and the layer it is required to be on.</param>
-    [TestCaseSource(typeof(DataSource), nameof(DataSource.MandatoryLayerCheckData))]
-    public void PrefabsAreOnTheirMandatedLayers(MandatoryLayerForClass data)
+    [Test]
+    public void SpecifiedMonoBehavioursWithinPrefabsAreOnTheirMandatedLayers()
     {
-        // Arrange -> prefab array arranged during SetUp().
 
-        // Act
-        Type targetType = data.className;
+        // ARRANGE
+        bool allRelevantMonoBehavioursAreOnTheRightLayer = true;
+        StringBuilder sb = new StringBuilder();
+        MonoBehaviour[] prefabMonoBehaviours;
+
+        // ACT - Check each MonoBehaviour in the scene
+
         foreach (GameObject prefab in allPrefabs)
         {
-            
-            if (prefab.GetComponent(data.className) != null)
-            {
-                bool correctLayer = prefab.layer == LayerMask.NameToLayer(data.layerName);
+            prefabMonoBehaviours = prefab.GetComponentsInChildren<MonoBehaviour>();
 
-                // Assert: The prefab is on the correct layer.
-                Assert.IsTrue(correctLayer, "Prefab {0} (of type <{1}>) is not on {2} layer.", prefab.name, data.className.Name, data.layerName);
+            foreach (MonoBehaviour mono in prefabMonoBehaviours)
+            {
+                Type monoType = mono.GetType();
+                RequiredLayerAttribute attribute = Attribute.GetCustomAttribute(monoType, typeof(RequiredLayerAttribute)) as RequiredLayerAttribute;
+                if (attribute != null)
+                {
+                    // Once we are here, we have found a MonoBehaviour with a RequiredLayerAttribute.
+                    // We now need to test the GameObject to see if it is on the layer that is mandated.
+
+                    if (mono.gameObject.layer != LayerMask.NameToLayer(attribute.layer))
+                    {
+                        // The test will fail, as the GameObject SHOULD have had been on a specific layer, but WAS NOT.
+                        // We are delaying the assertion so that all errors are identified in the console, rather than requiring the
+                        // test to be run multiple times (and only identifying a single breach each time).
+                        allRelevantMonoBehavioursAreOnTheRightLayer = false;
+                        sb.Append($"-> {monoType.Name} script requires object '{mono.gameObject.name}' (in prefab {prefab.name}) to be on {attribute.layer} layer, but it was on {LayerMask.LayerToName(mono.gameObject.layer)} layer.\n");
+                    }
+                }
             }
         }
+
+        // ASSERT
+        Assert.IsTrue(allRelevantMonoBehavioursAreOnTheRightLayer, sb.ToString());
     }
     #endregion
 

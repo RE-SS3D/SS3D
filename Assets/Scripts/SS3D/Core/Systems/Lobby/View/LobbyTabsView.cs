@@ -7,7 +7,7 @@ namespace SS3D.Core.Systems.Lobby.View
     /// </summary>
     public sealed class LobbyTabsView : MonoBehaviour
     {
-        [SerializeField] private GenericTabView[] _categoryUi;
+        [SerializeField][NotNull] private GenericTabView[] _categoryUi;
         
         private void Start()
         {

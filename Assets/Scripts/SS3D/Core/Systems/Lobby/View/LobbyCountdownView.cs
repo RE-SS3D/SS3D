@@ -12,7 +12,7 @@ namespace SS3D.Core.Systems.Lobby.View
     /// </summary>
     public class LobbyCountdownView : NetworkBehaviour
     {
-        [SerializeField] private TMP_Text _roundCountdownText;
+        [SerializeField][NotNull] private TMP_Text _roundCountdownText;
 
         private int _roundSeconds;
         private RoundState _roundState;
