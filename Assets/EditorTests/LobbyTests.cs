@@ -117,26 +117,8 @@ public class LobbyTests
         bool allRelevantMonoBehavioursAreOnTheRightLayer = true;
         StringBuilder sb = new StringBuilder();
 
-        // ACT - Check each MonoBehaviour in the scene
-        foreach (MonoBehaviour mono in allMonoBehaviours)
-        {
-            Type monoType = mono.GetType();
-            RequiredLayerAttribute attribute = Attribute.GetCustomAttribute(monoType, typeof(RequiredLayerAttribute)) as RequiredLayerAttribute;
-            if (attribute != null)
-            {
-                // Once we are here, we have found a MonoBehaviour with a RequiredLayerAttribute.
-                // We now need to test the GameObject to see if it is on the layer that is mandated.
-
-                if (mono.gameObject.layer != LayerMask.NameToLayer(attribute.layer))
-                {
-                    // The test will fail, as the GameObject SHOULD have had been on a specific layer, but WAS NOT.
-                    // We are delaying the assertion so that all errors are identified in the console, rather than requiring the
-                    // test to be run multiple times (and only identifying a single breach each time).
-                    allRelevantMonoBehavioursAreOnTheRightLayer = false;
-                    sb.Append($"-> {monoType.Name} script requires scene object '{mono.gameObject.name}' to be on {attribute.layer} layer, but it was on {LayerMask.LayerToName(mono.gameObject.layer)} layer.\n");
-                }
-            }
-        }
+        // ACT
+        allRelevantMonoBehavioursAreOnTheRightLayer = CheckMonoBehavioursForCorrectLayer(allMonoBehaviours, ref sb);
 
         // ASSERT
         Assert.IsTrue(allRelevantMonoBehavioursAreOnTheRightLayer, sb.ToString());
@@ -155,31 +137,12 @@ public class LobbyTests
         StringBuilder sb = new StringBuilder();
         MonoBehaviour[] prefabMonoBehaviours;
 
-        // ACT - Check each MonoBehaviour in the scene
-
+        // ACT
         foreach (GameObject prefab in allPrefabs)
         {
             prefabMonoBehaviours = prefab.GetComponentsInChildren<MonoBehaviour>();
-
-            foreach (MonoBehaviour mono in prefabMonoBehaviours)
-            {
-                Type monoType = mono.GetType();
-                RequiredLayerAttribute attribute = Attribute.GetCustomAttribute(monoType, typeof(RequiredLayerAttribute)) as RequiredLayerAttribute;
-                if (attribute != null)
-                {
-                    // Once we are here, we have found a MonoBehaviour with a RequiredLayerAttribute.
-                    // We now need to test the GameObject to see if it is on the layer that is mandated.
-
-                    if (mono.gameObject.layer != LayerMask.NameToLayer(attribute.layer))
-                    {
-                        // The test will fail, as the GameObject SHOULD have had been on a specific layer, but WAS NOT.
-                        // We are delaying the assertion so that all errors are identified in the console, rather than requiring the
-                        // test to be run multiple times (and only identifying a single breach each time).
-                        allRelevantMonoBehavioursAreOnTheRightLayer = false;
-                        sb.Append($"-> {monoType.Name} script requires object '{mono.gameObject.name}' (in prefab {prefab.name}) to be on {attribute.layer} layer, but it was on {LayerMask.LayerToName(mono.gameObject.layer)} layer.\n");
-                    }
-                }
-            }
+            allRelevantMonoBehavioursAreOnTheRightLayer =
+                allRelevantMonoBehavioursAreOnTheRightLayer && CheckMonoBehavioursForCorrectLayer(prefabMonoBehaviours, ref sb);
         }
 
         // ASSERT
@@ -195,5 +158,31 @@ public class LobbyTests
                              BindingFlags.NonPublic;
         return flags;
     }
+
+    private bool CheckMonoBehavioursForCorrectLayer(MonoBehaviour[] monos, ref StringBuilder sb)
+    {
+        bool allRelevantMonoBehavioursAreOnTheRightLayer = true;
+        foreach (MonoBehaviour mono in monos)
+        {
+            Type monoType = mono.GetType();
+            RequiredLayerAttribute attribute = Attribute.GetCustomAttribute(monoType, typeof(RequiredLayerAttribute)) as RequiredLayerAttribute;
+            if (attribute != null)
+            {
+                // Once we are here, we have found a MonoBehaviour with a RequiredLayerAttribute.
+                // We now need to test the GameObject to see if it is on the layer that is mandated.
+
+                if (mono.gameObject.layer != LayerMask.NameToLayer(attribute.layer))
+                {
+                    // The test will fail, as the GameObject SHOULD have had been on a specific layer, but WAS NOT.
+                    // We are delaying the assertion so that all errors are identified in the console, rather than requiring the
+                    // test to be run multiple times (and only identifying a single breach each time).
+                    allRelevantMonoBehavioursAreOnTheRightLayer = false;
+                    sb.Append($"-> {monoType.Name} script requires object '{mono.gameObject.name}' to be on {attribute.layer} layer, but it was on {LayerMask.LayerToName(mono.gameObject.layer)} layer.\n");
+                }
+            }
+        }
+        return allRelevantMonoBehavioursAreOnTheRightLayer;
+    }
+
     #endregion
 }
