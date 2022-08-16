@@ -3,11 +3,11 @@ using System.Linq;
 using FishNet;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using SS3D.Core.Networking.PlayerControl.Messages;
-using SS3D.Core.Systems.Lobby.Messages;
+using SS3D.Systems.Lobby.Messages;
+using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
 
-namespace SS3D.Core.Systems.Lobby
+namespace SS3D.Systems.Lobby
 {
     /// <summary>
     /// Manages all networked lobby stuff

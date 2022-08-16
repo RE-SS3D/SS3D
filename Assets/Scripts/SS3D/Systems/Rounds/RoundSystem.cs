@@ -7,11 +7,9 @@ using FishNet.Managing.Server;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
-using SS3D.Core.Rounds.Messages;
-using SS3D.Core.Systems.Permissions;
-using SS3D.Core.Systems.Rounds;
-using SS3D.Core.Systems.Rounds.Messages;
-using SS3D.Networking.PlayerControl;
+using SS3D.Systems.Permissions;
+using SS3D.Systems.PlayerControl;
+using SS3D.Systems.Rounds.Messages;
 using UnityEngine;
 
 namespace SS3D.Systems.Rounds

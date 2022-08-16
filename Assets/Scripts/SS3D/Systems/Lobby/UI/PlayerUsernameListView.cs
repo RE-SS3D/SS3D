@@ -5,12 +5,11 @@ using Cysharp.Threading.Tasks;
 using FishNet;
 using FishNet.Object;
 using SS3D.Core;
-using SS3D.Core.Systems.Lobby;
-using SS3D.Core.Systems.Lobby.Messages;
-using SS3D.Core.Systems.Lobby.View;
+using SS3D.Systems.Lobby.Messages;
+using SS3D.Systems.UI;
 using UnityEngine;
 
-namespace SS3D.UI
+namespace SS3D.Systems.Lobby.UI
 {
     /// <summary>
     /// Controls the player list in the lobby

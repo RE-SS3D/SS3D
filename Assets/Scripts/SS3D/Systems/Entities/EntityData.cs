@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using SS3D.Core.Systems.Inventory.Subsystem.Clothing;
+using SS3D.Systems.Clothing;
 
-namespace SS3D.Core.Systems.Entities
+namespace SS3D.Systems.Entities
 {
     public struct EntityData
     {

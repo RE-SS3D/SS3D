@@ -1,4 +1,4 @@
-namespace SS3D.Core
+namespace SS3D.Core.Utils
 {
     /// <summary>
     /// Holds data from the Hub to send the server when we connect

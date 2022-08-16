@@ -5,7 +5,7 @@ using UnityEngine;
 using File = System.IO.File;
 using Path = System.IO.Path;
 
-namespace SS3D.Core.Systems.Permissions
+namespace SS3D.Systems.Permissions
 {
     /// <summary>
     /// TODO: Make a simple permission system based on a .txt file to avoid non-admins from starting a round

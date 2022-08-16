@@ -3,11 +3,11 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using SS3D.Core.Networking.PlayerControl.Messages;
-using SS3D.Core.Systems.Entities;
+using SS3D.Systems.Entities;
+using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
 
-namespace SS3D.Networking.PlayerControl
+namespace SS3D.Systems.PlayerControl
 {
     /// <summary>
     /// Controls the player flux, when users want to authenticate, rejoin the game, leave the game

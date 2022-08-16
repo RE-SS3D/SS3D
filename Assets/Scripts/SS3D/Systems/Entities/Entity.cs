@@ -1,8 +1,8 @@
 ﻿using FishNet.Object;
-using SS3D.Core.Systems.Inventory;
+using SS3D.Systems.Inventory;
 using UnityEngine;
 
-namespace SS3D.Core.Systems.Entities
+namespace SS3D.Systems.Entities
 {
     /// <summary>
     /// Base class for all things that can be controlled by a player

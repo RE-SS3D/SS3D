@@ -1,7 +1,7 @@
 using System;
 using FishNet.Broadcast;
 
-namespace SS3D.Core.Systems.Rounds.Messages
+namespace SS3D.Systems.Rounds.Messages
 {
     /// <summary>
     /// Used by the player to start a round

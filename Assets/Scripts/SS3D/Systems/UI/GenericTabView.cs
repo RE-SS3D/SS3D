@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SS3D.Core.Systems.Lobby.View
+namespace SS3D.Systems.UI
 {
     /// <summary>
     /// Generic class to manage a simple tab/panel UI

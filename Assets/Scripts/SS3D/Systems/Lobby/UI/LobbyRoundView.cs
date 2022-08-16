@@ -1,10 +1,10 @@
 using FishNet;
 using FishNet.Object;
-using SS3D.Core.Systems.Rounds.Messages;
+using SS3D.Systems.Rounds.Messages;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SS3D.UI
+namespace SS3D.Systems.Lobby.UI
 {
     public class LobbyRoundView : NetworkBehaviour
     {

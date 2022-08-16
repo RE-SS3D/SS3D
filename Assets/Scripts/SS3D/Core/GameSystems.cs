@@ -6,13 +6,17 @@ using Object = UnityEngine.Object;
 namespace SS3D.Core
 {
     /// <summary>
-    /// Class used to get game systems, I haven't tested with Photon yet but my attempts on the same idea
-    /// with FishNet networking worked out fine. (Still useful for offline things in any case)
+    /// Class used to get game systems, using generics and then making cache of said systems
     /// </summary>
     public static class GameSystems
     {
         private static readonly Dictionary<Type, object> Systems = new();
 
+        /// <summary>
+        /// Get any system at runtime, make sure there's no duplicates before using
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static T Get<T>() where T : Object
         {
             if (Systems.TryGetValue(typeof(T), out object match))

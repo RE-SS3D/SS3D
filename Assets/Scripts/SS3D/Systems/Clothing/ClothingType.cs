@@ -1,4 +1,4 @@
-﻿namespace SS3D.Core.Systems.Inventory.Subsystem.Clothing
+﻿namespace SS3D.Systems.Clothing
 {
     public enum ClothingType
     {

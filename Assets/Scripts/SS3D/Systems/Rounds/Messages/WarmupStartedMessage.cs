@@ -1,7 +1,7 @@
 using System;
 using FishNet.Broadcast;
 
-namespace SS3D.Core.Rounds.Messages
+namespace SS3D.Systems.Rounds.Messages
 {
     [Serializable]
     public struct WarmupStartedMessage : IBroadcast

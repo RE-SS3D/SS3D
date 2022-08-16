@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace SS3D.Core.Systems.Inventory
+namespace SS3D.Systems.Inventory
 {
     public class InventorySlot : MonoBehaviour
     {

@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SS3D.Systems.UI
+namespace SS3D.Networking
 {
     /// <summary>
     /// Displays the process of connecting to a server on ui elements
@@ -26,7 +26,6 @@ namespace SS3D.Systems.UI
         [SerializeField] private Button _retryButton;
         
         [SerializeField] private TMP_Text _messageText;
-
 
         private bool _connectionFailed;
         

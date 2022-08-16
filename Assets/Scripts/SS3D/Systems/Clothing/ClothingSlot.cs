@@ -1,10 +1,8 @@
 using Coimbra;
-using SS3D.Core.Systems.Inventory;
-using SS3D.Core.Systems.Inventory.Subsystem.Clothing;
-using SS3D.Core.Systems.Inventory.Subsystem.Clothing.Items;
+using SS3D.Systems.Inventory;
 using UnityEngine;
 
-namespace SS3D.Systems.Inventory.Subsystem.Clothing
+namespace SS3D.Systems.Clothing
 {
     public class ClothingSlot : InventorySlot
     {
@@ -15,10 +13,9 @@ namespace SS3D.Systems.Inventory.Subsystem.Clothing
         /// </summary>
         [SerializeField] private Transform _clothingParent;
         /// <summary>
-        /// Clothing instance
+        /// Clothing object in this slot
         /// </summary>
-        [SerializeField] private ClothingObject clothingObject;
-
+        [SerializeField] private ClothingObject _clothingObject;
         /// <summary>
         /// Which weights the new clothing will copy from?
         /// </summary>
@@ -37,8 +34,8 @@ namespace SS3D.Systems.Inventory.Subsystem.Clothing
 
             RemoveClothing();
 
-            this.clothingObject = Instantiate(clothingObject, _clothingParent);
-            this.clothingObject.SetWeights(_weightsCopyTarget.rootBone, _weightsCopyTarget.bones);
+            _clothingObject = Instantiate(clothingObject, _clothingParent);
+            _clothingObject.SetWeights(_weightsCopyTarget.rootBone, _weightsCopyTarget.bones);
         }
 
         /// <summary>
@@ -46,8 +43,8 @@ namespace SS3D.Systems.Inventory.Subsystem.Clothing
         /// </summary>
         public void RemoveClothing()
         {
-            clothingObject.Destroy();
-            clothingObject = null;
+            _clothingObject.Destroy();
+            _clothingObject = null;
         }
     }
 }

@@ -1,8 +1,6 @@
-﻿
-using FishNet.Broadcast;
-using SS3D.Core.Systems.Rounds;
+﻿using FishNet.Broadcast;
 
-namespace SS3D.Core.Rounds.Messages
+namespace SS3D.Systems.Rounds.Messages
 {
     public struct RoundStateUpdatedMessage : IBroadcast
     {

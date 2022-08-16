@@ -1,4 +1,4 @@
-﻿namespace SS3D.Core.Systems.Entities.Humanoid
+﻿namespace SS3D.Systems.Entities
 {
     /// <summary>
     /// Base class for all humans

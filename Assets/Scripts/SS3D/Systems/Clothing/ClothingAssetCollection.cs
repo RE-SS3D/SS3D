@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using Coimbra;
-using SS3D.Core.Systems.Inventory.Subsystem.Clothing.Items;
 using UnityEngine;
 
-namespace SS3D.Systems.Inventory.Subsystem.Clothing.Items
+namespace SS3D.Systems.Clothing
 {
     /// <summary>
     /// Clothing collection used to hold all game clothing

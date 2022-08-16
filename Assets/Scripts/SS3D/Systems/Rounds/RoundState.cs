@@ -1,6 +1,6 @@
 using System;
 
-namespace SS3D.Core.Systems.Rounds
+namespace SS3D.Systems.Rounds
 {
     /// <summary>
     /// This is used to by the RoundManager to control the round state

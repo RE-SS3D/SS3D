@@ -4,6 +4,7 @@ using System.Linq;
 using FishNet;
 using FishNet.Managing;
 using SS3D.Core.Networking.Utils;
+using SS3D.Core.Utils;
 using UnityEngine;
 
 namespace SS3D.Core
@@ -11,6 +12,8 @@ namespace SS3D.Core
     /// <summary>
     /// Helps the NetworkManager to understand what we should do in this instance,
     /// if we are a server, or a client, and process respective data.
+    ///
+    /// TODO: Could use a refactor
     /// </summary>
     public sealed class SessionNetworkHelper : MonoBehaviour
     {

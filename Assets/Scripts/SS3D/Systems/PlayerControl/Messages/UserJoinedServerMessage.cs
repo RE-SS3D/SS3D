@@ -1,8 +1,7 @@
 using System;
 using FishNet.Broadcast;
 
-
-namespace SS3D.Core.Networking.PlayerControl.Messages
+namespace SS3D.Systems.PlayerControl.Messages
 {
     /// <summary>
     /// Fired when a user authenticates

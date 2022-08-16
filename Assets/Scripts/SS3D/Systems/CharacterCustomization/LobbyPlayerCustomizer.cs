@@ -1,11 +1,9 @@
-﻿using SS3D.Core.Systems.Entities;
-using SS3D.Core.Systems.Inventory.Subsystem.Clothing;
-using SS3D.Core.Systems.Inventory.Subsystem.Clothing.Items;
-using SS3D.Systems.Inventory.Subsystem.Clothing;
-using SS3D.Systems.Inventory.Subsystem.Clothing.Items;
+﻿using System.Linq;
+using SS3D.Systems.Clothing;
+using SS3D.Systems.Entities;
 using UnityEngine;
 
-namespace SS3D.Systems.Lobby.CharacterCustomization
+namespace SS3D.Systems.CharacterCustomization
 {
     public class LobbyPlayerCustomizer : MonoBehaviour
     {
@@ -32,7 +30,7 @@ namespace SS3D.Systems.Lobby.CharacterCustomization
 
         private void AddSelectedClothing(ClothingObject clothingObject)
         {
-            _previewDummyInstance.Inventory.GetSlots<ClothingSlot>()[0].AddClothing(clothingObject);
+            _previewDummyInstance.Inventory.GetSlots<ClothingSlot>().ToList()[0].AddClothing(clothingObject);
         }
     }
 }

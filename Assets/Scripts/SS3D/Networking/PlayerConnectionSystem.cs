@@ -3,8 +3,8 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Transporting;
-using SS3D.Core.Networking.PlayerControl.Messages;
-using SS3D.Core.Systems.Entities;
+using SS3D.Systems.Entities;
+using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
 
 namespace SS3D.Networking

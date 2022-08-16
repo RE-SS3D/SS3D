@@ -1,7 +1,7 @@
 ﻿using Coimbra;
 using UnityEngine;
 
-namespace SS3D.Core.Systems.Inventory.Subsystem.Clothing.Items
+namespace SS3D.Systems.Clothing
 {
     /// <summary>
     /// Used to set clothing on an entity

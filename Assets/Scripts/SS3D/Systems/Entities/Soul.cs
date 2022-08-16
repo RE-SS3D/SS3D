@@ -4,7 +4,7 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using UnityEngine;
 
-namespace SS3D.Core.Systems.Entities
+namespace SS3D.Systems.Entities
 {
     /// <summary>
     /// Unique, persistent object that the player owns, it manages what character it is controlling and stores other player data.
