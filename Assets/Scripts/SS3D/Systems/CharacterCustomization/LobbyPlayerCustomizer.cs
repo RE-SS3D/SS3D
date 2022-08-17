@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using SS3D.Systems.Clothing;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Storage;
 using UnityEngine;
 
 namespace SS3D.Systems.CharacterCustomization
@@ -9,10 +10,10 @@ namespace SS3D.Systems.CharacterCustomization
     {
         [SerializeField] private ClothingAssetCollection _clothingAssetCollection;
 
-        [SerializeField] private Entity _previewDummyPrefab;
+        [SerializeField] private PlayerControllable _previewDummyPrefab;
         [SerializeField] private Transform _previewDummyStartPoint;
 
-        [SerializeField] private Entity _previewDummyInstance;
+        [SerializeField] private PlayerControllable _previewDummyInstance;
 
         private ClothingObject _selectedClothingObject;
 
@@ -30,7 +31,7 @@ namespace SS3D.Systems.CharacterCustomization
 
         private void AddSelectedClothing(ClothingObject clothingObject)
         {
-            _previewDummyInstance.Inventory.GetSlots<ClothingSlot>().ToList()[0].AddClothing(clothingObject);
+            _previewDummyInstance.GetComponent<EntityInventory>().GetSlots<ClothingSlot>().ToList()[0].AddClothing(clothingObject);
         }
     }
 }

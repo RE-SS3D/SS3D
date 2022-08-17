@@ -1,10 +1,10 @@
 using Coimbra;
-using SS3D.Systems.Inventory;
+using SS3D.Systems.Storage;
 using UnityEngine;
 
 namespace SS3D.Systems.Clothing
 {
-    public class ClothingSlot : InventorySlot
+    public class ClothingSlot : Storage.Inventory
     {
         /// TODO: Make this a tickbox or something
         [SerializeField] private ClothingType _compatibleClothingType;

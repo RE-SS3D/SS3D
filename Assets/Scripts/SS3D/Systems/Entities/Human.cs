@@ -1,9 +1,11 @@
-﻿namespace SS3D.Systems.Entities
+﻿using UnityEngine;
+
+namespace SS3D.Systems.Entities
 {
     /// <summary>
     /// Base class for all humans
     /// </summary>
-    public class Human : Entity
+    public class Human : MonoBehaviour
     {
 
     }
