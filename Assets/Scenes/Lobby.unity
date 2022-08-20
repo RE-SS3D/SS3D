@@ -791,7 +791,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _clothingAssetCollection: {fileID: 11400000, guid: 81c9cd65798d36b48b8de3afc5dcd737, type: 2}
-  _previewDummyPrefab: {fileID: 6783221202165516324, guid: dd6b1e97a12f6b04a8d5650390be43f9, type: 3}
+  _previewDummyPrefab: {fileID: 0}
   _previewDummyStartPoint: {fileID: 1544788595}
   _previewDummyInstance: {fileID: 0}
 --- !u!1 &771589491
@@ -1944,6 +1944,22 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 187882043}
+    - target: {fileID: 1113205651287261246, guid: d0d3fca97d97f283d89aac442f2e50c7, type: 3}
+      propertyPath: m_RenderMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1113205651287261246, guid: d0d3fca97d97f283d89aac442f2e50c7, type: 3}
+      propertyPath: m_SortingOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1113205651287261246, guid: d0d3fca97d97f283d89aac442f2e50c7, type: 3}
+      propertyPath: m_PlaneDistance
+      value: 95.44
+      objectReference: {fileID: 0}
+    - target: {fileID: 1113205651287261246, guid: d0d3fca97d97f283d89aac442f2e50c7, type: 3}
+      propertyPath: m_AdditionalShaderChannelsFlag
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 1113205651287261247, guid: d0d3fca97d97f283d89aac442f2e50c7, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -2206,8 +2222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _networkBehaviours:
-  - {fileID: 4896080232311651820}
+  _networkBehaviours: []
   SceneTransformProperties:
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
