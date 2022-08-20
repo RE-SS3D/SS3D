@@ -6,9 +6,10 @@ namespace SS3D.Core.Systems.Lobby.View
     /// <summary>
     /// Simple Username ui element controller
     /// </summary>
+    [RequiredLayer("UI")]
     public sealed class PlayerUsernameView : MonoBehaviour
     {
-        [SerializeField] private TMP_Text _nameLabel;
+        [SerializeField][NotNull] private TMP_Text _nameLabel;
 
         public string Name => _nameLabel.text;
     
