@@ -8,7 +8,7 @@ namespace SS3D.Systems.Lobby.UI
 {
     public class LobbyRoundView : NetworkBehaviour
     {
-        [SerializeField] private Button _embarkButton;
+        [SerializeField][NotNull] private Button _embarkButton;
 
         private void Start()
         {

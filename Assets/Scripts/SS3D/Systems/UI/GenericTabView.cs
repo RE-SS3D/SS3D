@@ -6,11 +6,12 @@ namespace SS3D.Systems.UI
     /// <summary>
     /// Generic class to manage a simple tab/panel UI
     /// </summary>
+    [RequiredLayer("UI")]
     public sealed class GenericTabView : MonoBehaviour
     {
         [SerializeField] private bool _active;
-        [SerializeField] private Transform _panelUI;
-        [SerializeField] private Button _tabButton;
+        [SerializeField] [NotNull] private Transform _panelUI;
+        [SerializeField] [NotNull] private Button _tabButton;
 
         public Button Button => _tabButton;
         public bool Active => _active;
