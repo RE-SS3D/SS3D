@@ -1,9 +1,6 @@
 #region Discord References
 
 using System;
-using System.Runtime.InteropServices;
-using Coimbra;
-using SS3D.Core;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -23,7 +20,7 @@ namespace UDiscord
 
         [Header("Events Settings")]
         public UnityEvent OnJoin = new UnityEvent();
-        public UnityEvent OnConnect = new UnityEvent();
+        public static UnityEvent OnConnect = new UnityEvent();
         public UnityEvent OnDisconnect = new UnityEvent();
         public UnityEvent OnDestroy = new UnityEvent();
 
@@ -33,22 +30,13 @@ namespace UDiscord
 
         private void Awake()
         {
+            OnConnect.AddListener(CallDiscord);
             App = this;
         }
 
-        private void Start()
+        public static void Initialize()
         {
-            bool enableDiscordIntegration = ApplicationStateManager.EnableDiscordIntegration;
-            if (!enableDiscordIntegration)
-            {
-                gameObject.Destroy();
-                return;
-            }
-
-            if (Discord_Start)
-            {
-                OnConnect.AddListener(CallDiscord);
-            }
+            
             OnConnect?.Invoke();
         }
 

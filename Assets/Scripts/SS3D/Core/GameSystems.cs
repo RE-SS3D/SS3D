@@ -1,85 +1,39 @@
 ﻿using System;
-using SS3D.Core.Networking.PlayerControl;
-using SS3D.Core.Systems.Lobby;
-using SS3D.Core.Systems.Permissions;
-using SS3D.Core.Systems.Rounds;
+using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Core
 {
     /// <summary>
-    /// TODO: Automate this crap
+    /// Class used to get game systems, using generics and then making cache of said systems
     /// </summary>
     public static class GameSystems
     {
-        private static LobbySystem _lobbySystem;
-        private static RoundSystem _roundSystem;
-        private static PermissionSystem _permissionSystem;
-        private static PlayerControlSystem _playerControlSystem;
+        private static readonly Dictionary<Type, object> Systems = new();
 
-        public static LobbySystem LobbySystem
+        /// <summary>
+        /// Get any system at runtime, make sure there's no duplicates before using
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T Get<T>() where T : Object
         {
-            get
+            if (Systems.TryGetValue(typeof(T), out object match))
             {
-                if (_lobbySystem != null) { return _lobbySystem; }
-
-                _lobbySystem = Object.FindObjectOfType<LobbySystem>();
-                if (_lobbySystem == null)
-                {
-                    Debug.Log(new Exception($"[{nameof(GameSystems)}] - Couldn't find lobby system"));
-                }
-
-                return _lobbySystem;
+                return (T)match;
             }
-        }
 
-        public static RoundSystem RoundSystem
-        {
-            get
+            match = Object.FindObjectOfType<T>();
+
+            if (match == null)
             {
-                if (_roundSystem != null) { return _roundSystem; }
-
-                _roundSystem = Object.FindObjectOfType<RoundSystem>();
-                if (_roundSystem == null)
-                {
-                    Debug.Log(new Exception($"[{nameof(GameSystems)}] - Couldn't find round system"));
-                }
-
-                return _roundSystem;
+                Debug.Log($"[{nameof(GameSystems)}] - Couldn't find system of {nameof(T)} in the scene");
             }
-        }
 
-        public static PermissionSystem PermissionSystem
-        {
-            get
-            {
-                if (_permissionSystem != null) { return _permissionSystem; }
+            Systems.Add(typeof(T), match);
 
-                _permissionSystem = Object.FindObjectOfType<PermissionSystem>();
-                if (_permissionSystem == null)
-                {
-                    Debug.Log(new Exception($"[{nameof(GameSystems)}] - Couldn't find permission system"));
-                }
-
-                return _permissionSystem;
-            }
-        }
-
-        public static PlayerControlSystem PlayerControlSystem
-        {
-            get
-            {
-                if (_playerControlSystem != null) { return _playerControlSystem; }
-
-                _playerControlSystem = Object.FindObjectOfType<PlayerControlSystem>();
-                if (_playerControlSystem == null)
-                {
-                    Debug.Log(new Exception($"[{nameof(GameSystems)}] - Couldn't find player control system"));
-                }
-
-                return _playerControlSystem;
-            }
+            return (T)match;
         }
     }
 }

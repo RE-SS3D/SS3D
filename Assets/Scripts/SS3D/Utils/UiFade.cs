@@ -61,9 +61,13 @@ namespace SS3D.Utils
             _canvasGroup.alpha = fadeOut ? 0 : 1;
 
             if (callback != null)
+            {
                 _canvasGroup.DOFade((int)_intendedState, _transitionDuration).OnComplete(callback.Invoke).SetEase(Ease.InCubic);
+            }
             else
+            {
                 _canvasGroup.DOFade((int)_intendedState, _transitionDuration).SetEase(Ease.InCubic);
+            }
 
             _currentState = !_currentState;
         }

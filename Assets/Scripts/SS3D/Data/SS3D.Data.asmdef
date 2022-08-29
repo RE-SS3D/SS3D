@@ -1,3 +1,16 @@
 {
-	"name": "NewAssembly"
+    "name": "SS3D.Data",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b763ff73a93a62c4ea128e32ed2cd0d6"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
