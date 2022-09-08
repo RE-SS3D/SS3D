@@ -36,7 +36,7 @@ namespace SS3D.Systems.Lobby
         private void AddLobbyPlayer(UserJoinedServerMessage userJoinedServerMessage)
         {
             _players.Add(userJoinedServerMessage.Ckey);
-
+                                                 
             UserJoinedLobbyMessage userJoinedLobbyMessage = new(userJoinedServerMessage.Ckey);
             InstanceFinder.ServerManager.Broadcast(userJoinedLobbyMessage);
 

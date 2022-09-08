@@ -17,13 +17,13 @@ namespace SS3D.Systems.Lobby.UI
     public sealed class PlayerUsernameListView : NetworkBehaviour
     {
         // The UI element this is linked to
-        [SerializeField] private Transform _root;
+        [SerializeField] [NotNull] private Transform _root;
         
         // Username list, local list that is "networked" by the SyncList on LobbyManager
-        [SerializeField] private List<PlayerUsernameView> _playerUsernames;
+        [SerializeField] [NotNull] private List<PlayerUsernameView> _playerUsernames;
         
         // The username panel prefab
-        [SerializeField] private GameObject _uiPrefab;
+        [SerializeField] [NotNull] private GameObject _uiPrefab;
 
         public override void OnStartClient()
         {
