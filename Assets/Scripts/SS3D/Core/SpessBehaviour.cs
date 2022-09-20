@@ -79,25 +79,13 @@ namespace SS3D.Core
         public Matrix4x4 WorldToLocalMatrix => TransformCache.worldToLocalMatrix;
         #endregion
 
+        #region SETUP
         private void Awake()
         {
             Initialize();
             ListenToEvents();
             OnAwake();
         }
-        
-        private void Start() { OnStart(); }
-
-        private void OnPreUpdate(ref EventContext context, in LastPreUpdateEvent e) { HandlePreUpdate(e.DeltaTime); }
-        private void OnUpdate(ref EventContext context, in UpdateEvent e) { HandleUpdate(e.DeltaTime); }
-        private void OnLateUpdate(ref EventContext context, in LateUpdateEvent e) { HandleLateUpdate(e.DeltaTime); }
-
-        protected virtual void OnAwake() { }
-        protected virtual void OnStart() { }
-
-        protected virtual void HandlePreUpdate(in float deltaTime) { }
-        protected virtual void HandleLateUpdate(float deltaTime) { }
-        protected virtual void HandleUpdate(in float deltaTime) { }
 
         private void Initialize()
         {
@@ -111,5 +99,21 @@ namespace SS3D.Core
             UpdateEvent.AddListener(OnUpdate);
             LateUpdateEvent.AddListener(OnLateUpdate);
         }
+        #endregion
+
+        #region EVENT_CALLS
+        private void OnPreUpdate(ref EventContext context, in LastPreUpdateEvent e) { HandlePreUpdate(e.DeltaTime); }
+        private void OnUpdate(ref EventContext context, in UpdateEvent e) { HandleUpdate(e.DeltaTime); }
+        private void OnLateUpdate(ref EventContext context, in LateUpdateEvent e) { HandleLateUpdate(e.DeltaTime); }
+        private void Start() { OnStart(); }
+        #endregion
+
+        #region EVENT_CALLBACKS
+        protected virtual void OnAwake() { }
+        protected virtual void OnStart() { }
+        protected virtual void HandlePreUpdate(in float deltaTime) { }
+        protected virtual void HandleLateUpdate(float deltaTime) { }
+        protected virtual void HandleUpdate(in float deltaTime) { }
+        #endregion
     }
 }
