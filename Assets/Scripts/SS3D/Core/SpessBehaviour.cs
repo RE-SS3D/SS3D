@@ -12,29 +12,72 @@ namespace SS3D.Core
     [Tooltip("Used to optimize all GameObjects, avoid MonoBehaviours")]
     public class SpessBehaviour : NetworkBehaviour
     {
-        public Transform Transform { get; private set; }
-        public GameObject GameObject { get; private set; }
+        public Transform TransformCache { get; private set; }
+        public GameObject GameObjectCache { get; private set; }
+
+        #region ACCESSORS
+        public RectTransform RectTransform => (RectTransform)TransformCache;
 
         public Vector3 Position
         {
-            get => Transform.position;
-            set => Transform.position = value;
+            get => TransformCache.position;
+            set => TransformCache.position = value;
         }
 
         public Vector3 RotationEuler
         {
-            get => Transform.rotation.eulerAngles;
-            set => Transform.rotation = Quaternion.Euler(value);
+            get => TransformCache.eulerAngles;
+            set => TransformCache.eulerAngles = value;
         }
 
         public Quaternion Rotation
         {
-            get => Transform.rotation;
-            set => Transform.rotation = value;
+            get => TransformCache.rotation;
+            set => TransformCache.rotation = value;
         }
 
-        public RectTransform RectTransform => (RectTransform)Transform;
+        public Transform Parent => TransformCache.parent;
 
+        public Vector3 Forward => TransformCache.forward;
+        public Vector3 Backward => -TransformCache.forward;
+        public Vector3 Right => TransformCache.right;
+        public Vector3 Left => -TransformCache.right;
+        public Vector3 Up => TransformCache.up;
+        public Vector3 Down => -TransformCache.up;
+
+        public Transform Root => TransformCache.root;
+
+        public void SetParent(Transform parent) => TransformCache.SetParent(parent);
+
+        public Vector3 LocalPosition
+        {
+            get => TransformCache.localPosition;
+            set => TransformCache.localPosition = value;
+        }
+
+        public Quaternion LocalRotation
+        {
+            get => TransformCache.localRotation;
+            set => TransformCache.localRotation = value;
+        }
+
+        public Vector3 LocalEuler
+        {
+            get => TransformCache.localEulerAngles;
+            set => TransformCache.localEulerAngles = value;
+        }
+
+        public Vector3 LocalScale
+        {
+            get => TransformCache.localScale;
+            set => TransformCache.localScale = value;
+        }
+
+        public Vector3 Scale => TransformCache.lossyScale;
+
+        public Matrix4x4 LocalToWorldMatrix => TransformCache.localToWorldMatrix;
+        public Matrix4x4 WorldToLocalMatrix => TransformCache.worldToLocalMatrix;
+        #endregion
 
         private void Awake()
         {
@@ -43,23 +86,7 @@ namespace SS3D.Core
             OnAwake();
         }
         
-        private void Start()
-        {
-            OnStart();
-        }
-
-        private void Initialize()
-        {
-            Transform = base.transform;
-            GameObject = gameObject;
-        }
-
-        private void ListenToEvents()
-        {
-            LastPreUpdateEvent.AddListener(OnPreUpdate);
-            UpdateEvent.AddListener(OnUpdate);
-            LateUpdateEvent.AddListener(OnLateUpdate);
-        }
+        private void Start() { OnStart(); }
 
         private void OnPreUpdate(ref EventContext context, in LastPreUpdateEvent e) { HandlePreUpdate(e.DeltaTime); }
         private void OnUpdate(ref EventContext context, in UpdateEvent e) { HandleUpdate(e.DeltaTime); }
@@ -71,5 +98,18 @@ namespace SS3D.Core
         protected virtual void HandlePreUpdate(in float deltaTime) { }
         protected virtual void HandleLateUpdate(float deltaTime) { }
         protected virtual void HandleUpdate(in float deltaTime) { }
+
+        private void Initialize()
+        {
+            TransformCache = transform;
+            GameObjectCache = gameObject;
+        }
+
+        private void ListenToEvents()
+        {
+            LastPreUpdateEvent.AddListener(OnPreUpdate);
+            UpdateEvent.AddListener(OnUpdate);
+            LateUpdateEvent.AddListener(OnLateUpdate);
+        }
     }
 }
