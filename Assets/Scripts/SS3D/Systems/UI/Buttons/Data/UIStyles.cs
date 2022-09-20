@@ -17,30 +17,30 @@ namespace SS3D.Systems.UI.Buttons.Data
         #endregion
 
         #region LABEL_BUTTON
-        public static class LabelButton
+        public static class Buttons
         {
-            public static ButtonTextColorPair NormalColor = new()
+            public static readonly ButtonStyle LabelButton = new()
             {
-                Button = new Color(0, 0, 0, .35f),
-                Text = new Color(255, 255, 255, 1)
-            };
-
-            public static ButtonTextColorPair HighlightedColor = new()
-            {
-                Button = new Color(0, 0, 0, .75f),
-                Text = new Color(255, 255, 255, 1)
-            };
-
-            public static ButtonTextColorPair PressedColor = new()
-            {
-                Button = new Color(255, 255, 255, 1),
-                Text = new Color(0, 0, 0, 1)
-            };
-
-            public static ButtonTextColorPair DisabledColor = new()
-            {
-                Button = new Color(0, 0, 0, .6f),
-                Text = new Color(255, 255, 255, .23f)
+                NormalColor = new ButtonTextColorPair
+                {
+                    Button = new Color(0, 0, 0, .35f),
+                    Text = new Color(255, 255, 255, 1)
+                },
+                HighlightedColor = new ButtonTextColorPair
+                {
+                    Button = new Color(0, 0, 0, .75f),
+                    Text = new Color(255, 255, 255, 1)
+                },
+                PressedColor = new ButtonTextColorPair
+                {
+                    Button = new Color(255, 255, 255, 1),
+                    Text = new Color(0, 0, 0, 1)
+                },
+                DisabledColor = new ButtonTextColorPair
+                {
+                    Button = new Color(0, 0, 0, .6f),
+                    Text = new Color(255, 255, 255, .23f)
+                },
             };
         }
         #endregion

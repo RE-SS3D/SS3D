@@ -19,10 +19,12 @@ namespace SS3D.Systems.UI.Buttons
         public bool Pressed;
         public bool Disabled;
 
-        private readonly ButtonTextColorPair _normalColor = UIStyles.LabelButton.NormalColor;
-        private readonly ButtonTextColorPair _highlightedColor = UIStyles.LabelButton.HighlightedColor;
-        private readonly ButtonTextColorPair _pressedColor = UIStyles.LabelButton.PressedColor;
-        private readonly ButtonTextColorPair _disabledColor = UIStyles.LabelButton.DisabledColor;
+        [SerializeField] private ButtonStyleAsset _buttonStyle;
+
+        private ButtonTextColorPair NormalColor => _buttonStyle.NormalColor;
+        private ButtonTextColorPair HighlightedColor => _buttonStyle.HighlightedColor;
+        private ButtonTextColorPair PressedColor => _buttonStyle.PressedColor;
+        private ButtonTextColorPair DisabledColor => _buttonStyle.DisabledColor;
 
         [Header("UI Elements")]
         [SerializeField] private TMP_Text _label;
@@ -120,28 +122,28 @@ namespace SS3D.Systems.UI.Buttons
 
             if (Disabled)
             {
-                _image.color = _disabledColor.Button;
-                _label.color = _disabledColor.Text;
+                _image.color = DisabledColor.Button;
+                _label.color = DisabledColor.Text;
                 return;
             }
 
             if (!Pressed)
             {
-                _image.color = _normalColor.Button;
-                _label.color = _normalColor.Text;
+                _image.color = NormalColor.Button;
+                _label.color = NormalColor.Text;
             }
 
             if (_hovered && !Pressed)
             {
-                _image.color = _highlightedColor.Button;
-                _label.color = _highlightedColor.Text;
+                _image.color = HighlightedColor.Button;
+                _label.color = HighlightedColor.Text;
                 return;
             }
 
             if (Pressed)
             {
-                _image.color = _pressedColor.Button;
-                _label.color = _pressedColor.Text;
+                _image.color = PressedColor.Button;
+                _label.color = PressedColor.Text;
             }
         }
     }
