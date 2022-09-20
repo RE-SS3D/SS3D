@@ -8,7 +8,7 @@ using System;
 using Mirror;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
-using UnityEditor.Experimental.SceneManagement;
+
 #endif
 
 namespace SS3D.Engine.Inventory
@@ -259,7 +259,7 @@ namespace SS3D.Engine.Inventory
         private void OnDrawGizmos()
         {
             // Make sure gizmo only draws in prefab mode
-            if (EditorApplication.isPlaying || PrefabStageUtility.GetCurrentPrefabStage() == null)
+            if (EditorApplication.isPlaying || UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage() == null)
             {
                 return;
             }
