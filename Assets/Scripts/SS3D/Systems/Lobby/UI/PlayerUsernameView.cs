@@ -1,3 +1,5 @@
+using SS3D.Core;
+using SS3D.Core.Attributes;
 using TMPro;
 using UnityEngine;
 

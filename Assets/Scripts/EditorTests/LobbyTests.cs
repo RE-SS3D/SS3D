@@ -5,6 +5,8 @@ using UnityEngine;
 using System;
 using UnityEditor;
 using System.Text;
+using SS3D.Core;
+using SS3D.Core.Attributes;
 
 public class LobbyTests
 {
@@ -171,13 +173,13 @@ public class LobbyTests
                 // Once we are here, we have found a MonoBehaviour with a RequiredLayerAttribute.
                 // We now need to test the GameObject to see if it is on the layer that is mandated.
 
-                if (mono.gameObject.layer != LayerMask.NameToLayer(attribute.layer))
+                if (mono.gameObject.layer != LayerMask.NameToLayer(attribute.Layer))
                 {
                     // The test will fail, as the GameObject SHOULD have had been on a specific layer, but WAS NOT.
                     // We are delaying the assertion so that all errors are identified in the console, rather than requiring the
                     // test to be run multiple times (and only identifying a single breach each time).
                     allRelevantMonoBehavioursAreOnTheRightLayer = false;
-                    sb.Append($"-> {monoType.Name} script requires object '{mono.gameObject.name}' to be on {attribute.layer} layer, but it was on {LayerMask.LayerToName(mono.gameObject.layer)} layer.\n");
+                    sb.Append($"-> {monoType.Name} script requires object '{mono.gameObject.name}' to be on {attribute.Layer} layer, but it was on {LayerMask.LayerToName(mono.gameObject.layer)} layer.\n");
                 }
             }
         }

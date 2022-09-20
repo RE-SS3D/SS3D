@@ -2398,6 +2398,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9161192146963471493, guid: 2d191bd0e2c3e2f4b9ec68793b19550a, type: 3}
+      propertyPath: Pressed
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9161192146963471493, guid: 2d191bd0e2c3e2f4b9ec68793b19550a, type: 3}
       propertyPath: _buttonStyle
       value: 
       objectReference: {fileID: 11400000, guid: 1f2e4672b1f5d4a468470f754f4cb837, type: 2}
@@ -2423,6 +2427,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9161192147382977501, guid: 2d191bd0e2c3e2f4b9ec68793b19550a, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9161192147382977502, guid: 2d191bd0e2c3e2f4b9ec68793b19550a, type: 3}
+      propertyPath: Pressed
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9161192147382977502, guid: 2d191bd0e2c3e2f4b9ec68793b19550a, type: 3}
@@ -2454,6 +2462,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9161192147438561834, guid: 2d191bd0e2c3e2f4b9ec68793b19550a, type: 3}
+      propertyPath: Pressed
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9161192147438561834, guid: 2d191bd0e2c3e2f4b9ec68793b19550a, type: 3}
       propertyPath: _buttonStyle
       value: 
       objectReference: {fileID: 11400000, guid: 1f2e4672b1f5d4a468470f754f4cb837, type: 2}
@@ -2479,6 +2491,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9161192147497989160, guid: 2d191bd0e2c3e2f4b9ec68793b19550a, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9161192147497989165, guid: 2d191bd0e2c3e2f4b9ec68793b19550a, type: 3}
+      propertyPath: Pressed
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9161192147497989165, guid: 2d191bd0e2c3e2f4b9ec68793b19550a, type: 3}
