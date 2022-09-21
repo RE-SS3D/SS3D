@@ -1,0 +1,190 @@
+fileFormatVersion: 2
+guid: 2a30be4c78c286b4e89636ae631df4d0
+ModelImporter:
+  serializedVersion: 19300
+  internalIDToNameTable:
+  - first:
+      74: 2116230413520390826
+    second: Filter_Right|Character001|Take 001|BaseLayer
+  - first:
+      74: -4152863897404549990
+    second: Filter_Right|Character001|Take 001|BaseLayer.001
+  - first:
+      74: 4419621850542960566
+    second: Filter_Right|Character001|Take 001|BaseLayer.002
+  - first:
+      74: 9178833822129522104
+    second: Filter_Right|Filter_Left|Filter_Left|KeyAction.004|Filter_Left|KeyAction.004
+  - first:
+      74: -7032567454590961146
+    second: Filter_Right|Filter_Right|Filter_Right|KeyAction.004|Filter_Right|KeyAction.
+  - first:
+      74: 3145698121429274556
+    second: Filter_Right|Mixer_Left|Mixer_Left|KeyAction.004|Mixer_Left|KeyAction.004
+  - first:
+      74: -2330526843665447174
+    second: Filter_Right|Mixer_Right|Mixer_Right|KeyAction.004|Mixer_Right|KeyAction.004
+  - first:
+      74: -8069412785196950681
+    second: Filter_Left|Character001|Take 001|BaseLayer
+  - first:
+      74: -7517020185522386808
+    second: Filter_Left|Character001|Take 001|BaseLayer.001
+  - first:
+      74: 8519797052320656161
+    second: Filter_Left|Character001|Take 001|BaseLayer.002
+  - first:
+      74: 6361657160923005269
+    second: Filter_Left|Filter_Left|Filter_Left|KeyAction.004|Filter_Left|KeyAction.004
+  - first:
+      74: -4639012667212934662
+    second: Filter_Left|Filter_Right|Filter_Right|KeyAction.004|Filter_Right|KeyAction.
+  - first:
+      74: 4976621519097655417
+    second: Filter_Left|Mixer_Left|Mixer_Left|KeyAction.004|Mixer_Left|KeyAction.004
+  - first:
+      74: -5013541400504989613
+    second: Filter_Left|Mixer_Right|Mixer_Right|KeyAction.004|Mixer_Right|KeyAction.004
+  - first:
+      74: -5127774108079584990
+    second: Mixer_Right|Character001|Take 001|BaseLayer
+  - first:
+      74: -3992638068151863084
+    second: Mixer_Right|Character001|Take 001|BaseLayer.001
+  - first:
+      74: 2321546731252016869
+    second: Mixer_Right|Character001|Take 001|BaseLayer.002
+  - first:
+      74: 4357193554565201052
+    second: Mixer_Right|Filter_Left|Filter_Left|KeyAction.004|Filter_Left|KeyAction.004
+  - first:
+      74: -5407289718197666163
+    second: Mixer_Right|Filter_Right|Filter_Right|KeyAction.004|Filter_Right|KeyAction.
+  - first:
+      74: 2836814014000368448
+    second: Mixer_Right|Mixer_Left|Mixer_Left|KeyAction.004|Mixer_Left|KeyAction.004
+  - first:
+      74: 8514362135572362982
+    second: Mixer_Right|Mixer_Right|Mixer_Right|KeyAction.004|Mixer_Right|KeyAction.004
+  - first:
+      74: -7194452495276462828
+    second: Mixer_Left|Character001|Take 001|BaseLayer
+  - first:
+      74: 3230772856373368369
+    second: Mixer_Left|Character001|Take 001|BaseLayer.001
+  - first:
+      74: -1921369486635430994
+    second: Mixer_Left|Character001|Take 001|BaseLayer.002
+  - first:
+      74: -4698770672445617571
+    second: Mixer_Left|Filter_Left|Filter_Left|KeyAction.004|Filter_Left|KeyAction.004
+  - first:
+      74: 5317404529680458503
+    second: Mixer_Left|Filter_Right|Filter_Right|KeyAction.004|Filter_Right|KeyAction.
+  - first:
+      74: -3526330744474622095
+    second: Mixer_Left|Mixer_Left|Mixer_Left|KeyAction.004|Mixer_Left|KeyAction.004
+  - first:
+      74: 8368714177127530591
+    second: Mixer_Left|Mixer_Right|Mixer_Right|KeyAction.004|Mixer_Right|KeyAction.004
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Palette05
+    second: {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Palette05 Emission
+    second: {fileID: 2100000, guid: a4136159677bfb546846ebe3f0e64d9c, type: 2}
+  materials:
+    materialImportMode: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
