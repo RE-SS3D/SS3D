@@ -7,7 +7,6 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Attributes;
 using SS3D.Systems.Lobby.Messages;
-using SS3D.Systems.UI;
 using UnityEngine;
 
 namespace SS3D.Systems.Lobby.UI

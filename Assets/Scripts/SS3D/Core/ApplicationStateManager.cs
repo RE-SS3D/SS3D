@@ -1,7 +1,6 @@
 using DG.Tweening;
 using UDiscord;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace SS3D.Core
 {
