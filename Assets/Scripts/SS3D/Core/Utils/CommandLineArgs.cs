@@ -1,4 +1,4 @@
-namespace SS3D.Core.Networking.Utils
+namespace SS3D.Core.Utils
 {
     /// <summary>
     /// Stores all the constants for CMD arguments for easy access and readability

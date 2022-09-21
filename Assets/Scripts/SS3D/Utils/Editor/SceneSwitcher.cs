@@ -14,7 +14,7 @@ namespace SS3D.Utils.Editor
 			ToolbarExtender.LeftToolbarGUI.Add(OnToolbarGUI);
 		}
 
-		public static void OnToolbarGUI()
+		private static void OnToolbarGUI()
 		{
 			GUILayout.FlexibleSpace();
 
@@ -34,7 +34,7 @@ namespace SS3D.Utils.Editor
 
 	public static class SceneHelper
 	{
-		private static string SceneToOpen;
+		private static string _sceneToOpen;
 
 		public static void StartScene(string sceneName)
 		{
@@ -43,13 +43,13 @@ namespace SS3D.Utils.Editor
 				EditorApplication.isPlaying = false;
 			}
 
-			SceneToOpen = sceneName;
+			_sceneToOpen = sceneName;
 			EditorApplication.update += OnUpdate;
 		}
 
-		public static void OnUpdate()
+		private static void OnUpdate()
 		{
-			if (SceneToOpen == null ||
+			if (_sceneToOpen == null ||
 			    EditorApplication.isPlaying || EditorApplication.isPaused ||
 			    EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode)
 			{
@@ -62,7 +62,7 @@ namespace SS3D.Utils.Editor
 			{
 				// need to get scene via search because the path to the scene
 				// file contains the package version so it'll change over time
-				string[] guids = AssetDatabase.FindAssets("t:scene " + SceneToOpen, null);
+				string[] guids = AssetDatabase.FindAssets("t:scene " + _sceneToOpen, null);
 				if (guids.Length == 0)
 				{
 					Debug.LogWarning("Couldn't find scene file");
@@ -74,7 +74,7 @@ namespace SS3D.Utils.Editor
 				}
 			}
 
-			SceneToOpen = null;
+			_sceneToOpen = null;
 		}
 	}
 }
