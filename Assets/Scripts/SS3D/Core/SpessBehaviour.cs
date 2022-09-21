@@ -36,6 +36,9 @@ namespace SS3D.Core
             set => TransformCache.rotation = value;
         }
 
+        public bool ActiveSelf => GameObjectCache.activeSelf;
+        public bool ActiveInHierarchy => GameObjectCache.activeInHierarchy;
+
         public Transform Parent => TransformCache.parent;
 
         public Vector3 Forward => TransformCache.forward;

@@ -1,11 +1,10 @@
-using System;
 using SS3D.Core;
 using SS3D.Systems.UI.Buttons;
 using SS3D.Systems.UI.Screens;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SS3D.Systems.Lobby.UI
+namespace SS3D.Systems.CharacterCustomization
 {
     public class LobbyCharacterCustomizerView : SpessBehaviour
     {
@@ -34,6 +33,11 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleCloseCustomizerButton(bool state)
         {
+            if (state)
+            {
+                return;
+            }
+
             ChangeGameScreenEvent changeGameScreenEvent = new(ScreenType.Lobby);
             changeGameScreenEvent.Invoke(this);
         }

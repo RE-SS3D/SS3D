@@ -11,7 +11,7 @@ namespace SS3D.Systems.UI.Buttons
     /// Custom SS3D button, works similarly as Unity's
     /// </summary>
     [AddComponentMenu("| SS3D/UI/Label Button")]
-    public class LabelButton : SpessBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+    public class LabelButton : SpessBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler, IPointerDownHandler
     {
         public event Action<bool> OnPressed;
         public event Action<bool> OnHighlightChanged;
@@ -35,9 +35,35 @@ namespace SS3D.Systems.UI.Buttons
         [SerializeField] private TMP_Text _label;
         [SerializeField] private Image _image;
 
-        public bool Pressed => _pressed;
-        public bool Disabled => _disabled;
-        public bool Highlighted => _highlighted; 
+        public bool Pressed
+        {
+            get => _pressed;
+            private set
+            {
+                _pressed = value; 
+                OnPressed?.Invoke(_pressed);
+            }
+        }
+
+        public bool Disabled
+        {
+            get => _disabled;
+            private set
+            {
+                _disabled = value;
+                OnDisabledChanged?.Invoke(_disabled);
+            }
+        }
+
+        public bool Highlighted
+        {
+            get => _highlighted;
+            private set
+            {
+                _highlighted = value; 
+                OnHighlightChanged?.Invoke(_highlighted);
+            }
+        }
 
         private ButtonTextColorPair NormalColor => _buttonStyle.NormalColor;
         private ButtonTextColorPair HighlightedColor => _buttonStyle.HighlightedColor;
@@ -53,9 +79,9 @@ namespace SS3D.Systems.UI.Buttons
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            _highlighted = true;
+            Highlighted = true;
 
-            if (_disabled)
+            if (Disabled)
             {
                 return;
             }
@@ -65,9 +91,9 @@ namespace SS3D.Systems.UI.Buttons
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            _highlighted = false;
+            Highlighted = false;
 
-            if (_disabled)
+            if (Disabled)
             {
                 return;
             }
@@ -75,14 +101,26 @@ namespace SS3D.Systems.UI.Buttons
             Unhighlight();
         }
 
-        public void OnPointerClick(PointerEventData eventData)
+        public void OnPointerDown(PointerEventData eventData)
         {
-            if (_disabled)
+            if (Disabled)
             {
                 return;
             }
 
-            Press();
+            _pressed = true;
+            ProcessPress();
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            if (Disabled)
+            {
+                return;
+            }
+
+            _pressed = false;
+            ProcessPress();
         }
 
         private void Highlight()
@@ -105,10 +143,8 @@ namespace SS3D.Systems.UI.Buttons
             UpdateVisuals();
         }
 
-        private void Press()
+        private void ProcessPress()
         {
-            _pressed = !_pressed;
-
             if (_pressed)
             {
                 Select(); 
@@ -138,11 +174,17 @@ namespace SS3D.Systems.UI.Buttons
                 _label = GetComponentInChildren<TMP_Text>();
             }
 
-            if (_disabled)
+            if (Disabled)
             {
                 _image.color = DisabledColor.Button * (_baseImageColor * _colorMultiplier);
                 _label.color = DisabledColor.Text * (_baseTextColor * _colorMultiplier);
                 return;
+            }
+
+            if (_pressed)
+            {
+                _image.color = PressedColor.Button * (_baseImageColor * _colorMultiplier);
+                _label.color = PressedColor.Text * (_baseTextColor * _colorMultiplier);
             }
 
             if (!_pressed)
@@ -151,17 +193,10 @@ namespace SS3D.Systems.UI.Buttons
                 _label.color = NormalColor.Text * (_baseTextColor * _colorMultiplier);
             }
 
-            if (_highlighted && !_pressed)
+            if (Highlighted && !_pressed)
             {
                 _image.color = HighlightedColor.Button * (_baseImageColor * _colorMultiplier);
                 _label.color = HighlightedColor.Text * (_baseTextColor * _colorMultiplier);
-                return;
-            }
-
-            if (_pressed)
-            {
-                _image.color = PressedColor.Button * (_baseImageColor * _colorMultiplier);
-                _label.color = PressedColor.Text * (_baseTextColor * _colorMultiplier);
             }
         }
     }

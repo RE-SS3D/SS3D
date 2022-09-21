@@ -4049,7 +4049,7 @@ GameObject:
   - component: {fileID: 7681193208418680076}
   - component: {fileID: 1408888235524066563}
   - component: {fileID: 6349697050721758704}
-  - component: {fileID: 4370972904279086843}
+  - component: {fileID: 7174890275416467753}
   m_Layer: 5
   m_Name: Character Button
   m_TagString: Untagged
@@ -4116,7 +4116,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4370972904279086843
+--- !u!114 &7174890275416467753
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
