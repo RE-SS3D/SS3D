@@ -381,8 +381,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ff2a45d97e1e4340a9e8acc52d6f42f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Pressed: 0
-  Disabled: 0
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 3206407796921847736}
+  _networkObjectCache: {fileID: 0}
+  _pressed: 0
+  _disabled: 0
+  _highlighted: 0
+  _buttonStyle: {fileID: 0}
+  _colorMultiplier: 0
+  _baseImageColor: {r: 0, g: 0, b: 0, a: 0}
+  _baseTextColor: {r: 0, g: 0, b: 0, a: 0}
   _label: {fileID: 127922181}
   _image: {fileID: 297694207}
 --- !u!1 &347544576
@@ -766,8 +774,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ff2a45d97e1e4340a9e8acc52d6f42f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Pressed: 0
-  Disabled: 0
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 3206407796921847736}
+  _networkObjectCache: {fileID: 0}
+  _pressed: 0
+  _disabled: 0
+  _highlighted: 0
+  _buttonStyle: {fileID: 0}
+  _colorMultiplier: 0
+  _baseImageColor: {r: 0, g: 0, b: 0, a: 0}
+  _baseTextColor: {r: 0, g: 0, b: 0, a: 0}
   _label: {fileID: 347544578}
   _image: {fileID: 1756966056}
 --- !u!1 &1909611343
@@ -831,8 +847,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ff2a45d97e1e4340a9e8acc52d6f42f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Pressed: 0
-  Disabled: 0
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 3206407796921847736}
+  _networkObjectCache: {fileID: 0}
+  _pressed: 0
+  _disabled: 0
+  _highlighted: 0
+  _buttonStyle: {fileID: 0}
+  _colorMultiplier: 0
+  _baseImageColor: {r: 0, g: 0, b: 0, a: 0}
+  _baseTextColor: {r: 0, g: 0, b: 0, a: 0}
   _label: {fileID: 362058674}
   _image: {fileID: 1909611347}
 --- !u!114 &1909611347
@@ -996,8 +1020,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ff2a45d97e1e4340a9e8acc52d6f42f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Pressed: 0
-  Disabled: 0
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 3206407796921847736}
+  _networkObjectCache: {fileID: 0}
+  _pressed: 0
+  _disabled: 0
+  _highlighted: 0
+  _buttonStyle: {fileID: 0}
+  _colorMultiplier: 0
+  _baseImageColor: {r: 0, g: 0, b: 0, a: 0}
+  _baseTextColor: {r: 0, g: 0, b: 0, a: 0}
   _label: {fileID: 102491733}
   _image: {fileID: 1950942548}
 --- !u!1 &620800390035324490
@@ -1922,6 +1954,7 @@ GameObject:
   - component: {fileID: 7860572305637640851}
   - component: {fileID: 7860572305637640860}
   - component: {fileID: 7860572305637640861}
+  - component: {fileID: 3206407796921847736}
   m_Layer: 5
   m_Name: Character Customizer Canvas
   m_TagString: Untagged
@@ -2011,3 +2044,27 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &3206407796921847736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7860572305637640862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _networkBehaviours: []
+  SceneTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
+  _isNetworked: 1
+  _hasParentNetworkObjectAtEdit: 0
+  NetworkObserver: {fileID: 0}
+  _prefabId: -1
+  _scenePathHash: 0
+  _sceneId: 0
+  _sceneNetworkObjects: []

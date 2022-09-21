@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bf502799e4f744a4b838a0814c66e8d3, type: 3}
-  m_Name: Default
+  m_Name: None
   m_EditorClassIdentifier: 
   NormalColor:
     Button: {r: 1, g: 1, b: 1, a: 1}
-    Text: {r: 0, g: 0, b: 0, a: 1}
+    Text: {r: 1, g: 1, b: 1, a: 1}
   HighlightedColor:
-    Button: {r: 1, g: 1, b: 1, a: 0.7176471}
-    Text: {r: 0, g: 0, b: 0, a: 0.7019608}
+    Button: {r: 1, g: 1, b: 1, a: 0.6509804}
+    Text: {r: 1, g: 1, b: 1, a: 0.6509804}
   PressedColor:
-    Button: {r: 1, g: 1, b: 1, a: 0.7294118}
-    Text: {r: 0, g: 0, b: 0, a: 0.72156864}
+    Button: {r: 1, g: 1, b: 1, a: 0.5019608}
+    Text: {r: 1, g: 1, b: 1, a: 0.5019608}
   DisabledColor:
-    Button: {r: 1, g: 1, b: 1, a: 0.39607844}
-    Text: {r: 0, g: 0, b: 0, a: 0.4117647}
+    Button: {r: 1, g: 1, b: 1, a: 0.2509804}
+    Text: {r: 1, g: 1, b: 1, a: 0.2509804}

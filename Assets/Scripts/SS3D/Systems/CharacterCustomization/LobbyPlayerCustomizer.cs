@@ -20,7 +20,7 @@ namespace SS3D.Systems.CharacterCustomization
 
         private void Start()
         {
-            _dummyInstance = Instantiate(_dummyPrefab, _dummyStartPoint);
+//            _dummyInstance = Instantiate(_dummyPrefab, _dummyStartPoint);
         }
 
 
