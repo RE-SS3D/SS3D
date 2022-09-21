@@ -491,11 +491,11 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165067830856234
   _sceneNetworkObjects:
-  - {fileID: 1300949537}
   - {fileID: 246961641}
   - {fileID: 474682044}
   - {fileID: 616353825}
   - {fileID: 1081000820}
+  - {fileID: 1300949537}
   - {fileID: 1747971347}
   - {fileID: 2038082477}
   - {fileID: 2057128681}
@@ -607,11 +607,11 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165066633438947
   _sceneNetworkObjects:
-  - {fileID: 1300949537}
   - {fileID: 246961641}
   - {fileID: 474682044}
   - {fileID: 616353825}
   - {fileID: 1081000820}
+  - {fileID: 1300949537}
   - {fileID: 1747971347}
   - {fileID: 2038082477}
   - {fileID: 2057128681}
@@ -689,11 +689,11 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165068398884832
   _sceneNetworkObjects:
-  - {fileID: 1300949537}
   - {fileID: 246961641}
   - {fileID: 474682044}
   - {fileID: 616353825}
   - {fileID: 1081000820}
+  - {fileID: 1300949537}
   - {fileID: 1747971347}
   - {fileID: 2038082477}
   - {fileID: 2057128681}
@@ -1165,11 +1165,11 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165068380223416
   _sceneNetworkObjects:
-  - {fileID: 1300949537}
   - {fileID: 246961641}
   - {fileID: 474682044}
   - {fileID: 616353825}
   - {fileID: 1081000820}
+  - {fileID: 1300949537}
   - {fileID: 1747971347}
   - {fileID: 2038082477}
   - {fileID: 2057128681}
@@ -1275,11 +1275,11 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165064794059917
   _sceneNetworkObjects:
-  - {fileID: 1300949537}
   - {fileID: 246961641}
   - {fileID: 474682044}
   - {fileID: 616353825}
   - {fileID: 1081000820}
+  - {fileID: 1300949537}
   - {fileID: 1747971347}
   - {fileID: 2038082477}
   - {fileID: 2057128681}
@@ -1809,11 +1809,11 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165066046619548
   _sceneNetworkObjects:
-  - {fileID: 1300949537}
   - {fileID: 246961641}
   - {fileID: 474682044}
   - {fileID: 616353825}
   - {fileID: 1081000820}
+  - {fileID: 1300949537}
   - {fileID: 1747971347}
   - {fileID: 2038082477}
   - {fileID: 2057128681}
@@ -1911,9 +1911,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 988dec00c80c53945b5516f8d81ee0f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 2
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: 2038082477}
-  _networkObjectCache: {fileID: 1747971347}
+  _networkObjectCache: {fileID: 2038082477}
   _roundCountdownText: {fileID: 1113205651454122611}
 --- !u!114 &2038082477
 MonoBehaviour:
@@ -1934,17 +1934,17 @@ MonoBehaviour:
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
-  _hasParentNetworkObjectAtEdit: 1
+  _hasParentNetworkObjectAtEdit: 0
   NetworkObserver: {fileID: 0}
   _prefabId: -1
   _scenePathHash: 952082934
   _sceneId: 4089165065227811653
   _sceneNetworkObjects:
-  - {fileID: 1300949537}
   - {fileID: 246961641}
   - {fileID: 474682044}
   - {fileID: 616353825}
   - {fileID: 1081000820}
+  - {fileID: 1300949537}
   - {fileID: 1747971347}
   - {fileID: 2038082477}
   - {fileID: 2057128681}
@@ -2021,11 +2021,11 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165067736400930
   _sceneNetworkObjects:
-  - {fileID: 1300949537}
   - {fileID: 246961641}
   - {fileID: 474682044}
   - {fileID: 616353825}
   - {fileID: 1081000820}
+  - {fileID: 1300949537}
   - {fileID: 1747971347}
   - {fileID: 2038082477}
   - {fileID: 2057128681}
@@ -2962,6 +2962,30 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4370972903657002554, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4370972903657002554, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4370972903657002554, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4370972903657002554, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4370972903657002554, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 501.6718
+      objectReference: {fileID: 0}
+    - target: {fileID: 4370972903657002554, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 335.28992
+      objectReference: {fileID: 0}
     - target: {fileID: 4370972904889678301, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -3249,11 +3273,11 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165067743629323
   _sceneNetworkObjects:
-  - {fileID: 1300949537}
   - {fileID: 246961641}
   - {fileID: 474682044}
   - {fileID: 616353825}
   - {fileID: 1081000820}
+  - {fileID: 1300949537}
   - {fileID: 1747971347}
   - {fileID: 2038082477}
   - {fileID: 2057128681}
