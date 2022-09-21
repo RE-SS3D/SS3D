@@ -32,7 +32,7 @@ namespace SS3D.Systems.UI.Buttons
                     _button.OnPointerExit(null);
                 }
 
-               //_button.SendMessageUpwards("OnValidate", _button, SendMessageOptions.RequireReceiver);
+                EditorUtility.SetDirty(_button);
             }
 
             base.OnInspectorGUI();
