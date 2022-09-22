@@ -17,7 +17,7 @@ Option A.
 
 Option B.
 1. Clone this (SS3D) repository.
-2. [Download Unity 2019.4.30f1 or newer](https://unity3d.com/get-unity/download/archive) and open the folder containing the project in Unity.
+2. [Download Unity 2021.3.0f1 or newer](https://unity3d.com/get-unity/download/archive) and open the folder containing the project in Unity.
 
 ### Setup:
 
@@ -83,7 +83,7 @@ Explain the problem clearly and include any additional details to help maintaine
 
 Pull requests allow the maintainers to review any changes and verify they are wanted and don't break anything in the existing project. Similarly to issues, you should use the template when making a new PR and provide as much detail as possible.
 
-* Pull requests should merge into the *master* branch.
+* Pull requests should merge into the *develop* branch.
 * The title and description should be clear and concise.
 * If the PR is attempting to fix an issue, reference the issue number in the PR description ("Fixes #number").
 * Include pictures/videos in your pull request whenever possible.
