@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 3005367019165699049}
   - component: {fileID: 4469390917034111888}
   - component: {fileID: 3201441509120621224}
-  - component: {fileID: -1448244782923316114}
   - component: {fileID: 2225542677482032006}
   - component: {fileID: -6759719253771936552}
   m_Layer: 0
@@ -32,6 +31,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -55,15 +55,17 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
-  - {fileID: 2100000, guid: b16864a2572634c4ca3ef9ab752bb66f, type: 2}
+  - {fileID: 2100000, guid: 5a13a4ff45725714e835d3dbd3611a6f, type: 2}
+  - {fileID: 2100000, guid: b305a95a2bec7f64fa47fff74c81e869, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -84,6 +86,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &3201441509120621224
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -97,21 +100,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.0000005, y: 2.581737, z: 1}
   m_Center: {x: 0, y: 1.2908685, z: 0}
---- !u!114 &-1448244782923316114
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5989834269598487349}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DisplayName: Steel Girder
-  Text: 
-  MaxDistance: 0
 --- !u!114 &2225542677482032006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,14 +109,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 5989834269598487349}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  visible: 0
-  m_AssetId: 60695978170ac0c48af8fd7ac2c0a43c
-  hasSpawned: 0
+  _networkBehaviours: []
+  SceneTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
+  _isNetworked: 1
+  _hasParentNetworkObjectAtEdit: 0
+  NetworkObserver: {fileID: 0}
+  _prefabId: -1
+  _scenePathHash: 0
+  _sceneId: 0
+  _sceneNetworkObjects: []
 --- !u!114 &-6759719253771936552
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,11 +133,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5989834269598487349}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d4c17829cf718f419146d93c0826f22, type: 3}
+  m_Script: {fileID: 11500000, guid: 94120b376bbd78b4ab7a4b115b3f3b22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2225542677482032006}
+  _networkObjectCache: {fileID: 0}
   selectedAdjacencyType: 1
   CrossConnectAllowed: 1
   simpleAdjacency:
@@ -157,24 +153,16 @@ MonoBehaviour:
     u: {fileID: 2256514625206161274, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     i: {fileID: -8265987230191886290, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     lNone: {fileID: 8776228716606939545, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
-    lSingle: {fileID: -11870246166909645, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
+    lSingle: {fileID: -11870246166909645, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     tNone: {fileID: 1488574439620358511, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
-    tSingleRight: {fileID: -2127744595439564799, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
-    tSingleLeft: {fileID: -3200185679279159369, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
-    tDouble: {fileID: -8361241951420798070, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
-    xNone: {fileID: -5126041165234292758, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
-    xSingle: {fileID: -3982188834590592042, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
+    tSingleRight: {fileID: -2127744595439564799, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    tSingleLeft: {fileID: -3200185679279159369, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    tDouble: {fileID: -8361241951420798070, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    xNone: {fileID: -5126041165234292758, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    xSingle: {fileID: -3982188834590592042, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     xSide: {fileID: -112919310873740191, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
-    xOpposite: {fileID: 6225367577992342243, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
-    xTriple: {fileID: -4491423919934737300, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
+    xOpposite: {fileID: 6225367577992342243, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    xTriple: {fileID: -4491423919934737300, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     xQuad: {fileID: 4011312947144960823, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     viewObstacles: []
     opaque: 0

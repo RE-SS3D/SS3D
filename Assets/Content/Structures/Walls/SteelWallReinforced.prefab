@@ -27,6 +27,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4751264288399655126}
   m_RootOrder: 1
@@ -71,6 +72,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4751264288399655126}
   m_RootOrder: 3
@@ -100,7 +102,6 @@ GameObject:
   - component: {fileID: 5423264426121296638}
   - component: {fileID: 6696866361892651655}
   - component: {fileID: 5900408713039550863}
-  - component: {fileID: 181711760065846440}
   - component: {fileID: 3329265302435793928}
   - component: {fileID: -5032096873030947251}
   m_Layer: 0
@@ -120,6 +121,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7865440248658157346}
   - {fileID: 1617587746005885406}
@@ -147,15 +149,17 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7b91bd4845c08c04f96e3a5f5c47aeca, type: 2}
-  - {fileID: 2100000, guid: b16864a2572634c4ca3ef9ab752bb66f, type: 2}
+  - {fileID: 2100000, guid: 5a13a4ff45725714e835d3dbd3611a6f, type: 2}
+  - {fileID: 2100000, guid: b305a95a2bec7f64fa47fff74c81e869, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -176,6 +180,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &5900408713039550863
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -189,21 +194,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.0000002, y: 2.5825613, z: 1.0000002}
   m_Center: {x: 0, y: 1.2912806, z: 0}
---- !u!114 &181711760065846440
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3591147544166670882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 671f779259184f2c984b9c017a5141df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DisplayName: Steel Reinforced Wall
-  Text: 
-  MaxDistance: 0
 --- !u!114 &3329265302435793928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,14 +203,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 3591147544166670882}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  visible: 0
-  m_AssetId: d11a68992658b7741bd28ffdf04165ba
-  hasSpawned: 0
+  _networkBehaviours: []
+  SceneTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
+  _isNetworked: 1
+  _hasParentNetworkObjectAtEdit: 0
+  NetworkObserver: {fileID: 0}
+  _prefabId: -1
+  _scenePathHash: 0
+  _sceneId: 0
+  _sceneNetworkObjects: []
 --- !u!114 &-5032096873030947251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -230,11 +227,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 3591147544166670882}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d4c17829cf718f419146d93c0826f22, type: 3}
+  m_Script: {fileID: 11500000, guid: 94120b376bbd78b4ab7a4b115b3f3b22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 3329265302435793928}
+  _networkObjectCache: {fileID: 0}
   selectedAdjacencyType: 1
   CrossConnectAllowed: 1
   simpleAdjacency:
@@ -249,24 +247,16 @@ MonoBehaviour:
     u: {fileID: -4617469110243651000, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     i: {fileID: -4202866168148515202, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     lNone: {fileID: 1416678969765429477, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
-    lSingle: {fileID: 2615301760864349125, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
-    tNone: {fileID: -4631304276038291484, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
-    tSingleRight: {fileID: 2101405080814798504, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
-    tSingleLeft: {fileID: -4684418801502764421, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
-    tDouble: {fileID: -7045099174083754657, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
+    lSingle: {fileID: 2615301760864349125, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    tNone: {fileID: -4631304276038291484, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    tSingleRight: {fileID: 2101405080814798504, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    tSingleLeft: {fileID: -4684418801502764421, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    tDouble: {fileID: -7045099174083754657, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     xNone: {fileID: 4255688939808854452, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
-    xSingle: {fileID: 3945060429677625043, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
+    xSingle: {fileID: 3945060429677625043, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     xSide: {fileID: 9163509131738271192, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
-    xOpposite: {fileID: -7744038958267161825, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
-    xTriple: {fileID: 5869884649093938551, guid: 9c0b392ffb24ca248a002fe36b08bae8,
-      type: 3}
+    xOpposite: {fileID: -7744038958267161825, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
+    xTriple: {fileID: 5869884649093938551, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     xQuad: {fileID: 4199670461815796357, guid: 9c0b392ffb24ca248a002fe36b08bae8, type: 3}
     viewObstacles:
     - {fileID: 5351388144419023931}
@@ -316,6 +306,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4751264288399655126}
   m_RootOrder: 0
@@ -360,6 +351,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4751264288399655126}
   m_RootOrder: 2
