@@ -8,6 +8,6 @@ namespace SS3D.Systems.Entities
     /// </summary>
     public class PlayerControllable : NetworkBehaviour
     {
-        
+
     }
 }

@@ -1,6 +1,7 @@
 using FishNet;
 using FishNet.Object;
 using SS3D.Core;
+using SS3D.Core.Attributes;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Messages;
 using TMPro;

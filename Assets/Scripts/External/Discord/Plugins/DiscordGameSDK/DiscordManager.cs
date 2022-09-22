@@ -226,10 +226,9 @@ namespace UDiscord
 
         #region Others
 
-        //OnDisable means when object is disabled or game turned off
         void OnDisable()
         {
-            Debug.Log($"[{typeof(DiscordManager)}] - Discord Shutdown after 10 seconds");
+            Debug.Log($"[{nameof(DiscordManager)}] - Discord Shutdown after 10 seconds");
             Shutdown();
             discord?.Dispose();
         }
