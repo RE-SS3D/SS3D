@@ -14,7 +14,7 @@ namespace SS3D.Core
     ///
     /// TODO: Could use a refactor
     /// </summary>
-    public sealed class SessionNetworkHelper : MonoBehaviour
+    public sealed class SessionNetworkHelper : SpessBehaviour
     {
         private static List<string> _commandLineArgs;
 

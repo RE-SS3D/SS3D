@@ -42,7 +42,7 @@ namespace UDiscord
 
         private void Update()
         {
-            discord.RunCallbacks();
+            discord?.RunCallbacks();
         }
 
         #endregion

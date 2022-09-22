@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 
 namespace SS3D.Systems.UI.Buttons
@@ -37,3 +38,4 @@ namespace SS3D.Systems.UI.Buttons
         }
     }
 }
+#endif

@@ -70,10 +70,8 @@ namespace SS3D.Systems.UI.Buttons
         private ButtonTextColorPair PressedColor => _buttonStyle.PressedColor;
         private ButtonTextColorPair DisabledColor => _buttonStyle.DisabledColor;
 
-        protected override void OnValidate()
+        private void OnValidate()
         {
-            base.OnValidate();
-
             UpdateVisuals();
         }
 

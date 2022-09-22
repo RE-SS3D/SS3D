@@ -1,5 +1,6 @@
 using FishNet;
 using FishNet.Object;
+using SS3D.Core;
 using SS3D.Core.Attributes;
 using SS3D.Systems.Rounds.Messages;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 
 namespace SS3D.Systems.Lobby.UI
 {
-    public class LobbyRoundView : NetworkBehaviour
+    public class LobbyRoundView : SpessBehaviour
     {
         [SerializeField][NotNull] private Button _embarkButton;
 

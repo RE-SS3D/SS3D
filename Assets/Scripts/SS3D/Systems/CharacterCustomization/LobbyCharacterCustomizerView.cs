@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace SS3D.Systems.CharacterCustomization
 {
-    public class LobbyCharacterCustomizerView : SpessBehaviour
+    public class LobbyCharacterCustomizerView : NetworkedSpessBehaviour
     {
         [SerializeField] private Button _openCustomizerButton;
         [SerializeField] private LabelButton _closeCustomizerButton;

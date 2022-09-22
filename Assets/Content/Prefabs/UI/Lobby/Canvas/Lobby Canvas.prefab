@@ -2661,10 +2661,10 @@ RectTransform:
   m_Father: {fileID: 4370972904293784224}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -370.9001, y: -242.7101}
+  m_SizeDelta: {x: 501.6718, y: 335.28992}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4370972903657002556
 CanvasRenderer:
@@ -3671,6 +3671,7 @@ GameObject:
   - component: {fileID: 9217222916359667033}
   - component: {fileID: 4370972905076281517}
   - component: {fileID: 1401177685}
+  - component: {fileID: 1300949538}
   m_Layer: 5
   m_Name: Lobby Canvas
   m_TagString: Untagged
@@ -3761,8 +3762,8 @@ CanvasGroup:
   m_GameObject: {fileID: 4370972905076281512}
   m_Enabled: 1
   m_Alpha: 1
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
 --- !u!114 &1401177685
 MonoBehaviour:
@@ -3781,6 +3782,21 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &1300949538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4370972905076281512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce7e9de368c8487083b5df6427df9f21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _screenType: 3
+  _canvasGroup: {fileID: 4370972905076281517}
+  _holder: {fileID: 4370972904293784224}
 --- !u!1 &4370972905362277894
 GameObject:
   m_ObjectHideFlags: 0
@@ -4106,8 +4122,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cb3545a3e3c816644b9a11e8bfc168e0, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 0}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -4141,7 +4157,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.509434, g: 0.509434, b: 0.509434, a: 0.8235294}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:

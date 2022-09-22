@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SS3D.Utils;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -13,7 +14,7 @@ namespace SS3D.Core
         private static readonly Dictionary<Type, object> Systems = new();
 
         /// <summary>
-        /// Get any system at runtime, make sure there's no duplicates before using
+        /// Gets any system at runtime, make sure there's no duplicates of said system before using.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
@@ -28,7 +29,9 @@ namespace SS3D.Core
 
             if (match == null)
             {
-                Debug.Log($"[{nameof(GameSystems)}] - Couldn't find system of {nameof(T)} in the scene");
+                string author = $"[{nameof(GameSystems)}]".Colorize(LogColors.Important); 
+
+                Debug.LogError($"{author} - Couldn't find system of {nameof(T)} in the scene");
             }
 
             Systems.Add(typeof(T), match);

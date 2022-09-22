@@ -1,3 +1,4 @@
+using System;
 using FishNet;
 using FishNet.Object;
 using SS3D.Core;
@@ -12,12 +13,9 @@ namespace SS3D.Systems.Lobby.UI
     /// <summary>
     /// Handles the lobby countdown view
     /// </summary>
-    public class LobbyCountdownView : NetworkBehaviour
+    public class LobbyCountdownView : NetworkedSpessBehaviour
     {
         [SerializeField][NotNull] private TMP_Text _roundCountdownText;
-
-        private int _roundSeconds;
-        private RoundState _roundState;
 
         private RoundSystem _roundSystem;
 
@@ -25,9 +23,8 @@ namespace SS3D.Systems.Lobby.UI
         {
             base.OnStartClient();
 
-            SubscribeToEvents();
-
             UpdateRoundCountDownText();
+            SubscribeToEvents();
         }
 
         private void SubscribeToEvents()
@@ -38,28 +35,25 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleRoundTickUpdated(RoundTickUpdatedMessage m)
         {
-            // probably discontinued
-            _roundSeconds = m.Seconds;
-
             UpdateRoundCountDownText();
         }
 
         private void HandleRoundStateUpdated(RoundStateUpdatedMessage m)
         {
-            // probably discontinued
-            _roundState = m.RoundState;
-            
             UpdateRoundCountDownText();
         }
 
         private void UpdateRoundCountDownText()
         {
-            _roundSystem = GameSystems.Get<RoundSystem>();
+            if (_roundSystem == null)
+            {
+                _roundSystem = GameSystems.Get<RoundSystem>();
+            }
 
-            _roundState = _roundSystem.RoundState;
-            _roundSeconds = _roundSystem.RoundTime;
-
-            _roundCountdownText.text = $"{_roundState} - {_roundSeconds}";
+            if (_roundSystem != null)
+            {
+                _roundCountdownText.text = $"{_roundSystem.RoundState} - {_roundSystem.RoundSeconds}";
+            }
         }
     }
 }
