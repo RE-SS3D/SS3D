@@ -1,6 +1,7 @@
 using Coimbra.Services.Events;
 using SS3D.Attributes;
 using SS3D.Core;
+using SS3D.Core.Behaviours;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Messages;
 using TMPro;

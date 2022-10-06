@@ -1,6 +1,7 @@
 using FishNet;
 using SS3D.Attributes;
 using SS3D.Core;
+using SS3D.Core.Behaviours;
 using SS3D.Systems.Rounds.Messages;
 using SS3D.UI.Buttons;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace SS3D.Systems.Lobby.UI
     /// </summary>
     public class LobbyRoundView : SpessBehaviour
     {
-        [FormerlySerializedAs("_embarkButton")] [SerializeField][NotNull] private ToggleLabelButton _startRoundButton;
+        //[FormerlySerializedAs("_embarkButton")] [SerializeField][NotNull] private ToggleLabelButton _startRoundButton;
 
         private void Start()
         {
@@ -23,7 +24,7 @@ namespace SS3D.Systems.Lobby.UI
 
         private void AddEventListeners()
         {
-            _startRoundButton.OnPressed += HandleEmbarkButtonPressed;
+            //_startRoundButton.OnPressed += HandleEmbarkButtonPressed;
         }
 
         private void HandleEmbarkButtonPressed(bool state)

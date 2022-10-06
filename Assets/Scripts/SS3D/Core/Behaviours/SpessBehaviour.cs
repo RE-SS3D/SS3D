@@ -1,16 +1,14 @@
 ﻿using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
-using FishNet.Object;
 using UnityEngine;
 
-// ReSharper disable InconsistentNaming
-namespace SS3D.Core
+namespace SS3D.Core.Behaviours
 {
     /// <summary>
     /// Used to optimize all GameObjects, avoid MonoBehaviours
     /// </summary>
     [Tooltip("Used to optimize all GameObjects, avoid MonoBehaviours")]
-    public class NetworkedSpessBehaviour : NetworkBehaviour
+    public class SpessBehaviour : MonoBehaviour
     {
         public Transform TransformCache { get; private set; }
         public GameObject GameObjectCache { get; private set; }

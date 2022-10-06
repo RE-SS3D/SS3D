@@ -7,6 +7,7 @@ using FishNet.Managing.Server;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
+using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;

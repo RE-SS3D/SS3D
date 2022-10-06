@@ -1,6 +1,7 @@
 ﻿using Coimbra.Services.Events;
 using DG.Tweening;
 using SS3D.Core;
+using SS3D.Core.Behaviours;
 using UnityEngine;
 
 namespace SS3D.Systems.Screens

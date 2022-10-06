@@ -3,6 +3,7 @@ using System.Linq;
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
+using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
