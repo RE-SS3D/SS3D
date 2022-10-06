@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Text;
 using NUnit.Framework;
-using SS3D.Core.Attributes;
+using SS3D.Attributes;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;

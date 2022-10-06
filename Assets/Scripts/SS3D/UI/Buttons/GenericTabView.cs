@@ -1,8 +1,8 @@
-using SS3D.Core.Attributes;
+using SS3D.Attributes;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SS3D.Systems.UI.Buttons
+namespace SS3D.UI.Buttons
 {
     /// <summary>
     /// Generic class to manage a simple tab/panel UI

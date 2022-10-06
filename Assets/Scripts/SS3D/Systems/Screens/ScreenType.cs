@@ -1,4 +1,4 @@
-﻿namespace SS3D.Systems.UI.Screens
+﻿namespace SS3D.Systems.Screens
 {
     public enum ScreenType
     {

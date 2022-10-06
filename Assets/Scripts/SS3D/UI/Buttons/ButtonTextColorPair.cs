@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace SS3D.Systems.UI.Buttons
+namespace SS3D.UI.Buttons
 {
     [Serializable]
     public struct ButtonTextColorPair

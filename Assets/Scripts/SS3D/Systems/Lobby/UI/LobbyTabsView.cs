@@ -1,5 +1,5 @@
-using SS3D.Core.Attributes;
-using SS3D.Systems.UI.Buttons;
+using SS3D.Attributes;
+using SS3D.UI.Buttons;
 using UnityEngine;
 
 namespace SS3D.Systems.Lobby.UI

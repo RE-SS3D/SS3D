@@ -67,11 +67,11 @@ namespace SS3D.Systems.Rounds
         [Server]
         private void ServerSubscribeToEvents()
         {
-            _serverManager.RegisterBroadcast<RequestStartRoundMessage>(HandleRequestStartRound);
+            _serverManager.RegisterBroadcast<ChangeRoundStateMessage>(HandleRequestStartRound);
         }
 
         [Server]
-        private void HandleRequestStartRound(NetworkConnection conn, RequestStartRoundMessage _)
+        private void HandleRequestStartRound(NetworkConnection conn, ChangeRoundStateMessage _)
         {
             RequestStartRound(conn);
         }

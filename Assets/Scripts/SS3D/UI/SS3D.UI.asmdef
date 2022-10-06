@@ -1,16 +1,14 @@
 {
-    "name": "SS3D.Core",
+    "name": "SS3D.UI",
     "rootNamespace": "",
     "references": [
-        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
-        "GUID:5fc9604920bae0a4e813087ad428c215",
+        "GUID:43c1375cedfd4704d8556970fe75a17e",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
         "GUID:fa8dbf94b90efa1478e7c833397cb0b2",
-        "GUID:b763ff73a93a62c4ea128e32ed2cd0d6",
-        "GUID:46e20dca70571ce4e817a6b5874168a0",
-        "GUID:92a1e40b8cccf8645adbdd275ac6371a",
-        "GUID:2aa873da5672f9c418c3d5556aaa7ca8",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
         "GUID:6aabbee860c32c64d9bbd52d0704ed2c",
-        "GUID:d2bbca7254de5e746857b04cfb560876"
+        "GUID:d2bbca7254de5e746857b04cfb560876",
+        "GUID:b763ff73a93a62c4ea128e32ed2cd0d6"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

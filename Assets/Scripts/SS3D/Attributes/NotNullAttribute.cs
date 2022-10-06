@@ -1,6 +1,6 @@
 using System;
 
-namespace SS3D.Core.Attributes
+namespace SS3D.Attributes
 {
     /// <summary>
     /// When decorated with this attribute, a field requires that it be set

@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace SS3D.Systems.UI.Buttons
+namespace SS3D.UI.Buttons
 {
     [CreateAssetMenu(fileName = "ButtonStyleAsset", menuName = "SS3D/UI/Buttons/ButtonStyle", order = 0)]
     public class ButtonStyleAsset : ScriptableObject
     {
         public ButtonTextColorPair NormalColor;
-        public ButtonTextColorPair HighlightedColor;
+        [FormerlySerializedAs("HighlightedColor")] public ButtonTextColorPair NormalHighlightedColor;
         public ButtonTextColorPair PressedColor;
+        public ButtonTextColorPair PressedHighlightedColor;
         public ButtonTextColorPair DisabledColor;
     }
 }

@@ -8,7 +8,13 @@ namespace SS3D.Systems.Rounds.Messages
     /// TODO: Make this based on player permissions
     /// </summary>
     [Serializable]
-    public struct RequestStartRoundMessage : IBroadcast
+    public struct ChangeRoundStateMessage : IBroadcast
     {
+        public readonly bool State;
+
+        public ChangeRoundStateMessage(bool state)
+        {
+            State = state;
+        }
     }
 }

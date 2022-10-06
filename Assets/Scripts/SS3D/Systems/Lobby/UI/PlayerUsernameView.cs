@@ -1,4 +1,4 @@
-using SS3D.Core.Attributes;
+using SS3D.Attributes;
 using TMPro;
 using UnityEngine;
 

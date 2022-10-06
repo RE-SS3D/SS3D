@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SS3D.Systems.UI.Buttons
+namespace SS3D.UI.Buttons
 {
     [Serializable]
     public struct ButtonStyle

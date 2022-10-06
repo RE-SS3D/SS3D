@@ -2,16 +2,16 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace SS3D.Systems.UI.Buttons
+namespace SS3D.UI.Buttons
 {
-    [CustomEditor(typeof(LabelButton))]
-    public class LabelButtonHighlightDebugEditor : Editor
+    [CustomEditor(typeof(ToggleLabelButton))]
+    public class MultipleLabelButtonHighlightDebugEditor : Editor
     {
-        private LabelButton _button;
+        private ToggleLabelButton _button;
 
         private void OnEnable()
         {
-            _button = (LabelButton)target;
+            _button = (ToggleLabelButton)target;
         }
 
         public override void OnInspectorGUI()

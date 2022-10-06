@@ -1,6 +1,6 @@
 using System;
 
-namespace SS3D.Core.Attributes
+namespace SS3D.Attributes
 {
     /// <summary>
     /// When decorated with this attribute, a Component requires that its GameObject

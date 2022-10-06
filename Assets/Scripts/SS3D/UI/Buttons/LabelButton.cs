@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace SS3D.Systems.UI.Buttons
+namespace SS3D.UI.Buttons
 {
     /// <summary>
     /// Custom SS3D button, works similarly as Unity's
@@ -18,22 +18,26 @@ namespace SS3D.Systems.UI.Buttons
         public event Action<bool> OnDisabledChanged;
 
         [Header("States")] 
-        [SerializeField] private bool _pressed;
+        [SerializeField]
+        protected bool _pressed;
         [SerializeField] private bool _disabled;
         [Header("Debug Info")]
         [SerializeField] private bool _highlighted;
 
         [Header("Style")]
-        [SerializeField] private ButtonStyleAsset _buttonStyle;
+        [SerializeField]
+        protected ButtonStyleAsset _buttonStyle;
 
         [Header("Colors")]
-        [SerializeField] private float _colorMultiplier = 1f;
-        [SerializeField] private Color _baseImageColor = Color.white;
-        [SerializeField] private Color _baseTextColor = Color.white;
+        [SerializeField]
+        protected float _colorMultiplier = 1f;
+        [SerializeField] protected Color _baseImageColor = Color.white;
+        [SerializeField] protected Color _baseTextColor = Color.white;
 
         [Header("UI Elements")]
-        [SerializeField] private TMP_Text _label;
-        [SerializeField] private Image _image;
+        [SerializeField]
+        protected TMP_Text _label;
+        [SerializeField] protected Image _image;
 
         public bool Pressed
         {
@@ -65,10 +69,11 @@ namespace SS3D.Systems.UI.Buttons
             }
         }
 
-        private ButtonTextColorPair NormalColor => _buttonStyle.NormalColor;
-        private ButtonTextColorPair HighlightedColor => _buttonStyle.HighlightedColor;
-        private ButtonTextColorPair PressedColor => _buttonStyle.PressedColor;
-        private ButtonTextColorPair DisabledColor => _buttonStyle.DisabledColor;
+        protected ButtonTextColorPair NormalColor => _buttonStyle.NormalColor;
+        protected ButtonTextColorPair NormalHighlightedColor => _buttonStyle.NormalHighlightedColor;
+        protected ButtonTextColorPair PressedColor => _buttonStyle.PressedColor;
+        protected ButtonTextColorPair PressedHighlightedColor => _buttonStyle.PressedHighlightedColor;
+        protected ButtonTextColorPair DisabledColor => _buttonStyle.DisabledColor;
 
         private void OnValidate()
         {
@@ -99,7 +104,7 @@ namespace SS3D.Systems.UI.Buttons
             Unhighlight();
         }
 
-        public void OnPointerDown(PointerEventData eventData)
+        public virtual void OnPointerDown(PointerEventData eventData)
         {
             if (Disabled)
             {
@@ -110,7 +115,7 @@ namespace SS3D.Systems.UI.Buttons
             ProcessPress();
         }
 
-        public void OnPointerUp(PointerEventData eventData)
+        public virtual void OnPointerUp(PointerEventData eventData)
         {
             if (Disabled)
             {
@@ -141,7 +146,7 @@ namespace SS3D.Systems.UI.Buttons
             UpdateVisuals();
         }
 
-        private void ProcessPress()
+        protected void ProcessPress()
         {
             if (_pressed)
             {
@@ -155,7 +160,7 @@ namespace SS3D.Systems.UI.Buttons
             OnPressed?.Invoke(_pressed);
         }
 
-        private void UpdateVisuals()
+        protected virtual void UpdateVisuals()
         {
             if (_buttonStyle == null)
             {
@@ -179,22 +184,28 @@ namespace SS3D.Systems.UI.Buttons
                 return;
             }
 
-            if (_pressed)
+            if (_pressed && !Highlighted)
             {
                 _image.color = PressedColor.Button * (_baseImageColor * _colorMultiplier);
                 _label.color = PressedColor.Text * (_baseTextColor * _colorMultiplier);
             }
 
-            if (!_pressed)
+            if (!_pressed && !Highlighted)
             {
                 _image.color = NormalColor.Button * (_baseImageColor * _colorMultiplier);
                 _label.color = NormalColor.Text * (_baseTextColor * _colorMultiplier);
             }
 
-            if (Highlighted && !_pressed)
+            if (_pressed && Highlighted)
             {
-                _image.color = HighlightedColor.Button * (_baseImageColor * _colorMultiplier);
-                _label.color = HighlightedColor.Text * (_baseTextColor * _colorMultiplier);
+                _image.color = PressedHighlightedColor.Button * (_baseImageColor * _colorMultiplier);
+                _label.color = PressedHighlightedColor.Text * (_baseTextColor * _colorMultiplier);
+            }
+
+            if (!_pressed && Highlighted)
+            {
+                _image.color = NormalHighlightedColor.Button * (_baseImageColor * _colorMultiplier);
+                _label.color = NormalHighlightedColor.Text * (_baseTextColor * _colorMultiplier);
             }
         }
     }

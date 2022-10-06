@@ -1,16 +1,20 @@
 using FishNet;
-using FishNet.Object;
+using SS3D.Attributes;
 using SS3D.Core;
-using SS3D.Core.Attributes;
 using SS3D.Systems.Rounds.Messages;
+using SS3D.UI.Buttons;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace SS3D.Systems.Lobby.UI
 {
+    /// <summary>
+    /// Controls a button that starts or stops a round
+    /// </summary>
     public class LobbyRoundView : SpessBehaviour
     {
-        [SerializeField][NotNull] private Button _embarkButton;
+        [FormerlySerializedAs("_embarkButton")] [SerializeField][NotNull] private ToggleLabelButton _startRoundButton;
 
         private void Start()
         {
@@ -19,18 +23,18 @@ namespace SS3D.Systems.Lobby.UI
 
         private void AddEventListeners()
         {
-            _embarkButton.onClick.AddListener(HandleEmbarkButtonPressed);
+            _startRoundButton.OnPressed += HandleEmbarkButtonPressed;
         }
 
-        private void HandleEmbarkButtonPressed()
+        private void HandleEmbarkButtonPressed(bool state)
         {
-            RequestStartRound();
+            ChangeRoundState(state);
         }
 
-        private void RequestStartRound()
+        private void ChangeRoundState(bool state)
         {
-            RequestStartRoundMessage requestStartRoundMessage = new();
-            InstanceFinder.ClientManager.Broadcast(requestStartRoundMessage);
+            ChangeRoundStateMessage changeRoundStateMessage = new(state);
+            InstanceFinder.ClientManager.Broadcast(changeRoundStateMessage);
         }
     }
 }

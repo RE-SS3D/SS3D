@@ -3,7 +3,7 @@ using DG.Tweening;
 using SS3D.Core;
 using UnityEngine;
 
-namespace SS3D.Systems.UI.Screens
+namespace SS3D.Systems.Screens
 {
     /// <summary>
     /// Controls a screen that can be activated and deactivated globally using events

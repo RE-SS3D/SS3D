@@ -21,7 +21,7 @@ namespace SS3D.Systems.PlayerControl
         private readonly SyncList<Soul> _serverSouls = new();
 
         public string GetSoulCkeyByConn(NetworkConnection conn) => _serverSouls.SingleOrDefault(soul => soul.Owner == conn)?.Ckey;
-        private Soul GetSoulByCkey(string ckey) => _serverSouls.SingleOrDefault(soul => soul.Ckey == ckey);
+        public Soul GetSoulByCkey(string ckey) => _serverSouls.SingleOrDefault(soul => soul.Ckey == ckey);
 
         private void Start()
         {
