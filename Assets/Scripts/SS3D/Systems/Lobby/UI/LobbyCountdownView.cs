@@ -1,4 +1,5 @@
 using System;
+using Coimbra.Services.Events;
 using FishNet;
 using FishNet.Object;
 using SS3D.Core;
@@ -17,7 +18,8 @@ namespace SS3D.Systems.Lobby.UI
     {
         [SerializeField][NotNull] private TMP_Text _roundCountdownText;
 
-        private RoundSystem _roundSystem;
+        private int _seconds;
+        private RoundState _roundState;
 
         public override void OnStartClient()
         {
@@ -29,31 +31,27 @@ namespace SS3D.Systems.Lobby.UI
 
         private void SubscribeToEvents()
         {
-            InstanceFinder.ClientManager.RegisterBroadcast<RoundStateUpdatedMessage>(HandleRoundStateUpdated);
-            InstanceFinder.ClientManager.RegisterBroadcast<RoundTickUpdatedMessage>(HandleRoundTickUpdated);
+            RoundStateUpdated.AddListener(HandleRoundStateUpdated);
+            RoundTickUpdated.AddListener(HandleRoundTickUpdated);
         }
 
-        private void HandleRoundTickUpdated(RoundTickUpdatedMessage m)
+        private void HandleRoundTickUpdated(ref EventContext context, in RoundTickUpdated roundTickUpdated)
         {
+            _seconds = roundTickUpdated.Seconds;
+
             UpdateRoundCountDownText();
         }
 
-        private void HandleRoundStateUpdated(RoundStateUpdatedMessage m)
+        private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated roundStateUpdated)
         {
+            _roundState = roundStateUpdated.RoundState;
+
             UpdateRoundCountDownText();
         }
 
         private void UpdateRoundCountDownText()
         {
-            if (_roundSystem == null)
-            {
-                _roundSystem = GameSystems.Get<RoundSystem>();
-            }
-
-            if (_roundSystem != null)
-            {
-                _roundCountdownText.text = $"{_roundSystem.RoundState} - {_roundSystem.RoundSeconds}";
-            }
+            _roundCountdownText.text = $"{_roundState} - {_seconds}";
         }
     }
 }

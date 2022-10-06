@@ -1,14 +1,15 @@
 using System;
+using Coimbra.Services.Events;
 using FishNet.Broadcast;
 
 namespace SS3D.Systems.Rounds.Messages
 {
    [Serializable]
-   public struct RoundTickUpdatedMessage : IBroadcast
+   public partial struct RoundTickUpdated : IEvent
    {
       public readonly int Seconds;
 
-      public RoundTickUpdatedMessage(int seconds)
+      public RoundTickUpdated(int seconds)
       {
          Seconds = seconds;
       } 

@@ -2,19 +2,20 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using FishNet.Object;
-using SS3D.Utils;
-using UnityEngine;
+using SS3D.Logging;
+using LogType = SS3D.Logging.LogType;
 
 namespace SS3D.Systems.Rounds
 {
     /// <summary>
     /// Round system base implementation for basic round functionality
     /// </summary>
-    public class RoundSystem : RoundSystemBase
+    public sealed class RoundSystem : RoundSystemBase
     {
         /// <summary>
         /// Round loop runner
         /// </summary>
+        [Server]
         protected override async UniTask ProcessStartRound()
         {
             if (!IsServer) { return; }
@@ -26,22 +27,26 @@ namespace SS3D.Systems.Rounds
             await StopRound();
         }
 
+        /// <summary>
+        /// Prepares the round before starting
+        /// </summary>
         [Server]
         protected override async UniTask PrepareRound()
         {
-            string author = $"[{nameof(RoundSystem)}]".Colorize(LogColors.ServerOnly);
-            Debug.Log($"{author} - Preparing round");
-
+            Punpun.Say(this, "Preparing round", LogType.ServerOnly);
+            
             RoundState = RoundState.Preparing;
 
             await UniTask.WaitUntil(() => RoundState == RoundState.Preparing);
         }
 
+        /// <summary>
+        /// Process the round tick until the round ends
+        /// </summary>
         [Server]
         protected override async UniTask ProcessRoundTick()
         {
-            string author = $"[{nameof(RoundSystem)}]".Colorize(LogColors.ServerOnly);
-            Debug.Log($"{author} - Starting warmup tick");
+            Punpun.Say(this, "Starting warmup tick", LogType.ServerOnly);
 
             RoundSeconds = _warmupSeconds;
             TickCancellationToken = new CancellationTokenSource();
@@ -61,7 +66,7 @@ namespace SS3D.Systems.Rounds
                 }
             }
 
-            Debug.Log($"{author} - Starting round tick");
+            Punpun.Say(this, "Starting round tick", LogType.ServerOnly);
 
             while (IsOngoing)
             {
@@ -77,8 +82,7 @@ namespace SS3D.Systems.Rounds
             RoundState = RoundState.Ending;
             await UniTask.WaitUntil(() => RoundState == RoundState.Ending);
 
-            string author = $"[{nameof(RoundSystem)}]".Colorize(LogColors.ServerOnly);
-            Debug.Log($"{author} - Ending round");
+            Punpun.Say(this, "Ending round", LogType.ServerOnly);
         }
 
         [Server]
@@ -89,9 +93,7 @@ namespace SS3D.Systems.Rounds
             RoundState = RoundState.Stopped;
             await UniTask.WaitUntil(() => RoundState == RoundState.Stopped);
 
-            string author = $"[{nameof(RoundSystem)}]".Colorize(LogColors.ServerOnly);
-            Debug.Log($"{author} - Round stopped"); 
+            Punpun.Say(this, "Round stopped", LogType.ServerOnly); 
         }
-
     }
 }

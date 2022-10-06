@@ -7,10 +7,13 @@ using FishNet.Managing.Server;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
+using SS3D.Logging;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds.Messages;
 using UnityEngine;
+using LogType = SS3D.Logging.LogType;
+
 #pragma warning disable CS1998
 
 namespace SS3D.Systems.Rounds
@@ -21,11 +24,11 @@ namespace SS3D.Systems.Rounds
     public class RoundSystemBase : NetworkedSpessBehaviour
     {
         [Header("Round Information")]                                   
-        [SyncVar] [SerializeField] private RoundState _roundState;
+        [SyncVar(OnChange = "SetRoundState")] [SerializeField] private RoundState _roundState;
         /// <summary>
         /// How much time has passed
         /// </summary>
-        [SyncVar] [SerializeField] private int _currentTimerSeconds;
+        [SyncVar(OnChange = "SetCurrentTimerSeconds")] [SerializeField] private int _currentTimerSeconds;
         /// <summary>
         /// How many seconds of warmup
         /// </summary>
@@ -34,25 +37,17 @@ namespace SS3D.Systems.Rounds
 
         protected CancellationTokenSource TickCancellationToken;
         private ServerManager _serverManager;
-
+        
         public RoundState RoundState
         {
             get => _roundState;
-            protected set
-            {
-                _roundState = value;
-                UpdateRoundState();
-            }
+            protected set => _roundState = value;
         }
 
         public int RoundSeconds
         {
             get => _currentTimerSeconds;
-            protected set
-            {
-                _currentTimerSeconds = value; 
-                UpdateClock();
-            }
+            protected set => _currentTimerSeconds = value;
         }
 
         public bool IsWarmingUp => RoundState == RoundState.WarmingUp;
@@ -88,7 +83,7 @@ namespace SS3D.Systems.Rounds
         [Server]
         private void RequestStartRound(NetworkConnection conn)
         {
-            const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;
+            const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;             
 
             PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
             PermissionSystem permissionSystem = GameSystems.Get<PermissionSystem>();
@@ -99,20 +94,21 @@ namespace SS3D.Systems.Rounds
             // Checks if player can call a round start
             if (permissionSystem.GetUserPermission(userCkey) != requiredRole)
             {
-                Debug.Log($"[{nameof(RoundSystemBase)}] - User {userCkey} doesn't have {requiredRole} permission");
+                string message = $"User {userCkey} doesn't have {requiredRole} permission";
+                Punpun.Say(this, message, LogType.ServerOnly);
             }
             else
             {
-                Debug.Log($"[{nameof(RoundSystemBase)}] - User {userCkey} has started the round");
+                string message = $"User {userCkey} has started the round";
+                Punpun.Say(this, message, LogType.ServerOnly);
+
                 #pragma warning disable CS4014
                 ProcessStartRound();   
                 #pragma warning restore CS4014
             }
         }
 
-        /// <summary>
-        /// Server method to start the warmup
-        /// </summary>
+
         [Server]
         protected virtual async UniTask ProcessStartRound()
         {
@@ -143,31 +139,20 @@ namespace SS3D.Systems.Rounds
             throw new NotImplementedException("Method is not implemented, please do, you moron 😘");
         }
 
-        [Server]
-        private void UpdateClock()
+        private void SetCurrentTimerSeconds(int oldValue, int newValue, bool asServer)
         {
-            if (!IsServer)
-            {
-                return;
-            }
-            
-            RoundTickUpdatedMessage roundTickUpdatedMessage = new(_currentTimerSeconds);
-            _serverManager.Broadcast(roundTickUpdatedMessage, false);
+            _currentTimerSeconds = newValue;
+
+            RoundTickUpdated roundTickUpdated = new(_currentTimerSeconds);
+            roundTickUpdated.Invoke(this);
         }
 
-        [Server]
-        protected void UpdateRoundState()
+        private void SetRoundState(RoundState oldValue, RoundState newValue, bool asServer)
         {
-            RoundStateUpdatedMessage roundStateUpdatedMessage = new(_roundState);
-            _serverManager.Broadcast(roundStateUpdatedMessage, false);
-        }
+            _roundState = newValue;
 
-        protected int GetTimerSeconds()
-        {
-            TimeSpan timeSpan = TimeSpan.FromSeconds(_currentTimerSeconds);
-            int timer = (int)timeSpan.TotalSeconds;
-            
-            return timer;
+            RoundStateUpdated roundStateUpdated = new(_roundState);
+            roundStateUpdated.Invoke(this);
         }
     }
 }                               
