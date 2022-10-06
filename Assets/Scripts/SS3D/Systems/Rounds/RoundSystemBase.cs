@@ -72,17 +72,18 @@ namespace SS3D.Systems.Rounds
         }
 
         [Server]
-        private void HandleRequestStartRound(NetworkConnection conn, ChangeRoundStateMessage _)
+        private void HandleRequestStartRound(NetworkConnection conn, ChangeRoundStateMessage m)
         {
-            RequestStartRound(conn);
+            AuthorizeChangeRoundState(conn, m);
         }
 
         /// <summary>
         /// Process the start round request
         /// </summary>
         /// <param name="conn">The connection that requested the round start</param>
+        /// <param name="changeRoundStateMessage"></param>
         [Server]
-        private void RequestStartRound(NetworkConnection conn)
+        private void AuthorizeChangeRoundState(NetworkConnection conn, ChangeRoundStateMessage m)
         {
             const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;             
 
@@ -104,14 +105,14 @@ namespace SS3D.Systems.Rounds
                 Punpun.Say(this, message, LogType.ServerOnly);
 
                 #pragma warning disable CS4014
-                ProcessStartRound();   
+                ProcessChangeRoundState(m);   
                 #pragma warning restore CS4014
             }
         }
 
 
         [Server]
-        protected virtual async UniTask ProcessStartRound()
+        protected virtual async UniTask ProcessChangeRoundState(ChangeRoundStateMessage changeRoundStateMessage)
         {
             throw new NotImplementedException("Method is not implemented, please do, you moron 😘");
         }

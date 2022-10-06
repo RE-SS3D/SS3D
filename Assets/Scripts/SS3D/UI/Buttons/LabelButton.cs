@@ -14,7 +14,10 @@ namespace SS3D.UI.Buttons
     [AddComponentMenu("| SS3D/UI/Label Button")]
     public class LabelButton : SpessBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler, IPointerDownHandler
     {
-        public event Action<bool> OnPressed;
+        public event Action<bool, MouseButtonType> OnPressed;
+        public event Action<bool> OnPressedDown; 
+        public event Action<bool> OnPressedUp; 
+
         public event Action<bool> OnHighlightChanged;
         public event Action<bool> OnDisabledChanged;
 
@@ -46,7 +49,6 @@ namespace SS3D.UI.Buttons
             private set
             {
                 _pressed = value; 
-                OnPressed?.Invoke(_pressed);
             }
         }
 
@@ -113,7 +115,7 @@ namespace SS3D.UI.Buttons
             }
 
             _pressed = true;
-            ProcessPress();
+            ProcessPress(MouseButtonType.MouseDown);
         }
 
         public virtual void OnPointerUp(PointerEventData eventData)
@@ -124,7 +126,7 @@ namespace SS3D.UI.Buttons
             }
 
             _pressed = false;
-            ProcessPress();
+            ProcessPress(MouseButtonType.MouseUp);
         }
 
         private void Highlight()
@@ -147,7 +149,7 @@ namespace SS3D.UI.Buttons
             UpdateVisuals();
         }
 
-        protected void ProcessPress()
+        protected void ProcessPress(MouseButtonType eventData)
         {
             if (_pressed)
             {
@@ -158,7 +160,17 @@ namespace SS3D.UI.Buttons
                 Deselect();
             }
 
-            OnPressed?.Invoke(_pressed);
+            OnPressed?.Invoke(_pressed, eventData);
+
+            switch (eventData)
+            {
+                case MouseButtonType.MouseDown:
+                    OnPressedDown?.Invoke(_pressed);
+                    break;
+                default:
+                    OnPressedUp?.Invoke(_pressed);
+                    break;
+            }
         }
 
         protected virtual void UpdateVisuals()

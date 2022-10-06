@@ -2,7 +2,9 @@
 using DG.Tweening;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using UnityEngine;
+using LogType = SS3D.Logging.LogType;
 
 namespace SS3D.Systems.Screens
 {
@@ -72,7 +74,8 @@ namespace SS3D.Systems.Screens
 
             if (LastScreen == nextScreen)
             {
-                Debug.Log($"[{nameof(GameScreen)}] - Game screen changed to {nextScreen}");
+                string message = $"Game screen changed to {nextScreen}";
+                Punpun.Say(this, message);
             }
         }
     }

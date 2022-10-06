@@ -2,12 +2,14 @@
 using System.Linq;
 using FishNet.Connection;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.PlayerControl.Messages;
+using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Rounds.Messages;
 
 namespace SS3D.Systems.Rounds
@@ -17,7 +19,7 @@ namespace SS3D.Systems.Rounds
     /// </summary>
     public class RoundPlayerSystem : NetworkedSystem
     {
-        private readonly List<Soul> _readyPlayers = new();
+        [SyncVar(OnChange = "SetReadyPlayers")] private List<Soul> _readyPlayers = new();
 
         public override void OnStartServer()
         {
@@ -69,6 +71,14 @@ namespace SS3D.Systems.Rounds
                     _readyPlayers.Remove(soul);
                 }
             }
+        }
+
+        private void SetReadyPlayers(List<Soul> oldReadyPlayers, List<Soul> newReadyPlayers, bool asServer)
+        {
+            _readyPlayers = newReadyPlayers;
+
+            ReadyPlayersChanged readyPlayersChanged = new ReadyPlayersChanged(_readyPlayers);
+            readyPlayersChanged.Invoke(this);
         }
     }
 }

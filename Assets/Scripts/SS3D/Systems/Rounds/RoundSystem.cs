@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using FishNet.Object;
 using SS3D.Logging;
+using SS3D.Systems.Rounds.Messages;
 using LogType = SS3D.Logging.LogType;
 
 namespace SS3D.Systems.Rounds
@@ -15,16 +16,25 @@ namespace SS3D.Systems.Rounds
         /// <summary>
         /// Round loop runner
         /// </summary>
+        /// <param name="changeRoundStateMessage"></param>
         [Server]
-        protected override async UniTask ProcessStartRound()
+        protected override async UniTask ProcessChangeRoundState(ChangeRoundStateMessage m)
         {
             if (!IsServer) { return; }
 
-            await StopRound();
-            await PrepareRound();
-            await ProcessRoundTick();
-            await ProcessEndRound();
-            await StopRound();
+            if (m.State)
+            {
+                await StopRound();
+                await PrepareRound();
+                await ProcessRoundTick();
+                await ProcessEndRound();
+                await StopRound();
+            }
+            else
+            {
+                await ProcessEndRound();
+                await StopRound();
+            }
         }
 
         /// <summary>
@@ -37,7 +47,8 @@ namespace SS3D.Systems.Rounds
             
             RoundState = RoundState.Preparing;
 
-            await UniTask.WaitUntil(() => RoundState == RoundState.Preparing);
+            TimeSpan second = TimeSpan.FromMilliseconds(500);
+            await UniTask.Delay(second);
         }
 
         /// <summary>
@@ -56,7 +67,7 @@ namespace SS3D.Systems.Rounds
 
             while (IsWarmingUp && RoundSeconds > 0)
             {
-                await UniTask.Delay(second);
+                await UniTask.Delay(second, cancellationToken: TickCancellationToken.Token);
 
                 RoundSeconds--;
 
@@ -70,7 +81,7 @@ namespace SS3D.Systems.Rounds
 
             while (IsOngoing)
             {
-                await UniTask.Delay(second);
+                await UniTask.Delay(second, cancellationToken: TickCancellationToken.Token);
 
                 RoundSeconds++;
             }
@@ -80,7 +91,10 @@ namespace SS3D.Systems.Rounds
         protected override async UniTask ProcessEndRound()
         {
             RoundState = RoundState.Ending;
-            await UniTask.WaitUntil(() => RoundState == RoundState.Ending);
+            TickCancellationToken?.Cancel();
+
+            TimeSpan second = TimeSpan.FromMilliseconds(500);
+            await UniTask.Delay(second);
 
             Punpun.Say(this, "Ending round", LogType.ServerOnly);
         }
@@ -88,10 +102,16 @@ namespace SS3D.Systems.Rounds
         [Server]
         protected override async UniTask StopRound()
         {
-            TickCancellationToken?.Cancel();
+            if (RoundState == RoundState.Stopped)
+            {
+                return;
+            }
 
             RoundState = RoundState.Stopped;
-            await UniTask.WaitUntil(() => RoundState == RoundState.Stopped);
+            RoundSeconds = 0;
+
+            TimeSpan second = TimeSpan.FromMilliseconds(500);
+            await UniTask.Delay(second);
 
             Punpun.Say(this, "Round stopped", LogType.ServerOnly); 
         }

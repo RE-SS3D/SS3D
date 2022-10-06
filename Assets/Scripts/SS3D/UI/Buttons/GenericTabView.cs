@@ -17,12 +17,11 @@ namespace SS3D.UI.Buttons
         public Button Button => _tabButton;
         public bool Active => _active;
         
-        public void UpdateCategoryState(bool state)
+        public void SetActive(bool state)
         {
             _tabButton.interactable = !state;
             _panelUI.gameObject.SetActive(state);
             _active = state;
         }
-    
     }
 }

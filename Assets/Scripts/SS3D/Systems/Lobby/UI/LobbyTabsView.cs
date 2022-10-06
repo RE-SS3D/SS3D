@@ -33,7 +33,7 @@ namespace SS3D.Systems.Lobby.UI
         {
             foreach (GenericTabView tab in _categoryUi)
             {
-                tab.UpdateCategoryState(tab == _categoryUi[index]);
+                tab.SetActive(tab == _categoryUi[index]);
             }
         }
     }

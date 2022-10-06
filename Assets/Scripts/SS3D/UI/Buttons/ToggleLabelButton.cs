@@ -18,7 +18,7 @@ namespace SS3D.UI.Buttons
             }
 
             _pressed = !_pressed;
-            ProcessPress();
+            ProcessPress(MouseButtonType.MouseDown);
         }
 
         public override void OnPointerUp(PointerEventData eventData)
@@ -28,7 +28,7 @@ namespace SS3D.UI.Buttons
                 return;
             }
 
-            ProcessPress();
+            ProcessPress(MouseButtonType.MouseUp);
         }
 
         protected override void UpdateVisuals()

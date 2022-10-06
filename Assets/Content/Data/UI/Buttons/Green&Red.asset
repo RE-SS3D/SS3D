@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf502799e4f744a4b838a0814c66e8d3, type: 3}
+  m_Name: Green&Red
+  m_EditorClassIdentifier: 
+  NormalColor:
+    Button: {r: 0.53333336, g: 0.7019608, b: 0.41960785, a: 1}
+    Text: {r: 1, g: 1, b: 1, a: 1}
+  NormalHighlightedColor:
+    Button: {r: 0.5979441, g: 0.78699994, b: 0.4704413, a: 1}
+    Text: {r: 1, g: 1, b: 1, a: 1}
+  PressedColor:
+    Button: {r: 0.7254902, g: 0.28627452, b: 0.28627452, a: 1}
+    Text: {r: 1, g: 1, b: 1, a: 1}
+  PressedHighlightedColor:
+    Button: {r: 0.7254902, g: 0.20096076, b: 0.20096076, a: 1}
+    Text: {r: 1, g: 1, b: 1, a: 1}
+  DisabledColor:
+    Button: {r: 0.2735849, g: 0.2735849, b: 0.2735849, a: 0.16470589}
+    Text: {r: 1, g: 1, b: 1, a: 0.18431373}

@@ -1,6 +1,7 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Screens;
+using SS3D.UI;
 using SS3D.UI.Buttons;
 using UnityEngine;
 using UnityEngine.UI;
@@ -32,7 +33,7 @@ namespace SS3D.Systems.CharacterCustomization
             changeGameScreenEvent.Invoke(this);
         }
 
-        private void HandleCloseCustomizerButton(bool state)
+        private void HandleCloseCustomizerButton(bool state, MouseButtonType mouseButtonType)
         {
             if (state)
             {
