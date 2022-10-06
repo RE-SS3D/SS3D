@@ -21,7 +21,7 @@ namespace SS3D.Systems.Rounds
     /// <summary>
     /// Base for the round system, done here to avoid too much code in the round system 
     /// </summary>
-    public class RoundSystemBase : NetworkedSpessBehaviour
+    public class RoundSystemBase : NetworkedSystem
     {
         [Header("Round Information")]                                   
         [SyncVar(OnChange = "SetRoundState")] [SerializeField] private RoundState _roundState;

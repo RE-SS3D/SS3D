@@ -3,6 +3,7 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
@@ -12,7 +13,7 @@ namespace SS3D.Systems.PlayerControl
     /// <summary>
     /// Controls the player flux, when users want to authenticate, rejoin the game, leave the game
     /// </summary>
-    public sealed class PlayerControlSystem : NetworkBehaviour
+    public sealed class PlayerControlSystem : NetworkedSystem
     {
         [SerializeField] private GameObject _soulPrefab;
 

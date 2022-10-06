@@ -14,7 +14,7 @@ namespace SS3D.Systems.Rounds
     /// <summary>
     /// Sets what players are ready or not.
     /// </summary>
-    public class RoundPlayerSystem : NetworkedSpessBehaviour
+    public class RoundPlayerSystem : NetworkedSystem
     {
         private readonly List<Soul> _readyPlayers = new();
 
