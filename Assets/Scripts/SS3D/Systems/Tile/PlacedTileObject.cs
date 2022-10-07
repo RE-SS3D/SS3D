@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using FishNet;
-using FishNet.Managing.Server;
-using FishNet.Managing.Client;
-using SS3D.Engine.Tiles;
-using SS3D.Engine.Tiles.Connections;
+using SS3D.Systems.Tile.Connections;
 using UnityEngine;
 
-namespace SS3D.Engine.Tile.TileRework
+namespace SS3D.Systems.Tile
 {
     /// <summary>
     /// Class that is attached to every GameObject placed on the TileMap. 
@@ -31,16 +28,16 @@ namespace SS3D.Engine.Tile.TileRework
         /// <param name="worldPosition"></param>
         /// <param name="origin"></param>
         /// <param name="dir"></param>
-        /// <param name="tileObjectSO"></param>
+        /// <param name="tileObjectSo"></param>
         /// <returns></returns>
-        public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSO)
+        public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo)
         {
 
-            GameObject placedGameObject = EditorAndRuntime.InstantiatePrefab(tileObjectSO.prefab);
+            GameObject placedGameObject = EditorAndRuntime.InstantiatePrefab(tileObjectSo.prefab);
             placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
 
             // Alternative name is required for walls as they can occupy the same tile
-            if (TileHelper.ContainsSubLayers(tileObjectSO.layer))
+            if (TileHelper.ContainsSubLayers(tileObjectSo.layer))
                 placedGameObject.name += "_" + TileHelper.GetDirectionIndex(dir);
 
             PlacedTileObject placedObject = placedGameObject.GetComponent<PlacedTileObject>();
@@ -49,7 +46,7 @@ namespace SS3D.Engine.Tile.TileRework
                 placedObject = placedGameObject.AddComponent<PlacedTileObject>();
             }
 
-            placedObject.Setup(tileObjectSO, origin, dir);
+            placedObject.Setup(tileObjectSo, origin, dir);
 
             if (InstanceFinder.ServerManager?.Started ?? false)
             {
@@ -59,23 +56,23 @@ namespace SS3D.Engine.Tile.TileRework
             return placedObject;
         }
 
-        private TileObjectSo tileObjectSO;
-        private Vector2Int origin;
-        private Direction dir;
-        private IAdjacencyConnector adjacencyConnector;
+        private TileObjectSo _tileObjectSo;
+        private Vector2Int _origin;
+        private Direction _dir;
+        private IAdjacencyConnector _adjacencyConnector;
 
         /// <summary>
         /// Set up a new PlacedTileObject.
         /// </summary>
-        /// <param name="tileObjectSO"></param>
+        /// <param name="tileObjectSo"></param>
         /// <param name="origin"></param>
         /// <param name="dir"></param>
-        public void Setup(TileObjectSo tileObjectSO, Vector2Int origin, Direction dir)
+        public void Setup(TileObjectSo tileObjectSo, Vector2Int origin, Direction dir)
         {
-            this.tileObjectSO = tileObjectSO;
-            this.origin = origin;
-            this.dir = dir;
-            adjacencyConnector = GetComponent<IAdjacencyConnector>();
+            _tileObjectSo = tileObjectSo;
+            _origin = origin;
+            _dir = dir;
+            _adjacencyConnector = GetComponent<IAdjacencyConnector>();
         }
 
         /// <summary>
@@ -84,7 +81,7 @@ namespace SS3D.Engine.Tile.TileRework
         /// <returns></returns>
         public List<Vector2Int> GetGridPositionList()
         {
-            return tileObjectSO.GetGridPositionList(origin, dir);
+            return _tileObjectSo.GetGridPositionList(_origin, _dir);
         }
 
         /// <summary>
@@ -92,14 +89,14 @@ namespace SS3D.Engine.Tile.TileRework
         /// </summary>
         public void DestroySelf()
         {
-            if (adjacencyConnector != null)
-                adjacencyConnector.CleanAdjacencies();
+            if (_adjacencyConnector != null)
+                _adjacencyConnector.CleanAdjacencies();
             EditorAndRuntime.Destroy(gameObject);
         }
 
         public override string ToString()
         {
-            return tileObjectSO.nameString;
+            return _tileObjectSo.nameString;
         }
 
         /// <summary>
@@ -110,9 +107,9 @@ namespace SS3D.Engine.Tile.TileRework
         {
             return new PlacedSaveObject
             {
-                tileObjectSOName = tileObjectSO.nameString,
-                origin = origin,
-                dir = dir,
+                tileObjectSOName = _tileObjectSo.nameString,
+                origin = _origin,
+                dir = _dir,
             };
         }
 
@@ -122,7 +119,7 @@ namespace SS3D.Engine.Tile.TileRework
         /// <returns></returns>
         public bool HasAdjacencyConnector()
         {
-            return adjacencyConnector != null;
+            return _adjacencyConnector != null;
         }
 
         /// <summary>
@@ -131,8 +128,8 @@ namespace SS3D.Engine.Tile.TileRework
         /// <param name="placedObjects"></param>
         public void UpdateAllAdjacencies(PlacedTileObject[] placedObjects)
         {
-            if (adjacencyConnector != null)
-                adjacencyConnector.UpdateAll(placedObjects);
+            if (_adjacencyConnector != null)
+                _adjacencyConnector.UpdateAll(placedObjects);
         }
 
         /// <summary>
@@ -142,15 +139,15 @@ namespace SS3D.Engine.Tile.TileRework
         /// <param name="placedNeighbour"></param>
         public void UpdateSingleAdjacency(Direction dir, PlacedTileObject placedNeighbour)
         {
-            if (adjacencyConnector != null)
-                adjacencyConnector.UpdateSingle(dir, placedNeighbour);
+            if (_adjacencyConnector != null)
+                _adjacencyConnector.UpdateSingle(dir, placedNeighbour);
         }
 
         public TileObjectGenericType GetGenericType()
         {
-            if (tileObjectSO != null)
+            if (_tileObjectSo != null)
             {
-                return tileObjectSO.genericType;
+                return _tileObjectSo.genericType;
             }
 
             return TileObjectGenericType.None;
@@ -158,9 +155,9 @@ namespace SS3D.Engine.Tile.TileRework
 
         public TileObjectSpecificType GetSpecificType()
         {
-            if (tileObjectSO != null)
+            if (_tileObjectSo != null)
             {
-                return tileObjectSO.specificType;
+                return _tileObjectSo.specificType;
             }
 
             return TileObjectSpecificType.None;
@@ -168,20 +165,20 @@ namespace SS3D.Engine.Tile.TileRework
 
         public string GetName()
         {
-            if (tileObjectSO != null)
-                return tileObjectSO.nameString;
+            if (_tileObjectSo != null)
+                return _tileObjectSo.nameString;
             else
                 return string.Empty;
         }
 
         public Direction GetDirection()
         {
-            return dir;
+            return _dir;
         }
 
         public TileLayer GetLayer()
         {
-            return tileObjectSO.layer;
+            return _tileObjectSo.layer;
         }
     }
 }

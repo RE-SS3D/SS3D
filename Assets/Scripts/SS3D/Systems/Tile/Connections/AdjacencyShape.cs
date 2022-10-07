@@ -1,4 +1,4 @@
-﻿namespace SS3D.Engine.Tile.TileRework.Connections
+﻿namespace SS3D.Systems.Tile.Connections
 {
     public enum AdjacencyShape
     {

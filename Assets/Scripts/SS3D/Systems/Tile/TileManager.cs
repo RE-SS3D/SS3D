@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using SS3D.Engine.Tile.TileRework;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using static SS3D.Engine.Tiles.TileMap;
-using static SS3D.Engine.Tile.TileRework.TileRestrictions;
+using static SS3D.Systems.Tile.TileMap;
+using static SS3D.Systems.Tile.TileRestrictions;
 
-namespace SS3D.Engine.Tiles
+namespace SS3D.Systems.Tile
 {
     /// <summary>
     /// Manager class that is used for managing all tiles. Scripts that want to interact with the TileMap should do it via this class.
@@ -39,15 +35,15 @@ namespace SS3D.Engine.Tiles
         /// Singleton instance
         /// </summary>
         private static TileManager _instance;
-        public static TileManager Instance { get { return _instance; } }
+        public static TileManager Instance => _instance;
 
         public bool IsInitialized { get; private set; }
-        public static event System.Action TileManagerLoaded;
+        public static event Action OnTileManagerLoaded;
 
-        private static TileObjectSo[] tileObjectSOs;
+        private static TileObjectSo[] _tileObjectSOs;
         private string saveFileName = "tilemaps";
 
-        private List<TileMap> mapList;
+        private List<TileMap> _mapList;
 
         /// <summary>
         /// Initializes the TileManager.
@@ -56,7 +52,7 @@ namespace SS3D.Engine.Tiles
         {
             if (!IsInitialized)
             {
-                mapList = new List<TileMap>();
+                _mapList = new List<TileMap>();
 
                 // Scene has to be the same when playing in the editor or in the lobby
                 //TODO: figure out how to replace SceneLoader or introduce minimal version of it?
@@ -78,7 +74,7 @@ namespace SS3D.Engine.Tiles
                     string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
                     listTileObjectSO.Add(AssetDatabase.LoadAssetAtPath<TileObjectSo>(assetPath));
                 }
-                tileObjectSOs = listTileObjectSO.ToArray();
+                _tileObjectSOs = listTileObjectSO.ToArray();
 #else
                 Resources.LoadAll<TileObjectSo>("");
                 tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSo>();
@@ -88,7 +84,7 @@ namespace SS3D.Engine.Tiles
                 UpdateAllAdjacencies();
                 IsInitialized = true;
 
-                TileManagerLoaded?.Invoke();
+                OnTileManagerLoaded?.Invoke();
             }
         }
 
@@ -121,7 +117,7 @@ namespace SS3D.Engine.Tiles
             else
             {
                 _instance = this;
-                UnityEditor.EditorApplication.delayCall += () => {
+                EditorApplication.delayCall += () => {
                     if (this)
                         Reinitialize();
                 };
@@ -133,11 +129,11 @@ namespace SS3D.Engine.Tiles
         /// <summary>
         /// Adds a new TileMap. Should only be called from the Editor.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="mapName"></param>
         /// <returns></returns>
-        public TileMap AddTileMap(string name)
+        public TileMap AddTileMap(string mapName)
         {
-            TileMap map = Create(name);
+            TileMap map = Create(mapName);
             map.transform.SetParent(transform);
 
             return map;
@@ -149,7 +145,7 @@ namespace SS3D.Engine.Tiles
         public void CreateEmptyMap()
         {
             int emptyMapNumber = 1;
-            foreach (TileMap map in mapList)
+            foreach (TileMap map in _mapList)
             {
                 if (map.GetName() == "Empty map (" + emptyMapNumber + ")")
                 {
@@ -158,21 +154,21 @@ namespace SS3D.Engine.Tiles
             }
 
             TileMap emptyMap = AddTileMap("Empty map (" + emptyMapNumber + ")");
-            mapList.Add(emptyMap);
+            _mapList.Add(emptyMap);
         }
 
         public List<TileMap> GetTileMaps()
         {
-            return mapList;
+            return _mapList;
         }
 
         public string[] GetTileMapNames()
         {
-            string[] names = new string[mapList.Count];
+            string[] names = new string[_mapList.Count];
 
-            for (int i = 0; i < mapList.Count; i++)
+            for (int i = 0; i < _mapList.Count; i++)
             {
-                names[i] = mapList[i].GetName();
+                names[i] = _mapList[i].GetName();
             }
 
             return names;
@@ -184,7 +180,7 @@ namespace SS3D.Engine.Tiles
         /// <returns></returns>
         private TileMap GetMainMap()
         {
-            foreach (TileMap existingMap in mapList)
+            foreach (TileMap existingMap in _mapList)
             {
                 if (existingMap.IsMain)
                     return existingMap;
@@ -200,7 +196,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="map"></param>
         public void SetMainMap(TileMap map)
         {
-            foreach (TileMap existingMap in mapList)
+            foreach (TileMap existingMap in _mapList)
             {
                 existingMap.IsMain = false;
             }
@@ -212,39 +208,39 @@ namespace SS3D.Engine.Tiles
         /// </summary>
         /// <param name="map"></param>
         /// <param name="subLayerIndex"></param>
-        /// <param name="tileObjectSO"></param>
+        /// <param name="tileObjectSo"></param>
         /// <param name="position"></param>
         /// <param name="dir"></param>
-        public void SetTileObject(TileMap map, int subLayerIndex, TileObjectSo tileObjectSO, Vector3 position, Direction dir)
+        public void SetTileObject(TileMap map, int subLayerIndex, TileObjectSo tileObjectSo, Vector3 position, Direction dir)
         {
-            if (CanBuild(map, subLayerIndex, tileObjectSO, position, dir, false))
-                map.SetTileObject(subLayerIndex, tileObjectSO, position, dir);
+            if (CanBuild(map, subLayerIndex, tileObjectSo, position, dir, false))
+                map.SetTileObject(subLayerIndex, tileObjectSo, position, dir);
         }
 
         /// <summary>
         /// Simplified version of SetTileObject. Will set a TileObjectSO on the main map without a sub layer.
         /// </summary>
-        /// <param name="tileObjectSO"></param>
+        /// <param name="tileObjectSo"></param>
         /// <param name="position"></param>
         /// <param name="dir"></param>
-        public void SetTileObject(TileObjectSo tileObjectSO, Vector3 position, Direction dir)
+        private void SetTileObject(TileObjectSo tileObjectSo, Vector3 position, Direction dir)
         {
-            if (tileObjectSO.layer == TileLayer.HighWallMount || tileObjectSO.layer == TileLayer.LowWallMount)
+            if (tileObjectSo.layer is TileLayer.HighWallMount or TileLayer.LowWallMount)
                 Debug.LogError("Simplified function SetTileObject() is used. Do not use this function with layers where a sub index is required!");
 
-            GetMainMap().SetTileObject(0, tileObjectSO, position, dir);
+            GetMainMap().SetTileObject(0, tileObjectSo, position, dir);
         }
 
         /// <summary>
         /// Simplified version of SetTileObject. Will set a TileObjectSO from a name, on the main map and without a sub layer.
         /// </summary>
-        /// <param name="tileObjectSOName"></param>
+        /// <param name="tileObjectSoName"></param>
         /// <param name="position"></param>
         /// <param name="dir"></param>
-        public void SetTileObject(string tileObjectSOName, Vector3 position, Direction dir)
+        public void SetTileObject(string tileObjectSoName, Vector3 position, Direction dir)
         {
 
-            SetTileObject(GetTileObjectSO(tileObjectSOName), position, dir);
+            SetTileObject(GetTileObjectSO(tileObjectSoName), position, dir);
         }
 
         /// <summary>
@@ -252,12 +248,12 @@ namespace SS3D.Engine.Tiles
         /// </summary>
         /// <param name="map"></param>
         /// <param name="subLayerIndex"></param>
-        /// <param name="tileObjectSOName"></param>
+        /// <param name="tileObjectSoName"></param>
         /// <param name="position"></param>
         /// <param name="dir"></param>
-        public void SetTileObject(TileMap map, int subLayerIndex, string tileObjectSOName, Vector3 position, Direction dir)
+        public void SetTileObject(TileMap map, int subLayerIndex, string tileObjectSoName, Vector3 position, Direction dir)
         {
-            SetTileObject(map, subLayerIndex, GetTileObjectSO(tileObjectSOName), position, dir);
+            SetTileObject(map, subLayerIndex, GetTileObjectSO(tileObjectSoName), position, dir);
         }
 
         /// <summary>
@@ -265,32 +261,32 @@ namespace SS3D.Engine.Tiles
         /// </summary>
         /// <param name="map"></param>
         /// <param name="subLayerIndex"></param>
-        /// <param name="tileObjectSO"></param>
+        /// <param name="tileObjectSo"></param>
         /// <param name="position"></param>
         /// <param name="dir"></param>
         /// <returns></returns>
-        public bool CanBuild(TileMap selectedMap, int subLayerIndex, TileObjectSo tileObjectSO, Vector3 position, Direction dir, bool overrideAllowed)
+        public bool CanBuild(TileMap selectedMap, int subLayerIndex, TileObjectSo tileObjectSo, Vector3 position, Direction dir, bool overrideAllowed)
         {
             bool canBuild = true;
-            foreach (TileMap map in mapList)
+            foreach (TileMap map in _mapList)
             {
                 if (map == selectedMap)
                 {
                     if (overrideAllowed)
                     {
                         // Do not check if the tile is occupied. Only apply tile restrictions.
-                        canBuild &= map.CanBuild(subLayerIndex, tileObjectSO, position, dir, CheckRestrictions.OnlyRestrictions);
+                        canBuild &= map.CanBuild(subLayerIndex, tileObjectSo, position, dir, CheckRestrictions.OnlyRestrictions);
                     }
                     else
                     {
                         // Check for tile restrictions as well.
-                        canBuild &= map.CanBuild(subLayerIndex, tileObjectSO, position, dir, CheckRestrictions.Everything);
+                        canBuild &= map.CanBuild(subLayerIndex, tileObjectSo, position, dir, CheckRestrictions.Everything);
                     }
                 }
                 else
                 {
                     // Only check if the tile is occupied. Otherwise we cannot build furniture for example.
-                    canBuild &= map.CanBuild(subLayerIndex, tileObjectSO, position, dir, CheckRestrictions.None);
+                    canBuild &= map.CanBuild(subLayerIndex, tileObjectSo, position, dir, CheckRestrictions.None);
                 }
             }
             return canBuild;
@@ -299,16 +295,16 @@ namespace SS3D.Engine.Tiles
         /// <summary>
         /// Simplified version of CanBuild(). Assumes the main map is used and no sub layers are needed.
         /// </summary>
-        /// <param name="tileObjectSO"></param>
+        /// <param name="tileObjectSo"></param>
         /// <param name="position"></param>
         /// <param name="dir"></param>
         /// <returns></returns>
-        public bool CanBuild(TileObjectSo tileObjectSO, Vector3 position, Direction dir)
+        public bool CanBuild(TileObjectSo tileObjectSo, Vector3 position, Direction dir)
         {
-            if (tileObjectSO.layer == TileLayer.HighWallMount || tileObjectSO.layer == TileLayer.LowWallMount)
+            if (tileObjectSo.layer is TileLayer.HighWallMount or TileLayer.LowWallMount)
                 Debug.LogError("Simplified function CanBuild() is used. Do not use this function with layers where a sub index is required!");
 
-            return CanBuild(GetMainMap(), 0, tileObjectSO, position, dir, false);
+            return CanBuild(GetMainMap(), 0, tileObjectSo, position, dir, false);
         }
 
         /// <summary>
@@ -339,14 +335,14 @@ namespace SS3D.Engine.Tiles
         /// <summary>
         /// Returns a TileObjectSO for a given name. Used during loading to find a matching object.
         /// </summary>
-        /// <param name="tileObjectSOName"></param>
+        /// <param name="tileObjectSoName"></param>
         /// <returns></returns>
-        public TileObjectSo GetTileObjectSO(string tileObjectSOName)
+        public TileObjectSo GetTileObjectSO(string tileObjectSoName)
         {
-            TileObjectSo tileObjectSO = tileObjectSOs.FirstOrDefault(tileObject => tileObject.nameString == tileObjectSOName);
-            if (tileObjectSO == null)
-                Debug.LogError("TileObjectSO was not found: " + tileObjectSOName);
-            return tileObjectSO;
+            TileObjectSo tileObjectSo = _tileObjectSOs.FirstOrDefault(tileObject => tileObject.nameString == tileObjectSoName);
+            if (tileObjectSo == null)
+                Debug.LogError("TileObjectSO was not found: " + tileObjectSoName);
+            return tileObjectSo;
         }
 
         /// <summary>
@@ -356,13 +352,13 @@ namespace SS3D.Engine.Tiles
         {
             List<MapSaveObject> saveObjectList = new List<MapSaveObject>();
 
-            foreach (TileMap map in mapList)
+            foreach (TileMap map in _mapList)
             {
                 MapSaveObject saveObject = map.Save();
                 saveObjectList.Add(saveObject);
             }
 
-            ManagerSaveObject saveMapObject = new ManagerSaveObject
+            ManagerSaveObject saveMapObject = new()
             {
                 saveObjectList = saveObjectList.ToArray()
             };
@@ -382,15 +378,12 @@ namespace SS3D.Engine.Tiles
         /// new created, or only reinitalized.
         /// </summary>
         /// <param name="softLoad"></param>
-        public void LoadAll(bool softLoad)
+        private void LoadAll(bool softLoad)
         {
-            if (tileObjectSOs == null)
-            {
-                tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSo>();
-            }
+            _tileObjectSOs ??= Resources.FindObjectsOfTypeAll<TileObjectSo>();
 
             if (softLoad)
-                mapList.Clear();
+                _mapList.Clear();
             else
                 DestroyMaps();
 
@@ -400,7 +393,7 @@ namespace SS3D.Engine.Tiles
             {
                 Debug.Log("No saved maps found. Creating default one.");
                 CreateEmptyMap();
-                mapList[mapList.Count - 1].IsMain = true;
+                _mapList[^1].IsMain = true;
                 SaveAll();
                 return;
             }
@@ -436,7 +429,7 @@ namespace SS3D.Engine.Tiles
                     map.Load(s, false);
                     Debug.Log("Tilemaps loaded from save");
                 }
-                mapList.Add(map);
+                _mapList.Add(map);
             }
 
             
@@ -451,7 +444,7 @@ namespace SS3D.Engine.Tiles
             map.Clear();
             EditorAndRuntime.Destroy(map.gameObject);
 
-            mapList.Remove(map);
+            _mapList.Remove(map);
         }
 
         /// <summary>
@@ -459,7 +452,7 @@ namespace SS3D.Engine.Tiles
         /// </summary>
         private void DestroyMaps()
         {
-            foreach (TileMap map in mapList)
+            foreach (TileMap map in _mapList)
             {
                 map.Clear();
             }
@@ -469,7 +462,7 @@ namespace SS3D.Engine.Tiles
                 EditorAndRuntime.Destroy(transform.GetChild(i).gameObject);
             }
 
-            mapList.Clear();
+            _mapList.Clear();
         }
 
         /// <summary>
@@ -485,7 +478,7 @@ namespace SS3D.Engine.Tiles
             {
                 DestroyMaps();
                 CreateEmptyMap();
-                mapList[mapList.Count - 1].IsMain = true;
+                _mapList[^1].IsMain = true;
                 SaveAll();
             }
 #endif
@@ -507,7 +500,7 @@ namespace SS3D.Engine.Tiles
         [ContextMenu("Force adjacency update")]
         private void UpdateAllAdjacencies()
         {
-            foreach (TileMap map in mapList)
+            foreach (TileMap map in _mapList)
             {
                 map.UpdateAllAdjacencies();
             }

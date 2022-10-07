@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes;
-using SS3D.Engine.Tiles;
+using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 
-namespace SS3D.Engine.Tile.TileRework.Connections
+namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
     /// Used for storing adjacencies.
@@ -13,11 +11,11 @@ namespace SS3D.Engine.Tile.TileRework.Connections
     public class AdjacencyMap
     {
         //Stores an array of which of the 8 surrounding tiles have a connection. Order assumed to match Direction enum values.
-        private AdjacencyData[] connections;
+        private AdjacencyData[] _connections;
 
         public AdjacencyMap()
         {
-            connections = new [] {
+            _connections = new [] {
                 new AdjacencyData (TileObjectGenericType.None, TileObjectSpecificType.None, false),
                 new AdjacencyData (TileObjectGenericType.None, TileObjectSpecificType.None, false),
                 new AdjacencyData (TileObjectGenericType.None, TileObjectSpecificType.None, false),
@@ -29,11 +27,11 @@ namespace SS3D.Engine.Tile.TileRework.Connections
             };
         }
 
-        public AdjacencyData[] Connections => connections;
+        public AdjacencyData[] Connections => _connections;
 
         public bool HasConnection(Direction direction)
         {
-            return connections[(int)direction].Exists;
+            return _connections[(int)direction].Exists;
         }
 
         public int GetCardinalConnectionCount()
@@ -88,10 +86,10 @@ namespace SS3D.Engine.Tile.TileRework.Connections
          */
         public bool SetConnection(Direction direction, AdjacencyData data)
         {
-            bool changed = !data.Equals(connections[(int) direction]);
+            bool changed = !data.Equals(_connections[(int) direction]);
             if (changed)
             {
-                connections[(int) direction] = data;
+                _connections[(int) direction] = data;
             }
 
             return changed;
@@ -104,19 +102,19 @@ namespace SS3D.Engine.Tile.TileRework.Connections
                 TileHelper.CardinalDirections().Select(direction => (int)direction).ToList() : 
                 TileHelper.DiagonalDirections().Select(direction => (int)direction).ToList();
             //Loop through each index in direction indexes, pick those that exist and cast them to the Direction enum.
-            return (from index in directionIndexes where connections[index].Exists select (Direction) index).ToList();
+            return (from index in directionIndexes where _connections[index].Exists select (Direction) index).ToList();
         }
         
         public void DeserializeFromByte(byte bytemap)
         {
-            BitArray bits = new BitArray(new byte[] { bytemap });
+            BitArray bits = new(new[] { bytemap });
             AdjacencyData[] adjacencyData = new AdjacencyData[8];
             for (int i = 0; i < bits.Length; i++)
             {
                 adjacencyData[i] = new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, bits[i]);
             }
 
-            connections = adjacencyData;
+            _connections = adjacencyData;
         }
 
         public byte SerializeToByte()
@@ -124,7 +122,7 @@ namespace SS3D.Engine.Tile.TileRework.Connections
             int sum = 0;
             for (int i = 1, direction = 0; i < 256; i *= 2, direction++)
             {
-                if (connections[direction].Exists)
+                if (_connections[direction].Exists)
                 {
                     sum += i;
                 }
@@ -135,7 +133,7 @@ namespace SS3D.Engine.Tile.TileRework.Connections
 
         public override string ToString()
         {
-            return $"{connections}";
+            return $"{_connections}";
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System;
-using SS3D.Engine.Tiles;
 using UnityEngine;
 
-namespace SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes
+namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
 {
     /// <summary>
     /// Adjacency type used for objects that do require complex connections.

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using SS3D.Engine.Tile.TileRework;
 using UnityEngine;
 
-namespace SS3D.Engine.Tiles
+namespace SS3D.Systems.Tile
 {
     /// <summary>
     /// Class for the base TileObject that is used by the TileMap.
@@ -68,7 +65,9 @@ namespace SS3D.Engine.Tiles
         public void ClearAllPlacedObjects()
         {
             foreach (PlacedTileObject placedObject in placedObjects)
-                placedObject?.DestroySelf();
+            {
+                placedObject.DestroySelf();
+            }
 
             map.TriggerGridObjectChanged(x, y);
         }

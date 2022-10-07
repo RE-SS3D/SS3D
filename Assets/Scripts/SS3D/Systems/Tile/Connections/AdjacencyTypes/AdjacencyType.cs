@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace SS3D.Engine.Tiles.Connections
+﻿namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
 {
     /// <summary>
     /// Specifies which types of adjency connectors the multi adjacency connector should use.

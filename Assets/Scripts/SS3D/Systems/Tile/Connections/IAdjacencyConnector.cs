@@ -1,9 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using SS3D.Engine.Tile.TileRework;
-using UnityEngine;
-
-namespace SS3D.Engine.Tiles.Connections
+﻿namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
     /// Interface that all adjacency connectors should use.

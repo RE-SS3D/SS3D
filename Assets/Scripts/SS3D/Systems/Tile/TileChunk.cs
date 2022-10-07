@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SS3D.Engine.Tiles
+namespace SS3D.Systems.Tile
 {
     /// <summary>
     /// Chunk class used for grouping together TileObjects.
@@ -16,11 +15,11 @@ namespace SS3D.Engine.Tiles
         /// <summary>
         /// Event that is triggered when a TileObject changes.
         /// </summary>
-        public event EventHandler<OnGridObjectChangedEventArgs> OnGridObjectChanged;
-        public class OnGridObjectChangedEventArgs : EventArgs
+        public event EventHandler<GridObjectChangedEventArgs> OnGridObjectChanged;
+        public class GridObjectChangedEventArgs : EventArgs
         {
-            public int x;
-            public int y;
+            public int X;
+            public int Y;
         }
 
         /// <summary>
@@ -28,8 +27,8 @@ namespace SS3D.Engine.Tiles
         /// </summary>
         public struct TileGrid
         {
-            public TileLayer layer;
-            public TileObject[] tileObjectsGrid;
+            public TileLayer Layer;
+            public TileObject[] TileObjectsGrid;
         }
 
         /// <summary>
@@ -49,25 +48,25 @@ namespace SS3D.Engine.Tiles
         /// <summary>
         /// Unique key for each chunk
         /// </summary>
-        private Vector2Int chunkKey;
+        private readonly Vector2Int _chunkKey;
 
-        private int width;
-        private int height;
-        private float tileSize = 1f;
-        private Vector3 originPosition;
-        private List<TileGrid> tileGridList;
-        private TileManager tileManager;
+        private readonly int _width;
+        private readonly int _height;
+        private readonly float _tileSize;
+        private readonly Vector3 _originPosition;
+        private List<TileGrid> _tileGridList;
+        private TileManager _tileManager;
 
         public TileChunk(Vector2Int chunkKey, int width, int height, float tileSize, Vector3 originPosition)
         {
-            this.chunkKey = chunkKey;
-            this.width = width;
-            this.height = height;
-            this.tileSize = tileSize;
-            this.originPosition = originPosition;
+            _chunkKey = chunkKey;
+            _width = width;
+            _height = height;
+            _tileSize = tileSize;
+            _originPosition = originPosition;
 
             CreateAllGrids();
-            tileManager = TileManager.Instance;
+            _tileManager = TileManager.Instance;
         }
 
         /// <summary>
@@ -77,18 +76,18 @@ namespace SS3D.Engine.Tiles
         /// <returns></returns>
         private TileGrid CreateGrid(TileLayer layer)
         {
-            TileGrid grid = new TileGrid { layer = layer };
+            TileGrid grid = new TileGrid { Layer = layer };
 
-            int gridSize = width * height;
-            grid.tileObjectsGrid = new TileObject[gridSize];
+            int gridSize = _width * _height;
+            grid.TileObjectsGrid = new TileObject[gridSize];
 
             int subLayerSize = TileHelper.GetSubLayerSize(layer);
 
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < _width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (int y = 0; y < _height; y++)
                 {
-                    grid.tileObjectsGrid[y * width + x] = new TileObject(this, layer, x, y, subLayerSize);
+                    grid.TileObjectsGrid[y * _width + x] = new TileObject(this, layer, x, y, subLayerSize);
                 }
             }
 
@@ -100,37 +99,37 @@ namespace SS3D.Engine.Tiles
         /// </summary>
         private void CreateAllGrids()
         {
-            tileGridList = new List<TileGrid>();
+            _tileGridList = new List<TileGrid>();
 
             foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
-                tileGridList.Add(CreateGrid(layer));
+                _tileGridList.Add(CreateGrid(layer));
             }
         }
 
         public int GetWidth()
         {
-            return width;
+            return _width;
         }
 
         public int GetHeight()
         {
-            return height;
+            return _height;
         }
 
         public float GetTileSize()
         {
-            return tileSize;
+            return _tileSize;
         }
 
         public Vector3 GetOrigin()
         {
-            return originPosition;
+            return _originPosition;
         }
 
         public Vector2Int GetKey()
         {
-            return chunkKey;
+            return _chunkKey;
         }
 
         /// <summary>
@@ -141,7 +140,7 @@ namespace SS3D.Engine.Tiles
         /// <returns></returns>
         public Vector3 GetWorldPosition(int x, int y)
         {
-            return new Vector3(x, 0, y) * tileSize + originPosition;
+            return new Vector3(x, 0, y) * _tileSize + _originPosition;
         }
 
         /// <summary>
@@ -151,7 +150,7 @@ namespace SS3D.Engine.Tiles
         /// <returns></returns>
         public Vector2Int GetXY(Vector3 worldPosition)
         {
-            return new Vector2Int((int)Math.Round(worldPosition.x - originPosition.x), (int)Math.Round(worldPosition.z - originPosition.z));
+            return new Vector2Int((int)Math.Round(worldPosition.x - _originPosition.x), (int)Math.Round(worldPosition.z - _originPosition.z));
         }
 
         /// <summary>
@@ -164,9 +163,9 @@ namespace SS3D.Engine.Tiles
 
             foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
-                for (int x = 0; x < width; x++)
+                for (int x = 0; x < _width; x++)
                 {
-                    for (int y = 0; y < height; y++)
+                    for (int y = 0; y < _height; y++)
                     {
                         TileObject tileObject = GetTileObject(layer, x, y);
                         if (!tileObject.IsCompletelyEmpty())
@@ -185,9 +184,9 @@ namespace SS3D.Engine.Tiles
         /// <param name="enabled"></param>
         public void SetEnabled(TileLayer layer, bool enabled)
         {
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < _width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (int y = 0; y < _height; y++)
                 {
                     for (int i = 0; i < TileHelper.GetSubLayerSize(layer); i++)
                     {
@@ -206,9 +205,9 @@ namespace SS3D.Engine.Tiles
         /// <param name="value"></param>
         public void SetTileObject(TileLayer layer, int x, int y, TileObject value)
         {
-            if (x >= 0 && y >= 0 && x < width && y < height)
+            if (x >= 0 && y >= 0 && x < _width && y < _height)
             {
-                tileGridList[(int)layer].tileObjectsGrid[y * width + x] = value;
+                _tileGridList[(int)layer].TileObjectsGrid[y * _width + x] = value;
                 TriggerGridObjectChanged(x, y);
             }
         }
@@ -234,9 +233,9 @@ namespace SS3D.Engine.Tiles
         /// <returns></returns>
         public TileObject GetTileObject(TileLayer layer, int x, int y)
         {
-            if (x >= 0 && y >= 0 && x < width && y < height)
+            if (x >= 0 && y >= 0 && x < _width && y < _height)
             {
-                return tileGridList[(int)layer].tileObjectsGrid[y * width + x];
+                return _tileGridList[(int)layer].TileObjectsGrid[y * _width + x];
             }
             else
             {
@@ -252,14 +251,13 @@ namespace SS3D.Engine.Tiles
         /// <returns></returns>
         public TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
         {
-            Vector2Int vector = new Vector2Int();
-            vector = GetXY(worldPosition);
+            Vector2Int vector = GetXY(worldPosition);
             return GetTileObject(layer, vector.x, vector.y);
         }
 
         public void TriggerGridObjectChanged(int x, int y)
         {
-            OnGridObjectChanged?.Invoke(this, new OnGridObjectChangedEventArgs { x = x, y = y });
+            OnGridObjectChanged?.Invoke(this, new GridObjectChangedEventArgs { X = x, Y = y });
         }
 
         /// <summary>
@@ -269,9 +267,9 @@ namespace SS3D.Engine.Tiles
         {
             foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
-                for (int x = 0; x < width; x++)
+                for (int x = 0; x < _width; x++)
                 {
-                    for (int y = 0; y < height; y++)
+                    for (int y = 0; y < _height; y++)
                     {
                         TileObject tileObject = GetTileObject(layer, x, y);
                         for (int i = 0; i < TileHelper.GetSubLayerSize(layer); i++)
@@ -296,9 +294,9 @@ namespace SS3D.Engine.Tiles
 
             foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
-                for (int x = 0; x < width; x++)
+                for (int x = 0; x < _width; x++)
                 {
-                    for (int y = 0; y < height; y++)
+                    for (int y = 0; y < _height; y++)
                     {
                         TileObject tileObject = GetTileObject(layer, x, y);
                         if (!tileObject.IsCompletelyEmpty())
@@ -311,11 +309,11 @@ namespace SS3D.Engine.Tiles
 
             ChunkSaveObject saveObject = new ChunkSaveObject {
                 tileObjectSaveObjectArray = tileObjectSaveObjectList.ToArray(),
-                height = height,
-                originPosition = originPosition,
-                tileSize = tileSize,
-                width = width,
-                chunkKey = chunkKey,
+                height = _height,
+                originPosition = _originPosition,
+                tileSize = _tileSize,
+                width = _width,
+                chunkKey = _chunkKey,
             };
 
             return saveObject;
