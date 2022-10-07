@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using SS3D.Engine.Tile.TileRework;
-using SS3D.Engine.Tiles;
 using SS3D.Systems.Tile;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace SS3D.Editor.TileMap
 {
@@ -13,29 +12,29 @@ namespace SS3D.Editor.TileMap
      */
     public class TileDragHandler
     {
-        public TileDragHandler(TileManager tileManager, TileMapEditor mapEditor, Systems.Tile.TileMap map, int subLayerIndex, TileObjectSo tileObjectSO, Direction selectedDir, Vector3Int snappedPosition)
+        public TileDragHandler(TileManager tileManager, TileMapEditor mapEditor, SS3D.Systems.Tile.TileMap map, int subLayerIndex, TileObjectSo tileObjectSo, Direction selectedDir, Vector3Int snappedPosition)
         {
-            this.tileManager = tileManager;
-            this.mapEditor = mapEditor;
-            this.map = map;
-            this.subLayerIndex = subLayerIndex;
-            this.tileObjectSO = tileObjectSO;
-            this.selectedDir = selectedDir;
-            startPosition = snappedPosition;
-            curPosition = snappedPosition;
+            _tileManager = tileManager;
+            _mapEditor = mapEditor;
+            _map = map;
+            _subLayerIndex = subLayerIndex;
+            _tileObjectSo = tileObjectSo;
+            _selectedDir = selectedDir;
+            _startPosition = snappedPosition;
+            _curPosition = snappedPosition;
 
-            var tile = CreateGhost();
+            GameObject tile = CreateGhost();
             tile.transform.position = new Vector3(snappedPosition.x, 0, snappedPosition.y);
-            dragTiles.Insert(0, tile);
+            _dragTiles.Insert(0, tile);
         }
 
         private GameObject CreateGhost()
         {
-            GameObject ghostObject = (GameObject)PrefabUtility.InstantiatePrefab(tileObjectSO.prefab);
+            GameObject ghostObject = (GameObject)PrefabUtility.InstantiatePrefab(_tileObjectSo.prefab);
             ghostObject.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             ghostObject.name = "Ghost object";
             ghostObject.tag = "EditorOnly";
-            ghostObject.transform.SetParent(tileManager.transform);
+            ghostObject.transform.SetParent(_tileManager.transform);
             return ghostObject;
         }
 
@@ -50,17 +49,17 @@ namespace SS3D.Editor.TileMap
         public void HandleDrag(Vector3Int mousePosition)
         {
             // Don't need to update if the mouse hasn't moved
-            if (curPosition == mousePosition)
+            if (_curPosition == mousePosition)
                 return;
 
-            var prevPosition = curPosition;
+            Vector3Int prevPosition = _curPosition;
 
             // Change the number of columns and rows of tiles to match
             // Note: This is kinda insane.
-            int rowStart = startPosition.x;
+            int rowStart = _startPosition.x;
             int rowEnd = prevPosition.x;
             int rowInc = rowStart <= rowEnd ? 1 : -1;
-            int columnStart = startPosition.y;
+            int columnStart = _startPosition.y;
             int columnEnd = prevPosition.y;
             int columnInc = columnStart <= columnEnd ? 1 : -1;
 
@@ -78,10 +77,10 @@ namespace SS3D.Editor.TileMap
                     int minColumn = Math.Max(columnLength - Math.Abs(columnDiff), 1);
                     for (int j = minColumn; j < columnLength; j++)
                     {
-                        GameObject.DestroyImmediate(dragTiles[columnLength * i + j].gameObject);
+                        Object.DestroyImmediate(_dragTiles[columnLength * i + j].gameObject);
                     }
                     if (columnLength - minColumn > 0)
-                        dragTiles.RemoveRange(columnLength * i + minColumn, columnLength - minColumn);
+                        _dragTiles.RemoveRange(columnLength * i + minColumn, columnLength - minColumn);
                 }
 
                 // We need to add more columns in the negative direction,
@@ -91,7 +90,7 @@ namespace SS3D.Editor.TileMap
                     // We've already deleted all but one column, so:
                     columnEnd = columnStart;
                     columnLength = 1;
-                    columnDiff = mousePosition.y - startPosition.y;
+                    columnDiff = mousePosition.y - _startPosition.y;
                     // Flip the incrementor, causing columnDiff * columnInc > 0
                     columnInc = -columnInc;
                 }
@@ -103,9 +102,9 @@ namespace SS3D.Editor.TileMap
                   // Add tiles from (but excluding) columnEnd, up to (and including) columnEnd + columnDiff
                     for (int j = columnLength; j < columnLength + Math.Abs(columnDiff); j++)
                     {
-                        var tile = CreateGhost();
+                        GameObject tile = CreateGhost();
                         tile.transform.position = new Vector3(rowStart + i * rowInc, 0, columnStart + j * columnInc);
-                        dragTiles.Insert(columnLength * i + j, tile);
+                        _dragTiles.Insert(columnLength * i + j, tile);
                     }
                 }
             }
@@ -124,11 +123,11 @@ namespace SS3D.Editor.TileMap
                 {
                     for (int j = 0; j < columnLength; j++)
                     {
-                        GameObject.DestroyImmediate(dragTiles[columnLength * i + j]);
+                        Object.DestroyImmediate(_dragTiles[columnLength * i + j]);
                     }
                 }
                 if (rowLength - minRow > 0)
-                    dragTiles.RemoveRange(minRow * columnLength, (rowLength - minRow) * columnLength);
+                    _dragTiles.RemoveRange(minRow * columnLength, (rowLength - minRow) * columnLength);
 
                 // If we've crossed axes, we need to create more rows, so we manipulate values for the next if to trigger
                 if (rowLength - Math.Abs(rowDiff) <= 0)
@@ -136,7 +135,7 @@ namespace SS3D.Editor.TileMap
                     // We've already deleted all but one row, so:
                     rowEnd = rowStart;
                     rowLength = 1;
-                    rowDiff = mousePosition.x - startPosition.x;
+                    rowDiff = mousePosition.x - _startPosition.x;
 
                     // Flip the incrementor, so that the code now things we're increasing rows
                     rowInc = -rowInc;
@@ -148,9 +147,9 @@ namespace SS3D.Editor.TileMap
                 {
                     for (int j = 0; j < columnLength; j++)
                     {
-                        var tile = CreateGhost();
+                        GameObject tile = CreateGhost();
                         tile.transform.position = new Vector3(rowStart + i * rowInc, 0, columnStart + j * columnInc);
-                        dragTiles.Insert(columnLength * i + j, tile);
+                        _dragTiles.Insert(columnLength * i + j, tile);
                     }
                 }
             }
@@ -160,7 +159,7 @@ namespace SS3D.Editor.TileMap
             else
                 ShowTiles();
 
-            curPosition = mousePosition;
+            _curPosition = mousePosition;
         }
 
         /**
@@ -170,22 +169,22 @@ namespace SS3D.Editor.TileMap
         {
             CancelDrag();
 
-            int xInc = startPosition.x < curPosition.x ? 1 : -1;
-            int yInc = startPosition.y < curPosition.y ? 1 : -1;
-            for (int x = startPosition.x; x != curPosition.x + xInc; x += xInc)
+            int xInc = _startPosition.x < _curPosition.x ? 1 : -1;
+            int yInc = _startPosition.y < _curPosition.y ? 1 : -1;
+            for (int x = _startPosition.x; x != _curPosition.x + xInc; x += xInc)
             {
-                for (int y = startPosition.y; y != curPosition.y + yInc; y += yInc)
+                for (int y = _startPosition.y; y != _curPosition.y + yInc; y += yInc)
                 {
                     if (DeleteTiles)
                     {
-                        tileManager.ClearTileObject(map, SelectedLayer, 0, new Vector3(x, 0, y));
+                        _tileManager.ClearTileObject(_map, SelectedLayer, 0, new Vector3(x, 0, y));
                     }
                     else
                     {
                         if (AllowOverwrite)
-                            tileManager.ClearTileObject(map, SelectedLayer, 0, new Vector3(x, 0, y));
+                            _tileManager.ClearTileObject(_map, SelectedLayer, 0, new Vector3(x, 0, y));
 
-                        tileManager.SetTileObject(map, subLayerIndex, tileObjectSO, new Vector3(x, 0, y), selectedDir);
+                        _tileManager.SetTileObject(_map, _subLayerIndex, _tileObjectSo, new Vector3(x, 0, y), _selectedDir);
                     }
                 }
             }
@@ -194,47 +193,50 @@ namespace SS3D.Editor.TileMap
         /**
          * Destroys all temporary objects without creating the objects.
          */
-        public void CancelDrag()
+        private void CancelDrag()
         {
             // Ensure the tiles are cleared no matter what. Otherwise some annoying stuff can happen.
-            for (int i = 0; i < dragTiles.Count; ++i)
+            foreach (GameObject tiles in _dragTiles)
             {
-                if (dragTiles[i] && dragTiles[i])
-                    UnityEngine.Object.DestroyImmediate(dragTiles[i]);
+                if (tiles && tiles)
+                {
+                    Object.DestroyImmediate(tiles);
+                }
             }
-            dragTiles.Clear();
+
+            _dragTiles.Clear();
         }
 
         public List<GameObject> GetDragTiles()
         {
-            return dragTiles;
+            return _dragTiles;
         }
 
         private void HideTiles()
         {
-            foreach (var gameobject in dragTiles)
+            foreach (GameObject tile in _dragTiles)
             {
-                gameobject.SetActive(false);
+                tile.SetActive(false);
             }
         }
 
         private void ShowTiles()
         {
-            foreach (var gameobject in dragTiles)
+            foreach (GameObject tile in _dragTiles)
             {
-                gameobject.SetActive(true);
+                tile.SetActive(true);
             }
         }
 
-        private readonly TileManager tileManager;
-        private readonly TileMapEditor mapEditor;
-        private readonly Systems.Tile.TileMap map;
-        private readonly int subLayerIndex;
-        private readonly TileObjectSo tileObjectSO;
-        private readonly Direction selectedDir;
-        private readonly Vector3Int startPosition;
-        private Vector3Int curPosition;
-        private List<GameObject> dragTiles = new List<GameObject>();
+        private readonly TileManager _tileManager;
+        private readonly TileMapEditor _mapEditor;
+        private readonly SS3D.Systems.Tile.TileMap _map;
+        private readonly int _subLayerIndex;
+        private readonly TileObjectSo _tileObjectSo;
+        private readonly Direction _selectedDir;
+        private readonly Vector3Int _startPosition;
+        private Vector3Int _curPosition;
+        private readonly List<GameObject> _dragTiles = new();
 
         public bool DeleteTiles { get; set; }
         public bool AllowOverwrite { get; set; }
