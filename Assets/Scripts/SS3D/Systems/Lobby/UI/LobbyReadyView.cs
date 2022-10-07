@@ -27,7 +27,7 @@ namespace SS3D.Systems.Lobby.UI
                 return;
             }
 
-            string ckey = GameSystems.Get<PlayerControlSystem>().GetSoulCkeyByConn(LocalConnection);
+            string ckey = GameSystems.Get<PlayerControlSystem>().GetSoulCkey(LocalConnection);
                            
             ChangePlayerReadyMessage playerReadyMessage = new(ckey, pressed);
 

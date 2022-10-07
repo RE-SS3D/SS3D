@@ -1,4 +1,5 @@
 using SS3D.Attributes;
+using SS3D.Core.Behaviours;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +9,7 @@ namespace SS3D.UI.Buttons
     /// Generic class to manage a simple tab/panel UI
     /// </summary>
     [RequiredLayer("UI")]
-    public sealed class GenericTabView : MonoBehaviour
+    public sealed class GenericTabView : SpessBehaviour
     {
         [SerializeField] private bool _active;
         [SerializeField] [NotNull] private Transform _panelUI;
@@ -17,7 +18,7 @@ namespace SS3D.UI.Buttons
         public Button Button => _tabButton;
         public bool Active => _active;
         
-        public void SetActive(bool state)
+        public void SetTabActive(bool state)
         {
             _tabButton.interactable = !state;
             _panelUI.gameObject.SetActive(state);

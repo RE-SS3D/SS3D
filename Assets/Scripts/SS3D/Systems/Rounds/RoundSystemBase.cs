@@ -91,7 +91,7 @@ namespace SS3D.Systems.Rounds
             PermissionSystem permissionSystem = GameSystems.Get<PermissionSystem>();
 
             // Gets the soul that matches the connection, uses the ckey as the user id
-            string userCkey = playerControlSystem.GetSoulCkeyByConn(conn);
+            string userCkey = playerControlSystem.GetSoulCkey(conn);
 
             // Checks if player can call a round start
             if (permissionSystem.GetUserPermission(userCkey) != requiredRole)

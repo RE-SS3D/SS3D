@@ -88,6 +88,8 @@ namespace SS3D.Core.Behaviours
             OnAwake();
         }
 
+        private void Start() { OnStart(); }
+
         private void Initialize()
         {
             TransformCache = transform;
@@ -106,7 +108,6 @@ namespace SS3D.Core.Behaviours
         private void OnPreUpdate(ref EventContext context, in LastPreUpdateEvent e) { HandlePreUpdate(e.DeltaTime); }
         private void OnUpdate(ref EventContext context, in UpdateEvent e) { HandleUpdate(e.DeltaTime); }
         private void OnLateUpdate(ref EventContext context, in LateUpdateEvent e) { HandleLateUpdate(e.DeltaTime); }
-        private void Start() { OnStart(); }
         #endregion
 
         #region EVENT_CALLBACKS

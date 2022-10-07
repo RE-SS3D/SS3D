@@ -70,12 +70,9 @@ namespace SS3D.Systems.Rounds
                 await UniTask.Delay(second, cancellationToken: TickCancellationToken.Token);
 
                 RoundSeconds--;
-
-                if (RoundSeconds == 0)
-                {
-                    RoundState = RoundState.Ongoing;
-                }
             }
+
+            RoundState = RoundState.Ongoing;
 
             Punpun.Say(this, "Starting round tick", LogType.ServerOnly);
 

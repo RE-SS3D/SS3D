@@ -22,8 +22,8 @@ namespace SS3D.Systems.PlayerControl
         [SyncObject]
         private readonly SyncList<Soul> _serverSouls = new();
 
-        public string GetSoulCkeyByConn(NetworkConnection conn) => _serverSouls.SingleOrDefault(soul => soul.Owner == conn)?.Ckey;
-        public Soul GetSoulByCkey(string ckey) => _serverSouls.SingleOrDefault(soul => soul.Ckey == ckey);
+        public string GetSoulCkey(NetworkConnection conn) => _serverSouls.SingleOrDefault(soul => soul.Owner == conn)?.Ckey;
+        public Soul GetSoul(string ckey) => _serverSouls.SingleOrDefault(soul => soul.Ckey == ckey);
 
         private void Start()
         {
@@ -46,7 +46,7 @@ namespace SS3D.Systems.PlayerControl
         {
             string ckey = userAuthorizationMessage.Ckey;
 
-            Soul match = GetSoulByCkey(ckey);
+            Soul match = GetSoul(ckey);
 
             if (match != null)
             {

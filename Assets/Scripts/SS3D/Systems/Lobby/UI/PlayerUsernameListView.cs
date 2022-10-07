@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
+using Coimbra.Services.Events;
 using Cysharp.Threading.Tasks;
-using FishNet.Object;
-using FishNet.Object.Synchronizing;
 using SS3D.Attributes;
 using SS3D.Core;
+using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Systems.Lobby.Messages;
 using SS3D.Systems.Rounds.Events;
@@ -16,7 +16,7 @@ namespace SS3D.Systems.Lobby.UI
     /// <summary>
     /// Controls the player list in the lobby
     /// </summary>
-    public sealed class PlayerUsernameListView : NetworkBehaviour
+    public sealed class PlayerUsernameListView : NetworkedSpessBehaviour
     {
         // The UI element this is linked to
         [SerializeField] [NotNull] private Transform _root;
@@ -46,12 +46,13 @@ namespace SS3D.Systems.Lobby.UI
         {
             ClientManager.RegisterBroadcast<UserJoinedLobbyMessage>(HandleUserJoinedLobby);
             ClientManager.RegisterBroadcast<UserLeftLobbyMessage>(HandleUserLeftLobby);
-            ClientManager.RegisterBroadcast<ReadyPlayersChanged>(HandleReadyPlayersChanged);
+
+            ReadyPlayersChanged.AddListener(HandleReadyPlayersChanged);
         }
 
-        private void HandleReadyPlayersChanged(ReadyPlayersChanged m)
+        private void HandleReadyPlayersChanged(ref EventContext context, in ReadyPlayersChanged e)
         {
-            List<string> readyPlayers = m.ReadyPlayers;
+            List<string> readyPlayers = e.ReadyPlayers;
 
             foreach (PlayerUsernameView username in _playerUsernames)
             {
