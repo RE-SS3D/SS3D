@@ -1,7 +1,6 @@
-﻿using SS3D.Engine.Tiles;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace SS3D.Engine.Tile.TileRework.Connections
+namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
     /// Class used for picking the correct connector shape based on adjacent tiles.
@@ -11,34 +10,23 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         public static AdjacencyShape GetSimpleShape(AdjacencyMap adjacencyMap)
         {
             int connectionCount = adjacencyMap.GetCardinalConnectionCount();
-            if (connectionCount == 0)
+            switch (connectionCount)
             {
-                return AdjacencyShape.O;
+                case 0:
+                    return AdjacencyShape.O;
+                case 1:
+                    return AdjacencyShape.U;
+                //When two connections, checks if they're opposite or adjacent
+                case 2:
+                    return adjacencyMap.HasConnection(Direction.North) == adjacencyMap.HasConnection(Direction.South) ? AdjacencyShape.I : AdjacencyShape.L;
+                case 3:
+                    return AdjacencyShape.T;
+                case 4:
+                    return AdjacencyShape.X;
+                default:
+                    Debug.LogError($"Could not resolve Simple Adjacency Shape for given Adjacency Map - {adjacencyMap}");
+                    return AdjacencyShape.O;
             }
-
-            if (connectionCount == 1)
-            {
-                return AdjacencyShape.U;
-            }
-
-            //When two connections, checks if they're opposite or adjacent
-            if (connectionCount == 2)
-            {
-                return adjacencyMap.HasConnection(Direction.North) == adjacencyMap.HasConnection(Direction.South) ? AdjacencyShape.I : AdjacencyShape.L;
-            }
-
-            if (connectionCount == 3)
-            {
-                return AdjacencyShape.T;
-            }
-
-            if (connectionCount == 4)
-            {
-                return AdjacencyShape.X;
-            }
-
-            Debug.LogError($"Could not resolve Simple Adjacency Shape for given Adjacency Map - {adjacencyMap}");
-            return AdjacencyShape.O;
         }
         
         public static AdjacencyShape GetAdvancedShape(AdjacencyMap adjacencyMap)

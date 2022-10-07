@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using SS3D.Engine.Tiles;
 using UnityEngine;
 
-namespace SS3D.Engine.Tile.TileRework
+namespace SS3D.Systems.Tile
 {
     /// <summary>
     /// Scriptable object that should be used for every tile object.
@@ -30,7 +29,7 @@ namespace SS3D.Engine.Tile.TileRework
         /// </summary>
         /// <param name="dir"></param>
         /// <returns></returns>
-        public Vector2Int GetRotationOffset(Direction dir)
+        public static Vector2Int GetRotationOffset(Direction dir)
         {
             switch (dir)
             {

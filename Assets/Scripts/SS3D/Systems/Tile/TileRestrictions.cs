@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using SS3D.Engine.Tiles;
 using UnityEngine;
 
-namespace SS3D.Engine.Tile.TileRework
+namespace SS3D.Systems.Tile
 {
    
 
@@ -31,13 +30,13 @@ namespace SS3D.Engine.Tile.TileRework
         /// <param name="map"></param>
         /// <param name="position"></param>
         /// <param name="subLayerIndex"></param>
-        /// <param name="tileObjectSO"></param>
+        /// <param name="tileObjectSo"></param>
         /// <param name="dir"></param>
         /// <returns></returns>
-        public static bool CanBuild(TileMap map, Vector3 position, int subLayerIndex, TileObjectSo tileObjectSO, Direction dir)
+        public static bool CanBuild(TileMap map, Vector3 position, int subLayerIndex, TileObjectSo tileObjectSo, Direction dir)
         {
             TileManager tileManager = TileManager.Instance;
-            TileLayer placedLayer = tileObjectSO.layer;
+            TileLayer placedLayer = tileObjectSo.layer;
             TileObject[] tileObjects = new TileObject[TileHelper.GetTileLayers().Length];
 
             foreach (TileLayer layer in TileHelper.GetTileLayers())
@@ -46,7 +45,7 @@ namespace SS3D.Engine.Tile.TileRework
             }
 
             // Cannot build anything unless a plenum is placed
-            if (placedLayer != TileLayer.Plenum && !CanBuildOnPlenum(map, position, tileObjectSO, dir))
+            if (placedLayer != TileLayer.Plenum && !CanBuildOnPlenum(map, position, tileObjectSo, dir))
                 return false;
 
             // No wall mounts on non-walls
@@ -59,7 +58,7 @@ namespace SS3D.Engine.Tile.TileRework
                 case TileLayer.LowWallMount:
                 case TileLayer.HighWallMount:
                 {
-                    if (!CanBuildWallAttachment(map, position, tileObjectSO, dir))
+                    if (!CanBuildWallAttachment(map, position, tileObjectSo, dir))
                     {
                         return false;
                     }
@@ -76,7 +75,7 @@ namespace SS3D.Engine.Tile.TileRework
                     break;
                 }
                 // No walls on furniture
-                case TileLayer.Turf when tileObjectSO.genericType == TileObjectGenericType.Wall && (!tileObjects[(int)TileLayer.FurnitureBase].IsCompletelyEmpty() ||
+                case TileLayer.Turf when tileObjectSo.genericType == TileObjectGenericType.Wall && (!tileObjects[(int)TileLayer.FurnitureBase].IsCompletelyEmpty() ||
                     !tileObjects[(int)TileLayer.FurnitureTop].IsCompletelyEmpty() ||
                     !tileObjects[(int)TileLayer.Overlay].IsCompletelyEmpty()):
                     return false;
@@ -127,18 +126,19 @@ namespace SS3D.Engine.Tile.TileRework
 
             // No plenum means we cannot build anything on top
             if (plenumObject.IsCompletelyEmpty())
+            {
                 return false;
+            }
 
             // Only allow wires and machines on catwalks
             if (plenumObject.GetPlacedObject(0).name.Contains("Catwalk") && (plenumAttachment.layer != TileLayer.Wire &&
                 plenumAttachment.layer != TileLayer.FurnitureBase))
+            {
                 return false;
+            }
 
             // Can only build on a Plenum and not Catwalks or Lattices
-            if (!plenumObject.GetPlacedObject(0).name.Contains("Plenum") && !plenumObject.GetPlacedObject(0).name.Contains("Catwalk"))
-                return false;
-
-            return true;
+            return plenumObject.GetPlacedObject(0).name.Contains("Plenum") || plenumObject.GetPlacedObject(0).name.Contains("Catwalk");
         }
 
         /// <summary>

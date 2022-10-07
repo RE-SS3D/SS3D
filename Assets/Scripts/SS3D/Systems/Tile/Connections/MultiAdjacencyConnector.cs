@@ -1,11 +1,10 @@
-﻿using FishNet.Object;
-using FishNet.Managing.Server;
-using SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes;
-using SS3D.Engine.Tiles;
-using SS3D.Engine.Tiles.Connections;
+﻿using System;
+using FishNet.Object;
+using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace SS3D.Engine.Tile.TileRework.Connections
+namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
     /// Main adjacency connector class that should fulfill the majority of the use cases. This class ensures that similar objects will have their meshes seamlessly connect to each other.
@@ -21,13 +20,13 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         /// A type that specifies to which objects to connect to. Must be set if cross connect is used.
         /// </summary>
         [Tooltip("Generic ID that adjacent objects must be to count. If empty, any id is accepted.")]
-        private TileObjectGenericType genericType;
+        private TileObjectGenericType _genericType;
 
         /// <summary>
         /// Specific ID to differentiate objects when the generic is the same.
         /// </summary>
         [Tooltip("Specific ID to differentiate objects when the generic is the same.")]
-        private TileObjectSpecificType specificType;
+        private TileObjectSpecificType _specificType;
 
         /// <summary>
         /// Bool that determines if objects on different layers are allowed to connect to each other.
@@ -43,23 +42,21 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         /// Keeps track of adjacenc connections. Do not directly modify! Use the sync functions instead.
         /// </summary>
         //[SyncVar(hook = nameof(SyncAdjacentConnections))]
-        private byte adjacentConnections;
-
-        /// <summary>
-        /// Keeps track of blocked connections. Do not directly modify! Use the sync functions instead.
-        /// </summary>
-        //[SyncVar(hook = nameof(SyncBlockedConnections))]
-        private byte blockedConnections;
+        private byte _adjacentConnections;
 
         /// <summary>
         /// As syncvars cannot be directly modified. This field is used by the AdjacencyEditor.
         /// </summary>
-        [HideInInspector]
-        public byte EditorblockedConnections;
-        public byte BlockedConnections => blockedConnections;
+        [FormerlySerializedAs("EditorblockedConnections")] [HideInInspector]
+        public byte EditorBlockedConnections;
 
-        private AdjacencyMap adjacencyMap;
-        private MeshFilter filter;
+        /// <summary>
+        /// Keeps track of blocked connections. Do not directly modify! Use the sync functions instead.
+        /// </summary>
+        private byte BlockedConnections { get; set; }
+
+        private AdjacencyMap _adjacencyMap;
+        private MeshFilter _filter;
 
         public void Awake()
         {
@@ -79,26 +76,26 @@ namespace SS3D.Engine.Tile.TileRework.Connections
                 return;
             }
 
-            if (adjacencyMap == null)
+            if (_adjacencyMap == null)
             {
-                adjacencyMap = new AdjacencyMap();
+                _adjacencyMap = new AdjacencyMap();
             }
 
-            if (!filter)
+            if (!_filter)
             {
-                filter = GetComponent<MeshFilter>();
+                _filter = GetComponent<MeshFilter>();
             }
 
             PlacedTileObject placedTileObject = GetComponent<PlacedTileObject>();
             if (placedTileObject == null)
             {
-                genericType = TileObjectGenericType.None;
-                specificType = TileObjectSpecificType.None;
+                _genericType = TileObjectGenericType.None;
+                _specificType = TileObjectSpecificType.None;
             }
             else
             {
-                genericType = placedTileObject.GetGenericType();
-                specificType = placedTileObject.GetSpecificType();
+                _genericType = placedTileObject.GetGenericType();
+                _specificType = placedTileObject.GetSpecificType();
             }
         }
 
@@ -110,8 +107,8 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         private void SyncAdjacentConnections(byte oldConnections, byte newConnections)
         {
             EnsureInit();
-            adjacentConnections = newConnections;
-            adjacencyMap.DeserializeFromByte(adjacentConnections);
+            _adjacentConnections = newConnections;
+            _adjacencyMap.DeserializeFromByte(_adjacentConnections);
             UpdateMeshAndDirection();
         }
 
@@ -123,7 +120,7 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         private void SyncBlockedConnections(byte oldConnections, byte newConnections)
         {
             EnsureInit();
-            blockedConnections = newConnections;
+            BlockedConnections = newConnections;
             UpdateMeshAndDirection();
         }
 
@@ -134,8 +131,8 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         {
             base.OnStartClient();
             EnsureInit();
-            SyncAdjacentConnections(adjacentConnections, adjacentConnections);
-            SyncBlockedConnections(blockedConnections, EditorblockedConnections);
+            SyncAdjacentConnections(_adjacentConnections, _adjacentConnections);
+            SyncBlockedConnections(BlockedConnections, EditorBlockedConnections);
         }
 
         /// <summary>
@@ -174,18 +171,20 @@ namespace SS3D.Engine.Tile.TileRework.Connections
             foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
                 // Get the neighbour for a given direction
-                var vector = TileHelper.ToCardinalVector(dir);
+                Tuple<int, int> vector = TileHelper.ToCardinalVector(dir);
                 TileObject neighbour = map.GetTileObject(layer, transform.position + new Vector3(vector.Item1, 0, vector.Item2));
 
-                if ((neighbour.GetPlacedObject(0) && neighbour.GetPlacedObject(0).HasAdjacencyConnector()) || layer == ownLayer)
+                if ((!neighbour.GetPlacedObject(0) || !neighbour.GetPlacedObject(0).HasAdjacencyConnector()) && layer != ownLayer)
                 {
-                    bool connected = UpdateSingleConnection(dir, neighbour.GetPlacedObject(0));
-                    changed |= connected;
-
-                    // Update our neighbour as well
-                    if (connected)
-                        neighbour.GetPlacedObject(0)?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), GetComponent<PlacedTileObject>());
+                    continue;
                 }
+
+                bool connected = UpdateSingleConnection(dir, neighbour.GetPlacedObject(0));
+                changed |= connected;
+
+                // Update our neighbour as well
+                if (connected)
+                    neighbour.GetPlacedObject(0)?.UpdateSingleAdjacency(TileHelper.GetOpposite(dir), GetComponent<PlacedTileObject>());
             }
 
             if (changed)
@@ -248,21 +247,21 @@ namespace SS3D.Engine.Tile.TileRework.Connections
                 // If cross connect is allowed, we only allow it to connect when the object type matches the connector type
                 if (CrossConnectAllowed)
                 {
-                    isConnected &= placedObject.GetGenericType() == genericType && genericType != TileObjectGenericType.None;
+                    isConnected &= placedObject.GetGenericType() == _genericType && _genericType != TileObjectGenericType.None;
                 }
                 else
                 {
-                    isConnected &= placedObject.GetGenericType() == genericType || genericType == TileObjectGenericType.None;
+                    isConnected &= placedObject.GetGenericType() == _genericType || _genericType == TileObjectGenericType.None;
                 }
 
                 // Check for specific
-                isConnected &= placedObject.GetSpecificType() == specificType || specificType == TileObjectSpecificType.None;
+                isConnected &= placedObject.GetSpecificType() == _specificType || _specificType == TileObjectSpecificType.None;
 
                  
-                isConnected &= ((blockedConnections >> (int) dir) & 0x1) == 0;
+                isConnected &= ((BlockedConnections >> (int) dir) & 0x1) == 0;
             }
-            bool isUpdated = adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
-            byte connections = adjacencyMap.SerializeToByte();
+            bool isUpdated = _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
+            byte connections = _adjacencyMap.SerializeToByte();
             SyncAdjacentConnections(connections, connections);
 
             // Cross connect will override adjacents for other layers, so return isConnected instead.
@@ -276,10 +275,10 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         /// <param name="value"></param>
         public void SetBlockedDirection(Direction dir, bool value)
         {
-            adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, value));
-            SyncBlockedConnections(blockedConnections, adjacencyMap.SerializeToByte());
-            EditorblockedConnections = BlockedConnections;
-            adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, !value));
+            _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, value));
+            SyncBlockedConnections(BlockedConnections, _adjacencyMap.SerializeToByte());
+            EditorBlockedConnections = BlockedConnections;
+            _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, !value));
             UpdateMeshAndDirection();
         }
 
@@ -288,7 +287,7 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         /// </summary>
         public void UpdateBlockedFromEditor()
         {
-            SyncBlockedConnections(blockedConnections, EditorblockedConnections);
+            SyncBlockedConnections(BlockedConnections, EditorBlockedConnections);
         }
 
         /// <summary>
@@ -300,22 +299,22 @@ namespace SS3D.Engine.Tile.TileRework.Connections
             switch (selectedAdjacencyType)
             {
                 case AdjacencyType.Simple:
-                    info = simpleAdjacency.GetMeshAndDirection(adjacencyMap);
+                    info = simpleAdjacency.GetMeshAndDirection(_adjacencyMap);
                     break;
                 case AdjacencyType.Advanced:
-                    info = advancedAdjacency.GetMeshAndDirection(adjacencyMap);
+                    info = advancedAdjacency.GetMeshAndDirection(_adjacencyMap);
                     break;
                 case AdjacencyType.Offset:
-                    info = offsetAdjacency.GetMeshAndDirection(adjacencyMap);
+                    info = offsetAdjacency.GetMeshAndDirection(_adjacencyMap);
                     break;
             }
 
-            if (filter == null)
+            if (_filter == null)
             {
-                filter = GetComponent<MeshFilter>();
+                _filter = GetComponent<MeshFilter>();
             }
 
-            filter.mesh = info.Mesh;
+            _filter.mesh = info.Mesh;
 
             transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, info.Rotation, transform.localRotation.eulerAngles.z);
         }
@@ -327,23 +326,27 @@ namespace SS3D.Engine.Tile.TileRework.Connections
         {
             TileMap map = GetComponentInParent<TileMap>();
 
-            var neighbourObjects = map.GetNeighbourObjects(GetComponent<PlacedTileObject>().GetLayer(), 0, transform.position);
+            PlacedTileObject[] neighbourObjects = map.GetNeighbourObjects(GetComponent<PlacedTileObject>().GetLayer(), 0, transform.position);
             for (int i = 0; i < neighbourObjects.Length; i++)
             {
                 neighbourObjects[i]?.UpdateSingleAdjacency(TileHelper.GetOpposite((Direction)i), null);
             }
 
-            if (CrossConnectAllowed)
+            if (!CrossConnectAllowed)
+            {
+                return;
+            }
+
             {
                 foreach (TileLayer layer in TileHelper.GetTileLayers())
                 {
                     for (int i = 0; i < neighbourObjects.Length; i++)
                     {
                         // Get the neighbour for a given direction
-                        var vector = TileHelper.ToCardinalVector((Direction)i);
+                        Tuple<int, int> vector = TileHelper.ToCardinalVector((Direction)i);
                         TileObject neighbour = map.GetTileObject(layer, transform.position + new Vector3(vector.Item1, 0, vector.Item2));
 
-                        if ((neighbour.GetPlacedObject(0) && neighbour.GetPlacedObject(0).HasAdjacencyConnector()))
+                        if (neighbour.GetPlacedObject(0) && neighbour.GetPlacedObject(0).HasAdjacencyConnector())
                         {
                             neighbour.GetPlacedObject(0).UpdateSingleAdjacency(TileHelper.GetOpposite((Direction)i), null);
                         }

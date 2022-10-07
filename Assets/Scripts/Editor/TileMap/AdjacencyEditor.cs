@@ -1,7 +1,9 @@
 ﻿using SS3D.Engine.Tile.TileRework;
 using SS3D.Engine.Tile.TileRework.Connections;
-using SS3D.Engine.Tile.TileRework.Connections.AdjacencyTypes;
 using SS3D.Engine.Tiles;
+using SS3D.Systems.Tile;
+using SS3D.Systems.Tile.Connections;
+using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using UnityEditor;
 using UnityEngine;
 
@@ -71,7 +73,7 @@ namespace SS3D.Editor.TileMap
                 {
                     // Get the PlacedTileObject and map
                     var placedObject = connector.gameObject.GetComponent<PlacedTileObject>();
-                    Engine.Tiles.TileMap map = connector.gameObject.GetComponentInParent<Engine.Tiles.TileMap>();
+                    Systems.Tile.TileMap map = connector.gameObject.GetComponentInParent<Systems.Tile.TileMap>();
 
                     // Get all neighbours
                     var neighbourObjects = map.GetNeighbourObjects(placedObject.GetLayer(), 0, placedObject.transform.position);

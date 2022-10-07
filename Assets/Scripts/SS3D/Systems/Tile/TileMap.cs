@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SS3D.Engine.Tile.TileRework;
-using UnityEditor;
 using UnityEngine;
-using static SS3D.Engine.Tile.TileRework.TileRestrictions;
+using static SS3D.Systems.Tile.TileRestrictions;
 
-namespace SS3D.Engine.Tiles
+namespace SS3D.Systems.Tile
 {
     /// <summary>
     /// Class used for storing and modifying a tile map.
@@ -27,24 +25,24 @@ namespace SS3D.Engine.Tiles
         /// <summary>
         /// Number of TileObjects that should go in a chunk. 16 x 16
         /// </summary>
-        public const int CHUNK_SIZE = 16;
+        public const int ChunkSize = 16;
 
         /// <summary>
         /// The size of each tile.
         /// </summary>
-        private const float TILE_SIZE = 1.0f;
+        private const float TileSize = 1.0f;
 
         /// <summary>
         /// The tolerance threshold for identifying a tile object at a position.
         /// </summary>
         private const float POSITION_TOLERANCE = 0.05f;
 
-        private Dictionary<Vector2Int, TileChunk> chunks;
-        public int ChunkCount { get => chunks.Count; }
+        private Dictionary<Vector2Int, TileChunk> _chunks;
+        public int ChunkCount => _chunks.Count;
         public bool IsMain { get; set; }
 
-        private string mapName;
-        private TileManager tileManager;
+        private string _mapName;
+        private TileManager _tileManager;
 
         /// <summary>
         /// Creates a new TileMap.
@@ -64,24 +62,24 @@ namespace SS3D.Engine.Tiles
         /// <summary>
         /// Initialize the new map.
         /// </summary>
-        /// <param name="name"></param>
-        public void Setup(string name)
+        /// <param name="mapName"></param>
+        public void Setup(string mapName)
         {
-            chunks = new Dictionary<Vector2Int, TileChunk>();
-            tileManager = TileManager.Instance;
-            this.name = name;
-            mapName = name;
+            _chunks = new Dictionary<Vector2Int, TileChunk>();
+            _tileManager = TileManager.Instance;
+            this.name = mapName;
+            _mapName = mapName;
         }
 
         public string GetName()
         {
-            return mapName;
+            return _mapName;
         }
 
-        public void SetName(string name)
+        public void SetName(string mapName)
         {
-            this.mapName = name;
-            gameObject.name = name;
+            _mapName = mapName;
+            gameObject.name = mapName;
         }
 
         /// <summary>
@@ -91,7 +89,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="enabled"></param>
         public void SetEnabled(TileLayer layer, bool enabled)
         {
-            foreach (TileChunk chunk in chunks.Values)
+            foreach (TileChunk chunk in _chunks.Values)
             {
                 chunk.SetEnabled(layer, enabled);
             }
@@ -103,7 +101,7 @@ namespace SS3D.Engine.Tiles
         /// <param name="chunkKey">The key for the chunk</param>
         public TileChunk GetChunk(Vector2Int chunkKey)
         {
-            chunks.TryGetValue(chunkKey, out TileChunk value);
+            _chunks.TryGetValue(chunkKey, out TileChunk value);
             return value;
         }
 
@@ -115,7 +113,7 @@ namespace SS3D.Engine.Tiles
         /// <returns></returns>
         private TileChunk CreateChunk(Vector2Int chunkKey, Vector3 origin)
         {
-            TileChunk chunk = new TileChunk(chunkKey, CHUNK_SIZE, CHUNK_SIZE, TILE_SIZE, origin);
+            TileChunk chunk = new TileChunk(chunkKey, ChunkSize, ChunkSize, TileSize, origin);
             return chunk;
         }
 
@@ -126,14 +124,14 @@ namespace SS3D.Engine.Tiles
         {
             // Number of chunks can be modified during deletion, so create a copy
             List<TileChunk> tempChunkList = new List<TileChunk>();
-            tempChunkList.AddRange(chunks.Values);
+            tempChunkList.AddRange(_chunks.Values);
 
             foreach (TileChunk chunk in tempChunkList)
             {
                 chunk.Clear();
             }
 
-            chunks.Clear();
+            _chunks.Clear();
         }
 
         /// <summary>
@@ -154,8 +152,8 @@ namespace SS3D.Engine.Tiles
         /// <returns></returns>
         public Vector2Int GetKey(Vector3 worldPosition)
         {
-            int x = (int)Math.Floor(worldPosition.x / CHUNK_SIZE);
-            int y = (int)Math.Floor(worldPosition.z / CHUNK_SIZE);
+            int x = (int)Math.Floor(worldPosition.x / ChunkSize);
+            int y = (int)Math.Floor(worldPosition.z / ChunkSize);
 
             return (GetKey(x, y));
         }
@@ -168,21 +166,22 @@ namespace SS3D.Engine.Tiles
         private TileChunk GetOrCreateChunk(Vector3 worldPosition)
         {
             Vector2Int key = GetKey(worldPosition);
-            TileChunk chunk;
 
             // Create a new chunk if there is none
-            if (!chunks.TryGetValue(key, out chunk))
+            if (_chunks.TryGetValue(key, out TileChunk _))
             {
-                Vector3 origin = new Vector3 {x = key.x * CHUNK_SIZE, z = key.y * CHUNK_SIZE };
-                chunks[key] = CreateChunk(key, origin);
+                return _chunks[key];
             }
 
-            return chunks[key];
+            Vector3 origin = new Vector3 {x = key.x * ChunkSize, z = key.y * ChunkSize };
+            _chunks[key] = CreateChunk(key, origin);
+
+            return _chunks[key];
         }
 
         public TileChunk[] GetChunks()
         {
-            return chunks?.Values.ToArray();
+            return _chunks?.Values.ToArray();
         }
 
         /// <summary>
@@ -192,26 +191,26 @@ namespace SS3D.Engine.Tiles
         private void DeleteIfEmpty(TileChunk chunk)
         {
             if (chunk.IsEmpty())
-                chunks.Remove(GetKey(chunk.GetOrigin()));
+                _chunks.Remove(GetKey(chunk.GetOrigin()));
         }
 
         /// <summary>
         /// Returns whether the specified object can be successfully build for a given position and direction.
         /// </summary>
         /// <param name="subLayerIndex">Sub layer the object should go. Usually zero</param>
-        /// <param name="tileObjectSO">Object to place</param>
+        /// <param name="tileObjectSo">Object to place</param>
         /// <param name="position">World position to place the object</param>
         /// <param name="dir">Direction the object is facing</param>
         /// <returns></returns>
-        public bool CanBuild(int subLayerIndex, TileObjectSo tileObjectSO, Vector3 position, Direction dir, CheckRestrictions checkRestrictions)
+        public bool CanBuild(int subLayerIndex, TileObjectSo tileObjectSo, Vector3 position, Direction dir, CheckRestrictions checkRestrictions)
         {
             // Get the right chunk
             TileChunk chunk = GetOrCreateChunk(position);
             Vector2Int vector = chunk.GetXY(position);
             Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
-            TileLayer layer = tileObjectSO.layer;
+            TileLayer layer = tileObjectSo.layer;
 
-            List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
+            List<Vector2Int> gridPositionList = tileObjectSo.GetGridPositionList(placedObjectOrigin, dir);
 
             bool canBuild = true;
             foreach (Vector2Int gridPosition in gridPositionList)
@@ -220,10 +219,10 @@ namespace SS3D.Engine.Tiles
                 Vector3 checkWorldPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
 
                 if (checkRestrictions == CheckRestrictions.Everything)
-                    canBuild &= TileRestrictions.CanBuild(this, checkWorldPosition, subLayerIndex, tileObjectSO, dir);
+                    canBuild &= TileRestrictions.CanBuild(this, checkWorldPosition, subLayerIndex, tileObjectSo, dir);
                 else if (checkRestrictions == CheckRestrictions.OnlyRestrictions)
                 {
-                    canBuild &= TileRestrictions.CanBuild(this, checkWorldPosition, subLayerIndex, tileObjectSO, dir);
+                    canBuild &= TileRestrictions.CanBuild(this, checkWorldPosition, subLayerIndex, tileObjectSo, dir);
                     continue;
                 }
 
@@ -258,12 +257,12 @@ namespace SS3D.Engine.Tiles
         /// Sets a specified TileObject on the map.
         /// </summary>
         /// <param name="subLayerIndex">Sub layer the object should go. Usually zero</param>
-        /// <param name="tileObjectSO">Object to place</param>
+        /// <param name="tileObjectSo">Object to place</param>
         /// <param name="position">World position to place the object</param>
         /// <param name="dir">Direction the object is facing</param
-        public void SetTileObject(int subLayerIndex, TileObjectSo tileObjectSO, Vector3 position, Direction dir)
+        public void SetTileObject(int subLayerIndex, TileObjectSo tileObjectSo, Vector3 position, Direction dir)
         {
-            TileLayer layer = tileObjectSO.layer;
+            TileLayer layer = tileObjectSo.layer;
             GameObject layerObject = GetOrCreateLayerObject(layer);
 
             // Get the right chunk
@@ -272,18 +271,18 @@ namespace SS3D.Engine.Tiles
             Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
 
             // Test Can Build
-            List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
+            List<Vector2Int> gridPositionList = tileObjectSo.GetGridPositionList(placedObjectOrigin, dir);
 
-            if (CanBuild(subLayerIndex, tileObjectSO, position, dir, CheckRestrictions.Everything))
+            if (CanBuild(subLayerIndex, tileObjectSo, position, dir, CheckRestrictions.Everything))
             {
                 // Get the chunk again as it may be deleted in CanBuild()
                 chunk = GetOrCreateChunk(position);
 
-                Vector2Int rotationOffset = tileObjectSO.GetRotationOffset(dir);
+                Vector2Int rotationOffset = TileObjectSo.GetRotationOffset(dir);
                 Vector3 placedObjectWorldPosition = chunk.GetWorldPosition(placedObjectOrigin.x, placedObjectOrigin.y) + 
-                    tileObjectSO.prefab.transform.position + new Vector3(rotationOffset.x, 0, rotationOffset.y) * chunk.GetTileSize();
+                    tileObjectSo.prefab.transform.position + new Vector3(rotationOffset.x, 0, rotationOffset.y) * chunk.GetTileSize();
 
-                PlacedTileObject placedObject = PlacedTileObject.Create(placedObjectWorldPosition, placedObjectOrigin, dir, tileObjectSO);
+                PlacedTileObject placedObject = PlacedTileObject.Create(placedObjectWorldPosition, placedObjectOrigin, dir, tileObjectSo);
                 placedObject.transform.SetParent(layerObject.transform);
 
                 foreach (Vector2Int gridPosition in gridPositionList)
@@ -312,13 +311,13 @@ namespace SS3D.Engine.Tiles
         /// Sets a PlacedTileObject on the map based on a known object, position and direction. Used for reconstructing the map structure from a save file.
         /// </summary>
         /// <param name="subLayerIndex"></param>
-        /// <param name="tileObjectSO"></param>
+        /// <param name="tileObjectSo"></param>
         /// <param name="placedObject"></param>
         /// <param name="position"></param>
         /// <param name="dir"></param>
-        public void LoadTileObject(int subLayerIndex, TileObjectSo tileObjectSO, PlacedTileObject placedObject, Vector3 position, Direction dir)
+        public void LoadTileObject(int subLayerIndex, TileObjectSo tileObjectSo, PlacedTileObject placedObject, Vector3 position, Direction dir)
         {
-            TileLayer layer = tileObjectSO.layer;
+            TileLayer layer = tileObjectSo.layer;
             GameObject layerObject = GetOrCreateLayerObject(layer);
 
             // Get the right chunk
@@ -326,12 +325,12 @@ namespace SS3D.Engine.Tiles
             Vector2Int vector = chunk.GetXY(position);
             Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
 
-            List<Vector2Int> gridPositionList = tileObjectSO.GetGridPositionList(placedObjectOrigin, dir);
+            List<Vector2Int> gridPositionList = tileObjectSo.GetGridPositionList(placedObjectOrigin, dir);
 
-            Vector2Int rotationOffset = tileObjectSO.GetRotationOffset(dir);
+            Vector2Int rotationOffset = TileObjectSo.GetRotationOffset(dir);
             Vector3 placedObjectWorldPosition = chunk.GetWorldPosition(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, 0, rotationOffset.y) * chunk.GetTileSize();
 
-            placedObject.Setup(tileObjectSO, placedObjectOrigin, dir);
+            placedObject.Setup(tileObjectSo, placedObjectOrigin, dir);
             placedObject.transform.SetParent(layerObject.transform);
 
             foreach (Vector2Int gridPosition in gridPositionList)
@@ -366,7 +365,7 @@ namespace SS3D.Engine.Tiles
             if (placedObject != null)
             {
                 // Destroy any objects that are on top
-                foreach (var topPlacedObject in TileRestrictions.GetToBeDestroyedObjects(this, layer, position))
+                foreach (var topPlacedObject in GetToBeDestroyedObjects(this, layer, position))
                 {
                     topPlacedObject.ClearAllPlacedObjects();
                 }
@@ -405,15 +404,15 @@ namespace SS3D.Engine.Tiles
             return chunk.GetTileObject(layer, worldPosition);
         }
 
-        public void UpdateAdjacencies(TileLayer layer, Vector3 worldPosition)
+        private void UpdateAdjacencies(TileLayer layer, Vector3 worldPosition)
         {
-            var adjacentObjects = new PlacedTileObject[8];
+            PlacedTileObject[] adjacentObjects = new PlacedTileObject[8];
             TileObject currentTileObject = GetTileObject(layer, worldPosition);
 
             // Find the neighbours in each direction
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
-                var vector = TileHelper.ToCardinalVector(direction);
+                Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
                 TileObject neighbour = GetTileObject(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2));
 
                 adjacentObjects[(int)direction] = neighbour.GetPlacedObject(0);
@@ -428,11 +427,9 @@ namespace SS3D.Engine.Tiles
         /// </summary>
         public void UpdateAllAdjacencies()
         {
-            var adjacentObjects = new PlacedTileObject[8];
-
             // Chunks dictionary can be modified in the time between...
-            List<TileChunk> tempChunkList = new List<TileChunk>();
-            tempChunkList.AddRange(chunks.Values);
+            List<TileChunk> tempChunkList = new();
+            tempChunkList.AddRange(_chunks.Values);
 
             // Loop through every single tile object...
             foreach (TileChunk chunk in tempChunkList)
@@ -449,7 +446,7 @@ namespace SS3D.Engine.Tiles
                             {
                                 // Find the neighbours in each direction
                                 Vector3 currentPosition = chunk.GetWorldPosition(x, y);
-                                adjacentObjects = GetNeighbourObjects(layer, 0, currentPosition);
+                                PlacedTileObject[] adjacentObjects = GetNeighbourObjects(layer, 0, currentPosition);
                                 tileObject.GetPlacedObject(0).UpdateAllAdjacencies(adjacentObjects);
                             }
                         }
@@ -467,11 +464,11 @@ namespace SS3D.Engine.Tiles
         /// <returns></returns>
         public PlacedTileObject[] GetNeighbourObjects(TileLayer layer, int subLayerIndex, Vector3 position)
         {
-            var adjacentObjects = new PlacedTileObject[8];
+            PlacedTileObject[] adjacentObjects = new PlacedTileObject[8];
 
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
-                var vector = TileHelper.ToCardinalVector(direction);
+                Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
                 TileObject neighbour = GetTileObject(layer, position + new Vector3(vector.Item1, 0, vector.Item2));
 
                 adjacentObjects[(int)direction] = neighbour.GetPlacedObject(subLayerIndex);
@@ -488,14 +485,14 @@ namespace SS3D.Engine.Tiles
         {
             List<TileChunk.ChunkSaveObject> chunkObjectSaveList = new List<TileChunk.ChunkSaveObject>();
 
-            foreach (TileChunk chunk in chunks.Values)
+            foreach (TileChunk chunk in _chunks.Values)
             {
                 chunkObjectSaveList.Add(chunk.Save());
             }
 
             return new MapSaveObject
             {
-                mapName = mapName,
+                mapName = _mapName,
                 isMain = IsMain,
                 saveObjectList = chunkObjectSaveList.ToArray(),
             };
@@ -509,43 +506,45 @@ namespace SS3D.Engine.Tiles
         /// <param name="softLoad"></param>
         public void Load(MapSaveObject saveObject, bool softLoad)
         {
-            if (!tileManager) tileManager = FindObjectOfType<TileManager>();
+            if (!_tileManager) _tileManager = FindObjectOfType<TileManager>();
 
             IsMain = saveObject.isMain;
 
             // Loop through every chunk in map
-            foreach (var chunk in saveObject.saveObjectList)
+            foreach (TileChunk.ChunkSaveObject chunk in saveObject.saveObjectList)
             {
                 // Loop through every tile object in chunk
-                foreach (var tileObjectSaveObject in chunk.tileObjectSaveObjectArray)
+                foreach (TileObject.TileSaveObject tileObjectSaveObject in chunk.tileObjectSaveObjectArray)
                 {
                     TileLayer layer = tileObjectSaveObject.layer;
                     for (int subLayerIndex = 0; subLayerIndex < TileHelper.GetSubLayerSize(layer); subLayerIndex++)
                     {
                         string objectName = tileObjectSaveObject.placedSaveObjects[subLayerIndex].tileObjectSOName;
-                        if (!objectName.Equals(""))
+                        if (objectName.Equals(""))
                         {
-                            if (softLoad)
+                            continue;
+                        }
+
+                        if (softLoad)
+                        {
+                            TileObjectSo tileObjectSo = _tileManager.GetTileObjectSO(objectName);
+
+                            // Find the object and set it up again...
+                            Vector3 position = TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition);
+                            PlacedTileObject placedTileObject = FindChild(layer, subLayerIndex, position)?.GetComponent<PlacedTileObject>();
+
+                            if (!placedTileObject)
                             {
-                                TileObjectSo tileObjectSO = tileManager.GetTileObjectSO(objectName);
-
-                                // Find the object and set it up again...
-                                Vector3 position = TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition);
-                                PlacedTileObject placedTileObject = FindChild(layer, subLayerIndex, position)?.GetComponent<PlacedTileObject>();
-
-                                if (!placedTileObject)
-                                {
-                                    Debug.LogWarning("Child was not found when reinitializing: " + objectName);
-                                    continue;
-                                }
-
-                                LoadTileObject(subLayerIndex, tileObjectSO, placedTileObject, position, tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
+                                Debug.LogWarning("Child was not found when reinitializing: " + objectName);
+                                continue;
                             }
-                            else
-                            {
-                                tileManager.SetTileObject(this, subLayerIndex, objectName, TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition)
-                                    , tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
-                            }
+
+                            LoadTileObject(subLayerIndex, tileObjectSo, placedTileObject, position, tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
+                        }
+                        else
+                        {
+                            _tileManager.SetTileObject(this, subLayerIndex, objectName, TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition)
+                                , tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
                         }
                     }
                 }
@@ -569,16 +568,18 @@ namespace SS3D.Engine.Tiles
 
             for (int i = 0; i < layerObjectTransform.childCount; i++)
             {
-                var child = layerObjectTransform.GetChild(i);
+                Transform child = layerObjectTransform.GetChild(i);
 
                 // There can be small offsets in height for some objects like overlays, so use only X and Z
-                if ((Math.Abs(child.position.x - position.x) < POSITION_TOLERANCE) && (Math.Abs(child.position.z - position.z) < POSITION_TOLERANCE))
+                if (!(Math.Abs(child.position.x - position.x) < POSITION_TOLERANCE) || !(Math.Abs(child.position.z - position.z) < POSITION_TOLERANCE))
                 {
-                    if (sameTile && !child.name.Contains("_" + subLayerIndex))
-                        continue;
-
-                    return child.gameObject;
+                    continue;
                 }
+
+                if (sameTile && !child.name.Contains("_" + subLayerIndex))
+                    continue;
+
+                return child.gameObject;
             }
 
             return null;
@@ -597,7 +598,7 @@ namespace SS3D.Engine.Tiles
                     return transform.GetChild(i).gameObject;
             }
 
-            GameObject layerObject = new GameObject(layer.ToString());
+            GameObject layerObject = new(layer.ToString());
             layerObject.transform.SetParent(transform);
             return layerObject;
         }

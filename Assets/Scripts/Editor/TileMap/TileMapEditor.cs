@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using SS3D.Engine.Tile.TileRework;
 using SS3D.Engine.Tiles;
-using SS3D.Engine.Tiles.Connections;
+using SS3D.Systems.Tile;
+using SS3D.Systems.Tile.Connections;
 using UnityEditor;
 using UnityEngine;
 
@@ -262,7 +263,7 @@ namespace SS3D.Editor.TileMap
         /// </summary>
         private void ApplySettings()
         {
-            Engine.Tiles.TileMap map = tileManager.GetTileMaps()[selectedTileMapIndex];
+            Systems.Tile.TileMap map = tileManager.GetTileMaps()[selectedTileMapIndex];
             map.SetName(selectedName);
             map.IsMain = isMainMap;
 
@@ -448,12 +449,12 @@ namespace SS3D.Editor.TileMap
             }
         }
 
-        private Engine.Tiles.TileMap GetCurrentMap()
+        private Systems.Tile.TileMap GetCurrentMap()
         {
             return tileManager.GetTileMaps()[selectedTileMapIndex];
         }
 
-        private void FillGridOptions(Engine.Tiles.TileMap map)
+        private void FillGridOptions(Systems.Tile.TileMap map)
         {
             selectedName = map.GetName();
             isMainMap = map.IsMain;
@@ -496,7 +497,7 @@ namespace SS3D.Editor.TileMap
         /// Draws the edges of chunks.
         /// </summary>
         /// <param name="map">Map to get chunks from</param>
-        private void DisplayGrid(Engine.Tiles.TileMap map)
+        private void DisplayGrid(Systems.Tile.TileMap map)
         {
             Handles.color = Color.cyan;
             Vector3 offset = new Vector3(0.5f, 0, 0.5f);
@@ -504,10 +505,10 @@ namespace SS3D.Editor.TileMap
             TileChunk[] chunks = map.GetChunks();
             foreach (var chunk in chunks)
             {
-                Handles.DrawLine(chunk.GetOrigin() - offset, chunk.GetOrigin() + new Vector3(Engine.Tiles.TileMap.CHUNK_SIZE, 0, 0) - offset);
-                Handles.DrawLine(chunk.GetOrigin() - offset, chunk.GetOrigin() + new Vector3(0, 0, Engine.Tiles.TileMap.CHUNK_SIZE) - offset);
-                Handles.DrawLine(chunk.GetOrigin() - offset + new Vector3(Engine.Tiles.TileMap.CHUNK_SIZE, 0, 0), chunk.GetOrigin() + new Vector3(Engine.Tiles.TileMap.CHUNK_SIZE, 0, Engine.Tiles.TileMap.CHUNK_SIZE) - offset);
-                Handles.DrawLine(chunk.GetOrigin() - offset + new Vector3(0, 0, Engine.Tiles.TileMap.CHUNK_SIZE), chunk.GetOrigin() + new Vector3(Engine.Tiles.TileMap.CHUNK_SIZE, 0, Engine.Tiles.TileMap.CHUNK_SIZE) - offset);
+                Handles.DrawLine(chunk.GetOrigin() - offset, chunk.GetOrigin() + new Vector3(Systems.Tile.TileMap.ChunkSize, 0, 0) - offset);
+                Handles.DrawLine(chunk.GetOrigin() - offset, chunk.GetOrigin() + new Vector3(0, 0, Systems.Tile.TileMap.ChunkSize) - offset);
+                Handles.DrawLine(chunk.GetOrigin() - offset + new Vector3(Systems.Tile.TileMap.ChunkSize, 0, 0), chunk.GetOrigin() + new Vector3(Systems.Tile.TileMap.ChunkSize, 0, Systems.Tile.TileMap.ChunkSize) - offset);
+                Handles.DrawLine(chunk.GetOrigin() - offset + new Vector3(0, 0, Systems.Tile.TileMap.ChunkSize), chunk.GetOrigin() + new Vector3(Systems.Tile.TileMap.ChunkSize, 0, Systems.Tile.TileMap.ChunkSize) - offset);
             }
         }
 
@@ -583,7 +584,7 @@ namespace SS3D.Editor.TileMap
         /// </summary>
         private void UpdateTileVisibility()
         {
-            Engine.Tiles.TileMap map = GetCurrentMap();
+            Systems.Tile.TileMap map = GetCurrentMap();
             foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
                 bool visible = layerVisibilitySelection[(int)layer];
