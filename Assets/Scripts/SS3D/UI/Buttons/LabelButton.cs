@@ -46,19 +46,21 @@ namespace SS3D.UI.Buttons
         public bool Pressed
         {
             get => _pressed;
-            private set
+            set
             {
-                _pressed = value; 
+                _pressed = value;
+                UpdateVisuals();
             }
         }
 
         public bool Disabled
         {
             get => _disabled;
-            private set
+            set
             {
                 _disabled = value;
                 OnDisabledChanged?.Invoke(_disabled);
+                UpdateVisuals();
             }
         }
 

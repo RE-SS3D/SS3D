@@ -12,16 +12,16 @@ namespace SS3D.Systems.Lobby.UI
     /// <summary>
     /// Handles the lobby countdown view
     /// </summary>
-    public class RoundStateView : NetworkedSpessBehaviour
+    public class RoundStateView : SpessBehaviour
     {
         [SerializeField][NotNull] private TMP_Text _roundCountdownText;
 
         private int _seconds;
         private RoundState _roundState;
 
-        public override void OnStartClient()
+        protected override void OnStart()
         {
-            base.OnStartClient();
+            base.OnStart();
 
             UpdateRoundCountDownText();
             SubscribeToEvents();

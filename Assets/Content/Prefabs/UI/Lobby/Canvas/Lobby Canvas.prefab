@@ -967,9 +967,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 988dec00c80c53945b5516f8d81ee0f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 0
-  _addedNetworkObject: {fileID: 4370972904279086847}
-  _networkObjectCache: {fileID: 4370972904279086847}
   _roundCountdownText: {fileID: 996747445}
 --- !u!1 &1359148433
 GameObject:
@@ -1299,7 +1296,6 @@ GameObject:
   - component: {fileID: 1669090662}
   - component: {fileID: 1669090665}
   - component: {fileID: 1669090664}
-  - component: {fileID: 1669090663}
   m_Layer: 5
   m_Name: Admin
   m_TagString: Untagged
@@ -1366,27 +1362,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1669090663
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1669090661}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ff2a45d97e1e4340a9e8acc52d6f42f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _pressed: 0
-  _disabled: 0
-  _highlighted: 0
-  _buttonStyle: {fileID: 11400000, guid: c7f70b557fb6aff4f81aac4ebf55a784, type: 2}
-  _colorMultiplier: 1
-  _baseImageColor: {r: 0.122311115, g: 0.122311115, b: 0.128, a: 1}
-  _baseTextColor: {r: 1, g: 1, b: 1, a: 1}
-  _label: {fileID: 817747711}
-  _image: {fileID: 1669090664}
 --- !u!1 &1784472767
 GameObject:
   m_ObjectHideFlags: 0
@@ -4870,7 +4845,6 @@ GameObject:
   - component: {fileID: 4370972904889678303}
   - component: {fileID: 4370972904889678302}
   - component: {fileID: 4370972904279086842}
-  - component: {fileID: 4370972904279086846}
   m_Layer: 5
   m_Name: Embark
   m_TagString: Untagged
@@ -4960,22 +4934,6 @@ MonoBehaviour:
   _image: {fileID: 4370972904889678302}
   _normalText: ready
   _pressedText: not ready
---- !u!114 &4370972904279086846
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4370972904889678299}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75abc5e850c3ad6469addf92b9772824, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 1
-  _addedNetworkObject: {fileID: 4370972904279086847}
-  _networkObjectCache: {fileID: 4370972904279086847}
-  _button: {fileID: 4370972904279086842}
 --- !u!1 &4370972904894213158
 GameObject:
   m_ObjectHideFlags: 0
@@ -5302,7 +5260,6 @@ GameObject:
   - component: {fileID: 4370972905076281517}
   - component: {fileID: 1401177685}
   - component: {fileID: 1300949538}
-  - component: {fileID: 4370972904279086847}
   m_Layer: 5
   m_Name: Lobby Canvas
   m_TagString: Untagged
@@ -5428,42 +5385,6 @@ MonoBehaviour:
   _screenType: 3
   _canvasGroup: {fileID: 4370972905076281517}
   _holder: {fileID: 4370972904293784224}
---- !u!114 &4370972904279086847
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4370972905076281512}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _networkBehaviours:
-  - {fileID: 996747447}
-  - {fileID: 4370972904279086846}
-  SceneTransformProperties:
-    Position: {x: 683, y: 384, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 1}
-    LocalScale: {x: 1.329244, y: 1.329244, z: 1.329244}
-  _isNetworked: 1
-  _hasParentNetworkObjectAtEdit: 0
-  NetworkObserver: {fileID: 0}
-  _prefabId: -1
-  _scenePathHash: 0
-  _sceneId: 0
-  _sceneNetworkObjects:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 4370972904279086847}
 --- !u!1 &4370972905362277894
 GameObject:
   m_ObjectHideFlags: 0

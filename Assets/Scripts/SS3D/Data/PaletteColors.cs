@@ -4,6 +4,7 @@ namespace SS3D.Data
 {
     public static class PaletteColors
     {
+        public static Color White = Color.white;
         public static Color LightGreen = new Color(42, 193, 50);
         public static Color NormalGreen = new Color(35, 155, 42);
 

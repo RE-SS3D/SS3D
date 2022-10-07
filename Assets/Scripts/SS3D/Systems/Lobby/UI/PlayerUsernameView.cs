@@ -18,5 +18,10 @@ namespace SS3D.Systems.Lobby.UI
         {
             _nameLabel.text = newName;
         }
+
+        public void UpdateNameColor(Color color)
+        {
+            _nameLabel.color = color;
+        }
     }
 }

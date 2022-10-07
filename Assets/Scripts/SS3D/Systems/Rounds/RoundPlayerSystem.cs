@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using Coimbra.Services.Events;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
@@ -19,7 +19,7 @@ namespace SS3D.Systems.Rounds
     /// </summary>
     public class RoundPlayerSystem : NetworkedSystem
     {
-        [SyncVar(OnChange = "SetReadyPlayers")] private List<Soul> _readyPlayers = new();
+        [SyncObject] private readonly SyncList<string> _readyPlayers = new();
 
         public override void OnStartServer()
         {
@@ -27,15 +27,29 @@ namespace SS3D.Systems.Rounds
 
             ServerManager.RegisterBroadcast<ChangePlayerReadyMessage>(HandleChangePlayerReady);
             ServerManager.RegisterBroadcast<UserLeftServerMessage>(HandleUserLeftServer);
+
+            RoundStateUpdated.AddListener(HandleRoundStateUpdated);
+            _readyPlayers.OnChange += SyncReadyPlayers;
+        }
+
+        private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
+        {
+            RoundState roundState = e.RoundState;
+
+            if (roundState == RoundState.Ongoing)
+            {
+                // Spawn players idk
+                _readyPlayers.Clear();
+            }
         }
 
         private void HandleUserLeftServer(NetworkConnection sender, UserLeftServerMessage m)
         {
             Soul soul = GameSystems.Get<PlayerControlSystem>().GetSoulByCkey(m.Ckey);
 
-            if (_readyPlayers.SingleOrDefault(match => match == soul))
+            if (_readyPlayers.SingleOrDefault(match => match == soul.Ckey) != null)
             {
-                _readyPlayers.Remove(soul);
+                _readyPlayers.Remove(soul.Ckey);
             }
         }
 
@@ -54,31 +68,27 @@ namespace SS3D.Systems.Rounds
         [Server]
         private void SetPlayerReady(Soul soul, bool ready)
         {
-            if (ready)
-            {
-                if (!_readyPlayers.SingleOrDefault(match => match == soul))
-                {
-                    Punpun.Say(this, $"player is {soul.Ckey} is ready", LogType.ServerOnly);
-                    _readyPlayers.Add(soul);
-                }
-            }
+            bool soulIsReady = _readyPlayers.Contains(soul.Ckey);
 
-            else
+            switch (ready)
             {
-                if (_readyPlayers.SingleOrDefault(match => match == soul))
-                {
+                case true when !soulIsReady:
+                    Punpun.Say(this, $"player is {soul.Ckey} is ready", LogType.ServerOnly);
+                    _readyPlayers.Add(soul.Ckey);
+                    break;
+                case false when soulIsReady:
                     Punpun.Say(this, $"player is {soul.Ckey} is not ready", LogType.ServerOnly);
-                    _readyPlayers.Remove(soul);
-                }
+                    _readyPlayers.Remove(soul.Ckey);
+                    break;
             }
         }
 
-        private void SetReadyPlayers(List<Soul> oldReadyPlayers, List<Soul> newReadyPlayers, bool asServer)
+        [Server]
+        private void SyncReadyPlayers(SyncListOperation op, int index, string s, string newItem1, bool asServer)
         {
-            _readyPlayers = newReadyPlayers;
+            ReadyPlayersChanged readyPlayersChanged = new(_readyPlayers.ToList());
 
-            ReadyPlayersChanged readyPlayersChanged = new ReadyPlayersChanged(_readyPlayers);
-            readyPlayersChanged.Invoke(this);
+            ServerManager.Broadcast(readyPlayersChanged);
         }
     }
 }
