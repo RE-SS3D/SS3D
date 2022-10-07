@@ -378,7 +378,7 @@ namespace SS3D.Systems.Tile
         /// new created, or only reinitalized.
         /// </summary>
         /// <param name="softLoad"></param>
-        private void LoadAll(bool softLoad)
+        public void LoadAll(bool softLoad)
         {
             _tileObjectSOs ??= Resources.FindObjectsOfTypeAll<TileObjectSo>();
 

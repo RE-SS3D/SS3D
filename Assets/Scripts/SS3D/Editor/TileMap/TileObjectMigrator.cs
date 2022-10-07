@@ -1,5 +1,4 @@
-﻿using SS3D.Engine.Tile.TileRework;
-using SS3D.Systems.Tile;
+﻿using SS3D.Systems.Tile;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,15 +9,17 @@ namespace SS3D.Editor.TileMap
         // [MenuItem("RE:SS3D Editor Tools/Migrate")]
         public static void Migrate()
         {
-            string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(TileObjectSo)));
+            string[] guids = AssetDatabase.FindAssets($"t:{typeof(TileObjectSo)}");
 
-            for (int i = 0; i < guids.Length; i++)
+            foreach (string guid in guids)
             {
-                string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
+                string assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 TileObjectSo asset = AssetDatabase.LoadAssetAtPath<TileObjectSo>(assetPath);
 
                 if (asset.nameString == asset.prefab.name)
+                {
                     continue;
+                }
 
                 asset.nameString = asset.prefab.name;
 
