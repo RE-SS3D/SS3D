@@ -6,18 +6,18 @@ namespace SS3D.Logging
     {
         private const string UndefinedLogColor = "#FFFFFF";
 
-        private static readonly Dictionary<LogType, string> Colors = new()
+        private static readonly Dictionary<Logs, string> Colors = new()
         {
-            { LogType.None, "#FFFFFF"},
-            { LogType.Generic, "#FFFFFF"},
-            { LogType.Important, "#8D3131"},
-            { LogType.ServerOnly, "#A645A6"},
-            { LogType.External, "#E6DC33"},
+            { Logs.None, "#FFFFFF"},
+            { Logs.Generic, "#FFFFFF"},
+            { Logs.Important, "#8D3131"},
+            { Logs.ServerOnly, "#A645A6"},
+            { Logs.External, "#E6DC33"},
         };
 
-        public static string GetLogColor(LogType logType)
+        public static string GetLogColor(Logs logs)
         {
-            Colors.TryGetValue(logType, out string color);
+            Colors.TryGetValue(logs, out string color);
 
             return color != string.Empty ? color : UndefinedLogColor;
         } 

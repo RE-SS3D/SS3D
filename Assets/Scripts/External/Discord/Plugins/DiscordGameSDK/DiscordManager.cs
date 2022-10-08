@@ -4,7 +4,6 @@ using System;
 using SS3D.Logging;
 using UnityEngine;
 using UnityEngine.Events;
-using LogType = SS3D.Logging.LogType;
 
 #endregion
 
@@ -211,16 +210,16 @@ namespace UDiscord
                 activityManager.SendInvite(485905734618447895, ActivityActionType.Join, "", (inviteUserResult) =>
                 {
                     Console.WriteLine("Invite User {0}", inviteUserResult);
-                    Punpun.Say(nameof(DiscordManager), "How is This Working >???", LogType.External);
+                    Punpun.Say(nameof(DiscordManager), "How is This Working >???", Logs.External);
                 });
 
                 if(res == Result.Ok)
                 {
-                    Punpun.Say(this, "Discord Status Is On!", LogType.External);
+                    Punpun.Say(this, "Discord Status Is On!", Logs.External);
                 }
                 else
                 {
-                    Punpun.Panic(nameof(DiscordManager), "Discord Status Failed!", LogType.External);
+                    Punpun.Panic(nameof(DiscordManager), "Discord Status Failed!", Logs.External);
                 }
             });
         }
@@ -230,7 +229,7 @@ namespace UDiscord
 
         void OnDisable()
         {
-            Punpun.Yell(nameof(DiscordManager), "Discord Shutdown after 10 seconds", LogType.External);
+            Punpun.Yell(nameof(DiscordManager), "Discord Shutdown after 10 seconds", Logs.External);
 
             Shutdown();
             discord?.Dispose();

@@ -13,7 +13,6 @@ using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds.Messages;
 using UnityEngine;
-using LogType = SS3D.Logging.LogType;
 
 #pragma warning disable CS1998
 
@@ -97,12 +96,12 @@ namespace SS3D.Systems.Rounds
             if (permissionSystem.GetUserPermission(userCkey) != requiredRole)
             {
                 string message = $"User {userCkey} doesn't have {requiredRole} permission";
-                Punpun.Say(this, message, LogType.ServerOnly);
+                Punpun.Say(this, message, Logs.ServerOnly);
             }
             else
             {
                 string message = $"User {userCkey} has started the round";
-                Punpun.Say(this, message, LogType.ServerOnly);
+                Punpun.Say(this, message, Logs.ServerOnly);
 
                 #pragma warning disable CS4014
                 ProcessChangeRoundState(m);   
@@ -145,6 +144,8 @@ namespace SS3D.Systems.Rounds
         {
             _currentTimerSeconds = newValue;
 
+            Punpun.Say(this, _currentTimerSeconds.ToString(), Logs.ServerOnly);
+
             RoundTickUpdated roundTickUpdated = new(_currentTimerSeconds);
             roundTickUpdated.Invoke(this);
         }
@@ -152,6 +153,8 @@ namespace SS3D.Systems.Rounds
         private void SetRoundState(RoundState oldValue, RoundState newValue, bool asServer)
         {
             _roundState = newValue;
+            
+            Punpun.Say(this, _roundState.ToString(), Logs.ServerOnly);
 
             RoundStateUpdated roundStateUpdated = new(_roundState);
             roundStateUpdated.Invoke(this);

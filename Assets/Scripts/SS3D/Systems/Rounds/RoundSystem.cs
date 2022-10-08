@@ -4,7 +4,6 @@ using Cysharp.Threading.Tasks;
 using FishNet.Object;
 using SS3D.Logging;
 using SS3D.Systems.Rounds.Messages;
-using LogType = SS3D.Logging.LogType;
 
 namespace SS3D.Systems.Rounds
 {
@@ -21,6 +20,8 @@ namespace SS3D.Systems.Rounds
         protected override async UniTask ProcessChangeRoundState(ChangeRoundStateMessage m)
         {
             if (!IsServer) { return; }
+
+            Punpun.Yell(this, "Processing round state changed", Logs.ServerOnly);
 
             if (m.State)
             {
@@ -43,7 +44,7 @@ namespace SS3D.Systems.Rounds
         [Server]
         protected override async UniTask PrepareRound()
         {
-            Punpun.Say(this, "Preparing round", LogType.ServerOnly);
+            Punpun.Say(this, "Preparing round", Logs.ServerOnly);
             
             RoundState = RoundState.Preparing;
 
@@ -57,7 +58,7 @@ namespace SS3D.Systems.Rounds
         [Server]
         protected override async UniTask ProcessRoundTick()
         {
-            Punpun.Say(this, "Starting warmup tick", LogType.ServerOnly);
+            Punpun.Say(this, "Starting warmup tick", Logs.ServerOnly);
 
             RoundSeconds = _warmupSeconds;
             TickCancellationToken = new CancellationTokenSource();
@@ -74,7 +75,7 @@ namespace SS3D.Systems.Rounds
 
             RoundState = RoundState.Ongoing;
 
-            Punpun.Say(this, "Starting round tick", LogType.ServerOnly);
+            Punpun.Say(this, "Starting round tick", Logs.ServerOnly);
 
             while (IsOngoing)
             {
@@ -93,7 +94,7 @@ namespace SS3D.Systems.Rounds
             TimeSpan second = TimeSpan.FromMilliseconds(500);
             await UniTask.Delay(second);
 
-            Punpun.Say(this, "Ending round", LogType.ServerOnly);
+            Punpun.Say(this, "Ending round", Logs.ServerOnly);
         }
 
         [Server]
@@ -110,7 +111,7 @@ namespace SS3D.Systems.Rounds
             TimeSpan second = TimeSpan.FromMilliseconds(500);
             await UniTask.Delay(second);
 
-            Punpun.Say(this, "Round stopped", LogType.ServerOnly); 
+            Punpun.Say(this, "Round stopped", Logs.ServerOnly); 
         }
     }
 }

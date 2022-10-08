@@ -38,6 +38,7 @@ namespace SS3D.Systems.Rounds
             _readyPlayers.OnChange += SetReadyPlayers;
         }
 
+        [Server]
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
         {
             RoundState roundState = e.RoundState;
@@ -86,11 +87,11 @@ namespace SS3D.Systems.Rounds
             switch (ready)
             {
                 case true when !soulIsReady:
-                    Punpun.Say(this, $"player is {soul.Ckey} is ready", LogType.ServerOnly);
+                    Punpun.Say(this, $"player is {soul.Ckey} is ready", Logs.ServerOnly);
                     _readyPlayers.Add(soul.Ckey);
                     break;
                 case false when soulIsReady:
-                    Punpun.Say(this, $"player is {soul.Ckey} is not ready", LogType.ServerOnly);
+                    Punpun.Say(this, $"player is {soul.Ckey} is not ready", Logs.ServerOnly);
                     _readyPlayers.Remove(soul.Ckey);
                     break;
             }

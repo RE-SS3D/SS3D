@@ -1,10 +1,9 @@
 ﻿using Coimbra.Services.Events;
 using DG.Tweening;
-using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
+using SS3D.Systems.Screens.Events;
 using UnityEngine;
-using LogType = SS3D.Logging.LogType;
 
 namespace SS3D.Systems.Screens
 {
@@ -17,10 +16,9 @@ namespace SS3D.Systems.Screens
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Transform _holder;
 
-        public static ScreenType LastScreen { get; private set; }
+        private static ScreenType LastScreen { get; set; }
 
         private const float ScaleInScale = 1.15f;
-
         private const float FadeDuration = .05f;
         private const float ScaleDuration = .175f;
 
@@ -29,13 +27,6 @@ namespace SS3D.Systems.Screens
             base.OnStart();
 
             Setup();
-        }
-
-        private void HandleChangeGameScreen(ref EventContext context, in ChangeGameScreenEvent e)
-        {
-            ScreenType screenType = e.Screen;
-
-            SetScreenState(screenType);
         }
 
         private void Setup()
@@ -49,7 +40,22 @@ namespace SS3D.Systems.Screens
             }
 
             SetScreenState(ScreenType.Lobby, true);
+
             ChangeGameScreenEvent.AddListener(HandleChangeGameScreen);
+            ChangeCameraEvent.AddListener(HandleChangeCamera);
+        }
+
+        private void HandleChangeGameScreen(ref EventContext context, in ChangeGameScreenEvent e)
+        {
+            ScreenType screenType = e.Screen;
+
+            SetScreenState(screenType);
+        }
+
+        private void HandleChangeCamera(ref EventContext context, in ChangeCameraEvent e)
+        {
+            ChangeGameScreenEvent changeGameScreenEvent = new(ScreenType.None);
+            changeGameScreenEvent.Invoke(this);
         }
 
         private void SetScreenState(ScreenType nextScreen, bool forceInstant = false)
@@ -72,11 +78,13 @@ namespace SS3D.Systems.Screens
             _canvasGroup.interactable = matchesScreenType;
             _canvasGroup.blocksRaycasts = matchesScreenType;
 
-            if (LastScreen == nextScreen)
+            if (LastScreen != nextScreen)
             {
-                string message = $"Game screen changed to {nextScreen}";
-                Punpun.Say(this, message);
+                return;
             }
+
+            string message = $"Game screen changed to {nextScreen}";
+            Punpun.Say(this, message);
         }
     }
 }

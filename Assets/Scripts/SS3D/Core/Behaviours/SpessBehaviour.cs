@@ -1,4 +1,5 @@
-﻿using Coimbra.Services.Events;
+﻿using System;
+using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using UnityEngine;
 
@@ -49,6 +50,8 @@ namespace SS3D.Core.Behaviours
         public Transform Root => TransformCache.root;
 
         public void SetParent(Transform parent) => TransformCache.SetParent(parent);
+        public void LookAt(Transform target) => TransformCache.LookAt(target);
+        public void LookAt(Vector3 target) => TransformCache.LookAt(target);
 
         public Vector3 LocalPosition
         {
@@ -90,6 +93,8 @@ namespace SS3D.Core.Behaviours
 
         private void Start() { OnStart(); }
 
+        private void OnDestroy() { OnDestroyed(); }
+
         private void Initialize()
         {
             TransformCache = transform;
@@ -113,6 +118,7 @@ namespace SS3D.Core.Behaviours
         #region EVENT_CALLBACKS
         protected virtual void OnAwake() { }
         protected virtual void OnStart() { }
+        protected virtual void OnDestroyed() { }
         protected virtual void HandlePreUpdate(in float deltaTime) { }
         protected virtual void HandleLateUpdate(float deltaTime) { }
         protected virtual void HandleUpdate(in float deltaTime) { }

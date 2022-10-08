@@ -1,6 +1,6 @@
 ﻿namespace SS3D.Logging
 {
-    public enum LogType
+    public enum Logs
     {
          None = 0,
          Generic = 1,

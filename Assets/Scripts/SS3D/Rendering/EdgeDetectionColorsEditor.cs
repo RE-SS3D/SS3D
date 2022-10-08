@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+
+using UnityEditor;
 using UnityEngine;
 
 namespace SS3D.Rendering
@@ -73,3 +75,5 @@ namespace SS3D.Rendering
 		}
 	}
 }
+
+#endif

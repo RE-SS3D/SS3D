@@ -1,4 +1,7 @@
 using System;
+using SS3D.Core;
+using SS3D.Core.Behaviours;
+using SS3D.Systems.Screens;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities.Humanoid
@@ -23,7 +26,7 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private float _rotationLerpMultiplier;
 
         // [Header("Movement IK Targets")] 
-        // [SerializeField] private Transform _movementTarget;
+        [SerializeField] private Transform _movementTarget;
         // [SerializeField] private Transform _mousePositionTransform;
         // [SerializeField] private Transform _mouseDirectionTransform;
 
@@ -31,13 +34,15 @@ namespace SS3D.Systems.Entities.Humanoid
         private bool _isWalking;
 
         [Header("Debug Info")] 
-        //private Vector3 _absoluteMovement;
+        private Vector3 _absoluteMovement;
         private Vector2 _input;
         private Vector2 _smoothedInput;
+
         private Vector3 _targetMovement;
+
         private float _smoothedX;
         private float _smoothedY;
-        private Camera _camera;
+        private SpessBehaviour _camera;
 
         private const float WalkAnimatorValue = .3f;
         private const float RunAnimatorValue = 1f;
@@ -49,7 +54,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void Setup()
         {
-            //camera = CameraManager.singleton.playerCamera;
+            _camera = GameSystems.Get<CameraSystem>().PlayerCamera;
         }
 
         private void Update()
@@ -77,13 +82,14 @@ namespace SS3D.Systems.Entities.Humanoid
             
             if (_input.magnitude != 0)
             {
-                // MoveMovementTarget(_input);
+                MoveMovementTarget(_input);
                 RotatePlayerToMovement();
                 MovePlayer();
             }
             else
-            {
-               // MoveMovementTarget(Vector2.zero);   
+            { 
+                MovePlayer(); 
+                MoveMovementTarget(Vector2.zero, 5);   
             }
                 
             UpdateMousePositionTransforms();
@@ -106,21 +112,21 @@ namespace SS3D.Systems.Entities.Humanoid
         /// Moves the movement targets with the given input
         /// </summary>
         /// <param name="movementInput"></param>
-        // private void MoveMovementTarget(Vector2 movementInput)
-        // {
-            // makes the movement align to the camera view
-            // Vector3 newTargetMovement =
-            //     movementInput.y * Vector3.Cross(_camera.transform.right, Vector3.up).normalized +
-            //     movementInput.x * Vector3.Cross(Vector3.up, _camera.transform.forward).normalized;
-            //
-            // // smoothly changes the target movement
-            // _targetMovement = Vector3.Lerp(_targetMovement, newTargetMovement, Time.deltaTime * _lerpMultiplier);
-            //
-            // Vector3 resultingMovement = _targetMovement + transform.position;
-            //_absoluteMovement = resultingMovement;
+         private void MoveMovementTarget(Vector2 movementInput, float multiplier = 1)
+         {
+             //makes the movement align to the camera view
+             Vector3 newTargetMovement =
+                 movementInput.y * Vector3.Cross(_camera.Right, Vector3.up).normalized +
+                 movementInput.x * Vector3.Cross(Vector3.up, _camera.Forward).normalized;
+            
+             // smoothly changes the target movement
+             _targetMovement = Vector3.Lerp(_targetMovement, newTargetMovement, Time.deltaTime * (_lerpMultiplier * multiplier));
+            
+             Vector3 resultingMovement = _targetMovement + transform.position;
+            _absoluteMovement = resultingMovement;
 
-            // _movementTarget.position = _absoluteMovement;
-        // }
+             _movementTarget.position = _absoluteMovement;
+         }
 
         /// <summary>
         /// Rotates the player to the target movement

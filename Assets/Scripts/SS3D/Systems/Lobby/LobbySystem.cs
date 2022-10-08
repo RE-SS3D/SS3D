@@ -7,7 +7,6 @@ using SS3D.Logging;
 using SS3D.Systems.Lobby.Messages;
 using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
-using LogType = SS3D.Logging.LogType;
 
 namespace SS3D.Systems.Lobby
 {
@@ -43,7 +42,7 @@ namespace SS3D.Systems.Lobby
             InstanceFinder.ServerManager.Broadcast(userJoinedLobbyMessage);
 
             string message = $"Added player to lobby: {userJoinedServerMessage.Ckey}";
-            Punpun.Say(this, message, LogType.ServerOnly);
+            Punpun.Say(this, message, Logs.ServerOnly);
         }
 
         [Server]
@@ -55,7 +54,7 @@ namespace SS3D.Systems.Lobby
             InstanceFinder.ServerManager.Broadcast(userLeftLobbyMessage);
 
             string message = $"Removed player from lobby: {userLeftServerMessage.Ckey}"; 
-            Punpun.Say(this, message, LogType.ServerOnly);
+            Punpun.Say(this, message, Logs.ServerOnly);
         }
     }
 }

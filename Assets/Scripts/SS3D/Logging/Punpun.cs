@@ -13,10 +13,10 @@ namespace SS3D.Logging
         /// </summary>
         /// <param name="sender">who sends the message</param>
         /// <param name="message">message</param>
-        /// <param name="logType">type of log</param>
-        public static void Say(object sender, string message, LogType logType = LogType.Generic, bool colorizeEverything = false)
+        /// <param name="logs">type of log</param>
+        public static void Say(object sender, string message, Logs logs = Logs.Generic, bool colorizeEverything = false)
         {
-            Debug.Log(ProcessDebug(sender, message, logType, colorizeEverything));
+            Debug.Log(ProcessDebug(sender, message, logs, colorizeEverything));
         }
 
         /// <summary>
@@ -24,10 +24,10 @@ namespace SS3D.Logging
         /// </summary>
         /// <param name="sender">who sends the message</param>
         /// <param name="message">message</param>
-        /// <param name="logType">type of log</param>
-        public static void Yell(object sender, string message, LogType logType = LogType.Generic, bool colorizeEverything = false)
+        /// <param name="logs">type of log</param>
+        public static void Yell(object sender, string message, Logs logs = Logs.Generic, bool colorizeEverything = false)
         {
-            Debug.LogWarning(ProcessDebug(sender, message, logType, colorizeEverything));
+            Debug.LogWarning(ProcessDebug(sender, message, logs, colorizeEverything));
         }
 
         /// <summary>
@@ -35,15 +35,15 @@ namespace SS3D.Logging
         /// </summary>
         /// <param name="sender">who sends the message</param>
         /// <param name="message">message</param>
-        /// <param name="logType">type of log</param>
-        public static void Panic(object sender, string message, LogType logType = LogType.Generic, bool colorizeEverything = false)
+        /// <param name="logs">type of log</param>
+        public static void Panic(object sender, string message, Logs logs = Logs.Generic, bool colorizeEverything = false)
         {
-            Debug.LogError(ProcessDebug(sender, message, logType, colorizeEverything));
+            Debug.LogError(ProcessDebug(sender, message, logs, colorizeEverything));
         }
 
-        private static string ProcessDebug(object sender, string message, LogType logType = LogType.Generic, bool colorizeEverything = false)
+        private static string ProcessDebug(object sender, string message, Logs logs = Logs.Generic, bool colorizeEverything = false)
         {
-            string color = LogColors.GetLogColor(logType);
+            string color = LogColors.GetLogColor(logs);
 
             string name = sender.GetType().Name;
             string author = name == "RuntimeType" ? $"{sender}" : $"{name}";

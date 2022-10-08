@@ -51,6 +51,8 @@ namespace SS3D.Core.Behaviours
         public Transform Root => TransformCache.root;
 
         public void SetParent(Transform parent) => TransformCache.SetParent(parent);
+        public void LookAt(Transform target) => TransformCache.LookAt(target);
+        public void LookAt(Vector3 target) => TransformCache.LookAt(target);
 
         public Vector3 LocalPosition
         {

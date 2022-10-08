@@ -52,9 +52,9 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 1
+    value: 2
   threshold:
-    overrideState: 0
+    overrideState: 1
     value: 1
   softKnee:
     overrideState: 0
@@ -93,7 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6050e2d5de785ce4d931e4dbdbf2d755, type: 3}
   m_Name: ChromaticAberration
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   enabled:
     overrideState: 1
     value: 1
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 556797029e73b2347956b6579e77e05b, type: 3}
   m_Name: DepthOfField
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   enabled:
     overrideState: 1
     value: 1
@@ -188,10 +188,10 @@ MonoBehaviour:
     value: 1
   temperature:
     overrideState: 0
-    value: 0
+    value: 6.98
   tint:
     overrideState: 0
-    value: 0
+    value: -5.6
   colorFilter:
     overrideState: 1
     value: {r: 1, g: 0.995283, b: 0.995283, a: 1}
@@ -200,25 +200,25 @@ MonoBehaviour:
     value: 0
   saturation:
     overrideState: 0
-    value: 1
+    value: -9.6
   brightness:
     overrideState: 0
-    value: 0
+    value: 1.2
   postExposure:
     overrideState: 0
     value: 0.86
   contrast:
     overrideState: 1
-    value: -0.9
+    value: -18
   mixerRedOutRedIn:
     overrideState: 0
     value: 100
   mixerRedOutGreenIn:
-    overrideState: 1
+    overrideState: 0
     value: 1
   mixerRedOutBlueIn:
-    overrideState: 1
-    value: 3
+    overrideState: 0
+    value: -5
   mixerGreenOutRedIn:
     overrideState: 0
     value: 0
@@ -239,13 +239,13 @@ MonoBehaviour:
     value: 100
   lift:
     overrideState: 0
-    value: {x: 1, y: 1, z: 1, w: 0}
+    value: {x: 0.97558236, y: 0.94622695, z: 1, w: -0.038684648}
   gamma:
-    overrideState: 0
-    value: {x: 1, y: 1, z: 1, w: 0}
+    overrideState: 1
+    value: {x: 0.96379095, y: 0.8933966, z: 1, w: 0}
   gain:
-    overrideState: 0
-    value: {x: 1, y: 1, z: 1, w: 0}
+    overrideState: 1
+    value: {x: 1, y: 0.9841668, z: 0.95468175, w: 0}
   masterCurve:
     overrideState: 0
     value:
@@ -1493,10 +1493,10 @@ MonoBehaviour:
     value: {x: 0.5, y: 0.5}
   intensity:
     overrideState: 1
-    value: 0.238
+    value: 0.368
   smoothness:
-    overrideState: 0
-    value: 0.2
+    overrideState: 1
+    value: 0.448
   roundness:
     overrideState: 0
     value: 1
@@ -1531,7 +1531,7 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 0.48
+    value: 0.21
   color:
     overrideState: 1
     value: {r: 0, g: 0, b: 0, a: 1}
@@ -1548,14 +1548,14 @@ MonoBehaviour:
     overrideState: 0
     value: -12
   thicknessModifier:
-    overrideState: 0
+    overrideState: 1
     value: 1
   directLightingStrength:
     overrideState: 0
     value: 0
   radius:
-    overrideState: 0
-    value: 0.4
+    overrideState: 1
+    value: 0.25
   quality:
     overrideState: 1
     value: 2

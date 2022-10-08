@@ -5,9 +5,10 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.PlayerControl;
+using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
+using SS3D.Systems.Rounds.Messages;
 using UnityEngine;
-using LogType = SS3D.Logging.LogType;
 
 namespace SS3D.Systems.Entities
 {
@@ -16,11 +17,25 @@ namespace SS3D.Systems.Entities
         [SerializeField] private PlayerControllable _tempHuman;
         [SerializeField] private Transform _tempSpawnPoint;
 
+        private bool _alreadySpawnedInitialPlayers;
+        private readonly List<Soul> _spawnedPlayers = new();
+
         public override void OnStartServer()
         {
             base.OnStartServer();
 
             SpawnReadyPlayersEvent.AddListener(HandleSpawnReadyPlayers);
+            RoundStateUpdated.AddListener(HandleRoundStateUpdated);
+        }
+
+        private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
+        {
+            RoundState roundState = e.RoundState;
+
+            if (roundState == RoundState.Stopped)
+            {
+                _alreadySpawnedInitialPlayers = false;
+            }
         }
 
         [Server]
@@ -34,9 +49,15 @@ namespace SS3D.Systems.Entities
         [Server]
         private void SpawnReadyPlayers(List<string> players)
         {
+            if (_alreadySpawnedInitialPlayers)
+            {
+                return;
+            }
+
             if (players == null || players.Count == 0)
             {
-                Punpun.Say(this, "No players to spawn", LogType.ServerOnly);
+                _alreadySpawnedInitialPlayers = true;
+                Punpun.Say(this, "No players to spawn", Logs.ServerOnly);
                 return;
             }
 
@@ -45,15 +66,19 @@ namespace SS3D.Systems.Entities
             foreach (string ckey in players)
             {
                 Soul soul = playerControlSystem.GetSoul(ckey);
+                _spawnedPlayers.Add(soul);
 
-                PlayerControllable controllable = Instantiate(_tempHuman, _tempSpawnPoint);
-
-                ServerManager.Spawn(controllable.GameObjectCache, soul.Owner);
+                PlayerControllable controllable = Instantiate(_tempHuman, _tempSpawnPoint.position, Quaternion.identity);
+                ServerManager.Spawn(controllable.NetworkObject, soul.Owner);
+                
+                controllable.GiveOwnership(soul.Owner);
                 controllable.ControllingSoul = soul.Owner;
 
-                string message = $"Spawning played {soul.Ckey} on {controllable.name}";
-                Punpun.Say(this, message, LogType.ServerOnly);
+                string message = $"Spawning player {soul.Ckey} on {controllable.name}";
+                Punpun.Say(this, message, Logs.ServerOnly);
             }
+
+            _alreadySpawnedInitialPlayers = true;
         }
     }
 }
