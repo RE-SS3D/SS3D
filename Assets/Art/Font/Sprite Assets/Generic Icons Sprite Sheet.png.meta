@@ -116,7 +116,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Rendered Icons Sprite Sheet_0
+      name: Generic Icons Sprite Sheet_0
       rect:
         serializedVersion: 2
         x: 0
@@ -130,14 +130,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c609cc1cc684928488cd33b0f25c0864
-      internalID: 1184331351
+      spriteID: 5752f63aee63baa4d8f3aec5fb8e9c59
+      internalID: -1487819975
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rendered Icons Sprite Sheet_1
+      name: Generic Icons Sprite Sheet_1
       rect:
         serializedVersion: 2
         x: 128
@@ -151,8 +151,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 286a1ef17b19ca748920139d47f54d7a
-      internalID: 339977705
+      spriteID: d3a84ec3fa62d6d4b85bbf75bc8b06d4
+      internalID: -1469174022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Generic Icons Sprite Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 1920
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19dc62da4aad57f4b84c8515f21f32c6
+      internalID: 1428108409
       vertices: []
       indices: 
       edges: []
@@ -168,8 +189,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Rendered Icons Sprite Sheet_1: 339977705
-      Rendered Icons Sprite Sheet_0: 1184331351
+      Generic Icons Sprite Sheet_0: -1487819975
+      Generic Icons Sprite Sheet_1: -1469174022
+      Generic Icons Sprite Sheet_2: 1428108409
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using SS3D.Logging;
-using SS3D.Utils;
-using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Core
@@ -27,6 +25,7 @@ namespace SS3D.Core
             }
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         /// <summary>
         /// Gets any system at runtime, make sure there's no duplicates of said system before using.
         /// </summary>

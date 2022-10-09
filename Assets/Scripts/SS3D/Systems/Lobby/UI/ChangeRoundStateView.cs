@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 
 namespace SS3D.Systems.Lobby.UI
 {
@@ -21,8 +22,10 @@ namespace SS3D.Systems.Lobby.UI
     {
         [SerializeField][NotNull] private ToggleLabelButton _startRoundButton;
 
-        private void Start()
+        protected override void OnStart()
         {
+            base.OnStart();
+            
             AddEventListeners();
         }
 

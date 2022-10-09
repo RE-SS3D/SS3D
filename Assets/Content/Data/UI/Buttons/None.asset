@@ -25,5 +25,5 @@ MonoBehaviour:
     Button: {r: 1, g: 1, b: 1, a: 0.6509804}
     Text: {r: 1, g: 1, b: 1, a: 0.6509804}
   DisabledColor:
-    Button: {r: 1, g: 1, b: 1, a: 0.2509804}
-    Text: {r: 1, g: 1, b: 1, a: 0.2509804}
+    Button: {r: 1, g: 1, b: 1, a: 0.043137256}
+    Text: {r: 1, g: 1, b: 1, a: 0.043137256}

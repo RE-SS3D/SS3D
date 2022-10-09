@@ -1,8 +1,7 @@
 using System;
 using Coimbra.Services.Events;
-using FishNet.Broadcast;
 
-namespace SS3D.Systems.Rounds.Messages
+namespace SS3D.Systems.Rounds.Events
 {
    [Serializable]
    public partial struct RoundTickUpdated : IEvent

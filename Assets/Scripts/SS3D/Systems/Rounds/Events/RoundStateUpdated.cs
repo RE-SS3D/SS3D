@@ -1,6 +1,6 @@
 ﻿using Coimbra.Services.Events;
 
-namespace SS3D.Systems.Rounds.Messages
+namespace SS3D.Systems.Rounds.Events
 {
     public partial struct RoundStateUpdated : IEvent
     {

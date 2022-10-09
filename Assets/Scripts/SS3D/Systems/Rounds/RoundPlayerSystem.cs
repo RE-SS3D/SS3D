@@ -11,6 +11,7 @@ using SS3D.Systems.PlayerControl;
 using SS3D.Systems.PlayerControl.Messages;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Rounds.Messages;
+using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 
 namespace SS3D.Systems.Rounds
 {
@@ -58,6 +59,7 @@ namespace SS3D.Systems.Rounds
             _readyPlayers.Clear();
         }
 
+        [Server]
         private void HandleUserLeftServer(NetworkConnection sender, UserLeftServerMessage m)
         {
             Soul soul = GameSystems.Get<PlayerControlSystem>().GetSoul(m.Ckey);
@@ -68,6 +70,7 @@ namespace SS3D.Systems.Rounds
             }
         }
 
+        [Server]
         private void HandleChangePlayerReady(NetworkConnection sender, ChangePlayerReadyMessage m)
         {
             Soul soul = GameSystems.Get<PlayerControlSystem>().GetSoul(m.Ckey);

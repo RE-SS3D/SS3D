@@ -81,20 +81,26 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 0
     m_Scale: 1
-    m_Name: approved
-    m_HashCode: -183794389
+    m_Name: approve
+    m_HashCode: 905484143
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 1
     m_Scale: 1
-    m_Name: denied
-    m_HashCode: -497152985
+    m_Name: deny
+    m_HashCode: 3487446
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 2
+    m_Scale: 1.3
+    m_Name: embark
+    m_HashCode: -228294542
   m_SpriteGlyphTable:
   - m_Index: 0
     m_Metrics:
       m_Width: 128
       m_Height: 128
-      m_HorizontalBearingX: -64
+      m_HorizontalBearingX: 0
       m_HorizontalBearingY: 117.6
       m_HorizontalAdvance: 128
     m_GlyphRect:
@@ -109,11 +115,26 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 128
       m_Height: 128
-      m_HorizontalBearingX: -64
-      m_HorizontalBearingY: 107
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 111.2
       m_HorizontalAdvance: 128
     m_GlyphRect:
       m_X: 128
+      m_Y: 1920
+      m_Width: 128
+      m_Height: 128
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: 339977705, guid: 144f91100f2164b42a55fb9afa33f359, type: 3}
+  - m_Index: 2
+    m_Metrics:
+      m_Width: 128
+      m_Height: 128
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 107
+      m_HorizontalAdvance: 128
+    m_GlyphRect:
+      m_X: 256
       m_Y: 1920
       m_Width: 128
       m_Height: 128

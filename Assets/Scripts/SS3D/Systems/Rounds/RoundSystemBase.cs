@@ -11,8 +11,11 @@ using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
+using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Rounds.Messages;
 using UnityEngine;
+using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
+using RoundTickUpdated = SS3D.Systems.Rounds.Events.RoundTickUpdated;
 
 #pragma warning disable CS1998
 
@@ -37,21 +40,21 @@ namespace SS3D.Systems.Rounds
 
         protected CancellationTokenSource TickCancellationToken;
         private ServerManager _serverManager;
-        
-        public RoundState RoundState
+
+        protected RoundState RoundState
         {
             get => _roundState;
-            protected set => _roundState = value;
+            set => _roundState = value;
         }
 
-        public int RoundSeconds
+        protected int RoundSeconds
         {
             get => _currentTimerSeconds;
-            protected set => _currentTimerSeconds = value;
+            set => _currentTimerSeconds = value;
         }
 
-        public bool IsWarmingUp => RoundState == RoundState.WarmingUp;
-        public bool IsOngoing => RoundState == RoundState.Ongoing;
+        protected bool IsWarmingUp => RoundState == RoundState.WarmingUp;
+        protected bool IsOngoing => RoundState == RoundState.Ongoing;
 
         public override void OnStartServer()
         {
@@ -90,7 +93,7 @@ namespace SS3D.Systems.Rounds
             PermissionSystem permissionSystem = GameSystems.Get<PermissionSystem>();
 
             // Gets the soul that matches the connection, uses the ckey as the user id
-            string userCkey = playerControlSystem.GetSoulCkey(conn);
+            string userCkey = playerControlSystem.GetCkey(conn);
 
             // Checks if player can call a round start
             if (permissionSystem.GetUserPermission(userCkey) != requiredRole)
@@ -108,7 +111,6 @@ namespace SS3D.Systems.Rounds
                 #pragma warning restore CS4014
             }
         }
-
 
         [Server]
         protected virtual async UniTask ProcessChangeRoundState(ChangeRoundStateMessage changeRoundStateMessage)

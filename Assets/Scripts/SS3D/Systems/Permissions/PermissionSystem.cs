@@ -24,6 +24,13 @@ namespace SS3D.Systems.Permissions
         [SyncObject]
         private readonly SyncDictionary<string, ServerRoleTypes> _userPermissions = new();
 
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            _userPermissions.OnChange += HandleOnChange;
+        }
+
         public override void OnStartClient()
         {
             base.OnStartClient();
@@ -36,7 +43,6 @@ namespace SS3D.Systems.Permissions
             base.OnStartServer();
 
             LoadPermissions();
-            _userPermissions.OnChange += HandleOnChange;
         }
 
         private void HandleOnChange(SyncDictionaryOperation op, string key, ServerRoleTypes value, bool asServer)
@@ -46,7 +52,6 @@ namespace SS3D.Systems.Permissions
 
         public ServerRoleTypes GetUserPermission(string ckey)
         {
-
             if (_userPermissions.Count == 0 || _userPermissions == null)
             {
                 LoadPermissions();
