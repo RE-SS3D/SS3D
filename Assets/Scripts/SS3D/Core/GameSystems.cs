@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using SS3D.Logging;
-using SS3D.Utils;
-using UnityEngine;
-using LogType = SS3D.Logging.LogType;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Core
@@ -28,6 +25,7 @@ namespace SS3D.Core
             }
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         /// <summary>
         /// Gets any system at runtime, make sure there's no duplicates of said system before using.
         /// </summary>
@@ -46,7 +44,7 @@ namespace SS3D.Core
             {
                 string message = $"Couldn't find system of {typeof(T).Name} in the scene";
 
-                Punpun.Panic(typeof(GameSystems), message, LogType.Important);
+                Punpun.Panic(typeof(GameSystems), message, Logs.Important);
             }
 
             Systems.Add(typeof(T), match);

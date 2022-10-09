@@ -5,6 +5,7 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
@@ -22,11 +23,13 @@ namespace SS3D.Systems.PlayerControl
         [SyncObject]
         private readonly SyncList<Soul> _serverSouls = new();
 
-        public string GetSoulCkeyByConn(NetworkConnection conn) => _serverSouls.SingleOrDefault(soul => soul.Owner == conn)?.Ckey;
-        public Soul GetSoulByCkey(string ckey) => _serverSouls.SingleOrDefault(soul => soul.Ckey == ckey);
+        public string GetCkey(NetworkConnection conn) => _serverSouls.Find(soul => soul.Owner == conn)?.Ckey;
+        public Soul GetSoul(string ckey) => _serverSouls.Find(soul => soul.Ckey == ckey);
 
-        private void Start()
+        protected override void OnStart()
         {
+            base.OnStart();
+            
             SubscribeToEvents();
         }
 
@@ -46,30 +49,29 @@ namespace SS3D.Systems.PlayerControl
         {
             string ckey = userAuthorizationMessage.Ckey;
 
-            Soul match = GetSoulByCkey(ckey);
+            Soul match = GetSoul(ckey);
 
-            if (match != null)
+            if (match == null)
             {
-                Debug.Log($"[{nameof(PlayerControlSystem)}] - SERVER - Soul match for {ckey} found, reassigning to client");
+                Punpun.Say(this, $"No Soul match for {ckey} found, creating a new one", Logs.ServerOnly);
+
+                match = Instantiate(_soulPrefab).GetComponent<Soul>();
+                match.SetCkey(string.Empty, ckey, true);
+
+                _serverSouls.Add(match);
+
+                ServerManager.Spawn(match.gameObject);
             }
             else
             {
-                Debug.Log($"[{nameof(PlayerControlSystem)}] - SERVER - No Soul match for {ckey} found, creating a new one");
-
-                match = Instantiate(_soulPrefab).GetComponent<Soul>();
-                match.SetCkey(string.Empty ,ckey, true);
-                _serverSouls.Add(match);
-
-                InstanceFinder.ServerManager.Spawn(match.gameObject);
+                Punpun.Say(this, $"Soul match for {ckey} found, reassigning to client", Logs.ServerOnly);
             }
 
-            NetworkObject networkObject = match.gameObject.GetComponent<NetworkObject>();
+            NetworkObject networkObject = match.NetworkObject;
             networkObject.GiveOwnership(conn);
 
             UserJoinedServerMessage userJoinedServerMessage = new(match.Ckey);
-            InstanceFinder.ServerManager.Broadcast(userJoinedServerMessage);         
-
-            Debug.Log($"[{nameof(PlayerControlSystem)}] - SERVER - Handle Authorize Player: {match.Ckey}");
+            ServerManager.Broadcast(userJoinedServerMessage);         
         }
     }
 }

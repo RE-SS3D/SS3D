@@ -6,7 +6,7 @@ using SS3D.Systems.Entities;
 
 namespace SS3D.Systems.Rounds.Events
 {
-    public partial struct ReadyPlayersChanged : IBroadcast
+    public partial struct ReadyPlayersChanged : IEvent
     {
         public readonly List<string> ReadyPlayers;
 

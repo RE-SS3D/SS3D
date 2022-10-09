@@ -16,7 +16,7 @@ namespace SS3D.Networking
     {
         [Header("Loading Icon")]
         [SerializeField] private Transform _loadingIcon;
-        [SerializeField] private Vector3 _loadingMovement = new Vector3(0, 0, -360);
+        [SerializeField] private Vector3 _loadingMovement = new(0, 0, -360);
         [SerializeField] private float _loadingIconAnimationDuration;
 
         [Header("Buttons")] 

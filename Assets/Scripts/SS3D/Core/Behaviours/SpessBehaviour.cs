@@ -1,4 +1,5 @@
-﻿using Coimbra.Services.Events;
+﻿using System;
+using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using UnityEngine;
 
@@ -10,8 +11,37 @@ namespace SS3D.Core.Behaviours
     [Tooltip("Used to optimize all GameObjects, avoid MonoBehaviours")]
     public class SpessBehaviour : MonoBehaviour
     {
-        public Transform TransformCache { get; private set; }
-        public GameObject GameObjectCache { get; private set; }
+        private GameObject _gameObjectCache;
+        private Transform _transformCache;
+
+        public Transform TransformCache
+        {
+            get
+            {
+                if (_transformCache == null)
+                {
+                    _transformCache = transform;
+                }
+
+                return _transformCache;
+            }
+            private set => _transformCache = value;
+        }
+
+        public GameObject GameObjectCache
+        {
+            get
+            {
+                if (_gameObjectCache == null)
+                {
+                    _gameObjectCache = gameObject;
+
+                }
+
+                return _gameObjectCache;
+            }
+            private set => _gameObjectCache = value;
+        }
 
         #region ACCESSORS
         public RectTransform RectTransform => (RectTransform)TransformCache;
@@ -48,7 +78,10 @@ namespace SS3D.Core.Behaviours
 
         public Transform Root => TransformCache.root;
 
+        public void SetActive(bool state) => GameObjectCache.SetActive(state);
         public void SetParent(Transform parent) => TransformCache.SetParent(parent);
+        public void LookAt(Transform target) => TransformCache.LookAt(target);
+        public void LookAt(Vector3 target) => TransformCache.LookAt(target);
 
         public Vector3 LocalPosition
         {
@@ -88,6 +121,10 @@ namespace SS3D.Core.Behaviours
             OnAwake();
         }
 
+        private void Start() { OnStart(); }
+
+        private void OnDestroy() { OnDestroyed(); }
+
         private void Initialize()
         {
             TransformCache = transform;
@@ -106,12 +143,12 @@ namespace SS3D.Core.Behaviours
         private void OnPreUpdate(ref EventContext context, in LastPreUpdateEvent e) { HandlePreUpdate(e.DeltaTime); }
         private void OnUpdate(ref EventContext context, in UpdateEvent e) { HandleUpdate(e.DeltaTime); }
         private void OnLateUpdate(ref EventContext context, in LateUpdateEvent e) { HandleLateUpdate(e.DeltaTime); }
-        private void Start() { OnStart(); }
         #endregion
 
         #region EVENT_CALLBACKS
         protected virtual void OnAwake() { }
         protected virtual void OnStart() { }
+        protected virtual void OnDestroyed() { }
         protected virtual void HandlePreUpdate(in float deltaTime) { }
         protected virtual void HandleLateUpdate(float deltaTime) { }
         protected virtual void HandleUpdate(in float deltaTime) { }

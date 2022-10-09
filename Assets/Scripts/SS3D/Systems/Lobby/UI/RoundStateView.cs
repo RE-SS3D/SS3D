@@ -6,6 +6,8 @@ using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Messages;
 using TMPro;
 using UnityEngine;
+using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
+using RoundTickUpdated = SS3D.Systems.Rounds.Events.RoundTickUpdated;
 
 namespace SS3D.Systems.Lobby.UI
 {
