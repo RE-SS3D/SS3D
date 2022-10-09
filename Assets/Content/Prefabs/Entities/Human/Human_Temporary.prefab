@@ -2784,7 +2784,7 @@ MonoBehaviour:
   _isNetworked: 1
   _hasParentNetworkObjectAtEdit: 0
   NetworkObserver: {fileID: 0}
-  _prefabId: 3
+  _prefabId: 10
   _scenePathHash: 0
   _sceneId: 0
   _sceneNetworkObjects:
@@ -2914,8 +2914,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   _characterController: {fileID: 3812744165389046210}
   _movementSpeed: 5
-  _lerpMultiplier: 3
-  _rotationLerpMultiplier: 3
+  _lerpMultiplier: 2
+  _rotationLerpMultiplier: 6
   _movementTarget: {fileID: 282733360052666326}
 --- !u!114 &6706577840954258383
 MonoBehaviour:

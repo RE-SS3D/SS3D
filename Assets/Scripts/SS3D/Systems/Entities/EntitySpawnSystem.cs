@@ -14,7 +14,7 @@ namespace SS3D.Systems.Entities
 {
     public class EntitySpawnSystem : NetworkedSystem
     {
-        [SerializeField] private PlayerControllable _tempHuman;
+        [SerializeField] private List<PlayerControllable> _tempHuman;
         [SerializeField] private Transform _tempSpawnPoint;
 
         private bool _alreadySpawnedInitialPlayers;
@@ -68,7 +68,9 @@ namespace SS3D.Systems.Entities
                 Soul soul = playerControlSystem.GetSoul(ckey);
                 _spawnedPlayers.Add(soul);
 
-                PlayerControllable controllable = Instantiate(_tempHuman, _tempSpawnPoint.position, Quaternion.identity);
+                PlayerControllable controllable = Instantiate(_tempHuman[Random.Range(0, _tempHuman.Count)],
+                    _tempSpawnPoint.position, Quaternion.identity);
+
                 ServerManager.Spawn(controllable.NetworkObject, soul.Owner);
                 
                 controllable.GiveOwnership(soul.Owner);
