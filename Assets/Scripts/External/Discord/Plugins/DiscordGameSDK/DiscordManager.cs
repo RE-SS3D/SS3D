@@ -4,6 +4,7 @@ using System;
 using SS3D.Logging;
 using UnityEngine;
 using UnityEngine.Events;
+using LogType = SS3D.Logging.LogType;
 
 #endregion
 

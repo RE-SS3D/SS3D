@@ -7,6 +7,7 @@ using SS3D.Logging;
 using SS3D.Systems.Lobby.Messages;
 using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
+using LogType = SS3D.Logging.LogType;
 
 namespace SS3D.Systems.Lobby
 {
