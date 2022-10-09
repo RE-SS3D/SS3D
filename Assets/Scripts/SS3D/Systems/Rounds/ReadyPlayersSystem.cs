@@ -18,7 +18,7 @@ namespace SS3D.Systems.Rounds
     /// <summary>
     /// Sets what players are ready or not.
     /// </summary>
-    public class RoundPlayerSystem : NetworkedSystem
+    public class ReadyPlayersSystem : NetworkedSystem
     {
         [SyncObject] private readonly SyncList<string> _readyPlayers = new();
 
@@ -45,8 +45,6 @@ namespace SS3D.Systems.Rounds
         {
             RoundState roundState = e.RoundState;
 
-            Punpun.Yell(this, $"round state updated {roundState}");
-
             if (roundState != RoundState.Ongoing)
             {
                 return;
@@ -55,7 +53,6 @@ namespace SS3D.Systems.Rounds
             SpawnReadyPlayersEvent spawnReadyPlayersEvent = new(_readyPlayers.ToList());
             spawnReadyPlayersEvent.Invoke(this);
 
-            // Spawn players idk
             _readyPlayers.Clear();
         }
 

@@ -47,8 +47,10 @@ namespace SS3D.Systems.Entities.Humanoid
         private const float WalkAnimatorValue = .3f;
         private const float RunAnimatorValue = 1f;
 
-        private void Start()
+        protected override void OnStart()
         {
+            base.OnStart();
+
             Setup();
         }
 
@@ -57,8 +59,10 @@ namespace SS3D.Systems.Entities.Humanoid
             _camera = GameSystems.Get<CameraSystem>().PlayerCamera;
         }
 
-        private void Update()
+        protected override void HandleUpdate(in float deltaTime)
         {
+            base.HandleUpdate(in deltaTime);
+
             if (!IsOwner)
             {
                 return;

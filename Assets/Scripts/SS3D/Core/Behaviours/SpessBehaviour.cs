@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using Coimbra.Services;
 using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using UnityEngine;
@@ -13,6 +14,8 @@ namespace SS3D.Core.Behaviours
     {
         private GameObject _gameObjectCache;
         private Transform _transformCache;
+
+        private readonly List<EventHandle> _eventHandles = new();
 
         public Transform TransformCache
         {
@@ -117,7 +120,7 @@ namespace SS3D.Core.Behaviours
         private void Awake()
         {
             Initialize();
-            ListenToEvents();
+            AddEventListeners();
             OnAwake();
         }
 
@@ -131,12 +134,22 @@ namespace SS3D.Core.Behaviours
             GameObjectCache = gameObject;
         }
 
-        private void ListenToEvents()
+        private void AddEventListeners()
         {
-            LastPreUpdateEvent.AddListener(OnPreUpdate);
-            UpdateEvent.AddListener(OnUpdate);
-            LateUpdateEvent.AddListener(OnLateUpdate);
+            _eventHandles.Add(LastPreUpdateEvent.AddListener(OnPreUpdate));
+            _eventHandles.Add(UpdateEvent.AddListener(OnUpdate));
+            _eventHandles.Add(LateUpdateEvent.AddListener(OnLateUpdate));
         }
+
+        private void RemoveEventListeners()
+        {
+            IEventService eventService = ServiceLocator.Get<IEventService>();
+            foreach (EventHandle eventHandle in _eventHandles)
+            {
+                eventService?.RemoveListener(eventHandle);
+            } 
+        }
+
         #endregion
 
         #region EVENT_CALLS
@@ -148,7 +161,12 @@ namespace SS3D.Core.Behaviours
         #region EVENT_CALLBACKS
         protected virtual void OnAwake() { }
         protected virtual void OnStart() { }
-        protected virtual void OnDestroyed() { }
+
+        protected virtual void OnDestroyed()
+        {
+            RemoveEventListeners();
+        }
+
         protected virtual void HandlePreUpdate(in float deltaTime) { }
         protected virtual void HandleLateUpdate(float deltaTime) { }
         protected virtual void HandleUpdate(in float deltaTime) { }

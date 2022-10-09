@@ -17,10 +17,10 @@ namespace SS3D.Systems.Lobby.UI
         [SerializeField] private ToggleLabelButton _readyButton;
         [SerializeField] private LabelButton _embarkButton;
 
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
-
+            base.OnAwake();
+            
             _readyButton.OnPressedDown += HandleReadyButtonPressed;
             _embarkButton.OnPressedDown += HandleEmbarkButtonPressed;
 

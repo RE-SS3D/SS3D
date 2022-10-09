@@ -25,6 +25,7 @@ namespace SS3D.Systems.PlayerControl
 
         public string GetCkey(NetworkConnection conn) => _serverSouls.Find(soul => soul.Owner == conn)?.Ckey;
         public Soul GetSoul(string ckey) => _serverSouls.Find(soul => soul.Ckey == ckey);
+        public Soul GetSoul(NetworkConnection conn) => _serverSouls.Find(soul => soul.Owner == conn);
 
         protected override void OnStart()
         {

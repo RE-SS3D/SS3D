@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Coimbra;
 using Coimbra.Services.Events;
 using FishNet.Connection;
 using FishNet.Object;
@@ -25,6 +26,7 @@ namespace SS3D.Systems.Entities
         [SyncObject]
         private readonly SyncList<string> _spawnedPlayers = new();
 
+        private readonly List<PlayerControllable> _serverSpawnedPlayers = new();
         private bool _alreadySpawnedInitialPlayers;
 
         public bool IsPlayedSpawned(string ckey) => _spawnedPlayers.Contains(ckey);
@@ -69,7 +71,9 @@ namespace SS3D.Systems.Entities
             }
 
             _alreadySpawnedInitialPlayers = false;
-            _spawnedPlayers.Clear();
+            _spawnedPlayers.Clear();  
+
+            DestroySpawnedPlayers();
         }
 
         [Server]
@@ -120,6 +124,17 @@ namespace SS3D.Systems.Entities
             _alreadySpawnedInitialPlayers = true;
         }
 
+        private void DestroySpawnedPlayers()
+        {
+            foreach (PlayerControllable player in _serverSpawnedPlayers)
+            {
+                ServerManager.Despawn(player.GameObjectCache);
+                player.GameObjectCache.Destroy();
+            }
+
+            _serverSpawnedPlayers.Clear();
+        }
+
         private void SpawnPlayer(string ckey)
         {
             PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
@@ -128,6 +143,7 @@ namespace SS3D.Systems.Entities
             _spawnedPlayers.Add(ckey);
 
             PlayerControllable controllable = Instantiate(_tempHuman[Random.Range(0, _tempHuman.Count)], _tempSpawnPoint.position, Quaternion.identity);
+            _serverSpawnedPlayers.Add(controllable);
 
             ServerManager.Spawn(controllable.NetworkObject, soul.Owner);
                 

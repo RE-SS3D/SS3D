@@ -2912,6 +2912,7 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
+  _scaleInOnSpawn: 1
   _characterController: {fileID: 3812744165389046210}
   _movementSpeed: 5
   _lerpMultiplier: 2

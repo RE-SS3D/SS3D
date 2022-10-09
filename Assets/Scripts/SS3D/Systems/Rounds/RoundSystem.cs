@@ -21,8 +21,6 @@ namespace SS3D.Systems.Rounds
         {
             if (!IsServer) { return; }
 
-            Punpun.Yell(this, "Processing round state changed", Logs.ServerOnly);
-
             if (m.State)
             {
                 await StopRound();

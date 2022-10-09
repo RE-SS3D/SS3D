@@ -37,22 +37,124 @@ namespace SS3D.Systems.Screens
 
         // Sensitivities and Accelerations
         // How quickly distance changes
-        private const float DISTANCE_ACCELERATION = 15.0f; 
-        private const float ANGLE_ACCELERATION = 8f;
+        private const float DistanceAcceleration = 15.0f; 
+        private const float AngleAcceleration = 8f;
         // The exponential effect of distance
-        private const float DISTANCE_SCALING = 1.18f; 
+        private const float DistanceScaling = 1.18f; 
 
-        private const float HORIZONTAL_ROTATION_SENSITIVITY = 150f;
-        private const float VERTICAL_ROTATION_SENSITIVITY = 80f;
+        private const float HorizontalRotationSensitivity = 150f;
+        private const float VerticalRotationSensitivity = 80f;
 
         // Limits
-        private const float MIN_VERTICAL_ANGLE = 10f;
-        private const float MAX_VERTICAL_ANGLE = 80f;
+        private const float MinVerticalAngle = 10f;
+        private const float MaxVerticalAngle = 80f;
 
-        private const float MIN_DISTANCE = 3f;
-        private const float MAX_DISTANCE = 15f;
+        private const float MinDistance = 3f;
+        private const float MaxDistance = 15f;
 
-        private const float CARDINAL_SNAP_TIME = 0.3f;
+        private const float CardinalSnapTime = 0.3f;
+        private const float SnapAngle = 45.1f;
+
+        protected override void HandleUpdate(in float deltaTime)
+        {
+            base.HandleUpdate(in deltaTime);
+            
+            ProcessCameraFollow();
+        }
+
+        protected override void HandleLateUpdate(float deltaTime)
+        {
+            base.HandleLateUpdate(deltaTime);
+
+            ProcessCameraPositionPostPhysics();
+        }
+
+        /// <summary>
+       /// Gather inputs used to determine new camera values
+       /// </summary>
+        private void ProcessCameraFollow()
+        {
+            // Ignore camera controls when the mouse is over the UI
+            if (EventSystem.current != null)
+            {
+                if (EventSystem.current.IsPointerOverGameObject())
+                {
+                    return;
+                }
+            }
+
+            bool horizontalRotationPressed = Input.GetButton("Camera Rotation");
+            bool verticalRotationPressed = Input.GetButton("Camera Vertical Rotation");
+
+            float horizontalRotation = Input.GetAxis("Camera Rotation");
+            float verticalRotation = Input.GetAxis("Camera Vertical Rotation");
+
+            bool rotationButtonDown = Input.GetButtonDown("Camera Rotation");
+            bool rotationButtonUp = Input.GetButtonUp("Camera Rotation");
+            float zoom = Input.GetAxis("Camera Zoom");
+
+            // Check for double tap
+            if (rotationButtonDown)
+            {
+                _prevHorizontalAxisPress = Time.time;
+            }
+
+            // If a double tap actually works
+            // Round to closest 90 degree angle, going up or down based on whether axis is positive or negative
+            if (rotationButtonUp && Time.time - _prevHorizontalAxisPress < CardinalSnapTime)
+            {
+                _horizontalAngle = Mathf.Round((_horizontalAngle + (horizontalRotation > 0 ? SnapAngle : -SnapAngle)) / 90.0f) * 90.0f;
+                _prevHorizontalAxisPress = 0.0f;
+                return;
+            }
+
+            // input handling
+            float horizontalAngleDelta = 0.0f;
+            float verticalAngleDelta = 0.0f;
+
+            if (horizontalRotationPressed && (Time.time - _prevHorizontalAxisPress) > CardinalSnapTime)
+            { 
+                horizontalAngleDelta = horizontalRotation * HorizontalRotationSensitivity * Time.deltaTime;
+            }
+            if (verticalRotationPressed)
+            {
+                verticalAngleDelta = verticalRotation * VerticalRotationSensitivity * Time.deltaTime;
+            }
+
+            // Determine new values, clamping as necessary
+            _distance = Mathf.Clamp(_distance - zoom, MinDistance, MaxDistance);
+            _horizontalAngle = (_horizontalAngle + horizontalAngleDelta) % 360f;
+            _verticalAngle = Mathf.Clamp(_verticalAngle + verticalAngleDelta, MinVerticalAngle, MaxVerticalAngle);
+        }
+
+        /// <summary>
+       /// Determine camera position after any physics/player movement
+       /// </summary>
+        private void ProcessCameraPositionPostPhysics()
+        {
+            // if there is no target exit out of update
+            if (!_target)
+            {
+                return;
+            }
+
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+
+            // Smooth the distance and angle before using it
+            _currentHorizontalAngle = Mathf.LerpAngle(_currentHorizontalAngle, _horizontalAngle, Time.deltaTime * AngleAcceleration);
+            _currentDistance = Mathf.MoveTowards(_currentDistance, _distance, Time.deltaTime * DistanceAcceleration);
+            // The position is determined by the orientation and the distance, where distance has an exponential effect.
+            Vector3 relativePosition = Quaternion.Euler(0, _currentHorizontalAngle, _verticalAngle) * new Vector3(Mathf.Pow(DistanceScaling, _currentDistance), 0, 0);
+            // Determine the part of the target we want to follow
+            Vector3 targetPosition = _target.transform.position + _playerOffset;
+
+            // Look at that part from the correct position
+            Position = targetPosition + relativePosition;
+            LookAt(targetPosition);
+        }
 
         /// <summary>
         /// Updates the target the camera is meant to follow
@@ -68,75 +170,6 @@ namespace SS3D.Systems.Screens
             {
                 _playerOffset = new Vector3(0, character.height);
             }
-        }
-
-       /// <summary>
-       /// Gather inputs used to determine new camera values
-       /// </summary>
-        public void Update()
-        {
-            // Ignore camera controls when the mouse is over the UI
-            if (EventSystem.current.IsPointerOverGameObject())
-                return;
-        
-            // Check for double tap
-            if (Input.GetButtonDown("Camera Rotation"))
-                _prevHorizontalAxisPress = Time.time;
-
-            // If a double tap actually works
-            // Round to closest 90 degree angle, going up or down based on whether axis is positive or negative
-            if (Input.GetButtonUp("Camera Rotation") && (Time.time - _prevHorizontalAxisPress) < CARDINAL_SNAP_TIME)
-            {
-                _horizontalAngle = Mathf.Round((_horizontalAngle + (Input.GetAxis("Camera Rotation") > 0 ? 45.1f : -45.1f)) / 90.0f) * 90.0f;
-                _prevHorizontalAxisPress = 0.0f;
-                return;
-            }
-
-            // input handling
-            float zoom = Input.GetAxis("Camera Zoom");
-            float horizontalAngleDelta = 0.0f;
-            float verticalAngleDelta = 0.0f;
-
-            if (Input.GetButton("Camera Rotation") && (Time.time - _prevHorizontalAxisPress) > CARDINAL_SNAP_TIME)
-            { 
-                horizontalAngleDelta = Input.GetAxis("Camera Rotation") * HORIZONTAL_ROTATION_SENSITIVITY * Time.deltaTime;
-            }
-            if (Input.GetButton("Camera Vertical Rotation"))
-            {
-                verticalAngleDelta = Input.GetAxis("Camera Vertical Rotation") * VERTICAL_ROTATION_SENSITIVITY * Time.deltaTime;
-            }
-
-            // Determine new values, clamping as necessary
-            _distance = Mathf.Clamp(_distance - zoom, MIN_DISTANCE, MAX_DISTANCE);
-            _horizontalAngle = (_horizontalAngle + horizontalAngleDelta) % 360f;
-            _verticalAngle = Mathf.Clamp(_verticalAngle + verticalAngleDelta, MIN_VERTICAL_ANGLE, MAX_VERTICAL_ANGLE);
-        }
-
-       /// <summary>
-       /// Determine camera position after any physics/player movement
-       /// </summary>
-        public void LateUpdate()
-        {
-            // if there is no target exit out of update
-            if (!_target)
-            {
-                return;
-            }
-
-            if (EventSystem.current.IsPointerOverGameObject())
-                return;
-
-            // Smooth the distance and angle before using it
-            _currentHorizontalAngle = Mathf.LerpAngle(_currentHorizontalAngle, _horizontalAngle, Time.deltaTime * ANGLE_ACCELERATION);
-            _currentDistance = Mathf.MoveTowards(_currentDistance, _distance, Time.deltaTime * DISTANCE_ACCELERATION);
-            // The position is determined by the orientation and the distance, where distance has an exponential effect.
-            Vector3 relativePosition = Quaternion.Euler(0, _currentHorizontalAngle, _verticalAngle) * new Vector3(Mathf.Pow(DISTANCE_SCALING, _currentDistance), 0, 0);
-            // Determine the part of the target we want to follow
-            Vector3 targetPosition = _target.transform.position + _playerOffset;
-
-            // Look at that part from the correct position
-            Position = targetPosition + relativePosition;
-            LookAt(targetPosition);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using FishNet.Connection;
+﻿using DG.Tweening;
+using FishNet.Connection;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Screens.Events;
@@ -13,12 +14,26 @@ namespace SS3D.Systems.Entities
     {
         [SyncVar(OnChange = "SyncControllingSoul")] private NetworkConnection _controllingSoul;
 
+        [SerializeField] private bool _scaleInOnSpawn = true;
+        private const float ScaleInDuration = .6f;
+
         protected bool ControlledByLocalPlayer => _controllingSoul == LocalConnection;
 
         public NetworkConnection ControllingSoul
         {
             get => _controllingSoul;
             set => SetControllingSoul(value);
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            if (_scaleInOnSpawn)
+            {
+                LocalScale = Vector3.zero;
+                TransformCache.DOScale(1, ScaleInDuration).SetEase(Ease.OutElastic);
+            }
         }
 
         public override void OnStartClient()
