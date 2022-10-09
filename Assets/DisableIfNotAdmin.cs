@@ -6,6 +6,7 @@ using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Core.Utils;
+using SS3D.Logging;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.Permissions.Events;
 using SS3D.Systems.PlayerControl;
@@ -21,7 +22,7 @@ public class DisableIfNotAdmin : NetworkedSpessBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-
+        
         ClientManager.RegisterBroadcast<UserJoinedServerMessage>(HandleUserJoinedServer);
         UserPermissionsChangedEvent.AddListener(HandleUserPermissionsUpdated);
     }
@@ -42,8 +43,13 @@ public class DisableIfNotAdmin : NetworkedSpessBehaviour
         DisableObjects();
     }
 
-    private async void DisableObjects()
+    private void DisableObjects()
     {
+        if (_ckey == null)
+        {
+            return;
+        }
+
         PermissionSystem permissionSystem = GameSystems.Get<PermissionSystem>();
         PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
 

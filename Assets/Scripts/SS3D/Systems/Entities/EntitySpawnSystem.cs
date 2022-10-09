@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using Coimbra.Services.Events;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
+using SS3D.Systems.Entities.Events;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
@@ -18,7 +21,28 @@ namespace SS3D.Systems.Entities
         [SerializeField] private Transform _tempSpawnPoint;
 
         private bool _alreadySpawnedInitialPlayers;
-        private readonly List<Soul> _spawnedPlayers = new();
+
+        [SyncObject]
+        private readonly SyncList<string> _spawnedPlayers = new();
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+
+            _spawnedPlayers.OnChange += SetSpawnedPlayers;
+            SyncSpawnedPlayers();
+        }
+
+        private void SetSpawnedPlayers(SyncListOperation op, int index, string old, string player, bool asServer)
+        {
+            SyncSpawnedPlayers();
+        }
+
+        private void SyncSpawnedPlayers()
+        {
+            SpawnedPlayersUpdated spawnedPlayersUpdated = new(_spawnedPlayers.ToList());
+            spawnedPlayersUpdated.Invoke(this);
+        }
 
         public override void OnStartServer()
         {
@@ -26,6 +50,13 @@ namespace SS3D.Systems.Entities
 
             SpawnReadyPlayersEvent.AddListener(HandleSpawnReadyPlayers);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
+
+            _spawnedPlayers.OnChange += HandleSpawnedPlayersChanged;
+        }
+
+        private void HandleSpawnedPlayersChanged(SyncListOperation op, int index, string olditem, string newitem, bool asserver)
+        {
+            
         }
 
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
@@ -66,7 +97,7 @@ namespace SS3D.Systems.Entities
             foreach (string ckey in players)
             {
                 Soul soul = playerControlSystem.GetSoul(ckey);
-                _spawnedPlayers.Add(soul);
+                _spawnedPlayers.Add(ckey);
 
                 PlayerControllable controllable = Instantiate(_tempHuman[Random.Range(0, _tempHuman.Count)],
                     _tempSpawnPoint.position, Quaternion.identity);

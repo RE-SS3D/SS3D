@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Core.Behaviours;
 using SS3D.Systems.Permissions.Events;
 using UnityEngine;
 using File = System.IO.File;
@@ -12,20 +14,40 @@ namespace SS3D.Systems.Permissions
     /// <summary>
     /// TODO: Make a simple permission system based on a .txt file to avoid non-admins from starting a round
     /// </summary>
-    public class PermissionSystem : NetworkBehaviour
+    public sealed class PermissionSystem : NetworkedSystem
     {
         private const string EditorPermissionFilePath = "/Builds/Config/permissions.txt";
         private const string PermissionFilePath = "/Config/permissions.txt";
 
         private static string FullPermissionFilePath => Path.GetFullPath(".") + (Application.isEditor ? EditorPermissionFilePath : PermissionFilePath);
 
-        [SyncVar(OnChange = "SyncUserPermissions")]
-        private Dictionary<string, ServerRoleTypes> _userPermissions = new();
+        [SyncObject]
+        private readonly SyncDictionary<string, ServerRoleTypes> _userPermissions = new();
 
-        [Server]
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+
+            SyncUserPermissions();
+        }
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+
+            LoadPermissions();
+            _userPermissions.OnChange += HandleOnChange;
+        }
+
+        private void HandleOnChange(SyncDictionaryOperation op, string key, ServerRoleTypes value, bool asServer)
+        {
+              SyncUserPermissions();
+        }
+
         public ServerRoleTypes GetUserPermission(string ckey)
         {
-            if (_userPermissions.Count == 0)
+
+            if (_userPermissions.Count == 0 || _userPermissions == null)
             {
                 LoadPermissions();
             }
@@ -46,13 +68,6 @@ namespace SS3D.Systems.Permissions
             // TODO: This
         }
 
-        public override void OnStartServer()
-        {
-            base.OnStartServer();
-
-            LoadPermissions();
-        }
-
         [Server]
         private void LoadPermissions()
         {
@@ -71,26 +86,25 @@ namespace SS3D.Systems.Permissions
 
                 Debug.Log($"[{nameof(PermissionSystem)}] - Found user permission {ckey} as {role}");
             }
-
-            UserPermissionsChangedEvent permissionsChangedEvent = new(_userPermissions);
-            permissionsChangedEvent.Invoke(this);
         }
 
-        private void SyncUserPermissions(Dictionary<string, ServerRoleTypes> oldValue, Dictionary<string, ServerRoleTypes> newValue, bool asBool)
+        private void SyncUserPermissions()
         {
-            _userPermissions = newValue;
+            Dictionary<string, ServerRoleTypes> dictionary = _userPermissions.ToDictionary(pair => pair.Key, pair => pair.Value);
 
-            UserPermissionsChangedEvent permissionsChangedEvent = new(_userPermissions);
+            UserPermissionsChangedEvent permissionsChangedEvent = new(dictionary);
             permissionsChangedEvent.Invoke(this);
         }
 
         private static void CreatePermissionsFileIfNotExists()
         {
-            if (!File.Exists(FullPermissionFilePath))
+            if (File.Exists(FullPermissionFilePath))
             {
-                Debug.Log($"[{nameof(PermissionSystem)}] - Permissions file not found, creating a new one");
-                File.WriteAllText(FullPermissionFilePath, string.Empty);
+                return;
             }
+
+            Debug.Log($"[{nameof(PermissionSystem)}] - Permissions file not found, creating a new one");
+            File.WriteAllText(FullPermissionFilePath, string.Empty);
         }
     }
 }
