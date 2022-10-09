@@ -1,213 +1,119 @@
 ﻿using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using FishNet;
-using FishNet.Connection;
-using FishNet.Managing.Server;
 using FishNet.Object;
-using FishNet.Object.Synchronizing;
-using SS3D.Core;
-using SS3D.Systems.Permissions;
-using SS3D.Systems.PlayerControl;
+using SS3D.Logging;
 using SS3D.Systems.Rounds.Messages;
-using UnityEngine;
+using LogType = SS3D.Logging.LogType;
 
 namespace SS3D.Systems.Rounds
 {
     /// <summary>
-    ///   <para>
-    ///     Behaviour responsible for syncing timers between server and clients and starting
-    ///     and restarting rounds.
-    /// </para>
+    /// Round system base implementation for basic round functionality
     /// </summary>
-    public class RoundSystem : NetworkBehaviour
+    public sealed class RoundSystem : RoundSystemBase
     {
-        [Header("Round Stats")] 
-        [SyncVar] 
-        [SerializeField] private RoundState _roundState;
-        
-        // How much time has passed
-        [SyncVar] 
-        [SerializeField] private int _currentTimerSeconds;
-
-        // How many seconds of warmup
-        [Header("Warmup")]
-        [SyncVar] 
-        [SerializeField] private int _warmupTimerSeconds = 5;
-
-        private Action _warmupCoroutine;
-        private Action _tickCoroutine;
-
-        private CancellationTokenSource _warmupCancellationToken;
-        private CancellationTokenSource _tickCancellationToken;
-
-        private ServerManager _serverManager;
-
-        public bool RoundRunning => _roundState == RoundState.Running;
-        public bool RoundStarting => _roundState == RoundState.Starting;
-        public bool OnWarmup => _roundState == RoundState.WarmingUp;
-
-        public RoundState RoundState => _roundState;
-        public int RoundTime => _currentTimerSeconds;
-
-        public override void OnStartServer()
-        {
-            base.OnStartServer();
-
-            _serverManager = InstanceFinder.ServerManager;
-            
-            ServerSubscribeToEvents();
-        }
-        
+        /// <summary>
+        /// Round loop runner
+        /// </summary>
+        /// <param name="changeRoundStateMessage"></param>
         [Server]
-        private void ServerSubscribeToEvents()
+        protected override async UniTask ProcessChangeRoundState(ChangeRoundStateMessage m)
         {
-            _serverManager.RegisterBroadcast<RequestStartRoundMessage>(HandleRequestStartRound);
-        }
+            if (!IsServer) { return; }
 
-        private void HandleRequestStartRound(NetworkConnection conn, RequestStartRoundMessage m)
-        {
-            const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;
-
-            PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
-            PermissionSystem permissionSystem = GameSystems.Get<PermissionSystem>();
-
-            string userCkey = playerControlSystem.GetSoulCkeyByConn(conn);
-            if (permissionSystem.GetUserPermission(userCkey) != requiredRole)
+            if (m.State)
             {
-                Debug.Log($"[{nameof(RoundSystem)}] - User {userCkey} doesn't have {requiredRole} permission");
+                await StopRound();
+                await PrepareRound();
+                await ProcessRoundTick();
+                await ProcessEndRound();
+                await StopRound();
             }
             else
             {
-                Debug.Log($"[{nameof(RoundSystem)}] - User {userCkey} has started the round");
-                ServerStartWarmup();   
+                await ProcessEndRound();
+                await StopRound();
             }
         }
 
         /// <summary>
-        /// Server method to start the warmup
+        /// Prepares the round before starting
         /// </summary>
         [Server]
-        private void ServerStartWarmup()
+        protected override async UniTask PrepareRound()
         {
-            if (!IsServer)
-            {
-                return;
-            }
+            Punpun.Say(this, "Preparing round", LogType.ServerOnly);
+            
+            RoundState = RoundState.Preparing;
 
-            // Starts the warmup
-            _currentTimerSeconds = _warmupTimerSeconds;
-            UpdateRoundState(RoundState.WarmingUp);
-
-            _tickCancellationToken?.Cancel();
-            _warmupCoroutine = ProcessWarmupTickCoroutine;
-
-            _warmupCoroutine.Invoke();
-
-            WarmupStartedMessage warmupStartedMessage = new();
-            _serverManager.Broadcast(warmupStartedMessage);
+            TimeSpan second = TimeSpan.FromMilliseconds(500);
+            await UniTask.Delay(second);
         }
 
+        /// <summary>
+        /// Process the round tick until the round ends
+        /// </summary>
         [Server]
-        private void HandleStartRound()
+        protected override async UniTask ProcessRoundTick()
         {
-            // Only do SyncVar assignments, tick coroutine and the RPC on the server.
-            if (!IsServer)
-            {
-                return;
-            }
+            Punpun.Say(this, "Starting warmup tick", LogType.ServerOnly);
 
-            if (RoundRunning)
-            {
-                Debug.Log($"[{nameof(RoundSystem)}] - Can't start round as round is already running");
-                return;
-            }
-            
-            UpdateRoundState(RoundState.Starting);
-            
-            UpdateRoundState(RoundState.Running);
-
-            _warmupCancellationToken?.Cancel();
-            _tickCoroutine = ProcessTickCoroutine;
-
-            _tickCoroutine.Invoke();
-            
-            _serverManager.Broadcast(new RoundStartedMessage());
-        }
-
-        [Server]
-        private async void ProcessWarmupTickCoroutine()
-        {
-            if (!IsServer)
-            {
-                return;
-            }
-
-            _warmupCancellationToken = new CancellationTokenSource();
+            RoundSeconds = _warmupSeconds;
+            TickCancellationToken = new CancellationTokenSource();
             TimeSpan second = TimeSpan.FromSeconds(1);
 
-            while (_currentTimerSeconds > 0)
-            {
-                UpdateClock(GetTimerSeconds());
-                _currentTimerSeconds--;
+            RoundState = RoundState.WarmingUp;
 
-                Debug.Log($"[{nameof(RoundSystem)}] - Start timer: {_currentTimerSeconds}");
-                await UniTask.Delay(second, true, PlayerLoopTiming.Update, cancellationToken: _warmupCancellationToken.Token);
+            while (IsWarmingUp && RoundSeconds > 0)
+            {
+                await UniTask.Delay(second, cancellationToken: TickCancellationToken.Token);
+
+                RoundSeconds--;
+
+                if (RoundSeconds == 0)
+                {
+                    RoundState = RoundState.Ongoing;
+                }
             }
 
-            HandleStartRound();
+            Punpun.Say(this, "Starting round tick", LogType.ServerOnly);
+
+            while (IsOngoing)
+            {
+                await UniTask.Delay(second, cancellationToken: TickCancellationToken.Token);
+
+                RoundSeconds++;
+            }
         }
 
         [Server]
-        private async void ProcessTickCoroutine()
+        protected override async UniTask ProcessEndRound()
         {
-            if (!IsServer)
+            RoundState = RoundState.Ending;
+            TickCancellationToken?.Cancel();
+
+            TimeSpan second = TimeSpan.FromMilliseconds(500);
+            await UniTask.Delay(second);
+
+            Punpun.Say(this, "Ending round", LogType.ServerOnly);
+        }
+
+        [Server]
+        protected override async UniTask StopRound()
+        {
+            if (RoundState == RoundState.Stopped)
             {
                 return;
             }
 
-            _tickCancellationToken = new CancellationTokenSource();
-            TimeSpan second = TimeSpan.FromSeconds(1);
+            RoundState = RoundState.Stopped;
+            RoundSeconds = 0;
 
-            while (RoundRunning)
-            {
-                UpdateClock(GetTimerSeconds());
-                _currentTimerSeconds++;
-                await UniTask.Delay(second, true, PlayerLoopTiming.Update, _tickCancellationToken.Token);
-            }
+            TimeSpan second = TimeSpan.FromMilliseconds(500);
+            await UniTask.Delay(second);
 
-            Debug.Log($"[{nameof(RoundSystem)}] - Coroutine running while round is not active");
-        }
-
-        [Server]
-        private void UpdateClock(int time)
-        {
-            if (!IsServer)
-            {
-                return;
-            }
-            
-            RoundTickUpdatedMessage roundTickUpdatedMessage = new(time);
-            _serverManager.Broadcast(roundTickUpdatedMessage, false);
-        }
-
-        private int GetTimerSeconds()
-        {
-            TimeSpan timeSpan = TimeSpan.FromSeconds(_currentTimerSeconds);
-            int timer = (int)timeSpan.TotalSeconds;
-            
-            return timer;
-        }
-
-        [Server]
-        private void UpdateRoundState(RoundState newState)
-        {
-            _roundState = newState;
-            
-            Debug.Log($"[{nameof(RoundSystem)}] - Round state updated: [{newState}]");
-            
-            RoundStateUpdatedMessage roundStateUpdatedMessage = new(newState);
-            _serverManager.Broadcast(roundStateUpdatedMessage, false);
+            Punpun.Say(this, "Round stopped", LogType.ServerOnly); 
         }
     }
-}                               
+}

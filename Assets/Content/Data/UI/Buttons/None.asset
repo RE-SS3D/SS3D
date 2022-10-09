@@ -15,12 +15,15 @@ MonoBehaviour:
   NormalColor:
     Button: {r: 1, g: 1, b: 1, a: 1}
     Text: {r: 1, g: 1, b: 1, a: 1}
-  HighlightedColor:
+  NormalHighlightedColor:
     Button: {r: 1, g: 1, b: 1, a: 0.6509804}
     Text: {r: 1, g: 1, b: 1, a: 0.6509804}
   PressedColor:
     Button: {r: 1, g: 1, b: 1, a: 0.5019608}
     Text: {r: 1, g: 1, b: 1, a: 0.5019608}
+  PressedHighlightedColor:
+    Button: {r: 1, g: 1, b: 1, a: 0.6509804}
+    Text: {r: 1, g: 1, b: 1, a: 0.6509804}
   DisabledColor:
     Button: {r: 1, g: 1, b: 1, a: 0.2509804}
     Text: {r: 1, g: 1, b: 1, a: 0.2509804}

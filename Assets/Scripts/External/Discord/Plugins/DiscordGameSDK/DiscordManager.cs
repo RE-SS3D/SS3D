@@ -1,8 +1,10 @@
 #region Discord References
 
 using System;
+using SS3D.Logging;
 using UnityEngine;
 using UnityEngine.Events;
+using LogType = SS3D.Logging.LogType;
 
 #endregion
 
@@ -42,7 +44,7 @@ namespace UDiscord
 
         private void Update()
         {
-            discord.RunCallbacks();
+            discord?.RunCallbacks();
         }
 
         #endregion
@@ -209,16 +211,16 @@ namespace UDiscord
                 activityManager.SendInvite(485905734618447895, ActivityActionType.Join, "", (inviteUserResult) =>
                 {
                     Console.WriteLine("Invite User {0}", inviteUserResult);
-                    Debug.Log($"[{typeof(DiscordManager)}] - How is This Working >???");
+                    Punpun.Say(nameof(DiscordManager), "How is This Working >???", LogType.External);
                 });
 
                 if(res == Result.Ok)
                 {
-                    Debug.Log($"[{typeof(DiscordManager)}] - Discord Status Is On!");
+                    Punpun.Say(this, "Discord Status Is On!", LogType.External);
                 }
                 else
                 {
-                    Debug.LogError($"[{typeof(DiscordManager)}] - Discord Status Failed!");
+                    Punpun.Panic(nameof(DiscordManager), "Discord Status Failed!", LogType.External);
                 }
             });
         }
@@ -228,7 +230,8 @@ namespace UDiscord
 
         void OnDisable()
         {
-            Debug.Log($"[{nameof(DiscordManager)}] - Discord Shutdown after 10 seconds");
+            Punpun.Yell(nameof(DiscordManager), "Discord Shutdown after 10 seconds", LogType.External);
+
             Shutdown();
             discord?.Dispose();
         }

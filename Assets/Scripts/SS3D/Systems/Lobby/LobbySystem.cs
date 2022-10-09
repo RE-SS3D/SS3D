@@ -3,9 +3,11 @@ using System.Linq;
 using FishNet;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Logging;
 using SS3D.Systems.Lobby.Messages;
 using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
+using LogType = SS3D.Logging.LogType;
 
 namespace SS3D.Systems.Lobby
 {
@@ -40,7 +42,8 @@ namespace SS3D.Systems.Lobby
             UserJoinedLobbyMessage userJoinedLobbyMessage = new(userJoinedServerMessage.Ckey);
             InstanceFinder.ServerManager.Broadcast(userJoinedLobbyMessage);
 
-            Debug.Log($"[{nameof(LobbySystem)}] - SERVER - Added player to lobby: {userJoinedServerMessage.Ckey}");
+            string message = $"Added player to lobby: {userJoinedServerMessage.Ckey}";
+            Punpun.Say(this, message, LogType.ServerOnly);
         }
 
         [Server]
@@ -51,7 +54,8 @@ namespace SS3D.Systems.Lobby
             UserLeftLobbyMessage userLeftLobbyMessage = new(userLeftServerMessage.Ckey);
             InstanceFinder.ServerManager.Broadcast(userLeftLobbyMessage);
 
-            Debug.Log($"[{nameof(LobbySystem)}] - SERVER - Removed player from lobby: {userLeftServerMessage.Ckey}");
+            string message = $"Removed player from lobby: {userLeftServerMessage.Ckey}"; 
+            Punpun.Say(this, message, LogType.ServerOnly);
         }
     }
 }

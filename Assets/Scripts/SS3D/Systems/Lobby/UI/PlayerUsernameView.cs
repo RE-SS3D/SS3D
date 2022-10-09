@@ -1,4 +1,4 @@
-using SS3D.Core.Attributes;
+using SS3D.Attributes;
 using TMPro;
 using UnityEngine;
 
@@ -17,6 +17,11 @@ namespace SS3D.Systems.Lobby.UI
         public void UpdateNameText(string newName)
         {
             _nameLabel.text = newName;
+        }
+
+        public void UpdateNameColor(Color color)
+        {
+            _nameLabel.color = color;
         }
     }
 }

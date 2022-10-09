@@ -9,9 +9,9 @@ namespace SS3D.Systems.Rounds
     public enum RoundState
     {
         Stopped = 0,
-        WarmingUp = 1,
-        Starting = 2,
-        Running = 3,
+        Preparing = 1,
+        WarmingUp = 2,
+        Ongoing = 3,
         Ending = 4,
         Ended = 5
     }

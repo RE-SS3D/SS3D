@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using SS3D.Logging;
+using SS3D.Utils;
 using UnityEngine;
+using LogType = SS3D.Logging.LogType;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Core
@@ -13,7 +16,20 @@ namespace SS3D.Core
         private static readonly Dictionary<Type, object> Systems = new();
 
         /// <summary>
-        /// Get any system at runtime, make sure there's no duplicates before using
+        /// Registers a system in the dictionary so we don't have to use find object of type
+        /// </summary>
+        /// <param name="system"></param>
+        /// <typeparam name="T"></typeparam>
+        public static void Register<T>(T system)
+        {
+            if (!Systems.TryGetValue(typeof(T), out object _))
+            {
+                Systems.Add(typeof(T), system);   
+            }
+        }
+
+        /// <summary>
+        /// Gets any system at runtime, make sure there's no duplicates of said system before using.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
@@ -28,7 +44,9 @@ namespace SS3D.Core
 
             if (match == null)
             {
-                Debug.Log($"[{nameof(GameSystems)}] - Couldn't find system of {nameof(T)} in the scene");
+                string message = $"Couldn't find system of {typeof(T).Name} in the scene";
+
+                Punpun.Panic(typeof(GameSystems), message, LogType.Important);
             }
 
             Systems.Add(typeof(T), match);

@@ -2,6 +2,8 @@ using System;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Core;
+using SS3D.Core.Behaviours;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities
@@ -10,7 +12,7 @@ namespace SS3D.Systems.Entities
     /// Unique, persistent object that the player owns, it manages what character it is controlling and stores other player data.
     /// </summary>
     [Serializable]
-    public sealed class Soul : NetworkBehaviour
+    public sealed class Soul : NetworkedSpessBehaviour
     {
         [SyncVar(OnChange = nameof(SetCkey))] private string _ckey;
 

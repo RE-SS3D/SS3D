@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FishNet;
 using FishNet.Managing;
+using SS3D.Core.Behaviours;
 using SS3D.Core.Utils;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace SS3D.Core
     ///
     /// TODO: Could use a refactor
     /// </summary>
-    public sealed class SessionNetworkHelper : MonoBehaviour
+    public sealed class SessionNetworkHelper : SpessBehaviour
     {
         private static List<string> _commandLineArgs;
 

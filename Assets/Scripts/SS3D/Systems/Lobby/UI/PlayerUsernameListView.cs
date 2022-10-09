@@ -2,11 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
 using Cysharp.Threading.Tasks;
-using FishNet;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
+using SS3D.Attributes;
 using SS3D.Core;
-using SS3D.Core.Attributes;
+using SS3D.Data;
 using SS3D.Systems.Lobby.Messages;
+using SS3D.Systems.Rounds.Events;
 using UnityEngine;
 
 namespace SS3D.Systems.Lobby.UI
@@ -24,6 +26,7 @@ namespace SS3D.Systems.Lobby.UI
         
         // The username panel prefab
         [SerializeField] [NotNull] private GameObject _uiPrefab;
+        [SerializeField] private Color _userReadyColor = PaletteColors.LightBlue;
 
         public override void OnStartClient()
         {
@@ -41,8 +44,26 @@ namespace SS3D.Systems.Lobby.UI
         // Generic method to agglomerate all event managing
         private void SubscribeToEvents()
         {
-            InstanceFinder.ClientManager.RegisterBroadcast<UserJoinedLobbyMessage>(HandleUserJoinedLobby);
-            InstanceFinder.ClientManager.RegisterBroadcast<UserLeftLobbyMessage>(HandleUserLeftLobby);
+            ClientManager.RegisterBroadcast<UserJoinedLobbyMessage>(HandleUserJoinedLobby);
+            ClientManager.RegisterBroadcast<UserLeftLobbyMessage>(HandleUserLeftLobby);
+            ClientManager.RegisterBroadcast<ReadyPlayersChanged>(HandleReadyPlayersChanged);
+        }
+
+        private void HandleReadyPlayersChanged(ReadyPlayersChanged m)
+        {
+            List<string> readyPlayers = m.ReadyPlayers;
+
+            foreach (PlayerUsernameView username in _playerUsernames)
+            {
+                if (readyPlayers.Contains(username.Name))
+                {
+                    username.UpdateNameColor(_userReadyColor);
+                }
+                else
+                {
+                    username.UpdateNameColor(PaletteColors.White);
+                }
+            }
         }
 
         private void HandleUserLeftLobby(UserLeftLobbyMessage m)

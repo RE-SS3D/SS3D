@@ -3,6 +3,8 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Core;
+using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
@@ -12,7 +14,7 @@ namespace SS3D.Systems.PlayerControl
     /// <summary>
     /// Controls the player flux, when users want to authenticate, rejoin the game, leave the game
     /// </summary>
-    public sealed class PlayerControlSystem : NetworkBehaviour
+    public sealed class PlayerControlSystem : NetworkedSystem
     {
         [SerializeField] private GameObject _soulPrefab;
 
@@ -21,7 +23,7 @@ namespace SS3D.Systems.PlayerControl
         private readonly SyncList<Soul> _serverSouls = new();
 
         public string GetSoulCkeyByConn(NetworkConnection conn) => _serverSouls.SingleOrDefault(soul => soul.Owner == conn)?.Ckey;
-        private Soul GetSoulByCkey(string ckey) => _serverSouls.SingleOrDefault(soul => soul.Ckey == ckey);
+        public Soul GetSoulByCkey(string ckey) => _serverSouls.SingleOrDefault(soul => soul.Ckey == ckey);
 
         private void Start()
         {
