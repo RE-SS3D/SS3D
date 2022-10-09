@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: SS3DSpawnablePrefabs
   m_EditorClassIdentifier: 
   _prefabs:
-  - {fileID: 1019513474262773944, guid: 06c946c7c639138488b814e4448b82e4, type: 3}
+  - {fileID: 562230263738288595, guid: 59f05e8a3a1d4b94eb5222aed605e260, type: 3}
+  - {fileID: 8203177977882359099, guid: 6ab4ce7059d374a4498481e1385c222e, type: 3}
   - {fileID: 2930813178971533500, guid: c1636d15ebf1b7c44b2bf3953fc986e9, type: 3}
   - {fileID: 2930813178971533500, guid: 75cea198f98fd5549924c58d0eb7113c, type: 3}
   - {fileID: 2930813178971533500, guid: 40ed03086f8374c46beb2607092c5ed5, type: 3}
@@ -22,6 +23,5 @@ MonoBehaviour:
   - {fileID: 2930813178971533500, guid: 3b6ab9f6da0dd3c459d75945adb349a8, type: 3}
   - {fileID: 2930813178971533500, guid: 15dd440e1b8de1546aebed4bb0ad9699, type: 3}
   - {fileID: 2930813178971533500, guid: 1c3eed1ea37ecc1448e41270cdc63486, type: 3}
-  - {fileID: 562230263738288595, guid: 59f05e8a3a1d4b94eb5222aed605e260, type: 3}
-  - {fileID: 8203177977882359099, guid: 6ab4ce7059d374a4498481e1385c222e, type: 3}
+  - {fileID: 1019513474262773944, guid: 06c946c7c639138488b814e4448b82e4, type: 3}
   - {fileID: 3206407796921847736, guid: 3335d001fdfff824aa859b98f2fe564e, type: 3}

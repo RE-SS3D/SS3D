@@ -6,7 +6,7 @@ namespace SS3D.Systems.Entities.Silicon
 {
     public class EngineerBorgAnimatorController : SpessBehaviour
     {
-        [SerializeField] private ThreadedMovement _movementController;
+        [SerializeField] private EngineerBorgMovement _movementController;
 
         [SerializeField] private Animator _animator;
         [SerializeField] private float _lerpMultiplier;

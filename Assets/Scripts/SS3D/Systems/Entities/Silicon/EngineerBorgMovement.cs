@@ -11,7 +11,7 @@ namespace SS3D.Systems.Entities.Silicon
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
-    public class ThreadedMovement : PlayerControllable
+    public class EngineerBorgMovement : NetworkedSpessBehaviour
     {
         public event Action<float> OnSpeedChanged;
 
@@ -57,7 +57,7 @@ namespace SS3D.Systems.Entities.Silicon
                 return;
             }
 
-            if (ControlledByLocalPlayer)
+            //if (ControlledByLocalPlayer)
             {
                 ProcessCharacterMovement();
             }
