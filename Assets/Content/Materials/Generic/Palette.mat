@@ -79,13 +79,13 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _Lumin: 2
+    - _Lumin: 0
     - _MaxLight: 1
     - _Metallic: 0
-    - _MinLight: 0.319
+    - _MinLight: 0.252
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Offset: 0.501
+    - _Offset: 0.112
     - _OtlWidth: 1
     - _Parallax: 0.02
     - _Segmented: 0

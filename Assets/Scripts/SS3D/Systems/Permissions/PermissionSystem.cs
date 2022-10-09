@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
+using SS3D.Systems.Permissions.Events;
 using UnityEngine;
 using File = System.IO.File;
 using Path = System.IO.Path;
@@ -17,14 +19,25 @@ namespace SS3D.Systems.Permissions
 
         private static string FullPermissionFilePath => Path.GetFullPath(".") + (Application.isEditor ? EditorPermissionFilePath : PermissionFilePath);
 
-        private readonly Dictionary<string, ServerRoleTypes> _userPermissions = new();
+        [SyncVar(OnChange = "SyncUserPermissions")]
+        private Dictionary<string, ServerRoleTypes> _userPermissions = new();
 
         [Server]
         public ServerRoleTypes GetUserPermission(string ckey)
         {
+            if (_userPermissions.Count == 0)
+            {
+                LoadPermissions();
+            }
+
             bool containsKey = _userPermissions.ContainsKey(ckey);
 
             return containsKey ? _userPermissions[ckey] : ServerRoleTypes.User;
+        }
+
+        public bool CanUserPerformAction(ServerRoleTypes requiredRole, string ckey)
+        {
+            return GetUserPermission(ckey) == requiredRole;
         }
 
         [Server]
@@ -58,6 +71,17 @@ namespace SS3D.Systems.Permissions
 
                 Debug.Log($"[{nameof(PermissionSystem)}] - Found user permission {ckey} as {role}");
             }
+
+            UserPermissionsChangedEvent permissionsChangedEvent = new(_userPermissions);
+            permissionsChangedEvent.Invoke(this);
+        }
+
+        private void SyncUserPermissions(Dictionary<string, ServerRoleTypes> oldValue, Dictionary<string, ServerRoleTypes> newValue, bool asBool)
+        {
+            _userPermissions = newValue;
+
+            UserPermissionsChangedEvent permissionsChangedEvent = new(_userPermissions);
+            permissionsChangedEvent.Invoke(this);
         }
 
         private static void CreatePermissionsFileIfNotExists()

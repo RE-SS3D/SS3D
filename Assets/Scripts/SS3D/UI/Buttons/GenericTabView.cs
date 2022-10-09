@@ -20,8 +20,16 @@ namespace SS3D.UI.Buttons
         
         public void SetTabActive(bool state)
         {
-            _tabButton.interactable = !state;
-            _panelUI.gameObject.SetActive(state);
+            if (_tabButton != null)
+            {
+                _tabButton.interactable = !state;
+            }
+
+            if (_panelUI != null)
+            {
+                _panelUI.gameObject.SetActive(state);
+            }
+
             _active = state;
         }
     }

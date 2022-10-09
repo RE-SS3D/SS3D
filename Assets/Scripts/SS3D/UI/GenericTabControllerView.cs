@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.UI.Buttons;
@@ -28,7 +29,12 @@ namespace SS3D.UI
 
         private void HandleTabButtonPressed(GenericTabView tab)
         {
-            foreach (GenericTabView tabView in _tabs)
+            if (tab == null)
+            {
+                return;
+            }
+
+            foreach (GenericTabView tabView in _tabs.Where(tabView => tabView != null))
             {
                 tabView.SetTabActive(tab == tabView);
             }
