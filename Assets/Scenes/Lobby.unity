@@ -595,7 +595,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 246961643}
   _roundState: 0
   _currentTimerSeconds: 0
-  _warmupSeconds: 2
+  _warmupSeconds: 1
 --- !u!114 &246961643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -621,7 +621,6 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165068274781624
   _sceneNetworkObjects:
-  - {fileID: 0}
   - {fileID: 246961643}
   - {fileID: 474682044}
   - {fileID: 516802435}
@@ -760,7 +759,6 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165067449748061
   _sceneNetworkObjects:
-  - {fileID: 0}
   - {fileID: 246961643}
   - {fileID: 474682044}
   - {fileID: 516802435}
@@ -826,9 +824,8 @@ MonoBehaviour:
   NetworkObserver: {fileID: 0}
   _prefabId: -1
   _scenePathHash: 952082934
-  _sceneId: 4089165064888012131
+  _sceneId: 4089165067983064303
   _sceneNetworkObjects:
-  - {fileID: 0}
   - {fileID: 246961643}
   - {fileID: 474682044}
   - {fileID: 516802435}
@@ -938,7 +935,6 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165065593587589
   _sceneNetworkObjects:
-  - {fileID: 0}
   - {fileID: 246961643}
   - {fileID: 474682044}
   - {fileID: 516802435}
@@ -1048,7 +1044,8 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 661652618}
   _networkObjectCache: {fileID: 661652618}
   _tempHuman:
-  - {fileID: 7315299611182944311, guid: 06c946c7c639138488b814e4448b82e4, type: 3}
+  - {fileID: 1872721284991216642, guid: c1636d15ebf1b7c44b2bf3953fc986e9, type: 3}
+  - {fileID: 1872721284991216642, guid: 1c3eed1ea37ecc1448e41270cdc63486, type: 3}
   _tempSpawnPoint: {fileID: 1544788595}
 --- !u!114 &661652618
 MonoBehaviour:
@@ -1075,7 +1072,6 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165065572732856
   _sceneNetworkObjects:
-  - {fileID: 0}
   - {fileID: 246961643}
   - {fileID: 474682044}
   - {fileID: 516802435}
@@ -1192,54 +1188,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ff2a45d97e1e4340a9e8acc52d6f42f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &770461854
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 770461855}
-  - component: {fileID: 770461856}
-  m_Layer: 0
-  m_Name: Lobby Character Customizer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &770461855
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 770461854}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 990295461}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &770461856
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 770461854}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13676ae0c1f040ff940038c2a1c24c10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _clothingCollection: {fileID: 11400000, guid: 81c9cd65798d36b48b8de3afc5dcd737, type: 2}
-  _dummyPrefab: {fileID: 0}
-  _dummyStartPoint: {fileID: 1544788595}
-  _dummyInstance: {fileID: 0}
 --- !u!1 &771589491
 GameObject:
   m_ObjectHideFlags: 0
@@ -1410,7 +1358,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 990295461}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &913757967
 MonoBehaviour:
@@ -1454,7 +1402,6 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165064983676277
   _sceneNetworkObjects:
-  - {fileID: 0}
   - {fileID: 246961643}
   - {fileID: 474682044}
   - {fileID: 516802435}
@@ -1528,7 +1475,6 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165067838457873
   _sceneNetworkObjects:
-  - {fileID: 0}
   - {fileID: 246961643}
   - {fileID: 474682044}
   - {fileID: 516802435}
@@ -1755,7 +1701,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 770461855}
   - {fileID: 1127411103}
   - {fileID: 913757966}
   m_Father: {fileID: 0}
@@ -1786,7 +1731,6 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165065847714833
   _sceneNetworkObjects:
-  - {fileID: 0}
   - {fileID: 246961643}
   - {fileID: 474682044}
   - {fileID: 516802435}
@@ -2021,7 +1965,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 990295461}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1127411104
 MonoBehaviour:
@@ -3135,7 +3079,6 @@ MonoBehaviour:
   _scenePathHash: 952082934
   _sceneId: 4089165065551727391
   _sceneNetworkObjects:
-  - {fileID: 0}
   - {fileID: 246961643}
   - {fileID: 474682044}
   - {fileID: 516802435}

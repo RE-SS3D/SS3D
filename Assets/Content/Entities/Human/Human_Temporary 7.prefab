@@ -2773,29 +2773,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _networkBehaviours:
-  - {fileID: 7255324433810104430}
-  - {fileID: 5113695969261828376}
-  - {fileID: 1872721284991216642}
+  _networkBehaviours: []
   SceneTransformProperties:
     Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 1}
-    LocalScale: {x: 1, y: 1, z: 1}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
   _isNetworked: 1
   _hasParentNetworkObjectAtEdit: 0
   NetworkObserver: {fileID: 0}
-  _prefabId: 7
+  _prefabId: -1
   _scenePathHash: 0
   _sceneId: 0
-  _sceneNetworkObjects:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 2930813178971533500}
-  - {fileID: 0}
+  _sceneNetworkObjects: []
 --- !u!114 &7255324433810104430
 MonoBehaviour:
   m_ObjectHideFlags: 0
