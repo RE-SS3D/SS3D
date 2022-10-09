@@ -13,7 +13,7 @@ namespace FishNet.CodeGenerating.Processing
     internal class QolAttributeProcessor
     {
 
-        internal bool Process(TypeDefinition typeDef, bool codeStripping)
+        internal bool Process(TypeDefinition typeDef, bool moveStrippedCalls)
         {
             bool modified = false;
             List<MethodDefinition> methods = typeDef.Methods.ToList();
@@ -119,9 +119,7 @@ namespace FishNet.CodeGenerating.Processing
 
             if (qolType == QolAttributeType.Client)
             {
-                bool removeLogic = (CodeStripping.StripBuild && CodeStripping.ReleasingForServer);
-                
-                if (!removeLogic && !CodeStripping.StripBuild)
+                if (!StripMethod(methodDef))
                 {
                     LoggingType logging = qolAttribute.GetField("Logging", LoggingType.Warning);
                     /* Since isClient also uses insert first
@@ -136,21 +134,27 @@ namespace FishNet.CodeGenerating.Processing
                     }
                     //If (!base.IsOwner);
                     if (requireOwnership)
-                        CodegenSession.ObjectHelper.CreateLocalClientIsOwnerCheck(methodDef, logging, true, false, true);
+                        CodegenSession.NetworkBehaviourHelper.CreateLocalClientIsOwnerCheck(methodDef, logging, true, false, true);
                     //Otherwise normal IsClient check.
                     else
-                        CodegenSession.ObjectHelper.CreateIsClientCheck(methodDef, logging, useStatic, true);
+                        CodegenSession.NetworkBehaviourHelper.CreateIsClientCheck(methodDef, logging, useStatic, true);
                 }
             }
             else if (qolType == QolAttributeType.Server)
             {
-                bool removeLogic = (CodeStripping.StripBuild && CodeStripping.ReleasingForClient);
-                
-                if (!removeLogic && !CodeStripping.StripBuild)
+                if (!StripMethod(methodDef))
                 {
                     LoggingType logging = qolAttribute.GetField("Logging", LoggingType.Warning);
-                    CodegenSession.ObjectHelper.CreateIsServerCheck(methodDef, logging, useStatic, true);
+                    CodegenSession.NetworkBehaviourHelper.CreateIsServerCheck(methodDef, logging, useStatic, true);
                 }
+            }
+
+            bool StripMethod(MethodDefinition md)
+            {
+                
+
+                //Fall through.
+                return false;
             }
         }
 

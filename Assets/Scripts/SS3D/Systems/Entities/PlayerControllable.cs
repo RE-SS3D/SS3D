@@ -12,7 +12,7 @@ namespace SS3D.Systems.Entities
     /// </summary>
     public class PlayerControllable : NetworkedSpessBehaviour
     {
-        [SyncVar(OnChange = "SyncControllingSoul")] private Soul _controllingSoul = new();
+        [SyncVar(OnChange = "SyncControllingSoul")] private Soul _controllingSoul;
 
         [SerializeField] private bool _scaleInOnSpawn = true;
         private const float ScaleInDuration = .6f;

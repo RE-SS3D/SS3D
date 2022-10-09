@@ -12,6 +12,7 @@ namespace FishNet.Connection
     /// </summary>
     public partial class NetworkConnection : IEquatable<NetworkConnection>
     {
+#pragma warning disable CS0414
         #region Private.
         /// <summary>
         /// Last tick this connection sent a ping.
@@ -33,7 +34,7 @@ namespace FishNet.Connection
         /// </summary>
         private const byte EXCESSIVE_PING_LIMIT = 10;
         #endregion
-
+#pragma warning restore CS0414
         /// <summary>
         /// Initializes for ping.
         /// </summary>
@@ -44,6 +45,17 @@ namespace FishNet.Connection
             //Round down so required ticks is lower.
             _requiredPingTicks = NetworkManager.TimeManager.TimeToTicks(requiredInterval, TickRounding.RoundDown);
         }
+
+
+        /// <summary>
+        /// Resets PingPong values.
+        /// </summary>
+        private void ResetPingPong()
+        {
+            _excessivePingCount = 0;
+            _lastPingTick = 0;
+        }
+
         /// <summary>
         /// Called when a ping is received from this connection. Returns if can respond to ping.
         /// </summary>
@@ -56,6 +68,10 @@ namespace FishNet.Connection
             return true;
 #else
             TimeManager tm = (NetworkManager == null) ? InstanceFinder.TimeManager : NetworkManager.TimeManager;
+            //Server FPS is running low, timing isn't reliable enough to kick clients.
+            if (tm.LowFrameRate)
+                return true;
+
             uint currentTick = tm.Tick;
             uint difference = (currentTick - _lastPingTick);
             _lastPingTick = currentTick;

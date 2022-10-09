@@ -1,5 +1,8 @@
-﻿using MonoFN.Cecil;
+﻿using FishNet.CodeGenerating.Extension;
+using MonoFN.Cecil;
+using MonoFN.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -7,8 +10,130 @@ namespace FishNet.CodeGenerating.Helping.Extension
 {
 
 
-    internal static class TypeDefinitionExtensions
+    internal static class TypeDefinitionExtensionsOld
     {
+
+        /// <summary>
+        /// Creates a GenericInstanceType and adds parameters.
+        /// </summary>
+        internal static GenericInstanceType CreateGenericInstanceType(this TypeDefinition type, Collection<GenericParameter> parameters)
+        {
+            GenericInstanceType git = new GenericInstanceType(type);
+            foreach (GenericParameter gp in parameters)
+                git.GenericArguments.Add(gp);
+
+            return git;
+        }
+
+        /// <summary>
+        /// Finds public fields in type and base type
+        /// </summary>
+        /// <param name="variable"></param>
+        /// <returns></returns>
+        public static IEnumerable<FieldDefinition> FindAllPublicFields(this TypeDefinition typeDef, bool ignoreStatic, bool ignoreNonSerialized, System.Type[] excludedBaseTypes = null, string[] excludedAssemblyPrefixes = null)
+        {
+            while (typeDef != null)
+            {
+                if (IsExcluded(typeDef, excludedBaseTypes, excludedAssemblyPrefixes))
+                    break;
+
+                foreach (FieldDefinition fd in typeDef.Fields)
+                {
+                    if (ignoreStatic && fd.IsStatic)
+                        continue;
+                    if (fd.IsPrivate)
+                        continue;
+                    if (ignoreNonSerialized && fd.IsNotSerialized)
+                        continue;
+                    if (CodegenSession.GeneralHelper.CodegenExclude(fd))
+                        continue;
+
+                    yield return fd;
+                }
+
+                try { typeDef = typeDef.BaseType?.CachedResolve(); }
+                catch { break; }
+            }
+        }
+
+        /// <summary>
+        /// Finds public properties on typeDef and all base types which have a public get/set accessor.
+        /// </summary>
+        /// <param name="typeDef"></param>
+        /// <returns></returns>
+        public static IEnumerable<PropertyDefinition> FindAllPublicProperties(this TypeDefinition typeDef, bool excludeGenerics = true, System.Type[] excludedBaseTypes = null, string[] excludedAssemblyPrefixes = null)
+        {
+            while (typeDef != null)
+            {
+                if (IsExcluded(typeDef, excludedBaseTypes, excludedAssemblyPrefixes))
+                    break;
+
+                foreach (PropertyDefinition pd in typeDef.Properties)
+                {
+                    //Missing get or set method.
+                    if (pd.GetMethod == null || pd.SetMethod == null)
+                        continue;
+                    //Get or set is private.
+                    if (pd.GetMethod.IsPrivate || pd.SetMethod.IsPrivate)
+                        continue;
+                    if (excludeGenerics && pd.GetMethod.ReturnType.IsGenericParameter)
+                        continue;
+                    if (CodegenSession.GeneralHelper.CodegenExclude(pd))
+                        continue;
+
+                    yield return pd;
+                }
+
+                try { typeDef = typeDef.BaseType?.CachedResolve(); }
+                catch { break; }
+            }
+
+
+        }
+
+        /// <summary>
+        /// Returns if typeDef is excluded.
+        /// </summary>
+        private static bool IsExcluded(TypeDefinition typeDef, System.Type[] excludedBaseTypes = null, string[] excludedAssemblyPrefixes = null)
+        {
+            if (excludedBaseTypes != null)
+            {
+                foreach (System.Type t in excludedBaseTypes)
+                {
+                    if (typeDef.FullName == t.FullName)
+                        return true;
+                }
+            }
+            if (excludedAssemblyPrefixes != null)
+            {
+                foreach (string s in excludedAssemblyPrefixes)
+                {
+                    int len = s.Length;
+                    string tdAsmName = typeDef.Module.Assembly.FullName;
+                    if (tdAsmName.Length >= len && tdAsmName.Substring(0, len).ToLower() == s.ToLower())
+                        return true;
+                }
+            }
+
+            //Fall through, not excluded.
+            return false;
+        }
+
+
+        /// <summary>
+        /// Returns if typeDef is excluded.
+        /// </summary>
+        public static bool IsExcluded(this TypeDefinition typeDef, string excludedAssemblyPrefix)
+        {
+
+            int len = excludedAssemblyPrefix.Length;
+            string tdAsmName = typeDef.Module.Assembly.FullName;
+            if (tdAsmName.Length >= len && tdAsmName.Substring(0, len).ToLower() == excludedAssemblyPrefix.ToLower())
+                return true;
+
+            //Fall through, not excluded.
+            return false;
+        }
 
         /// <summary>
         /// Returns if typeDef or any of it's parents inherit from NetworkBehaviour.
@@ -17,7 +142,7 @@ namespace FishNet.CodeGenerating.Helping.Extension
         /// <returns></returns>
         internal static bool InheritsNetworkBehaviour(this TypeDefinition typeDef)
         {
-            string nbFullName = CodegenSession.ObjectHelper.NetworkBehaviour_FullName;
+            string nbFullName = CodegenSession.NetworkBehaviourHelper.FullName;
 
             TypeDefinition copyTd = typeDef;
             while (copyTd != null)
@@ -25,7 +150,7 @@ namespace FishNet.CodeGenerating.Helping.Extension
                 if (copyTd.FullName == nbFullName)
                     return true;
 
-                copyTd = copyTd.GetNextBaseClass();
+                copyTd = copyTd.GetNextBaseTypeDefinition();
             }
 
             //Fall through, network behaviour not found.
@@ -53,7 +178,7 @@ namespace FishNet.CodeGenerating.Helping.Extension
         /// <returns></returns>
         internal static bool CanProcessBaseType(this TypeDefinition typeDef)
         {
-            return (typeDef != null && typeDef.BaseType != null && typeDef.BaseType.FullName != CodegenSession.ObjectHelper.NetworkBehaviour_FullName);
+            return (typeDef != null && typeDef.BaseType != null && typeDef.BaseType.FullName != CodegenSession.NetworkBehaviourHelper.FullName);
         }
         /// <summary>
         /// Returns if the BaseType for TypeDef exist and is not NetworkBehaviour,
@@ -62,7 +187,7 @@ namespace FishNet.CodeGenerating.Helping.Extension
         /// <returns></returns>
         internal static TypeDefinition GetNextBaseClassToProcess(this TypeDefinition typeDef)
         {
-            if (typeDef.BaseType != null && typeDef.BaseType.FullName != CodegenSession.ObjectHelper.NetworkBehaviour_FullName)
+            if (typeDef.BaseType != null && typeDef.BaseType.FullName != CodegenSession.NetworkBehaviourHelper.FullName)
                 return typeDef.BaseType.CachedResolve();
             else
                 return null;
@@ -125,23 +250,13 @@ namespace FishNet.CodeGenerating.Helping.Extension
         }
 
 
-        /// <summary>
-        /// Gets the next base type for typeDef.
-        /// </summary>
-        /// <param name="typeDef"></param>
-        /// <returns></returns>
-        internal static TypeDefinition GetNextBaseClass(this TypeDefinition typeDef)
-        {
-            return (typeDef.BaseType == null) ? null : typeDef.BaseType.CachedResolve();
-        }
+
         /// <summary>
         /// Returns if typeDef is static (abstract, sealed).
         /// </summary>
-        /// <param name="typeDef"></param>
-        /// <returns></returns>
         internal static bool IsStatic(this TypeDefinition typeDef)
         {
-            //Combing flags in a single check some reason doesn't work right with HasFlag.
+            //Combining flags in a single check some reason doesn't work right with HasFlag.
             return (typeDef.Attributes.HasFlag(TypeAttributes.Abstract) && typeDef.Attributes.HasFlag(TypeAttributes.Sealed));
         }
 
@@ -188,7 +303,7 @@ namespace FishNet.CodeGenerating.Helping.Extension
                 if (copyTd.BaseType.IsType(type))
                     return true;
 
-                copyTd = copyTd.GetNextBaseClass();
+                copyTd = copyTd.GetNextBaseTypeDefinition();
             }
 
             //Fall through.

@@ -4,6 +4,7 @@ using FishNet.Managing.Client;
 using FishNet.Managing.Logging;
 using FishNet.Managing.Scened;
 using FishNet.Managing.Server;
+using FishNet.Managing.Statistic;
 using FishNet.Managing.Timing;
 using FishNet.Managing.Transporting;
 using FishNet.Utility;
@@ -123,6 +124,17 @@ namespace FishNet
             {
                 NetworkManager nm = NetworkManager;
                 return (nm == null) ? null : nm.RollbackManager;
+            }
+        }
+        /// <summary>
+        /// Returns the first instance of StatisticsManager.
+        /// </summary>
+        public static StatisticsManager StatisticsManager
+        {
+            get
+            {
+                NetworkManager nm = NetworkManager;
+                return (nm == null) ? null : nm.StatisticsManager;
             }
         }
 

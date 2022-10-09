@@ -3,14 +3,16 @@ using FishNet.Documenting;
 using FishNet.Managing.Logging;
 using FishNet.Object;
 using FishNet.Serializing;
+using FishNet.Serializing.Helping;
 using FishNet.Transporting;
 using FishNet.Utility;
 using FishNet.Utility.Extension;
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using SystemStopwatch = System.Diagnostics.Stopwatch;
-
+using UnityScene = UnityEngine.SceneManagement.Scene;
 
 namespace FishNet.Managing.Timing
 {
@@ -19,26 +21,9 @@ namespace FishNet.Managing.Timing
     /// Provides data and actions for network time and tick based systems.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class TimeManager : MonoBehaviour
+    [AddComponentMenu("FishNet/Manager/TimeManager")]
+    public sealed partial class TimeManager : MonoBehaviour
     {
-        //#region Types.
-        //public enum BufferPurgeType
-        //{
-        //    /// <summary>
-        //    /// Run an additional input per tick when buffered inputs are higher than normal.
-        //    /// This prevents clients from sending excessive inputs but may briefly disrupt clients synchronization if their timing is drastically off.
-        //    /// Use this option for more secure prediction.
-        //    /// </summary>
-        //    Discard = 0,
-        //    /// <summary>
-        //    /// Run an additional input per tick when buffered inputs are higher than normal.
-        //    /// This is useful for keeping the client synchronized with the server by processing inputs that would normally be discarded.
-        //    /// However, by running extra buffered inputs the client has a better opportunity to cheat.
-        //    /// </summary>
-        //    Run = 1
-        //}
-        //#endregion
-
         #region Public.
         /// <summary>
         /// Called before performing a reconcile on NetworkBehaviour.
@@ -67,11 +52,24 @@ namespace FishNet.Managing.Timing
         /// </summary>
         public event Action OnTick;
         /// <summary>
-        /// Called immediately before physics simulation will occur for the tick.
+        /// When using TimeManager for physics timing, this is called immediately before physics simulation will occur for the tick.
+        /// While using Unity for physics timing, this is called during FixedUpdate.
         /// This may be useful if you wish to run physics differently for stacked scenes.
-        /// This action will only call when physics are set to TimeManager.
         /// </summary>
+        [Obsolete("Use OnPrePhysicsSimulation.")] //Remove on 2023/01/01
         public event Action<float> OnPhysicsSimulation;
+        /// <summary>
+        /// When using TimeManager for physics timing, this is called immediately before physics simulation will occur for the tick.
+        /// While using Unity for physics timing, this is called during FixedUpdate.
+        /// This may be useful if you wish to run physics differently for stacked scenes.
+        /// </summary>
+        public event Action<float> OnPrePhysicsSimulation;
+        /// <summary>
+        /// When using TimeManager for physics timing, this is called immediately after the physics simulation has occured for the tick.
+        /// While using Unity for physics timing, this is called during Update, only if a physics frame.
+        /// This may be useful if you wish to run physics differently for stacked scenes.
+        /// </summary>
+        public event Action<float> OnPostPhysicsSimulation;
         /// <summary>
         /// Called after a tick occurs; physics would have simulated if using PhysicsMode.TimeManager.
         /// </summary>
@@ -89,13 +87,25 @@ namespace FishNet.Managing.Timing
         /// </summary>
         public event Action OnFixedUpdate;
         /// <summary>
-        /// RoundTripTime in milliseconds.
+        /// RoundTripTime in milliseconds. This value includes latency from the tick rate.
         /// </summary>
         public long RoundTripTime { get; private set; }
+        /// <summary>
+        /// True if the number of frames per second are less than the number of expected ticks per second.
+        /// </summary>
+        internal bool LowFrameRate => ((Time.unscaledTime - _lastMultipleTicksTime) < 1f);
         /// <summary>
         /// Tick on the last received packet, be it from server or client.
         /// </summary>
         public uint LastPacketTick { get; internal set; }
+        /// <summary>
+        /// Last tick any object reconciled.
+        /// </summary>
+        public uint LastReconcileTick { get; internal set; }
+        /// <summary>
+        /// Last tick any object replicated.
+        /// </summary>
+        public uint LastReplicateTick { get; internal set; }
         /// <summary>
         /// Current approximate network tick as it is on server.
         /// When running as client only this is an approximation to what the server tick is.
@@ -106,8 +116,9 @@ namespace FishNet.Managing.Timing
         /// </summary>
         public uint Tick { get; internal set; }
         /// <summary>
-        /// Percentage of how much into next tick the time is.
+        /// Percentage as 0-100 of how much into next tick the time is.
         /// </summary>
+        [Obsolete("Use GetPreciseTick or GetTickPercent instead.")] //Remove on 2023/01/01
         public byte TickPercent
         {
             get
@@ -121,7 +132,7 @@ namespace FishNet.Managing.Timing
             }
         }
         /// <summary>
-        /// DeltaTime for TickRate.
+        /// A fixed deltaTime for TickRate.
         /// </summary>
         [HideInInspector]
         public double TickDelta { get; private set; }
@@ -137,9 +148,41 @@ namespace FishNet.Managing.Timing
         /// How long the local client has been connected.
         /// </summary>
         public float ClientUptime { get; private set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        private bool _isReplaying;
+        /// <summary>
+        /// Returns if any prediction is replaying.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsReplaying() => _isReplaying;
+        /// <summary>
+        /// Returns if scene is replaying.
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <returns></returns>
+        public bool IsReplaying(UnityScene scene) => _replayingScenes.Contains(scene);
+        /// <summary>
+        /// True if any predictions are replaying.
+        /// </summary>
         #endregion
 
         #region Serialized.
+        /// <summary>
+        /// While true clients may drop local ticks if their devices are unable to maintain the tick rate.
+        /// This could result in a temporary desynchronization but will prevent the client falling further behind on ticks by repeatedly running the logic cycle multiple times per frame.
+        /// </summary>
+        [Tooltip("While true clients may drop local ticks if their devices are unable to maintain the tick rate. This could result in a temporary desynchronization but will prevent the client falling further behind on ticks by repeatedly running the logic cycle multiple times per frame.")]
+        [SerializeField]
+        private bool _allowTickDropping;
+        /// <summary>
+        /// Maximum number of ticks which may occur in a single frame before remainder are dropped for the frame.
+        /// </summary>
+        [Tooltip("Maximum number of ticks which may occur in a single frame before remainder are dropped for the frame.")]
+        [Range(1, 25)]
+        [SerializeField]
+        private byte _maximumFrameTicks = 3;
         /// <summary>
         /// 
         /// </summary>
@@ -194,6 +237,18 @@ namespace FishNet.Managing.Timing
 
         #region Private.
         /// <summary>
+        /// Scenes which are currently replaying prediction.
+        /// </summary>
+        private HashSet<UnityScene> _replayingScenes = new HashSet<UnityScene>(new SceneHandleEqualityComparer());
+        /// <summary>
+        /// Ticks that have passed on client since the last time server sent an UpdateTicksBroadcast.
+        /// </summary>
+        private uint _clientTicks = 0;
+        /// <summary>
+        /// Last Tick the server sent out UpdateTicksBroadcast.
+        /// </summary>
+        private uint _lastUpdateTicks = 0;
+        /// <summary>
         /// 
         /// </summary>
         private uint _localTick;
@@ -244,6 +299,14 @@ namespace FishNet.Managing.Timing
         /// </summary>
         private bool _receivedPong = true;
         /// <summary>
+        /// Last unscaledTime multiple ticks occurred in a single frame.
+        /// </summary>
+        private float _lastMultipleTicksTime;
+        /// <summary>
+        /// Number of times ticks would have increased last frame.
+        /// </summary>
+        private int _lastTicksCount;
+        /// <summary>
         /// Number of TimeManagers open which are using manual physics.
         /// </summary>
         private static uint _manualPhysics;
@@ -271,19 +334,16 @@ namespace FishNet.Managing.Timing
         /// </summary>
         private const string SAVED_FIXED_TIME_TEXT = "SavedFixedTimeFN";
         #endregion
-
-        /// <summary>
-        /// Ticks that have passed on client since the last time server sent an UpdateTicksBroadcast.
-        /// </summary>
-        private uint _clientTicks = 0;
-        /// <summary>
-        /// Last Tick the server sent out UpdateTicksBroadcast.
-        /// </summary>
-        private uint _lastUpdateTicks = 0;
+        private void OnEnable()
+        {
+            UnityEngine.SceneManagement.SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
+        }
 
 #if UNITY_EDITOR
         private void OnDisable()
         {
+            UnityEngine.SceneManagement.SceneManager.sceneUnloaded -= SceneManager_sceneUnloaded;
+
             //If closing/stopping.
             if (ApplicationState.IsQuitting())
             {
@@ -303,6 +363,13 @@ namespace FishNet.Managing.Timing
         internal void TickFixedUpdate()
         {
             OnFixedUpdate?.Invoke();
+            /* Invoke onsimulation if using Unity time.
+             * Otherwise let the tick cycling part invoke. */
+            if (PhysicsMode == PhysicsMode.Unity)
+            {
+                OnPhysicsSimulation?.Invoke(Time.fixedDeltaTime);
+                OnPrePhysicsSimulation?.Invoke(Time.fixedDeltaTime);
+            }
         }
 
         /// <summary>
@@ -316,6 +383,12 @@ namespace FishNet.Managing.Timing
                 ClientUptime += Time.deltaTime;
 
             IncreaseTick();
+
+            /* Invoke onsimulation if using Unity time.
+            * Otherwise let the tick cycling part invoke. */
+            if (PhysicsMode == PhysicsMode.Unity && Time.inFixedTimeStep)
+                OnPostPhysicsSimulation?.Invoke(Time.fixedDeltaTime);
+
             OnUpdate?.Invoke();
         }
 
@@ -356,12 +429,23 @@ namespace FishNet.Managing.Timing
 
 
         /// <summary>
+        /// Called when a scene unloads.
+        /// </summary>
+        /// <param name="arg0"></param>
+        private void SceneManager_sceneUnloaded(UnityScene s)
+        {
+            _replayingScenes.Remove(s);
+        }
+
+
+        /// <summary>
         /// Called after the local client connection state changes.
         /// </summary>
         private void ClientManager_OnClientConnectionState(ClientConnectionStateArgs obj)
         {
             if (obj.ConnectionState != LocalConnectionState.Started)
             {
+                _replayingScenes.Clear();
                 _pingStopwatch.Stop();
                 ClientUptime = 0f;
                 LocalTick = 0;
@@ -369,6 +453,7 @@ namespace FishNet.Managing.Timing
                 if (!_networkManager.IsServer)
                     Tick = 0;
             }
+            //Started.
             else
             {
                 _pingStopwatch.Restart();
@@ -392,9 +477,11 @@ namespace FishNet.Managing.Timing
         /// Invokes OnPre/PostReconcile events.
         /// Internal use.
         /// </summary>
-        [APIExclude] //codegen make internal and then public in codegen.
+        [APIExclude]
+        [CodegenMakePublic] //To internal.
         public void InvokeOnReconcile(NetworkBehaviour nb, bool before)
         {
+            nb.IsReconciling = before;
             if (before)
                 OnPreReconcile?.Invoke(nb);
             else
@@ -405,13 +492,21 @@ namespace FishNet.Managing.Timing
         /// Invokes OnReplicateReplay.
         /// Internal use.
         /// </summary>
-        [APIExclude] //codegen make internal and then public in codegen.
-        public void InvokeOnReplicateReplay(PhysicsScene ps, PhysicsScene2D ps2d, bool before)
+        [APIExclude]
+        [CodegenMakePublic] //To internal.
+        public void InvokeOnReplicateReplay(UnityScene scene, PhysicsScene ps, PhysicsScene2D ps2d, bool before)
         {
+            _isReplaying = before;
             if (before)
+            {
+                _replayingScenes.Add(scene);
                 OnPreReplicateReplay?.Invoke(ps, ps2d);
+            }
             else
+            {
+                _replayingScenes.Remove(scene);
                 OnPostReplicateReplay?.Invoke(ps, ps2d);
+            }
         }
 
         /// <summary>
@@ -602,9 +697,21 @@ namespace FishNet.Managing.Timing
             bool isClient = _networkManager.IsClient;
 
             double timePerSimulation = (_networkManager.IsServer) ? TickDelta : _adjustedTickDelta;
-            double time = Time.deltaTime;
+            double time = Time.unscaledDeltaTime;
             _elapsedTickTime += time;
             FrameTicked = (_elapsedTickTime >= timePerSimulation);
+
+            //Number of ticks to occur this frame.
+            int ticksCount = Mathf.FloorToInt((float)(_elapsedTickTime / timePerSimulation));
+            if (ticksCount > 1)
+                _lastMultipleTicksTime = Time.unscaledDeltaTime;
+
+            if (_allowTickDropping && !_networkManager.IsServer)
+            {
+                //If ticks require dropping. Set exactly to maximum ticks.
+                if (ticksCount > _maximumFrameTicks)
+                    _elapsedTickTime = (timePerSimulation * (double)_maximumFrameTicks);
+            }
 
             while (_elapsedTickTime >= timePerSimulation)
             {
@@ -616,15 +723,16 @@ namespace FishNet.Managing.Timing
                  * Therefor iterate must occur after OnPreTick.
                  * Iteration will only run once per frame. */
                 TryIterateData(true);
-
                 OnTick?.Invoke();
 
                 if (PhysicsMode == PhysicsMode.TimeManager)
                 {
                     float tick = (float)TickDelta;
                     OnPhysicsSimulation?.Invoke(tick);
+                    OnPrePhysicsSimulation?.Invoke(tick);
                     Physics.Simulate(tick);
                     Physics2D.Simulate(tick);
+                    OnPostPhysicsSimulation?.Invoke(tick);
                 }
 
                 OnPostTick?.Invoke();
@@ -649,13 +757,102 @@ namespace FishNet.Managing.Timing
 
         }
 
+
         #region TicksToTime.
+        /// <summary>
+        /// Returns the percentage of how far the TimeManager is into the next tick.
+        /// </summary>
+        /// <returns></returns>
+        public double GetTickPercent()
+        {
+            if (_networkManager == null)
+                return default;
+
+            double delta = (_networkManager.IsServer) ? TickDelta : _adjustedTickDelta;
+            double percent = (_elapsedTickTime / delta) * 100d;
+            return percent;
+        }
+        /// <summary>
+        /// Returns a PreciseTick.
+        /// </summary>
+        /// <param name="tick">Tick to set within the returned PreciseTick.</param>
+        /// <returns></returns>
+        public PreciseTick GetPreciseTick(uint tick)
+        {
+            if (_networkManager == null)
+                return default;
+
+            double delta = (_networkManager.IsServer) ? TickDelta : _adjustedTickDelta;
+            double percent = (_elapsedTickTime / delta) * 100;
+
+            return new PreciseTick(tick, percent);
+        }
+        /// <summary>
+        /// Returns a PreciseTick.
+        /// </summary>
+        /// <param name="tickType">Tick to use within PreciseTick.</param>
+        /// <returns></returns>
+        public PreciseTick GetPreciseTick(TickType tickType)
+        {
+            if (_networkManager == null)
+                return default;
+
+            if (tickType == TickType.Tick)
+            {
+                return GetPreciseTick(Tick);
+            }
+            else if (tickType == TickType.LocalTick)
+            {
+                return GetPreciseTick(LocalTick);
+            }
+            else if (tickType == TickType.LastPacketTick)
+            {
+                return GetPreciseTick(LastPacketTick);
+            }
+            else
+            {
+                if (_networkManager.CanLog(LoggingType.Error))
+                    Debug.LogError($"TickType {tickType.ToString()} is unhandled.");
+                return default;
+            }
+        }
+
+
+        /// <summary>
+        /// Converts current ticks to time.
+        /// </summary>
+        /// <param name="tickType">TickType to compare against.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public double TicksToTime(TickType tickType = TickType.LocalTick)
+        {
+            if (tickType == TickType.LocalTick)
+            {
+                return TicksToTime(LocalTick);
+            }
+            else if (tickType == TickType.Tick)
+            {
+                return TicksToTime(Tick);
+            }
+            else if (tickType == TickType.LastPacketTick)
+            {
+                return TicksToTime(LastPacketTick);
+            }
+            else
+            {
+                if (_networkManager != null && _networkManager.CanLog(LoggingType.Error))
+                    Debug.LogError($"TickType {tickType} is unhandled.");
+                return 0d;
+            }
+        }
+
         /// <summary>
         /// Converts current ticks to time.
         /// </summary>
         /// <param name="useLocalTick">True to use the LocalTick, false to use Tick.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Obsolete("Use TicksToTime(TickType) instead.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] //Remove on 2023/01/01
         public double TicksToTime(bool useLocalTick = true)
         {
             if (useLocalTick)
@@ -679,7 +876,20 @@ namespace FishNet.Managing.Timing
         /// <param name="previousTick">The previous tick.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Obsolete("Use TimePassed(uint, uint).")] //remove 2023/01/01.
         public double TicksToTime(uint currentTick, uint previousTick)
+        {
+            return TimePassed(currentTick, previousTick);
+        }
+
+        /// <summary>
+        /// Gets time passed from currentTick to previousTick.
+        /// </summary>
+        /// <param name="currentTick">The current tick.</param>
+        /// <param name="previousTick">The previous tick.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public double TimePassed(uint currentTick, uint previousTick)
         {
             double multiplier;
             double result;
@@ -695,6 +905,34 @@ namespace FishNet.Managing.Timing
             }
 
             return (result * multiplier);
+        }
+
+        /// <summary>
+        /// Gets time passed from Tick to preciseTick.
+        /// </summary>
+        /// <param name="preciseTick">PreciseTick value to compare against.</param>
+        /// <param name="allowNegative">True to allow negative values. When false and value would be negative 0 is returned.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public double TimePassed(PreciseTick preciseTick, bool allowNegative = false)
+        {
+            PreciseTick currentPt = GetPreciseTick(TickType.Tick);
+
+            long tickDifference = (currentPt.Tick - preciseTick.Tick);
+            double percentDifference = (currentPt.Percent - preciseTick.Percent);
+
+            /* If tickDifference is less than 0 or tickDifference and percentDifference are 0 or less
+             * then the result would be negative. */
+            bool negativeValue = (tickDifference < 0 || (tickDifference <= 0 && percentDifference <= 0));
+
+            if (!allowNegative && negativeValue)
+                return 0d;
+
+            double tickTime = TimePassed(preciseTick.Tick, true);
+            double percent = (percentDifference / 100);
+            double percentTime = (percent * TickDelta);
+
+            return (tickTime + percentTime);
         }
         /// <summary>
         /// Gets time passed from Tick to previousTick.
@@ -725,7 +963,7 @@ namespace FishNet.Managing.Timing
                 }
             }
         }
-        #endregion 
+        #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         /// <summary>
@@ -749,7 +987,6 @@ namespace FishNet.Managing.Timing
         /// Tries to iterate incoming or outgoing data.
         /// </summary>
         /// <param name="incoming">True to iterate incoming.</param>
-        /// <param name="isTick">True if call is occuring during a tick.</param>
         private void TryIterateData(bool incoming)
         {
             if (incoming)
@@ -766,20 +1003,11 @@ namespace FishNet.Managing.Timing
                     return;
                 _lastIncomingIterationFrame = frameCount;
 
-                /* This will be true if to iterate first first
-                 * resulting in the first TransportManager.Iterate
-                 * being called for server, and the second for client. */
-                //bool a = (_networkManager.IncomingIterationOrder == NetworkManager.HostIterationOrder.ServerFirst);
-                //_networkManager.TransportManager.IterateIncoming(a);
-                //_networkManager.TransportManager.IterateIncoming(!a);
                 _networkManager.TransportManager.IterateIncoming(true);
                 _networkManager.TransportManager.IterateIncoming(false);
             }
             else
             {
-                //bool a = (_networkManager.OutgoingIterationOrder == NetworkManager.HostIterationOrder.ServerFirst);
-                //_networkManager.TransportManager.IterateOutgoing(a);
-                //_networkManager.TransportManager.IterateOutgoing(!a);
                 _networkManager.TransportManager.IterateOutgoing(true);
                 _networkManager.TransportManager.IterateOutgoing(false);
             }
@@ -792,7 +1020,7 @@ namespace FishNet.Managing.Timing
         /// </summary>
         private void SendTimingAdjustment()
         {
-            uint requiredTicks = TimeToTicks(_timingInterval);            
+            uint requiredTicks = TimeToTicks(_timingInterval);
             uint tick = Tick;
             if (tick - _lastUpdateTicks >= requiredTicks)
             {
