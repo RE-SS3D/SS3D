@@ -7,5 +7,7 @@
          Important = 2,
          ServerOnly = 3,
          External = 4,
+         ClientOnly = 5,
+         Physics = 6,
     }
 }

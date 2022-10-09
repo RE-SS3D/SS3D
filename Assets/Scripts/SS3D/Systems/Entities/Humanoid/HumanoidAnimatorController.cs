@@ -1,8 +1,9 @@
+using SS3D.Core.Behaviours;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities.Humanoid
 {
-    public class HumanoidAnimatorController : MonoBehaviour
+    public class HumanoidAnimatorController : SpessBehaviour
     {
         [SerializeField] private HumanoidController _movementController;
 

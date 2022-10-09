@@ -1065,7 +1065,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &282733360052666326
 Transform:
   m_ObjectHideFlags: 0
@@ -2787,7 +2787,15 @@ MonoBehaviour:
   _prefabId: 3
   _scenePathHash: 0
   _sceneId: 0
-  _sceneNetworkObjects: []
+  _sceneNetworkObjects:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 2930813178971533500}
+  - {fileID: 0}
 --- !u!114 &7255324433810104430
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,4 +1,6 @@
-﻿namespace SS3D.Utils
+﻿using UnityEngine;
+
+namespace SS3D.Utils
 {
     public static class StringUtility
     {
