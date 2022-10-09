@@ -36,9 +36,9 @@ RectTransform:
   m_Father: {fileID: 1359148434}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 66, y: -18.93605}
   m_SizeDelta: {x: 132, y: 27.8721}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &55875277
@@ -100,8 +100,8 @@ MonoBehaviour:
   _baseTextColor: {r: 1, g: 1, b: 1, a: 1}
   _label: {fileID: 2101152833}
   _image: {fileID: 55875276}
-  _normalText: <sprite name="approved"> start round
-  _pressedText: <sprite name="denied"> stop round
+  _normalText: <sprite name="approve"> start round
+  _pressedText: <sprite name="deny"> stop round
 --- !u!114 &55875279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,10 +152,10 @@ RectTransform:
   m_Father: {fileID: 1784472768}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 166, y: -45.7238}
+  m_SizeDelta: {x: 332, y: 91.4476}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &67016290
 CanvasRenderer:
@@ -384,10 +384,10 @@ RectTransform:
   m_Father: {fileID: 387771207}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 171, y: -17.055767}
+  m_SizeDelta: {x: 332, y: 24.111534}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &561880033
 CanvasRenderer:
@@ -521,9 +521,9 @@ RectTransform:
   m_Father: {fileID: 67016288}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 166, y: -30.651}
   m_SizeDelta: {x: 332, y: 61.302}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &654811579
@@ -868,9 +868,9 @@ RectTransform:
   m_Father: {fileID: 67016288}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 166, y: -76.3748}
   m_SizeDelta: {x: 234.88, y: 19.953}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &996747446
@@ -1018,10 +1018,10 @@ RectTransform:
   m_Father: {fileID: 1547124749}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 166, y: -161.34666}
+  m_SizeDelta: {x: 332, y: 139.79813}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1359148435
 CanvasRenderer:
@@ -1111,10 +1111,10 @@ RectTransform:
   m_Father: {fileID: 387771207}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 171, y: -35.9199}
+  m_SizeDelta: {x: 332, y: 3.61673}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1516433592
 CanvasRenderer:
@@ -1211,10 +1211,10 @@ RectTransform:
   m_Father: {fileID: 387771207}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 171, y: -158.35114}
+  m_SizeDelta: {x: 332, y: 231.24573}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1547124753
 CanvasRenderer:
@@ -1336,10 +1336,10 @@ RectTransform:
   m_Father: {fileID: 561880029}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 166, y: -12.055767}
+  m_SizeDelta: {x: 332, y: 24.111534}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1669090665
 CanvasRenderer:
@@ -1473,10 +1473,10 @@ RectTransform:
   m_Father: {fileID: 1547124749}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 166, y: -45.7238}
+  m_SizeDelta: {x: 332, y: 91.4476}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1784472770
 CanvasRenderer:
@@ -1598,7 +1598,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: <sprite name="approved"> start round
+  m_text: <sprite name="approve"> start round
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 62e6adf63482d6f42aee1f313095799e, type: 2}
   m_sharedMaterial: {fileID: -5529144078996397610, guid: 62e6adf63482d6f42aee1f313095799e, type: 2}
@@ -5535,7 +5535,7 @@ Canvas:
   m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 1
-  m_PixelPerfect: 0
+  m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
@@ -6051,7 +6051,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.227451, g: 0.20392159, b: 0.20392159, a: 1}
+  m_Color: {r: 0.40392157, g: 0.5529412, b: 0.72156864, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -6085,7 +6085,7 @@ MonoBehaviour:
   _highlighted: 0
   _buttonStyle: {fileID: 11400000, guid: c7f70b557fb6aff4f81aac4ebf55a784, type: 2}
   _colorMultiplier: 1
-  _baseImageColor: {r: 0.227451, g: 0.20392159, b: 0.20392159, a: 1}
+  _baseImageColor: {r: 0.40392157, g: 0.5529412, b: 0.72156864, a: 1}
   _baseTextColor: {r: 1, g: 1, b: 1, a: 1}
   _label: {fileID: 4033101250090483491}
   _image: {fileID: 8801076718284731543}
