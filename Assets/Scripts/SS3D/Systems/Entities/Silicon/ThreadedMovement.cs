@@ -4,16 +4,14 @@ using SS3D.Core.Behaviours;
 using SS3D.Systems.Screens;
 using UnityEngine;
 
-namespace SS3D.Systems.Entities.Humanoid
+namespace SS3D.Systems.Entities.Silicon
 {
     /// <summary>
-    /// Controls the movement for biped characters that use the same armature
-    /// as the human model uses.
+    /// Controls the movement for threaded characters
     /// </summary>
-    [RequireComponent(typeof(HumanoidAnimatorController))]
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
-    public class HumanoidController : PlayerControllable
+    public class ThreadedMovement : PlayerControllable
     {
         public event Action<float> OnSpeedChanged;
 
@@ -25,13 +23,7 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private float _lerpMultiplier;
         [SerializeField] private float _rotationLerpMultiplier;
 
-        // [Header("Movement IK Targets")] 
         [SerializeField] private Transform _movementTarget;
-        // [SerializeField] private Transform _mousePositionTransform;
-        // [SerializeField] private Transform _mouseDirectionTransform;
-
-        [Header("Run/Walk")]
-        private bool _isWalking;
 
         [Header("Debug Info")] 
         private Vector3 _absoluteMovement;
@@ -43,9 +35,6 @@ namespace SS3D.Systems.Entities.Humanoid
         private float _smoothedX;
         private float _smoothedY;
         private SpessBehaviour _camera;
-
-        private const float WalkAnimatorValue = .3f;
-        private const float RunAnimatorValue = 1f;
 
         protected override void OnStart()
         {
@@ -80,8 +69,6 @@ namespace SS3D.Systems.Entities.Humanoid
         private void ProcessCharacterMovement()
         {
             ProcessPlayerInput();
-            ProcessToggleRun();
-
             _characterController.Move(Physics.gravity);
             
             if (_input.magnitude != 0)
@@ -95,42 +82,27 @@ namespace SS3D.Systems.Entities.Humanoid
                 MovePlayer(); 
                 MoveMovementTarget(Vector2.zero, 5);   
             }
-                
-            UpdateMousePositionTransforms();
         }
-    
-        /// <summary>
-        /// Gets the mouse position and updates the mouse IK targets while maintaining the player height
-        /// </summary>
-        private void UpdateMousePositionTransforms()
-        {
-            // Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-            // Vector3 mousePos = ray.origin - ray.direction * (ray.origin.y / ray.direction.y);
-            // mousePos = new Vector3(mousePos.x, transform.position.y, mousePos.z);
-            
-            // _mouseDirectionTransform.LookAt(mousePos);
-            // _mousePositionTransform.position = mousePos;
-        }
-        
+
         /// <summary>
         /// Moves the movement targets with the given input
         /// </summary>
         /// <param name="movementInput"></param>
-         private void MoveMovementTarget(Vector2 movementInput, float multiplier = 1)
-         {
-             //makes the movement align to the camera view
-             Vector3 newTargetMovement =
-                 movementInput.y * Vector3.Cross(_camera.Right, Vector3.up).normalized +
-                 movementInput.x * Vector3.Cross(Vector3.up, _camera.Forward).normalized;
+        private void MoveMovementTarget(Vector2 movementInput, float multiplier = 1)
+        {
+            //makes the movement align to the camera view
+            Vector3 newTargetMovement =
+                movementInput.y * Vector3.Cross(_camera.Right, Vector3.up).normalized +
+                movementInput.x * Vector3.Cross(Vector3.up, _camera.Forward).normalized;
             
-             // smoothly changes the target movement
-             _targetMovement = Vector3.Lerp(_targetMovement, newTargetMovement, Time.deltaTime * (_lerpMultiplier * multiplier));
+            // smoothly changes the target movement
+            _targetMovement = Vector3.Lerp(_targetMovement, newTargetMovement, Time.deltaTime * (_lerpMultiplier * multiplier));
             
-             Vector3 resultingMovement = _targetMovement + transform.position;
+            Vector3 resultingMovement = _targetMovement + transform.position;
             _absoluteMovement = resultingMovement;
 
-             _movementTarget.position = _absoluteMovement;
-         }
+            _movementTarget.position = _absoluteMovement;
+        }
 
         /// <summary>
         /// Rotates the player to the target movement
@@ -148,7 +120,7 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             _characterController.Move(_targetMovement * ((_movementSpeed) * Time.deltaTime));
         }
-        
+
         /// <summary>
         /// Process the player movement input, smoothing it 
         /// </summary>
@@ -157,28 +129,11 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             float x = Input.GetAxisRaw("Horizontal");
             float y = Input.GetAxisRaw("Vertical");
-            
-            float inputFilteredSpeed = _isWalking ? WalkAnimatorValue : RunAnimatorValue;
-            
-            x = Mathf.Clamp(x, -inputFilteredSpeed, inputFilteredSpeed);
-            y = Mathf.Clamp(y, -inputFilteredSpeed, inputFilteredSpeed);
-            
+
             _input = new Vector2(x, y);
-            OnSpeedChanged?.Invoke(_input.magnitude != 0 ? inputFilteredSpeed : 0);
+            OnSpeedChanged?.Invoke(_input.magnitude != 0 ? _input.magnitude : 0);
 
             _smoothedInput = Vector2.Lerp(_smoothedInput, _input, Time.deltaTime * (_lerpMultiplier / 10));
         }
-        
-        /// <summary>
-        /// Toggles your movement between run/walk
-        /// </summary>
-        private void ProcessToggleRun()
-        {
-            if (Input.GetButtonDown("Toggle Run"))
-            {
-                _isWalking = !_isWalking;
-            }
-        }
     }
-    
 }
