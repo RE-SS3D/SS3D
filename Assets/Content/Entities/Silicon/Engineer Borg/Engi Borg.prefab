@@ -1288,7 +1288,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 6
+  <PrefabId>k__BackingField: 10
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 9988794035435604749
@@ -1428,7 +1428,7 @@ MonoBehaviour:
   _characterController: {fileID: 8159127053265572578}
   _movementSpeed: 2
   _lerpMultiplier: 2
-  _rotationLerpMultiplier: 6
+  _rotationLerpMultiplier: 1
   _movementTarget: {fileID: 6852574109517490658}
 --- !u!1 &6250850031364791032
 GameObject:

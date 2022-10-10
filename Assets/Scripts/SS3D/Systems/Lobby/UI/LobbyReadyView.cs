@@ -1,4 +1,5 @@
 using Coimbra.Services.Events;
+using Cysharp.Threading.Tasks;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
@@ -30,7 +31,20 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleSpawnedPlayersUpdated(ref EventContext context, in SpawnedPlayersUpdated e)
         {
+            SyncSpawnedPlayers();
+        }
+
+        private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
+        {
+            SyncRoundState(e.RoundState);
+        }
+
+        private async void SyncSpawnedPlayers()
+        {
+            await UniTask.WaitUntil(() => GameSystems.Get<EntitySpawnSystem>() != null);
             EntitySpawnSystem spawnSystem = GameSystems.Get<EntitySpawnSystem>();
+
+            await UniTask.WaitUntil(() => GameSystems.Get<PlayerControlSystem>() != null);
             PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
 
             string ckey = playerControlSystem.GetCkey(LocalConnection);
@@ -45,11 +59,12 @@ namespace SS3D.Systems.Lobby.UI
             }
         }
 
-        private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
+        private async void SyncRoundState(RoundState roundState)
         {
-            RoundState roundState = e.RoundState;
-
+            await UniTask.WaitUntil(() => GameSystems.Get<EntitySpawnSystem>() != null);
             EntitySpawnSystem spawnSystem = GameSystems.Get<EntitySpawnSystem>();
+
+            await UniTask.WaitUntil(() => GameSystems.Get<PlayerControlSystem>() != null);
             PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
 
             string ckey = playerControlSystem.GetCkey(LocalConnection);

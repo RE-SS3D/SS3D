@@ -183,7 +183,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.9767473, b: 0.8349056, a: 1}
-  m_Intensity: 1
+  m_Intensity: 1.33
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -233,6 +233,66 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!1 &183722652
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 183722653}
+  - component: {fileID: 183722654}
+  m_Layer: 0
+  m_Name: PreviewStartPoint (001)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &183722653
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183722652}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.33, z: 1.96}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 451564087}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &183722654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183722652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1ef1ddf564a4e948bddd9940b4a1e53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 771589493}
+  _networkObjectCache: {fileID: 771589493}
+  SodaCans:
+  - {fileID: 8423412686940963211, guid: de543fe84ff1e564e9f616e3aa62c122, type: 3}
+  - {fileID: 8423412686940963211, guid: 260f9055de5f3424d807ca1d8d7a011c, type: 3}
+  - {fileID: 8423412686940963211, guid: bb701a993659a10439bd36445f90d143, type: 3}
+  - {fileID: 8423412686940963211, guid: cbe4989d1925276409163212a1ee01b8, type: 3}
+  - {fileID: 8423412686940963211, guid: 1f96c431e982dc84281c52987a0aac1c, type: 3}
+  - {fileID: 8423412686940963211, guid: 67dec530733e9f44184e1cc616786768, type: 3}
+  - {fileID: 8423412686940963211, guid: ae126cdb679d68642b4dcc7d4db6d2ea, type: 3}
+  SpawnQuantity: 2
+  SpawnPosition: {fileID: 183722653}
+  EnableForceField: 0
+  ForceMultiplier: 1
+  SpawnedCans: []
 --- !u!1 &187882041
 GameObject:
   m_ObjectHideFlags: 0
@@ -628,6 +688,7 @@ MonoBehaviour:
   - {fileID: 516802435}
   - {fileID: 616353825}
   - {fileID: 661652618}
+  - {fileID: 771589493}
   - {fileID: 913757968}
   - {fileID: 914529552}
   - {fileID: 990295462}
@@ -685,6 +746,7 @@ Transform:
   - {fileID: 1545583595}
   - {fileID: 1544788595}
   - {fileID: 687688022}
+  - {fileID: 183722653}
   m_Father: {fileID: 771589492}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -768,6 +830,7 @@ MonoBehaviour:
   - {fileID: 516802435}
   - {fileID: 616353825}
   - {fileID: 661652618}
+  - {fileID: 771589493}
   - {fileID: 913757968}
   - {fileID: 914529552}
   - {fileID: 990295462}
@@ -837,6 +900,7 @@ MonoBehaviour:
   - {fileID: 516802435}
   - {fileID: 616353825}
   - {fileID: 661652618}
+  - {fileID: 771589493}
   - {fileID: 913757968}
   - {fileID: 914529552}
   - {fileID: 990295462}
@@ -948,6 +1012,7 @@ MonoBehaviour:
   - {fileID: 516802435}
   - {fileID: 616353825}
   - {fileID: 661652618}
+  - {fileID: 771589493}
   - {fileID: 913757968}
   - {fileID: 914529552}
   - {fileID: 990295462}
@@ -1087,6 +1152,7 @@ MonoBehaviour:
   - {fileID: 516802435}
   - {fileID: 616353825}
   - {fileID: 661652618}
+  - {fileID: 771589493}
   - {fileID: 913757968}
   - {fileID: 914529552}
   - {fileID: 990295462}
@@ -1207,6 +1273,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 771589492}
+  - component: {fileID: 771589493}
   m_Layer: 0
   m_Name: World Objects
   m_TagString: Untagged
@@ -1232,6 +1299,43 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &771589493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 771589491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <IsNested>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 0
+  _networkBehaviours:
+  - {fileID: 183722654}
+  <ParentNetworkObject>k__BackingField: {fileID: 0}
+  <ChildNetworkObjects>k__BackingField: []
+  _isNetworked: 1
+  _isGlobal: 0
+  _defaultDespawnType: 0
+  NetworkObserver: {fileID: 0}
+  <PrefabId>k__BackingField: -1
+  _scenePathHash: 952082934
+  <SceneId>k__BackingField: 4089165064840772184
+  <AssetPathHash>k__BackingField: 0
+  _sceneNetworkObjects:
+  - {fileID: 246961643}
+  - {fileID: 474682044}
+  - {fileID: 516802435}
+  - {fileID: 616353825}
+  - {fileID: 661652618}
+  - {fileID: 771589493}
+  - {fileID: 913757968}
+  - {fileID: 914529552}
+  - {fileID: 990295462}
+  - {fileID: 2057128681}
 --- !u!114 &778960611 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3736358312388430202, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
@@ -1287,7 +1391,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 0.740566, g: 1, b: 0.9871752, a: 1}
-  m_Intensity: 1
+  m_Intensity: 1.33
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -1384,7 +1488,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 990295462}
-  _networkObjectCache: {fileID: 990295462}
+  _networkObjectCache: {fileID: 913757968}
   _blockNone: 0
   _menuOpen: 0
 --- !u!114 &913757968
@@ -1400,10 +1504,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 1
   _networkBehaviours:
   - {fileID: 913757967}
-  <ParentNetworkObject>k__BackingField: {fileID: 0}
+  <ParentNetworkObject>k__BackingField: {fileID: 990295462}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
   _isGlobal: 0
@@ -1419,6 +1523,7 @@ MonoBehaviour:
   - {fileID: 516802435}
   - {fileID: 616353825}
   - {fileID: 661652618}
+  - {fileID: 771589493}
   - {fileID: 913757968}
   - {fileID: 914529552}
   - {fileID: 990295462}
@@ -1494,6 +1599,7 @@ MonoBehaviour:
   - {fileID: 516802435}
   - {fileID: 616353825}
   - {fileID: 661652618}
+  - {fileID: 771589493}
   - {fileID: 913757968}
   - {fileID: 914529552}
   - {fileID: 990295462}
@@ -1542,7 +1648,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.9767473, b: 0.8349056, a: 1}
-  m_Intensity: 1
+  m_Intensity: 1.33
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -1636,7 +1742,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.9767473, b: 0.8349056, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 1.33
   m_Range: 20
   m_SpotAngle: 141.7
   m_InnerSpotAngle: 1
@@ -1736,7 +1842,8 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 0}
-  <ChildNetworkObjects>k__BackingField: []
+  <ChildNetworkObjects>k__BackingField:
+  - {fileID: 913757968}
   _isNetworked: 1
   _isGlobal: 0
   _defaultDespawnType: 0
@@ -1751,6 +1858,7 @@ MonoBehaviour:
   - {fileID: 516802435}
   - {fileID: 616353825}
   - {fileID: 661652618}
+  - {fileID: 771589493}
   - {fileID: 913757968}
   - {fileID: 914529552}
   - {fileID: 990295462}
@@ -1899,7 +2007,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.9767473, b: 0.8349056, a: 1}
-  m_Intensity: 1
+  m_Intensity: 1.33
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -2116,7 +2224,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 1.33
   m_Range: 20
   m_SpotAngle: 141.7
   m_InnerSpotAngle: 1
@@ -2210,7 +2318,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.9767473, b: 0.8349056, a: 1}
-  m_Intensity: 1
+  m_Intensity: 1.33
   m_Range: 5
   m_SpotAngle: 179
   m_InnerSpotAngle: 1
@@ -2625,7 +2733,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 0.740566, g: 1, b: 0.9871752, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 1.33
   m_Range: 20
   m_SpotAngle: 141.7
   m_InnerSpotAngle: 1
@@ -2877,7 +2985,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.9767473, b: 0.8349056, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 1.33
   m_Range: 20
   m_SpotAngle: 141.7
   m_InnerSpotAngle: 1
@@ -2971,7 +3079,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.9767473, b: 0.8349056, a: 1}
-  m_Intensity: 1
+  m_Intensity: 1.33
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -3101,6 +3209,7 @@ MonoBehaviour:
   - {fileID: 516802435}
   - {fileID: 616353825}
   - {fileID: 661652618}
+  - {fileID: 771589493}
   - {fileID: 913757968}
   - {fileID: 914529552}
   - {fileID: 990295462}
