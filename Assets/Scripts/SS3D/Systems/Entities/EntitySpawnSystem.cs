@@ -147,7 +147,6 @@ namespace SS3D.Systems.Entities
             ServerManager.Spawn(controllable.NetworkObject, soul.Owner);
                 
             controllable.GiveOwnership(soul.Owner);
-            controllable.ControllingSoul = soul;
 
             string message = $"Spawning player {soul.Ckey} on {controllable.name}";
             Punpun.Say(this, message, Logs.ServerOnly); 

@@ -1238,6 +1238,8 @@ GameObject:
   - component: {fileID: 8194241498855983179}
   - component: {fileID: 1669376080218637799}
   - component: {fileID: 8159127053265572578}
+  - component: {fileID: -7634788102200668286}
+  - component: {fileID: -925834532171443999}
   m_Layer: 0
   m_Name: Engi Borg
   m_TagString: Untagged
@@ -1279,7 +1281,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 9083373980788225397}
   - {fileID: 8194241498855983179}
-  - {fileID: 0}
+  - {fileID: -925834532171443999}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -1392,6 +1394,42 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.75, z: 0}
+--- !u!114 &-7634788102200668286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6199841308937614464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbc1eb056567432f8578a1ddea10e5d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _movementController: {fileID: -925834532171443999}
+  _animator: {fileID: 1669376080218637799}
+  _lerpMultiplier: 2
+--- !u!114 &-925834532171443999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6199841308937614464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b72826cbf06fd7c4f8cde7bfe0991462, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: 1019513474262773944}
+  _networkObjectCache: {fileID: 1019513474262773944}
+  _scaleInOnSpawn: 1
+  _characterController: {fileID: 8159127053265572578}
+  _movementSpeed: 2
+  _lerpMultiplier: 2
+  _rotationLerpMultiplier: 6
+  _movementTarget: {fileID: 6852574109517490658}
 --- !u!1 &6250850031364791032
 GameObject:
   m_ObjectHideFlags: 0

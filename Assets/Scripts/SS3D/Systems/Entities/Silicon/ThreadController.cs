@@ -11,58 +11,55 @@ namespace SS3D.Systems.Entities.Silicon
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
-    public class EngineerBorgMovement : NetworkedSpessBehaviour
+    public class ThreadController : PlayerControllable
     {
         public event Action<float> OnSpeedChanged;
-
+        
         [Header("Components")] 
         [SerializeField] private CharacterController _characterController;
-
+        
         [Header("Movement Settings")]
         [SerializeField] private float _movementSpeed;
         [SerializeField] private float _lerpMultiplier;
         [SerializeField] private float _rotationLerpMultiplier;
-
+        
         [SerializeField] private Transform _movementTarget;
-
+        
         [Header("Debug Info")] 
         private Vector3 _absoluteMovement;
         private Vector2 _input;
         private Vector2 _smoothedInput;
-
+        
         private Vector3 _targetMovement;
-
+        
         private float _smoothedX;
         private float _smoothedY;
         private SpessBehaviour _camera;
-
+        
         protected override void OnStart()
         {
             base.OnStart();
-
+        
             Setup();
         }
-
+        
         private void Setup()
         {
             _camera = GameSystems.Get<CameraSystem>().PlayerCamera;
         }
-
+        
         protected override void HandleUpdate(in float deltaTime)
         {
             base.HandleUpdate(in deltaTime);
-
+        
             if (!IsOwner)
             {
                 return;
             }
-
-            //if (ControlledByLocalPlayer)
-            {
-                ProcessCharacterMovement();
-            }
+            
+            ProcessCharacterMovement();
         }
-
+        
         /// <summary>
         /// Executes the movement code and updates the IK targets
         /// </summary>
@@ -83,7 +80,7 @@ namespace SS3D.Systems.Entities.Silicon
                 MoveMovementTarget(Vector2.zero, 5);   
             }
         }
-
+        
         /// <summary>
         /// Moves the movement targets with the given input
         /// </summary>
@@ -100,10 +97,10 @@ namespace SS3D.Systems.Entities.Silicon
             
             Vector3 resultingMovement = _targetMovement + transform.position;
             _absoluteMovement = resultingMovement;
-
+        
             _movementTarget.position = _absoluteMovement;
         }
-
+        
         /// <summary>
         /// Rotates the player to the target movement
         /// </summary>
@@ -112,7 +109,7 @@ namespace SS3D.Systems.Entities.Silicon
             transform.rotation = 
                 Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_targetMovement), Time.deltaTime * _rotationLerpMultiplier);
         }
-
+        
         /// <summary>
         /// Moves the player to the target movement
         /// </summary>
@@ -120,7 +117,7 @@ namespace SS3D.Systems.Entities.Silicon
         {
             _characterController.Move(_targetMovement * ((_movementSpeed) * Time.deltaTime));
         }
-
+        
         /// <summary>
         /// Process the player movement input, smoothing it 
         /// </summary>
@@ -129,10 +126,10 @@ namespace SS3D.Systems.Entities.Silicon
         {
             float x = Input.GetAxisRaw("Horizontal");
             float y = Input.GetAxisRaw("Vertical");
-
+        
             _input = new Vector2(x, y);
             OnSpeedChanged?.Invoke(_input.magnitude != 0 ? _input.magnitude : 0);
-
+        
             _smoothedInput = Vector2.Lerp(_smoothedInput, _input, Time.deltaTime * (_lerpMultiplier / 10));
         }
     }

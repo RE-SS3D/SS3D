@@ -68,10 +68,7 @@ namespace SS3D.Systems.Entities.Humanoid
                 return;
             }
 
-            if (ControlledByLocalPlayer)
-            {
-                ProcessCharacterMovement();
-            }
+            ProcessCharacterMovement();
         }
 
         /// <summary>

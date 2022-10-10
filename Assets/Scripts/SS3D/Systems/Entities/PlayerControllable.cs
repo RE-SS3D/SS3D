@@ -1,6 +1,5 @@
 ﻿using DG.Tweening;
 using FishNet.Connection;
-using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
@@ -12,21 +11,14 @@ namespace SS3D.Systems.Entities
     /// </summary>
     public class PlayerControllable : NetworkedSpessBehaviour
     {
-        [SyncVar(OnChange = "SyncControllingSoul")] private Soul _controllingSoul;
-
         [SerializeField] private bool _scaleInOnSpawn = true;
         private const float ScaleInDuration = .6f;
 
-        protected bool ControlledByLocalPlayer => _controllingSoul.Owner == LocalConnection;
-
-        public Soul ControllingSoul
+        public override void OnOwnershipClient(NetworkConnection prevOwner)
         {
-            get => _controllingSoul;
-            set
-            {
-                _controllingSoul = value;
-                SetCameraFollow();
-            }
+            base.OnOwnershipClient(prevOwner);
+
+            SetCameraFollow();
         }
 
         protected override void OnStart()
@@ -57,16 +49,9 @@ namespace SS3D.Systems.Entities
             SetCameraFollow();
         }
 
-        private void SyncControllingSoul(Soul oldControllingSoul, Soul newControllingSoul, bool asServer)
-        {
-            _controllingSoul = newControllingSoul;
-
-            SetCameraFollow();
-        }
-
         private void SetCameraFollow()
         {
-            if (_controllingSoul.Owner != LocalConnection)
+            if (!IsOwner)
             {
                 return;
             }
