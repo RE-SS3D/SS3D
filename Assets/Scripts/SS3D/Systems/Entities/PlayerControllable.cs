@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using FishNet.Connection;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Screens.Events;
@@ -11,12 +12,15 @@ namespace SS3D.Systems.Entities
     /// </summary>
     public class PlayerControllable : NetworkedSpessBehaviour
     {
+        public Action<NetworkConnection> OnOwnerChanged;
+
         [SerializeField] private bool _scaleInOnSpawn = true;
         private const float ScaleInDuration = .6f;
 
         public override void OnOwnershipClient(NetworkConnection prevOwner)
         {
             base.OnOwnershipClient(prevOwner);
+            OnOwnerChanged?.Invoke(Owner);
 
             SetCameraFollow();
         }
@@ -35,6 +39,8 @@ namespace SS3D.Systems.Entities
                 LocalScale = Vector3.zero;
                 TransformCache.DOScale(1, ScaleInDuration).SetEase(Ease.OutElastic);
             }
+
+            OnOwnerChanged?.Invoke(Owner);
         }
 
         public void ProcessDespawn()
@@ -58,6 +64,14 @@ namespace SS3D.Systems.Entities
 
             ChangeCameraEvent changeCameraEvent = new(GameObjectCache);
             changeCameraEvent.Invoke(this);
+        }
+
+        public void SetOwner(NetworkConnection conn)
+        {
+            NetworkObject.RemoveOwnership();
+            NetworkObject.GiveOwnership(conn);
+
+            OnOwnerChanged?.Invoke(conn);
         }
     }
 }

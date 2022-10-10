@@ -9,6 +9,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Entities.Messages;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
@@ -50,14 +51,32 @@ namespace SS3D.Systems.Entities
             base.OnStartServer();
 
             ServerManager.RegisterBroadcast<RequestEmbarkMessage>(HandleRequestEmbark);
+            ServerManager.RegisterBroadcast<RequestMindSwap>(HandleRequestMindSwap);
 
             SpawnReadyPlayersEvent.AddListener(HandleSpawnReadyPlayers);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
         }
 
+        private void HandleRequestMindSwap(NetworkConnection conn, RequestMindSwap m)
+        {
+            ProcessMindSwap(m.Origin, m.Target);
+        }
+
         private void HandleSpawnedPlayersChanged(SyncListOperation op, int index, string olditem, string newitem, bool asserver)
         {
             SyncSpawnedPlayers();
+        }
+
+        [Server]
+        private void ProcessMindSwap(GameObject origin, GameObject target)
+        {
+            PlayerControllable originControllable = origin.GetComponent<PlayerControllable>();
+            PlayerControllable targetControllable = target.GetComponent<PlayerControllable>();
+
+            NetworkConnection originConn = originControllable.Owner;
+
+            originControllable.RemoveOwnership();
+            targetControllable.SetOwner(originConn);
         }
 
         [Server]
@@ -145,8 +164,7 @@ namespace SS3D.Systems.Entities
             _serverSpawnedPlayers.Add(controllable);
 
             ServerManager.Spawn(controllable.NetworkObject, soul.Owner);
-                
-            controllable.GiveOwnership(soul.Owner);
+            controllable.SetOwner(soul.Owner);
 
             string message = $"Spawning player {soul.Ckey} on {controllable.name}";
             Punpun.Say(this, message, Logs.ServerOnly); 

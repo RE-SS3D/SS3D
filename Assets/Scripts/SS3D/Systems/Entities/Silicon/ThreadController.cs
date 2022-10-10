@@ -1,4 +1,5 @@
 using System;
+using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Screens;
@@ -14,7 +15,8 @@ namespace SS3D.Systems.Entities.Silicon
     public class ThreadController : PlayerControllable
     {
         public event Action<float> OnSpeedChanged;
-        
+        public event Action<bool> OnPowerChanged; 
+
         [Header("Components")] 
         [SerializeField] private CharacterController _characterController;
         
@@ -41,8 +43,14 @@ namespace SS3D.Systems.Entities.Silicon
             base.OnStart();
         
             Setup();
+            OnOwnerChanged += HandleOwnerChanged;
         }
-        
+
+        private void HandleOwnerChanged(NetworkConnection owner)
+        {
+            OnPowerChanged?.Invoke(owner.ClientId == -1);
+        }
+
         private void Setup()
         {
             _camera = GameSystems.Get<CameraSystem>().PlayerCamera;

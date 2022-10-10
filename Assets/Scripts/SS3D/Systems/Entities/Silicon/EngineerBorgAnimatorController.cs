@@ -24,11 +24,18 @@ namespace SS3D.Systems.Entities.Silicon
         private void SubscribeToEvents()
         {
             _movementController.OnSpeedChanged += UpdateMovement;
+            _movementController.OnPowerChanged += UpdatePower;
+        }
+
+        private void UpdatePower(bool power)
+        {
+            _animator.SetBool(Animations.Silicon.Power, power);
         }
 
         private void UnsubscribeFromEvents()
         {
             _movementController.OnSpeedChanged -= UpdateMovement;
+            _movementController.OnPowerChanged -= UpdatePower;
         }
 
         private void UpdateMovement(float speed)
