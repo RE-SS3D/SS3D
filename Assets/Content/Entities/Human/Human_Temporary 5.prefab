@@ -2727,6 +2727,7 @@ GameObject:
   - component: {fileID: 3812744165389046210}
   - component: {fileID: 1872721284991216642}
   - component: {fileID: 6706577840954258383}
+  - component: {fileID: 8336170331735268562}
   m_Layer: 0
   m_Name: Human_Temporary 5
   m_TagString: Untagged
@@ -2779,13 +2780,14 @@ MonoBehaviour:
   - {fileID: 7255324433810104430}
   - {fileID: 5113695969261828376}
   - {fileID: 1872721284991216642}
+  - {fileID: 8336170331735268562}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 10
+  <PrefabId>k__BackingField: 17
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 17681061130038033069
@@ -2906,8 +2908,8 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  _scaleInOnSpawn: 1
   _characterController: {fileID: 3812744165389046210}
+  _playerControllable: {fileID: 8336170331735268562}
   _movementSpeed: 5
   _lerpMultiplier: 2
   _rotationLerpMultiplier: 6
@@ -2926,7 +2928,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _movementController: {fileID: 1872721284991216642}
   _animator: {fileID: 1252106768682846670}
-  _lerpMultiplier: 3
+  _lerpMultiplier: 2.4
+--- !u!114 &8336170331735268562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67a464fdf1254e188dcb2729033a7718, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 3
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  _scaleInOnSpawn: 1
 --- !u!1 &6530700040387722453
 GameObject:
   m_ObjectHideFlags: 0

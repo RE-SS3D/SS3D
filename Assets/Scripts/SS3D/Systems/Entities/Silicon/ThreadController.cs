@@ -12,13 +12,14 @@ namespace SS3D.Systems.Entities.Silicon
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
-    public class ThreadController : PlayerControllable
+    public class ThreadController : NetworkedSpessBehaviour
     {
         public event Action<float> OnSpeedChanged;
         public event Action<bool> OnPowerChanged; 
 
         [Header("Components")] 
         [SerializeField] private CharacterController _characterController;
+        [SerializeField] private PlayerControllable _playerControllable;
         
         [Header("Movement Settings")]
         [SerializeField] private float _movementSpeed;
@@ -38,22 +39,18 @@ namespace SS3D.Systems.Entities.Silicon
         private float _smoothedY;
         private SpessBehaviour _camera;
         
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
+            base.OnAwake();
         
             Setup();
-            OnOwnerChanged += HandleOwnerChanged;
-        }
-
-        private void HandleOwnerChanged(NetworkConnection owner)
-        {
-            OnPowerChanged?.Invoke(owner.ClientId == -1);
         }
 
         private void Setup()
         {
             _camera = GameSystems.Get<CameraSystem>().PlayerCamera;
+
+            _playerControllable.ControllingSoulChanged += HandleControllingSoulChanged;
         }
         
         protected override void HandleUpdate(in float deltaTime)
@@ -139,6 +136,11 @@ namespace SS3D.Systems.Entities.Silicon
             OnSpeedChanged?.Invoke(_input.magnitude != 0 ? _input.magnitude : 0);
         
             _smoothedInput = Vector2.Lerp(_smoothedInput, _input, Time.deltaTime * (_lerpMultiplier / 10));
+        }
+
+        private void HandleControllingSoulChanged(Soul soul)
+        {
+            OnPowerChanged?.Invoke(!(soul != null));
         }
     }
 }

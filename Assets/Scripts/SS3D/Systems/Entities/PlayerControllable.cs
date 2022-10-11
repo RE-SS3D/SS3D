@@ -1,6 +1,8 @@
 ﻿using System;
 using DG.Tweening;
 using FishNet.Connection;
+using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
@@ -12,18 +14,19 @@ namespace SS3D.Systems.Entities
     /// </summary>
     public class PlayerControllable : NetworkedSpessBehaviour
     {
-        public Action<NetworkConnection> OnOwnerChanged;
+        public Action<Soul> ControllingSoulChanged;
+
+        [SyncVar(OnChange = "SetControllingSoul")] private Soul _controllingSoul;
 
         [SerializeField] private bool _scaleInOnSpawn = true;
-        private const float ScaleInDuration = .6f;
 
-        public override void OnOwnershipClient(NetworkConnection prevOwner)
+        public Soul ControllingSoul
         {
-            base.OnOwnershipClient(prevOwner);
-            OnOwnerChanged?.Invoke(Owner);
-
-            SetCameraFollow();
+            get => _controllingSoul;
+            set => _controllingSoul = value;
         }
+
+        private const float ScaleInDuration = .6f;
 
         protected override void OnStart()
         {
@@ -37,12 +40,13 @@ namespace SS3D.Systems.Entities
             if (_scaleInOnSpawn)
             {
                 LocalScale = Vector3.zero;
-                TransformCache.DOScale(1, ScaleInDuration).SetEase(Ease.OutElastic);
+                TransformCache.DOScale(1, ScaleInDuration).SetEase(Ease.OutCirc);
             }
 
-            OnOwnerChanged?.Invoke(Owner);
+            ControllingSoulChanged?.Invoke(ControllingSoul);
         }
 
+        [Server]
         public void ProcessDespawn()
         {
             TransformCache.DOScale(0, ScaleInDuration).SetEase(Ease.OutElastic).OnComplete(() => ServerManager.Despawn(GameObjectCache));
@@ -52,10 +56,10 @@ namespace SS3D.Systems.Entities
         {
             base.OnStartClient();
 
-            SetCameraFollow();
+            UpdateCameraFollow();
         }
 
-        private void SetCameraFollow()
+        private void UpdateCameraFollow()
         {
             if (!IsOwner)
             {
@@ -66,12 +70,30 @@ namespace SS3D.Systems.Entities
             changeCameraEvent.Invoke(this);
         }
 
-        public void SetOwner(NetworkConnection conn)
+        public void SetControllingSoul(Soul oldSoul, Soul newSoul, bool asServer)
         {
-            NetworkObject.RemoveOwnership();
-            NetworkObject.GiveOwnership(conn);
+            _controllingSoul = newSoul;
 
-            OnOwnerChanged?.Invoke(conn);
+            ControllingSoulChanged?.Invoke(_controllingSoul);
+            UpdateCameraFollow();
+        }
+
+        [Server]
+        public void ChangeControllingSoul(Soul soul)
+        {
+            _controllingSoul = soul;
+
+            if (soul == null)
+            {
+                RemoveOwnership();
+            }
+            else
+            {
+                GiveOwnership(soul.Owner);   
+            }
+
+            ControllingSoulChanged?.Invoke(_controllingSoul);
+            UpdateCameraFollow();
         }
     }
 }

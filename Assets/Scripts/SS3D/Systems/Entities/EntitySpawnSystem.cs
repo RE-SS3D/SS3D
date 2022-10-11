@@ -73,10 +73,10 @@ namespace SS3D.Systems.Entities
             PlayerControllable originControllable = origin.GetComponent<PlayerControllable>();
             PlayerControllable targetControllable = target.GetComponent<PlayerControllable>();
 
-            NetworkConnection originConn = originControllable.Owner;
+            Soul originSoul = originControllable.ControllingSoul;
 
-            originControllable.RemoveOwnership();
-            targetControllable.SetOwner(originConn);
+            originControllable.ChangeControllingSoul(null);
+            targetControllable.ChangeControllingSoul(originSoul);
         }
 
         [Server]
@@ -143,6 +143,7 @@ namespace SS3D.Systems.Entities
             _alreadySpawnedInitialPlayers = true;
         }
 
+        [Server]
         private void DestroySpawnedPlayers()
         {
             foreach (PlayerControllable player in _serverSpawnedPlayers)
@@ -164,7 +165,7 @@ namespace SS3D.Systems.Entities
             _serverSpawnedPlayers.Add(controllable);
 
             ServerManager.Spawn(controllable.NetworkObject, soul.Owner);
-            controllable.SetOwner(soul.Owner);
+            controllable.ChangeControllingSoul(soul);
 
             string message = $"Spawning player {soul.Ckey} on {controllable.name}";
             Punpun.Say(this, message, Logs.ServerOnly); 
