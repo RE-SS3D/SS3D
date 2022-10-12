@@ -18,10 +18,16 @@ namespace SS3D.Systems.Permissions
 
         [SerializeField] private List<GameObject> _objectsToDisable;
 
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            UserPermissionsChangedEvent.AddListener(HandleUserPermissionsUpdated);
+        }
+
         public override void OnStartClient()
         {
             base.OnStartClient();
-            UserPermissionsChangedEvent.AddListener(HandleUserPermissionsUpdated);
         }
 
         private void HandleUserPermissionsUpdated(ref EventContext context, in UserPermissionsChangedEvent e)
@@ -39,9 +45,14 @@ namespace SS3D.Systems.Permissions
 
             PermissionSystem permissionSystem = GameSystems.Get<PermissionSystem>();
 
-            bool isAdmin = permissionSystem.CanUserPerformAction(ServerRoleTypes.Administrator, _ckey);
+            bool foundUserPermission = permissionSystem.TryGetUserRole(_ckey, out ServerRoleTypes role);
 
-            if (isAdmin)
+            if (!foundUserPermission)
+            {
+                return;
+            }
+
+            if (role == ServerRoleTypes.Administrator)
             {
                 return;
             }

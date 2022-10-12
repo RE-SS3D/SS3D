@@ -24,6 +24,8 @@ namespace SS3D.Systems.Permissions
         [SyncObject]
         private readonly SyncDictionary<string, ServerRoleTypes> _userPermissions = new();
 
+        private bool HasLoadedPermissions;
+
         protected override void OnStart()
         {
             base.OnStart();
@@ -47,10 +49,10 @@ namespace SS3D.Systems.Permissions
 
         private void HandleOnChange(SyncDictionaryOperation op, string key, ServerRoleTypes value, bool asServer)
         {
-              SyncUserPermissions();
+            SyncUserPermissions();
         }
 
-        public ServerRoleTypes GetUserPermission(string ckey)
+        public bool TryGetUserRole(string ckey, out ServerRoleTypes userPermission)
         {
             if (_userPermissions.Count == 0 || _userPermissions == null)
             {
@@ -58,13 +60,9 @@ namespace SS3D.Systems.Permissions
             }
 
             bool containsKey = _userPermissions.ContainsKey(ckey);
+            userPermission = containsKey ? _userPermissions[ckey] : ServerRoleTypes.None;
 
-            return containsKey ? _userPermissions[ckey] : ServerRoleTypes.User;
-        }
-
-        public bool CanUserPerformAction(ServerRoleTypes requiredRole, string ckey)
-        {
-            return GetUserPermission(ckey) == requiredRole;
+            return containsKey;
         }
 
         [Server]
@@ -80,8 +78,9 @@ namespace SS3D.Systems.Permissions
 
             string[] lines = File.ReadAllLines(FullPermissionFilePath);
 
-            foreach (string line in lines)
+            for (int index = 0; index < lines.Length; index++)
             {
+                string line = lines[index];
                 string[] words = line.Split(" ");
 
                 string ckey = words[0];
