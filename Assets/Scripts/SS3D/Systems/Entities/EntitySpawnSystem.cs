@@ -74,8 +74,9 @@ namespace SS3D.Systems.Entities
             PlayerControllable targetControllable = target.GetComponent<PlayerControllable>();
 
             Soul originSoul = originControllable.ControllingSoul;
+            Soul targetSoul = targetControllable.ControllingSoul;
 
-            originControllable.ChangeControllingSoul(null);
+            originControllable.ChangeControllingSoul(targetSoul);
             targetControllable.ChangeControllingSoul(originSoul);
         }
 

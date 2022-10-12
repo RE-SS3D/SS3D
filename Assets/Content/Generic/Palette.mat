@@ -12,6 +12,7 @@ Material:
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _GLOSSYREFLECTIONS_OFF
+  - _SEGMENTED_ON
   - _SPECULARHIGHLIGHTS_OFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
@@ -79,16 +80,16 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _Lumin: 1
+    - _Lumin: 0.887
     - _MaxLight: 1
     - _Metallic: 0
-    - _MinLight: 0.869
+    - _MinLight: 0.363
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Offset: 0
+    - _Offset: 0.172
     - _OtlWidth: 1
     - _Parallax: 0.02
-    - _Segmented: 0
+    - _Segmented: 1
     - _Shininess: 0.7
     - _ShnIntense: 0
     - _ShnOverlap: 0
@@ -97,8 +98,8 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 0
     - _SrcBlend: 1
-    - _Steps: 7.95
-    - _StpSmooth: 0
+    - _Steps: 2.99
+    - _StpSmooth: 0.486
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:

@@ -10,7 +10,8 @@ Material:
   m_Name: New Material
   m_Shader: {fileID: 4800000, guid: 7cd5de0b884b14f88ab763ef465e1799, type: 3}
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _SEGMENTED_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -72,12 +73,12 @@ Material:
     - _Lumin: 1.065
     - _MaxLight: 1
     - _Metallic: 0
-    - _MinLight: 0.645
+    - _MinLight: 0.379
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Offset: 0.826
     - _Parallax: 0.02
-    - _Segmented: 0
+    - _Segmented: 1
     - _ShnIntense: 0
     - _ShnOverlap: 0
     - _ShnRange: 0.15
@@ -85,8 +86,8 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _Steps: 1
-    - _StpSmooth: 0
+    - _Steps: 6.4
+    - _StpSmooth: 0.58
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:

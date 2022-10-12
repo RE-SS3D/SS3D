@@ -122,12 +122,19 @@ namespace SS3D.Core.Behaviours
         private void Awake()
         {
             Initialize();
-            AddEventListeners();
             OnAwake();
         }
 
-        private void Start() { OnStart(); }
-        private void OnDestroy() { OnDestroyed(); }
+        private void Start()
+        {
+            AddEventListeners();
+            OnStart();
+        }
+
+        private void OnDestroy()
+        {
+            OnDestroyed();
+        }
 
         private void Initialize()
         {

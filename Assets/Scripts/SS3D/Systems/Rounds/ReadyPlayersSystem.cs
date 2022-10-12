@@ -8,6 +8,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl;
+using SS3D.Systems.PlayerControl.Events;
 using SS3D.Systems.PlayerControl.Messages;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Rounds.Messages;
@@ -27,8 +28,8 @@ namespace SS3D.Systems.Rounds
             base.OnStartServer();
 
             ServerManager.RegisterBroadcast<ChangePlayerReadyMessage>(HandleChangePlayerReady);
-            ServerManager.RegisterBroadcast<UserLeftServerMessage>(HandleUserLeftServer);
 
+            OnlineSoulsChanged.AddListener(HandleUserLeftServer);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
         }
 
@@ -57,9 +58,19 @@ namespace SS3D.Systems.Rounds
         }
 
         [Server]
-        private void HandleUserLeftServer(NetworkConnection sender, UserLeftServerMessage m)
+        private void HandleUserLeftServer(ref EventContext context, in OnlineSoulsChanged e)
         {
-            Soul soul = GameSystems.Get<PlayerControlSystem>().GetSoul(m.Ckey);
+            if (e.ChangeType == ChangeType.Addition)
+            {
+                return;
+            }
+
+            Soul soul = e.Changed;
+
+            if (soul == null)
+            {
+                return;
+            }
 
             if (_readyPlayers.SingleOrDefault(match => match == soul.Ckey) != null)
             {

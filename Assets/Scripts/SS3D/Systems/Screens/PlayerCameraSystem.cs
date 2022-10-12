@@ -26,7 +26,7 @@ namespace SS3D.Systems.Screens
             _camera.DOFieldOfView(75, 0);
             _camera.DOFieldOfView(65, .7F);
 
-            Punpun.Say(this, $"setting new camera target {target.name}", Logs.Generic);
+            Punpun.Say(this, $"setting new camera target {target.name}");
             _cameraFollow.SetTarget(target);
         }
     }

@@ -43,6 +43,7 @@ namespace SS3D.Systems.Entities
                 TransformCache.DOScale(1, ScaleInDuration).SetEase(Ease.OutCirc);
             }
 
+            UpdateCameraFollow();
             ControllingSoulChanged?.Invoke(ControllingSoul);
         }
 
@@ -91,9 +92,6 @@ namespace SS3D.Systems.Entities
             {
                 GiveOwnership(soul.Owner);   
             }
-
-            ControllingSoulChanged?.Invoke(_controllingSoul);
-            UpdateCameraFollow();
         }
     }
 }

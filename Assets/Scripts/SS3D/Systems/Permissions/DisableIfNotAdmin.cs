@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Coimbra;
 using Coimbra.Services.Events;
 using SS3D.Core;
@@ -20,24 +21,12 @@ namespace SS3D.Systems.Permissions
         public override void OnStartClient()
         {
             base.OnStartClient();
-        
-            ClientManager.RegisterBroadcast<UserJoinedServerMessage>(HandleUserJoinedServer);
             UserPermissionsChangedEvent.AddListener(HandleUserPermissionsUpdated);
-        }
-
-        private void HandleUserJoinedServer(UserJoinedServerMessage joinedServerMessage)
-        {
-            if (joinedServerMessage.Ckey != LocalPlayerAccountUtility.Ckey)
-            {
-                return;
-            }
-        
-            _ckey = joinedServerMessage.Ckey;
-            DisableObjects();
         }
 
         private void HandleUserPermissionsUpdated(ref EventContext context, in UserPermissionsChangedEvent e)
         {
+            _ckey = LocalPlayerAccountUtility.Ckey;
             DisableObjects();
         }
 
@@ -49,7 +38,6 @@ namespace SS3D.Systems.Permissions
             }
 
             PermissionSystem permissionSystem = GameSystems.Get<PermissionSystem>();
-            PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
 
             bool isAdmin = permissionSystem.CanUserPerformAction(ServerRoleTypes.Administrator, _ckey);
 
@@ -58,12 +46,9 @@ namespace SS3D.Systems.Permissions
                 return;
             }
 
-            foreach (GameObject o in _objectsToDisable)
+            foreach (GameObject o in _objectsToDisable.Where(o => o != null))
             {
-                if (o != null)
-                {
-                    o.Destroy();
-                }
+                o.Destroy();
             }
         }
     }
