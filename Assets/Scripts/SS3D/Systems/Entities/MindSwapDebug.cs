@@ -22,6 +22,11 @@ namespace SS3D.Systems.Entities
         [ContextMenu("Request Mind Swap")]
         public void DoMindSwap()
         {
+            if (Origin == null || Target == null)
+            {
+                return;
+            }
+
             RequestMindSwap mindSwap = new(Origin, Target);
             ClientManager.Broadcast(mindSwap);
 
