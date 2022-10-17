@@ -16,7 +16,7 @@ namespace SS3D.Systems.Entities
     {
         public Action<Soul> ControllingSoulChanged;
 
-        [SyncVar(OnChange = "SetControllingSoul")] private Soul _controllingSoul;
+        [SyncVar(OnChange = "SyncControllingSoul")] private Soul _controllingSoul;
 
         [SerializeField] private bool _scaleInOnSpawn = true;
 
@@ -71,7 +71,7 @@ namespace SS3D.Systems.Entities
             changeCameraEvent.Invoke(this);
         }
 
-        public void SetControllingSoul(Soul oldSoul, Soul newSoul, bool asServer)
+        public void SyncControllingSoul(Soul oldSoul, Soul newSoul, bool asServer)
         {
             _controllingSoul = newSoul;
 
@@ -80,7 +80,7 @@ namespace SS3D.Systems.Entities
         }
 
         [Server]
-        public void ChangeControllingSoul(Soul soul)
+        public void SetControllingSoul(Soul soul)
         {
             _controllingSoul = soul;
 

@@ -33,7 +33,7 @@ namespace SS3D.Systems.Entities.Humanoid
         // [SerializeField] private Transform _mouseDirectionTransform;
 
         [Header("Run/Walk")]
-        private bool _isWalking;
+        private bool _isRunning;
 
         [Header("Debug Info")] 
         private Vector3 _absoluteMovement;
@@ -132,7 +132,7 @@ namespace SS3D.Systems.Entities.Humanoid
              // smoothly changes the target movement
              _targetMovement = Vector3.Lerp(_targetMovement, newTargetMovement, Time.deltaTime * (_lerpMultiplier * multiplier));
             
-             Vector3 resultingMovement = _targetMovement + transform.position;
+             Vector3 resultingMovement = _targetMovement + Position;
             _absoluteMovement = resultingMovement;
 
              _movementTarget.position = _absoluteMovement;
@@ -143,8 +143,10 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         private void RotatePlayerToMovement()
         {
+            Quaternion lookRotation = Quaternion.LookRotation(_targetMovement);
+
             transform.rotation = 
-                Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_targetMovement), Time.deltaTime * _rotationLerpMultiplier);
+                Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * _rotationLerpMultiplier);
         }
 
         /// <summary>
@@ -164,15 +166,15 @@ namespace SS3D.Systems.Entities.Humanoid
             float x = Input.GetAxisRaw("Horizontal");
             float y = Input.GetAxisRaw("Vertical");
             
-            float inputFilteredSpeed = _isWalking ? WalkAnimatorValue : RunAnimatorValue;
+            float inputFilteredSpeed = _isRunning ? RunAnimatorValue : WalkAnimatorValue;
             
             x = Mathf.Clamp(x, -inputFilteredSpeed, inputFilteredSpeed);
             y = Mathf.Clamp(y, -inputFilteredSpeed, inputFilteredSpeed);
             
             _input = new Vector2(x, y);
-            OnSpeedChanged?.Invoke(_input.magnitude != 0 ? inputFilteredSpeed : 0);
-
             _smoothedInput = Vector2.Lerp(_smoothedInput, _input, Time.deltaTime * (_lerpMultiplier / 10));
+
+            OnSpeedChanged?.Invoke(_input.magnitude != 0 ? inputFilteredSpeed : 0);
         }
         
         /// <summary>
@@ -182,7 +184,7 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             if (Input.GetButtonDown("Toggle Run"))
             {
-                _isWalking = !_isWalking;
+                _isRunning = !_isRunning;
             }
         }
     }

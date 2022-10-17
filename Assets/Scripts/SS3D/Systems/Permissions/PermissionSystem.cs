@@ -96,6 +96,8 @@ namespace SS3D.Systems.Permissions
         {
             Dictionary<string, ServerRoleTypes> dictionary = _userPermissions.ToDictionary(pair => pair.Key, pair => pair.Value);
 
+
+
             UserPermissionsChangedEvent permissionsChangedEvent = new(dictionary);
             permissionsChangedEvent.Invoke(this);
         }

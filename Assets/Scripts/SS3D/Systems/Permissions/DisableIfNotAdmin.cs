@@ -25,14 +25,10 @@ namespace SS3D.Systems.Permissions
             UserPermissionsChangedEvent.AddListener(HandleUserPermissionsUpdated);
         }
 
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-        }
-
         private void HandleUserPermissionsUpdated(ref EventContext context, in UserPermissionsChangedEvent e)
         {
             _ckey = LocalPlayerAccountUtility.Ckey;
+
             DisableObjects();
         }
 

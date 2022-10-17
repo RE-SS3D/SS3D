@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Coimbra;
 using Coimbra.Services.Events;
 using FishNet.Connection;
 using FishNet.Object;
@@ -15,7 +14,6 @@ using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Rounds.Messages;
 using UnityEngine;
-using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 
 namespace SS3D.Systems.Entities
 {
@@ -76,8 +74,8 @@ namespace SS3D.Systems.Entities
             Soul originSoul = originControllable.ControllingSoul;
             Soul targetSoul = targetControllable.ControllingSoul;
 
-            originControllable.ChangeControllingSoul(targetSoul);
-            targetControllable.ChangeControllingSoul(originSoul);
+            originControllable.SetControllingSoul(targetSoul);
+            targetControllable.SetControllingSoul(originSoul);
         }
 
         [Server]
@@ -166,7 +164,7 @@ namespace SS3D.Systems.Entities
             _serverSpawnedPlayers.Add(controllable);
 
             ServerManager.Spawn(controllable.NetworkObject, soul.Owner);
-            controllable.ChangeControllingSoul(soul);
+            controllable.SetControllingSoul(soul);
 
             string message = $"Spawning player {soul.Ckey} on {controllable.name}";
             Punpun.Say(this, message, Logs.ServerOnly); 

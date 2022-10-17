@@ -2,9 +2,8 @@ using System;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using SS3D.Core;
 using SS3D.Core.Behaviours;
-using UnityEngine;
+using SS3D.Logging;
 
 namespace SS3D.Systems.Entities
 {
@@ -33,7 +32,7 @@ namespace SS3D.Systems.Entities
         /// </summary>
         public void SetCkey(string oldCkey, string newCkey, bool asServer)
         {
-            Debug.Log($"[{nameof(Soul)}] - SyncVarHook - Updating player ckey");
+            Punpun.Say(this, $"Updating player ckey {newCkey}");
             _ckey = newCkey; 
             gameObject.name = "Soul: " + _ckey;
         }
