@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Coimbra;
 using SS3D.Core.Behaviours;
-using SS3D.Engine.Interactions;
 using SS3D.Interactions.UI.RadialMenuInteraction;
 using TMPro;
 using UnityEngine;

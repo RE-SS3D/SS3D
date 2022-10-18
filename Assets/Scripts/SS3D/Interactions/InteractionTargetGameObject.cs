@@ -1,5 +1,4 @@
 ﻿using System;
-using SS3D.Engine.Interactions;
 using UnityEngine;
 
 namespace SS3D.Interactions

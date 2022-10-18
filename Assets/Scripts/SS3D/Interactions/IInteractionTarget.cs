@@ -1,6 +1,4 @@
-﻿using SS3D.Engine.Interactions;
-
-namespace SS3D.Interactions
+﻿namespace SS3D.Interactions
 {
     /// <summary>
     /// A target which can be interacted with

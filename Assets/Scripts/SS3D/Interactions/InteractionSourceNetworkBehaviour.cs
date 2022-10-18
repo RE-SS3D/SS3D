@@ -2,7 +2,6 @@
 using System.Linq;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
-using SS3D.Engine.Interactions;
 using UnityEngine;
 using Random = UnityEngine.Random;
 

@@ -30,7 +30,7 @@ namespace SS3D.Systems.Permissions
         {
             base.OnStart();
 
-            _userPermissions.OnChange += HandleOnChange;
+            _userPermissions.OnChange += HandleUserPermissionsChanged;
         }
 
         public override void OnStartClient()
@@ -47,7 +47,7 @@ namespace SS3D.Systems.Permissions
             LoadPermissions();
         }
 
-        private void HandleOnChange(SyncDictionaryOperation op, string key, ServerRoleTypes value, bool asServer)
+        private void HandleUserPermissionsChanged(SyncDictionaryOperation op, string key, ServerRoleTypes value, bool asServer)
         {
             SyncUserPermissions();
         }
@@ -68,7 +68,9 @@ namespace SS3D.Systems.Permissions
         [Server]
         public void ChangeUserPermission(string ckey, ServerRoleTypes role)
         {
-            // TODO: This
+            // TODO: This            
+            // Add new user permission to list
+            // Add new user permission to text file
         }
 
         [Server]
