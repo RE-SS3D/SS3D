@@ -140,7 +140,7 @@ namespace SS3D.Systems.Entities.Silicon
 
         private void HandleControllingSoulChanged(Soul soul)
         {
-            OnPowerChanged?.Invoke(!(soul != null));
+            OnPowerChanged?.Invoke(soul != null);
         }
     }
 }

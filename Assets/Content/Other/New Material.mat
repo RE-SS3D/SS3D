@@ -76,7 +76,7 @@ Material:
     - _MinLight: 0.379
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Offset: 0.826
+    - _Offset: -0.212
     - _Parallax: 0.02
     - _Segmented: 1
     - _ShnIntense: 0
@@ -87,7 +87,7 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Steps: 6.4
-    - _StpSmooth: 0.58
+    - _StpSmooth: 0.658
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
