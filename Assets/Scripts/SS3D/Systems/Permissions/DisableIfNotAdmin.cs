@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
 using Coimbra.Services.Events;
+using Cysharp.Threading.Tasks;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Core.Utils;
@@ -41,12 +42,12 @@ namespace SS3D.Systems.Permissions
 
             PermissionSystem permissionSystem = GameSystems.Get<PermissionSystem>();
 
-            bool foundUserPermission = permissionSystem.TryGetUserRole(_ckey, out ServerRoleTypes role);
-
-            if (!foundUserPermission)
+            if (!permissionSystem.HasLoadedPermissions)
             {
                 return;
             }
+
+            permissionSystem.TryGetUserRole(_ckey, out ServerRoleTypes role);
 
             if (role == ServerRoleTypes.Administrator)
             {

@@ -115,7 +115,7 @@ namespace SS3D.Systems.PlayerControl
                 Punpun.Say(this, $"No Soul match for {ckey} found, creating a new one", Logs.ServerOnly);
 
                 match = Instantiate(_soulPrefab).GetComponent<Soul>();
-                match.SetCkey(string.Empty, ckey, true);
+                match.UpdateCkey(string.Empty, ckey, true);
 
                 _serverSouls.Add(match);
 
