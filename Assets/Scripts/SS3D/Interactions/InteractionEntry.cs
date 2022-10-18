@@ -1,4 +1,6 @@
-﻿namespace SS3D.Interactions
+﻿using SS3D.Interactions.Interfaces;
+
+namespace SS3D.Interactions
 {
     public struct InteractionEntry
     {

@@ -3,6 +3,7 @@ using System.Linq;
 using Coimbra;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
+using SS3D.Interactions.Interfaces;
 using SS3D.Interactions.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;

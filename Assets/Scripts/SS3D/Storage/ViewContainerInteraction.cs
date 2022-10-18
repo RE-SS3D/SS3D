@@ -1,0 +1,85 @@
+﻿using SS3D.Interactions;
+using SS3D.Interactions.Extensions;
+using SS3D.Interactions.Interfaces;
+using SS3D.Storage.Containers;
+using SS3D.Systems.Entities;
+using UnityEngine;
+
+namespace SS3D.Storage
+{
+    public class ViewContainerInteraction : IInteraction
+    {
+        public Sprite Icon;
+
+        public float MaxDistance { get; set; }
+
+        public readonly ContainerDescriptor ContainerDescriptor;
+
+        public ViewContainerInteraction(ContainerDescriptor containerDescriptor)
+        {
+            ContainerDescriptor = containerDescriptor;
+        }
+        
+        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
+        {
+            return null;
+        }
+
+        public string GetName(InteractionEvent interactionEvent)
+        {
+            return "View " + ContainerDescriptor.ContainerName;
+        }
+
+        public Sprite GetIcon(InteractionEvent interactionEvent)
+        {
+            return Icon;
+        }
+
+        public bool CanInteract(InteractionEvent interactionEvent)
+        {
+            if (!InteractionExtensions.RangeCheck(interactionEvent))
+            {
+                return false;
+            }
+
+            AttachedContainer container = ContainerDescriptor.AttachedContainer;
+            if (container == null)
+            {
+                return false;
+            }
+            
+            Inventory inventory = interactionEvent.Source.GetComponentInTree<Storage.Inventory>();
+            if (inventory == null)
+            {
+                return false;
+            }
+            
+            PlayerControllable entity = interactionEvent.Source.GetComponentInTree<PlayerControllable>();
+            if (entity == null)
+            {
+                return false;
+            }
+            return !inventory.HasContainer(container) && entity.GetComponent<Hands>().CanInteract(container.gameObject);
+        }
+
+        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            Inventory inventory = interactionEvent.Source.GetComponentInTree<Storage.Inventory>();
+            AttachedContainer attachedContainer = ContainerDescriptor.AttachedContainer;
+            
+            inventory.OpenContainer(attachedContainer);
+
+            return false;
+        }
+
+        public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
+}

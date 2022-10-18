@@ -1,4 +1,5 @@
 ﻿using FishNet.Connection;
+using SS3D.Interactions.Interfaces;
 
 namespace SS3D.Interactions
 {

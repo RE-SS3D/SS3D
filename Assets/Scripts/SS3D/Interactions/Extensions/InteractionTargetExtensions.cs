@@ -1,4 +1,6 @@
-﻿namespace SS3D.Interactions.Extensions
+﻿using SS3D.Interactions.Interfaces;
+
+namespace SS3D.Interactions.Extensions
 {                           
     public static class InteractionTargetExtensions
     {

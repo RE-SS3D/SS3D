@@ -2,6 +2,7 @@
 using System.Linq;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
+using SS3D.Interactions.Interfaces;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -12,7 +13,7 @@ namespace SS3D.Interactions
     /// </summary>
     public abstract class InteractionSourceNetworkBehaviour : NetworkedSpessBehaviour, IGameObjectProvider, IInteractionSource
     {
-        protected bool SupportsMultipleInteractions { get; set; } = false;
+        protected bool SupportsMultipleInteractions { get; set; }
         public IInteractionSource Source { get; set; }
         
         // Server only
