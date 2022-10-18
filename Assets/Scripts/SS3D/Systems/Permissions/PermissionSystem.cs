@@ -4,6 +4,7 @@ using System.Linq;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using SS3D.Systems.Permissions.Events;
 using UnityEngine;
 using File = System.IO.File;
@@ -23,8 +24,7 @@ namespace SS3D.Systems.Permissions
 
         [SyncObject]
         private readonly SyncDictionary<string, ServerRoleTypes> _userPermissions = new();
-
-        private bool HasLoadedPermissions;
+        [SyncVar] public bool HasLoadedPermissions;
 
         protected override void OnStart()
         {
@@ -88,28 +88,30 @@ namespace SS3D.Systems.Permissions
 
                 _userPermissions.Add(ckey, role);
 
-                Debug.Log($"[{nameof(PermissionSystem)}] - Found user permission {ckey} as {role}");
+                Punpun.Say(this, $"Found user permission {ckey} as {role}", Logs.ServerOnly);
             }
+
+            HasLoadedPermissions = true;
+            SyncUserPermissions();
         }
 
         private void SyncUserPermissions()
         {
             Dictionary<string, ServerRoleTypes> dictionary = _userPermissions.ToDictionary(pair => pair.Key, pair => pair.Value);
 
-
-
             UserPermissionsChangedEvent permissionsChangedEvent = new(dictionary);
             permissionsChangedEvent.Invoke(this);
         }
 
-        private static void CreatePermissionsFileIfNotExists()
+        [Server]
+        private void CreatePermissionsFileIfNotExists()
         {
             if (File.Exists(FullPermissionFilePath))
             {
                 return;
             }
 
-            Debug.Log($"[{nameof(PermissionSystem)}] - Permissions file not found, creating a new one");
+            Punpun.Say(this, $"Permissions file not found, creating a new one", Logs.ServerOnly);
             File.WriteAllText(FullPermissionFilePath, string.Empty);
         }
     }
