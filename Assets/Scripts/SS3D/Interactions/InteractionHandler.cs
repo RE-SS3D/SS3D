@@ -1,115 +1,130 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Coimbra;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
+using SS3D.Engine.Interactions;
 using SS3D.Interactions.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace SS3D.Engine.Interactions
+namespace SS3D.Interactions
 {
-    /**
-     * <summary>Attached to the player, initiates interactions.</summary>
-     */
+    /// <summary>
+    /// Attached to the player, initiates interactions.
+    /// </summary>
     public class InteractionHandler : NetworkedSpessBehaviour
     {
-        /// <summary>Mask for physics to use when finding targets</summary>
-        [SerializeField]
+        /// <summary>
+        /// Mask for physics to use when finding targets
+        /// </summary>
         [Tooltip("Mask for physics to use when finding targets")]
-        private LayerMask selectionMask = 0;
+        [SerializeField] private LayerMask _selectionMask = 0;
 
         // Must be the one ui context menu prefab object
-        [SerializeField]
-        private GameObject menuPrefab = null;
+        [SerializeField] private GameObject _menuPrefab;
 
-        private Camera camera;
+        private Camera _camera;
+        private RadialInteractionMenuView _activeMenu;
 
-        private void Start()
+        protected override void HandleUpdate(in float deltaTime)
         {
-            //camera = CameraManager.singleton.playerCamera;
-        }
+            base.HandleUpdate(in deltaTime);
 
-        public void Update()
-        {
             // Ensure that mouse isn't over ui (game objects aren't tracked by the eventsystem, so ispointer would return false
-            if (!IsOwner || camera == null || EventSystem.current.IsPointerOverGameObject())
+            if (!IsOwner || _camera == null || EventSystem.current.IsPointerOverGameObject())
             {
                 return;
             }
 
             if (Input.GetButtonDown("Click"))
             {
-                if (activeMenu != null)
-                {
-                    Destroy(activeMenu.gameObject);
-                    return;
-                }
-
-                // Run the most prioritised action
-                var ray = camera.ScreenPointToRay(Input.mousePosition);
-                var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
-
-                if (viableInteractions.Count > 0)
-                {
-                    interactionEvent.Target = viableInteractions[0].Target;
-                    CmdRunInteraction(ray, 0, viableInteractions[0].Interaction.GetName(interactionEvent));
-                }
-
+                ProcessPrimaryClick();
             }
+
             else if (Input.GetButtonDown("Secondary Click"))
             {
-                if (activeMenu != null)
-                {
-                    Destroy(activeMenu.gameObject);
-                }
-
-                if (Input.GetButton("Alternate"))
-                {
-                    // Hands hands = GetComponent<Hands>();
-                    // if (hands != null )
-                    // {
-                    //     Item item = hands.ItemInHand;
-                    //     if (item != null)
-                    //     {
-                    //         InteractInHand(item.gameObject, gameObject, true);
-                    //     }
-                    // }
-                }
-                else
-                {
-                    var ray = camera.ScreenPointToRay(Input.mousePosition);
-                    var viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
-                    if (viableInteractions.Select(x => x.Interaction).ToList().Count > 0)
-                    {
-                        // Create a menu that will run the given action when clicked
-                        var obj = Instantiate(menuPrefab, transform.root.transform);
-                        activeMenu = obj.GetComponentInChildren<RadialInteractionMenuUI>();
-
-                        activeMenu.Position = Input.mousePosition;
-                        activeMenu.Event = interactionEvent;
-                        activeMenu.Interactions = viableInteractions.Select(x => x.Interaction).ToList();
-                        activeMenu.onSelect = interaction =>
-                        {
-                            CmdRunInteraction(ray, viableInteractions.FindIndex(x => x.Interaction == interaction),
-                                interaction.GetName(interactionEvent));
-                        };
-                    }
-                }
+                ProcessSecondaryClick();
             }
 
             if (Input.GetButtonDown("Activate"))
             {
-                // Activate item in selected hand
+                ProcessUse();
+            }
+        }
+
+        private void ProcessUse()
+        {
+            // Activate item in selected hand
+            // Hands hands = GetComponent<Hands>();
+            // if (hands != null )
+            // {
+            //     Item item = hands.ItemInHand;
+            //     if (item != null)
+            //     {
+            //         InteractInHand(item.gameObject, gameObject);
+            //     }
+            // }
+        }
+
+        private void ProcessSecondaryClick()
+        {
+            if (_activeMenu != null)
+            {
+                _activeMenu.Destroy();
+            }
+
+            if (Input.GetButton("Alternate"))
+            {
                 // Hands hands = GetComponent<Hands>();
                 // if (hands != null )
                 // {
                 //     Item item = hands.ItemInHand;
                 //     if (item != null)
                 //     {
-                //         InteractInHand(item.gameObject, gameObject);
+                //         InteractInHand(item.gameObject, gameObject, true);
                 //     }
                 // }
             }
+            else
+            {
+                Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+                List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+                if (viableInteractions.Select(x => x.Interaction).ToList().Count <= 0)
+                {
+                    return;
+                }
+
+                // Create a menu that will run the given action when clicked
+                GameObject menu = Instantiate(_menuPrefab, Root);
+                _activeMenu = menu.GetComponentInChildren<RadialInteractionMenuView>();
+
+                _activeMenu.Position = Input.mousePosition;
+                _activeMenu.Event = interactionEvent;
+                _activeMenu.Interactions = viableInteractions.Select(x => x.Interaction).ToList();
+                _activeMenu.OnSelect = interaction =>
+                {
+                    CmdRunInteraction(ray, viableInteractions.FindIndex(x => x.Interaction == interaction),
+                        interaction.GetName(interactionEvent));
+                };
+            }
+        }
+
+        private void ProcessPrimaryClick()
+        {
+            if (_activeMenu != null)
+            {
+                _activeMenu.Destroy(); 
+                return;
+            }
+
+            // Run the most prioritised action
+            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+
+            if (viableInteractions.Count <= 0) return;
+            interactionEvent.Target = viableInteractions[0].Target;
+            CmdRunInteraction(ray, 0, viableInteractions[0].Interaction.GetName(interactionEvent));
         }
 
         /// <summary>
@@ -127,7 +142,7 @@ namespace SS3D.Engine.Interactions
                 return;
             }
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
-            InteractionEvent interactionEvent = new InteractionEvent(source, null);
+            InteractionEvent interactionEvent = new(source, null);
             List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
             if (entries.Count < 1)
             {
@@ -137,15 +152,15 @@ namespace SS3D.Engine.Interactions
             interactionEvent.Target = entries[0].Target;
             if (showMenu && entries.Select(x => x.Interaction).ToList().Count > 0)
             {
-                var obj = Instantiate(menuPrefab, transform.root.transform);
-                activeMenu = obj.GetComponentInChildren<RadialInteractionMenuUI>();
+                GameObject menu = Instantiate(_menuPrefab, transform.root.transform);
+                _activeMenu = menu.GetComponentInChildren<RadialInteractionMenuView>();
 
                 Vector3 mousePosition = Input.mousePosition;
-                mousePosition.y = Mathf.Max(obj.transform.GetChild(0).GetComponent<RectTransform>().rect.height, mousePosition.y);
-                activeMenu.Position = mousePosition;
-                activeMenu.Event = interactionEvent;
-                activeMenu.Interactions = entries.Select(x => x.Interaction).ToList();
-                activeMenu.onSelect = interaction =>
+                mousePosition.y = Mathf.Max(menu.transform.GetChild(0).GetComponent<RectTransform>().rect.height, mousePosition.y);
+                _activeMenu.Position = mousePosition;
+                _activeMenu.Event = interactionEvent;
+                _activeMenu.Interactions = entries.Select(x => x.Interaction).ToList();
+                _activeMenu.OnSelect = interaction =>
                 {
                     CmdRunInventoryInteraction(target, sourceObject,
                         entries.FindIndex(x => x.Interaction == interaction),
@@ -163,7 +178,7 @@ namespace SS3D.Engine.Interactions
         {
             IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
-            InteractionEvent interactionEvent = new InteractionEvent(source, null);
+            InteractionEvent interactionEvent = new(source, null);
             List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
             
             // TODO: Validate access to inventory
@@ -175,7 +190,7 @@ namespace SS3D.Engine.Interactions
                 return;
             }
             
-            var chosenEntry = entries[index];
+            InteractionEntry chosenEntry = entries[index];
             interactionEvent.Target = chosenEntry.Target;
 
             if (chosenEntry.Interaction.GetName(interactionEvent) != name)
@@ -196,10 +211,10 @@ namespace SS3D.Engine.Interactions
         {
             IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
-            InteractionEvent interactionEvent = new InteractionEvent(source, null);
+            InteractionEvent interactionEvent = new(source, null);
             List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
             
-            var chosenInteraction = entries[index];
+            InteractionEntry chosenInteraction = entries[index];
             interactionEvent.Target = chosenInteraction.Target;
             
             if (chosenInteraction.Interaction.GetName(interactionEvent) != name)
@@ -236,7 +251,7 @@ namespace SS3D.Engine.Interactions
                 Debug.LogError($"Interaction received from client {gameObject.name} can not occur! Server-client misalignment.");
                 return;
             }
-            var chosenEntry = viableInteractions[index];
+            InteractionEntry chosenEntry = viableInteractions[index];
             interactionEvent.Target = chosenEntry.Target;
 
             if (chosenEntry.Interaction.GetName(interactionEvent) != name)
@@ -266,7 +281,7 @@ namespace SS3D.Engine.Interactions
                 Debug.LogWarning($"Interaction received from server can not occur! Server-client misalignment on object {gameObject.name}.", this);
                 return;
             }
-            var chosenInteraction = viableInteractions[index];
+            InteractionEntry chosenInteraction = viableInteractions[index];
             interactionEvent.Target = chosenInteraction.Target;
             
             if (chosenInteraction.Interaction.GetName(interactionEvent) != name)
@@ -293,10 +308,10 @@ namespace SS3D.Engine.Interactions
                 return new List<InteractionEntry>();
             }
             
-            List<IInteractionTarget> targets = new List<IInteractionTarget>();
+            List<IInteractionTarget> targets = new();
             // Raycast to find target game object
             Vector3 point = Vector3.zero;
-            if (Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, selectionMask, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, _selectionMask, QueryTriggerInteraction.Ignore))
             {
                 point = hit.point;
                 GameObject targetGo = hit.transform.gameObject;
@@ -316,10 +331,9 @@ namespace SS3D.Engine.Interactions
         /// <returns>A list of all valid interaction targets</returns>
         private List<IInteractionTarget> GetTargetsFromGameObject(IInteractionSource source, GameObject gameObject)
         {
-            List<IInteractionTarget> targets = new List<IInteractionTarget>();
+            List<IInteractionTarget> targets = new();
             // Get all target components which are not disabled and the source can interact with
-            targets.AddRange(gameObject.GetComponents<IInteractionTarget>().Where(x =>
-                (x as MonoBehaviour)?.enabled != false && source.CanInteractWithTarget(x)));
+            targets.AddRange(gameObject.GetComponents<IInteractionTarget>().Where(x =>(x as MonoBehaviour)?.enabled != false && source.CanInteractWithTarget(x)));
             if (targets.Count < 1)
             {
                 targets.Add(new InteractionTargetGameObject(gameObject));
@@ -357,7 +371,5 @@ namespace SS3D.Engine.Interactions
             IInteractionSource activeTool = toolHolder?.GetActiveTool();
             return activeTool ?? GetComponent<IInteractionSource>();
         }
-        
-        private RadialInteractionMenuUI activeMenu = null;
     }
 }

@@ -1,10 +1,12 @@
-﻿using UnityEngine;
+﻿using SS3D.Core.Behaviours;
+using SS3D.Engine.Interactions;
+using UnityEngine;
 
-namespace SS3D.Engine.Interactions
+namespace SS3D.Interactions
 {
-    public abstract class InteractionTargetBehaviour : MonoBehaviour, IInteractionTarget, IGameObjectProvider
+    public abstract class InteractionTargetBehaviour : SpessBehaviour, IInteractionTarget, IGameObjectProvider
     {
-        public GameObject GameObject => gameObject;
+        public GameObject GameObject => GameObjectCache;
         public abstract IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent);
     }
 }

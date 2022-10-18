@@ -8,9 +8,9 @@ namespace SS3D.Interactions.Extensions
         public static IInteractionSource GetRootSource(this IInteractionSource source)
         {
             IInteractionSource current = source;
-            while (current.Parent != null)
+            while (current.Source != null)
             {
-                current = current.Parent;
+                current = current.Source;
             }
 
             return current;
@@ -41,7 +41,7 @@ namespace SS3D.Interactions.Extensions
                         return component;
                     }
                 }
-                current = current.Parent;
+                current = current.Source;
             }
 
             provider = null;

@@ -1,4 +1,4 @@
-﻿namespace SS3D.Engine.Interactions
+﻿namespace SS3D.Interactions
 {
     public interface IClientInteraction
     {

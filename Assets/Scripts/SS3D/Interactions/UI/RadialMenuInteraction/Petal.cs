@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using SS3D.Interactions.UI.RadialMenuInteraction;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -25,7 +26,7 @@ public class Petal : MonoBehaviour
     public void UpdateRotation()
     {
         float rot = rect.transform.rotation.eulerAngles.z;
-        button.angle = rot + 90 > 359 ? (rot + 90) - 360 : rot + 90;
+        button.Angle = rot + 90 > 359 ? (rot + 90) - 360 : rot + 90;
     }
 
     public void Update()

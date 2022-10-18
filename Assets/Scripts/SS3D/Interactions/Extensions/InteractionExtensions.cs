@@ -1,6 +1,4 @@
-﻿using SS3D.Engine.Interactions;
-using SS3D.Engine.Interactions.Extensions;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SS3D.Interactions.Extensions
 {
@@ -16,7 +14,7 @@ namespace SS3D.Interactions.Extensions
                 return true;
             }
 
-            var interactionRangeLimit = interactionEvent.Source.GetComponentInTree<IInteractionRangeLimit>(out IGameObjectProvider provider);
+            IInteractionRangeLimit interactionRangeLimit = interactionEvent.Source.GetComponentInTree<IInteractionRangeLimit>(out IGameObjectProvider provider);
             if (interactionRangeLimit == null)
             {
                 // No range limit
@@ -55,13 +53,14 @@ namespace SS3D.Interactions.Extensions
             }
 
             Rigidbody targetRigidBody = interactionEvent.Target.GetComponent<Rigidbody>();
-            if (targetRigidBody != null)
+            if (targetRigidBody == null)
             {
-                Vector3 closestPointOnRigidBody = targetRigidBody.ClosestPointOnBounds(sourcePosition);
-                return range.IsInRange(sourcePosition, closestPointOnRigidBody);
+                return false;
             }
 
-            return false;
+            Vector3 closestPointOnRigidBody = targetRigidBody.ClosestPointOnBounds(sourcePosition);
+            return range.IsInRange(sourcePosition, closestPointOnRigidBody);
+
         }
 
         private static bool IsWallTop(Vector3 position, float deadzone = 0)

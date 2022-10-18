@@ -1,9 +1,11 @@
-﻿namespace SS3D.Engine.Interactions
+﻿using SS3D.Engine.Interactions;
+
+namespace SS3D.Interactions
 {
     public struct InteractionEntry
     {
-        public IInteractionTarget Target;
-        public IInteraction Interaction;
+        public readonly IInteractionTarget Target;
+        public readonly IInteraction Interaction;
 
         public InteractionEntry(IInteractionTarget target, IInteraction interaction)
         {

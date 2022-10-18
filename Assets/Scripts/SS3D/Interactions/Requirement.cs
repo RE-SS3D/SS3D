@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using SS3D.Engine.Interactions;
+using UnityEngine;
 
-namespace SS3D.Engine.Interactions
+namespace SS3D.Interactions
 {
     /// <summary>
     /// Can be used to wrap an interaction, adding additional consequences

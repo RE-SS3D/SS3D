@@ -1,142 +1,160 @@
-﻿using SS3D.Engine.Interactions.UI;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using SS3D.Interactions.UI;
-using UnityEditor;
+﻿using Coimbra;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class PetalsManager : MonoBehaviour
+namespace SS3D.Interactions.UI.RadialMenuInteraction
 {
-    public GameObject petalPrefab; // the petal prefab
-    public GameObject petalParent; // the gameobject under which the petals should be initialized
-    public RadialInteractionMenuUI contextMenu;
-    public PetalFolder folder;
-    int petalIndex = 0;
-    
-    public void Update()
+    public class PetalsManager : MonoBehaviour
     {
-        if (folder != null && folder.isDirty == true && folder.CheckAnimationDone())
+        public GameObject PetalPrefab;
+        public GameObject PetalParent;
+        public RadialInteractionMenuView ContextMenu;
+
+        private PetalFolder _folder;
+        private int _petalIndex = 0;
+
+        private static readonly int AnimationReturnButtonVisible = Animator.StringToHash("ReturnButtonVisible");
+
+        public void Update()
         {
+            if (_folder == null || _folder.IsDirty != true || !_folder.CheckAnimationDone())
+            {
+                return;
+            }
+
             UpdatePetals();
-            folder.isDirty = false;
+            _folder.IsDirty = false;
         }
-    }
 
-    public void UpdatePetals()
-    {
-        int i = 0;
-
-        foreach (Petal petal in folder.petals)
+        private void UpdatePetals()
         {
-            if (i >= petalIndex && i < petalIndex + 8) // if is active
-            {
-                if (petal.IsVisible()) // if was active
-                {
+            int i = 0;
 
-                    int diff = ((int)(petal.transform.localEulerAngles.z + 0.5f) - ((i - petalIndex) * -45)) % 360;
-                    if (diff > 180 && diff != 0)
+            foreach (Petal petal in _folder.Petals)
+            {
+                // if is active
+                if (i >= _petalIndex && i < _petalIndex + 8) 
+                {
+                    // if was active
+                    if (petal.IsVisible())
                     {
-                        petal.Rotate(false);
+                        int diff = ((int)(petal.transform.localEulerAngles.z + 0.5f) - ((i - _petalIndex) * -45)) % 360;
+                        switch (diff)
+                        {
+                            case > 180:
+                                petal.Rotate(false);
+                                break;
+                            case < 180 when diff != 0:
+                                petal.Rotate(true);
+                                break;
+                        }
                     }
-                    else if (diff < 180 && diff != 0)
+                    else
                     {
-                        petal.Rotate(true);
+                        petal.gameObject.SetActive(true);
+                        petal.Appear();
                     }
+                    petal.transform.localEulerAngles = new Vector3(0, 0, (360 + ((i - _petalIndex) * -45)) % 360);
                 }
                 else
                 {
-                    petal.gameObject.SetActive(true);
-                    petal.Appear();
+                    // if was active but not anymore
+                    if (petal.IsVisible()) 
+                    {
+                        petal.Disappear();
+                    }
                 }
-                petal.transform.localEulerAngles = new Vector3(0, 0, (360 + ((i - petalIndex) * -45)) % 360);
+                i++;
             }
-            else // if is not active
+            if (ContextMenu != null)
             {
-                if (petal.IsVisible()) // if was active but not anymore
-                {
-                    petal.Disappear();
-                }
-                else
-                {
-                    // don't do anything (keep petal disabled)
-                }
+                ContextMenu.Animator.SetBool(AnimationReturnButtonVisible, this._folder.Folder != null);
             }
-            i++;
         }
-        if (contextMenu != null)
+
+        public PetalFolder GetFolder()
         {
-            contextMenu.menuAnimator.SetBool("ReturnButtonVisible", this.folder.prec != null);
+            return _folder;
         }
-    }
 
-    public PetalFolder GetFolder()
-    {
-        return(folder);
-    }
-
-    public void SetFolder(PetalFolder newFolder, bool isRoot)
-    {
-        petalIndex = 0;
-        if (isRoot && folder != null)
-            this.folder.Clear();
-        else if (folder != null)
-            this.folder.Disable();
-        newFolder.prec = (isRoot ? null : this.folder);
-        this.folder = newFolder;
-        this.folder.isDirty = true;
-    }
-
-    public void Return()
-    {
-        petalIndex = 0;
-        if (folder.prec == null)
-            return ;
-        this.folder.Clear();
-        this.folder = this.folder.prec;
-        this.folder.Enable();
-        this.folder.isDirty = true;
-    }
-
-    public Petal AddPetalToFolder()
-    {
-        Petal newPetal = Instantiate(petalPrefab, petalParent.transform).GetComponent<Petal>();
-        newPetal.transform.parent = petalParent.transform;
-        folder.AddPetal(newPetal);
-        folder.isDirty = true;
-        return (newPetal);
-    }
-    public Petal AddPetalToFolder(Sprite icon, string name)
-    {
-        Petal newPetal = Instantiate(petalPrefab, petalParent.transform).GetComponent<Petal>();
-        newPetal.iconImage.texture = icon.texture;
-        newPetal.name = name;
-        newPetal.transform.SetParent(petalParent.transform, false);
-        folder.AddPetal(newPetal);
-        folder.isDirty = true;
-        return (newPetal);
-    }
-
-    public void Clear()
-    {
-        foreach(Petal petal in folder.petals)
+        public void SetFolder(PetalFolder newFolder, bool isRoot)
         {
-            Destroy(petal.gameObject);
-        }
-        folder.petals.Clear();
-        folder.isDirty = true;
-    }
+            _petalIndex = 0;
+            if (isRoot && _folder != null)
+            {
+                _folder.Clear();
+            }
+            else if (_folder != null)
+            {
+                _folder.Disable();
+            }
 
-    public void MoveIndex(int offset)
-    {
-        if (folder == null)// || folder.CheckAnimationDone() == false)
-            return ;
-        petalIndex += offset;
-        folder.isDirty = true;
-        if (petalIndex < 0 || folder.petals.Count <= 8)
-            petalIndex = 0;
-        else if (petalIndex > folder.petals.Count - 8)
-            petalIndex = folder.petals.Count - 8;
+            newFolder.Folder = (isRoot ? null : _folder);
+            _folder = newFolder;
+            _folder.IsDirty = true;
+        }
+
+        public void Return()
+        {
+            _petalIndex = 0;
+            if (_folder.Folder == null)
+            {
+                return ;
+            }
+
+            _folder.Clear();
+            _folder = _folder.Folder;
+            _folder.Enable();
+            _folder.IsDirty = true;
+        }
+
+        public Petal AddPetalToFolder()
+        {
+            Petal newPetal = Instantiate(PetalPrefab, PetalParent.transform).GetComponent<Petal>();
+            newPetal.transform.parent = PetalParent.transform;
+            _folder.AddPetal(newPetal);
+            _folder.IsDirty = true;
+            return newPetal;
+        }
+        public Petal AddPetalToFolder(Sprite icon, string name)
+        {
+            Petal newPetal = Instantiate(PetalPrefab, PetalParent.transform).GetComponent<Petal>();
+            newPetal.iconImage.texture = icon.texture;
+            newPetal.name = name;
+            newPetal.transform.SetParent(PetalParent.transform, false);
+            _folder.AddPetal(newPetal);
+            _folder.IsDirty = true;
+            return (newPetal);
+        }
+
+        public void Clear()
+        {
+            foreach(Petal petal in _folder.Petals)
+            {
+                petal.Destroy();
+            }
+
+            _folder.Petals.Clear();
+            _folder.IsDirty = true;
+        }
+
+        public void MoveIndex(int offset)
+        {
+            if (_folder == null)
+            {
+                return;
+            }
+
+            _petalIndex += offset;
+            _folder.IsDirty = true;
+
+            if (_petalIndex < 0 || _folder.Petals.Count <= 8)
+            {
+                _petalIndex = 0;
+            }
+            else if (_petalIndex > _folder.Petals.Count - 8)
+            {
+                _petalIndex = _folder.Petals.Count - 8;
+            }
+        }
     }
 }

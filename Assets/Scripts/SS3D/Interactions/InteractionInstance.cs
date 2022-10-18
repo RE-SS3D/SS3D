@@ -1,6 +1,7 @@
 ﻿using FishNet.Connection;
+using SS3D.Engine.Interactions;
 
-namespace SS3D.Engine.Interactions
+namespace SS3D.Interactions
 {
     public class InteractionInstance
     {
@@ -25,10 +26,17 @@ namespace SS3D.Engine.Interactions
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((InteractionInstance) obj);
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            return obj.GetType() == GetType() && Equals((InteractionInstance) obj);
         }
 
         public override int GetHashCode()

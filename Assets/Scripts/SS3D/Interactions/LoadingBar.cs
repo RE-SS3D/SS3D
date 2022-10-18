@@ -1,36 +1,50 @@
-﻿using UnityEngine;
+﻿using Coimbra;
+using SS3D.Core.Behaviours;
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace SS3D.Engine.Interactions
+namespace SS3D.Interactions
 {
     /// <summary>
     /// Manages loading bar progress, should be attached to loading bar prefab
     /// </summary>
-    public class LoadingBar : MonoBehaviour
+    public class LoadingBar : SpessBehaviour
     {
         public float StartTime { get; set; }
         public float Duration { get; set; }
         public Slider TargetSlider;
-        
-        void Start()
+
+        protected override void OnStart()
         {
-            // Set start time to now if not specified
+            base.OnStart();
+
+            Setup();
+        }
+
+        protected override void HandleUpdate(in float deltaTime)
+        {
+            base.HandleUpdate(in deltaTime);
+
+            ProcessLoading();
+        }
+
+        private void Setup()
+        {
             if (StartTime == 0)
             {
                 StartTime = Time.time;
-            }
+            }   
         }
-        
-        void Update()
+
+
+        private void ProcessLoading()
         {
-            // Check if loading completed
             if (StartTime + Duration < Time.time)
             {
-                Destroy(gameObject);
+                GameObjectCache.Destroy();
                 return;
             }
 
-            // Adjust slider
             TargetSlider.value = (Time.time - StartTime) / Duration;
         }
     }

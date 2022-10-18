@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
-namespace SS3D.Engine.Interactions
+namespace SS3D.Interactions
 {
     /// <summary>
     /// Allows the creation of additional interactions for an existing source

@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using SS3D.Engine.Interactions;
+using UnityEngine;
 
-namespace SS3D.Engine.Interactions
+namespace SS3D.Interactions
 {
     /// <summary>
     /// Interaction target for target game objects without their own interaction target 
@@ -16,7 +18,7 @@ namespace SS3D.Engine.Interactions
         
         public IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
         {
-            return new IInteraction[0];
+            return Array.Empty<IInteraction>();
         }
     }
 }

@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
+using SS3D.Engine.Interactions;
 
-namespace SS3D.Engine.Interactions
+namespace SS3D.Interactions
 {
     public interface IInteractionSource
     {
-        IInteractionSource Parent { get; set; }
+        IInteractionSource Source { get; set; }
 
         /// <summary>
         /// Allows the source to manipulate existing interactions and add new ones
         /// </summary>
         /// <param name="targets">The interaction targets of this interaction</param>
-        /// <param name="interactions">The already present interactions</param>
-        void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions);
+        /// <param name="entries">The already present interactions</param>
+        void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> entries);
         /// <summary>
         /// Checks if this source can interact with a certain target
         /// </summary>

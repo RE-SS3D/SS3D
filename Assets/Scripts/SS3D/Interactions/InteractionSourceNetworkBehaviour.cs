@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
@@ -15,106 +14,85 @@ namespace SS3D.Interactions
     public abstract class InteractionSourceNetworkBehaviour : NetworkedSpessBehaviour, IGameObjectProvider, IInteractionSource
     {
         protected bool SupportsMultipleInteractions { get; set; } = false;
-        public IInteractionSource Parent { get; set; }
-
-        private class ClientInteractionInstance
-        {
-            public ClientInteractionInstance(IClientInteraction interaction, InteractionEvent interactionEvent, InteractionReference reference)
-            {
-                Interaction = interaction;
-                Event = interactionEvent;
-                Reference = reference;
-            }
-
-            public IClientInteraction Interaction { get; }
-            public InteractionEvent Event { get; }
-            public InteractionReference Reference { get; }
-            public bool FirstTick { get; set; } = true;
-        }
+        public IInteractionSource Source { get; set; }
         
         // Server only
-        private readonly List<InteractionInstance> interactions = new List<InteractionInstance>();
+        private readonly List<InteractionInstance> _interactions = new();
         // Client only
-        private readonly List<ClientInteractionInstance> clientInteractions = new List<ClientInteractionInstance>();
+        private readonly List<ClientInteractionInstance> _clientInteractions = new();
 
         public virtual void Update()
         {
             if (IsClient)
             {
-                // Update client interactions
-                for (int index = 0; index < clientInteractions.Count; index++)
-                {
-                    ClientInteractionInstance instance = clientInteractions[index];
-                    if (instance.FirstTick)
-                    {
-                        instance.FirstTick = false;
-                        try
-                        {
-                            if (!instance.Interaction.ClientStart(instance.Event))
-                            {
-                                clientInteractions.RemoveAt(index);
-                                index--;
-                            }
-                        }
-                        catch (Exception)
-                        {
-                            clientInteractions.RemoveAt(index);
-                            throw;
-                        }
-                        
-                    }
-                    else
-                    {
-                        if (!instance.Interaction.ClientUpdate(instance.Event))
-                        {
-                            clientInteractions.RemoveAt(index);
-                            index--;
-                        }
-                    }
-                }
+                UpdateClientInteractions();
             }
             if (IsServer)
             {
-                // Update server interactions
-                for (int index = 0; index < interactions.Count; index++)
-                {
-                    InteractionInstance instance = interactions[index];
-                    if (instance.FirstTick)
-                    {
-                        instance.FirstTick = false;
-                        try
-                        {
-                            if (!instance.Interaction.Start(instance.Event, instance.Reference))
-                            {
-                                interactions.Remove(instance);
-                                index--;
-                            }
-                        }
-                        catch (Exception)
-                        {
-                            interactions.Remove(instance);
-                            throw;
-                        }
-                        
-                    }
-                    else
-                    {
-                        if (!instance.Interaction.Update(instance.Event, instance.Reference))
-                        {
-                            interactions.Remove(instance);
-                            index--;
-                        }
-                    }
-                }
+                UpdateServerInteractions();
             }
         }
-        
 
-        public virtual void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        private void UpdateServerInteractions()
         {
-            foreach (var extension in GetComponents<IInteractionSourceExtension>())
+            for (int index = 0; index < _interactions.Count; index++)
             {
-                extension.GenerateInteractionsFromSource(targets, interactions);
+                InteractionInstance instance = _interactions[index];
+                if (instance.FirstTick)
+                {
+                    instance.FirstTick = false;
+
+                    if (instance.Interaction.Start(instance.Event, instance.Reference))
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (instance.Interaction.Update(instance.Event, instance.Reference))
+                    {
+                        continue;
+                    }
+                }
+
+                _interactions.Remove(instance);
+                index--;
+            }
+        }
+
+        private void UpdateClientInteractions()
+        {
+            for (int index = 0; index < _clientInteractions.Count; index++)
+            {
+                ClientInteractionInstance instance = _clientInteractions[index];
+                if (instance.FirstTick)
+                {
+                    instance.FirstTick = false;
+
+                    if (instance.Interaction.ClientStart(instance.Event))
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (instance.Interaction.ClientUpdate(instance.Event))
+                    {
+                        continue;
+                    }
+                }
+
+                _clientInteractions.RemoveAt(index);
+                index--;
+            }
+        }
+
+
+        public virtual void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> entries)
+        {
+            foreach (IInteractionSourceExtension extension in GetComponents<IInteractionSourceExtension>())
+            {
+                extension.GenerateInteractionsFromSource(targets, entries);
             }
         }
 
@@ -132,23 +110,23 @@ namespace SS3D.Interactions
         public InteractionReference Interact(InteractionEvent interactionEvent, IInteraction interaction)
         {
             
-            InteractionReference reference = new InteractionReference(Random.Range(1, Int32.MaxValue));
+            InteractionReference reference = new(Random.Range(1, int.MaxValue));
             if (!SupportsMultipleInteractions)
             {
-                for (int index = interactions.Count - 1; index >= 0; index--)
+                for (int index = _interactions.Count - 1; index >= 0; index--)
                 {
-                    InteractionInstance instance = interactions[index];
+                    InteractionInstance instance = _interactions[index];
                     CancelInteraction(instance.Reference);
                 }
             }
-            interactions.Add(new InteractionInstance(interaction, interactionEvent, reference, Owner));
+            _interactions.Add(new InteractionInstance(interaction, interactionEvent, reference, Owner));
 
             return reference;
         }
 
         public InteractionInstance GetInstanceFromReference(InteractionReference reference)
         {
-            return interactions.FirstOrDefault(x => x.Reference.Equals(reference));
+            return _interactions.FirstOrDefault(x => x.Reference.Equals(reference));
         }
 
         public void ClientInteract(InteractionEvent interactionEvent, IInteraction interaction,
@@ -157,7 +135,7 @@ namespace SS3D.Interactions
             IClientInteraction clientInteraction = interaction.CreateClient(interactionEvent);
             if (clientInteraction != null)
             {
-                clientInteractions.Add(new ClientInteractionInstance(clientInteraction,
+                _clientInteractions.Add(new ClientInteractionInstance(clientInteraction,
                     interactionEvent, reference));
             }
             
@@ -166,22 +144,22 @@ namespace SS3D.Interactions
         [Server]
         public void CancelInteraction(InteractionReference reference)
         {
-            InteractionInstance instance = interactions.FirstOrDefault(i => Equals(reference, i.Reference));
+            InteractionInstance instance = _interactions.FirstOrDefault(i => Equals(reference, i.Reference));
             if (instance == null) return;
             
             RpcCancelInteraction(reference.Id);
             instance.Interaction.Cancel(instance.Event, reference);
-            interactions.Remove(instance);
+            _interactions.Remove(instance);
         }
 
         [ObserversRpc]
         private void RpcCancelInteraction(int id)
         {
-            ClientInteractionInstance instance = clientInteractions.FirstOrDefault(i => i.Reference.Id == id);
+            ClientInteractionInstance instance = _clientInteractions.FirstOrDefault(i => i.Reference.Id == id);
             if (instance != null)
             {
                 instance.Interaction.ClientCancel(instance.Event);
-                clientInteractions.Remove(instance);
+                _clientInteractions.Remove(instance);
             }
         }
 

@@ -1,60 +1,59 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Coimbra;
 using UnityEngine;
 
-public class PetalFolder
+namespace SS3D.Interactions.UI.RadialMenuInteraction
 {
-    public GameObject petalPrefab;
-    public List<Petal> petals;
-    public PetalFolder prec;
-    public bool isDirty;
-
-    public PetalFolder(GameObject prefab)
+    public class PetalFolder
     {
-        this.petals = new List<Petal>();
-        this.prec = null;
-        isDirty = true;
-        petalPrefab = prefab;
-    }
+        public GameObject PetalPrefab;
+        public readonly List<Petal> Petals;
+        public PetalFolder Folder;
+        public bool IsDirty;
 
-    public bool AddPetal(Petal petal)
-    {
-        this.petals.Add(petal);
-        isDirty = true;
-        return true;
-    }
-
-    public bool CheckAnimationDone()
-    {
-        foreach (Petal petal in petals)
+        public PetalFolder(GameObject prefab)
         {
-            if (petal.IsAnimationInProgress() == false)
-                return (false);
+            Petals = new List<Petal>();
+            Folder = null;
+            IsDirty = true;
+            PetalPrefab = prefab;
         }
-        return (true);
-    }
 
-    public void Clear()
-    {
-        foreach (Petal petal in petals)
+        public bool AddPetal(Petal petal)
         {
-            UnityEngine.Object.Destroy(petal.gameObject);
+            Petals.Add(petal);
+            IsDirty = true;
+            return true;
         }
-    }
 
-    public void Disable()
-    {
-        foreach (Petal petal in petals)
+        public bool CheckAnimationDone()
         {
-            petal.gameObject.SetActive(false);
+            return Petals.All(petal => petal.IsAnimationInProgress());
         }
-    }
 
-    public void Enable()
-    {
-        foreach (Petal petal in petals)
+        public void Clear()
         {
-            petal.gameObject.SetActive(true);
+            foreach (Petal petal in Petals)
+            {
+                petal.Destroy();
+            }
+        }
+
+        public void Disable()
+        {
+            foreach (Petal petal in Petals)
+            {
+                petal.gameObject.SetActive(false);
+            }
+        }
+
+        public void Enable()
+        {
+            foreach (Petal petal in Petals)
+            {
+                petal.gameObject.SetActive(true);
+            }
         }
     }
 }

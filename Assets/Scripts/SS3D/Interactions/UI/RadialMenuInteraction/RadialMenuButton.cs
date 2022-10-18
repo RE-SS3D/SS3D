@@ -1,40 +1,39 @@
-﻿using SS3D.Engine.Interactions.UI;
-using System.Collections;
-using System.Collections.Generic;
-using SS3D.Interactions.UI;
-using TMPro;
-using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class RadialMenuButton : Button
+namespace SS3D.Interactions.UI.RadialMenuInteraction
 {
-    public string objectName;
-    public string interaction;
-    [HideInInspector]
-    public float angle;
-
-    public RadialInteractionMenuUI menu;
-
-    // Sets menu's selected petal and the interaction name
-    void PetalSelect()
+    public class RadialMenuButton : Button
     {
-        menu.selectedPetal = transform.GetComponent<RectTransform>();
-        menu.interactionName.text = interaction;
-        menu.objectName.text = objectName;
-    }
+        public string ObjectName;
+        public string Interaction;
+        [HideInInspector] public float Angle;
 
-    private void Update()
-    {
-        if (menu != null)
+        public RadialInteractionMenuView Menu;
+
+        // Sets menu's selected petal and the interaction name
+        private void PetalSelect()
         {
-            if (menu.mouseAngle >= angle - menu.buttonAngle
-                && menu.mouseAngle < angle + menu.buttonAngle)
+            Menu.selectedPetal = transform.GetComponent<RectTransform>();
+            Menu.InteractionName.text = Interaction;
+            Menu.ObjectName.text = ObjectName;
+        }
+
+        private void Update()
+        {
+            if (Menu == null)
             {
-                if (menu.mouseDistance > menu.buttonMaxDistance)
-                {
-                    PetalSelect();
-                }
+                return;
+            }
+
+            if (!(Menu.MouseAngle >= Angle - Menu.ButtonAngle) || !(Menu.MouseAngle < Angle + Menu.ButtonAngle))
+            {
+                return;
+            }
+
+            if (Menu.MouseDistance > Menu.ButtonMaxDistance)
+            {
+                PetalSelect();
             }
         }
     }

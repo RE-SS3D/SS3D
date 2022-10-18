@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using SS3D.Engine.Interactions;
+using UnityEngine;
 
-namespace SS3D.Engine.Interactions
+namespace SS3D.Interactions
 {
     public class InteractionEvent
     {
@@ -17,7 +18,7 @@ namespace SS3D.Engine.Interactions
         /// </summary>
         public Vector3 Point { get; }
 
-        public InteractionEvent(IInteractionSource source, IInteractionTarget target, Vector3 point = new Vector3())
+        public InteractionEvent(IInteractionSource source, IInteractionTarget target, Vector3 point = new())
         {
             Source = source;
             Target = target;

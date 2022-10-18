@@ -1,4 +1,4 @@
-﻿namespace SS3D.Engine.Interactions
+﻿namespace SS3D.Interactions
 {
     /// <summary>
     /// A reference to a currently running interaction
@@ -22,10 +22,17 @@
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((InteractionReference) obj);
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            return obj.GetType() == GetType() && Equals((InteractionReference) obj);
         }
 
         public override int GetHashCode()

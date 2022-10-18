@@ -1,42 +1,44 @@
-﻿using SS3D.Engine.Interactions.Extensions;
+﻿using Coimbra;
 using SS3D.Interactions.Extensions;
 using UnityEngine;
 
-namespace SS3D.Engine.Interactions
+namespace SS3D.Interactions
 {
-    public class ClientDelayedInteraction : IClientInteraction
+    public sealed class ClientDelayedInteraction : IClientInteraction
     {
         public float Delay { get; set; }
         public GameObject LoadingBarPrefab { get; set; }
 
-        private static readonly Vector3 LoadingBarOffset = new Vector3(0, 2f, 0);
-        private GameObject loadingBarInstance;
+        private static readonly Vector3 LoadingBarOffset = new(0, 2f, 0);
+        private GameObject _loadingBarInstance;
 
-        public virtual bool ClientStart(InteractionEvent interactionEvent)
+        public bool ClientStart(InteractionEvent interactionEvent)
         {
             if (LoadingBarPrefab == null)
             {
                 return false;
             }
-            
-            if (interactionEvent.Source.GetRootSource() is IGameObjectProvider source)
+
+            if (interactionEvent.Source.GetRootSource() is not IGameObjectProvider source)
             {
-                loadingBarInstance = Object.Instantiate(LoadingBarPrefab, source.GameObject.transform);
-                loadingBarInstance.transform.localPosition = LoadingBarOffset;
-                loadingBarInstance.GetComponent<LoadingBar>().Duration = Delay;
+                return true;
             }
 
+            _loadingBarInstance = Object.Instantiate(LoadingBarPrefab, source.GameObject.transform);
+            _loadingBarInstance.transform.localPosition = LoadingBarOffset;
+            _loadingBarInstance.GetComponent<LoadingBar>().Duration = Delay;
+
             return true;
         }
 
-        public virtual bool ClientUpdate(InteractionEvent interactionEvent)
+        public bool ClientUpdate(InteractionEvent interactionEvent)
         {
             return true;
         }
 
-        public virtual void ClientCancel(InteractionEvent interactionEvent)
+        public void ClientCancel(InteractionEvent interactionEvent)
         {
-            Object.Destroy(loadingBarInstance);
+            _loadingBarInstance.Destroy();
         }
     }
 }
