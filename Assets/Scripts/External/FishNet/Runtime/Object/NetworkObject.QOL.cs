@@ -3,6 +3,7 @@ using FishNet.Connection;
 using FishNet.Managing;
 using FishNet.Managing.Client;
 using FishNet.Managing.Logging;
+using FishNet.Managing.Observing;
 using FishNet.Managing.Scened;
 using FishNet.Managing.Server;
 using FishNet.Managing.Timing;
@@ -44,7 +45,7 @@ namespace FishNet.Object
 
             private set => _isClient = value;
         }
-        
+
         /// <summary>
         /// True if only the client is active and authenticated.
         /// </summary>
@@ -76,29 +77,32 @@ namespace FishNet.Object
                  * NetworkObject has been initialized on the client side.
                  *
                  * This value is used to prevent IsOwner from returning true
-                 * when running as host.
+                 * when running as host; primarily in Update or Tick callbacks
+                 * where IsOwner would be true as host but OnStartClient has
+                 * not called yet.
                  * 
                  * EG: server will set owner when it spawns the object.
                  * If IsOwner is checked before the object spawns on the
                  * client-host then it would also return true, since the
                  * Owner reference would be the same as what was set by server.
+                 *
                  * This is however bad when the client hasn't initialized the object
-                 * yet because it gives a false sense of initialization.
+                 * yet because it gives a false sense of execution order. 
+                 * As a result, Update or Ticks may return IsOwner as true well before OnStartClient
+                 * is called. Many users rightfully create code with the assumption the client has been
+                 * initialized by the time IsOwner is true.
                  * 
-                 * Wait for client-host being initialized before potentially
-                 * returning true. */
+                 * This is a double edged sword though because now IsOwner would return true
+                 * within OnStartNetwork for clients only, but not for host given the client
+                 * side won't be initialized yet as host. As a work around CodeAnalysis will
+                 * inform users to instead use base.Owner.IsLocalClient within OnStartNetwork. */
                 if (!ClientInitialized)
                     return false;
-
-                ////perf see how this can be removed.
-                ////ClientInitialized is only used for this.
-                //if (!IsClient || !ClientInitialized || !Owner.IsValid || (NetworkManager == null))
-                //    return false;
 
                 return Owner.IsLocalClient;
             }
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -143,6 +147,10 @@ namespace FishNet.Object
         /// </summary>
         public ClientManager ClientManager { get; private set; }
         /// <summary>
+        /// ObserverManager for this object.
+        /// </summary>
+        public ObserverManager ObserverManager { get; private set; }
+        /// <summary>
         /// TransportManager for this object.
         /// </summary>
         public TransportManager TransportManager { get; private set; }
@@ -158,18 +166,40 @@ namespace FishNet.Object
         /// RollbackManager for this object.
         /// </summary>
         public RollbackManager RollbackManager { get; private set; }
-
-
         #endregion
 
         /// <summary>
+        /// Returns a NetworkBehaviour on this NetworkObject.
+        /// </summary>
+        /// <param name="componentIndex">ComponentIndex of the NetworkBehaviour.</param>
+        /// <param name="error">True to error if not found.</param>
+        /// <returns></returns>
+        public NetworkBehaviour GetNetworkBehaviour(byte componentIndex, bool error)
+        {
+            if (componentIndex >= NetworkBehaviours.Length)
+            {
+                if (error)
+                {
+                    bool staticLog = (NetworkManager == null);
+                    string errMsg = $"ComponentIndex of {componentIndex} is out of bounds on {gameObject.name} [id {ObjectId}]. This may occur if you have modified your gameObject/prefab without saving it, or the scene.";
+
+                    if (staticLog && NetworkManager.StaticCanLog(LoggingType.Error))
+                        Debug.LogError(errMsg);
+                    else if (!staticLog && NetworkManager.CanLog(LoggingType.Error))
+                        Debug.LogError(errMsg);
+                }
+            }
+
+            return NetworkBehaviours[componentIndex];
+        }
+        /// <summary>
         /// Despawns this NetworkObject. Only call from the server.
         /// </summary>
-        /// <param name="destroyInstantiated">True to also destroy the object if it was instantiated. False will only disable the object.</param>
-        public void Despawn()
+        /// <param name="cacheOnDespawnOverride">Overrides the default DisableOnDespawn value for this single despawn. Scene objects will never be destroyed.</param>
+        public void Despawn(DespawnType? despawnType = null)
         {
             NetworkObject nob = this;
-            NetworkManager.ServerManager.Despawn(nob);
+            NetworkManager.ServerManager.Despawn(nob, despawnType);
         }
         /// <summary>
         /// Spawns an object over the network. Only call from the server.

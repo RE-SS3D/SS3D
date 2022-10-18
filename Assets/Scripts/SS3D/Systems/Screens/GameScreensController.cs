@@ -1,12 +1,17 @@
 using Coimbra.Services.Events;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Events;
+using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
 
 namespace SS3D.Systems.Screens
 {
-    public sealed class GameScreensController : SpessBehaviour
+    public sealed class GameScreensController : NetworkedSpessBehaviour
     {
+        [SerializeField] private bool _blockNone;
         [SerializeField] private bool _menuOpen;
 
         protected override void OnStart()
@@ -14,7 +19,31 @@ namespace SS3D.Systems.Screens
             base.OnStart();
 
             _menuOpen = true;
+            _blockNone = true;
+
             ChangeGameScreenEvent.AddListener(HandleChangeGameScreen);
+            SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated);
+        }
+
+        private void HandleSpawnedPlayersUpdated(ref EventContext context, in SpawnedPlayersUpdated e)
+        {
+            PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
+            Soul soul = playerControlSystem.GetSoul(LocalConnection);
+
+            if (soul == null)
+            {
+                return;
+            }
+
+            bool isPlayerSpawned = e.SpawnedPlayers.Contains(soul.Ckey);
+
+            if (!isPlayerSpawned)
+            {
+                _menuOpen = true;
+            }
+
+            _blockNone = !isPlayerSpawned;
+            UpdateScreen();
         }
 
         private void HandleChangeGameScreen(ref EventContext context, in ChangeGameScreenEvent e)
@@ -41,15 +70,20 @@ namespace SS3D.Systems.Screens
 
         private void ProcessInput()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape) && !_blockNone)
             {
                 _menuOpen = !_menuOpen;
 
-                ScreenType newScreen = _menuOpen ? ScreenType.Lobby : ScreenType.None;
-                ChangeGameScreenEvent changeGameScreenEvent = new(newScreen);
-
-                changeGameScreenEvent.Invoke(this);
+                UpdateScreen();
             }
+        }
+
+        private void UpdateScreen()
+        {
+            ScreenType newScreen = _menuOpen ? ScreenType.Lobby : ScreenType.None;
+            ChangeGameScreenEvent changeGameScreenEvent = new(newScreen);
+
+            changeGameScreenEvent.Invoke(this);
         }
     }
 }

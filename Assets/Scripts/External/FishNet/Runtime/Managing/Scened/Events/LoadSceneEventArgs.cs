@@ -1,4 +1,5 @@
-﻿using UnityEngine.SceneManagement;
+﻿using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 namespace FishNet.Managing.Scened
 {
@@ -58,13 +59,20 @@ namespace FishNet.Managing.Scened
         /// Scenes which were skipped because they were already loaded.
         /// </summary>
         public readonly string[] SkippedSceneNames;
+        /// <summary>
+        /// Scenes which were unloaded.
+        /// </summary>
+        public readonly string[] UnloadedSceneNames;
 
-        internal SceneLoadEndEventArgs(LoadQueueData lqd, Scene[] loaded, string[] skipped)
+        internal SceneLoadEndEventArgs(LoadQueueData lqd, string[] skipped, Scene[] loaded, string[] unloadedSceneNames)
         {
             QueueData = lqd;
-            LoadedScenes = loaded;
             SkippedSceneNames = skipped;
+            LoadedScenes = loaded;
+            UnloadedSceneNames = unloadedSceneNames;
         }
+
+
     }
 
 }

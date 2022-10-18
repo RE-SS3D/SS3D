@@ -1,4 +1,5 @@
 ﻿using FishNet.Object;
+using FishNet.Serializing.Helping;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine.SceneManagement;
@@ -121,9 +122,6 @@ namespace FishNet.Managing.Scened
         /// <param name="movedNetworkObjects">NetworkObjects to move to the first specified scene.</param>
         public SceneLoadData(string[] sceneNames, NetworkObject[] movedNetworkObjects)
         {
-            for (int i = 0; i < sceneNames.Length; i++)
-                sceneNames[i] = Path.GetFileNameWithoutExtension(sceneNames[i]);
-
             SceneLookupData[] datas = SceneLookupData.CreateData(sceneNames);
             Construct(datas, movedNetworkObjects);
         }
@@ -167,6 +165,9 @@ namespace FishNet.Managing.Scened
             //Null values.
             if (Params == null || MovedNetworkObjects == null || SceneLookupDatas == null ||
                 Options == null)
+                return true;
+            //No lookups.
+            if (SceneLookupDatas.Length == 0)
                 return true;
 
             return false;

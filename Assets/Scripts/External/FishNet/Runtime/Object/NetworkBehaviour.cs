@@ -1,4 +1,6 @@
-﻿using FishNet.Utility.Constant;
+﻿using FishNet.Documenting;
+using FishNet.Serializing.Helping;
+using FishNet.Utility.Constant;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -57,7 +59,7 @@ namespace FishNet.Object
 
 
         /// <summary>
-        /// Serializes information about components.
+        /// Serializes information for network components.
         /// </summary>
         internal void SerializeComponents(NetworkObject nob, byte componentIndex)
         {
@@ -65,6 +67,22 @@ namespace FishNet.Object
             ComponentIndex = componentIndex;
         }
 
+        /// <summary>
+        /// Manually initializes network content for the NetworkBehaviour if the object it's on is disabled.
+        /// </summary>
+        internal void InitializeIfDisabled()
+        {
+            if (gameObject.activeInHierarchy)
+                return;
+
+            NetworkInitializeIfDisabledInternal();
+        }
+        /// <summary>
+        /// Long name is to prevent users from potentially creating their own method named the same.
+        /// </summary>
+        [CodegenMakePublic] //internal.
+        [APIExclude]
+        protected internal virtual void NetworkInitializeIfDisabledInternal() { }
         #region Editor.
         protected virtual void Reset()
         {
@@ -91,6 +109,17 @@ namespace FishNet.Object
             //    nob.UpdateNetworkBehaviours();
 #endif
         }
+
+        /// <summary>
+        /// Resets this NetworkBehaviour so that it may be added to an object pool.
+        /// </summary>
+        internal void ResetForObjectPool()
+        {
+            ResetSyncTypes();
+            ClearReplicateCache();
+            ClearBuffedRpcs();
+        }
+
 
         /// <summary>
         /// Tries to add the NetworkObject component.

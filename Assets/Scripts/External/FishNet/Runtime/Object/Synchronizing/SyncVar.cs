@@ -168,10 +168,15 @@ namespace FishNet.Object.Synchronizing
                  * but this has been changed because clients may want
                  * to update values locally while occasionally
                  * letting the syncvar adjust their side. */
-
                 T prev = _previousClientValue;
-                UpdateValues(nextValue);
-                InvokeOnChange(prev, _value, calledByUser);
+                /* If also server do not update value.
+                 * Server side has say of the current value. */
+                if (!base.NetworkManager.IsServer)
+                    UpdateValues(nextValue);
+                else
+                    _previousClientValue = nextValue;
+
+                InvokeOnChange(prev, nextValue, calledByUser);
                 TryDirty();
             }
 
@@ -200,23 +205,19 @@ namespace FishNet.Object.Synchronizing
         /// </summary>
         private void InvokeOnChange(T prev, T next, bool asServer)
         {
-            if (OnChange != null)
+            if (asServer)
             {
-                if (asServer)
-                {
-                    if (base.NetworkBehaviour.OnStartServerCalled)
-                        OnChange.Invoke(prev, next, asServer);
-                    else
-                        _serverOnChange = new CachedOnChange(prev, next);
-                }
+                if (base.NetworkBehaviour.OnStartServerCalled)
+                    OnChange?.Invoke(prev, next, asServer);
                 else
-                {
-                    if (base.NetworkBehaviour.OnStartClientCalled)
-                        OnChange.Invoke(prev, next, asServer);
-                    else
-                        _clientOnChange = new CachedOnChange(prev, next);
-                }
-
+                    _serverOnChange = new CachedOnChange(prev, next);
+            }
+            else
+            {
+                if (base.NetworkBehaviour.OnStartClientCalled)
+                    OnChange?.Invoke(prev, next, asServer);
+                else
+                    _clientOnChange = new CachedOnChange(prev, next);
             }
         }
 
@@ -282,7 +283,7 @@ namespace FishNet.Object.Synchronizing
         {
             base.Reset();
             _value = _initialValue;
-            _previousClientValue = _initialValue;            
+            _previousClientValue = _initialValue;
         }
     }
 }

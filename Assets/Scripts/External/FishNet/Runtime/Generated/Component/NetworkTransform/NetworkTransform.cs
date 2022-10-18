@@ -10,6 +10,7 @@ using FishNet.Documenting;
 using FishNet.Object;
 using FishNet.Serializing;
 using FishNet.Transporting;
+using FishNet.Utility.Extension;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -19,8 +20,10 @@ namespace FishNet.Component.Transforming
 {
     /// <summary> 
     /// A somewhat basic but reliable NetworkTransform that will be improved upon greatly after release.
-    /// </summary>   
-    public class NetworkTransform : NetworkBehaviour
+    /// </summary>
+    [DisallowMultipleComponent]
+    [AddComponentMenu("FishNet/Component/NetworkTransform")]
+    public sealed class NetworkTransform : NetworkBehaviour
     {
         #region Types.
         private struct ReceivedData
@@ -97,12 +100,35 @@ namespace FishNet.Component.Transforming
         }
         public class RateData
         {
+            /// <summary>
+            /// Rate for position after smart calculations.
+            /// </summary>
             public float Position;
+            /// <summary>
+            /// Rate for rotation after smart calculations.
+            /// </summary>
             public float Rotation;
+            /// <summary>
+            /// Rate for scale after smart calculations.
+            /// </summary>
             public float Scale;
+            /// <summary>
+            /// Unaltered rate for position calculated through position change and tickspan.
+            /// </summary>
             public float LastUnalteredPositionRate;
-            public bool AbnormalRateDetected;
-            public float TimeRemaining;
+            /// <summary>
+            /// Number of ticks the rates are calculated for.
+            /// If TickSpan is 2 then the rates are calculated under the assumption the transform changed over 2 ticks.
+            /// </summary>
+            public uint TickSpan;
+            /// <summary>
+            /// True if the rate is believed to be fluctuating unusually.
+            /// </summary>
+            internal bool AbnormalRateDetected;
+            /// <summary>
+            /// Time remaining until transform is expected to reach it's goal.
+            /// </summary>
+            internal float TimeRemaining;
 
             public RateData() { }
 
@@ -112,24 +138,27 @@ namespace FishNet.Component.Transforming
                 Rotation = 0f;
                 Scale = 0f;
                 LastUnalteredPositionRate = 0f;
+                TickSpan = 0;
                 AbnormalRateDetected = false;
                 TimeRemaining = 0f;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Update(RateData rd)
             {
-                Update(rd.Position, rd.Rotation, rd.Scale, rd.LastUnalteredPositionRate, rd.AbnormalRateDetected, rd.TimeRemaining);
+                Update(rd.Position, rd.Rotation, rd.Scale, rd.LastUnalteredPositionRate, rd.TickSpan, rd.AbnormalRateDetected, rd.TimeRemaining);
             }
 
             /// <summary>
             /// Updates rates.
             /// </summary>
-            public void Update(float position, float rotation, float scale, float unalteredPositionRate, bool abnormalRateDetected, float timeRemaining)
+            public void Update(float position, float rotation, float scale, float unalteredPositionRate, uint tickSpan, bool abnormalRateDetected, float timeRemaining)
             {
                 Position = position;
                 Rotation = rotation;
                 Scale = scale;
                 LastUnalteredPositionRate = unalteredPositionRate;
+                TickSpan = tickSpan;
                 AbnormalRateDetected = abnormalRateDetected;
                 TimeRemaining = timeRemaining;
             }
@@ -191,7 +220,6 @@ namespace FishNet.Component.Transforming
         public delegate void DataReceivedChanged(TransformData prev, TransformData next);
         /// <summary>
         /// Called when new data is received. Previous and next data are provided. Next data may be manipulated.
-        /// This feature is experimental.
         /// </summary>
         public event DataReceivedChanged OnDataReceived;
         /// <summary>
@@ -203,6 +231,7 @@ namespace FishNet.Component.Transforming
         /// </summary>
         public event Action OnInterpolationComplete;
         #endregion
+
         #region Serialized.
         /// <summary>
         /// True to synchronize when this transform changes parent.
@@ -234,7 +263,9 @@ namespace FishNet.Component.Transforming
         [Tooltip("How many ticks to extrapolate.")]
         [Range(0, 1024)]
         [SerializeField]
+#pragma warning disable CS0414 //Not in use.
         private ushort _extrapolation = 2;
+#pragma warning restore CS0414 //Not in use.
         /// <summary>
         /// True to enable teleport threshhold.
         /// </summary>
@@ -274,11 +305,21 @@ namespace FishNet.Component.Transforming
         [SerializeField]
         private bool _synchronizePosition = true;
         /// <summary>
+        /// Sets if to synchronize position.
+        /// </summary>
+        /// <param name="value">New value.</param>
+        public void SetSynchronizePosition(bool value) => _synchronizePosition = value;
+        /// <summary>
         /// Axes to snap on position.
         /// </summary>
         [Tooltip("Axes to snap on position.")]
         [SerializeField]
         private SnappedAxes _positionSnapping = new SnappedAxes();
+        /// <summary>
+        /// Sets which Position axes to snap.
+        /// </summary>
+        /// <param name="axes">Axes to snap.</param>
+        public void SetPositionSnapping(SnappedAxes axes) => _positionSnapping = axes;
         /// <summary>
         /// True to synchronize rotation. Even while checked only changed values are sent.
         /// </summary>
@@ -286,11 +327,21 @@ namespace FishNet.Component.Transforming
         [SerializeField]
         private bool _synchronizeRotation = true;
         /// <summary>
+        /// Sets if to synchronize rotation.
+        /// </summary>
+        /// <param name="value">New value.</param>
+        public void SetSynchronizeRotation(bool value) => _synchronizeRotation = value;
+        /// <summary>
         /// Axes to snap on rotation.
         /// </summary>
         [Tooltip("Axes to snap on rotation.")]
         [SerializeField]
         private SnappedAxes _rotationSnapping = new SnappedAxes();
+        /// <summary>
+        /// Sets which Scale axes to snap.
+        /// </summary>
+        /// <param name="axes">Axes to snap.</param>
+        public void SetRotationSnapping(SnappedAxes axes) => _rotationSnapping = axes;
         /// <summary>
         /// True to synchronize scale. Even while checked only changed values are sent.
         /// </summary>
@@ -298,11 +349,21 @@ namespace FishNet.Component.Transforming
         [SerializeField]
         private bool _synchronizeScale = true;
         /// <summary>
+        /// Sets if to synchronize scale.
+        /// </summary>
+        /// <param name="value">New value.</param>
+        public void SetSynchronizeScale(bool value) => _synchronizeScale = value;
+        /// <summary>
         /// Axes to snap on scale.
         /// </summary>
         [Tooltip("Axes to snap on scale.")]
         [SerializeField]
         private SnappedAxes _scaleSnapping = new SnappedAxes();
+        /// <summary>
+        /// Sets which Scale axes to snap.
+        /// </summary>
+        /// <param name="axes">Axes to snap.</param>
+        public void SetScaleSnapping(SnappedAxes axes) => _scaleSnapping = axes;
         #endregion
 
         #region Private.
@@ -386,7 +447,7 @@ namespace FishNet.Component.Transforming
         /// <summary>
         /// Number of intervals remaining before synchronization.
         /// </summary>
-        private byte _intervalsRemaining;
+        private short _intervalsRemaining;
         #endregion
 
         #region Const.
@@ -401,7 +462,7 @@ namespace FishNet.Component.Transforming
             _interval = Math.Max(_interval, (byte)1);
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             if (_receivedClientData.Writer != null)
             {
@@ -507,18 +568,32 @@ namespace FishNet.Component.Transforming
         /// </summary>
         private void TimeManager_OnPostTick()
         {
-            /* If more than 1 interval is remaining than then means
-             * there are more ticks to be waited upon. */
-            if (_intervalsRemaining > 1)
+            /* Intervals remaining is only used when the interval value
+             * is set higher than 1. An interval of 1 indicates to send
+             * every tick. Only check to wait more ticks if interval
+             * is larger than 1. */
+            if (_interval > 1)
             {
+                /* If intervalsRemaining is unset then that means the transform
+                 * did not change last tick. See if transform changed and if so then
+                 * update remaining to _interval. */
+                if (_intervalsRemaining == -1)
+                {
+                    //Transform didn't change, no reason to start remaining.
+                    if (!transform.hasChanged)
+                        return;
+
+                    _intervalsRemaining = _interval;
+                }
+
+                //If here then intervalsRemaining can be deducted.
                 _intervalsRemaining--;
-                return;
-            }
-            /* If there is 0 or 1 interval remaining then this
-             * tick would be the one to send data and reset the interval. */
-            else
-            {
-                _intervalsRemaining = _interval;
+                //Interval not met yet.
+                if (_intervalsRemaining > 0)
+                    return;
+                //Intervals remainin is met. Reset to -1 to await new change.
+                else
+                    _intervalsRemaining = -1;
             }
 
             
@@ -527,16 +602,6 @@ namespace FishNet.Component.Transforming
             if (base.IsClient)
                 SendToServer();
         }
-
-        /* 
-         * //todo make a special method for handling network transforms that iterates all
-         * of them at once and ALWAYS send the packetId TransformUpdate. This packet will
-         * have the total length of all updates. theres a chance a nob might not exist since
-         * these packets are unreliable and can arrive after a nob destruction. if thats
-         * the case then the packet can still be parsed out and recovered because the updateflags
-         * indicates exactly what data needs to be read.
-         */
-
 
         /// <summary>
         /// Tries to subscribe to TimeManager ticks.
@@ -551,6 +616,52 @@ namespace FishNet.Component.Transforming
                 base.NetworkManager.TimeManager.OnPostTick += TimeManager_OnPostTick;
             else
                 base.NetworkManager.TimeManager.OnPostTick -= TimeManager_OnPostTick;
+        }
+
+        /// <summary>
+        /// Updates the interval value over the network.
+        /// </summary>
+        /// <param name="value">New interval.</param>
+        public void SetInterval(byte value)
+        {
+            bool canSet = (base.IsServer && !_clientAuthoritative)
+                || (base.IsServer && _clientAuthoritative && !base.Owner.IsValid)
+                || (_clientAuthoritative && base.IsOwner);
+
+            if (!canSet)
+                return;
+
+            if (base.IsServer)
+                ObserversSetInterval(value);
+            else
+                ServerSetInterval(value);
+        }
+
+        /// <summary>
+        /// Updates the interval value.
+        /// </summary>
+        /// <param name="value"></param>
+        private void SetIntervalInternal(byte value)
+        {
+            value = (byte)Mathf.Max(value, 1);
+            _interval = value;
+        }
+
+        /// <summary>
+        /// Sets interval over the network.
+        /// </summary>
+        [ServerRpc(RunLocally = true)]
+        private void ServerSetInterval(byte value)
+        {
+            SetIntervalInternal(value);
+        }
+        /// <summary>
+        /// Sets interval over the network.
+        /// </summary>
+        [ObserversRpc(RunLocally = true)]
+        private void ObserversSetInterval(byte value)
+        {
+            SetIntervalInternal(value);
         }
 
 
@@ -984,6 +1095,7 @@ namespace FishNet.Component.Transforming
                         * and it's thrown off. */
                         if (!HasChanged(td))
                             _queueReady = false;
+                        OnInterpolationComplete?.Invoke();
                         
                 }
             }
@@ -1160,6 +1272,7 @@ namespace FishNet.Component.Transforming
         /// <summary>
         /// Gets transform values that have changed against specified proprties.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ChangedDelta GetChanged(ref Vector3 lastPosition, ref Quaternion lastRotation, ref Vector3 lastScale, NetworkBehaviour parentBehaviour)
         {
             ChangedDelta changed = ChangedDelta.Unset;
@@ -1174,7 +1287,7 @@ namespace FishNet.Component.Transforming
                 changed |= ChangedDelta.PositionZ;
 
             Quaternion rotation = t.localRotation;
-            if (rotation != lastRotation)
+            if (!rotation.Matches(lastRotation, true))
                 changed |= ChangedDelta.Rotation;
 
             ChangedDelta startChanged;
@@ -1250,12 +1363,13 @@ namespace FishNet.Component.Transforming
         /// </summary>
         private void SetInstantRates(RateData rd)
         {
-            rd.Update(-1f, -1f, -1f, -1f, false, -1f);
+            rd.Update(-1f, -1f, -1f, -1f, 1, false, -1f);
         }
 
         /// <summary>
         /// Sets move rates which will occur over time.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetCalculatedRates(uint lastTick, RateData prevRd, TransformData prevTd, GoalData nextGd, ChangedFull changedFull, bool hasChanged, Channel channel)
         {
             /* Only update rates if data has changed.
@@ -1356,18 +1470,14 @@ namespace FishNet.Component.Transforming
                 //abnormalCorrection = 1f;
                 positionRate = (unalteredPositionRate * abnormalCorrection);
             }
-            if (positionRate == 0f)
-                positionRate = prevRd.Position;
 
             //Rotation.
             if (ChangedFullContains(changedFull, ChangedFull.Rotation))
             {
                 Quaternion lastRotation = prevTd.Rotation;
-                distance = Quaternion.Angle(lastRotation, td.Rotation);
+                distance = lastRotation.Angle(td.Rotation, true);
                 rotationRate = (distance / timePassed) * abnormalCorrection;
             }
-            if (rotationRate == 0f)
-                rotationRate = prevRd.Rotation;
 
             //Scale.
             if (ChangedFullContains(changedFull, ChangedFull.Scale))
@@ -1376,10 +1486,8 @@ namespace FishNet.Component.Transforming
                 distance = Vector3.Distance(lastScale, td.Scale);
                 scaleRate = (distance / timePassed) * abnormalCorrection;
             }
-            if (scaleRate == 0f)
-                scaleRate = prevRd.Scale;
 
-            rd.Update(positionRate, rotationRate, scaleRate, unalteredPositionRate, abnormalRateDetected, timePassed);
+            rd.Update(positionRate, rotationRate, scaleRate, unalteredPositionRate, tickDifference, abnormalRateDetected, timePassed);
 
             //Returns if whole contains part.
             bool ChangedFullContains(ChangedFull whole, ChangedFull part)
@@ -1540,6 +1648,22 @@ namespace FishNet.Component.Transforming
             {
                 _goalDataQueue.Enqueue(nextGd);
             }
+
+            /* If the queue is excessive beyond interpolation then
+             * dequeue extras to prevent from dropping behind too
+             * quickly. This shouldn't be an issue with normal movement
+             * as the NT speeds up if the buffer unexpectedly grows, but
+             * when connections are unstable results may come in chunks
+             * and for a better experience the older parts of the chunks
+             * will be dropped. */
+            if (_goalDataQueue.Count > (_interpolation + 3))
+            {
+                while (_goalDataQueue.Count > _interpolation)
+                {
+                    GoalData tmpGd = _goalDataQueue.Dequeue();
+                    _goalDataCache.Push(tmpGd);
+                }
+            }
         }
 
         /// <summary>
@@ -1592,7 +1716,7 @@ namespace FishNet.Component.Transforming
         }
 
         /// <summary>
-        /// Updates which properties are synchronized. This feature is experimental.
+        /// Updates which properties are synchronized.
         /// </summary>
         /// <param name="value">Properties to synchronize.</param>
         public void SetSynchronizedProperties(SynchronizedProperty value)

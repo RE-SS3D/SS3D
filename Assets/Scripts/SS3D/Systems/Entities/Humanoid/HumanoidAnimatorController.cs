@@ -1,4 +1,5 @@
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Entities.Data;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities.Humanoid
@@ -22,15 +23,15 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void SubscribeToEvents()
         {
-            _movementController.OnAnimationSpeedChanged += UpdateMovementAnimation;
+            _movementController.OnSpeedChanged += UpdateMovement;
         }
 
         private void UnsubscribeFromEvents()
         {
-            _movementController.OnAnimationSpeedChanged -= UpdateMovementAnimation;
+            _movementController.OnSpeedChanged -= UpdateMovement;
         }
 
-        private void UpdateMovementAnimation(float speed)
+        private void UpdateMovement(float speed)
         {
             bool isMoving = speed != 0;
             float currentSpeed = _animator.GetFloat(Animations.Humanoid.MovementSpeed);
@@ -39,6 +40,5 @@ namespace SS3D.Systems.Entities.Humanoid
             
             _animator.SetFloat(Animations.Humanoid.MovementSpeed, speed);
         }
-        
     }
 }

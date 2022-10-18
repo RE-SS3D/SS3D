@@ -1,4 +1,5 @@
 ﻿using FishNet.Broadcast;
+using FishNet.CodeGenerating.Extension;
 using FishNet.CodeGenerating.Helping;
 using FishNet.CodeGenerating.Helping.Extension;
 using FishNet.CodeGenerating.Processing;
@@ -102,13 +103,9 @@ namespace FishNet.CodeGenerating.ILCore
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine($"Assembly {CodegenSession.Module.Name} has inherited access to SyncVars in different assemblies. When accessing SyncVars across assemblies be sure to use Get/Set methods withinin the inherited assembly script to change SyncVars. Accessible fields are:");
-
-                    //foreach ((TypeDefinition td, FieldDefinition fd) item in CodegenSession.DifferentAssemblySyncVars)
-                    //{ 
-                    // //   sb.AppendLine($"Field {item.fd.Name} within {item.fd.DeclaringType.FullName} in assembly {item.fd.Module.Name} is accessible.");
-                    //}
+      
                     foreach (FieldDefinition item in CodegenSession.DifferentAssemblySyncVars)
-                        sb.AppendLine($"   - Field {item.Name} within {item.DeclaringType.FullName} in assembly {item.Module.Name}.");
+                        sb.AppendLine($"Field {item.Name} within {item.DeclaringType.FullName} in assembly {item.Module.Name}.");
 
                     CodegenSession.LogWarning("v------- IMPORTANT -------v");
                     CodegenSession.LogWarning(sb.ToString());
@@ -215,7 +212,7 @@ namespace FishNet.CodeGenerating.ILCore
         {
             bool modified = false;
 
-            string networkBehaviourFullName = CodegenSession.ObjectHelper.NetworkBehaviour_FullName;
+            string networkBehaviourFullName = CodegenSession.NetworkBehaviourHelper.FullName;
 
             HashSet<TypeDefinition> typeDefs = new HashSet<TypeDefinition>();
             foreach (TypeDefinition td in CodegenSession.Module.Types)
@@ -241,7 +238,7 @@ namespace FishNet.CodeGenerating.ILCore
                     }
                     //0ms
 
-                    climbTd = climbTd.GetNextBaseClass();
+                    climbTd = climbTd.GetNextBaseTypeDefinition();
                     //this + name check 40ms
                 } while (climbTd != null);
 
@@ -301,7 +298,7 @@ namespace FishNet.CodeGenerating.ILCore
             bool modified = false;
             //Get all network behaviours to process.
             List<TypeDefinition> networkBehaviourTypeDefs = CodegenSession.Module.Types
-                .Where(td => td.IsSubclassOf(CodegenSession.ObjectHelper.NetworkBehaviour_FullName))
+                .Where(td => td.IsSubclassOf(CodegenSession.NetworkBehaviourHelper.FullName))
                 .ToList();
 
             //Moment a NetworkBehaviour exist the assembly is considered modified.
@@ -364,15 +361,15 @@ namespace FishNet.CodeGenerating.ILCore
                     /* Iterates all base types and
                      * adds them to inheritedTds so long
                      * as the base type is not a NetworkBehaviour. */
-                    TypeDefinition copyTd = tds[i].GetNextBaseClass();
+                    TypeDefinition copyTd = tds[i].GetNextBaseTypeDefinition();
                     while (copyTd != null)
                     {
                         //Class is NB.
-                        if (copyTd.FullName == CodegenSession.ObjectHelper.NetworkBehaviour_FullName)
+                        if (copyTd.FullName == CodegenSession.NetworkBehaviourHelper.FullName)
                             break;
 
                         inheritedTds.Add(copyTd);
-                        copyTd = copyTd.GetNextBaseClass();
+                        copyTd = copyTd.GetNextBaseTypeDefinition();
                     }
                 }
 
@@ -436,31 +433,42 @@ namespace FishNet.CodeGenerating.ILCore
                     uint childCount = 0;
 
                     TypeDefinition copyTd = typeDef;
+                    /* Iterate up to the parent script and then reverse
+                     * the order. This is so that the topmost is 0
+                     * and each inerhiting script adds onto that.
+                     * Setting child types this way makes it so parent
+                     * types don't need to have their synctype/rpc counts
+                     * rebuilt when scripts are later to be found
+                     * inheriting from them. */
+                    List<TypeDefinition> reversedTypeDefs = new List<TypeDefinition>();
                     do
                     {
-                        //How many RPCs are in copyTd.
-                        uint copyCount = CodegenSession.NetworkBehaviourSyncProcessor.GetSyncTypeCount(copyTd);
+                        reversedTypeDefs.Add(copyTd);
+                        copyTd = copyTd.GetNextBaseClassToProcess();
+                    } while (copyTd != null);
+                    reversedTypeDefs.Reverse();
 
+                    foreach (TypeDefinition td in reversedTypeDefs)
+                    {
+                        //How many RPCs are in copyTd.
+                        uint copyCount = CodegenSession.NetworkBehaviourSyncProcessor.GetSyncTypeCount(td);
                         /* If not found it this is the first time being
                          * processed. When this occurs set the value
                          * to 0. It will be overwritten below if baseCount
                          * is higher. */
                         uint previousCopyChildCount = 0;
-                        if (!typeDefCounts.TryGetValue(copyTd, out previousCopyChildCount))
-                            typeDefCounts[copyTd] = 0;
+                        if (!typeDefCounts.TryGetValue(td, out previousCopyChildCount))
+                            typeDefCounts[td] = 0;
                         /* If baseCount is higher then replace count for copyTd.
                          * This can occur when a class is inherited by several types
                          * and the first processed type might only have 1 rpc, while
                          * the next has 2. This could be better optimized but to keep
                          * the code easier to read, it will stay like this. */
                         if (childCount > previousCopyChildCount)
-                            typeDefCounts[copyTd] = childCount;
-
+                            typeDefCounts[td] = childCount;
                         //Increase baseCount with RPCs found here.
                         childCount += copyCount;
-
-                        copyTd = copyTd.GetNextBaseClassToProcess();
-                    } while (copyTd != null);
+                    }
                 }
             }
 

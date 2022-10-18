@@ -96,7 +96,7 @@ namespace SS3D.Systems.Rounds
             string userCkey = playerControlSystem.GetCkey(conn);
 
             // Checks if player can call a round start
-            if (permissionSystem.GetUserPermission(userCkey) != requiredRole)
+            if (permissionSystem.TryGetUserRole(userCkey, out ServerRoleTypes role) && role != requiredRole)
             {
                 string message = $"User {userCkey} doesn't have {requiredRole} permission";
                 Punpun.Say(this, message, Logs.ServerOnly);
