@@ -37,13 +37,14 @@ namespace FishNet.CodeGenerating.Helping
         private MethodReference NetworkManager_LogWarning_MethodRef;
         private MethodReference NetworkManager_LogError_MethodRef;
         internal MethodReference Debug_LogCommon_MethodRef;
-        private MethodReference Debug_LogWarning_MethodRef;
-        private MethodReference Debug_LogError_MethodRef;
+        internal MethodReference Debug_LogWarning_MethodRef;
+        internal MethodReference Debug_LogError_MethodRef;
         internal MethodReference Comparers_EqualityCompare_MethodRef;
         internal MethodReference Comparers_IsDefault_MethodRef;
-        internal MethodReference IsServer_MethodRef = null;
-        internal MethodReference IsClient_MethodRef = null;
-        internal MethodReference NetworkObject_Deinitializing_MethodRef = null;
+        internal MethodReference IsServer_MethodRef;
+        internal MethodReference IsClient_MethodRef;
+        internal MethodReference NetworkObject_Deinitializing_MethodRef;
+        internal MethodReference Application_IsPlaying_MethodRef;
         private Dictionary<Type, TypeReference> _importedTypeReferences = new Dictionary<Type, TypeReference>();
         private Dictionary<FieldDefinition, FieldReference> _importedFieldReferences = new Dictionary<FieldDefinition, FieldReference>();
         private Dictionary<MethodReference, MethodDefinition> _methodReferenceResolves = new Dictionary<MethodReference, MethodDefinition>();
@@ -51,13 +52,17 @@ namespace FishNet.CodeGenerating.Helping
         private Dictionary<FieldReference, FieldDefinition> _fieldReferenceResolves = new Dictionary<FieldReference, FieldDefinition>();
         private string NonSerialized_Attribute_FullName;
         private string Single_FullName;
-        private object fromMd;
+        #endregion
+
+        #region Const.
+        public const string UNITYENGINE_ASSEMBLY_PREFIX = "UnityEngine.";
         #endregion
 
         internal bool ImportReferences()
         {
             Type tmpType;
             SR.MethodInfo tmpMi;
+            SR.PropertyInfo tmpPi;
 
             NonSerialized_Attribute_FullName = typeof(NonSerializedAttribute).FullName;
             Single_FullName = typeof(float).FullName;
@@ -87,6 +92,12 @@ namespace FishNet.CodeGenerating.Helping
                 else if (mi.Name == nameof(Comparers.IsDefault))
                     Comparers_IsDefault_MethodRef = CodegenSession.ImportReference(mi);
             }
+
+            //Misc.
+            tmpType = typeof(UnityEngine.Application);
+            tmpPi = tmpType.GetProperty(nameof(UnityEngine.Application.isPlaying));
+            if (tmpPi != null)
+                Application_IsPlaying_MethodRef = CodegenSession.ImportReference(tmpPi.GetMethod);
 
             //Networkbehaviour.
             Type networkBehaviourType = typeof(NetworkBehaviour);
@@ -288,11 +299,9 @@ namespace FishNet.CodeGenerating.Helping
         }
 
         /// <summary>
-        /// Returns if methodInfo should be ignored.
+        /// Returns if type uses CodegenExcludeAttribute.
         /// </summary>
-        /// <param name="methodInfo"></param>
-        /// <returns></returns>
-        internal bool IgnoreMethod(SR.MethodInfo methodInfo)
+        internal bool CodegenExclude(SR.MethodInfo methodInfo)
         {
             foreach (SR.CustomAttributeData item in methodInfo.CustomAttributes)
             {
@@ -304,11 +313,9 @@ namespace FishNet.CodeGenerating.Helping
         }
 
         /// <summary>
-        /// Returns if methodInfo should be ignored.
+        /// Returns if type uses CodegenExcludeAttribute.
         /// </summary>
-        /// <param name="methodInfo"></param>
-        /// <returns></returns>
-        internal bool IgnoreMethod(MethodDefinition methodDef)
+        internal bool CodegenExclude(MethodDefinition methodDef)
         {
             foreach (CustomAttribute item in methodDef.CustomAttributes)
             {
@@ -318,6 +325,37 @@ namespace FishNet.CodeGenerating.Helping
 
             return false;
         }
+
+        /// <summary>
+        /// Returns if type uses CodegenExcludeAttribute.
+        /// </summary>
+        internal bool CodegenExclude(FieldDefinition fieldDef)
+        {
+            foreach (CustomAttribute item in fieldDef.CustomAttributes)
+            {
+                if (item.AttributeType.FullName == CodegenExcludeAttribute_FullName)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns if type uses CodegenExcludeAttribute.
+        /// </summary>
+        internal bool CodegenExclude(PropertyDefinition propDef)
+        {
+            foreach (CustomAttribute item in propDef.CustomAttributes)
+            {
+                if (item.AttributeType.FullName == CodegenExcludeAttribute_FullName)
+                    return true;
+            }
+
+            return false;
+        }
+
+
+
 
         /// <summary>
         /// Calls copiedMd with the assumption md shares the same parameters.
@@ -733,6 +771,9 @@ namespace FishNet.CodeGenerating.Helping
         /// <returns></returns>
         internal ParameterDefinition CreateParameter(MethodDefinition methodDef, TypeReference parameterTypeRef, string name = "", ParameterAttributes attributes = ParameterAttributes.None, int index = -1)
         {
+            int currentCount = methodDef.Parameters.Count;
+            if (string.IsNullOrEmpty(name))
+                name = (parameterTypeRef.Name + currentCount);
             ParameterDefinition parameterDef = new ParameterDefinition(name, attributes, parameterTypeRef);
             if (index == -1)
                 methodDef.Parameters.Add(parameterDef);
@@ -872,6 +913,31 @@ namespace FishNet.CodeGenerating.Helping
             bool hasReader = CodegenSession.ReaderHelper.HasDeserializer(typeRef, create);
 
             return (hasWriter && hasReader);
+        }
+
+        /// <summary>
+        /// Creates a return of default value for methodDef.
+        /// </summary>
+        /// <returns></returns>
+        public List<Instruction> CreateRetDefault(MethodDefinition methodDef, ModuleDefinition importReturnModule = null)
+        {
+            ILProcessor processor = methodDef.Body.GetILProcessor();
+            List<Instruction> instructions = new List<Instruction>();
+            //If requires a value return.
+            if (methodDef.ReturnType != methodDef.Module.TypeSystem.Void)
+            {
+                //Import type first.
+                methodDef.Module.ImportReference(methodDef.ReturnType);
+                if (importReturnModule != null)
+                    importReturnModule.ImportReference(methodDef.ReturnType);
+                VariableDefinition vd = CodegenSession.GeneralHelper.CreateVariable(methodDef, methodDef.ReturnType);
+                instructions.Add(processor.Create(OpCodes.Ldloca_S, vd));
+                instructions.Add(processor.Create(OpCodes.Initobj, vd.VariableType));
+                instructions.Add(processor.Create(OpCodes.Ldloc, vd));
+            }
+            instructions.Add(processor.Create(OpCodes.Ret));
+
+            return instructions;
         }
 
     }

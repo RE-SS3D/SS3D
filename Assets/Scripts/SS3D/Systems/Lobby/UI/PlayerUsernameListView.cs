@@ -1,13 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
 using Coimbra.Services.Events;
-using Cysharp.Threading.Tasks;
 using SS3D.Attributes;
-using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
-using SS3D.Systems.Lobby.Messages;
+using SS3D.Systems.Entities;
+using SS3D.Systems.PlayerControl;
+using SS3D.Systems.PlayerControl.Events;
 using SS3D.Systems.Rounds.Events;
 using UnityEngine;
 
@@ -28,26 +29,47 @@ namespace SS3D.Systems.Lobby.UI
         [SerializeField] [NotNull] private GameObject _uiPrefab;
         [SerializeField] private Color _userReadyColor = PaletteColors.LightBlue;
 
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            ReadyPlayersChanged.AddListener(HandleReadyPlayersChanged);
+        }
+
         public override void OnStartClient()
         {
             base.OnStartClient();
-
-            Setup();
             SubscribeToEvents();
         }
 
-        private void Setup()
-        {
-            SyncLobbyPlayers();
-        }
-
-        // Generic method to agglomerate all event managing
         private void SubscribeToEvents()
         {
-            ClientManager.RegisterBroadcast<UserJoinedLobbyMessage>(HandleUserJoinedLobby);
-            ClientManager.RegisterBroadcast<UserLeftLobbyMessage>(HandleUserLeftLobby);
+            OnlineSoulsChanged.AddListener(HandleOnlineSoulsChanged);
+        }
 
-            ReadyPlayersChanged.AddListener(HandleReadyPlayersChanged);
+        private void HandleOnlineSoulsChanged(ref EventContext context, in OnlineSoulsChanged e)
+        {
+            Soul soul = e.Changed;
+
+            if (soul == null)
+            {
+                return;
+            }
+
+            ChangeType changeType = e.ChangeType;
+            string ckey = soul.Ckey;
+
+            switch (changeType)
+            {
+                case ChangeType.Addition:
+                    AddUsernameUI(ckey);
+                    break;
+                case ChangeType.Removal:
+                    RemoveUsernameUI(ckey);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private void HandleReadyPlayersChanged(ref EventContext context, in ReadyPlayersChanged e)
@@ -56,45 +78,7 @@ namespace SS3D.Systems.Lobby.UI
 
             foreach (PlayerUsernameView username in _playerUsernames)
             {
-                if (readyPlayers.Contains(username.Name))
-                {
-                    username.UpdateNameColor(_userReadyColor);
-                }
-                else
-                {
-                    username.UpdateNameColor(PaletteColors.White);
-                }
-            }
-        }
-
-        private void HandleUserLeftLobby(UserLeftLobbyMessage m)
-        {
-            string ckey = m.Ckey;
-
-            RemoveUsernameUI(ckey);
-        }
-
-        private void HandleUserJoinedLobby(UserJoinedLobbyMessage m)
-        {
-            string ckey = m.Ckey;
-
-            AddUsernameUI(ckey);
-        }
-
-        /// <summary>
-        /// Makes sure the players are shown correct with a late join
-        /// </summary>
-        private async void SyncLobbyPlayers()
-        {
-            await UniTask.WaitUntil(() => GameSystems.Get<LobbySystem>() != null);
-
-            LobbySystem lobby = GameSystems.Get<LobbySystem>();
-
-            List<string> lobbyPlayers = lobby.CurrentLobbyPlayers() != null ? lobby.CurrentLobbyPlayers() : new List<string>();
-
-            foreach (string lobbyPlayer in lobbyPlayers)
-            {
-                AddUsernameUI(lobbyPlayer);
+                username.UpdateNameColor(readyPlayers.Contains(username.Name) ? _userReadyColor : PaletteColors.White);
             }
         }
 
@@ -134,8 +118,11 @@ namespace SS3D.Systems.Lobby.UI
                 playerUsernameUI.gameObject.Destroy();
             }
 
-            _playerUsernames.Remove(removedUsername);
-            removedUsername!.gameObject.Destroy();
+            if (removedUsername != null)
+            {
+                _playerUsernames.Remove(removedUsername);
+                removedUsername.gameObject.Destroy();
+            }
         }
     }
 }

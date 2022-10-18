@@ -5,6 +5,7 @@ using FishNet.Object;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace FishNet.Observing
 {
@@ -12,7 +13,8 @@ namespace FishNet.Observing
     /// Controls which clients can see and get messages for an object.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class NetworkObserver : NetworkBehaviour
+    [AddComponentMenu("FishNet/Component/NetworkObserver")]
+    public sealed class NetworkObserver : MonoBehaviour
     {
         #region Types.
         /// <summary>
@@ -45,7 +47,27 @@ namespace FishNet.Observing
         /// <summary>
         /// How ObserverManager conditions are used.
         /// </summary>
-        public ConditionOverrideType OverrideType => _overrideType;
+        public ConditionOverrideType OverrideType
+        {
+            get => _overrideType;
+            internal set => _overrideType = value;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Tooltip("True to update visibility for clientHost based on if they are an observer or not.")]
+        [FormerlySerializedAs("_setHostVisibility")]
+        [SerializeField]
+        private bool _updateHostVisibility = true;
+        /// <summary>
+        /// True to update visibility for clientHost based on if they are an observer or not.
+        /// </summary>
+        public bool UpdateHostVisibility
+        {
+            get => _updateHostVisibility;
+            private set => _updateHostVisibility = value;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -85,6 +107,10 @@ namespace FishNet.Observing
         /// Becomes true when registered with ServerObjects as Timed observers.
         /// </summary>
         private bool _registeredAsTimed;
+        /// <summary>
+        /// True if already pre-initialized.
+        /// </summary>
+        private bool _preintiialized;
         #endregion
 
         private void OnEnable()
@@ -103,57 +129,72 @@ namespace FishNet.Observing
                 UnregisterTimedConditions();
         }
 
+        internal void Deinitialize()
+        {
+            if (_networkObject != null && _networkObject.IsDeinitializing)
+                UnregisterTimedConditions();
+        }
+
         /// <summary>
         /// Initializes this script for use.
         /// </summary>
         /// <param name="networkManager"></param>
         internal void PreInitialize(NetworkObject networkObject)
         {
-            _networkObject = networkObject;
-
-            bool observerFound = false;
-            for (int i = 0; i < _observerConditions.Count; i++)
+            if (!_preintiialized)
             {
-                if (_observerConditions[i] != null)
-                {
-                    observerFound = true;
+                _preintiialized = true;
+                _networkObject = networkObject;
+                bool ignoringManager = (OverrideType == ConditionOverrideType.IgnoreManager);
 
-                    /* Make an instance of each condition so values are
-                     * not overwritten when the condition exist more than
-                     * once in the scene. Double edged sword of using scriptable
-                     * objects for conditions. */
-                    _observerConditions[i] = _observerConditions[i].Clone();
-                    ObserverCondition oc = _observerConditions[i];
-                    oc.InitializeOnce(_networkObject);
-                    //If timed also register as containing timed conditions.
-                    if (oc.Timed())
-                        _timedConditions.Add(oc);
-                }
-                else
-                {
-                    _observerConditions.RemoveAt(i);
-                    i--;
-                }
-            }
+                //Check to override SetHostVisibility.
+                if (!ignoringManager)
+                    UpdateHostVisibility = networkObject.ObserverManager.UpdateHostVisibility;
 
-            //No observers specified 
-            if (!observerFound)
-            {
-                /* Print warning and remove component if not using
-                 * IgnoreManager. This is because other overrides would
-                 * suggest conditions should be added in someway, but
-                 * none are specified.
-                 * 
-                 * Where-as no conditions with ignore manager would
-                 * make sense if the manager had conditions, but you wanted
-                 * this object global visible, thus no conditions. */
-                if (OverrideType != ConditionOverrideType.IgnoreManager)
+                bool observerFound = false;
+                for (int i = 0; i < _observerConditions.Count; i++)
                 {
-                    if (NetworkManager.CanLog(LoggingType.Warning))
-                        Debug.LogWarning($"NetworkObserver exist on {gameObject.name} but there are no observer conditions. This script has been removed.");
-                    Destroy(this);
+                    if (_observerConditions[i] != null)
+                    {
+                        observerFound = true;
+
+                        /* Make an instance of each condition so values are
+                         * not overwritten when the condition exist more than
+                         * once in the scene. Double edged sword of using scriptable
+                         * objects for conditions. */
+                        _observerConditions[i] = _observerConditions[i].Clone();
+                        ObserverCondition oc = _observerConditions[i];
+                        oc.InitializeOnce(_networkObject);
+                        //If timed also register as containing timed conditions.
+                        if (oc.Timed())
+                            _timedConditions.Add(oc);
+                    }
+                    else
+                    {
+                        _observerConditions.RemoveAt(i);
+                        i--;
+                    }
                 }
-                return;
+
+                //No observers specified 
+                if (!observerFound)
+                {
+                    /* Print warning and remove component if not using
+                     * IgnoreManager. This is because other overrides would
+                     * suggest conditions should be added in someway, but
+                     * none are specified.
+                     * 
+                     * Where-as no conditions with ignore manager would
+                     * make sense if the manager had conditions, but you wanted
+                     * this object global visible, thus no conditions. */
+                    if (!ignoringManager)
+                    {
+                        if (networkObject.NetworkManager.CanLog(LoggingType.Warning))
+                            Debug.LogWarning($"NetworkObserver exist on {gameObject.name} but there are no observer conditions. This script has been removed.");
+                        Destroy(this);
+                    }
+                    return;
+                }
             }
 
             RegisterTimedConditions();
@@ -180,7 +221,6 @@ namespace FishNet.Observing
             return null;
         }
 
-        private bool canPrint => (_networkObject != null && !_networkObject.IsOwner);
         /// <summary>
         /// Returns ObserverStateChange by comparing conditions for a connection.
         /// </summary>
@@ -188,7 +228,6 @@ namespace FishNet.Observing
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ObserverStateChange RebuildObservers(NetworkConnection connection, bool timedOnly)
         {
-            timedOnly = false;
             bool currentlyAdded = (_networkObject.Observers.Contains(connection));
 
             //True if all conditions are met.
@@ -209,34 +248,42 @@ namespace FishNet.Observing
                 }
                 else
                 {
-                    //Becomes true if a non-timed condition fails.
-                    bool nonTimedFailed = false;
-
-                    List<ObserverCondition> collection = (timedOnly) ? _timedConditions : _observerConditions;
-                    for (int i = 0; i < collection.Count; i++)
+                    //Return as failed if there is a parent nob which doesn't have visibility.
+                    if (_networkObject.ParentNetworkObject != null && !_networkObject.ParentNetworkObject.Observers.Contains(connection))
                     {
-                        ObserverCondition condition = collection[i];
-                        /* If any observer returns removed then break
-                         * from loop and return removed. If one observer has
-                         * removed then there's no reason to iterate
-                         * the rest. */
-                        bool conditionMet = condition.ConditionMet(connection, currentlyAdded, out bool notProcessed);
-                        if (notProcessed)
-                            conditionMet = currentlyAdded;
-
-                        //Condition not met.
-                        if (!conditionMet)
-                        {
-                            allConditionsMet = false;
-                            if (!condition.Timed())
-                                nonTimedFailed = true;
-                            break;
-                        }
+                        allConditionsMet = false;
                     }
+                    else
+                    {
+                        //Becomes true if a non-timed condition fails.
+                        bool nonTimedFailed = false;
 
-                    //If all conditions are being checked.
-                    if (!timedOnly)
-                        _nonTimedMet = !nonTimedFailed;
+                        List<ObserverCondition> collection = (timedOnly) ? _timedConditions : _observerConditions;
+                        for (int i = 0; i < collection.Count; i++)
+                        {
+                            ObserverCondition condition = collection[i];
+                            /* If any observer returns removed then break
+                             * from loop and return removed. If one observer has
+                             * removed then there's no reason to iterate
+                             * the rest. */
+                            bool conditionMet = condition.ConditionMet(connection, currentlyAdded, out bool notProcessed);
+                            if (notProcessed)
+                                conditionMet = currentlyAdded;
+
+                            //Condition not met.
+                            if (!conditionMet)
+                            {
+                                allConditionsMet = false;
+                                if (!condition.Timed())
+                                    nonTimedFailed = true;
+                                break;
+                            }
+                        }
+
+                        //If all conditions are being checked.
+                        if (!timedOnly)
+                            _nonTimedMet = !nonTimedFailed;
+                    }
                 }
             }
 
@@ -300,6 +347,22 @@ namespace FishNet.Observing
                 return ObserverStateChange.Unchanged;
             else
                 return ObserverStateChange.Added;
+        }
+
+
+        /// <summary>
+        /// Sets a new value for UpdateHostVisibility.
+        /// This does not immediately update renderers.
+        /// You may need to combine with NetworkObject.SetRenderersVisible(bool).
+        /// </summary>
+        /// <param name="value">New value.</param>
+        public void SetUpdateHostVisibility(bool value)
+        {
+            //Unchanged.
+            if (value == UpdateHostVisibility)
+                return;
+
+            UpdateHostVisibility = value;
         }
 
     }

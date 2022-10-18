@@ -7,8 +7,16 @@ using UnityEngine;
 namespace FishNet.CodeGenerating.Helping.Extension
 {
 
-    internal static class TypeReferenceExtensions
+    internal static class TypeReferenceExtensionsOld
     {
+
+        /// <summary>
+        /// Gets a Resolve favoring cached results first.
+        /// </summary>
+        internal static TypeDefinition CachedResolve(this TypeReference typeRef)
+        {
+            return CodegenSession.GeneralHelper.GetTypeReferenceResolve(typeRef);
+        }
 
         /// <summary>
         /// Returns if typeRef is a class or struct.
@@ -20,100 +28,27 @@ namespace FishNet.CodeGenerating.Helping.Extension
         }
 
         /// <summary>
+        /// Returns all properties on typeRef and all base types which have a public get/set accessor.
+        /// </summary>
+        /// <param name="typeRef"></param>
+        /// <returns></returns>
+        public static IEnumerable<PropertyDefinition> FindAllPublicProperties(this TypeReference typeRef, bool excludeGenerics = true, System.Type[] excludedBaseTypes = null, string[] excludedAssemblyPrefixes = null)
+        {
+            return typeRef.CachedResolve().FindAllPublicProperties(excludeGenerics, excludedBaseTypes, excludedAssemblyPrefixes);
+        }
+
+
+        /// <summary>
         /// Gets all public fields in typeRef and base type.
         /// </summary>
         /// <param name="typeRef"></param>
         /// <returns></returns>
-        public static IEnumerable<FieldDefinition> FindAllPublicFields(this TypeReference typeRef)
+        public static IEnumerable<FieldDefinition> FindAllPublicFields(this TypeReference typeRef, bool ignoreStatic, bool ignoreNonSerialized, System.Type[] excludedBaseTypes = null, string[] excludedAssemblyPrefixes = null)
         {
-            return FindAllPublicFields(typeRef.CachedResolve());
+            return typeRef.Resolve().FindAllPublicFields(ignoreStatic, ignoreNonSerialized, excludedBaseTypes, excludedAssemblyPrefixes);
         }
 
-        /// <summary>
-        /// Gets a Resolve favoring cached results first.
-        /// </summary>
-        internal static TypeDefinition CachedResolve(this TypeReference typeRef)
-        {
-            return CodegenSession.GeneralHelper.GetTypeReferenceResolve(typeRef);
-        }
-
-        /// <summary>
-        /// Finds public fields in type and base type
-        /// </summary>
-        /// <param name="variable"></param>
-        /// <returns></returns>
-        public static IEnumerable<FieldDefinition> FindAllPublicFields(this TypeDefinition typeDefinition)
-        {
-            while (typeDefinition != null)
-            {
-                foreach (FieldDefinition field in typeDefinition.Fields)
-                {
-                    if (field.IsStatic || field.IsPrivate)
-                        continue;
-
-                    if (field.IsNotSerialized)
-                        continue;
-
-                    yield return field;
-                }
-
-                try
-                {
-                    typeDefinition = typeDefinition.BaseType?.CachedResolve();
-                }
-                catch
-                {
-                    break;
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Returns a method within the base type of typeRef.
-        /// </summary>
-        /// <param name="typeRef"></param>
-        /// <param name="methodName"></param>
-        /// <returns></returns>
-        public static MethodDefinition GetMethodInBase(this TypeReference typeRef, string methodName)
-        {
-            TypeDefinition td = typeRef.CachedResolve().GetNextBaseClass();
-            while (td != null)
-            {
-                Debug.LogWarning(td.Name);
-                foreach (MethodDefinition md in td.Methods)
-                {
-                    Debug.Log("X " + md.Name);
-                    if (md.Name == methodName)
-                    {
-                        return md;
-
-                        //MethodReference method = md;
-                        //if (typeRefCopy.IsGenericInstance)
-                        //{
-                        //    var baseTypeInstance = (GenericInstanceType)typeRef;
-                        //    method = method.MakeHostInstanceGeneric(baseTypeInstance);
-                        //}
-
-                        //return method;
-                    }
-                }
-
-                try
-                {
-                    td = td.GetNextBaseClass();
-                }
-                /* This may occur when inheriting from a class
-                 * in another assembly. */
-                catch (AssemblyResolutionException)
-                {
-                    break;
-                }
-            }
-
-            return null;
-        }
-
+    
         /// <summary>
         /// Returns if a typeRef is type.
         /// </summary>

@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Xml.Serialization;
 
 #if UNITY_EDITOR
+using FishNet.Editing.PrefabCollectionGenerator;
 using UnityEditor.Compilation;
 using UnityEditor.Build.Reporting;
 using UnityEditor;
@@ -60,8 +61,58 @@ namespace FishNet.Configuring
 #pragma warning restore CS0162 // Unreachable code detected
             }
         }
+        /// <summary>
+        /// Technique to strip methods.
+        /// </summary>
+        public static StrippingTypes StrippingType => (StrippingTypes)Configuration.ConfigurationData.StrippingType;
 
-        
-    }
+        private static object _compilationContext;
+        public int callbackOrder => 0;
+#if UNITY_EDITOR
+
+        public void OnPreprocessBuild(BuildReport report)
+        {
+            Generator.IgnorePostProcess = true;
+            Generator.GenerateFull();
+            CompilationPipeline.compilationStarted += CompilationPipelineOnCompilationStarted;
+            CompilationPipeline.compilationFinished += CompilationPipelineOnCompilationFinished;
+
+            
+        }
+        /* Solution for builds ending with errors and not triggering OnPostprocessBuild.
+        * Link: https://gamedev.stackexchange.com/questions/181611/custom-build-failure-callback
+        */
+        private void CompilationPipelineOnCompilationStarted(object compilationContext)
+        {
+            _compilationContext = compilationContext;
+        }
+
+        private void CompilationPipelineOnCompilationFinished(object compilationContext)
+        {
+            if (compilationContext != _compilationContext)
+                return;
+
+            _compilationContext = null;
+
+            CompilationPipeline.compilationStarted -= CompilationPipelineOnCompilationStarted;
+            CompilationPipeline.compilationFinished -= CompilationPipelineOnCompilationFinished;
+
+            BuildingEnded();
+        }
+
+        private void BuildingEnded()
+        {
+            
+
+            Generator.IgnorePostProcess = false;
+        }
+
+        public void OnPostprocessBuild(BuildReport report)
+        {
+            
+                BuildingEnded();
+        }
+#endif
+        }
 
 }

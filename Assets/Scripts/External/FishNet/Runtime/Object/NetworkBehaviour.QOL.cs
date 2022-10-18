@@ -6,11 +6,13 @@ using FishNet.Connection;
 using FishNet.Managing;
 using FishNet.Managing.Client;
 using FishNet.Managing.Logging;
+using FishNet.Managing.Observing;
 using FishNet.Managing.Scened;
 using FishNet.Managing.Server;
 using FishNet.Managing.Timing;
 using FishNet.Managing.Transporting;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace FishNet.Object
@@ -36,6 +38,10 @@ namespace FishNet.Object
         /// ClientManager for this object.
         /// </summary>
         public ClientManager ClientManager => _networkObjectCache.ClientManager;
+        /// <summary>
+        /// ObserverManager for this object.
+        /// </summary>
+        public ObserverManager ObserverManager => _networkObjectCache.ObserverManager;
         /// <summary>
         /// TransportManager for this object.
         /// </summary>
@@ -77,12 +83,17 @@ namespace FishNet.Object
         /// </summary>
         public bool IsOffline => _networkObjectCache.IsOffline;
         /// <summary>
+        /// Observers for this NetworkBehaviour.
+        /// </summary>
+        public HashSet<NetworkConnection> Observers => _networkObjectCache.Observers;
+        /// <summary>
         /// True if the local client is the owner of this object.
         /// </summary>
 #if UNITY_2020_3_OR_NEWER
-        [PreventUsageInside("global::FishNet.Object.NetworkBehaviour", "OnStartServer")]
-        [PreventUsageInside("global::FishNet.Object.NetworkBehaviour", "Awake")]
-        [PreventUsageInside("global::FishNet.Object.NetworkBehaviour", "Start")]
+        [PreventUsageInside("global::FishNet.Object.NetworkBehaviour", "OnStartServer", "")]
+        [PreventUsageInside("global::FishNet.Object.NetworkBehaviour", "OnStartNetwork", " Use base.Owner.IsLocalClient instead.")]
+        [PreventUsageInside("global::FishNet.Object.NetworkBehaviour", "Awake", "")]
+        [PreventUsageInside("global::FishNet.Object.NetworkBehaviour", "Start", "")]
 #endif
         public bool IsOwner => _networkObjectCache.IsOwner;
         /// <summary>
@@ -124,10 +135,11 @@ namespace FishNet.Object
         /// <summary>
         /// Despawns this _networkObjectCache. Can only be called on the server.
         /// </summary>
-        public void Despawn()
+        /// <param name="cacheOnDespawnOverride">Overrides the default DisableOnDespawn value for this single despawn. Scene objects will never be destroyed.</param>
+        public void Despawn(DespawnType? despawnType = null)
         {
             if (!IsNetworkObjectNull(true))
-                _networkObjectCache.Despawn();
+                _networkObjectCache.Despawn(despawnType);
         }
         /// <summary>
         /// Spawns an object over the network. Can only be called on the server.
@@ -139,6 +151,17 @@ namespace FishNet.Object
             if (IsNetworkObjectNull(true))
                 return;
             _networkObjectCache.Spawn(go, ownerConnection);
+        }
+        /// <summary>
+        /// Spawns an object over the network. Can only be called on the server.
+        /// </summary>
+        /// <param name="nob">GameObject instance to spawn.</param>
+        /// <param name="ownerConnection">Connection to give ownership to.</param>
+        public void Spawn(NetworkObject nob, NetworkConnection ownerConnection = null)
+        {
+            if (IsNetworkObjectNull(true))
+                return;
+            _networkObjectCache.Spawn(nob, ownerConnection);
         }
         /// <summary>
         /// Returns if NetworkObject is null.

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using Coimbra;
 using Coimbra.Services.Events;
+using Cysharp.Threading.Tasks;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Core.Utils;
@@ -17,27 +19,17 @@ namespace SS3D.Systems.Permissions
 
         [SerializeField] private List<GameObject> _objectsToDisable;
 
-        public override void OnStartClient()
+        protected override void OnAwake()
         {
-            base.OnStartClient();
-        
-            ClientManager.RegisterBroadcast<UserJoinedServerMessage>(HandleUserJoinedServer);
-            UserPermissionsChangedEvent.AddListener(HandleUserPermissionsUpdated);
-        }
+            base.OnAwake();
 
-        private void HandleUserJoinedServer(UserJoinedServerMessage joinedServerMessage)
-        {
-            if (joinedServerMessage.Ckey != LocalPlayerAccountUtility.Ckey)
-            {
-                return;
-            }
-        
-            _ckey = joinedServerMessage.Ckey;
-            DisableObjects();
+            UserPermissionsChangedEvent.AddListener(HandleUserPermissionsUpdated);
         }
 
         private void HandleUserPermissionsUpdated(ref EventContext context, in UserPermissionsChangedEvent e)
         {
+            _ckey = LocalPlayerAccountUtility.Ckey;
+
             DisableObjects();
         }
 
@@ -49,21 +41,22 @@ namespace SS3D.Systems.Permissions
             }
 
             PermissionSystem permissionSystem = GameSystems.Get<PermissionSystem>();
-            PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
 
-            bool isAdmin = permissionSystem.CanUserPerformAction(ServerRoleTypes.Administrator, _ckey);
-
-            if (isAdmin)
+            if (!permissionSystem.HasLoadedPermissions)
             {
                 return;
             }
 
-            foreach (GameObject o in _objectsToDisable)
+            permissionSystem.TryGetUserRole(_ckey, out ServerRoleTypes role);
+
+            if (role == ServerRoleTypes.Administrator)
             {
-                if (o != null)
-                {
-                    o.Destroy();
-                }
+                return;
+            }
+
+            foreach (GameObject o in _objectsToDisable.Where(o => o != null))
+            {
+                o.Destroy();
             }
         }
     }

@@ -8,12 +8,12 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Entities.Messages;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Rounds.Messages;
 using UnityEngine;
-using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 
 namespace SS3D.Systems.Entities
 {
@@ -25,6 +25,7 @@ namespace SS3D.Systems.Entities
         [SyncObject]
         private readonly SyncList<string> _spawnedPlayers = new();
 
+        private readonly List<PlayerControllable> _serverSpawnedPlayers = new();
         private bool _alreadySpawnedInitialPlayers;
 
         public bool IsPlayedSpawned(string ckey) => _spawnedPlayers.Contains(ckey);
@@ -48,14 +49,33 @@ namespace SS3D.Systems.Entities
             base.OnStartServer();
 
             ServerManager.RegisterBroadcast<RequestEmbarkMessage>(HandleRequestEmbark);
+            ServerManager.RegisterBroadcast<RequestMindSwap>(HandleRequestMindSwap);
 
             SpawnReadyPlayersEvent.AddListener(HandleSpawnReadyPlayers);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
         }
 
+        private void HandleRequestMindSwap(NetworkConnection conn, RequestMindSwap m)
+        {
+            ProcessMindSwap(m.Origin, m.Target);
+        }
+
         private void HandleSpawnedPlayersChanged(SyncListOperation op, int index, string olditem, string newitem, bool asserver)
         {
             SyncSpawnedPlayers();
+        }
+
+        [Server]
+        private void ProcessMindSwap(GameObject origin, GameObject target)
+        {
+            PlayerControllable originControllable = origin.GetComponent<PlayerControllable>();
+            PlayerControllable targetControllable = target.GetComponent<PlayerControllable>();
+
+            Soul originSoul = originControllable.ControllingSoul;
+            Soul targetSoul = targetControllable.ControllingSoul;
+
+            originControllable.SetControllingSoul(targetSoul);
+            targetControllable.SetControllingSoul(originSoul);
         }
 
         [Server]
@@ -69,7 +89,9 @@ namespace SS3D.Systems.Entities
             }
 
             _alreadySpawnedInitialPlayers = false;
-            _spawnedPlayers.Clear();
+            _spawnedPlayers.Clear();  
+
+            DestroySpawnedPlayers();
         }
 
         [Server]
@@ -120,6 +142,17 @@ namespace SS3D.Systems.Entities
             _alreadySpawnedInitialPlayers = true;
         }
 
+        [Server]
+        private void DestroySpawnedPlayers()
+        {
+            foreach (PlayerControllable player in _serverSpawnedPlayers)
+            {
+                player.ProcessDespawn();
+            }
+
+            _serverSpawnedPlayers.Clear();
+        }
+
         private void SpawnPlayer(string ckey)
         {
             PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
@@ -128,11 +161,10 @@ namespace SS3D.Systems.Entities
             _spawnedPlayers.Add(ckey);
 
             PlayerControllable controllable = Instantiate(_tempHuman[Random.Range(0, _tempHuman.Count)], _tempSpawnPoint.position, Quaternion.identity);
+            _serverSpawnedPlayers.Add(controllable);
 
             ServerManager.Spawn(controllable.NetworkObject, soul.Owner);
-                
-            controllable.GiveOwnership(soul.Owner);
-            controllable.ControllingSoul = soul.Owner;
+            controllable.SetControllingSoul(soul);
 
             string message = $"Spawning player {soul.Ckey} on {controllable.name}";
             Punpun.Say(this, message, Logs.ServerOnly); 

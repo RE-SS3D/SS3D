@@ -4,6 +4,7 @@ using System.Linq;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using SS3D.Systems.Permissions.Events;
 using UnityEngine;
 using File = System.IO.File;
@@ -23,6 +24,7 @@ namespace SS3D.Systems.Permissions
 
         [SyncObject]
         private readonly SyncDictionary<string, ServerRoleTypes> _userPermissions = new();
+        [SyncVar] public bool HasLoadedPermissions;
 
         protected override void OnStart()
         {
@@ -47,10 +49,10 @@ namespace SS3D.Systems.Permissions
 
         private void HandleOnChange(SyncDictionaryOperation op, string key, ServerRoleTypes value, bool asServer)
         {
-              SyncUserPermissions();
+            SyncUserPermissions();
         }
 
-        public ServerRoleTypes GetUserPermission(string ckey)
+        public bool TryGetUserRole(string ckey, out ServerRoleTypes userPermission)
         {
             if (_userPermissions.Count == 0 || _userPermissions == null)
             {
@@ -58,13 +60,9 @@ namespace SS3D.Systems.Permissions
             }
 
             bool containsKey = _userPermissions.ContainsKey(ckey);
+            userPermission = containsKey ? _userPermissions[ckey] : ServerRoleTypes.None;
 
-            return containsKey ? _userPermissions[ckey] : ServerRoleTypes.User;
-        }
-
-        public bool CanUserPerformAction(ServerRoleTypes requiredRole, string ckey)
-        {
-            return GetUserPermission(ckey) == requiredRole;
+            return containsKey;
         }
 
         [Server]
@@ -80,8 +78,9 @@ namespace SS3D.Systems.Permissions
 
             string[] lines = File.ReadAllLines(FullPermissionFilePath);
 
-            foreach (string line in lines)
+            for (int index = 0; index < lines.Length; index++)
             {
+                string line = lines[index];
                 string[] words = line.Split(" ");
 
                 string ckey = words[0];
@@ -89,8 +88,11 @@ namespace SS3D.Systems.Permissions
 
                 _userPermissions.Add(ckey, role);
 
-                Debug.Log($"[{nameof(PermissionSystem)}] - Found user permission {ckey} as {role}");
+                Punpun.Say(this, $"Found user permission {ckey} as {role}", Logs.ServerOnly);
             }
+
+            HasLoadedPermissions = true;
+            SyncUserPermissions();
         }
 
         private void SyncUserPermissions()
@@ -101,14 +103,15 @@ namespace SS3D.Systems.Permissions
             permissionsChangedEvent.Invoke(this);
         }
 
-        private static void CreatePermissionsFileIfNotExists()
+        [Server]
+        private void CreatePermissionsFileIfNotExists()
         {
             if (File.Exists(FullPermissionFilePath))
             {
                 return;
             }
 
-            Debug.Log($"[{nameof(PermissionSystem)}] - Permissions file not found, creating a new one");
+            Punpun.Say(this, $"Permissions file not found, creating a new one", Logs.ServerOnly);
             File.WriteAllText(FullPermissionFilePath, string.Empty);
         }
     }

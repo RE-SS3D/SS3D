@@ -62,7 +62,7 @@ namespace FishNet.Object
         internal void InvokePostOnServerStart(NetworkConnection conn)
         {
             for (int i = 0; i < NetworkBehaviours.Length; i++)
-                NetworkBehaviours[i].OnSendBufferedRpcs(conn);
+                NetworkBehaviours[i].SendBufferedRpcs(conn);
 
             for (int i = 0; i < NetworkBehaviours.Length; i++)
                 NetworkBehaviours[i].OnSpawnServer(conn);
@@ -82,7 +82,7 @@ namespace FishNet.Object
         /// Invokes OnStop callbacks.
         /// </summary>
         /// <param name="asServer"></param>
-        private void InvokeStopCallbacks(bool asServer)
+        internal void InvokeStopCallbacks(bool asServer)
         {
             if (asServer)
             {
