@@ -18,8 +18,6 @@ namespace SS3D.Systems.Entities
 
         [SyncVar(OnChange = "SyncControllingSoul")] private Soul _controllingSoul;
 
-        [SerializeField] private bool _scaleInOnSpawn = true;
-
         public Soul ControllingSoul
         {
             get => _controllingSoul;
@@ -37,12 +35,6 @@ namespace SS3D.Systems.Entities
 
         private void OnSpawn()
         {
-            if (_scaleInOnSpawn)
-            {
-                LocalScale = Vector3.zero;
-                TransformCache.DOScale(1, ScaleInDuration).SetEase(Ease.OutCirc);
-            }
-
             UpdateCameraFollow();
             ControllingSoulChanged?.Invoke(ControllingSoul);
         }

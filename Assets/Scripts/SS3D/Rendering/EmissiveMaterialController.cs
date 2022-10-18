@@ -1,7 +1,5 @@
- using System;
 using SS3D.Core.Behaviours;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 namespace SS3D.Rendering
 {
