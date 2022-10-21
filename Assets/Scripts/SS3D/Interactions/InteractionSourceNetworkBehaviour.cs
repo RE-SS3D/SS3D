@@ -163,6 +163,6 @@ namespace SS3D.Interactions
             }
         }
 
-        public GameObject GameObject => gameObject;
+        public GameObject GameObject => GameObjectCache;
     }
 }

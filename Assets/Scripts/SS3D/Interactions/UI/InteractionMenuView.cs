@@ -45,7 +45,7 @@ namespace SS3D.Interactions.UI
 
         private void Update()
         {
-            if (!Input.GetButtonDown("Click") && !Input.GetButtonDown("Secondary Click"))
+            if (!Input.GetButtonDown("Primary Click") && !Input.GetButtonDown("Secondary Click"))
             {
                 return;
             }

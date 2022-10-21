@@ -146,7 +146,7 @@ namespace SS3D.Systems.Rounds
         {
             _currentTimerSeconds = newValue;
 
-            Punpun.Say(this, _currentTimerSeconds.ToString(), Logs.ServerOnly);
+            //Punpun.Say(this, _currentTimerSeconds.ToString(), Logs.ServerOnly);
 
             RoundTickUpdated roundTickUpdated = new(_currentTimerSeconds);
             roundTickUpdated.Invoke(this);
