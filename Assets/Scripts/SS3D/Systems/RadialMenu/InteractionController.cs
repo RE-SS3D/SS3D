@@ -77,27 +77,10 @@ namespace SS3D.Systems.RadialMenu
 
         private void ProcessSecondaryClick()
         {
-            if (Input.GetButton("Use"))
-            {
-                Hands hands = GetComponent<Hands>();
-                if (hands == null)
-                {
-                    return;
-                }
+            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
 
-                Item item = hands.ItemInHand;
-                if (item != null)
-                {
-                    InteractInHand(item.gameObject, gameObject, true);
-                }
-            }
-            else
-            {
-                Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-                List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
-
-                ViewInteractions(viableInteractions, interactionEvent, ray);
-            }
+            ViewTargetInteractions(viableInteractions, interactionEvent, ray);
         }
 
         private void ProcessPrimaryClick()
@@ -125,23 +108,24 @@ namespace SS3D.Systems.RadialMenu
             CmdRunInteraction(ray, 0, interactionName);
         }
 
-        private void ViewInteractions(List<InteractionEntry> viableInteractions, InteractionEvent interactionEvent, Ray ray)
+        private void ViewTargetInteractions(List<InteractionEntry> viableInteractions, InteractionEvent interactionEvent, Ray ray)
         {
             List<IInteraction> interactions = viableInteractions.Select(entry => entry.Interaction).ToList();
             
             if (interactions.Count <= 0) { return; }
 
-            _radialView.SetInteractions(interactions, interactionEvent, Input.mousePosition);
-            _radialView.OnInteractionSelected += interaction =>
+            void handleInteractionSelected(IInteraction interaction)
             {
                 string interactionName = interaction.GetName(interactionEvent);
-                int index = viableInteractions.FindIndex(x => x.Interaction == interaction);
 
+                int index = viableInteractions.FindIndex(x => x.Interaction == interaction);
                 index = Mathf.Clamp(index, 0, int.MaxValue);
 
                 CmdRunInteraction(ray, index, interactionName);
-            };
+            }
 
+            _radialView.SetInteractions(interactions, interactionEvent, Input.mousePosition);
+            _radialView.OnInteractionSelected += handleInteractionSelected;
             _radialView.ShowInteractionsMenu();
         }
 
@@ -154,39 +138,45 @@ namespace SS3D.Systems.RadialMenu
         [Client]
         public void InteractInHand(GameObject target, GameObject sourceObject, bool showMenu = false)
         {
-            IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
-            if (source == null)
+            if (!sourceObject.TryGetComponent(out IInteractionSource source))
             {
                 return;
             }
-            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
+
             InteractionEvent interactionEvent = new(source, null);
+
+            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
             List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
+            
             if (entries.Count < 1)
             {
                 return;
             }
 
             interactionEvent.Target = entries[0].Target;
-            List<IInteraction> interactions = entries.Select(x => x.Interaction).ToList();
+            List<IInteraction> interactions = entries.Select(entry => entry.Interaction).ToList();
 
             if (showMenu && interactions.Count > 0)
             {
                 Vector3 mousePosition = Input.mousePosition;
-                mousePosition.y = Mathf.Max(_radialView.transform.GetChild(0).GetComponent<RectTransform>().rect.height, mousePosition.y);
+                mousePosition.y = Mathf.Max(_radialView.RectTransform.rect.height, mousePosition.y);
+
                 _radialView.SetInteractions(interactions, interactionEvent, mousePosition);
 
-                _radialView.OnInteractionSelected += interaction =>
+                void handleInteractionSelected(IInteraction interaction)
                 {
                     int index = entries.FindIndex(x => x.Interaction == interaction);
                     string interactionName = interaction.GetName(interactionEvent);
 
                     CmdRunInventoryInteraction(target, sourceObject, index, interactionName);
-                };
+                }
+
+                _radialView.OnInteractionSelected += handleInteractionSelected;
             }
             else
             {
-                CmdRunInventoryInteraction(target, sourceObject, 0, entries[0].Interaction.GetName(interactionEvent));
+                IInteraction firstInteraction = entries.First().Interaction;
+                CmdRunInventoryInteraction(target, sourceObject, 0, firstInteraction.GetName(interactionEvent));
             }
         }
 
@@ -242,23 +232,12 @@ namespace SS3D.Systems.RadialMenu
             interactionEvent.Source.ClientInteract(interactionEvent, chosenInteraction.Interaction, new InteractionReference(referenceId));
         }
 
-        /**
-         * <summary>
-         * Runs an interaction (chosen on the client) on the server.
-         * <br />
-         * For reasons of serialization and security, some code is re-run
-         * </summary>
-         * <param name="ray">
-         * The ray the click came from. RaycastHit is not serializable and this ensures
-         * that a user can't try to interact with something that should be invisible.
-         * </param>
-         * <param name="index">
-         * The index into the prioritised interaction list this interaction is at
-         * </param>
-         * <param name="name">
-         * To confirm the interaction is the correctly selected one.
-         * </param>
-         */
+        /// <summary>
+        /// Runs an interaction (chosen on the client) on the server. For reasons of serialization and security, some code is re-run.
+        /// </summary>
+        /// <param name="ray">The ray the click came from. RaycastHit is not serializable and this ensures hat a user can't try to interact with something that should be invisible.</param>
+        /// <param name="index">The index into the prioritised interaction list this interaction is at</param>
+        /// <param name="name">To confirm the interaction is the correctly selected one.</param>
         [ServerRpc]
         private void CmdRunInteraction(Ray ray, int index, string name)
         {
@@ -271,7 +250,9 @@ namespace SS3D.Systems.RadialMenu
             InteractionEntry chosenEntry = viableInteractions[index];
             interactionEvent.Target = chosenEntry.Target;
 
-            if (chosenEntry.Interaction.GetName(interactionEvent) != name)
+            string interactionName = chosenEntry.Interaction.GetName(interactionEvent);
+
+            if (interactionName != name)
             {
                 Debug.LogError($"Interaction at index {index} did not have the expected name of {name}");
                 return;
@@ -319,6 +300,7 @@ namespace SS3D.Systems.RadialMenu
         {
             // Get source that's currently interacting (eg. hand, tool)
             IInteractionSource source = GetActiveInteractionSource();
+
             if (source == null)
             {
                 interactionEvent = null;
@@ -326,15 +308,17 @@ namespace SS3D.Systems.RadialMenu
             }
             
             List<IInteractionTarget> targets = new();
+
             // Raycast to find target game object
             Vector3 point = Vector3.zero;
-            if (Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, _selectionMask, QueryTriggerInteraction.Ignore))
+            bool raycast = Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, _selectionMask, QueryTriggerInteraction.Ignore);
+            if (raycast)
             {
                 point = hit.point;
-                GameObject targetGo = hit.transform.gameObject;
-                targets = GetTargetsFromGameObject(source, targetGo);
+                GameObject target = hit.transform.gameObject;
+                targets = GetTargetsFromGameObject(source, target);
             }
-            
+
             interactionEvent = new InteractionEvent(source, targets[0], point);
 
             return GetInteractionsFromTargets(source, targets, interactionEvent);
@@ -348,9 +332,22 @@ namespace SS3D.Systems.RadialMenu
         /// <returns>A list of all valid interaction targets</returns>
         private List<IInteractionTarget> GetTargetsFromGameObject(IInteractionSource source, GameObject gameObject)
         {
-            List<IInteractionTarget> targets = new();
+            List<IInteractionTarget> targets = GetComponents<IInteractionTarget>().ToList();
+
+            bool canInteractWith(IInteractionTarget target)
+            {
+                MonoBehaviour monoBehaviour = target as MonoBehaviour;
+
+                bool objectIsEnabled = monoBehaviour != null && monoBehaviour.enabled;
+                bool canInteractWithTarget = source.CanInteractWithTarget(target);
+
+                return objectIsEnabled && canInteractWithTarget;
+            }
+
+            IEnumerable<IInteractionTarget> interactionTargets = targets.Where(canInteractWith);
+
             // Get all target components which are not disabled and the source can interact with
-            targets.AddRange(gameObject.GetComponents<IInteractionTarget>().Where(x =>(x as MonoBehaviour)?.enabled != false && source.CanInteractWithTarget(x)));
+            targets.AddRange(interactionTargets);
             if (targets.Count < 1)
             {
                 targets.Add(new InteractionTargetGameObject(gameObject));
@@ -364,29 +361,52 @@ namespace SS3D.Systems.RadialMenu
         /// </summary>
         /// <param name="source">The interaction source</param>
         /// <param name="targets">The interaction targets</param>
-        /// <param name="event">The interaction event data</param>
+        /// <param name="interactionEvent">The interaction event data</param>
         /// <returns>A list of all possible interaction entries</returns>
-        private List<InteractionEntry> GetInteractionsFromTargets(IInteractionSource source,
-            List<IInteractionTarget> targets, InteractionEvent @event)
+        private List<InteractionEntry> GetInteractionsFromTargets(IInteractionSource source, List<IInteractionTarget> targets, InteractionEvent interactionEvent)
         {
+            List<InteractionEntry> interactions = new();
+            Vector3 point = interactionEvent.Point;
+
             // Generate interactions on targets
-            List<InteractionEntry> interactions = targets.SelectMany(t => 
-                t.GetTargetInteractions(new InteractionEvent(source, t, @event.Point))
-                    .Select(i => new InteractionEntry(t, i))
-            ).ToList();
-            
+            foreach (IInteractionTarget target in targets)
+            {
+                InteractionEvent e = new(source, target, point);
+                IInteraction[] targetInteractions = target.GetTargetInteractions(e);
+
+                foreach (IInteraction interaction in targetInteractions)
+                {
+                    InteractionEntry entry = new(target, interaction);
+                    interactions.Add(entry);
+                }
+            }
+
             // Allow the source to add its own interactions
             source.GenerateInteractionsFromSource(targets.ToArray(), interactions);
-            
+
             // Filter interactions to possible ones
-            return interactions.Where(i => i.Interaction.CanInteract(new InteractionEvent(source, i.Target, @event.Point))).ToList();
+            List<InteractionEntry> interactionsFromTargets = new();
+            foreach (InteractionEntry entry in interactions)
+            {
+                InteractionEvent e = new(source, entry.Target, point);
+
+                if (entry.Interaction.CanInteract(e))
+                {
+                    interactionsFromTargets.Add(entry);
+                }
+            }
+
+            return interactionsFromTargets;
         }
 
         private IInteractionSource GetActiveInteractionSource()
         {
             IToolHolder toolHolder = GetComponent<IToolHolder>();
             IInteractionSource activeTool = toolHolder?.GetActiveTool();
-            return activeTool ?? GetComponent<IInteractionSource>();
+
+            IInteractionSource interactionSource = activeTool ?? GetComponent<IInteractionSource>();
+
+            return interactionSource;
         }
     }
 }
