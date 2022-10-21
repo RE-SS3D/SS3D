@@ -239,7 +239,7 @@ namespace SS3D.Systems.RadialMenu
         /// <param name="index">The index into the prioritised interaction list this interaction is at</param>
         /// <param name="name">To confirm the interaction is the correctly selected one.</param>
         [ServerRpc]
-        private void CmdRunInteraction(Ray ray, int index, string name)
+        private void CmdRunInteraction(Ray ray, int index, string interactionName)
         {
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
             if (index >= viableInteractions.Count)
@@ -250,18 +250,18 @@ namespace SS3D.Systems.RadialMenu
             InteractionEntry chosenEntry = viableInteractions[index];
             interactionEvent.Target = chosenEntry.Target;
 
-            string interactionName = chosenEntry.Interaction.GetName(interactionEvent);
+            string chosenName = chosenEntry.Interaction.GetName(interactionEvent);
 
-            if (interactionName != name)
+            if (chosenName != interactionName)
             {
-                Debug.LogError($"Interaction at index {index} did not have the expected name of {name}");
+                Debug.LogError($"Interaction at index {index} did not have the expected name of {interactionName}");
                 return;
             }
 
             InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
             if (chosenEntry.Interaction.CreateClient(interactionEvent) != null)
             {
-                RpcExecuteClientInteraction(ray, index, name, reference.Id);
+                RpcExecuteClientInteraction(ray, index, interactionName, reference.Id);
             }
             
             // TODO: Keep track of interactions for cancellation
