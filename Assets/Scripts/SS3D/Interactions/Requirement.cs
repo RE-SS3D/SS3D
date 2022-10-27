@@ -24,11 +24,8 @@ namespace SS3D.Interactions
         /// Applies the requirement once it completes
         /// </summary>
         /// <param name="interactionEvent"></param>
-        protected virtual void ApplyRequirement(InteractionEvent interactionEvent)
-        {
-            
-        }
-        
+        protected virtual void ApplyRequirement(InteractionEvent interactionEvent) { }
+
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
             return Interaction.CreateClient(interactionEvent);
@@ -55,7 +52,6 @@ namespace SS3D.Interactions
             
             ApplyRequirement(interactionEvent);
             return false;
-
         }
 
         public bool Update(InteractionEvent interactionEvent, InteractionReference reference)

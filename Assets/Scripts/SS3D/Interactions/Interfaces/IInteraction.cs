@@ -11,6 +11,7 @@ namespace SS3D.Interactions.Interfaces
         /// Creates a client interaction (client-side)
         /// </summary>
         IClientInteraction CreateClient(InteractionEvent interactionEvent);
+
         /// <summary>
         /// Gets the name when interacted with a source
         /// </summary>

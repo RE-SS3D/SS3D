@@ -9,7 +9,10 @@ using UnityEngine;
 
 namespace SS3D.Systems.RadialMenu
 {
-    public class RadialInteractionView : SpessBehaviour
+    /// <summary>
+    /// Controls the UI for a radial interaction menu
+    /// </summary>
+    public class RadialInteractionView : SpessSystem
     {
         public event Action<IInteraction> OnInteractionSelected;
 
@@ -43,6 +46,18 @@ namespace SS3D.Systems.RadialMenu
             Disappear();
         }
 
+        protected override void HandleUpdate(in float deltaTime)
+        {
+            base.HandleUpdate(in deltaTime);
+
+            if (Input.GetMouseButtonUp(1))
+            {
+                Disappear();
+            }
+
+            UpdateIndicator();
+        }   
+
         private void Setup()                            
         {
             Interactions = new List<IInteraction>();
@@ -63,18 +78,6 @@ namespace SS3D.Systems.RadialMenu
         {
             Disappear();
             OnInteractionSelected?.Invoke(interaction);
-        }
-
-        protected override void HandleUpdate(in float deltaTime)
-        {
-            base.HandleUpdate(in deltaTime);
-
-            if (Input.GetMouseButtonUp(1))
-            {
-                Disappear();
-            }
-
-            UpdateIndicator();
         }
 
         private void UpdateIndicator()

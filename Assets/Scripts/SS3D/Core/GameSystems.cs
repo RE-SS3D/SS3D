@@ -38,18 +38,10 @@ namespace SS3D.Core
                 return (T)match;
             }
 
-            match = Object.FindObjectOfType<T>();
+            string message = $"Couldn't find system of {typeof(T).Name} in the scene";
+            Punpun.Panic(typeof(GameSystems), message, Logs.Important);
 
-            if (match == null)
-            {
-                string message = $"Couldn't find system of {typeof(T).Name} in the scene";
-
-                Punpun.Panic(typeof(GameSystems), message, Logs.Important);
-            }
-
-            Systems.Add(typeof(T), match);
-
-            return (T)match;
+            return null;
         }
     }
 }

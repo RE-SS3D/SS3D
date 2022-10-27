@@ -96,11 +96,11 @@ namespace SS3D.Interactions
         /// <summary>
         /// Creates the interactions from the source object
         /// </summary>
-        public virtual void CreateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> entries)
+        public virtual void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> entries)
         {
             foreach (IInteractionSourceExtension extension in GetComponents<IInteractionSourceExtension>())
             {
-                extension.CreateInteractionsFromSource(targets, entries);
+                extension.GetSourceInteractions(targets, entries);
             }
         }
 

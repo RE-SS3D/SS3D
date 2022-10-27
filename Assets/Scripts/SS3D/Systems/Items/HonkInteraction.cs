@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace SS3D.Systems.Items
 {
+    /// <summary>
+    /// Honks a horn. Honking requires the target to be BikeHorn
+    /// </summary>
     public class HonkInteraction : IInteraction
     {
         public Sprite Icon;
@@ -22,21 +25,24 @@ namespace SS3D.Systems.Items
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon;
-        }
+        }                                               
     
         public bool CanInteract(InteractionEvent interactionEvent)
         {
-            if (interactionEvent.Target is not BikeHorn horn)
+            IInteractionTarget target = interactionEvent.Target;
+            bool inRange = InteractionExtensions.RangeCheck(interactionEvent);
+
+            if (target is not BikeHorn horn)
             {
                 return false;
             }
 
-            if (!InteractionExtensions.RangeCheck(interactionEvent))
+            if (!inRange)
             {
                 return false;
             }
+
             return !horn.IsHonking();
-
         }
     
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)

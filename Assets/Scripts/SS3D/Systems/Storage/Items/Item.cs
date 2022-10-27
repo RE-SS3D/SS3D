@@ -13,9 +13,9 @@ using UnityEngine;
 
 namespace SS3D.Systems.Storage.Items
 {
-    /**
-     * An item describes what is held in a container.
-     */
+    /// <summary>
+    /// An item describes what is held in a container.
+    /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(NetworkTransform))]
@@ -133,15 +133,6 @@ namespace SS3D.Systems.Storage.Items
         //     sprite.name = transform.name;
         // }
 
-        // this creates the base interactions for an item, in this case, the drop interaction
-        public override void CreateInteractionsFromSource(IInteractionTarget[] targets,
-            List<InteractionEntry> interactions)
-        {
-            base.CreateInteractionsFromSource(targets, interactions);
-            DropInteraction dropInteraction = new DropInteraction();
-            interactions.Add(new InteractionEntry(null, dropInteraction));
-        }
-
         /// <summary>
         /// Check if an item has at least a certain quantity
         /// </summary>
@@ -232,6 +223,7 @@ namespace SS3D.Systems.Storage.Items
         {
             // TODO: Make this handle multiple renderers, with different states
             Renderer renderer = GetComponent<Renderer>();
+
             if (renderer != null)
             {
                 renderer.enabled = visible;
@@ -248,69 +240,23 @@ namespace SS3D.Systems.Storage.Items
             return component != null && component.enabled;
         }
 
-        void OnDestroy()
+        private void OnDestroy()
         {
             _container = null;
         }
 
-#if UNITY_EDITOR
-        private void OnDrawGizmos()
-        {
-            // Make sure gizmo only draws in prefab mode
-            if (EditorApplication.isPlaying ||
-                UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage() == null)
-            {
-                return;
-            }
-
-            Mesh handGuide = (Mesh)AssetDatabase.LoadAssetAtPath("Assets/Art/Models/Other/HoldGizmo.fbx", typeof(Mesh));
-
-            // Don't even have to check without attachment
-            if (AttachmentPoint == null)
-            {
-                return;
-            }
-            else
-            {
-                Gizmos.color = new Color32(255, 120, 20, 170);
-                Quaternion localRotation = AttachmentPoint.localRotation;
-                Vector3 eulerAngles = localRotation.eulerAngles;
-                Vector3 parentPosition = AttachmentPoint.parent.position;
-                Vector3 position = AttachmentPoint.localPosition;
-                // Draw a wire mesh of the rotated model
-                Vector3 rotatedPoint = RotatePointAround(parentPosition, position, eulerAngles);
-                rotatedPoint += new Vector3(0, position.z, position.y);
-                Gizmos.DrawWireMesh(handGuide, AttachmentPoint.position, localRotation);
-            }
-
-            // Same for the Left Hand
-            if (AttachmentPointAlt == null)
-            {
-                return;
-            }
-            else
-            {
-                Gizmos.color = new Color32(255, 120, 20, 170);
-                Quaternion localRotation = AttachmentPointAlt.localRotation;
-                Vector3 eulerAngles = localRotation.eulerAngles;
-                Vector3 parentPosition = AttachmentPointAlt.parent.position;
-                Vector3 position = AttachmentPointAlt.localPosition;
-                // Draw a wire mesh of the rotated model
-                Vector3 rotatedPoint = RotatePointAround(parentPosition, position, eulerAngles);
-                rotatedPoint += new Vector3(0, position.z, position.y);
-                Gizmos.DrawWireMesh(handGuide, AttachmentPointAlt.position, localRotation);
-            }
-        }
-
-        private Vector3 RotatePointAround(Vector3 point, Vector3 pivot, Vector3 angles)
-        {
-            return Quaternion.Euler(angles) * (point - pivot);
-        }
-
-#endif
         public virtual IInteraction[] GetTargetInteractions(InteractionEvent interactionEvent)
         {
             return new IInteraction[] { new PickupInteraction { InteractionIcon = _sprite } };
+        }
+
+        // this creates the base interactions for an item, in this case, the drop interaction
+        public override void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        {
+            base.GetSourceInteractions(targets, interactions);
+            DropInteraction dropInteraction = new();
+
+            interactions.Add(new InteractionEntry(null, dropInteraction));
         }
 
         public bool InContainer()
@@ -359,5 +305,51 @@ namespace SS3D.Systems.Storage.Items
         {
             _container = newContainer;
         }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            // Make sure gizmo only draws in prefab mode
+            if (EditorApplication.isPlaying || UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage() == null)
+            {
+                return;
+            }
+
+            Mesh handGuide = (Mesh)AssetDatabase.LoadAssetAtPath("Assets/Art/Models/Other/HoldGizmo.fbx", typeof(Mesh));
+
+            // Don't even have to check without attachment
+            if (AttachmentPoint != null)
+            {
+                Gizmos.color = new Color32(255, 120, 20, 170);
+                Quaternion localRotation = AttachmentPoint.localRotation;
+                Vector3 eulerAngles = localRotation.eulerAngles;
+                Vector3 parentPosition = AttachmentPoint.parent.position;
+                Vector3 position = AttachmentPoint.localPosition;
+                // Draw a wire mesh of the rotated model
+                Vector3 rotatedPoint = RotatePointAround(parentPosition, position, eulerAngles);
+                rotatedPoint += new Vector3(0, position.z, position.y);
+                Gizmos.DrawWireMesh(handGuide, AttachmentPoint.position, localRotation);
+            }
+
+            // Same for the Left Hand
+            if (AttachmentPointAlt != null)
+            {
+                Gizmos.color = new Color32(255, 120, 20, 170);
+                Quaternion localRotation = AttachmentPointAlt.localRotation;
+                Vector3 eulerAngles = localRotation.eulerAngles;
+                Vector3 parentPosition = AttachmentPointAlt.parent.position;
+                Vector3 position = AttachmentPointAlt.localPosition;
+                // Draw a wire mesh of the rotated model
+                Vector3 rotatedPoint = RotatePointAround(parentPosition, position, eulerAngles);
+                rotatedPoint += new Vector3(0, position.z, position.y);
+                Gizmos.DrawWireMesh(handGuide, AttachmentPointAlt.position, localRotation);
+            }
+        }
+
+        private static Vector3 RotatePointAround(Vector3 point, Vector3 pivot, Vector3 angles)
+        {
+            return Quaternion.Euler(angles) * (point - pivot);
+        }
+#endif
     }
 }

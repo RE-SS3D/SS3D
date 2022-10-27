@@ -202,6 +202,7 @@ namespace SS3D.Systems.RadialMenu
                 Debug.LogError($"Interaction received from client {gameObject.name} can not occur! Server-client misalignment.");
                 return;
             }
+
             InteractionEntry chosenEntry = viableInteractions[index];
             interactionEvent.Target = chosenEntry.Target;
 
@@ -324,7 +325,7 @@ namespace SS3D.Systems.RadialMenu
             }
 
             // Allow the source to add its own interactions
-            source.CreateInteractionsFromSource(targets.ToArray(), interactions);
+            source.GetSourceInteractions(targets.ToArray(), interactions);
 
             // Filter interactions to possible ones
             List<InteractionEntry> interactionsFromTargets = new();

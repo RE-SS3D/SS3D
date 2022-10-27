@@ -3,12 +3,14 @@ using System.Linq;
 using FishNet.Object;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Storage.Items;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
 namespace SS3D.Systems.Items
 {
+    /// <summary>
+    /// The honking device used by the clown on honking purposes
+    /// </summary>
     public class BikeHorn : Item
     {
         [Header("Bike horn settings")]
@@ -42,23 +44,22 @@ namespace SS3D.Systems.Items
             if (IsServer) { return; }
 
             _audioSource.Play();
+            _animator.SetTrigger(HonkAnimation);
         }
 
         public bool IsHonking()
         {
-            // If our audio source exists, and it's rigged up with our honk sound, and it's our child, check if it's playing. Otherwise, it's honkin' time.
-            if (_audioSource != null)
-            {
-                return _audioSource.isPlaying;  
-            }
+            bool audioSourceExists = _audioSource != null;
+            bool isPlaying = _audioSource.isPlaying;
 
-            return false;
+            // If our audio source exists, and it's rigged up with our honk sound, and it's our child,
+            // check if it's playing. Otherwise, it's honkin' time.
+            return audioSourceExists && isPlaying;
         }
         
         public override IInteraction[] GetTargetInteractions(InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = base.GetTargetInteractions(interactionEvent).ToList();
-            
             HonkInteraction honk = new() { Icon = _honkIcon };
 
             interactions.Add(honk);
