@@ -33,6 +33,9 @@ namespace SS3D.Interactions
             }
         }
 
+        /// <summary>
+        /// Updates interactions server-side
+        /// </summary>
         private void UpdateServerInteractions()
         {
             for (int index = 0; index < _interactions.Count; index++)
@@ -60,6 +63,9 @@ namespace SS3D.Interactions
             }
         }
 
+        /// <summary>
+        /// Updates interactions client-side
+        /// </summary>
         private void UpdateClientInteractions()
         {
             for (int index = 0; index < _clientInteractions.Count; index++)
@@ -87,12 +93,14 @@ namespace SS3D.Interactions
             }
         }
 
-
-        public virtual void GenerateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> entries)
+        /// <summary>
+        /// Creates the interactions from the source object
+        /// </summary>
+        public virtual void CreateInteractionsFromSource(IInteractionTarget[] targets, List<InteractionEntry> entries)
         {
             foreach (IInteractionSourceExtension extension in GetComponents<IInteractionSourceExtension>())
             {
-                extension.GenerateInteractionsFromSource(targets, entries);
+                extension.CreateInteractionsFromSource(targets, entries);
             }
         }
 
@@ -106,10 +114,12 @@ namespace SS3D.Interactions
             return true;
         }
 
+        /// <summary>
+        /// Runs the interaction
+        /// </summary>
         [Server]
         public InteractionReference Interact(InteractionEvent interactionEvent, IInteraction interaction)
         {
-            
             InteractionReference reference = new(Random.Range(1, int.MaxValue));
             if (!SupportsMultipleInteractions)
             {

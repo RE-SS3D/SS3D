@@ -23,27 +23,30 @@ namespace SS3D.Systems.RadialMenu
         [SerializeField] private List<RadialInteractionButton> _interactionButtons;
 
         private GameObject _selectedObject;
-        private  IInteraction _selectedInteraction;
+        private IInteraction _selectedInteraction;
 
         private Sequence _scaleSequence;
         private Sequence _fadeSequence;
+        private Sequence _petalRotateSequence;
 
         private const float ScaleDuration = .07f;
+        private const float PetalRotateDuration = .01f;
 
         private List<IInteraction> Interactions { get; set; }
-
         private InteractionEvent Event { get; set; }
 
         protected override void OnStart()
         {
             base.OnStart();
 
-            Disappear();
             Setup();
+            Disappear();
         }
 
-        private void Setup()
+        private void Setup()                            
         {
+            Interactions = new List<IInteraction>();
+
             foreach (RadialInteractionButton interactionButton in _interactionButtons)
             {
                 interactionButton.OnHovered += HandleInteractionButtonHovered;
@@ -76,19 +79,24 @@ namespace SS3D.Systems.RadialMenu
 
         private void UpdateIndicator()
         {
-            Vector3 mouse = Input.mousePosition;
-            Vector3 dir = (mouse - _indicator.position).normalized;
-
-            if (_selectedObject != null)
+            if (_selectedObject == null)
             {
-                _indicator.eulerAngles = new Vector3(0, 0, _selectedObject.transform.eulerAngles.z);
+                return;
             }
-        }
 
-        public void SetInteractions(List<IInteraction> interactions, InteractionEvent interactionEvent, Vector3 mousePosition)
-        {
-            Interactions = interactions;
-            Event = interactionEvent;
+            _petalRotateSequence?.Kill();
+            _petalRotateSequence = DOTween.Sequence();
+
+            //_indicator.eulerAngles = new Vector3(0, 0, z);
+            float z = _selectedObject.transform.eulerAngles.z;
+            Vector3 rotation = new(0, 0, z);
+
+            // Rotates the petal to the selected interaction
+            _petalRotateSequence
+                .Append(_indicator.DORotate(rotation, PetalRotateDuration)
+                    .SetEase(Ease.InCirc));
+
+            _petalRotateSequence.Play();
         }
 
         public void ShowInteractionsMenu()
@@ -97,8 +105,6 @@ namespace SS3D.Systems.RadialMenu
             {
                 return;
             }
-
-            ResetInteractionsMenu();
             
             InteractionFolder folder = new();
             foreach (IInteraction interaction in Interactions)
@@ -161,6 +167,8 @@ namespace SS3D.Systems.RadialMenu
             _fadeSequence.Play();
 
             _canvasGroup.interactable = false;
+ 
+            ResetInteractionsMenu();
         }
 
         private void ResetInteractionsMenu()
@@ -170,12 +178,28 @@ namespace SS3D.Systems.RadialMenu
                 interactionButton.Reset();
             }
 
-            //_interactions.Clear();
+            Interactions.Clear();
             _selectedInteraction = null;
             _selectedObject = null;
-            //_interactionEvent = null;
+            Event = null;
         }
 
+        /// <summary>
+        /// Updates the interactions that are available on the menu
+        /// </summary>
+        /// <param name="interactions">Interaction list</param>
+        /// <param name="interactionEvent">Interaction event</param>
+        /// <param name="mousePosition">Mouse position when the interaction was created</param>
+        public void SetInteractions(List<IInteraction> interactions, InteractionEvent interactionEvent, Vector3 mousePosition)
+        {
+            Interactions = interactions;
+            Event = interactionEvent;
+        }
+
+        /// <summary>
+        /// Gets a button that is not used
+        /// </summary>
+        /// <returns></returns>
         private RadialInteractionButton GetAvailableButton()
         {
             return _interactionButtons.First(button => !button.Occupied);

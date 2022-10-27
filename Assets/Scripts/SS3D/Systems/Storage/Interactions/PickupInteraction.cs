@@ -31,14 +31,17 @@ namespace SS3D.Systems.Storage.Interactions
 
         public bool CanInteract(InteractionEvent interactionEvent)
         {
+            IInteractionTarget target = interactionEvent.Target;
+            IInteractionSource source = interactionEvent.Source;
+
             // if the target is whatever the hell Alain did
             // and the part that matters, if the interaction source is a hand
-            if (interactionEvent.Target is IGameObjectProvider targetBehaviour && interactionEvent.Source is Hands hands)
+            if (target is IGameObjectProvider targetBehaviour && source is Hands hands)
             {
 		        // if the selected hand is not empty we return false
-                if (!hands.SelectedHandEmpty)
+                if (hands.SelectedHandEmpty)
                 {
-                    return false;
+                    return true;
                 }
                 
 		        // we try to get the Item component from the GameObject we just interacted with
@@ -48,9 +51,12 @@ namespace SS3D.Systems.Storage.Interactions
                 {
                     return false;
                 }
-		        // then we just do a range check, to make sure we can interact
+
+                bool isInRange = InteractionExtensions.RangeCheck(interactionEvent);
+                bool notInAContainer = !item.InContainer();
+                // then we just do a range check, to make sure we can interact
 		        // and we check if the item is not in a container, you can only pick things that are not in a container
-                return InteractionExtensions.RangeCheck(interactionEvent) && !item.InContainer();
+                return isInRange && notInAContainer;
             }
 
             return false;
@@ -76,7 +82,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            return;
+
         }
     }
 }

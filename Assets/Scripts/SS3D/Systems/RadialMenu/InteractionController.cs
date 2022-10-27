@@ -5,6 +5,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Logging;
 using SS3D.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace SS3D.Systems.RadialMenu
     /// <summary>
     /// Attached to the player, initiates interactions.
     /// </summary>
-    public class InteractionController : NetworkedSpessBehaviour
+    public sealed class InteractionController : NetworkedSpessBehaviour
     {
         /// <summary>
         /// Mask for physics to use when finding targets
@@ -59,6 +60,19 @@ namespace SS3D.Systems.RadialMenu
             }
         }
 
+        private void ProcessPrimaryClick()
+        {
+            RunPrimaryInteraction();
+        }
+
+        private void ProcessSecondaryClick()
+        {
+            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
+
+            ViewTargetInteractions(viableInteractions, interactionEvent, ray);
+        }
+
         private void ProcessUse()
         {
             // Activate item in selected hand
@@ -73,19 +87,6 @@ namespace SS3D.Systems.RadialMenu
             {
                 InteractInHand(item.gameObject, gameObject);
             }
-        }
-
-        private void ProcessSecondaryClick()
-        {
-            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-            List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
-
-            ViewTargetInteractions(viableInteractions, interactionEvent, ray);
-        }
-
-        private void ProcessPrimaryClick()
-        {
-            RunPrimaryInteraction();
         }
 
         /// <summary>
@@ -108,6 +109,12 @@ namespace SS3D.Systems.RadialMenu
             CmdRunInteraction(ray, 0, interactionName);
         }
 
+        /// <summary>
+        /// Gets and opens the menu for a target's interactions
+        /// </summary>
+        /// <param name="viableInteractions"></param>
+        /// <param name="interactionEvent"></param>
+        /// <param name="ray"></param>
         private void ViewTargetInteractions(List<InteractionEntry> viableInteractions, InteractionEvent interactionEvent, Ray ray)
         {
             List<IInteraction> interactions = viableInteractions.Select(entry => entry.Interaction).ToList();
@@ -136,7 +143,7 @@ namespace SS3D.Systems.RadialMenu
         /// <param name="source">The current selected item or the hands</param>
         /// <param name="showMenu">If a selection menu should be shown</param>
         [Client]
-        public void InteractInHand(GameObject target, GameObject sourceObject, bool showMenu = false)
+        private void InteractInHand(GameObject target, GameObject sourceObject, bool showMenu = false)
         {
             if (!sourceObject.TryGetComponent(out IInteractionSource source))
             {
@@ -178,58 +185,6 @@ namespace SS3D.Systems.RadialMenu
                 IInteraction firstInteraction = entries.First().Interaction;
                 CmdRunInventoryInteraction(target, sourceObject, 0, firstInteraction.GetName(interactionEvent));
             }
-        }
-
-        [ServerRpc]
-        private void CmdRunInventoryInteraction(GameObject target, GameObject sourceObject, int index, string name)
-        {
-            IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
-            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
-            InteractionEvent interactionEvent = new(source, null);
-            List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
-            
-            // TODO: Validate access to inventory
-
-            // Check for valid interaction index
-            if (index < 0 || entries.Count <= index)
-            {
-                Debug.LogError($"Inventory interaction with invalid index {index}", target);
-                return;
-            }
-            
-            InteractionEntry chosenEntry = entries[index];
-            interactionEvent.Target = chosenEntry.Target;
-
-            if (chosenEntry.Interaction.GetName(interactionEvent) != name)
-            {
-                Debug.LogError($"Interaction at index {index} did not have the expected name of {name}", target);
-                return;
-            }
-            
-            InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
-            if (chosenEntry.Interaction.CreateClient(interactionEvent) != null)
-            {
-                RpcExecuteClientInventoryInteraction(target, sourceObject, index, name, reference.Id);
-            }
-        }
-
-        [ObserversRpc]
-        private void RpcExecuteClientInventoryInteraction(GameObject target, GameObject sourceObject, int index, string name, int referenceId)
-        {
-            IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
-            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
-            InteractionEvent interactionEvent = new(source, null);
-            List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
-            
-            InteractionEntry chosenInteraction = entries[index];
-            interactionEvent.Target = chosenInteraction.Target;
-            
-            if (chosenInteraction.Interaction.GetName(interactionEvent) != name)
-            {
-                return;
-            }
-            
-            interactionEvent.Source.ClientInteract(interactionEvent, chosenInteraction.Interaction, new InteractionReference(referenceId));
         }
 
         /// <summary>
@@ -332,22 +287,9 @@ namespace SS3D.Systems.RadialMenu
         /// <returns>A list of all valid interaction targets</returns>
         private List<IInteractionTarget> GetTargetsFromGameObject(IInteractionSource source, GameObject gameObject)
         {
-            List<IInteractionTarget> targets = GetComponents<IInteractionTarget>().ToList();
-
-            bool canInteractWith(IInteractionTarget target)
-            {
-                MonoBehaviour monoBehaviour = target as MonoBehaviour;
-
-                bool objectIsEnabled = monoBehaviour != null && monoBehaviour.enabled;
-                bool canInteractWithTarget = source.CanInteractWithTarget(target);
-
-                return objectIsEnabled && canInteractWithTarget;
-            }
-
-            IEnumerable<IInteractionTarget> interactionTargets = targets.Where(canInteractWith);
-
+            List<IInteractionTarget> targets = new();
             // Get all target components which are not disabled and the source can interact with
-            targets.AddRange(interactionTargets);
+            targets.AddRange(gameObject.GetComponents<IInteractionTarget>().Where(x =>(x as MonoBehaviour)?.enabled != false && source.CanInteractWithTarget(x)));
             if (targets.Count < 1)
             {
                 targets.Add(new InteractionTargetGameObject(gameObject));
@@ -382,7 +324,7 @@ namespace SS3D.Systems.RadialMenu
             }
 
             // Allow the source to add its own interactions
-            source.GenerateInteractionsFromSource(targets.ToArray(), interactions);
+            source.CreateInteractionsFromSource(targets.ToArray(), interactions);
 
             // Filter interactions to possible ones
             List<InteractionEntry> interactionsFromTargets = new();
@@ -407,6 +349,69 @@ namespace SS3D.Systems.RadialMenu
             IInteractionSource interactionSource = activeTool ?? GetComponent<IInteractionSource>();
 
             return interactionSource;
+        }
+
+        [ServerRpc]
+        private void CmdRunInventoryInteraction(GameObject target, GameObject sourceObject, int index, string name)
+        {
+            IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
+            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
+            InteractionEvent interactionEvent = new(source, null);
+            List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
+            
+            // TODO: Validate access to inventory
+
+            // Check for valid interaction index
+            if (index < 0 || entries.Count <= index)
+            {
+                Punpun.Panic(target, $"Inventory interaction with invalid index {index}");
+
+                return;
+            }
+            
+            InteractionEntry chosenEntry = entries[index];
+            interactionEvent.Target = chosenEntry.Target;
+
+            if (chosenEntry.Interaction.GetName(interactionEvent) != name)
+            {
+                string message = $"Interaction at index {index} did not have the expected name of {name}";
+                Punpun.Panic(target, message);
+
+                return;
+            }
+            
+            InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
+            if (chosenEntry.Interaction.CreateClient(interactionEvent) != null)
+            {
+                RpcExecuteClientInventoryInteraction(target, sourceObject, index, name, reference.Id);
+            }
+        }
+
+        /// <summary>
+        /// Executes the interaction client-side
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="sourceObject"></param>
+        /// <param name="index"></param>
+        /// <param name="name"></param>
+        /// <param name="referenceId"></param>
+        [ObserversRpc]
+        private void RpcExecuteClientInventoryInteraction(GameObject target, GameObject sourceObject, int index, string name, int referenceId)
+        {
+            IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
+            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
+            InteractionEvent interactionEvent = new(source, null);
+            List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
+            
+            InteractionEntry chosenInteraction = entries[index];
+            interactionEvent.Target = chosenInteraction.Target;
+            
+            if (chosenInteraction.Interaction.GetName(interactionEvent) != name)
+            {
+                return;
+            }
+            
+            interactionEvent.Source.ClientInteract(interactionEvent, chosenInteraction.Interaction, new InteractionReference(referenceId));
         }
     }
 }

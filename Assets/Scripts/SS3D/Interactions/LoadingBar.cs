@@ -25,7 +25,7 @@ namespace SS3D.Interactions
         {
             base.HandleUpdate(in deltaTime);
 
-            ProcessLoading();
+            UpdateLoadingProgressTask();
         }
 
         private void Setup()
@@ -36,8 +36,10 @@ namespace SS3D.Interactions
             }   
         }
 
-
-        private void ProcessLoading()
+        /// <summary>
+        /// Updates the loading progress 
+        /// </summary>
+        private void UpdateLoadingProgressTask()
         {
             if (StartTime + Duration < Time.time)
             {

@@ -134,10 +134,10 @@ namespace SS3D.Systems.Storage.Items
         // }
 
         // this creates the base interactions for an item, in this case, the drop interaction
-        public override void GenerateInteractionsFromSource(IInteractionTarget[] targets,
+        public override void CreateInteractionsFromSource(IInteractionTarget[] targets,
             List<InteractionEntry> interactions)
         {
-            base.GenerateInteractionsFromSource(targets, interactions);
+            base.CreateInteractionsFromSource(targets, interactions);
             DropInteraction dropInteraction = new DropInteraction();
             interactions.Add(new InteractionEntry(null, dropInteraction));
         }

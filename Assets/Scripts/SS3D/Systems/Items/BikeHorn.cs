@@ -14,8 +14,11 @@ namespace SS3D.Systems.Items
         [Header("Bike horn settings")]
         [SerializeField] private AudioClip _honkSound;
         [SerializeField] private AudioSource _audioSource;
+        [SerializeField] private Animator _animator;
 
         [SerializeField] private Sprite _honkIcon;
+
+        private static readonly int HonkAnimation = Animator.StringToHash("Honk");
 
         protected override void OnStart()
         {
@@ -28,6 +31,7 @@ namespace SS3D.Systems.Items
         public void Honk()
         {
             _audioSource.Play();
+            _animator.SetTrigger(HonkAnimation);
 
             RpcPlayHonk();
         }

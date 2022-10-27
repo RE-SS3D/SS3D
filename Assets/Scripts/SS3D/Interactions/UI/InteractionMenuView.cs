@@ -15,7 +15,7 @@ namespace SS3D.Interactions.UI
      */
     public class InteractionMenuView : SpessBehaviour
     {
-        public Action<IInteraction> OnSelect;
+        public event Action<IInteraction> OnSelect;
 
         [SerializeField] private GameObject _buttonPrefab;
         [SerializeField] private GameObject _contentPanel;

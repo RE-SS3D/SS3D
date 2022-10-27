@@ -3,6 +3,9 @@ using SS3D.Interactions.Interfaces;
 
 namespace SS3D.Interactions
 {
+    /// <summary>
+    /// The instance of an interaction
+    /// </summary>
     public class InteractionInstance
     {
         public InteractionInstance(IInteraction interaction, InteractionEvent interactionEvent, InteractionReference reference, NetworkConnection owner)

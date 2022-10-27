@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 4166023753680569077}
   - component: {fileID: 1026993963860473145}
   - component: {fileID: 7647897630875670444}
+  - component: {fileID: 7807247313645579261}
+  - component: {fileID: 3401307552301717060}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -83,6 +85,47 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2359780655884948970}
   m_Mesh: {fileID: 5709868560514540240, guid: b7735b41af47b164f841a513161d8f07, type: 3}
+--- !u!95 &7807247313645579261
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2359780655884948970}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 95ee7a734e4e51842baf2ebbda1f514c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3401307552301717060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2359780655884948970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8cac635f24954048aad3a6ff9110beb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: 4819234911439508660}
+  _networkObjectCache: {fileID: 4819234911439508660}
+  IgnoredParameters: []
+  _animator: {fileID: 7807247313645579261}
+  _smoothFloats: 1
+  _synchronizeInterval: 0.1
+  _clientAuthoritative: 1
+  _sendToOwner: 0
 --- !u!1 &5406170708076973247
 GameObject:
   m_ObjectHideFlags: 0
@@ -190,6 +233,7 @@ MonoBehaviour:
   AttachmentPointAlt: {fileID: 0}
   _honkSound: {fileID: 8300000, guid: 8c8823796bbcb23438fcf68260070383, type: 3}
   _audioSource: {fileID: 4436435477320339985}
+  _animator: {fileID: 7807247313645579261}
   _honkIcon: {fileID: 21300000, guid: 03812e70c708b3047b20e316b16f1896, type: 3}
 --- !u!114 &4819234911439508660
 MonoBehaviour:
@@ -208,6 +252,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 5398674181771020985}
   - {fileID: 6573417749823381685}
+  - {fileID: 3401307552301717060}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -288,7 +333,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: 7829e19c625c89444af3b6c8d3b2ccee, type: 2}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.203
   m_Pitch: 1
   Loop: 0

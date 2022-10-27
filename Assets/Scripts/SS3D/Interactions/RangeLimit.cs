@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace SS3D.Interactions
 {
+    /// <summary>
+    /// Defines a range limit check for interactions
+    /// </summary>
     [Serializable]
     public struct RangeLimit
     {
@@ -15,6 +18,12 @@ namespace SS3D.Interactions
             Vertical = vertical;
         }
 
+        /// <summary>
+        /// Checks if an interaction is within range
+        /// </summary>
+        /// <param name="origin">The origin of the interaction</param>
+        /// <param name="target">The target object that creates the interaction</param>
+        /// <returns></returns>
         public bool IsInRange(Vector3 origin, Vector3 target)
         {
             bool isInVerticalRange = Mathf.Abs(target.y - origin.y) < Vertical;
