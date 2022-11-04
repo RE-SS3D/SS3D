@@ -37,11 +37,11 @@ namespace SS3D.Systems.Entities.Silicon
         private float _smoothedX;
         private float _smoothedY;
         private SpessBehaviour _camera;
-        
-        protected override void OnAwake()
+
+        protected override void OnStart()
         {
-            base.OnAwake();
-        
+            base.OnStart();
+
             Setup();
         }
 

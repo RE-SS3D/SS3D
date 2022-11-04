@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SS3D.Logging;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Core
@@ -17,11 +18,13 @@ namespace SS3D.Core
         /// </summary>
         /// <param name="system"></param>
         /// <typeparam name="T"></typeparam>
-        public static void Register<T>(T system)
+        public static void Register(MonoBehaviour system)
         {
-            if (!Systems.TryGetValue(typeof(T), out object _))
+            Type type = system.GetType();
+
+            if (!Systems.TryGetValue(type, out object _))
             {
-                Systems.Add(typeof(T), system);   
+                Systems.Add(type, system);   
             }
         }
 

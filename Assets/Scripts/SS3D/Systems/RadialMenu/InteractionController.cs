@@ -197,9 +197,11 @@ namespace SS3D.Systems.RadialMenu
         private void CmdRunInteraction(Ray ray, int index, string interactionName)
         {
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
-            if (index >= viableInteractions.Count)
+            if (index > viableInteractions.Count)
             {
-                Debug.LogError($"Interaction received from client {gameObject.name} can not occur! Server-client misalignment.");
+                string message = $"Interaction received from client {gameObject.name} can not occur! Server-client misalignment.";
+                Punpun.Panic(this, message, Logs.ServerOnly);
+
                 return;
             }
 

@@ -5,10 +5,9 @@
     /// </summary>
     public class NetworkedSystem : NetworkedSpessBehaviour
     {
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
-
+            base.OnAwake();
             GameSystems.Register(this);
         }
     }
