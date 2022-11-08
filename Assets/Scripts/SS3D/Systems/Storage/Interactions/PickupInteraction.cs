@@ -16,7 +16,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
-            return null;
+            return new ClientDelayedInteraction();
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -82,7 +82,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
-
+            return;
         }
     }
 }

@@ -3,7 +3,7 @@ using FishNet.Component.Transforming;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Storage.Containers;
-using SS3D.Storage.Interactions;
+using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Interactions;
 using UnityEditor;
 using UnityEngine;
@@ -25,28 +25,19 @@ namespace SS3D.Systems.Storage.Items
         [SerializeField] private string _itemId;
         [SerializeField] private string _name;
 
-        [Tooltip("The volume an item ocuppies in a container")]
-        //private float _volume = 10f;
-
-        // TODO: Make this private or just not show in the editor
-        // the sprite used for containers UI
         [SerializeField] private Sprite _sprite;
+
+        [SerializeField] private Rigidbody _rigidbody;
 
         [Tooltip("the item prefab, you can click on the item name and drag from Unity's file explorer")]
         public GameObject Prefab;
-
         [Header("Attachment settings")]
         [Tooltip("a point we use to know how the item should be oriented when held in a hand")]
         public Transform AttachmentPoint;
         [Tooltip("same point but for the left hand, in cases where it's needed")]
         public Transform AttachmentPointAlt;
-        // [Tooltip("the bulk of the item, how heavy it is")]
-        // public BulkSize bulkSize = BulkSize.Medium;
-        // [Tooltip("traits are attributes we use for stuff like 'is this item food', 'is this item a robot's part")]
-        // public List<Trait> traits;
         [Tooltip("The size of the item inside a container")]
         private Vector2Int _size;
-        // private Stackable stack;
         private Container _container;
 
         public Vector2Int Size => _size;
@@ -112,79 +103,7 @@ namespace SS3D.Systems.Storage.Items
             {
                 _size = new Vector2Int(_size.x, 1);
             }
-
-            // if (sprite == null && NetworkClient.active)
-            // {
-            //     GenerateNewIcon();
-            // }
         }
-
-
-        // TODO: Improve this
-        // we have this to generate icons at start, I do not know how bad it is for performance
-        // if you know anything about it, tell us
-        // public void GenerateNewIcon()
-        // {
-        //     RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
-        //     RuntimePreviewGenerator.OrthographicMode = true;
-        //
-        //     Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform, Shader.Find("Unlit/ItemPreview"), null, 128, 128, false);
-        //     sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
-        //     sprite.name = transform.name;
-        // }
-
-        /// <summary>
-        /// Check if an item has at least a certain quantity
-        /// </summary>
-        /// <param name="amount">The amount to check</param>
-        /// <returns>If the item has the required quantity</returns>
-        /// <exception cref="ArgumentException">Thrown if the amount is less than one</exception>
-        // public bool HasQuantity(int amount)
-        // {
-        //     if (amount < 1)
-        //     {
-        //         throw new ArgumentException("Amount must be at least 1", nameof(amount));
-        //     }
-        //     
-        //     if (amount == 1)
-        //     {
-        //         return true;
-        //     }
-        //
-        //     Stackable stackable = Stack;
-        //     if (stackable == null)
-        //     {
-        //         return false;
-        //     }
-        //
-        //     return stackable.amountInStack >= amount;
-        // }
-
-        /// <summary>
-        /// Consumes a certain amount of this item
-        /// </summary>
-        /// <param name="amount">The amount to consume</param>
-        // public void ConsumeQuantity(int amount)
-        // {
-        //     if (!HasQuantity(amount))
-        //     {
-        //         return;
-        //     }
-        //
-        //     Stackable stackable = Stack;
-        //     if (stackable != null)
-        //     {
-        //         stackable.amountInStack -= amount;
-        //         if (stackable.amountInStack <= 0)
-        //         {
-        //             Destroy();
-        //         }
-        //     }
-        //     else
-        //     {
-        //         Destroy();
-        //     }
-        // }
 
         /// <summary>
         /// Destroys this item
@@ -204,7 +123,7 @@ namespace SS3D.Systems.Storage.Items
         /// </summary>
         public void Freeze()
         {
-
+            _rigidbody.isKinematic = true;
         }
 
         /// <summary>
@@ -212,7 +131,7 @@ namespace SS3D.Systems.Storage.Items
         /// </summary>
         public void Unfreeze()
         {
-
+            _rigidbody.isKinematic = false;
         }
 
         /// <summary>
@@ -245,15 +164,15 @@ namespace SS3D.Systems.Storage.Items
             _container = null;
         }
 
-        public virtual IInteraction[] GetTargetInteractions(InteractionEvent interactionEvent)
+        public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
             return new IInteraction[] { new PickupInteraction { InteractionIcon = _sprite } };
         }
 
         // this creates the base interactions for an item, in this case, the drop interaction
-        public override void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
+        public override void CreateSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> interactions)
         {
-            base.GetSourceInteractions(targets, interactions);
+            base.CreateSourceInteractions(targets, interactions);
             DropInteraction dropInteraction = new();
 
             interactions.Add(new InteractionEntry(null, dropInteraction));

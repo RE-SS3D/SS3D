@@ -14,7 +14,7 @@ namespace SS3D.Systems.Items
     
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
-            return null;
+            return new ClientDelayedInteraction();
         }
     
         public string GetName(InteractionEvent interactionEvent)

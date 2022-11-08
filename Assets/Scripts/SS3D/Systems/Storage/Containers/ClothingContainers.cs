@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SS3D.Storage.Containers
+namespace SS3D.Systems.Storage.Containers
 {
     public class ClothingContainers : MonoBehaviour
     {

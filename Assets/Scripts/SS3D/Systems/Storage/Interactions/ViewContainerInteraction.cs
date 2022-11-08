@@ -1,11 +1,13 @@
 ﻿using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Storage;
 using SS3D.Storage.Containers;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Storage.Containers;
 using UnityEngine;
 
-namespace SS3D.Storage
+namespace SS3D.Systems.Storage.Interactions
 {
     public class ViewContainerInteraction : IInteraction
     {
@@ -22,7 +24,7 @@ namespace SS3D.Storage
         
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
-            return null;
+            return new ClientDelayedInteraction();;
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -48,7 +50,7 @@ namespace SS3D.Storage
                 return false;
             }
             
-            Inventory inventory = interactionEvent.Source.GetComponentInTree<Storage.Inventory>();
+            Inventory inventory = interactionEvent.Source.GetComponentInTree<Inventory>();
             if (inventory == null)
             {
                 return false;
@@ -64,7 +66,7 @@ namespace SS3D.Storage
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Inventory inventory = interactionEvent.Source.GetComponentInTree<Storage.Inventory>();
+            Inventory inventory = interactionEvent.Source.GetComponentInTree<Inventory>();
             AttachedContainer attachedContainer = ContainerDescriptor.AttachedContainer;
             
             inventory.OpenContainer(attachedContainer);
@@ -74,12 +76,12 @@ namespace SS3D.Storage
 
         public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            throw new System.NotImplementedException();
+            return true;
         }
 
         public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            throw new System.NotImplementedException();
+            return;
         }
     }
 }

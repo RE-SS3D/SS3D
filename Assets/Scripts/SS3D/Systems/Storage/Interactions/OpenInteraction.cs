@@ -6,7 +6,7 @@ using SS3D.Storage.Containers;
 using SS3D.Systems.Entities;
 using UnityEngine;
 
-namespace SS3D.Storage
+namespace SS3D.Systems.Storage.Interactions
 {
     [Serializable]
     public class OpenInteraction : IInteraction
@@ -27,7 +27,7 @@ namespace SS3D.Storage
 
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
-            return null;
+            return new ClientDelayedInteraction();;
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -113,12 +113,12 @@ namespace SS3D.Storage
 
         public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            throw new NotImplementedException();
+            return;
         }
 
         private void OnOpenStateChange(bool e)

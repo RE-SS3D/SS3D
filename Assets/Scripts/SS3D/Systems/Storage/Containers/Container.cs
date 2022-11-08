@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SS3D.Storage.Items;
+using SS3D.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
-namespace SS3D.Storage.Containers
+namespace SS3D.Systems.Storage.Containers
 {
     /// <summary>
     /// Stores items in a 2 dimensional container

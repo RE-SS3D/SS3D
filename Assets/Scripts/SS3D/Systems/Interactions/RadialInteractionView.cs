@@ -8,7 +8,7 @@ using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
 
-namespace SS3D.Systems.RadialMenu
+namespace SS3D.Systems.Interactions
 {
     /// <summary>
     /// Controls the UI for a radial interaction menu
@@ -150,6 +150,7 @@ namespace SS3D.Systems.RadialMenu
 
             _selectedObject = _interactionButtons.First().GameObjectCache;
             _selectedInteraction = Interactions.First();
+            
             UpdateIndicator();
 
             _scaleSequence?.Kill();

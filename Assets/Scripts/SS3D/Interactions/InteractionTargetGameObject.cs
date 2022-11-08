@@ -16,7 +16,7 @@ namespace SS3D.Interactions
 
         public GameObject GameObject { get; }
         
-        public IInteraction[] GetTargetInteractions(InteractionEvent interactionEvent)
+        public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
             return Array.Empty<IInteraction>();
         }

@@ -45,14 +45,14 @@ namespace SS3D.Interactions
                 {
                     instance.FirstTick = false;
 
-                    if (instance.Interaction.Start(instance.Event, instance.Reference))
+                    if (instance.Interaction != null && instance.Interaction.Start(instance.Event, instance.Reference))
                     {
                         continue;
                     }
                 }
                 else
                 {
-                    if (instance.Interaction.Update(instance.Event, instance.Reference))
+                    if (instance.Interaction != null && instance.Interaction.Update(instance.Event, instance.Reference))
                     {
                         continue;
                     }
@@ -75,14 +75,14 @@ namespace SS3D.Interactions
                 {
                     instance.FirstTick = false;
 
-                    if (instance.Interaction.ClientStart(instance.Event))
+                    if (instance.Interaction != null && instance.Interaction.ClientStart(instance.Event))
                     {
                         continue;
                     }
                 }
                 else
                 {
-                    if (instance.Interaction.ClientUpdate(instance.Event))
+                    if (instance.Interaction != null && instance.Interaction.ClientUpdate(instance.Event))
                     {
                         continue;
                     }
@@ -96,7 +96,7 @@ namespace SS3D.Interactions
         /// <summary>
         /// Creates the interactions from the source object
         /// </summary>
-        public virtual void GetSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> entries)
+        public virtual void CreateSourceInteractions(IInteractionTarget[] targets, List<InteractionEntry> entries)
         {
             foreach (IInteractionSourceExtension extension in GetComponents<IInteractionSourceExtension>())
             {
@@ -139,14 +139,12 @@ namespace SS3D.Interactions
             return _interactions.FirstOrDefault(x => x.Reference.Equals(reference));
         }
 
-        public void ClientInteract(InteractionEvent interactionEvent, IInteraction interaction,
-            InteractionReference reference)
+        public void ClientInteract(InteractionEvent interactionEvent, IInteraction interaction, InteractionReference reference)
         {
             IClientInteraction clientInteraction = interaction.CreateClient(interactionEvent);
             if (clientInteraction != null)
             {
-                _clientInteractions.Add(new ClientInteractionInstance(clientInteraction,
-                    interactionEvent, reference));
+                _clientInteractions.Add(new ClientInteractionInstance(clientInteraction, interactionEvent, reference));
             }
             
         }

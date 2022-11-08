@@ -2,6 +2,7 @@
 using FishNet.Object.Synchronizing;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Storage.Interactions;
 using UnityEngine;
 
 namespace SS3D.Storage
@@ -17,11 +18,14 @@ namespace SS3D.Storage
         private bool _openState;
 
         [SerializeField] protected Sprite OpenIcon;
-        public override IInteraction[] GetTargetInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            OpenInteraction openInteraction = new();
-            openInteraction.icon = OpenIcon;
+            OpenInteraction openInteraction = new()
+            {
+                icon = OpenIcon
+            };
             openInteraction.OnOpenStateChanged += OpenStateChanged;
+
             return new IInteraction[] { openInteraction };
         }
         

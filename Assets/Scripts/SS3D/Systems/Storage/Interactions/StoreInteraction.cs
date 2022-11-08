@@ -2,44 +2,34 @@
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Storage.Containers;
-using SS3D.Storage.Items;
+using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
-namespace SS3D.Storage
+namespace SS3D.Systems.Storage.Interactions
 {
-    // This Interaction takes the first available item inside a container
-    public sealed class TakeInteraction : IInteraction
+    public sealed class StoreInteraction : IInteraction
     {
         public Sprite Icon;
         private readonly ContainerDescriptor _containerDescriptor;
 
-        public TakeInteraction(ContainerDescriptor containerDescriptor)
+        public StoreInteraction(ContainerDescriptor containerDescriptor)
         {
             _containerDescriptor = containerDescriptor;
         }
 
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
-            return null;
+            return new ClientDelayedInteraction();;
         }
 
         public string GetName(InteractionEvent interactionEvent)
         {
-            return "Take in " + _containerDescriptor.ContainerName;
+            return "Store in " + _containerDescriptor.ContainerName;
         }
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            if(Icon != null)
-            {
-                Debug.Log("get icon" + Icon.name);
-            }
-            else
-            {
-                Debug.Log("icon is null");
-            }
-            
             return Icon;
         }
 
@@ -50,36 +40,36 @@ namespace SS3D.Storage
                 return false;
             }
 
-            // Will only appear if the current hand is empty and the container isn't empty
             AttachedContainer target = _containerDescriptor.AttachedContainer;
             if (interactionEvent.Source is Hands hands && target != null)
             {
-                return hands.SelectedHandEmpty && !target.Container.Empty;
+                return !hands.SelectedHandEmpty && CanStore(interactionEvent.Source.GetComponent<Item>(), target);
             }
-
             return false;
+        }
+
+        private bool CanStore(Item item, AttachedContainer target)
+        {
+            Container container = target.Container;
+            return container.CouldStoreItem(item) && container.CouldHoldItem(item);
         }
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Hands hands = (Hands) interactionEvent.Source;
-            int index = _containerDescriptor.AttachedContainer.Container.StoredItems.Count - 1;
-            Item pickupItem = _containerDescriptor.AttachedContainer.Container.StoredItems[index].Item;
-            if (pickupItem != null)
-            {
-                hands.Pickup(pickupItem);
-            }
+            Hands hands = interactionEvent.Source.GetComponent<Hands>(); 
+            _containerDescriptor.AttachedContainer.Container.AddItem(hands.ItemInHand);
+
             return false;
         }
 
         public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            throw new System.NotImplementedException();
+            return true;
         }
 
         public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            throw new System.NotImplementedException();
+            return;
         }
     }
 }

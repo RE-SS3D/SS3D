@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
-namespace SS3D.Systems.RadialMenu
+namespace SS3D.Systems.Interactions
 {
     public struct InteractionFolder
     {

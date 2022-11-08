@@ -7,6 +7,6 @@ namespace SS3D.Interactions
     public abstract class InteractionTargetBehaviour : SpessBehaviour, IInteractionTarget, IGameObjectProvider
     {
         public GameObject GameObject => GameObjectCache;
-        public abstract IInteraction[] GetTargetInteractions(InteractionEvent interactionEvent);
+        public abstract IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent);
     }
 }

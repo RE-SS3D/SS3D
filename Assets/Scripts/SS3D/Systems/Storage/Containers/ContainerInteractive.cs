@@ -2,6 +2,7 @@
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Storage.Items;
+using SS3D.Systems.Storage.Interactions;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace SS3D.Storage.Containers
         [HideInInspector] public ContainerDescriptor containerDescriptor;
         private Sprite _viewContainerIcon;
 
-        public override IInteraction[] GetTargetInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
             if (containerDescriptor.HasCustomInteraction)
             {

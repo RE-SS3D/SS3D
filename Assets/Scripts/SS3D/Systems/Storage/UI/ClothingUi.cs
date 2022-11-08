@@ -1,5 +1,6 @@
 ﻿using SS3D.Storage.Containers;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Storage.Containers;
 using UnityEngine;
 
 namespace SS3D.Storage.UI

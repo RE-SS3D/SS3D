@@ -166,13 +166,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7635944949394300046}
-  - component: {fileID: 6317755313662535609}
   - component: {fileID: 5398674181771020985}
   - component: {fileID: 4819234911439508660}
   - component: {fileID: 6573417749823381685}
   - component: {fileID: 6351433192589740835}
   - component: {fileID: 4436435477320339985}
-  m_Layer: 0
+  - component: {fileID: 4044200983548959999}
+  m_Layer: 10
   m_Name: BikeHorn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -196,20 +196,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &6317755313662535609
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6891363543938182813}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.07740313
-  m_Height: 0.30392832
-  m_Direction: 2
-  m_Center: {x: 0, y: 0, z: 0.089827836}
 --- !u!114 &5398674181771020985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,6 +214,7 @@ MonoBehaviour:
   _itemId: 
   _name: Bike horn
   _sprite: {fileID: 0}
+  _rigidbody: {fileID: 6351433192589740835}
   Prefab: {fileID: 6891363543938182813}
   AttachmentPoint: {fileID: 4619531351315044860}
   AttachmentPointAlt: {fileID: 0}
@@ -259,11 +246,24 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 18
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 17867790352780302039
-  _sceneNetworkObjects: []
+  _sceneNetworkObjects:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 4819234911439508660}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &6573417749823381685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -418,3 +418,17 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!64 &4044200983548959999
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6891363543938182813}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 5709868560514540240, guid: b7735b41af47b164f841a513161d8f07, type: 3}

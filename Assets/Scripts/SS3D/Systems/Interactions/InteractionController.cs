@@ -7,11 +7,12 @@ using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Storage.Containers;
+using SS3D.Systems.Screens;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace SS3D.Systems.RadialMenu
+namespace SS3D.Systems.Interactions
 {
     /// <summary>
     /// Attached to the player, initiates interactions.
@@ -32,7 +33,7 @@ namespace SS3D.Systems.RadialMenu
             base.OnStart();
 
             _radialView = GameSystems.Get<RadialInteractionView>();
-            _camera = Camera.main;
+            _camera = GameSystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
         }
 
         protected override void HandleUpdate(in float deltaTime)
@@ -106,7 +107,7 @@ namespace SS3D.Systems.RadialMenu
             string interactionName = interaction.Interaction.GetName(interactionEvent);
             interactionEvent.Target = interaction.Target;
 
-            CmdRunInteraction(ray, 0, interactionName);
+            CmdRunInteraction(ray, interactionName);
         }
 
         /// <summary>
@@ -128,7 +129,7 @@ namespace SS3D.Systems.RadialMenu
                 int index = viableInteractions.FindIndex(x => x.Interaction == interaction);
                 index = Mathf.Clamp(index, 0, int.MaxValue);
 
-                CmdRunInteraction(ray, index, interactionName);
+                CmdRunInteraction(ray, interactionName);
             }
 
             _radialView.SetInteractions(interactions, interactionEvent, Input.mousePosition);
@@ -194,33 +195,17 @@ namespace SS3D.Systems.RadialMenu
         /// <param name="index">The index into the prioritised interaction list this interaction is at</param>
         /// <param name="name">To confirm the interaction is the correctly selected one.</param>
         [ServerRpc]
-        private void CmdRunInteraction(Ray ray, int index, string interactionName)
+        private void CmdRunInteraction(Ray ray, string interactionName)
         {
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
-            if (index > viableInteractions.Count)
-            {
-                string message = $"Interaction received from client {gameObject.name} can not occur! Server-client misalignment.";
-                Punpun.Panic(this, message, Logs.ServerOnly);
 
-                return;
-            }
+            InteractionEntry interaction =
+                viableInteractions.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
 
-            InteractionEntry chosenEntry = viableInteractions[index];
-            interactionEvent.Target = chosenEntry.Target;
+            interactionEvent.Target = interaction.Target;
 
-            string chosenName = chosenEntry.Interaction.GetName(interactionEvent);
-
-            if (chosenName != interactionName)
-            {
-                Debug.LogError($"Interaction at index {index} did not have the expected name of {interactionName}");
-                return;
-            }
-
-            InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
-            if (chosenEntry.Interaction.CreateClient(interactionEvent) != null)
-            {
-                RpcExecuteClientInteraction(ray, index, interactionName, reference.Id);
-            }
+            InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, interaction.Interaction);
+            RpcExecuteClientInteraction(ray, interactionName, reference.Id);
             
             // TODO: Keep track of interactions for cancellation
         }
@@ -229,23 +214,25 @@ namespace SS3D.Systems.RadialMenu
         /// Confirms an interaction issued by a client
         /// </summary>
         [ObserversRpc]
-        private void RpcExecuteClientInteraction(Ray ray, int index, string name, int referenceId)
+        private void RpcExecuteClientInteraction(Ray ray, string name, int referenceId)
         {
+            if (IsServer)
+            {
+                return;
+            }
+
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
-            if (index >= viableInteractions.Count)
-            {
-                Debug.LogWarning($"Interaction received from server can not occur! Server-client misalignment on object {gameObject.name}.", this);
-                return;
-            }
-            InteractionEntry chosenInteraction = viableInteractions[index];
-            interactionEvent.Target = chosenInteraction.Target;
+            InteractionEntry interaction =
+                viableInteractions.Find(entry => entry.Interaction.GetName(interactionEvent) == name);
+
+            interactionEvent.Target = interaction.Target;
             
-            if (chosenInteraction.Interaction.GetName(interactionEvent) != name)
+            if (interaction.Interaction?.GetName(interactionEvent) != name)
             {
                 return;
             }
             
-            interactionEvent.Source.ClientInteract(interactionEvent, chosenInteraction.Interaction, new InteractionReference(referenceId));
+            interactionEvent.Source.ClientInteract(interactionEvent, interaction.Interaction, new InteractionReference(referenceId));
         }
 
         /// <summary>
@@ -317,7 +304,7 @@ namespace SS3D.Systems.RadialMenu
             foreach (IInteractionTarget target in targets)
             {
                 InteractionEvent e = new(source, target, point);
-                IInteraction[] targetInteractions = target.GetTargetInteractions(e);
+                IInteraction[] targetInteractions = target.CreateTargetInteractions(e);
 
                 foreach (IInteraction interaction in targetInteractions)
                 {
@@ -327,7 +314,7 @@ namespace SS3D.Systems.RadialMenu
             }
 
             // Allow the source to add its own interactions
-            source.GetSourceInteractions(targets.ToArray(), interactions);
+            source.CreateSourceInteractions(targets.ToArray(), interactions);
 
             // Filter interactions to possible ones
             List<InteractionEntry> interactionsFromTargets = new();
@@ -386,7 +373,7 @@ namespace SS3D.Systems.RadialMenu
             InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
             if (chosenEntry.Interaction.CreateClient(interactionEvent) != null)
             {
-                RpcExecuteClientInventoryInteraction(target, sourceObject, index, name, reference.Id);
+                RpcExecuteClientInventoryInteraction(target, sourceObject, name, reference.Id);
             }
         }
 
@@ -395,24 +382,23 @@ namespace SS3D.Systems.RadialMenu
         /// </summary>
         /// <param name="target"></param>
         /// <param name="sourceObject"></param>
-        /// <param name="index"></param>
-        /// <param name="name"></param>
+        /// <param name="interactionName"></param>
         /// <param name="referenceId"></param>
         [ObserversRpc]
-        private void RpcExecuteClientInventoryInteraction(GameObject target, GameObject sourceObject, int index, string name, int referenceId)
+        private void RpcExecuteClientInventoryInteraction(GameObject target, GameObject sourceObject, string interactionName, int referenceId)
         {
-            IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
-            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
-            InteractionEvent interactionEvent = new(source, null);
-            List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
-            
-            InteractionEntry chosenInteraction = entries[index];
-            interactionEvent.Target = chosenInteraction.Target;
-            
-            if (chosenInteraction.Interaction.GetName(interactionEvent) != name)
+            if (IsServer)
             {
                 return;
             }
+
+            IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
+            List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
+            InteractionEvent interactionEvent = new(source, new InteractionTargetGameObject(target));
+            List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
+            
+            InteractionEntry chosenInteraction = entries.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
+            interactionEvent.Target = chosenInteraction.Target;
             
             interactionEvent.Source.ClientInteract(interactionEvent, chosenInteraction.Interaction, new InteractionReference(referenceId));
         }

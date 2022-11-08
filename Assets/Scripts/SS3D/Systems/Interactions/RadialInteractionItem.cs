@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using SS3D.Interactions.Interfaces;
+﻿using SS3D.Interactions.Interfaces;
 using UnityEngine;
 
-namespace SS3D.Systems.RadialMenu
+namespace SS3D.Systems.Interactions
 {
     public struct RadialInteractionItem
     {

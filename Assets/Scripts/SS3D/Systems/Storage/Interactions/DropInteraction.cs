@@ -5,7 +5,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Storage.Containers;
 using UnityEngine;
 
-namespace SS3D.Storage.Interactions
+namespace SS3D.Systems.Storage.Interactions
 {
     // a drop interaction is when we remove an item from the hand
     [Serializable]
@@ -15,7 +15,7 @@ namespace SS3D.Storage.Interactions
 
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
-            return null;
+            return new ClientDelayedInteraction();
         }
 
         public string GetName(InteractionEvent interactionEvent)
@@ -54,12 +54,12 @@ namespace SS3D.Storage.Interactions
 
         public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            throw new NotImplementedException();
+            return;
         }
     }
 }

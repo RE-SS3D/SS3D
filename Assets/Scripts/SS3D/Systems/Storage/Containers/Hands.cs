@@ -4,6 +4,7 @@ using FishNet.Object;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Storage.Items;
+using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 using UnityEngine.EventSystems;

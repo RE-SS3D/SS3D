@@ -57,9 +57,9 @@ namespace SS3D.Systems.Items
             return audioSourceExists && isPlaying;
         }
         
-        public override IInteraction[] GetTargetInteractions(InteractionEvent interactionEvent)
+        public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            List<IInteraction> interactions = base.GetTargetInteractions(interactionEvent).ToList();
+            List<IInteraction> interactions = base.CreateTargetInteractions(interactionEvent).ToList();
             HonkInteraction honk = new() { Icon = _honkIcon };
 
             interactions.Add(honk);
