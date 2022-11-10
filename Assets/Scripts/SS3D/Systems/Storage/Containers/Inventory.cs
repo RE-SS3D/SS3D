@@ -78,7 +78,6 @@ namespace SS3D.Storage
                 return;
             }
 
-            
             if (Hands.SelectedHandEmpty)
             {
                 if (!container.Container.Empty)
@@ -137,14 +136,7 @@ namespace SS3D.Storage
         /// <param name="targetContainer">Into which container to move the item</param>
         public void ClientTransferItem(Item item, Vector2Int position, AttachedContainer targetContainer)
         {
-            NetworkedContainerReference? reference = NetworkedContainerReference.CreateReference(targetContainer);
-            if (reference == null)
-            {
-                Debug.LogError("Couldn't create reference for container in item transfer", targetContainer);
-                return;
-            }
-            
-            CmdTransferItem(item.gameObject, position, (NetworkedContainerReference) reference);
+            CmdTransferItem(item.gameObject, position, targetContainer);
         }
 
         /// <summary>
@@ -157,7 +149,7 @@ namespace SS3D.Storage
         }
 
         [ServerRpc]
-        private void CmdTransferItem(GameObject itemObject, Vector2Int position, NetworkedContainerReference reference)
+        private void CmdTransferItem(GameObject itemObject, Vector2Int position, AttachedContainer container)
         {
             Item item = itemObject.GetComponent<Item>();
             if (item == null)
@@ -177,25 +169,24 @@ namespace SS3D.Storage
                 return;
             }
 
-            AttachedContainer attachedContainer = reference.FindContainer();
-            if (attachedContainer == null)
+            if (container == null)
             {
-                Debug.LogError($"Client sent invalid container reference: NetId {reference.SyncNetworkId}, Container {reference.ContainerIndex}");
+                Debug.LogError($"Client sent invalid container reference: NetId {container.ObjectId}");
                 return;
             }
 
-            if (!CanModifyContainer(attachedTo) || !CanModifyContainer(attachedContainer))
+            if (!CanModifyContainer(attachedTo) || !CanModifyContainer(container))
             {
                 return;
             }
 
             Hands hands = GetComponent<Hands>();
-            if (hands == null || !hands.CanInteract(attachedContainer.gameObject))
+            if (hands == null || !hands.CanInteract(container.gameObject))
             {
                 return;
             }
             
-            attachedContainer.Container.AddItem(item, position);
+            container.Container.AddItemPosition(item, position);
         }
 
         /// <summary>

@@ -51,7 +51,7 @@ namespace SS3D.Systems.Storage.Interactions
         private bool CanStore(Item item, AttachedContainer target)
         {
             Container container = target.Container;
-            return container.CouldStoreItem(item) && container.CouldHoldItem(item);
+            return container.CanStoreItem(item) && container.CanHoldItem(item);
         }
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)

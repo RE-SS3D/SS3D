@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using FishNet.Component.Transforming;
+using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Storage.Containers;
@@ -123,7 +125,10 @@ namespace SS3D.Systems.Storage.Items
         /// </summary>
         public void Freeze()
         {
-            _rigidbody.isKinematic = true;
+            if (_rigidbody != null)
+            {
+                _rigidbody.isKinematic = true;
+            }
         }
 
         /// <summary>
@@ -131,7 +136,10 @@ namespace SS3D.Systems.Storage.Items
         /// </summary>
         public void Unfreeze()
         {
-            _rigidbody.isKinematic = false;
+            if (_rigidbody != null)
+            {
+                _rigidbody.isKinematic = false;
+            }
         }
 
         /// <summary>
@@ -199,6 +207,7 @@ namespace SS3D.Systems.Storage.Items
         //     return false;
         // }
 
+        [Server]
         public void SetContainer(Container newContainer, bool alreadyAdded, bool alreadyRemoved)
         {
             if (_container == newContainer)
@@ -206,11 +215,26 @@ namespace SS3D.Systems.Storage.Items
                 return;
             }
 
-            _container?.RemoveItem(this);
+            if (_container != null)
+            {
+                _container.RemoveItem(this);
+            }
 
             if (!alreadyAdded && newContainer != null)
             {
                 newContainer.AddItem(this);
+            }
+
+            _container = newContainer;
+            RpcSetContainer(newContainer);
+        }
+
+        [ObserversRpc]
+        private void RpcSetContainer(Container newContainer)
+        {
+            if (IsServer)
+            {
+                return;
             }
 
             _container = newContainer;

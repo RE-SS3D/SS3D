@@ -19,7 +19,6 @@ namespace SS3D.Storage.Containers
     {
         // References toward all container related scripts.
         public AttachedContainer AttachedContainer;
-        public ContainerSync ContainerSync;
         public ContainerInteractive ContainerInteractive;
         public ContainerItemDisplay ContainerItemDisplay;
         // reference towards the container UI linked to this container.

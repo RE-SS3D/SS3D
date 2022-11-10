@@ -60,16 +60,16 @@ namespace SS3D.Storage.UI
             
             if (_container != null)
             {
-                _container.Container.ContentsChanged -= ContainerContentsChanged;
+                _container.Container.OnContentsChanged -= ContainerContentsChanged;
             }
             
-            newContainer.Container.ContentsChanged += ContainerContentsChanged;
+            newContainer.Container.OnContentsChanged += ContainerContentsChanged;
             _container = newContainer;
         }
 
-        private void ContainerContentsChanged(Container _, IEnumerable<Item> items, ContainerChangeType changeType)
+        private void ContainerContentsChanged(Container _, IEnumerable<Item> items, IEnumerable<Item> newItems, ContainerChangeType type)
         {
-            if (changeType != ContainerChangeType.Move)
+            if (type != ContainerChangeType.Move)
             {
                 UpdateDisplay();
             }

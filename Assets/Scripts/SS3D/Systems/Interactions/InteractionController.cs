@@ -155,7 +155,7 @@ namespace SS3D.Systems.Interactions
 
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
             List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
-            
+
             if (entries.Count < 1)
             {
                 return;

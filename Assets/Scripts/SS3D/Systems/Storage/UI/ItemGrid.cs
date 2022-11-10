@@ -57,12 +57,12 @@ namespace SS3D.Storage.UI
                 StartCoroutine(DisplayInitialItems());
             }
 
-            container.ContentsChanged += ContainerOnContentsChanged;
+            container.OnContentsChanged += ContainerOnContentsChanged;
         }
 
         private void OnDestroy()
         {
-            AttachedContainer.Container.ContentsChanged -= ContainerOnContentsChanged;
+            AttachedContainer.Container.OnContentsChanged -= ContainerOnContentsChanged;
         }
 
         private IEnumerator DisplayInitialItems()
@@ -77,7 +77,7 @@ namespace SS3D.Storage.UI
             }
         }
 
-        private void ContainerOnContentsChanged(Container container, IEnumerable<Item> items, ContainerChangeType type)
+        private void ContainerOnContentsChanged(Container container, IEnumerable<Item> items, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             switch (type)
             {

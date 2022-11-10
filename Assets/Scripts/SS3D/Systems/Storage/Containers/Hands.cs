@@ -47,27 +47,27 @@ namespace SS3D.Storage.Containers
         /// </summary>
         public bool SelectedHandEmpty => SelectedHandContainer.Empty;
 
-        public void Awake()
+        protected override void OnAwake()
         {
+            base.OnAwake();
+
             SupportsMultipleInteractions = true;
-            
-            // Initialize hand containers
-            foreach (AttachedContainer attachedContainer in HandContainers)
-            {
-                attachedContainer.Container = new Container
-                {
-                    Size = new Vector2Int(5, 5)
-                };
-            }
         }
 
         [Server]
         public void Pickup(Item item)
         {
-            if (SelectedHandEmpty)
+            if (!SelectedHandEmpty)
             {
-                SelectedHandContainer.AddItem(item);
+                return;
             }
+
+            if (item.Container != SelectedHandContainer && item.Container != null)
+            {
+                item.Container.RemoveItem(item);
+            }
+
+            SelectedHandContainer.AddItem(item);
         }
 
         public bool IsEmpty()

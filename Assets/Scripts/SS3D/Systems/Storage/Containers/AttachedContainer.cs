@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SS3D.Core.Behaviours;
 using SS3D.Storage.Containers;
 using SS3D.Systems.Entities;
@@ -8,6 +9,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Storage.Containers
 {
+    [RequireComponent(typeof(Container))]
     /// <summary>
     /// A container attached to a gameobject
     /// </summary>
@@ -20,7 +22,7 @@ namespace SS3D.Systems.Storage.Containers
 
         public ContainerDescriptor ContainerDescriptor;
 
-        private Container _container;
+        [SerializeField] private Container _container;
 
         public delegate void ObserverHandler(AttachedContainer container, PlayerControllable observer);
         
@@ -36,6 +38,13 @@ namespace SS3D.Systems.Storage.Containers
         {
             get => _container;
             set => UpdateContainer(value);
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            UpdateContainer(_container);
         }
 
         /// <summary>
@@ -134,7 +143,7 @@ namespace SS3D.Systems.Storage.Containers
         {
             if (_container != null)
             {
-                _container.ContentsChanged -= ContainerContentsChanged;
+                _container.OnContentsChanged -= ContainerContentsChanged;
                 _container.AttachedTo = null;
             }
 
@@ -142,60 +151,97 @@ namespace SS3D.Systems.Storage.Containers
             {
                 return;
             }
-            
-            newContainer.ContentsChanged += ContainerContentsChanged;
+
+            newContainer.Size = ContainerDescriptor.Size;
+            newContainer.OnContentsChanged += ContainerContentsChanged;
             newContainer.AttachedTo = this;
             _container = newContainer;
         }
 
-        private void ContainerContentsChanged(Container container, IEnumerable<Item> items, ContainerChangeType type)
+        private void ContainerContentsChanged(Container container, IEnumerable<Item> oldItems,IEnumerable<Item> newItems, ContainerChangeType type)
         {
+            void handleItemAdded(Item item)
+            {
+                item.Freeze();
+                        
+                // Make invisible
+                if (ContainerDescriptor.HideItems)                                                                  
+                {
+                    item.SetVisibility(false);
+                }
+
+                // Attach to container
+                if (ContainerDescriptor.AttachItems)
+                {
+                    Transform itemTransform = item.transform;
+                    itemTransform.SetParent(transform, false);
+                    itemTransform.localPosition = ContainerDescriptor.AttachmentOffset;
+                    OnItemAttached(item);
+                }
+            }
+
+            void handleItemRemoved(Item item)
+            {
+                item.Unfreeze();
+                // Restore visibility
+                if (ContainerDescriptor.HideItems)
+                {
+                    item.SetVisibility(true);
+                }
+
+                // Remove parent if child of this
+                if (item.transform.parent == transform)
+                {
+                    item.transform.SetParent(null, true);
+                }
+
+                OnItemDetached(item);
+            }
+
             switch (type)
             {
                 case ContainerChangeType.Add:
-                {
-                    foreach (Item item in items)
+                    foreach (Item item in newItems)
                     {
-                        item.Freeze();
-                        // Make invisible
-                        if (ContainerDescriptor.HideItems)
+                        if (item == null)
                         {
-                            item.SetVisibility(false);
+                            continue;
                         }
 
-                        // Attach to container
-                        if (ContainerDescriptor.AttachItems)
+                        handleItemAdded(item);
+                    }
+
+                    break;
+                case ContainerChangeType.Move:
+                {
+                    foreach (Item item in newItems)
+                    {
+                        if (item == null)
                         {
-                            Transform itemTransform = item.transform;
-                            itemTransform.SetParent(transform, false);
-                            itemTransform.localPosition = ContainerDescriptor.AttachmentOffset;
-                            OnItemAttached(item);
+                            continue;
                         }
+
+                        handleItemRemoved(item);
+                        handleItemAdded(item);
                     }
 
                     break;
                 }
                 case ContainerChangeType.Remove:
                 {
-                    foreach (Item item in items)
+                    foreach (Item item in oldItems)
                     {
-                        item.Unfreeze();
-                        // Restore visibility
-                        if (ContainerDescriptor.HideItems)
+                        if (item == null)
                         {
-                            item.SetVisibility(true);
+                            continue;
                         }
-                        // Remove parent if child of this
-                        if (item.transform.parent == transform)
-                        {
-                            item.transform.SetParent(null, true);
-                        }
-                        OnItemDetached(item);
+
+                        handleItemRemoved(item);
                     }
 
                     break;
                 }
             }
-        }
+        }  
     }
 }

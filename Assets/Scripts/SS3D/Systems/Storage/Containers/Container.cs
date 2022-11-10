@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FishNet.Object.Synchronizing;
+using SS3D.Core.Behaviours;
 using SS3D.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
@@ -10,58 +12,95 @@ namespace SS3D.Systems.Storage.Containers
     /// <summary>
     /// Stores items in a 2 dimensional container
     /// </summary>
-    public class Container
+    public sealed class Container : NetworkedSpessBehaviour
     {
+        /// <summary>
+        /// Called when the contents of the container change
+        /// </summary>
+        public event ContainerContentsHandler OnContentsChanged;
+        public delegate void ContainerContentsHandler(Container container, IEnumerable<Item> oldItems,IEnumerable<Item> newItems, ContainerChangeType type);
+
         /// <summary>
         /// The size of this container
         /// </summary>
         public Vector2Int Size;
-
-        /// <summary>
-        /// Filters for this container
-        /// </summary>
-        // public readonly List<Filter> Filters = new List<Filter>();
-        
         /// <summary>
         /// An optional reference to an attached container
         /// </summary>
         public AttachedContainer AttachedTo { get; set; }
-
-        private readonly List<StoredItem> _items = new List<StoredItem>();
-        private readonly object _modificationLock = new object();
-
-        public delegate void ContainerContentsHandler(Container container, IEnumerable<Item> items,
-            ContainerChangeType type);
-
-        /// <summary>
-        /// Called when the contents of the container change
-        /// </summary>
-        public event ContainerContentsHandler ContentsChanged;
-
-        /// <summary>
-        /// Is this container empty
-        /// </summary>
-        public bool Empty => ItemCount == 0;
-        
-        /// <summary>
-        /// How many items are in this container
-        /// </summary>
-        public int ItemCount => _items.Count;
-        
-        /// <summary>
-        /// The items stored in this container
-        /// </summary>
-        public IEnumerable<Item> Items => _items.Select(x => x.Item);
-
         /// <summary>
         /// The items stored in this container, including information on how they are stored
         /// </summary>
-        public List<StoredItem> StoredItems => _items;
-
+        [SyncObject]
+        private readonly SyncList<StoredItem> _storedItems = new();
+        /// <summary>
+        /// Server sole purpose of locking code execution while an operation is outgoing
+        /// </summary>
+        private readonly object _modificationLock = new();
         /// <summary>
         /// The last time the contents of this container were changed
         /// </summary>
         public float LastModification { get; private set; }
+
+        public SyncList<StoredItem> StoredItems => _storedItems;
+        /// <summary>
+        /// Is this container empty
+        /// </summary>
+        public bool Empty => ItemCount == 0;
+        /// <summary>
+        /// How many items are in this container
+        /// </summary>
+        public int ItemCount => StoredItems.Count;
+        /// <summary>
+        /// The items stored in this container
+        /// </summary>
+        public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            StoredItems.OnChange += HandleStoredItemsChanged;
+        }
+
+        ~Container()
+        {
+            StoredItems.OnChange -= HandleStoredItemsChanged;
+        }
+
+        /// <summary>
+        /// Runs when the container was changed, networked
+        /// </summary>
+        /// <param name="op">Type of change</param>
+        /// <param name="index">Which element was changed</param>
+        /// <param name="oldItem">Element before the change</param>
+        /// <param name="newItem">Element after the change</param>
+        private void HandleStoredItemsChanged(SyncListOperation op, int index, StoredItem oldItem, StoredItem newItem, bool asServer)
+        {
+            ContainerChangeType changeType = ContainerChangeType.Add;
+
+            switch (op)
+            {
+                case SyncListOperation.Add:
+                    changeType = ContainerChangeType.Add;
+                    break;
+                case SyncListOperation.Insert:
+                case SyncListOperation.Set:
+                    changeType = ContainerChangeType.Move;
+                    break;
+                case SyncListOperation.RemoveAt:
+                case SyncListOperation.Clear:
+                    changeType = ContainerChangeType.Remove;
+                    break;
+                case SyncListOperation.Complete:
+                    changeType = ContainerChangeType.Move;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(op), op, null);
+            }
+
+            OnContentsChanged?.Invoke(this, new []{oldItem.Item} ,new []{newItem.Item}, changeType);
+        }
 
         /// <summary>
         /// Places an item into this container in the first available position
@@ -75,7 +114,7 @@ namespace SS3D.Systems.Storage.Containers
                 return true;
             }
 
-            if (!CouldStoreItem(item))
+            if (!CanStoreItem(item))
             {
                 return false;
             }
@@ -90,7 +129,7 @@ namespace SS3D.Systems.Storage.Containers
                 for (int x = 0; x <= maxX; x++)
                 {
                     Vector2Int itemPosition = new Vector2Int(x, y);
-                    if (AddItem(item, itemPosition))
+                    if (AddItemPosition(item, itemPosition))
                     {
                         return true;
                     }
@@ -106,30 +145,32 @@ namespace SS3D.Systems.Storage.Containers
         /// <param name="storedItem">The item to add</param>
         /// <param name="position">The target position in the container</param>
         /// <returns>If the item was added</returns>
-        public bool AddItem(Item item, Vector2Int position)
+        public bool AddItemPosition(Item item, Vector2Int position)
         {
             int itemIndex = FindItem(item);
             if (itemIndex != -1)
             {
                 StoredItem existingItem = StoredItems[itemIndex];
                 // Try to move existing item
-                if (existingItem.Position != position)
+                if (existingItem.Position == position)
                 {
-                    if (IsAreaFreeExcluding(new RectInt(position, item.Size), item))
-                    {
-                        StoredItems[itemIndex] = new StoredItem(item, position);
-                        OnContainerChanged(new[] {item}, ContainerChangeType.Move);
-                        return true;
-                    }
+                    return true;
+                }
 
+                if (!IsAreaFreeExcluding(new RectInt(position, item.Size), item))
+                {
                     return false;
                 }
 
-                // Item at same position, nothing to do
+                StoredItem storedItem = new(item, position);
+                StoredItems.Set(itemIndex, storedItem);
+
                 return true;
+
+                // Item at same position, nothing to do
             }
 
-            if (!CouldStoreItem(item))
+            if (!CanStoreItem(item))
             {
                 return false;
             }
@@ -144,13 +185,14 @@ namespace SS3D.Systems.Storage.Containers
                 }
             }
 
-            if (wasAdded)
+            if (!wasAdded)
             {
-                item.SetContainer(this, true, false);
-                OnItemAdded(item);
+                return false;
             }
 
-            return wasAdded;
+            item.SetContainer(this, true, false);
+
+            return true;
         }
 
         /// <summary>
@@ -160,7 +202,7 @@ namespace SS3D.Systems.Storage.Containers
         /// <param name="position">Where the item should go, make sure this position is valid and free!</param>
         private void AddItemUnchecked(Item item, Vector2Int position)
         {
-            var newItem = new StoredItem(item, position);
+            StoredItem newItem = new(item, position);
 
             // Move it if it is already in the container
             if (MoveItemUnchecked(newItem))
@@ -168,7 +210,7 @@ namespace SS3D.Systems.Storage.Containers
                 return;
             }
 
-            _items.Add(newItem);
+            StoredItems.Add(newItem);
             LastModification = Time.time;
         }
 
@@ -191,8 +233,6 @@ namespace SS3D.Systems.Storage.Containers
             {
                 AddItemUnchecked(storedItem);
             }
-            
-            OnContainerChanged(items.Select(x => x.Item), ContainerChangeType.Add);
         }
 
         /// <summary>
@@ -212,7 +252,7 @@ namespace SS3D.Systems.Storage.Containers
                 return false;
             }
 
-            foreach (StoredItem storedItem in _items)
+            foreach (StoredItem storedItem in StoredItems)
             {
                 var storedItemPlacement = new RectInt(storedItem.Position, storedItem.Item.Size);
                 if (area.Overlaps(storedItemPlacement))
@@ -236,15 +276,15 @@ namespace SS3D.Systems.Storage.Containers
             StoredItem storedItem = default;
             if (i != -1)
             {
-                storedItem = _items[i];
-                _items[i] = new StoredItem(storedItem.Item, new Vector2Int(100000, 100000));
+                storedItem = StoredItems[i];
+                StoredItems[i] = new StoredItem(storedItem.Item, new Vector2Int(100000, 100000));
             }
 
             bool areaFree = IsAreaFree(area);
 
             if (i != -1)
             {
-                _items[i] = storedItem;
+                StoredItems[i] = storedItem;
             }
 
             return areaFree;
@@ -256,9 +296,9 @@ namespace SS3D.Systems.Storage.Containers
         /// <param name="item">The item to remove</param>
         public void RemoveItem(Item item)
         {
-            for (var i = 0; i < _items.Count; i++)
+            for (var i = 0; i < StoredItems.Count; i++)
             {
-                if (_items[i].Item == item)
+                if (StoredItems[i].Item == item)
                 {
                     RemoveItemAt(i);
                     return;
@@ -276,9 +316,9 @@ namespace SS3D.Systems.Storage.Containers
             {
                 lock (_modificationLock)
                 {
-                    for (var i = 0; i < _items.Count; i++)
+                    for (var i = 0; i < StoredItems.Count; i++)
                     {
-                        StoredItem storedItem = _items[i];
+                        StoredItem storedItem = StoredItems[i];
                         if (storedItem.Item == itemToRemove)
                         {
                             StoredItems.RemoveAt(i);
@@ -290,8 +330,6 @@ namespace SS3D.Systems.Storage.Containers
             }
             
             LastModification = Time.time;
-            
-            OnContainerChanged(itemsToRemove, ContainerChangeType.Remove);
         }
 
         /// <summary>
@@ -301,14 +339,14 @@ namespace SS3D.Systems.Storage.Containers
         /// <returns>If the item was moved</returns>
         public bool MoveItemUnchecked(StoredItem item)
         {
-            for (var i = 0; i < _items.Count; i++)
+            for (var i = 0; i < StoredItems.Count; i++)
             {
-                StoredItem x = _items[i];
+                StoredItem x = StoredItems[i];
                 if (x.Item == item.Item)
                 {
                     if (x.Position != item.Position)
                     {
-                        _items[i] = item;
+                        StoredItems[i] = item;
                         LastModification = Time.time;
                     }
 
@@ -329,8 +367,6 @@ namespace SS3D.Systems.Storage.Containers
             {
                 MoveItemUnchecked(storedItem);
             }
-            
-            OnContainerChanged(items.Select(x => x.Item), ContainerChangeType.Move);
         }
 
         /// <summary>
@@ -340,7 +376,7 @@ namespace SS3D.Systems.Storage.Containers
         /// <returns>The item at the position, or null if there is none</returns>
         public Item ItemAt(Vector2Int position)
         {
-            foreach (StoredItem storedItem in _items)
+            foreach (StoredItem storedItem in StoredItems)
             {
                 var storedItemPlacement = new RectInt(storedItem.Position, storedItem.Item.Size);
                 if (storedItemPlacement.Contains(position))
@@ -359,7 +395,7 @@ namespace SS3D.Systems.Storage.Containers
         /// <returns>The item's position or (-1, -1)</returns>
         public Vector2Int PositionOf(Item item)
         {
-            foreach (StoredItem storedItem in _items)
+            foreach (StoredItem storedItem in StoredItems)
             {
                 if (storedItem.Item == item)
                 {
@@ -380,8 +416,7 @@ namespace SS3D.Systems.Storage.Containers
             
             if (Empty)
             {
-                _items.AddRange(otherContainer._items);
-                OnContainerChanged(otherContainer.Items, ContainerChangeType.Add);
+                StoredItems.AddRange(otherContainer.StoredItems);
                 return;
             }
             
@@ -395,10 +430,10 @@ namespace SS3D.Systems.Storage.Containers
             // We can assume that all items after that point have been changed, as items are always inserted at the end
             List<Item> movedItems = new List<Item>();
             int changedIndex = -1;
-            for (var i = 0; i < _items.Count; i++)
+            for (var i = 0; i < StoredItems.Count; i++)
             {
-                StoredItem storedItem = _items[i];
-                StoredItem otherContainerItem = otherContainer._items[i];
+                StoredItem storedItem = StoredItems[i];
+                StoredItem otherContainerItem = otherContainer.StoredItems[i];
                 if (storedItem.Item != otherContainerItem.Item)
                 {
                     changedIndex = i;
@@ -414,7 +449,7 @@ namespace SS3D.Systems.Storage.Containers
             // Invoke move logic if any element has moved
             if (movedItems.Count > 0)
             {
-                OnContainerChanged(movedItems, ContainerChangeType.Move);
+
             }
 
             // Nothing actually changed
@@ -424,34 +459,29 @@ namespace SS3D.Systems.Storage.Containers
             }
 
             // Remove all items after first divergence
-            Item[] removedItems = new Item[_items.Count - changedIndex];
-            for (var i = changedIndex; i < _items.Count;)
+            Item[] removedItems = new Item[StoredItems.Count - changedIndex];
+            for (var i = changedIndex; i < StoredItems.Count;)
             {
-                _items.RemoveAt(i);
+                StoredItems.RemoveAt(i);
             }
-            OnContainerChanged(removedItems.AsEnumerable(), ContainerChangeType.Remove);
 
             // Add all remaining items
             for (int i = changedIndex; i < otherContainer.ItemCount; i++)
             {
-                _items.Add(otherContainer._items[i]);
+                StoredItems.Add(otherContainer.StoredItems[i]);
             }
-            OnContainerChanged(otherContainer.Items.Skip(changedIndex + 1), ContainerChangeType.Add);
-            
-            
         }
 
         private void RemoveItemAt(int index)
         {
-            StoredItem item = _items[index];
+            StoredItem storedItem = StoredItems[index];
             lock (_modificationLock)
             {
-                _items.RemoveAt(index);
+                StoredItems.RemoveAt(index);
             }
 
             LastModification = Time.time;
-            item.Item.SetContainerUnchecked(null);
-            OnItemRemoved(item.Item);
+            storedItem.Item.SetContainerUnchecked(null);
         }
 
         /// <summary>
@@ -459,15 +489,14 @@ namespace SS3D.Systems.Storage.Containers
         /// </summary>
         public void Dump()
         {
-            Item[] oldItems = _items.Select(x => x.Item).ToArray();
+            Item[] oldItems = StoredItems.Select(x => x.Item).ToArray();
             for (int i = 0; i < oldItems.Length; i++)
             {
                 oldItems[i].Container = null;
             }
-            _items.Clear();
+            StoredItems.Clear();
 
             LastModification = Time.time;
-            OnContainerChanged(oldItems, ContainerChangeType.Remove);
         }
 
         /// <summary>
@@ -475,15 +504,14 @@ namespace SS3D.Systems.Storage.Containers
         /// </summary>
         public void Purge()
         {
-            Item[] oldItems = _items.Select(x => x.Item).ToArray();
-            foreach (StoredItem item in _items)
+            Item[] oldItems = StoredItems.Select(x => x.Item).ToArray();
+            foreach (StoredItem item in StoredItems)
             {
                 item.Item.Delete();
             }
-            _items.Clear();
+            StoredItems.Clear();
 
             LastModification = Time.time;
-            OnContainerChanged(oldItems, ContainerChangeType.Remove);
         }
 
         /// <summary>
@@ -493,7 +521,7 @@ namespace SS3D.Systems.Storage.Containers
         /// <returns>If it is in this container</returns>
         public bool ContainsItem(Item item)
         {
-            foreach (StoredItem storedItem in _items)
+            foreach (StoredItem storedItem in StoredItems)
             {
                 if (storedItem.Item == item)
                 {
@@ -509,7 +537,7 @@ namespace SS3D.Systems.Storage.Containers
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool CouldStoreItem(Item item)
+        public bool CanStoreItem(Item item)
         {
             // Do not store if the item is the container itself
             if (AttachedTo.GetComponent<Item>() == item)
@@ -533,7 +561,7 @@ namespace SS3D.Systems.Storage.Containers
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool CouldHoldItem(Item item)
+        public bool CanHoldItem(Item item)
         {
             Vector2Int itemSize = item.Size;
             int maxX = Size.x - itemSize.x;
@@ -561,9 +589,9 @@ namespace SS3D.Systems.Storage.Containers
         /// <returns>The index of the item or -1 if not found</returns>
         public int FindItem(Item item)
         {
-            for (var i = 0; i < _items.Count; i++)
+            for (var i = 0; i < StoredItems.Count; i++)
             {
-                StoredItem storedItem = _items[i];
+                StoredItem storedItem = StoredItems[i];
                 if (storedItem.Item == item)
                 {
                     return i;
@@ -571,21 +599,6 @@ namespace SS3D.Systems.Storage.Containers
             }
 
             return -1;
-        }
-
-        private void OnItemAdded(Item item)
-        {
-            OnContainerChanged(new[] {item}, ContainerChangeType.Add);
-        }
-
-        private void OnItemRemoved(Item item)
-        {
-            OnContainerChanged(new[] {item}, ContainerChangeType.Remove);
-        }
-
-        protected virtual void OnContainerChanged(IEnumerable<Item> changedItems, ContainerChangeType type)
-        {
-            ContentsChanged?.Invoke(this, changedItems, type);
         }
 
         public struct StoredItem : IEquatable<StoredItem>

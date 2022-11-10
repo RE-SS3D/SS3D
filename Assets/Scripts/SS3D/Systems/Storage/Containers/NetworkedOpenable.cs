@@ -5,7 +5,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Storage.Interactions;
 using UnityEngine;
 
-namespace SS3D.Storage
+namespace SS3D.Systems.Storage.Containers
 {
     // This handles networking for an Openable object
     [RequireComponent(typeof(Animator))]
