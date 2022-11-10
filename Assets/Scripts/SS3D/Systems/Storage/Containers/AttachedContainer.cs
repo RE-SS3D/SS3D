@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using SS3D.Core.Behaviours;
 using SS3D.Storage.Containers;
 using SS3D.Systems.Entities;
@@ -18,7 +17,7 @@ namespace SS3D.Systems.Storage.Containers
         /// <summary>
         /// The creatures looking at this container
         /// </summary>
-        public HashSet<PlayerControllable> ObservingPlayers = new();
+        public readonly HashSet<PlayerControllable> ObservingPlayers = new();
 
         public ContainerDescriptor ContainerDescriptor;
 
@@ -26,9 +25,9 @@ namespace SS3D.Systems.Storage.Containers
 
         public delegate void ObserverHandler(AttachedContainer container, PlayerControllable observer);
         
-        public event EventHandler<Item> ItemAttached;
-        public event EventHandler<Item> ItemDetached;
-        public event ObserverHandler NewObserver;
+        public event EventHandler<Item> OnItemAttached;
+        public event EventHandler<Item> OnItemDetached;
+        public event ObserverHandler OnNewObserver;
         
         /// <summary>
         /// The container that is attached
@@ -74,22 +73,6 @@ namespace SS3D.Systems.Storage.Containers
             return string.Empty;
         }
 
-        // public static AttachedContainer CreateEmpty(GameObject gameObject, Vector2Int size, IEnumerable<Filter> filters = null)
-        // {
-        //     var attachedContainer = gameObject.AddComponent<AttachedContainer>();
-        //     var container = new Container
-        //     {
-        //         Size = size
-        //     };
-        //     if (filters != null)
-        //     {
-        //         container.Filters.AddRange(filters);
-        //     }
-        //     attachedContainer.Container = container;
-        //     
-        //     return attachedContainer;
-        // }
-
         public void OnDestroy()
         {
             Container?.Purge();
@@ -105,7 +88,7 @@ namespace SS3D.Systems.Storage.Containers
             bool newObserver = ObservingPlayers.Add(observer);
             if (newObserver)
             {
-                OnNewObserver(observer);
+                ProcessNewObserver(observer);
             }
             return newObserver;
         }
@@ -124,26 +107,26 @@ namespace SS3D.Systems.Storage.Containers
             return $"{name}({nameof(AttachedContainer)})[size: {_container.Size}, items: {_container.ItemCount}]";
         }
 
-        private void OnItemAttached(Item e)
+        private void ProcessItemAttached(Item e)
         {
-            ItemAttached?.Invoke(this, e);
+            OnItemAttached?.Invoke(this, e);
         }
 
-        private void OnItemDetached(Item e)
+        private void ProcessItemDetached(Item e)
         {
-            ItemDetached?.Invoke(this, e);
+            OnItemDetached?.Invoke(this, e);
         }
 
-        private void OnNewObserver(PlayerControllable e)
+        private void ProcessNewObserver(PlayerControllable e)
         {
-            NewObserver?.Invoke(this, e);
+            OnNewObserver?.Invoke(this, e);
         }
 
         private void UpdateContainer(Container newContainer)
         {
             if (_container != null)
             {
-                _container.OnContentsChanged -= ContainerContentsChanged;
+                _container.OnContentsChanged -= HandleContainerContentsChanged;
                 _container.AttachedTo = null;
             }
 
@@ -153,12 +136,12 @@ namespace SS3D.Systems.Storage.Containers
             }
 
             newContainer.Size = ContainerDescriptor.Size;
-            newContainer.OnContentsChanged += ContainerContentsChanged;
+            newContainer.OnContentsChanged += HandleContainerContentsChanged;
             newContainer.AttachedTo = this;
             _container = newContainer;
         }
 
-        private void ContainerContentsChanged(Container container, IEnumerable<Item> oldItems,IEnumerable<Item> newItems, ContainerChangeType type)
+        private void HandleContainerContentsChanged(Container container, IEnumerable<Item> oldItems,IEnumerable<Item> newItems, ContainerChangeType type)
         {
             void handleItemAdded(Item item)
             {
@@ -176,7 +159,7 @@ namespace SS3D.Systems.Storage.Containers
                     Transform itemTransform = item.transform;
                     itemTransform.SetParent(transform, false);
                     itemTransform.localPosition = ContainerDescriptor.AttachmentOffset;
-                    OnItemAttached(item);
+                    ProcessItemAttached(item);
                 }
             }
 
@@ -195,7 +178,7 @@ namespace SS3D.Systems.Storage.Containers
                     item.transform.SetParent(null, true);
                 }
 
-                OnItemDetached(item);
+                ProcessItemDetached(item);
             }
 
             switch (type)

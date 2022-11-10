@@ -1,11 +1,10 @@
 ﻿using System;
 using Coimbra;
-using SS3D.Storage.Containers;
 using SS3D.Systems.Storage.Containers;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SS3D.Storage.UI
+namespace SS3D.Systems.Storage.UI
 {
     public class ContainerUi : MonoBehaviour
     {
@@ -14,7 +13,7 @@ namespace SS3D.Storage.UI
 
         private AttachedContainer _attachedContainer;
 
-        public Storage.Inventory Inventory
+        public Inventory Inventory
         {
             set => Grid.Inventory = value;
             get => Grid.Inventory;
@@ -45,7 +44,6 @@ namespace SS3D.Storage.UI
 
             container.AttachedTo.ContainerDescriptor.ContainerUi = this;
 
-            Vector2Int size = container.Size;
             RectTransform rectTransform = Grid.GetComponent<RectTransform>();
             Vector2 gridDimensions = Grid.GetGridDimensions();
             float width = rectTransform.offsetMin.x + Math.Abs(rectTransform.offsetMax.x) + gridDimensions.x + 1;

@@ -1,6 +1,6 @@
 ﻿using Coimbra;
 
-namespace SS3D.Storage.UI
+namespace SS3D.Systems.Storage.UI
 {
     public class ItemGridItem : ItemDisplay
     {

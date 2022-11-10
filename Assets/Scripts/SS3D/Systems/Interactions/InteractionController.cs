@@ -8,6 +8,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Storage.Containers;
 using SS3D.Systems.Screens;
+using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -126,9 +127,6 @@ namespace SS3D.Systems.Interactions
             {
                 string interactionName = interaction.GetName(interactionEvent);
 
-                int index = viableInteractions.FindIndex(x => x.Interaction == interaction);
-                index = Mathf.Clamp(index, 0, int.MaxValue);
-
                 CmdRunInteraction(ray, interactionName);
             }
 
@@ -199,8 +197,7 @@ namespace SS3D.Systems.Interactions
         {
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
 
-            InteractionEntry interaction =
-                viableInteractions.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
+            InteractionEntry interaction = viableInteractions.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
 
             interactionEvent.Target = interaction.Target;
 
@@ -214,7 +211,7 @@ namespace SS3D.Systems.Interactions
         /// Confirms an interaction issued by a client
         /// </summary>
         [ObserversRpc]
-        private void RpcExecuteClientInteraction(Ray ray, string name, int referenceId)
+        private void RpcExecuteClientInteraction(Ray ray, string interactionName, int referenceId)
         {
             if (IsServer)
             {
@@ -223,11 +220,11 @@ namespace SS3D.Systems.Interactions
 
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
             InteractionEntry interaction =
-                viableInteractions.Find(entry => entry.Interaction.GetName(interactionEvent) == name);
+                viableInteractions.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
 
             interactionEvent.Target = interaction.Target;
             
-            if (interaction.Interaction?.GetName(interactionEvent) != name)
+            if (interaction.Interaction?.GetName(interactionEvent) != interactionName)
             {
                 return;
             }
@@ -273,16 +270,17 @@ namespace SS3D.Systems.Interactions
         /// Gets all valid interaction targets from a game object
         /// </summary>
         /// <param name="source">The source of the interaction</param>
-        /// <param name="gameObject">The game objects the interaction targets are on</param>
+        /// <param name="targetGameObject">The game objects the interaction targets are on</param>
         /// <returns>A list of all valid interaction targets</returns>
-        private List<IInteractionTarget> GetTargetsFromGameObject(IInteractionSource source, GameObject gameObject)
+        private List<IInteractionTarget> GetTargetsFromGameObject(IInteractionSource source, GameObject targetGameObject)
         {
             List<IInteractionTarget> targets = new();
+
             // Get all target components which are not disabled and the source can interact with
-            targets.AddRange(gameObject.GetComponents<IInteractionTarget>().Where(x =>(x as MonoBehaviour)?.enabled != false && source.CanInteractWithTarget(x)));
+            targets.AddRange(targetGameObject.GetComponents<IInteractionTarget>().Where(x =>(x as MonoBehaviour)?.enabled != false && source.CanInteractWithTarget(x)));
             if (targets.Count < 1)
             {
-                targets.Add(new InteractionTargetGameObject(gameObject));
+                targets.Add(new InteractionTargetGameObject(targetGameObject));
             }
 
             return targets;
@@ -342,7 +340,7 @@ namespace SS3D.Systems.Interactions
         }
 
         [ServerRpc]
-        private void CmdRunInventoryInteraction(GameObject target, GameObject sourceObject, int index, string name)
+        private void CmdRunInventoryInteraction(GameObject target, GameObject sourceObject, int index, string interactionName)
         {
             IInteractionSource source = sourceObject.GetComponent<IInteractionSource>();
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
@@ -362,9 +360,9 @@ namespace SS3D.Systems.Interactions
             InteractionEntry chosenEntry = entries[index];
             interactionEvent.Target = chosenEntry.Target;
 
-            if (chosenEntry.Interaction.GetName(interactionEvent) != name)
+            if (chosenEntry.Interaction.GetName(interactionEvent) != interactionName)
             {
-                string message = $"Interaction at index {index} did not have the expected name of {name}";
+                string message = $"Interaction at index {index} did not have the expected name of {interactionName}";
                 Punpun.Panic(target, message);
 
                 return;
@@ -373,7 +371,7 @@ namespace SS3D.Systems.Interactions
             InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
             if (chosenEntry.Interaction.CreateClient(interactionEvent) != null)
             {
-                RpcExecuteClientInventoryInteraction(target, sourceObject, name, reference.Id);
+                RpcExecuteClientInventoryInteraction(target, sourceObject, interactionName, reference.Id);
             }
         }
 

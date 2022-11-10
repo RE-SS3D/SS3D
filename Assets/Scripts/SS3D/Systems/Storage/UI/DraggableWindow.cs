@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace SS3D.Storage.UI
+namespace SS3D.Systems.Storage.UI
 {
     public class DraggableWindow : MonoBehaviour, IBeginDragHandler, IDragHandler
     {

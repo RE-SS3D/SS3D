@@ -1,24 +1,24 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace SS3D.Storage.UI
+namespace SS3D.Systems.Storage.UI
 {
 	/// <summary>
 	/// Allows the Body Target user interface to be collapsible by clicking a button.
 	/// </summary>
 	public class ToggleBodyTargetUI : MonoBehaviour
 	{
-		private Button ExpandButton;
-		private CanvasGroup BodyTargetCanvas;
-		private bool isShowing = true;
-		private RectTransform ButtonTransform;
+		private Button _expandButton;
+		private CanvasGroup _bodyTargetCanvas;
+		private bool _isShowing = true;
+		private RectTransform _buttonTransform;
 
 		void Start()
 		{
-			BodyTargetCanvas = GameObject.Find("Body Parts").GetComponent<CanvasGroup>();
-			ExpandButton = GetComponent<Button>();
-			ExpandButton.onClick.AddListener(TaskOnClick);
-			ButtonTransform = GetComponent<RectTransform>();
+			_bodyTargetCanvas = GameObject.Find("Body Parts").GetComponent<CanvasGroup>();
+			_expandButton = GetComponent<Button>();
+			_expandButton.onClick.AddListener(TaskOnClick);
+			_buttonTransform = GetComponent<RectTransform>();
 		}
 
         private void Update()
@@ -39,18 +39,18 @@ namespace SS3D.Storage.UI
 		/// </summary>
 		private void Toggle()
         {
-			if (isShowing)
+			if (_isShowing)
 			{
-				BodyTargetCanvas.alpha = 0f; //this makes everything transparent
-				BodyTargetCanvas.blocksRaycasts = false; //this prevents the UI element to receive input events
+				_bodyTargetCanvas.alpha = 0f; //this makes everything transparent
+				_bodyTargetCanvas.blocksRaycasts = false; //this prevents the UI element to receive input events
 			}
 			else
 			{
-				BodyTargetCanvas.alpha = 1f; //this makes it visible again
-				BodyTargetCanvas.blocksRaycasts = true; //this allows the UI to receive inputs again.
+				_bodyTargetCanvas.alpha = 1f; //this makes it visible again
+				_bodyTargetCanvas.blocksRaycasts = true; //this allows the UI to receive inputs again.
 			}
 			this.gameObject.transform.GetChild(0).eulerAngles = new Vector3(this.gameObject.transform.GetChild(0).eulerAngles.x, this.gameObject.transform.GetChild(0).eulerAngles.y, this.gameObject.transform.GetChild(0).eulerAngles.z + 180);
-			isShowing = !isShowing;
+			_isShowing = !_isShowing;
 		}
 	}
 }

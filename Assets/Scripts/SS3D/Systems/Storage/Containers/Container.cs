@@ -77,7 +77,7 @@ namespace SS3D.Systems.Storage.Containers
         /// <param name="newItem">Element after the change</param>
         private void HandleStoredItemsChanged(SyncListOperation op, int index, StoredItem oldItem, StoredItem newItem, bool asServer)
         {
-            ContainerChangeType changeType = ContainerChangeType.Add;
+            ContainerChangeType changeType;
 
             switch (op)
             {
@@ -254,7 +254,7 @@ namespace SS3D.Systems.Storage.Containers
 
             foreach (StoredItem storedItem in StoredItems)
             {
-                var storedItemPlacement = new RectInt(storedItem.Position, storedItem.Item.Size);
+                RectInt storedItemPlacement = new(storedItem.Position, storedItem.Item.Size);
                 if (area.Overlaps(storedItemPlacement))
                 {
                     return false;
@@ -296,13 +296,15 @@ namespace SS3D.Systems.Storage.Containers
         /// <param name="item">The item to remove</param>
         public void RemoveItem(Item item)
         {
-            for (var i = 0; i < StoredItems.Count; i++)
+            for (int i = 0; i < StoredItems.Count; i++)
             {
-                if (StoredItems[i].Item == item)
+                if (StoredItems[i].Item != item)
                 {
-                    RemoveItemAt(i);
-                    return;
+                    continue;
                 }
+
+                RemoveItemAt(i);
+                return;
             }
         }
 
@@ -310,21 +312,23 @@ namespace SS3D.Systems.Storage.Containers
         /// Removes multiple items from the container
         /// </summary>
         /// <param name="itemsToRemove">An array of items to remove</param>
-        public void RemoveItems(Item[] itemsToRemove)
+        public void RemoveItems(IEnumerable<Item> itemsToRemove)
         {
             foreach (Item itemToRemove in itemsToRemove)
             {
                 lock (_modificationLock)
                 {
-                    for (var i = 0; i < StoredItems.Count; i++)
+                    for (int i = 0; i < StoredItems.Count; i++)
                     {
                         StoredItem storedItem = StoredItems[i];
-                        if (storedItem.Item == itemToRemove)
+                        if (storedItem.Item != itemToRemove)
                         {
-                            StoredItems.RemoveAt(i);
-                            itemToRemove.SetContainer(null, true, true);
-                            break;
+                            continue;
                         }
+
+                        StoredItems.RemoveAt(i);
+                        itemToRemove.SetContainer(null, true, true);
+                        break;
                     }
                 }
             }
@@ -339,19 +343,23 @@ namespace SS3D.Systems.Storage.Containers
         /// <returns>If the item was moved</returns>
         public bool MoveItemUnchecked(StoredItem item)
         {
-            for (var i = 0; i < StoredItems.Count; i++)
+            for (int i = 0; i < StoredItems.Count; i++)
             {
                 StoredItem x = StoredItems[i];
-                if (x.Item == item.Item)
+                if (x.Item != item.Item)
                 {
-                    if (x.Position != item.Position)
-                    {
-                        StoredItems[i] = item;
-                        LastModification = Time.time;
-                    }
+                    continue;
+                }
 
+                if (x.Position == item.Position)
+                {
                     return true;
                 }
+
+                StoredItems[i] = item;
+                LastModification = Time.time;
+
+                return true;
             }
 
             return false;
@@ -378,7 +386,7 @@ namespace SS3D.Systems.Storage.Containers
         {
             foreach (StoredItem storedItem in StoredItems)
             {
-                var storedItemPlacement = new RectInt(storedItem.Position, storedItem.Item.Size);
+                RectInt storedItemPlacement = new(storedItem.Position, storedItem.Item.Size);
                 if (storedItemPlacement.Contains(position))
                 {
                     return storedItem.Item;
@@ -428,7 +436,7 @@ namespace SS3D.Systems.Storage.Containers
             
             // Loop through all items to find the first index of divergence
             // We can assume that all items after that point have been changed, as items are always inserted at the end
-            List<Item> movedItems = new List<Item>();
+            List<Item> movedItems = new();
             int changedIndex = -1;
             for (var i = 0; i < StoredItems.Count; i++)
             {
@@ -459,8 +467,7 @@ namespace SS3D.Systems.Storage.Containers
             }
 
             // Remove all items after first divergence
-            Item[] removedItems = new Item[StoredItems.Count - changedIndex];
-            for (var i = changedIndex; i < StoredItems.Count;)
+            for (int i = changedIndex; i < StoredItems.Count;)
             {
                 StoredItems.RemoveAt(i);
             }
@@ -504,7 +511,6 @@ namespace SS3D.Systems.Storage.Containers
         /// </summary>
         public void Purge()
         {
-            Item[] oldItems = StoredItems.Select(x => x.Item).ToArray();
             foreach (StoredItem item in StoredItems)
             {
                 item.Item.Delete();
@@ -589,7 +595,7 @@ namespace SS3D.Systems.Storage.Containers
         /// <returns>The index of the item or -1 if not found</returns>
         public int FindItem(Item item)
         {
-            for (var i = 0; i < StoredItems.Count; i++)
+            for (int i = 0; i < StoredItems.Count; i++)
             {
                 StoredItem storedItem = StoredItems[i];
                 if (storedItem.Item == item)
@@ -599,36 +605,6 @@ namespace SS3D.Systems.Storage.Containers
             }
 
             return -1;
-        }
-
-        public struct StoredItem : IEquatable<StoredItem>
-        {
-            public readonly Item Item;
-            public readonly Vector2Int Position;
-
-            public StoredItem(Item item, Vector2Int position)
-            {
-                Item = item;
-                Position = position;
-            }
-
-            public bool Equals(StoredItem other)
-            {
-                return Equals(Item, other.Item) && Position.Equals(other.Position);
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj is StoredItem other && Equals(other);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return ((Item != null ? Item.GetHashCode() : 0) * 397) ^ Position.GetHashCode();
-                }
-            }
         }
     }
 }

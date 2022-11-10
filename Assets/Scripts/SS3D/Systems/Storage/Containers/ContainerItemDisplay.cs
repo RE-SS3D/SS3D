@@ -1,5 +1,5 @@
 ﻿using Coimbra;
-using SS3D.Storage.Items;
+using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -28,14 +28,14 @@ namespace SS3D.Storage.Containers
             Assert.IsNotNull(containerDescriptor);
             
             _displayedItems = new Item[containerDescriptor.Displays.Length];
-            containerDescriptor.AttachedContainer.ItemAttached += ContainerOnItemAttached;
-            containerDescriptor.AttachedContainer.ItemDetached += ContainerOnItemDetached;
+            containerDescriptor.AttachedContainer.OnItemAttached += ContainerOnItemAttached;
+            containerDescriptor.AttachedContainer.OnItemDetached += ContainerOnItemDetached;
         }
 
         public void OnDestroy()
         {
-            containerDescriptor.AttachedContainer.ItemAttached -= ContainerOnItemAttached;
-            containerDescriptor.AttachedContainer.ItemDetached -= ContainerOnItemDetached;
+            containerDescriptor.AttachedContainer.OnItemAttached -= ContainerOnItemAttached;
+            containerDescriptor.AttachedContainer.OnItemDetached -= ContainerOnItemDetached;
         }
 
         private void ContainerOnItemAttached(object sender, Item item)

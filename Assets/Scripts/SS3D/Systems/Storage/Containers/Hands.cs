@@ -3,22 +3,20 @@ using System.Linq;
 using FishNet.Object;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Storage.Items;
-using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace SS3D.Storage.Containers
+namespace SS3D.Systems.Storage.Containers
 {
-    [RequireComponent(typeof(Storage.Inventory))]
+    [RequireComponent(typeof(Inventory))]
     public class Hands : InteractionSourceNetworkBehaviour, IToolHolder, IInteractionRangeLimit, IInteractionOriginProvider
     {
         [SerializeField] public AttachedContainer[] HandContainers;
         [SerializeField] private float handRange;
 
         [NonSerialized]
-        public Storage.Inventory Inventory;
+        public Inventory Inventory;
         public int SelectedHandIndex { get; private set; }
         public RangeLimit range = new(1.5f, 1);
 	    // the origin of an x interaction that is performed is provided by this, we use it for range checks
@@ -33,7 +31,7 @@ namespace SS3D.Storage.Containers
         /// <summary>
         /// The item held in the active hand
         /// </summary>
-        public Item ItemInHand => SelectedHandContainer?.Items.FirstOrDefault();
+        public Item ItemInHand => SelectedHandContainer.Items.FirstOrDefault();
         /// <summary>
         /// The currently active hand
         /// </summary>
@@ -136,19 +134,16 @@ namespace SS3D.Storage.Containers
             {
                 return;
             }
+
+            SelectedHandIndex = HandContainers.ToList().IndexOf(selectedContainer);
+            if (SelectedHandIndex != -1)
+            {
+                OnHandChanged?.Invoke(SelectedHandIndex);
+                CmdSetActiveHand(SelectedHandIndex);
+            }
             else
             {
-                SelectedHandIndex = HandContainers.ToList().IndexOf(selectedContainer);
-                if (SelectedHandIndex != -1)
-                {
-                    OnHandChanged?.Invoke(SelectedHandIndex);
-                    CmdSetActiveHand(SelectedHandIndex);
-                }
-                else
-                {
-                    Debug.LogError("selectedContainer is not in HandContainers.");
-                    return;
-                }
+                Debug.LogError("selectedContainer is not in HandContainers.");
             }
         }
 

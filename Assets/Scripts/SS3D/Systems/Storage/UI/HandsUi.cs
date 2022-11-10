@@ -1,11 +1,10 @@
 ﻿using System;
-using SS3D.Storage.Containers;
 using SS3D.Systems.Storage.Containers;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
-namespace SS3D.Storage.UI
+namespace SS3D.Systems.Storage.UI
 {
     public class HandsUi : MonoBehaviour
     {
@@ -19,8 +18,8 @@ namespace SS3D.Storage.UI
         [NonSerialized]
         public Hands Hands;
 
-        private Color defaultColor;
-        private int currentHandIndex = -1;
+        private Color _defaultColor;
+        private int _currentHandIndex = -1;
 
         public void Start()
         {
@@ -32,34 +31,34 @@ namespace SS3D.Storage.UI
 
         private void OnHandChanged(int index)
         {
-            if (currentHandIndex == index)
+            if (_currentHandIndex == index)
             {
                 return;
             }
 
-            if (currentHandIndex != -1)
+            if (_currentHandIndex != -1)
             {
-                SetHandHighlight(currentHandIndex, false);
+                SetHandHighlight(_currentHandIndex, false);
             }
             
             SetHandHighlight(index, true);
-            currentHandIndex = index;
+            _currentHandIndex = index;
         }
 
         private void SetHandHighlight(int index, bool highlight)
         {
             Transform child = HandsContainer.transform.GetChild(index);
-            var button = child.GetComponent<Button>();
+            Button button = child.GetComponent<Button>();
             ColorBlock buttonColors = button.colors;
             if (highlight)
             {
-                defaultColor = buttonColors.normalColor;
+                _defaultColor = buttonColors.normalColor;
                 buttonColors.normalColor = SelectedColor;
                 buttonColors.highlightedColor = SelectedColor; // The selected hand keeps the same color, highlighted or not.
             }
             else
             {
-                buttonColors.normalColor = defaultColor;
+                buttonColors.normalColor = _defaultColor;
             }
 
             button.colors = buttonColors;
@@ -70,18 +69,18 @@ namespace SS3D.Storage.UI
             // Destroy existing elements
             Transform containerTransform = HandsContainer.transform;
             int childCount = containerTransform.childCount;
-            for (var i = 0; i < childCount; i++)
+            for (int i = 0; i < childCount; i++)
             {
                 DestroyImmediate(containerTransform.GetChild(0).gameObject);
             }
 
             // Create hand for every hand container
-            var containers = Hands.HandContainers;
-            for (var i = 0; i < containers.Length; i++)
+            AttachedContainer[] containers = Hands.HandContainers;
+            for (int i = 0; i < containers.Length; i++)
             {
                 AttachedContainer attachedContainer = containers[i];
                 GameObject handElement = Instantiate(i % 2 == 0 ? LeftHandPrefab : RightHandPrefab, HandsContainer, false);
-                var slot = handElement.GetComponent<SingleItemContainerSlot>();
+                SingleItemContainerSlot slot = handElement.GetComponent<SingleItemContainerSlot>();
                 slot.Inventory = Hands.Inventory;
                 slot.Container = attachedContainer;
             }

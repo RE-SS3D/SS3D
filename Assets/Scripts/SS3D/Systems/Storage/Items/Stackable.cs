@@ -1,4 +1,4 @@
-﻿namespace SS3D.Storage.Items
+﻿namespace SS3D.Systems.Storage.Items
 {
   //   [RequireComponent(typeof(Item))]
   //   public class Stackable : SpessBehaviour, IExaminable

@@ -2,7 +2,7 @@
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Storage.Containers;
+using SS3D.Systems.Storage.Containers;
 using UnityEngine;
 
 namespace SS3D.Systems.Storage.Interactions

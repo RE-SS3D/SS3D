@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Storage.Items;
-using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Interactions;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
-namespace SS3D.Storage.Containers
+namespace SS3D.Systems.Storage.Containers
 {
     public class ContainerInteractive : NetworkedOpenable
     {
@@ -19,16 +18,24 @@ namespace SS3D.Storage.Containers
         {
             if (containerDescriptor.HasCustomInteraction)
             {
-                return new IInteraction[0];
+                return Array.Empty<IInteraction>();
             }
 
-            List<IInteraction> interactions = new List<IInteraction>();
+            List<IInteraction> interactions = new();
 
-            StoreInteraction storeInteraction = new StoreInteraction(containerDescriptor);
-            storeInteraction.Icon = containerDescriptor.StoreIcon;
-            TakeInteraction takeInteraction = new TakeInteraction(containerDescriptor);
-            takeInteraction.Icon = containerDescriptor.TakeIcon;
-            ViewContainerInteraction view = new ViewContainerInteraction(containerDescriptor){MaxDistance = containerDescriptor.MaxDistance, Icon = _viewContainerIcon};
+            StoreInteraction storeInteraction = new(containerDescriptor)
+            {
+                Icon = containerDescriptor.StoreIcon
+            };
+            TakeInteraction takeInteraction = new(containerDescriptor)
+            {
+                Icon = containerDescriptor.TakeIcon
+            };
+            ViewContainerInteraction view = new(containerDescriptor)
+            {
+                MaxDistance = containerDescriptor.MaxDistance, Icon = _viewContainerIcon
+            };
+
             view.Icon = containerDescriptor.ViewIcon;
 
             // Pile or Normal the Store Interaction will always appear, but View only appears in Normal containers
@@ -46,13 +53,17 @@ namespace SS3D.Storage.Containers
                 }           
             }
 
-            if (containerDescriptor.IsOpenable)
+            if (!containerDescriptor.IsOpenable)
             {
-                OpenInteraction openInteraction = new(containerDescriptor);
-                openInteraction.icon = containerDescriptor.OpenIcon;
-                openInteraction.OnOpenStateChanged += OpenStateChanged;
-                interactions.Add(openInteraction);
+                return interactions.ToArray();
             }
+
+            OpenInteraction openInteraction = new(containerDescriptor)
+            {
+                icon = containerDescriptor.OpenIcon
+            };
+            openInteraction.OnOpenStateChanged += OpenStateChanged;
+            interactions.Add(openInteraction);
 
             return interactions.ToArray();
         }
@@ -69,7 +80,7 @@ namespace SS3D.Storage.Containers
         /// A faster solution could be to use unity game tag and to tag every object with a container as such.
         /// Keeping track in Container of the list of objects that are containers would make it really fast.
         /// </summary>
-        private void closeUis()
+        private void CloseUis()
         {
             if (containerDescriptor.ContainerUi != null)
             {
@@ -81,12 +92,14 @@ namespace SS3D.Storage.Containers
             {
                 ContainerInteractive[] containerInteractives = item.GameObject.GetComponents<ContainerInteractive>();
                 // if the item is an interactive container, we call this method again on it.
-                if (containerInteractives != null)
+                if (containerInteractives == null)
                 {
-                    foreach(ContainerInteractive c in containerInteractives)
-                    {
-                        c.closeUis();
-                    }                   
+                    continue;
+                }
+
+                foreach(ContainerInteractive c in containerInteractives)
+                {
+                    c.CloseUis();
                 }
             }
         }
@@ -96,7 +109,7 @@ namespace SS3D.Storage.Containers
             base.SyncOpenState(oldVal, newVal, asServer);
             if (!newVal)
             {
-                closeUis();
+                CloseUis();
             }
         }
     }

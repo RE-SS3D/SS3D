@@ -2,16 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using Coimbra;
-using SS3D.Storage.Containers;
-using SS3D.Storage.Interfaces;
-using SS3D.Storage.Items;
 using SS3D.Systems.Storage.Containers;
+using SS3D.Systems.Storage.Interfaces;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace SS3D.Storage.UI
+namespace SS3D.Systems.Storage.UI
 {
     public class ItemGrid : InventoryDisplayElement, IPointerClickHandler, IDropHandler, ISlotProvider
     {
@@ -47,7 +45,7 @@ namespace SS3D.Storage.UI
             Container container = AttachedContainer.Container;
             Vector2Int containerSize = container.Size;
             int count = containerSize.x * containerSize.y;
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 Instantiate(ItemSlotPrefab, parent);
             }

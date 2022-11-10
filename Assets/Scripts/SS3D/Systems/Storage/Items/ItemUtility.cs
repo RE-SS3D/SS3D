@@ -1,7 +1,6 @@
-﻿using SS3D.Systems.Storage.Items;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace SS3D.Storage.Items
+namespace SS3D.Systems.Storage.Items
 {
     public static class ItemUtility
     {

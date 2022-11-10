@@ -1,13 +1,13 @@
-﻿using SS3D.Storage.Items;
+﻿using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace SS3D.Storage.UI
+namespace SS3D.Systems.Storage.UI
 {
     public abstract class InventoryDisplayElement : MonoBehaviour, IDropHandler
     {
-        public Storage.Inventory Inventory;
+        public Inventory Inventory;
 
         /// <summary>
         /// Called when an item is being dropped onto this display
@@ -32,7 +32,7 @@ namespace SS3D.Storage.UI
                 return;
             }
 
-            var display = drag.GetComponent<ItemDisplay>();
+            ItemDisplay display = drag.GetComponent<ItemDisplay>();
             if (display == null)
             {
                 return;

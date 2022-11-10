@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SS3D.Storage.Containers;
-using SS3D.Storage.Interfaces;
-using SS3D.Storage.Items;
 using SS3D.Systems.Storage.Containers;
+using SS3D.Systems.Storage.Interfaces;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
 
-namespace SS3D.Storage.UI
+namespace SS3D.Systems.Storage.UI
 {
     /// <summary>
     /// A ui element to modify a container that contains one item

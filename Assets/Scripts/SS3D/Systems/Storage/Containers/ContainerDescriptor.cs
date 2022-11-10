@@ -1,9 +1,9 @@
-using SS3D.Storage.UI;
-using SS3D.Systems.Storage.Containers;
+using SS3D.Storage.Containers;
+using SS3D.Systems.Storage.UI;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace SS3D.Storage.Containers
+namespace SS3D.Systems.Storage.Containers
 {
     /// <summary>
     /// ContainerDescriptor manages every aspect of a container attached to a gameObject.
@@ -82,10 +82,6 @@ namespace SS3D.Storage.Containers
         {
             // create a new container of Size size
             Assert.IsNotNull(AttachedContainer);
-            AttachedContainer.Container = new Container
-            {
-                Size = Size
-            };
 
             // add optional filters
             // if (startFilter != null)

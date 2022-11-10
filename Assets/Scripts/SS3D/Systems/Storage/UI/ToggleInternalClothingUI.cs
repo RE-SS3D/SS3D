@@ -1,22 +1,22 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace SS3D.Storage.UI
+namespace SS3D.Systems.Storage.UI
 {
 	/// <summary>
 	/// Allows the Internal Clothing user interface to be collapsible by clicking a button.
 	/// </summary>
 	public class ToggleInternalClothingUI : MonoBehaviour
 	{
-		private Button ExpandButton;
-		private CanvasGroup InternalClothingCanvas;
-		private bool isShowing = true;
+		private Button _expandButton;
+		private CanvasGroup _internalClothingCanvas;
+		private bool _isShowing = true;
 
-		void Start()
+		private void Start()
 		{
-			InternalClothingCanvas = GameObject.Find("InternalClothing").GetComponent<CanvasGroup>();
-			ExpandButton = GetComponent<Button>();
-			ExpandButton.onClick.AddListener(TaskOnClick);
+			_internalClothingCanvas = GameObject.Find("InternalClothing").GetComponent<CanvasGroup>();
+			_expandButton = GetComponent<Button>();
+			_expandButton.onClick.AddListener(TaskOnClick);
 		}
 
         private void Update()
@@ -27,7 +27,8 @@ namespace SS3D.Storage.UI
 				Toggle();
 			}
 		}
-        void TaskOnClick()
+
+        private void TaskOnClick()
 		{
 			Toggle();
 		}
@@ -37,17 +38,17 @@ namespace SS3D.Storage.UI
 		/// </summary>
 		private void Toggle()
         {
-			if (isShowing)
+			if (_isShowing)
 			{
-				InternalClothingCanvas.alpha = 0f; //this makes everything transparent
-				InternalClothingCanvas.blocksRaycasts = false; //this prevents the UI element to receive input events
+				_internalClothingCanvas.alpha = 0f; //this makes everything transparent
+				_internalClothingCanvas.blocksRaycasts = false; //this prevents the UI element to receive input events
 			}
 			else
 			{
-				InternalClothingCanvas.alpha = 1f; //this makes it visible again
-				InternalClothingCanvas.blocksRaycasts = true; //this allows the UI to receive inputs again.
+				_internalClothingCanvas.alpha = 1f; //this makes it visible again
+				_internalClothingCanvas.blocksRaycasts = true; //this allows the UI to receive inputs again.
 			}
-			isShowing = !isShowing;
+			_isShowing = !_isShowing;
 		}
 	}
 }

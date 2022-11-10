@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace SS3D.Storage.Items
+namespace SS3D.Systems.Storage.Items
 {
     [Serializable]
     public struct ItemSupply

@@ -27,7 +27,6 @@ namespace SS3D.Systems.Interactions
         [SerializeField] private List<RadialInteractionButton> _interactionButtons;
 
         private GameObject _selectedObject;
-        private IInteraction _selectedInteraction;
 
         private Sequence _rotateSequence;
         private Sequence _scaleSequence;
@@ -73,7 +72,6 @@ namespace SS3D.Systems.Interactions
         private void HandleInteractionButtonHovered(GameObject button, IInteraction interaction)
         {
             _selectedObject = button;
-            _selectedInteraction = interaction;
         }
 
         private void HandleInteractionButtonPressed(IInteraction interaction)
@@ -149,7 +147,7 @@ namespace SS3D.Systems.Interactions
             Position = screenPos;
 
             _selectedObject = _interactionButtons.First().GameObjectCache;
-            _selectedInteraction = Interactions.First();
+            Interactions.First();
             
             UpdateIndicator();
 
@@ -214,7 +212,6 @@ namespace SS3D.Systems.Interactions
             }
 
             Interactions.Clear();
-            _selectedInteraction = null;
             _selectedObject = null;
             Event = null;
         }

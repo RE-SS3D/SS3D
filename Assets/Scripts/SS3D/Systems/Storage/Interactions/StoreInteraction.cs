@@ -1,7 +1,6 @@
 ﻿using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Storage.Containers;
 using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
@@ -20,7 +19,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
-            return new ClientDelayedInteraction();;
+            return new ClientDelayedInteraction();
         }
 
         public string GetName(InteractionEvent interactionEvent)

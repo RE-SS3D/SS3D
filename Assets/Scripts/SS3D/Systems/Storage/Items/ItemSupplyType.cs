@@ -1,4 +1,4 @@
-namespace SS3D.Storage.Items
+namespace SS3D.Systems.Storage.Items
 {
     public enum ItemSupplyType
     {

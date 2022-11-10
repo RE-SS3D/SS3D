@@ -2,14 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using FishNet.Connection;
 using FishNet.Object;
-using SS3D.Storage.Containers;
-using SS3D.Storage.Items;
 using SS3D.Systems.Entities;
-using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
-namespace SS3D.Storage
+namespace SS3D.Systems.Storage.Containers
 {
     /**
      * This is the basic inventory system. Any inventory-capable creature should have this component.

@@ -1,6 +1,5 @@
 ﻿using System;
 using FishNet.Component.Transforming;
-using SS3D.Storage.Items;
 using UnityEngine;
 
 namespace SS3D.Systems.Storage.Items

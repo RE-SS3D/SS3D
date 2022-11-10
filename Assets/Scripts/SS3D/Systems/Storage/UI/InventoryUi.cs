@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Coimbra;
-using SS3D.Storage.Containers;
 using SS3D.Systems.Storage.Containers;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace SS3D.Storage.UI
+namespace SS3D.Systems.Storage.UI
 {
     /// <summary>
     /// Coordinates the players inventory ui
@@ -14,14 +13,14 @@ namespace SS3D.Storage.UI
     public class InventoryUi : MonoBehaviour
     {
         [NonSerialized]
-        public Storage.Inventory Inventory;
+        public Inventory Inventory;
         public HandsUi HandsUi;
         /// <summary>
         /// The prefab for a container display
         /// </summary>
         public GameObject ContainerUiPrefab;
 
-        private List<ContainerDisplay> containerDisplays = new List<ContainerDisplay>();
+        private readonly List<ContainerDisplay> _containerDisplays = new();
         
         public void Start()
         {
@@ -36,20 +35,22 @@ namespace SS3D.Storage.UI
 
         private void InventoryOnContainerClosed(AttachedContainer container)
         {
-            for (var i = 0; i < containerDisplays.Count; i++)
+            for (int i = 0; i < _containerDisplays.Count; i++)
             {
-                if (containerDisplays[i].Container == container)
+                if (_containerDisplays[i].Container != container)
                 {
-                    containerDisplays[i].UiElement.Destroy();
-                    containerDisplays.RemoveAt(i);
-                    return;
+                    continue;
                 }
+
+                _containerDisplays[i].UiElement.Destroy();
+                _containerDisplays.RemoveAt(i);
+                return;
             }
         }
 
         private void InventoryOnContainerOpened(AttachedContainer container)
         {
-            foreach (ContainerDisplay x in containerDisplays)
+            foreach (ContainerDisplay x in _containerDisplays)
             {
                 if (x.Container == container)
                 {
@@ -58,11 +59,11 @@ namespace SS3D.Storage.UI
             }
 
             GameObject ui = Instantiate(ContainerUiPrefab);
-            var containerUi = ui.GetComponent<ContainerUi>();
+            ContainerUi containerUi = ui.GetComponent<ContainerUi>();
             Assert.IsNotNull(containerUi);
             containerUi.AttachedContainer = container;
             containerUi.Inventory = Inventory;
-            containerDisplays.Add(new ContainerDisplay(ui, container));
+            _containerDisplays.Add(new ContainerDisplay(ui, container));
         }
         
         private struct ContainerDisplay
