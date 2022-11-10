@@ -23,20 +23,5 @@ namespace SS3D.Systems.Storage.Containers
 
         [NonSerialized]
         public readonly Dictionary<string, AttachedContainer> Containers = new();
-
-        public void Awake()
-        {
-            // Filter[] filters = new Filter[1];
-            // foreach (string slotName in ClothingSlotNames)
-            // {
-            //     var trait = ScriptableObject.CreateInstance<Trait>();
-            //     trait.Hash = Animator.StringToHash($"Clothing{slotName}".ToUpper());
-            //     var filter = ScriptableObject.CreateInstance<Filter>();
-            //     filter.acceptedTraits = new List<Trait> {trait};
-            //     filter.deniedTraits = new List<Trait>();
-            //     filters[0] = filter;
-            //     Containers.Add(slotName, AttachedContainer.CreateEmpty(gameObject, Vector2Int.one, filters));
-            // }
-        }
     }
 }

@@ -310,25 +310,28 @@ namespace SS3D.Systems.Storage.Containers
 
             Vector3 itemDimensions = item.GetComponentInChildren<Collider>().bounds.size;
             float itemSize = 0;
-            
-            for(int i = 0; i < 3; i++) {
+
+            for (int i = 0; i < 3; i++)
+            {
                 if (itemDimensions[i] > itemSize)
-                    itemSize = itemDimensions[i];                 
+                {
+                    itemSize = itemDimensions[i];
+                }
             }
+
             float distance = Vector3.Distance(item.transform.position, position);
             position = distance > 0 ? position + new Vector3(0, itemSize * 0.5f, 0) : position;
 
             if (distance > 0)
+            {
                 item.transform.LookAt(transform);
+            }
             else
+            {
                 item.transform.rotation = rotation;
+            }
+
             item.transform.position = position;
-            //item.transform.rotation = item.GetComponent<Item>().attachmentPoint.rotation;
-            
-            //Vector3 transformRotation = item.transform.rotation.eulerAngles;
-            //transformRotation.x = 0f;
-            //transformRotation.z = 0f;
-            //item.transform.rotation = Quaternion.Euler(transformRotation);
             item.SetActive(true);
 
             if (IsServer)

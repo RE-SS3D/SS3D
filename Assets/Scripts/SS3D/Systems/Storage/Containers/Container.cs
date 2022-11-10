@@ -551,14 +551,6 @@ namespace SS3D.Systems.Storage.Containers
                 return false;
             }
 
-            // foreach (Filter filter in Filters)
-            // {
-            //     if (!filter.CanStore(item))
-            //     {
-            //         return false;
-            //     }
-            // }
-
             return true;
         }
 

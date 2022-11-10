@@ -1,4 +1,7 @@
+using FishNet;
+using FishNet.Connection;
 using SS3D.Storage.Containers;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Storage.UI;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -23,8 +26,8 @@ namespace SS3D.Systems.Storage.Containers
         public ContainerItemDisplay ContainerItemDisplay;
         // reference towards the container UI linked to this container.
         public ContainerUi ContainerUi;
-        // Open interaction icon, visible when opening a container.
         
+        // Open interaction icon, visible when opening a container.
         public Sprite OpenIcon;
         // Take interaction icon, visible when taking something from a container.
         public Sprite TakeIcon;
@@ -45,6 +48,7 @@ namespace SS3D.Systems.Storage.Containers
         public bool OpenWhenContainerViewed;
         /// <summary> Defines the size of the container, every item takes a defined place inside a container. </summary>
         public Vector2Int Size = new(0,0);
+        
         /// <summary>
         /// Set visibility of objects inside the container (not in the UI, in the actual game object).
         /// If the container is Hidden, the visibility of items is always off.
@@ -53,10 +57,8 @@ namespace SS3D.Systems.Storage.Containers
         public bool HideItems = true;
         /// <summary> If items should be attached as children. </summary>
         public bool AttachItems = true;
+        
         /// <summary> The initial filter of the container. Controls what can go in the container. </summary>
-        //public Filter startFilter;
-        /// <summary> Used as a flag to create relevant components for the container only once, when the containerDescriptor is added.
-        /// Used only by the Container Descriptor Editor</summary>
         public bool Initialized;
         /// <summary> max distance at which the container is visible if not hidden </summary>
         public float MaxDistance = 5f;
@@ -72,10 +74,6 @@ namespace SS3D.Systems.Storage.Containers
         public Transform[] Displays;
         public int NumberDisplay;
 
-        /// <summary>
-        /// How often the observer list should be updated
-        /// </summary>
-        //private float _checkObserversInterval = 1f;
         private float _lastObserverCheck;
         
         public void Awake()
@@ -83,54 +81,11 @@ namespace SS3D.Systems.Storage.Containers
             // create a new container of Size size
             Assert.IsNotNull(AttachedContainer);
 
-            // add optional filters
-            // if (startFilter != null)
-            //     attachedContainer.Container.Filters.Add(startFilter);
-
             // If container interactions icon are not defined at start, load default icons.
             OpenIcon = OpenIcon == null ? Resources.Load<Sprite>("Interactions/door") : OpenIcon;
             TakeIcon = TakeIcon == null ? Resources.Load<Sprite>("Interactions/take") : TakeIcon;
             StoreIcon = StoreIcon == null ? Resources.Load<Sprite>("Interactions/discard") : StoreIcon;
             ViewIcon = ViewIcon == null ? Resources.Load<Sprite>("Interactions/container") : ViewIcon;
-        }
-
-        public void Update()
-        {
-            // this should be executed only for some kind of containers, not sure which one. It needs some conditions.
-            UpdateObservers();
-        }
-
-        private void UpdateObservers()
-        {
-            // if (lastObserverCheck + CheckObserversInterval < Time.time)
-            // {
-            //     // Could probably be more efficient, it's currently checking every connection in game.
-            //     foreach (NetworkConnectionToClient connection in NetworkServer.connections.Values)
-            //     {
-            //         if (connection != null && connection.identity != null)
-            //         {
-            //             var creature = connection.identity.GetComponent<Entity>();
-            //             if (creature == null)
-            //             {
-            //                 continue;
-            //             }
-            //             if (creature.CanSee(gameObject))
-            //             {
-            //                 if (attachedContainer.Observers.Contains(creature))
-            //                 {
-            //                     continue;
-            //                 }
-            //                 attachedContainer.AddObserver(creature);
-            //             }
-            //             else 
-            //             {
-            //                 attachedContainer.RemoveObserver(creature);
-            //             }
-            //         }
-            //     }
-            //
-            //     lastObserverCheck = Time.time;
-            // }
         }
     }
 }

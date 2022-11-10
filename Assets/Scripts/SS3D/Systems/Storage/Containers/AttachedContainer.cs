@@ -53,22 +53,7 @@ namespace SS3D.Systems.Storage.Containers
         /// </summary>
         public string GetName()
         {
-            //Gets all components on this object implementing the interface IExaminable
-            // var iExaminables = GetComponents<IExaminable>();
-            //Go through each components until one has a ExamineType equal to SIMPLE_TEXT and is not an empty string, then returns the name linked to it.
-            // foreach (IExaminable iExaminable in iExaminables)
-            // {
-            //    if (iExaminable.GetData().GetExamineType() == ExamineType.SIMPLE_TEXT)
-            //     {
-            //         DataNameDescription DataName = (DataNameDescription)(iExaminable.GetData());
-            //         Name = DataName.GetName();
-            //         if (Name != "")
-            //         {
-            //             return Name;
-            //         }
-            //     }
-            // }
-            // return null;
+            // TODO: Add back examine system
 
             return string.Empty;
         }
