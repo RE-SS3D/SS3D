@@ -27,7 +27,7 @@ namespace SS3D.Systems.Storage.Containers
             {
                 Icon = containerDescriptor.StoreIcon
             };
-            TakeInteraction takeInteraction = new(containerDescriptor)
+            TakeFirstInteraction takeFirstInteraction = new(containerDescriptor)
             {
                 Icon = containerDescriptor.TakeIcon
             };
@@ -49,7 +49,7 @@ namespace SS3D.Systems.Storage.Containers
                 else
                 {
                     interactions.Add(storeInteraction);
-                    interactions.Add(takeInteraction);
+                    interactions.Add(takeFirstInteraction);
                 }           
             }
 
@@ -60,7 +60,7 @@ namespace SS3D.Systems.Storage.Containers
 
             OpenInteraction openInteraction = new(containerDescriptor)
             {
-                icon = containerDescriptor.OpenIcon
+                Icon = containerDescriptor.OpenIcon
             };
             openInteraction.OnOpenStateChanged += OpenStateChanged;
             interactions.Add(openInteraction);

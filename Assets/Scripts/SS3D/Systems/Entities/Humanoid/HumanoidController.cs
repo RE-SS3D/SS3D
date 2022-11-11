@@ -27,7 +27,7 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private float _lerpMultiplier;
         [SerializeField] private float _rotationLerpMultiplier;
 
-        // [Header("Movement IK Targets")] 
+        [Header("Movement IK Targets")] 
         [SerializeField] private Transform _movementTarget;
         // [SerializeField] private Transform _mousePositionTransform;
         // [SerializeField] private Transform _mouseDirectionTransform;

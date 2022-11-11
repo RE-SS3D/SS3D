@@ -1,3 +1,4 @@
+using SS3D.Data;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
@@ -12,7 +13,7 @@ namespace SS3D.Systems.Storage.Interactions
     // you can only pick things that are not in a container
     public class PickupInteraction : IInteraction
     {
-        public Sprite InteractionIcon;
+        public Sprite Icon;
 
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
@@ -26,7 +27,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return InteractionIcon;
+            return Icon != null ? Icon : Database.Icons.Get(InteractionIcons.Take);
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

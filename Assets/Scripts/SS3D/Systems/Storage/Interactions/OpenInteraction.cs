@@ -1,4 +1,5 @@
 ﻿using System;
+using SS3D.Data;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
@@ -11,7 +12,7 @@ namespace SS3D.Systems.Storage.Interactions
     [Serializable]
     public class OpenInteraction : IInteraction
     {
-        public Sprite icon;
+        public Sprite Icon;
 
         public event EventHandler<bool> OnOpenStateChanged;
         protected static readonly int OpenId = Animator.StringToHash("Open");
@@ -46,7 +47,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return icon;
+            return Icon != null ? Icon : Database.Icons.Get(InteractionIcons.Open);
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

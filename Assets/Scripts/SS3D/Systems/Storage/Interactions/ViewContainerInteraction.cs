@@ -1,4 +1,5 @@
-﻿using SS3D.Interactions;
+﻿using SS3D.Data;
+using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Entities;
@@ -32,7 +33,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon;
+            return Icon != null ? Icon : Database.Icons.Get(InteractionIcons.Open);
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

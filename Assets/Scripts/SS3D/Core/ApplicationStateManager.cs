@@ -1,4 +1,5 @@
 using DG.Tweening;
+using SS3D.Data;
 using UDiscord;
 using UnityEngine;
 
@@ -34,6 +35,8 @@ namespace SS3D.Core
         private void InitializeSubsystems()
         {
             DiscordManager.Initialize();
+
+            Database.Icons.PreloadAssets();
         }
 
         public void InitializeApplication()

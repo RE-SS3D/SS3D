@@ -1,4 +1,5 @@
-﻿using SS3D.Interactions;
+﻿using SS3D.Data;
+using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Storage.Containers;
@@ -8,12 +9,12 @@ using UnityEngine;
 namespace SS3D.Systems.Storage.Interactions
 {
     // This Interaction takes the first available item inside a container
-    public sealed class TakeInteraction : IInteraction
+    public sealed class TakeFirstInteraction : IInteraction
     {
         public Sprite Icon;
         private readonly ContainerDescriptor _containerDescriptor;
 
-        public TakeInteraction(ContainerDescriptor containerDescriptor)
+        public TakeFirstInteraction(ContainerDescriptor containerDescriptor)
         {
             _containerDescriptor = containerDescriptor;
         }
@@ -30,16 +31,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            if(Icon != null)
-            {
-                Debug.Log("get icon" + Icon.name);
-            }
-            else
-            {
-                Debug.Log("icon is null");
-            }
-            
-            return Icon;
+            return Icon != null ? Icon : Database.Icons.Get(InteractionIcons.Take);
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

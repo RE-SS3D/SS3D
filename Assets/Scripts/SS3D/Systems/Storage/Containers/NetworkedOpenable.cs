@@ -22,7 +22,7 @@ namespace SS3D.Systems.Storage.Containers
         {
             OpenInteraction openInteraction = new()
             {
-                icon = OpenIcon
+                Icon = OpenIcon
             };
             openInteraction.OnOpenStateChanged += OpenStateChanged;
 

@@ -1,5 +1,6 @@
 using FishNet;
 using FishNet.Connection;
+using SS3D.Data;
 using SS3D.Storage.Containers;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Storage.UI;
@@ -82,10 +83,10 @@ namespace SS3D.Systems.Storage.Containers
             Assert.IsNotNull(AttachedContainer);
 
             // If container interactions icon are not defined at start, load default icons.
-            OpenIcon = OpenIcon == null ? Resources.Load<Sprite>("Interactions/door") : OpenIcon;
-            TakeIcon = TakeIcon == null ? Resources.Load<Sprite>("Interactions/take") : TakeIcon;
-            StoreIcon = StoreIcon == null ? Resources.Load<Sprite>("Interactions/discard") : StoreIcon;
-            ViewIcon = ViewIcon == null ? Resources.Load<Sprite>("Interactions/container") : ViewIcon;
+            OpenIcon = Database.Icons.Get(InteractionIcons.Open);
+            TakeIcon = Database.Icons.Get(InteractionIcons.Take);
+            StoreIcon = Database.Icons.Get(InteractionIcons.Take);
+            ViewIcon = Database.Icons.Get(InteractionIcons.Open);
         }
     }
 }
