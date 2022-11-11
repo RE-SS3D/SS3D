@@ -17,8 +17,12 @@ using UnityEngine;
 
 namespace SS3D.Systems.Entities
 {
+    /// <summary>
+    /// Controls player spawning.
+    /// </summary>
     public class EntitySpawnSystem : NetworkedSystem
     {
+        [Header("Settings")]
         [SerializeField] private List<PlayerControllable> _tempHuman;
         [SerializeField] private Transform _tempSpawnPoint;
 
@@ -110,6 +114,10 @@ namespace SS3D.Systems.Entities
             SpawnLatePlayer(ckey);
         }
 
+        /// <summary>
+        /// Spawns a player after the round has started
+        /// </summary>
+        /// <param name="ckey"></param>
         [Server]
         private void SpawnLatePlayer(string ckey)
         {
@@ -119,6 +127,10 @@ namespace SS3D.Systems.Entities
             }
         }
 
+        /// <summary>
+        /// Spawns all the players that are ready when the round starts
+        /// </summary>
+        /// <param name="players"></param>
         [Server]
         private void SpawnReadyPlayers(List<string> players)
         {
@@ -142,6 +154,9 @@ namespace SS3D.Systems.Entities
             _alreadySpawnedInitialPlayers = true;
         }
 
+        /// <summary>
+        /// Destroys all spawned players
+        /// </summary>
         [Server]
         private void DestroySpawnedPlayers()
         {
@@ -153,6 +168,11 @@ namespace SS3D.Systems.Entities
             _serverSpawnedPlayers.Clear();
         }
 
+        /// <summary>
+        /// Spawns a player with a Ckey
+        /// </summary>
+        /// <param name="ckey">Unique user key</param>
+        [Server]
         private void SpawnPlayer(string ckey)
         {
             PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();

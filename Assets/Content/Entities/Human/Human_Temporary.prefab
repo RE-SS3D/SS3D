@@ -430,6 +430,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7421393902551255742}
+  - component: {fileID: 1209055579648204933}
   m_Layer: 0
   m_Name: hand_l
   m_TagString: Untagged
@@ -457,6 +458,43 @@ Transform:
   m_Father: {fileID: 4642323041727381657}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 2.9936128, y: 133.55603, z: -25.18251}
+--- !u!114 &1209055579648204933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1658636888425686351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AttachedContainer: {fileID: 7994111800386677094}
+  ContainerInteractive: {fileID: 0}
+  ContainerItemDisplay: {fileID: 981636438116294743}
+  ContainerUi: {fileID: 0}
+  OpenIcon: {fileID: 21300000, guid: 48da6209938d27844878cc3d318295e2, type: 3}
+  TakeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
+  StoreIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
+  ViewIcon: {fileID: 0}
+  AttachmentOffset: {x: 0, y: 0, z: 0}
+  ContainerName: container
+  OnlyStoreWhenOpen: 0
+  OpenWhenContainerViewed: 0
+  Size: {x: 10, y: 10}
+  HideItems: 1
+  AttachItems: 1
+  Initialized: 0
+  MaxDistance: 5
+  IsOpenable: 0
+  IsInteractive: 0
+  HasUi: 0
+  HasCustomInteraction: 0
+  HasCustomDisplay: 0
+  Displays:
+  - {fileID: 3012616593455593399}
+  NumberDisplay: 0
 --- !u!1 &1746419313471647427
 GameObject:
   m_ObjectHideFlags: 0
@@ -655,6 +693,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2666434032613405079}
+  - component: {fileID: 9153533615659619174}
+  - component: {fileID: 7653287983538616454}
+  - component: {fileID: 396059371930522959}
   m_Layer: 0
   m_Name: hold.r
   m_TagString: Untagged
@@ -677,6 +718,53 @@ Transform:
   m_Father: {fileID: 7227076765705622090}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9153533615659619174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2062586837675834606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDescriptor: {fileID: 1667608942592793804}
+  Mirrored: 0
+--- !u!114 &7653287983538616454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2062586837675834606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 9
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  ContainerDescriptor: {fileID: 1667608942592793804}
+  _container: {fileID: 396059371930522959}
+--- !u!114 &396059371930522959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2062586837675834606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 10
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  Size: {x: 0, y: 0}
 --- !u!1 &2085819744154837467
 GameObject:
   m_ObjectHideFlags: 0
@@ -686,6 +774,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7227076765705622090}
+  - component: {fileID: 1667608942592793804}
   m_Layer: 0
   m_Name: hand_r
   m_TagString: Untagged
@@ -713,6 +802,43 @@ Transform:
   m_Father: {fileID: 2677302238157752450}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 13.504737, y: -103.70228, z: -16.972988}
+--- !u!114 &1667608942592793804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2085819744154837467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AttachedContainer: {fileID: 7653287983538616454}
+  ContainerInteractive: {fileID: 0}
+  ContainerItemDisplay: {fileID: 9153533615659619174}
+  ContainerUi: {fileID: 0}
+  OpenIcon: {fileID: 21300000, guid: 48da6209938d27844878cc3d318295e2, type: 3}
+  TakeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
+  StoreIcon: {fileID: 21300000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
+  ViewIcon: {fileID: 0}
+  AttachmentOffset: {x: 0, y: 0, z: 0}
+  ContainerName: container
+  OnlyStoreWhenOpen: 0
+  OpenWhenContainerViewed: 0
+  Size: {x: 10, y: 10}
+  HideItems: 1
+  AttachItems: 1
+  Initialized: 0
+  MaxDistance: 5
+  IsOpenable: 0
+  IsInteractive: 0
+  HasUi: 0
+  HasCustomInteraction: 0
+  HasCustomDisplay: 0
+  Displays:
+  - {fileID: 2666434032613405079}
+  NumberDisplay: 0
 --- !u!1 &2127526918660967422
 GameObject:
   m_ObjectHideFlags: 0
@@ -815,6 +941,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3012616593455593399}
+  - component: {fileID: 981636438116294743}
+  - component: {fileID: 7994111800386677094}
+  - component: {fileID: 8411477508438424976}
   m_Layer: 0
   m_Name: hold.l
   m_TagString: Untagged
@@ -837,6 +966,53 @@ Transform:
   m_Father: {fileID: 7421393902551255742}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &981636438116294743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2712797265476924516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDescriptor: {fileID: 1209055579648204933}
+  Mirrored: 0
+--- !u!114 &7994111800386677094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2712797265476924516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 7
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  ContainerDescriptor: {fileID: 1209055579648204933}
+  _container: {fileID: 8411477508438424976}
+--- !u!114 &8411477508438424976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2712797265476924516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 8
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  Size: {x: 0, y: 0}
 --- !u!1 &2840666209206779409
 GameObject:
   m_ObjectHideFlags: 0
@@ -2728,7 +2904,10 @@ GameObject:
   - component: {fileID: 1872721284991216642}
   - component: {fileID: 6706577840954258383}
   - component: {fileID: 8336170331735268562}
-  m_Layer: 0
+  - component: {fileID: 5293420320943344825}
+  - component: {fileID: 2219108694782903046}
+  - component: {fileID: 3989715289005515527}
+  m_Layer: 11
   m_Name: Human_Temporary
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2781,6 +2960,13 @@ MonoBehaviour:
   - {fileID: 5113695969261828376}
   - {fileID: 1872721284991216642}
   - {fileID: 8336170331735268562}
+  - {fileID: 5293420320943344825}
+  - {fileID: 2219108694782903046}
+  - {fileID: 3989715289005515527}
+  - {fileID: 7994111800386677094}
+  - {fileID: 8411477508438424976}
+  - {fileID: 7653287983538616454}
+  - {fileID: 396059371930522959}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -2944,7 +3130,64 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  _scaleInOnSpawn: 1
+--- !u!114 &5293420320943344825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c0362743a29c3f4bb97acacf5ad39f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 4
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  _selectionMask:
+    serializedVersion: 2
+    m_Bits: 1043
+--- !u!114 &2219108694782903046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c49aa1e5ada94de1b51bd69341f36078, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 5
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  Hands: {fileID: 3989715289005515527}
+--- !u!114 &3989715289005515527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cb0dec8ad091bb468e4dfb0f4d4f75b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 6
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  HandContainers:
+  - {fileID: 7994111800386677094}
+  - {fileID: 7653287983538616454}
+  handRange: 5
+  range:
+    Horizontal: 1.5
+    Vertical: 1
+  interactionOrigin: {fileID: 5927494552340417975}
+  pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
 --- !u!1 &6530700040387722453
 GameObject:
   m_ObjectHideFlags: 0

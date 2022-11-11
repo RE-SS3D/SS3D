@@ -5,10 +5,9 @@
     /// </summary>
     public class SpessSystem : SpessBehaviour
     {
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
-
+            base.OnAwake();
             GameSystems.Register(this);
         }
     }

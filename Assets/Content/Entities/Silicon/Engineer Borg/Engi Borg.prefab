@@ -1402,7 +1402,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 10
+  <PrefabId>k__BackingField: 8
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 9988794035435604749
@@ -1571,7 +1571,6 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 1019513474262773944}
   _networkObjectCache: {fileID: 1019513474262773944}
-  _scaleInOnSpawn: 1
 --- !u!1 &6250850031364791032
 GameObject:
   m_ObjectHideFlags: 0
