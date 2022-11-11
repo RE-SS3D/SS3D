@@ -11,27 +11,6 @@ namespace FishNet.Object
 
     public abstract partial class NetworkBehaviour : MonoBehaviour
     {
-        #region Types.
-        private struct RpcLinkType
-        {
-            /// <summary>
-            /// Index of link.
-            /// </summary>
-            public ushort LinkIndex;
-            /// <summary>
-            /// Type of Rpc link is for.
-            /// </summary>
-            public RpcType RpcType;
-
-            public RpcLinkType(ushort linkIndex, RpcType rpcType)
-            {
-                LinkIndex = linkIndex;
-                RpcType = rpcType;
-            }
-        }
-
-        #endregion
-
         #region Private.        
         /// <summary>
         /// Link indexes for RPCs.
@@ -92,29 +71,29 @@ namespace FishNet.Object
             }
         }
 
-        ///// <summary>
-        ///// Creates a PooledWriter and writes the header for a rpc.
-        ///// </summary>
-        ///// <param name="writer"></param>
-        ///// <param name="rpcHash"></param>
-        ///// <param name="packetId"></param>
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //private void CreateLinkedRpcHeader(RpcLinkType link, PooledWriter writer)
-        //{
-        //    writer.WriteUInt16(link.LinkIndex);
-        //}
-
+        /// <summary>
+        /// Returns an estimated length for any Rpc header.
+        /// </summary>
+        /// <returns></returns>
+        private int GetEstimatedRpcHeaderLength()
+        {
+            /* Imaginary number for how long RPC headers are.
+            * They are well under this value but this exist to
+            * ensure a writer of appropriate length is pulled
+            * from the pool. */
+            return 20;
+        }
 
         /// <summary>
         /// Creates a PooledWriter and writes the header for a rpc.
         /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="rpcHash"></param>
-        /// <param name="packetId"></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private PooledWriter CreateLinkedRpc(RpcLinkType link, PooledWriter methodWriter, Channel channel)
         {
-            PooledWriter writer = WriterPool.GetWriter();
+            int rpcHeaderBufferLength = GetEstimatedRpcHeaderLength();
+            int methodWriterLength = methodWriter.Length;
+            //Writer containing full packet.
+            PooledWriter writer = WriterPool.GetWriter(rpcHeaderBufferLength + methodWriterLength);
             writer.WriteUInt16(link.LinkIndex);
             //Write length only if reliable.
             if (channel == Channel.Reliable)
@@ -125,6 +104,17 @@ namespace FishNet.Object
             return writer;
         }
 
+        /// <summary>
+        /// Returns RpcLinks the ServerManager.
+        /// </summary>
+        private void ReturnRpcLinks()
+        {
+            if (_rpcLinks.Count == 0)
+                return;
+
+            ServerManager?.ReturnRpcLinks(_rpcLinks);
+            _rpcLinks.Clear();
+        }
 
         /// <summary>
         /// Writes rpcLinks to writer.

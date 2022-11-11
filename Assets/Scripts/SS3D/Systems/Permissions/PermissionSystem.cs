@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
+using SS3D.Core.Behaviours;
+using SS3D.Logging;
+using SS3D.Systems.Permissions.Events;
 using UnityEngine;
 using File = System.IO.File;
 using Path = System.IO.Path;
@@ -10,27 +15,29 @@ namespace SS3D.Systems.Permissions
     /// <summary>
     /// TODO: Make a simple permission system based on a .txt file to avoid non-admins from starting a round
     /// </summary>
-    public class PermissionSystem : NetworkBehaviour
+    public sealed class PermissionSystem : NetworkedSystem
     {
         private const string EditorPermissionFilePath = "/Builds/Config/permissions.txt";
         private const string PermissionFilePath = "/Config/permissions.txt";
 
         private static string FullPermissionFilePath => Path.GetFullPath(".") + (Application.isEditor ? EditorPermissionFilePath : PermissionFilePath);
 
-        private readonly Dictionary<string, ServerRoleTypes> _userPermissions = new();
+        [SyncObject]
+        private readonly SyncDictionary<string, ServerRoleTypes> _userPermissions = new();
+        [SyncVar] public bool HasLoadedPermissions;
 
-        [Server]
-        public ServerRoleTypes GetUserPermission(string ckey)
+        protected override void OnStart()
         {
-            bool containsKey = _userPermissions.ContainsKey(ckey);
+            base.OnStart();
 
-            return containsKey ? _userPermissions[ckey] : ServerRoleTypes.User;
+            _userPermissions.OnChange += HandleUserPermissionsChanged;
         }
 
-        [Server]
-        public void ChangeUserPermission(string ckey, ServerRoleTypes role)
+        public override void OnStartClient()
         {
-            // TODO: This
+            base.OnStartClient();
+
+            SyncUserPermissions();
         }
 
         public override void OnStartServer()
@@ -40,6 +47,32 @@ namespace SS3D.Systems.Permissions
             LoadPermissions();
         }
 
+        private void HandleUserPermissionsChanged(SyncDictionaryOperation op, string key, ServerRoleTypes value, bool asServer)
+        {
+            SyncUserPermissions();
+        }
+
+        public bool TryGetUserRole(string ckey, out ServerRoleTypes userPermission)
+        {
+            if (_userPermissions.Count == 0 || _userPermissions == null)
+            {
+                LoadPermissions();
+            }
+
+            bool containsKey = _userPermissions.ContainsKey(ckey);
+            userPermission = containsKey ? _userPermissions[ckey] : ServerRoleTypes.None;
+
+            return containsKey;
+        }
+
+        [Server]
+        public void ChangeUserPermission(string ckey, ServerRoleTypes role)
+        {
+            // TODO: This            
+            // Add new user permission to list
+            // Add new user permission to text file
+        }
+
         [Server]
         private void LoadPermissions()
         {
@@ -47,8 +80,9 @@ namespace SS3D.Systems.Permissions
 
             string[] lines = File.ReadAllLines(FullPermissionFilePath);
 
-            foreach (string line in lines)
+            for (int index = 0; index < lines.Length; index++)
             {
+                string line = lines[index];
                 string[] words = line.Split(" ");
 
                 string ckey = words[0];
@@ -56,17 +90,31 @@ namespace SS3D.Systems.Permissions
 
                 _userPermissions.Add(ckey, role);
 
-                Debug.Log($"[{nameof(PermissionSystem)}] - Found user permission {ckey} as {role}");
+                Punpun.Say(this, $"Found user permission {ckey} as {role}", Logs.ServerOnly);
             }
+
+            HasLoadedPermissions = true;
+            SyncUserPermissions();
         }
 
-        private static void CreatePermissionsFileIfNotExists()
+        private void SyncUserPermissions()
         {
-            if (!File.Exists(FullPermissionFilePath))
+            Dictionary<string, ServerRoleTypes> dictionary = _userPermissions.ToDictionary(pair => pair.Key, pair => pair.Value);
+
+            UserPermissionsChangedEvent permissionsChangedEvent = new(dictionary);
+            permissionsChangedEvent.Invoke(this);
+        }
+
+        [Server]
+        private void CreatePermissionsFileIfNotExists()
+        {
+            if (File.Exists(FullPermissionFilePath))
             {
-                Debug.Log($"[{nameof(PermissionSystem)}] - Permissions file not found, creating a new one");
-                File.WriteAllText(FullPermissionFilePath, string.Empty);
+                return;
             }
+
+            Punpun.Say(this, $"Permissions file not found, creating a new one", Logs.ServerOnly);
+            File.WriteAllText(FullPermissionFilePath, string.Empty);
         }
     }
 }

@@ -81,64 +81,69 @@ namespace FishNet.Managing.Object
         }
 
         /// <summary>
+        /// Removes a NetworkedObject from spawned.
+        /// </summary>
+        /// <param name="nob"></param>
+        private void RemoveFromSpawned(int objectId, bool unexpectedlyDestroyed, ulong sceneId)
+        {
+            Spawned.Remove(objectId);
+            //Do the same with SceneObjects.
+            if (unexpectedlyDestroyed && (sceneId != 0))
+                RemoveFromSceneObjects(sceneId);
+        }
+
+        /// <summary>
         /// Despawns a NetworkObject.
         /// </summary>
-        internal virtual void Despawn(NetworkObject nob, bool asServer)
+        internal virtual void Despawn(NetworkObject nob, DespawnType despawnType, bool asServer)
         {
             if (nob == null)
             {
-                if (NetworkManager.CanLog(LoggingType.Warning))
-                    Debug.LogWarning($"Cannot despawn a null NetworkObject.");
+                NetworkManager.LogWarning($"Cannot despawn a null NetworkObject.");
                 return;
             }
 
             //True if should be destroyed, false if deactivated.
-            bool destroy;
+            bool destroy = false;
             /* Only modify object state if asServer,
              * or !asServer and not host. This is so clients, when acting as
              * host, don't destroy objects they lost observation of. */
-            //If as server.
-            if (asServer)
+
+            /* Nested prefabs can never be destroyed. Only check to 
+             * destroy if not nested. By nested prefab, this means the object
+             * despawning is part of another prefab that is also a spawned
+             * network object. */
+            if (!nob.IsNested)
             {
-                //Scene object.
-                if (nob.IsSceneObject)
+                //If as server.
+                if (asServer)
                 {
-                    destroy = false;
-                }
-                //Not a scene object, destroy normally.
-                else
-                {
-                    /* If client-host has visibility
-                     * then disable and wait for client-host to get destroy
-                     * message. Otherwise destroy immediately. */
-                    if (nob.Observers.Contains(NetworkManager.ClientManager.Connection))
+                    //Scene object.
+                    if (!nob.IsSceneObject)
                     {
-                        destroy = false;
-                        NetworkManager.ServerManager.Objects.AddToPending(nob);
-                    }
-                    else
-                    {
-                        destroy = true;
+                        /* If client-host has visibility
+                         * then disable and wait for client-host to get destroy
+                         * message. Otherwise destroy immediately. */
+                        if (nob.Observers.Contains(NetworkManager.ClientManager.Connection))
+                            NetworkManager.ServerManager.Objects.AddToPending(nob);
+                        else
+                            destroy = true;
                     }
                 }
-            }
-            //Not as server.
-            else
-            {
-                //Scene object.
-                if (nob.IsSceneObject)
-                {
-                    destroy = false;
-                }
-                //Not a scene object, destroy normally.
+                //Not as server.
                 else
                 {
-                    /* If was removed from pending then also destroy.
-                    * Pending objects are ones that exist on the server
-                     * side only to await destruction from client side.
-                     * Objects can also be destroyed if server is not
-                     * active. */
-                    destroy = (!NetworkManager.IsServer || NetworkManager.ServerManager.Objects.RemoveFromPending(nob.ObjectId));
+                    bool isServer = NetworkManager.IsServer;
+                    //Only check to destroy if not a scene object.
+                    if (!nob.IsSceneObject)
+                    {
+                        /* If was removed from pending then also destroy.
+                        * Pending objects are ones that exist on the server
+                        * side only to await destruction from client side.
+                        * Objects can also be destroyed if server is not
+                        * active. */
+                        destroy = (!isServer || NetworkManager.ServerManager.Objects.RemoveFromPending(nob.ObjectId));
+                    }
                 }
             }
 
@@ -147,32 +152,65 @@ namespace FishNet.Managing.Object
             //Remove from match condition only if server.
             if (asServer)
                 MatchCondition.RemoveFromMatchWithoutRebuild(nob, NetworkManager);
-            //Remove from spawned collection.
             RemoveFromSpawned(nob, false);
 
+            //If to destroy.
             if (destroy)
             {
-                MonoBehaviour.Destroy(nob.gameObject);
+                if (despawnType == DespawnType.Destroy)
+                    MonoBehaviour.Destroy(nob.gameObject);
+                else
+                    NetworkManager.StorePooledInstantiated(nob, nob.PrefabId, asServer);
             }
+            /* If to potentially disable instead of destroy.
+             * This is such as something is despawning server side
+             * but a clientHost is present, or if a scene object. */
             else
             {
-                /* If running as client and is also server
-                 * then see if server still has object spawned.
-                 * If not, the object can be disabled, otherwise
-                 * hide the renderers. */
-                if (!asServer && NetworkManager.IsServer)
+                //If as server.
+                if (asServer)
                 {
-                    //Still spawned.
-                    if (NetworkManager.ServerManager.Objects.Spawned.ContainsKey(nob.ObjectId))
-                        nob.SetHostVisibility(false);
-                    //Not spawned.
-                    else
+                    //If not clientHost then the object can be disabled.
+                    if (!NetworkManager.IsClient)
                         nob.gameObject.SetActive(false);
                 }
-                //AsServer or not IsServer, can deactivate
+                //Not as server.
                 else
                 {
-                    nob.gameObject.SetActive(false);
+                    //If the server is not active then the object can be disabled.
+                    if (!NetworkManager.IsServer)
+                    {
+                        nob.gameObject.SetActive(false);
+                    }
+                    //If also server then checks must be done.
+                    else
+                    {
+                        /* Object is still spawned on the server side. This means
+                         * the clientHost likely lost visibility. When this is the case
+                         * update clientHost renderers. */
+                        if (NetworkManager.ServerManager.Objects.Spawned.ContainsKey(nob.ObjectId))
+                            nob.SetRenderersVisible(false);
+                        /* No longer spawned on the server, can
+                         * deactivate on the client. */
+                        else
+                            nob.gameObject.SetActive(false);
+                    }
+                }
+
+                /* Also despawn child objects.
+                 * This only must be done when not destroying
+                 * as destroying would result in the despawn being
+                 * forced. 
+                 *
+                 * Only run if asServer as well. The server will send
+                 * individual despawns for each child. */
+                if (asServer)
+                {
+                    foreach (NetworkObject childNob in nob.ChildNetworkObjects)
+                    {
+                        if (childNob != null && !childNob.IsDeinitializing)
+                            Despawn(childNob, despawnType, asServer);
+                    }
                 }
             }
 
@@ -196,8 +234,8 @@ namespace FishNet.Managing.Object
         /// <summary>
         /// Initializes a prefab, not to be mistaken for initializing a spawned object.
         /// </summary>
-        /// <param name="prefab"></param>
-        /// <param name="index"></param>
+        /// <param name="prefab">Prefab to initialize.</param>
+        /// <param name="index">Index within spawnable prefabs.</param>
         public static void InitializePrefab(NetworkObject prefab, int index)
         {
             if (prefab == null)
@@ -206,8 +244,10 @@ namespace FishNet.Managing.Object
              * A value of -1 would indicate it's a scene
              * object. */
             if (index != -1)
-                prefab.SetPrefabId((short)index);
-            prefab.UpdateNetworkBehaviours();
+                prefab.PrefabId = (short)index;
+
+            byte componentIndex = 0;
+            prefab.UpdateNetworkBehaviours(null, ref componentIndex);
         }
 
         /// <summary>
@@ -216,7 +256,7 @@ namespace FishNet.Managing.Object
         protected virtual void DespawnSpawnedWithoutSynchronization(bool asServer)
         {
             foreach (NetworkObject nob in Spawned.Values)
-                DespawnWithoutSynchronization(nob, asServer);
+                DespawnWithoutSynchronization(nob, asServer, nob.GetDefaultDespawnType(), false);
 
             Spawned.Clear();
         }
@@ -225,7 +265,7 @@ namespace FishNet.Managing.Object
         /// Despawns a network object.
         /// </summary>
         /// <param name="nob"></param>
-        protected virtual void DespawnWithoutSynchronization(NetworkObject nob, bool asServer)
+        protected virtual void DespawnWithoutSynchronization(NetworkObject nob, bool asServer, DespawnType despawnType, bool removeFromSpawned)
         {
             //Null can occur when running as host and server already despawns such as wehen stopping.
             if (nob == null)
@@ -238,10 +278,19 @@ namespace FishNet.Managing.Object
             * as host* when being modified client side. */
             if (asServer || (!asServer && !NetworkManager.IsServer))
             {
+                if (removeFromSpawned)
+                    RemoveFromSpawned(nob, false);
                 if (nob.IsSceneObject)
+                {
                     nob.gameObject.SetActive(false);
+                }
                 else
-                    MonoBehaviour.Destroy(nob.gameObject);
+                {
+                    if (despawnType == DespawnType.Destroy)
+                        MonoBehaviour.Destroy(nob.gameObject);
+                    else
+                        NetworkManager.StorePooledInstantiated(nob, nob.PrefabId, asServer);
+                }
             }
         }
 
@@ -255,7 +304,7 @@ namespace FishNet.Managing.Object
 
             //If being added as client and is also server.
             if (!asServer && NetworkManager.IsServer)
-                nob.SetHostVisibility(true);
+                nob.SetRenderersVisible(true);
         }
 
         /// <summary>
@@ -274,6 +323,15 @@ namespace FishNet.Managing.Object
         protected internal void RemoveFromSceneObjects(NetworkObject nob)
         {
             SceneObjects.Remove(nob.SceneId);
+        }
+
+        /// <summary>
+        /// Removes a NetworkObject from SceneObjects.
+        /// </summary>
+        /// <param name="nob"></param>
+        protected internal void RemoveFromSceneObjects(ulong sceneId)
+        {
+            SceneObjects.Remove(sceneId);
         }
 
         /// <summary>

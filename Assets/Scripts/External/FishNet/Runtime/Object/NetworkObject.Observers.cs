@@ -3,6 +3,7 @@ using FishNet.Managing.Logging;
 using FishNet.Observing;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace FishNet.Object
@@ -39,30 +40,70 @@ namespace FishNet.Object
         /// True if renderers have been looked up.
         /// </summary>
         private bool _renderersPopulated;
+        /// <summary>
+        /// Last visibility value for clientHost on this object.
+        /// </summary>
+        private bool _lastClientHostVisibility;
         #endregion
+
+        /// <summary>
+        /// Updates cached renderers used to managing clientHost visibility.
+        /// </summary>
+        /// <param name="updateVisibility">True to also update visibility if clientHost.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void UpdateRenderers(bool updateVisibility = true)
+        {
+            UpdateRenderersInternal(updateVisibility);
+        }
 
         /// <summary>
         /// Sets the renderer visibility for clientHost.
         /// </summary>
-        /// <param name="visible"></param>
-        internal void SetHostVisibility(bool visible)
+        /// <param name="visible">True if renderers are to be visibile.</param>
+        /// <param name="force">True to skip blocking checks.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetRenderersVisible(bool visible, bool force = false)
         {
-            /* If renderers are not set then the object
-            * was never despawned. This means the renderers
-            * could not possibly be hidden. */
-            if (visible && !_renderersPopulated)
-                return;
-
-            if (!visible && !_renderersPopulated)
-            { 
-                _renderers = GetComponentsInChildren<Renderer>(true);
-                _renderersPopulated = true;
+            if (!force)
+            {
+                if (NetworkObserver != null && !NetworkObserver.UpdateHostVisibility)
+                    return;
             }
 
+            if (!_renderersPopulated)
+            {
+                UpdateRenderersInternal(true);
+                _renderersPopulated = true;
+            }
+            else
+            {
+                UpdateRenderVisibility(visible);
+            }
+        }
+
+        /// <summary>
+        /// Clears and updates renderers.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void UpdateRenderersInternal(bool updateVisibility)
+        {
+            _renderers = GetComponentsInChildren<Renderer>(true);
+            if (updateVisibility)
+                UpdateRenderVisibility(_lastClientHostVisibility);
+        }
+
+        /// <summary>
+        /// Updates visibilites on renders without checks.
+        /// </summary>
+        /// <param name="visible"></param>
+        private void UpdateRenderVisibility(bool visible)
+        {
             Renderer[] rs = _renderers;
             int count = rs.Length;
             for (int i = 0; i < count; i++)
                 rs[i].enabled = visible;
+
+            _lastClientHostVisibility = visible;
         }
 
         /// <summary>
@@ -76,19 +117,7 @@ namespace FishNet.Object
             NetworkObserver = GetComponent<NetworkObserver>();
             NetworkManager.ObserverManager.AddDefaultConditions(this, ref NetworkObserver);
         }
-        /// <summary>
-        /// Initializes NetworkObserver. This will only call once even as host.
-        /// </summary>
-        private void InitializeOnceObservers()
-        {
-            if (_networkObserverInitiliazed)
-                return;
-
-            if (NetworkObserver != null)
-                NetworkObserver.PreInitialize(this);
-
-            _networkObserverInitiliazed = true;
-        }
+  
 
         /// <summary>
         /// Removes a connection from observers for this object.
@@ -125,6 +154,13 @@ namespace FishNet.Object
                  * and return unchanged because nothing should process
                  * given the connection isnt active. */
                 Observers.Remove(connection);
+                return ObserverStateChange.Unchanged;
+            }
+            else if (IsDeinitializing)
+            {
+                /* If object is deinitializing it's either being despawned
+                 * this frame or it's not spawned. If we've made it this far,
+                 * it's most likely being despawned. */
                 return ObserverStateChange.Unchanged;
             }
 

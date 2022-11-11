@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Generic Interactions
+  m_EditorClassIdentifier: 
+  m_GroupName: Generic Interactions
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 1126fc962db90eb4599465450b6b7b5c
+  m_SerializeEntries:
+  - m_GUID: d1f34343e08a14e48a856e409c355f32
+    m_Address: Assets/Art/UI/Interactions/take.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d6678ac9f1a1c714fa5afdb6f1a0ff11
+    m_Address: Assets/Art/UI/Interactions/discard.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 48da6209938d27844878cc3d318295e2
+    m_Address: Assets/Art/UI/Interactions/open.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 03812e70c708b3047b20e316b16f1896
+    m_Address: Assets/Art/UI/Interactions/honk.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3788240ffacf45b4998b63134326628e
+    m_Address: Assets/Art/UI/Interactions/power.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 991edeac4c43de441893522378b441e1, type: 2}
+    - {fileID: 11400000, guid: c99466e8370fb3a4d9baf6ba6f5f1286, type: 2}

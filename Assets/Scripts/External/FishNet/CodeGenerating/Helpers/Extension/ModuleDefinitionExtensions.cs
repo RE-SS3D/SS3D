@@ -9,7 +9,6 @@ namespace FishNet.CodeGenerating.Helping.Extension
 
     public static class ModuleDefinitionExtensions
     {
-
         /// <summary>
         /// Gets a class within CodegenSession.Module.
         /// </summary>

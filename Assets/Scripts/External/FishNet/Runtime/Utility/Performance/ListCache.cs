@@ -2,6 +2,7 @@
 using FishNet.Object;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace FishNet.Utility.Performance
@@ -22,8 +23,13 @@ namespace FishNet.Utility.Performance
         [Obsolete("Use GetNetworkObjectCache instead.")] //Remove on 2023/01/01
         public static ListCache<NetworkObject> NetworkObjectCache = new ListCache<NetworkObject>();
         /// <summary>
+        /// Cache collection for NetworkObjects.
+        /// </summary>
+        private static Stack<ListCache<NetworkBehaviour>> _networkBehaviourCaches = new Stack<ListCache<NetworkBehaviour>>();
+        /// <summary>
         /// Cache for NetworkBehaviours.
         /// </summary>
+        [Obsolete("Use GetNetworkBehaviourCache instead.")] //Remove on 2023/01/01
         public static ListCache<NetworkBehaviour> NetworkBehaviourCache = new ListCache<NetworkBehaviour>();
         /// <summary>
         /// Cache collection for NetworkObjects.
@@ -92,6 +98,20 @@ namespace FishNet.Utility.Performance
 
             return result;
         }
+        /// <summary>
+        /// Returns a NetworkBehaviour cache. Use StoreCache to return the cache.
+        /// </summary>
+        /// <returns></returns>
+        public static ListCache<NetworkBehaviour> GetNetworkBehaviourCache()
+        {
+            ListCache<NetworkBehaviour> result;
+            if (_networkBehaviourCaches.Count == 0)
+                result = new ListCache<NetworkBehaviour>();
+            else
+                result = _networkBehaviourCaches.Pop();
+
+            return result;
+        }
         #endregion
 
 
@@ -122,6 +142,15 @@ namespace FishNet.Utility.Performance
         {
             cache.Reset();
             _transformCaches.Push(cache);
+        }
+        /// <summary>
+        /// Stores a NetworkBehaviour cache.
+        /// </summary>
+        /// <param name="cache"></param>
+        public static void StoreCache(ListCache<NetworkBehaviour> cache)
+        {
+            cache.Reset();
+            _networkBehaviourCaches.Push(cache);
         }
         #endregion
 
@@ -191,7 +220,20 @@ namespace FishNet.Utility.Performance
         /// <summary>
         /// Adds values to Collection.
         /// </summary>
+        /// <param name="values"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddValues(ListCache<T> values)
+        {
+            int w = values.Written;
+            List<T> c = values.Collection;
+            for (int i = 0; i < w; i++)
+                AddValue(c[i]);
+        }
+        /// <summary>
+        /// Adds values to Collection.
+        /// </summary>
         /// <param name="value"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddValues(T[] values)
         {
             for (int i = 0; i < values.Length; i++)
@@ -201,6 +243,7 @@ namespace FishNet.Utility.Performance
         /// Adds values to Collection.
         /// </summary>
         /// <param name="value"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddValues(List<T> values)
         {
             for (int i = 0; i < values.Count; i++)
@@ -210,6 +253,7 @@ namespace FishNet.Utility.Performance
         /// Adds values to Collection.
         /// </summary>
         /// <param name="value"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddValues(HashSet<T> values)
         {
             foreach (T item in values)
@@ -219,6 +263,7 @@ namespace FishNet.Utility.Performance
         /// Adds values to Collection.
         /// </summary>
         /// <param name="value"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddValues(ISet<T> values)
         {
             foreach (T item in values)
@@ -229,6 +274,7 @@ namespace FishNet.Utility.Performance
         /// Adds values to Collection.
         /// </summary>
         /// <param name="value"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddValues(IReadOnlyCollection<T> values)
         {
             foreach (T item in values)

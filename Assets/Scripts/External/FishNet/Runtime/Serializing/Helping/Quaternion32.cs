@@ -15,7 +15,7 @@ namespace FishNet.Serializing.Helping
         private const int IntScale = (1 << (BitsPerAxis - 1)) - 1;
         private const int IntMask = (1 << BitsPerAxis) - 1;
 
-        internal static uint Compress(Quaternion quaternion)
+        public static uint Compress(Quaternion quaternion)
         {
             float absX = Mathf.Abs(quaternion.x);
             float absY = Mathf.Abs(quaternion.y);
@@ -25,7 +25,7 @@ namespace FishNet.Serializing.Helping
             ComponentType largestComponent = ComponentType.X;
             float largestAbs = absX;
             float largest = quaternion.x;
-
+            
             if (absY > largestAbs)
             {
                 largestAbs = absY;
@@ -100,7 +100,7 @@ namespace FishNet.Serializing.Helping
             return unscaled;
         }
 
-        internal static Quaternion Decompress(uint compressed)
+        public static Quaternion Decompress(uint compressed)
         {
             var largestComponentType = (ComponentType)(compressed >> LargestComponentShift);
             uint integerA = (compressed >> AShift) & IntMask;

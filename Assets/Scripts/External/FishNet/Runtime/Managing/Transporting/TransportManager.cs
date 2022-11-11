@@ -16,6 +16,7 @@ namespace FishNet.Managing.Transporting
     /// Communicates with the Transport to send and receive data.
     /// </summary>
     [DisallowMultipleComponent]
+    [AddComponentMenu("FishNet/Manager/TransportManager")]
     public sealed partial class TransportManager : MonoBehaviour
     {
         #region Types.
@@ -54,6 +55,28 @@ namespace FishNet.Managing.Transporting
         /// </summary>
         [Tooltip("The current Transport being used.")]
         public Transport Transport;
+        #endregion
+
+        #region Serialized.
+        /// <summary>
+        /// 
+        /// </summary>
+        [Tooltip("Latency simulation settings.")]
+        [SerializeField]
+        private LatencySimulator _latencySimulator = new LatencySimulator();
+        /// <summary>
+        /// Latency simulation settings.
+        /// </summary>
+        public LatencySimulator LatencySimulator
+        {
+            get
+            {
+                //Shouldn't ever be null unless the user nullifies it.
+                if (_latencySimulator == null)
+                    _latencySimulator = new LatencySimulator();
+                return _latencySimulator;
+            }
+        }
         #endregion
 
         #region Private.
@@ -119,6 +142,9 @@ namespace FishNet.Managing.Transporting
 
             Transport.Initialize(_networkManager, 0);
             InitializeToServerBundles();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            _latencySimulator.Initialize(manager, Transport);
+#endif
         }
 
         /// <summary>
@@ -342,22 +368,26 @@ namespace FishNet.Managing.Transporting
         /// <summary>
         /// Processes data to be sent by the socket.
         /// </summary>
-        /// <param name="server">True to process data received on the server.</param>
-        internal void IterateOutgoing(bool server)
+        /// <param name="toServer">True to process data received on the server.</param>
+        internal void IterateOutgoing(bool toServer)
         {
             OnIterateOutgoingStart?.Invoke();
             int channelCount = CHANNEL_COUNT;
-            /* If sending from the server. */
-            if (server)
+            ulong sentBytes = 0;
+            bool latencySimulatorEnabled = LatencySimulator.CanSimulate;
+
+            /* If sending to the client. */
+            if (!toServer)
             {
                 TimeManager tm = _networkManager.TimeManager;
                 uint localTick = tm.LocalTick;
-                //uint sentBytes = 0;
                 //Write any dirty syncTypes.
                 _networkManager.ServerManager.Objects.WriteDirtySyncTypes();
 
+                int dirtyCount = _dirtyToClients.Count;
+
                 //Run through all dirty connections to send data to.
-                for (int z = 0; z < _dirtyToClients.Count; z++)
+                for (int z = 0; z < dirtyCount; z++)
                 {
                     NetworkConnection conn = _dirtyToClients[z];
                     if (conn == null || !conn.IsValid)
@@ -374,8 +404,13 @@ namespace FishNet.Managing.Transporting
                                 if (pb.GetBuffer(i, out ByteBuffer bb))
                                 {
                                     ArraySegment<byte> segment = new ArraySegment<byte>(bb.Data, 0, bb.Length);
-                                    Transport.SendToClient(channel, segment, conn.ClientId);
-                                    //sentBytes += (uint)segment.Count;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                                    if (latencySimulatorEnabled)
+                                        _latencySimulator.AddOutgoing(channel, segment, false, conn.ClientId);
+                                    else
+#endif
+                                        Transport.SendToClient(channel, segment, conn.ClientId);
+                                    sentBytes += (ulong)segment.Count;
                                 }
                             }
 
@@ -414,11 +449,15 @@ namespace FishNet.Managing.Transporting
                         i--;
                     }
                 }
-                //if (sentBytes > 0 && _networkManager.ServerManager.Objects.Spawned.Count > 1)
-                //    Debug.Log($"Sent {sentBytes} bytes. Avg {sentBytes / (_networkManager.ServerManager.Objects.Spawned.Count - 1)} per object.");
-                _dirtyToClients.Clear();
+
+                _networkManager.StatisticsManager.NetworkTraffic.LocalServerSentData(sentBytes);
+
+                if (dirtyCount == _dirtyToClients.Count)
+                    _dirtyToClients.Clear();
+                else if (dirtyCount > 0)
+                    _dirtyToClients.RemoveRange(0, dirtyCount);
             }
-            /* If sending from the client. */
+            /* If sending to the server. */
             else
             {
                 for (byte channel = 0; channel < channelCount; channel++)
@@ -430,16 +469,28 @@ namespace FishNet.Managing.Transporting
                             if (pb.GetBuffer(i, out ByteBuffer bb))
                             {
                                 ArraySegment<byte> segment = new ArraySegment<byte>(bb.Data, 0, bb.Length);
-                                Transport.SendToServer(channel, segment);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                                if (latencySimulatorEnabled)
+                                    _latencySimulator.AddOutgoing(channel, segment);
+                                else
+#endif
+                                    Transport.SendToServer(channel, segment);
+                                sentBytes += (ulong)segment.Count;
                             }
                         }
-
                         pb.Reset();
                     }
                 }
+
+                _networkManager.StatisticsManager.NetworkTraffic.LocalClientSentData(sentBytes);
             }
 
-            Transport.IterateOutgoing(server);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (latencySimulatorEnabled)
+                _latencySimulator.IterateOutgoing(toServer);
+#endif
+
+            Transport.IterateOutgoing(toServer);
             OnIterateOutgoingEnd?.Invoke();
         }
 
@@ -449,6 +500,13 @@ namespace FishNet.Managing.Transporting
         {
             if (Transport == null)
                 Transport = GetComponent<Transport>();
+
+            /* Update enabled state to force a reset if needed.
+             * This may be required if the user checked the enabled
+             * tick box at runtime. If enabled value didn't change
+             * then the Get will be the same as the Set and nothing
+             * will happen. */
+            _latencySimulator.SetEnabled(_latencySimulator.GetEnabled());
         }
 #endif
         #endregion

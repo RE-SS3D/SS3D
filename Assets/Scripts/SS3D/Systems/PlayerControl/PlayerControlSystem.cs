@@ -1,36 +1,100 @@
 using System.Linq;
-using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using FishNet.Transporting;
+using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using SS3D.Systems.Entities;
+using SS3D.Systems.PlayerControl.Events;
 using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.PlayerControl
 {
     /// <summary>
     /// Controls the player flux, when users want to authenticate, rejoin the game, leave the game
     /// </summary>
-    public sealed class PlayerControlSystem : NetworkBehaviour
+    public sealed class PlayerControlSystem : NetworkedSystem
     {
-        [SerializeField] private GameObject _soulPrefab;
+        [FormerlySerializedAs("_userPrefab")]
+        [Header("Settings")]
+        [SerializeField] private NetworkObject _unauthorizedUserPrefab;
+        [SerializeField] private NetworkObject _soulPrefab;
 
-        // TODO: SyncVar because client admins will probably need these, we can later restrict them from the normal user with the permissions system
         [SyncObject]
         private readonly SyncList<Soul> _serverSouls = new();
+        [SyncObject] 
+        private readonly SyncList<Soul> _onlineSouls = new();
 
-        public string GetSoulCkeyByConn(NetworkConnection conn) => _serverSouls.SingleOrDefault(soul => soul.Owner == conn)?.Ckey;
-        private Soul GetSoulByCkey(string ckey) => _serverSouls.SingleOrDefault(soul => soul.Ckey == ckey);
-
-        private void Start()
+        protected override void OnStart()
         {
-            SubscribeToEvents();
+            base.OnStart();
+            AddEventListeners();
         }
 
-        private void SubscribeToEvents()
+        public override void OnStartServer()
         {
-            InstanceFinder.ServerManager.RegisterBroadcast<UserAuthorizationMessage>(HandleAuthorizePlayer);
+            base.OnStartServer();
+
+            ServerManager.RegisterBroadcast<UserAuthorizationMessage>(ProcessAuthorizePlayer);
+
+            SceneManager.OnClientLoadedStartScenes += HandleClientLoadedStartScenes;
+            ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
+        }
+
+        private void AddEventListeners()
+        {
+            _serverSouls.OnChange += HandleServerSoulsChanged;
+            _onlineSouls.OnChange += HandleOnlineSouls;
+        }
+
+        private void HandleRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs remoteConnectionStateArgs)
+        {
+            if (remoteConnectionStateArgs.ConnectionState == RemoteConnectionState.Stopped)
+            {
+                ProcessPlayerDisconnect(conn);
+            }
+        }
+
+        private void HandleClientLoadedStartScenes(NetworkConnection conn, bool asServer)
+        {
+            ProcessPlayerJoin(conn);
+        }
+
+        private void HandleOnlineSouls(SyncListOperation op, int index, Soul oldItem, Soul newItem, bool asServer)
+        {
+            ChangeType changeType = newItem != null ? ChangeType.Addition : ChangeType.Removal;
+
+            Soul soul = changeType == ChangeType.Addition ? newItem : oldItem;
+
+            OnlineSoulsChanged serverSoulsChanged = new(_onlineSouls.ToList(), changeType, soul);
+            serverSoulsChanged.Invoke(this);
+        }
+
+        private void HandleServerSoulsChanged(SyncListOperation op, int index, Soul oldItem, Soul newItem, bool asServer)
+        {
+            ChangeType changeType = newItem != null ? ChangeType.Addition : ChangeType.Removal;
+
+            Soul soul = changeType == ChangeType.Addition ? newItem : oldItem;
+
+            ServerSoulsChanged serverSoulsChanged = new(_serverSouls.ToList(), changeType, soul);
+            serverSoulsChanged.Invoke(this);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="conn"></param>
+        [Server]
+        private void ProcessPlayerJoin(NetworkConnection conn)
+        {
+            string message = $"Player joined the server - {conn.ClientId} {conn.GetAddress()}";
+            Punpun.Say(this, message, Logs.ServerOnly);
+            
+            NetworkObject unauthorizedUser = Instantiate(_unauthorizedUserPrefab, Vector3.zero, Quaternion.identity);
+            ServerManager.Spawn(unauthorizedUser, conn);
         }
 
         /// <summary>
@@ -40,34 +104,77 @@ namespace SS3D.Systems.PlayerControl
         /// <param name="conn">Network connection</param>
         /// <param name="userAuthorizationMessage">struct containing the ckey and the connection that sent it</param>
         [Server]
-        private void HandleAuthorizePlayer(NetworkConnection conn, UserAuthorizationMessage userAuthorizationMessage)
+        private void ProcessAuthorizePlayer(NetworkConnection conn, UserAuthorizationMessage userAuthorizationMessage)
         {
             string ckey = userAuthorizationMessage.Ckey;
 
-            Soul match = GetSoulByCkey(ckey);
+            Soul match = GetSoul(ckey);
 
-            if (match != null)
+            if (match == null)
             {
-                Debug.Log($"[{nameof(PlayerControlSystem)}] - SERVER - Soul match for {ckey} found, reassigning to client");
+                Punpun.Say(this, $"No Soul match for {ckey} found, creating a new one", Logs.ServerOnly);
+
+                match = Instantiate(_soulPrefab).GetComponent<Soul>();
+                match.UpdateCkey(string.Empty, ckey, true);
+
+                _serverSouls.Add(match);
+
+                ServerManager.Spawn(match.gameObject);
             }
             else
             {
-                Debug.Log($"[{nameof(PlayerControlSystem)}] - SERVER - No Soul match for {ckey} found, creating a new one");
-
-                match = Instantiate(_soulPrefab).GetComponent<Soul>();
-                match.SetCkey(string.Empty ,ckey, true);
-                _serverSouls.Add(match);
-
-                InstanceFinder.ServerManager.Spawn(match.gameObject);
+                Punpun.Say(this, $"Soul match for {ckey} found, reassigning to client", Logs.ServerOnly);
             }
 
-            NetworkObject networkObject = match.gameObject.GetComponent<NetworkObject>();
+            NetworkObject networkObject = match.NetworkObject;
             networkObject.GiveOwnership(conn);
+            
+            _onlineSouls.Add(match);
+        }
 
-            UserJoinedServerMessage userJoinedServerMessage = new(match.Ckey);
-            InstanceFinder.ServerManager.Broadcast(userJoinedServerMessage);         
+        [Server]
+        private void ProcessPlayerDisconnect(NetworkConnection conn)
+        {
+            string message = $"Client {conn.ClientId} {conn.GetAddress()} disconnected"; 
+            Punpun.Say(this, message, Logs.ServerOnly);
+            
+            NetworkObject[] ownedObjects = conn.Objects.ToArray();
+            if (ownedObjects.Length == 0)
+            {
+                Punpun.Panic(this, "No clientOwnedObjects were found", Logs.ServerOnly);
+                return;
+            }
 
-            Debug.Log($"[{nameof(PlayerControlSystem)}] - SERVER - Handle Authorize Player: {match.Ckey}");
+            foreach (NetworkObject networkIdentity in ownedObjects)
+            {
+                Punpun.Say(this, $"Client {conn.GetAddress()}'s owned object: {networkIdentity.name}", Logs.ServerOnly);
+    
+                Soul soul = networkIdentity.GetComponent<Soul>();
+                if (soul != null)
+                {
+                    _onlineSouls.Remove(soul);
+                    soul.RemoveOwnership();
+                    return;
+                }
+                networkIdentity.RemoveOwnership();
+
+                Punpun.Say(this, $"Invoking the player server left event: {soul.Ckey}", Logs.ServerOnly);
+            }
+        }
+
+        public string GetCkey(NetworkConnection conn)
+        {
+            return _serverSouls.Find(soul => soul.Owner == conn)?.Ckey;
+        }
+
+        public Soul GetSoul(string ckey)
+        {
+            return _serverSouls.Find(soul => soul.Ckey == ckey);
+        }
+
+        public Soul GetSoul(NetworkConnection conn)
+        {
+            return _serverSouls.Find(soul => soul.Owner == conn);
         }
     }
 }

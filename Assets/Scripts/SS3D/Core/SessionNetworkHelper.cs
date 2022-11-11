@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using FishNet;
 using FishNet.Managing;
+using SS3D.Core.Behaviours;
+using SS3D.Core.Events;
 using SS3D.Core.Utils;
 using UnityEngine;
 
@@ -14,7 +16,7 @@ namespace SS3D.Core
     ///
     /// TODO: Could use a refactor
     /// </summary>
-    public sealed class SessionNetworkHelper : MonoBehaviour
+    public sealed class SessionNetworkHelper : SpessBehaviour
     {
         private static List<string> _commandLineArgs;
 
@@ -119,22 +121,32 @@ namespace SS3D.Core
                 InitiateNetworkSession();
             }
 
+            ApplicationMode applicationMode;
+
             if (_serverOnly)
             {
                 Debug.Log($"[{nameof(SessionNetworkHelper)}] - Hosting a new headless server");
                 networkManager.ServerManager.StartConnection();
+                applicationMode = ApplicationMode.ServerOnly;
             }
             else if (_isHost)
             {
                 Debug.Log($"[{nameof(SessionNetworkHelper)}] - Hosting a new server");
                 networkManager.ServerManager.StartConnection();
                 networkManager.ClientManager.StartConnection();
+
+                applicationMode = ApplicationMode.Host;
             }
             else
             {
                 Debug.Log($"[{nameof(SessionNetworkHelper)}] - Joining server {_ip} as {_ckey}");
                 networkManager.ClientManager.StartConnection(_ip);
+
+                applicationMode = ApplicationMode.Client;
             }
+
+            ApplicationStartedEvent applicationStartedEvent = new(_ckey, applicationMode);
+            applicationStartedEvent.Invoke(null!);
         }
     }
 }

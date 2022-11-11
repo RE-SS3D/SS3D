@@ -5,7 +5,8 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "SS3D.Core",
-        "FishNet.Runtime"
+        "FishNet.Runtime",
+        "SS3D.Attributes"
     ],
     "includePlatforms": [
         "Editor"

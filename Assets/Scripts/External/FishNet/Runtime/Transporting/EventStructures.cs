@@ -24,6 +24,11 @@ namespace FishNet.Transporting
         /// This is primarily used when supporting multiple transports.
         /// </summary>
         public int TransportIndex;
+        /// <summary>
+        /// Delegate to invoke after data is processed.
+        /// </summary>
+        /// <returns></returns>
+        public Action FinalizeMethod;
 
         public ServerReceivedDataArgs(ArraySegment<byte> data, Channel channel, int connectionId, int transportIndex)
         {
@@ -31,6 +36,15 @@ namespace FishNet.Transporting
             Channel = channel;
             ConnectionId = connectionId;
             TransportIndex = transportIndex;
+            FinalizeMethod = null;
+        }
+        public ServerReceivedDataArgs(ArraySegment<byte> data, Channel channel, int connectionId, int transportIndex, Action finalizeMethod)
+        {
+            Data = data;
+            Channel = channel;
+            ConnectionId = connectionId;
+            TransportIndex = transportIndex;
+            FinalizeMethod = finalizeMethod;
         }
     }
 
