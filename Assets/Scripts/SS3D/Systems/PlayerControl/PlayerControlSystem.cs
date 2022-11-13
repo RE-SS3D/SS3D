@@ -47,7 +47,7 @@ namespace SS3D.Systems.PlayerControl
         private void AddEventListeners()
         {
             _serverSouls.OnChange += HandleServerSoulsChanged;
-            _onlineSouls.OnChange += HandleOnlineSouls;
+            _onlineSouls.OnChange += HandleOnlineSoulsChanged;
         }
 
         private void HandleRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs remoteConnectionStateArgs)
@@ -55,7 +55,7 @@ namespace SS3D.Systems.PlayerControl
             if (remoteConnectionStateArgs.ConnectionState == RemoteConnectionState.Stopped)
             {
                 ProcessPlayerDisconnect(conn);
-            }
+            }                                                                                                                   
         }
 
         private void HandleClientLoadedStartScenes(NetworkConnection conn, bool asServer)
@@ -63,7 +63,7 @@ namespace SS3D.Systems.PlayerControl
             ProcessPlayerJoin(conn);
         }
 
-        private void HandleOnlineSouls(SyncListOperation op, int index, Soul oldItem, Soul newItem, bool asServer)
+        private void HandleOnlineSoulsChanged(SyncListOperation op, int index, Soul oldItem, Soul newItem, bool asServer)
         {
             ChangeType changeType = newItem != null ? ChangeType.Addition : ChangeType.Removal;
 
