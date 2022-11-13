@@ -84,7 +84,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2359780655884948970}
-  m_Mesh: {fileID: 5709868560514540240, guid: b7735b41af47b164f841a513161d8f07, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 7713227a7bac8284fa2b66e972979624, type: 2}
 --- !u!95 &7807247313645579261
 Animator:
   serializedVersion: 4
@@ -166,14 +166,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7635944949394300046}
-  - component: {fileID: 5398674181771020985}
+  - component: {fileID: -6034522111132069883}
   - component: {fileID: 4819234911439508660}
   - component: {fileID: 6573417749823381685}
   - component: {fileID: 6351433192589740835}
-  - component: {fileID: 4436435477320339985}
   - component: {fileID: 4044200983548959999}
   m_Layer: 10
-  m_Name: BikeHorn
+  m_Name: Nuke ID
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -196,7 +195,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5398674181771020985
+--- !u!114 &-6034522111132069883
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -205,23 +204,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 6891363543938182813}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6875a0fff2c323b4799aa91e128aa293, type: 3}
+  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 4819234911439508660}
   _networkObjectCache: {fileID: 4819234911439508660}
   _itemId: 
-  _name: Bike horn
+  _name: Nuke card
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 6351433192589740835}
   Prefab: {fileID: 6891363543938182813}
   AttachmentPoint: {fileID: 4619531351315044860}
   AttachmentPointAlt: {fileID: 0}
-  _honkSound: {fileID: 8300000, guid: 8c8823796bbcb23438fcf68260070383, type: 3}
-  _audioSource: {fileID: 4436435477320339985}
-  _animator: {fileID: 7807247313645579261}
-  _honkIcon: {fileID: 21300000, guid: 03812e70c708b3047b20e316b16f1896, type: 3}
 --- !u!114 &4819234911439508660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237,7 +232,7 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
-  - {fileID: 5398674181771020985}
+  - {fileID: -6034522111132069883}
   - {fileID: 6573417749823381685}
   - {fileID: 3401307552301717060}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
@@ -246,10 +241,10 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 12
+  <PrefabId>k__BackingField: 18
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 17867790352780302039
+  <AssetPathHash>k__BackingField: 9047651675365752773
   _sceneNetworkObjects:
   - {fileID: 0}
   - {fileID: 0}
@@ -322,102 +317,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!82 &4436435477320339985
-AudioSource:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6891363543938182813}
-  m_Enabled: 1
-  serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300002, guid: 7829e19c625c89444af3b6c8d3b2ccee, type: 2}
-  m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 0
-  m_Volume: 0.203
-  m_Pitch: 1
-  Loop: 0
-  Mute: 0
-  Spatialize: 0
-  SpatializePostEffects: 0
-  Priority: 128
-  DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
-  Pan2D: 0
-  rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
-  rolloffCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  panLevelCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
 --- !u!64 &4044200983548959999
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -431,4 +330,4 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 5709868560514540240, guid: b7735b41af47b164f841a513161d8f07, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 7713227a7bac8284fa2b66e972979624, type: 2}
