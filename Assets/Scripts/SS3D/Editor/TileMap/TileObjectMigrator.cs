@@ -1,4 +1,5 @@
-﻿using SS3D.Systems.Tile;
+﻿#if UNITY_EDITOR
+using SS3D.Systems.Tile;
 using UnityEditor;
 using UnityEngine;
 
@@ -31,3 +32,4 @@ namespace SS3D.Editor.TileMap
         }
     }
 }
+#endif

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SS3D.Tilemaps;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -49,36 +50,36 @@ namespace SS3D.Systems.Tile
                 return false;
 
             // No wall mounts on non-walls
-            if (tileObjects[(int)TileLayer.Turf].IsCompletelyEmpty() &&
-                (placedLayer == TileLayer.LowWallMount || placedLayer == TileLayer.HighWallMount))
-                return false;
+            // if (tileObjects[(int)TileLayer.Turf].IsCompletelyEmpty() &&
+            //     (placedLayer == TileLayer.LowWallMount || placedLayer == TileLayer.HighWallMount))
+            //     return false;
 
             switch (placedLayer)
             {
-                case TileLayer.LowWallMount:
-                case TileLayer.HighWallMount:
-                {
-                    if (!CanBuildWallAttachment(map, position, tileObjectSo, dir))
-                    {
-                        return false;
-                    }
-                    break;
-                }
-                // No furniture inside walls
-                case TileLayer.FurnitureBase:
-                case TileLayer.FurnitureTop:
-                case TileLayer.Overlay:
-                {
-                    TileObject wallObject = map.GetTileObject(TileLayer.Turf, position);
-                    if (!wallObject.IsCompletelyEmpty() && wallObject.GetPlacedObject(0).GetGenericType() == TileObjectGenericType.Wall)
-                        return false;
-                    break;
-                }
-                // No walls on furniture
-                case TileLayer.Turf when tileObjectSo.genericType == TileObjectGenericType.Wall && (!tileObjects[(int)TileLayer.FurnitureBase].IsCompletelyEmpty() ||
-                    !tileObjects[(int)TileLayer.FurnitureTop].IsCompletelyEmpty() ||
-                    !tileObjects[(int)TileLayer.Overlay].IsCompletelyEmpty()):
-                    return false;
+                // case TileLayer.LowWallMount:
+                // case TileLayer.HighWallMount:
+                // {
+                //     if (!CanBuildWallAttachment(map, position, tileObjectSo, dir))
+                //     {
+                //         return false;
+                //     }
+                //     break;
+                // }
+                // // No furniture inside walls
+                // case TileLayer.FurnitureBase:
+                // case TileLayer.FurnitureTop:
+                // case TileLayer.Overlay:
+                // {
+                //     TileObject wallObject = map.GetTileObject(TileLayer.Turf, position);
+                //     if (!wallObject.IsCompletelyEmpty() && wallObject.GetPlacedObject(0).GetGenericType() == TileObjectGenericType.Wall)
+                //         return false;
+                //     break;
+                // }
+                // // No walls on furniture
+                // case TileLayer.Turf when tileObjectSo.genericType == TileObjectGenericType.Wall && (!tileObjects[(int)TileLayer.FurnitureBase].IsCompletelyEmpty() ||
+                //     !tileObjects[(int)TileLayer.FurnitureTop].IsCompletelyEmpty() ||
+                //     !tileObjects[(int)TileLayer.Overlay].IsCompletelyEmpty()):
+                //     return false;
             }
 
 
@@ -101,8 +102,8 @@ namespace SS3D.Systems.Tile
                 return false;
 
             // No low wall mounts on windows
-            if (wallObject.GetPlacedObject(0).GetName().Contains("window") && wallAttachment.layer == TileLayer.LowWallMount)
-                return false;
+            // if (wallObject.GetPlacedObject(0).GetName().Contains("window") && wallAttachment.layer == TileLayer.LowWallMount)
+            //     return false;
 
             // Cannot build wall mount if it collides with the next wall
             PlacedTileObject[] adjacentObjects = map.GetNeighbourObjects(TileLayer.Turf, 0, position);
@@ -131,11 +132,11 @@ namespace SS3D.Systems.Tile
             }
 
             // Only allow wires and machines on catwalks
-            if (plenumObject.GetPlacedObject(0).name.Contains("Catwalk") && (plenumAttachment.layer != TileLayer.Wire &&
-                plenumAttachment.layer != TileLayer.FurnitureBase))
-            {
-                return false;
-            }
+            // if (plenumObject.GetPlacedObject(0).name.Contains("Catwalk") && (plenumAttachment.layer != TileLayer.Wire &&
+            //     plenumAttachment.layer != TileLayer.FurnitureBase))
+            // {
+            //     return false;
+            // }
 
             // Can only build on a Plenum and not Catwalks or Lattices
             return plenumObject.GetPlacedObject(0).name.Contains("Plenum") || plenumObject.GetPlacedObject(0).name.Contains("Catwalk");
@@ -165,15 +166,15 @@ namespace SS3D.Systems.Tile
             }
 
             // Remove any wall fixtures when the turf is missing
-            else if (layer == TileLayer.Turf)
-            {
-                toBeDestroyedList.Add(map.GetTileObject(TileLayer.HighWallMount, position));
-                toBeDestroyedList.Add(map.GetTileObject(TileLayer.LowWallMount, position));
-            }
+            // else if (layer == TileLayer.Turf)
+            // {
+            //     toBeDestroyedList.Add(map.GetTileObject(TileLayer.HighWallMount, position));
+            //     toBeDestroyedList.Add(map.GetTileObject(TileLayer.LowWallMount, position));
+            // }
 
             // Remove furniture top is furniture base is missing
-            else if (layer == TileLayer.FurnitureBase)
-                toBeDestroyedList.Add(map.GetTileObject(TileLayer.FurnitureTop, position));
+            // else if (layer == TileLayer.FurnitureBase)
+            //     toBeDestroyedList.Add(map.GetTileObject(TileLayer.FurnitureTop, position));
 
             return toBeDestroyedList;
         }

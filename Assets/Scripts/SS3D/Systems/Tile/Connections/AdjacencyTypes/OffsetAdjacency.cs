@@ -1,4 +1,5 @@
 ﻿using System;
+using SS3D.Tilemaps;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
@@ -55,6 +56,12 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
 
         private OffsetOrientation _orientation;
 
+        public OffsetOrientation Orientation
+        {
+            get => _orientation;
+            set => _orientation = value;
+        }
+
         public MeshDirectionInfo GetMeshAndDirection(AdjacencyMap adjacencyMap)
         {
             // Determine rotation and mesh specially for every single case.
@@ -66,66 +73,66 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
             {
                 case AdjacencyShape.O:
                     mesh = o;
-                    _orientation = OffsetOrientation.O;
+                    Orientation = OffsetOrientation.O;
                     break;
                 case AdjacencyShape.UNorth:
                     mesh = uNorth;
-                    _orientation = OffsetOrientation.UNorth;
+                    Orientation = OffsetOrientation.UNorth;
                     rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.GetSingleConnection());
                     break;
                 case AdjacencyShape.USouth:
                     mesh = uSouth;
-                    _orientation = OffsetOrientation.USouth;
+                    Orientation = OffsetOrientation.USouth;
                     rotation = TileHelper.AngleBetween(Direction.South, adjacencyMap.GetSingleNonConnection());
                     break;
                 case AdjacencyShape.I:
                     mesh = i;
-                    _orientation = OffsetOrientation.I;
+                    Orientation = OffsetOrientation.I;
                     rotation = TileHelper.AngleBetween(Direction.North, adjacencyMap.HasConnection(Direction.North) ? Direction.North : Direction.East);
                     break;
                 case AdjacencyShape.LNorthWest:
                     mesh = lNW;
-                    _orientation = OffsetOrientation.LNw;
+                    Orientation = OffsetOrientation.LNw;
                     rotation = 90;
                     break;
                 case AdjacencyShape.LNorthEast:
                     mesh = lNE;
-                    _orientation = OffsetOrientation.LSe;
+                    Orientation = OffsetOrientation.LSe;
                     rotation = 90;
                     break;
                 case AdjacencyShape.LSouthEast:
                     mesh = lSE;
-                    _orientation = OffsetOrientation.LSW;
+                    Orientation = OffsetOrientation.LSW;
                     rotation = 90;
                     break;
                 case AdjacencyShape.LSouthWest:
                     mesh = lSW;
-                    _orientation = OffsetOrientation.LNw;
+                    Orientation = OffsetOrientation.LNw;
                     rotation = 90;
                     break;
                 case AdjacencyShape.TNorthSouthEast:
                     mesh = tNSE;
-                    _orientation = OffsetOrientation.TSWE;
+                    Orientation = OffsetOrientation.TSWE;
                     rotation = 90;                      
                     break;
                 case AdjacencyShape.TSouthWestEast:
                     mesh = tSWE;
-                    _orientation = OffsetOrientation.TNSW;
+                    Orientation = OffsetOrientation.TNSW;
                     rotation = 90;
                     break;
                 case AdjacencyShape.TNorthSouthWest:
                     mesh = tNSW;
-                    _orientation = OffsetOrientation.TNEW;
+                    Orientation = OffsetOrientation.TNEW;
                     rotation = 90;
                     break;
                 case AdjacencyShape.TNorthEastWest:
                     mesh = tNEW;
-                    _orientation = OffsetOrientation.TNSE;
+                    Orientation = OffsetOrientation.TNSE;
                     rotation = 90;
                     break;
                 case AdjacencyShape.X:
                     mesh = x;
-                    _orientation = OffsetOrientation.X;
+                    Orientation = OffsetOrientation.X;
                     rotation = 90;
                     break;
                 default:

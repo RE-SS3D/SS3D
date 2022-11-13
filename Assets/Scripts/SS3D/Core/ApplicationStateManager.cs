@@ -28,15 +28,14 @@ namespace SS3D.Core
         {
             PreProcessTestParams();
             InitializeSingleton();
-            InitializeEssentialSystems();
+            InitializeEssentialSystems();   
             InitializeSubsystems();
         }
 
         private void InitializeSubsystems()
         {
             DiscordManager.Initialize();
-
-            Database.Icons.PreloadAssets();
+            AssetData.InitializeDatabases();
         }
 
         public void InitializeApplication()

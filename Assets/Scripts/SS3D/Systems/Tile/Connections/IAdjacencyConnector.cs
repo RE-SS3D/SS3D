@@ -1,4 +1,6 @@
-﻿namespace SS3D.Systems.Tile.Connections
+﻿using SS3D.Tilemaps;
+
+namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
     /// Interface that all adjacency connectors should use.

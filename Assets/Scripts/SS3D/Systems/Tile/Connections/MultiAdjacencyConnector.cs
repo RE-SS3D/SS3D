@@ -1,6 +1,7 @@
 ﻿using System;
 using FishNet.Object;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
+using SS3D.Tilemaps;
 using UnityEngine;
 using UnityEngine.Serialization;
 

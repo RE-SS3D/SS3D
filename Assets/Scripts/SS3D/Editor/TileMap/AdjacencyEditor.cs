@@ -1,6 +1,8 @@
-﻿using SS3D.Systems.Tile;
+﻿#if UNITY_EDITOR
+using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
+using SS3D.Tilemaps;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,7 +17,6 @@ namespace SS3D.Editor.TileMap
         //TODO: This can be refactored to be Dictionary<Direction, bool>, which would eliminate the need for conversions when working with AdjacencyMap
         private bool[] _blocked = new bool[8];
         private bool _showAdjacencyOptions = true;
-
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
@@ -134,3 +135,4 @@ namespace SS3D.Editor.TileMap
         }
     }
 }
+#endif

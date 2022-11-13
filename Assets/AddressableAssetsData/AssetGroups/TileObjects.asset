@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: TileObjects
+  m_EditorClassIdentifier: 
+  m_GroupName: TileObjects
+  m_Data:
+    m_SerializedData: []
+  m_GUID: c0ecb83ce86b63347b3f52aa12c89883
+  m_SerializeEntries:
+  - m_GUID: 45d13347efae0f54882e0e56dd770bb1
+    m_Address: Assets/Content/Tilemaps/Structures/Walls/SteelWall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3b33b5cf16a677a4e85a110679cde32a
+    m_Address: Assets/Content/Tilemaps/Structures/Floors/Plenum.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 854451834f026fb4f860bf0e977a104c
+    m_Address: Assets/Content/Tilemaps/Structures/Floors/Lattice.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a28267798293970468ab30803632a3f7
+    m_Address: Assets/Content/Tilemaps/Structures/Floors/Catwalk.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 49f2097d4710d114a89821d9164dfce2
+    m_Address: Assets/Content/Tilemaps/Structures/Floors/FloorTiles/Wood/TileWood.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 61201f10ccc2856459a9de99d9cdc52e
+    m_Address: Assets/Content/Tilemaps/Structures/Floors/FloorTiles/White/TileWhite.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 11b2fdf773177c74f8fe0075dfd94e7b, type: 2}
+    - {fileID: 11400000, guid: 109427d3d7391fe4c9fb3d3418cff416, type: 2}

@@ -31,7 +31,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Database.Icons.Get(InteractionIcons.Take);
+            return Icon != null ? Icon : AssetData.Get(InteractionIcons.Take);
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)

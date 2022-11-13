@@ -27,7 +27,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Database.Icons.Get(InteractionIcons.Take);
+            return Icon != null ? Icon : AssetData.Get(InteractionIcons.Take);
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -55,6 +55,7 @@ namespace SS3D.Systems.Storage.Interactions
 
                 bool isInRange = InteractionExtensions.RangeCheck(interactionEvent);
                 bool notInAContainer = !item.InContainer();
+
                 // then we just do a range check, to make sure we can interact
 		        // and we check if the item is not in a container, you can only pick things that are not in a container
                 return isInRange && notInAContainer;

@@ -1,4 +1,6 @@
-﻿namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
+﻿using System;
+
+namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
 {
     /// <summary>
     /// Stores the type of adjacency as well as if it exists or not. Used by Adjacency Map.
@@ -20,6 +22,16 @@
         {
             return other is AdjacencyData otherData && GenericType == otherData.GenericType && SpecificType == otherData.SpecificType &&
                    Exists == otherData.Exists;
+        }
+
+        public bool Equals(AdjacencyData other)
+        {
+            return GenericType == other.GenericType && SpecificType == other.SpecificType && Exists == other.Exists;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine((int)GenericType, (int)SpecificType, Exists);
         }
     }
 }

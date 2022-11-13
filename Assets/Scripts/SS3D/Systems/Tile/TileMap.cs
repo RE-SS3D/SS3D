@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SS3D.Tilemaps;
 using UnityEngine;
 using static SS3D.Systems.Tile.TileRestrictions;
 

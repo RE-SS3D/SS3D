@@ -1,7 +1,10 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
+using SS3D.Tilemaps;
+
 using UnityEditor;
 using UnityEngine;
 
@@ -134,7 +137,8 @@ namespace SS3D.Editor.TileMap
             }
 
             EditorGUI.BeginChangeCheck();
-            _selectedTileMapIndex = EditorGUILayout.Popup("Active tilemap:", _selectedTileMapIndex, _tileManager.GetTileMapNames());
+            _selectedTileMapIndex =
+                EditorGUILayout.Popup("Active tilemap:", _selectedTileMapIndex, _tileManager.GetTileMapNames());
             if (EditorGUI.EndChangeCheck())
             {
                 FillGridOptions(GetCurrentMap());
@@ -157,17 +161,20 @@ namespace SS3D.Editor.TileMap
                     _tileManager.CreateEmptyMap();
                     RefreshMapList();
                 }
+
                 if (GUILayout.Button("Delete"))
                 {
                     if (EditorUtility.DisplayDialog("Remove TileMap",
-                        "Are you sure that you want to remove '" + _tileManager.GetTileMapNames()[_selectedTileMapIndex] + "'?"
-                        , "Ok", "Cancel"))
+                            "Are you sure that you want to remove '" +
+                            _tileManager.GetTileMapNames()[_selectedTileMapIndex] + "'?"
+                            , "Ok", "Cancel"))
                     {
                         _madeChanges = true;
                         _tileManager.RemoveMap(GetCurrentMap());
                         RefreshMapList();
                     }
                 }
+
                 if (GUILayout.Button("Load"))
                 {
                     if (_madeChanges)
@@ -175,10 +182,17 @@ namespace SS3D.Editor.TileMap
                         DisplaySaveWarning();
                         _madeChanges = false;
                     }
+
                     _tileManager.LoadAll(false);
                     RefreshMapList();
                 }
-                if (GUILayout.Button("Save")) { _tileManager.SaveAll(); _madeChanges = false; }
+
+                if (GUILayout.Button("Save"))
+                {
+                    _tileManager.SaveAll();
+                    _madeChanges = false;
+                }
+
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.Space();
@@ -197,13 +211,20 @@ namespace SS3D.Editor.TileMap
                     {
                         ApplySettings();
                     }
-                    if (GUILayout.Button("Reset")) { FillGridOptions(GetCurrentMap()); }
+
+                    if (GUILayout.Button("Reset"))
+                    {
+                        FillGridOptions(GetCurrentMap());
+                    }
+
                     EditorGUILayout.EndHorizontal();
 
                     EditorGUILayout.Space();
                 }
+
                 EditorGUI.indentLevel--;
             }
+
             EditorGUILayout.EndFoldoutHeaderGroup();
 
             // Return if no map is selected
@@ -216,6 +237,7 @@ namespace SS3D.Editor.TileMap
             {
                 ShowLayerVisibility();
             }
+
             EditorGUILayout.EndFoldoutHeaderGroup();
 
             EditorGUILayout.Space();
@@ -245,11 +267,13 @@ namespace SS3D.Editor.TileMap
                 _enablePlacement = true;
                 _deleteTiles = false;
             }
+
             if (GUILayout.Button("Delete"))
             {
                 _enablePlacement = true;
                 _deleteTiles = true;
             }
+
             EditorGUILayout.EndHorizontal();
 
             // Selection grid
@@ -400,19 +424,21 @@ namespace SS3D.Editor.TileMap
                 case TileLayer.Turf:
                 case TileLayer.Wire:
                 case TileLayer.Disposal:
-                case TileLayer.PipeLeft:
-                case TileLayer.PipeMiddle:
-                case TileLayer.PipeRight:
-                case TileLayer.FurnitureBase:
-                case TileLayer.FurnitureTop:
-                default:
+                // case TileLayer.PipeLeft:
+                // case TileLayer.PipeMiddle:
+                // case TileLayer.PipeRight:
+                // case TileLayer.FurnitureBase:
+                // case TileLayer.FurnitureTop:
+                // default:
                     return 0;
                 // Use the direction enum as an offset for the sub layer
-                case TileLayer.HighWallMount:
-                case TileLayer.LowWallMount:
-                case TileLayer.Overlay:
+                // case TileLayer.HighWallMount:
+                // case TileLayer.LowWallMount:
+                // case TileLayer.Overlay:
                     return ((int)_selectedDir / 2);
             }
+
+            return 0;
         }
 
         /// <summary>
@@ -724,3 +750,5 @@ namespace SS3D.Editor.TileMap
         }
     }
 }
+
+#endif

@@ -1,6 +1,8 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using SS3D.Systems.Tile;
+using SS3D.Tilemaps;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -244,3 +246,4 @@ namespace SS3D.Editor.TileMap
     }
 
 }
+#endif

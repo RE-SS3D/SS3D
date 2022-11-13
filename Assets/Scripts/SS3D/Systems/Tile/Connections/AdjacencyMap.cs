@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
+using SS3D.Tilemaps;
 
 namespace SS3D.Systems.Tile.Connections
 {
