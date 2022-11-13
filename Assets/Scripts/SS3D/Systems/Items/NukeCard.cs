@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using FishNet.Object;
-using SS3D.Interactions;
-using SS3D.Interactions.Interfaces;
-using SS3D.Systems.Storage.Items;
-using UnityEngine;
+﻿using SS3D.Systems.Storage.Items;
 
 namespace SS3D.Systems.Items
 {
@@ -12,12 +6,7 @@ namespace SS3D.Systems.Items
     /// The syndies love to use this to blow up the place
     /// </summary>
     public class NukeCard : Item
-    {        
-        public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
-        {
-            List<IInteraction> interactions = base.CreateTargetInteractions(interactionEvent).ToList();
-
-            return interactions.ToArray();
-        }
+    {
+        //Nothing lol
     }
 }
