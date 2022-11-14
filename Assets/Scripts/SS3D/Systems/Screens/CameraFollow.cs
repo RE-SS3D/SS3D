@@ -15,48 +15,48 @@ namespace SS3D.Systems.Screens
         /// The object to follow
         /// </summary>
         [Header("Camera Settings")]
-        [SerializeField] private GameObject target;
+        [SerializeField] private GameObject _target;
         /// <summary>
         /// total distance from the target
         /// </summary>
-        [SerializeField] private float cameraDistance = 3f;
+        [SerializeField] private float _cameraDistance = 3f;
         /// <summary>
         /// horizontal angle of the camera (around the z axis)
         /// </summary>
-        [SerializeField] private float horizontalAngle = 90f;
+        [SerializeField] private float _horizontalAngle = 90f;
         /// <summary>
         /// angle above the player
         /// </summary>
-        [SerializeField] private float verticalAngle = 60f;
+        [SerializeField] private float _verticalAngle = 60f;
         /// <summary>
         /// Camera speed during transition
         /// </summary>
-        private float transitionSpeed;
+        private float _transitionSpeed;
         /// <summary>
         /// Becomes true at the begging of transition
         /// </summary>
-        private bool inTransition = false;
+        private bool _inTransition = false;
         /// <summary>
         /// If distance between camera and end point less then this value, transition ends
         /// </summary>
-        private float endTransitionDistance;
+        private float _endTransitionDistance;
         /// <summary>
         /// Offset value for the end point of transition. The lower the value, the more transition slows down at the end
         /// </summary>
-        private float newPositionOffsetMult = 0.1f;
+        private float _newPositionOffsetMult = 0.1f;
         /// <summary>
         /// While in transition stores target's position at previous update 
         /// </summary>
-        private Vector3 prevTargetPostion;
+        private Vector3 _prevTargetPostion;
         // Previous button downs for left and right axis movement
-        private float prevHorizontalAxisPress;
-        private float prevHorizontalRotation;
-        private float currentHorizontalAngle;
-        private float currentDistance;
+        private float _prevHorizontalAxisPress;
+        private float _prevHorizontalRotation;
+        private float _currentHorizontalAngle;
+        private float _currentDistance;
         /// <summary>
         /// Offset of target transform position to camera focus point.
         /// </summary>
-        private Vector3 playerOffset;
+        private Vector3 _playerOffset;
 
         // Sensitivities and Accelerations
         // How quickly distance changes
@@ -127,16 +127,16 @@ namespace SS3D.Systems.Screens
             // Check for double tap
             if (rotationButtonDown)
             {
-                prevHorizontalAxisPress = Time.time;
-                prevHorizontalRotation = horizontalRotation;
+                _prevHorizontalAxisPress = Time.time;
+                _prevHorizontalRotation = horizontalRotation;
             }
 
             // If a double tap actually works
             // Round to closest 90 degree angle, going up or down based on whether axis is positive or negative
-            if (rotationButtonUp && Time.time - prevHorizontalAxisPress < CardinalSnapTime)
+            if (rotationButtonUp && Time.time - _prevHorizontalAxisPress < CardinalSnapTime)
             {
-                horizontalAngle = Mathf.Round((horizontalAngle + (prevHorizontalRotation > 0 ? -SnapAngle : SnapAngle)) / 90.0f) * 90.0f;
-                prevHorizontalAxisPress = 0.0f;
+                _horizontalAngle = Mathf.Round((_horizontalAngle + (_prevHorizontalRotation > 0 ? -SnapAngle : SnapAngle)) / 90.0f) * 90.0f;
+                _prevHorizontalAxisPress = 0.0f;
                 return;
             }
 
@@ -144,7 +144,7 @@ namespace SS3D.Systems.Screens
             float horizontalAngleDelta = 0.0f;
             float verticalAngleDelta = 0.0f;
 
-            if (horizontalRotationPressed && (Time.time - prevHorizontalAxisPress) > CardinalSnapTime)
+            if (horizontalRotationPressed && (Time.time - _prevHorizontalAxisPress) > CardinalSnapTime)
             { 
                 horizontalAngleDelta = -horizontalRotation * HorizontalRotationSensitivity * Time.deltaTime;
             }
@@ -154,9 +154,9 @@ namespace SS3D.Systems.Screens
             }
 
             // Determine new values, clamping as necessary
-            cameraDistance = Mathf.Clamp(cameraDistance - zoom, MinDistance, MaxDistance);
-            horizontalAngle = (horizontalAngle + horizontalAngleDelta) % 360f;
-            verticalAngle = Mathf.Clamp(verticalAngle + verticalAngleDelta, MinVerticalAngle, MaxVerticalAngle);
+            _cameraDistance = Mathf.Clamp(_cameraDistance - zoom, MinDistance, MaxDistance);
+            _horizontalAngle = (_horizontalAngle + horizontalAngleDelta) % 360f;
+            _verticalAngle = Mathf.Clamp(_verticalAngle + verticalAngleDelta, MinVerticalAngle, MaxVerticalAngle);
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace SS3D.Systems.Screens
         private void ProcessCameraPositionPostPhysics()
         {
             // if there is no target exit out of update
-            if (!target)
+            if (!_target)
             {
                 return;
             }
@@ -175,7 +175,7 @@ namespace SS3D.Systems.Screens
                 return;
             }
 
-            if (inTransition)
+            if (_inTransition)
             {
                 TransitToNewTarget();
             }
@@ -190,12 +190,12 @@ namespace SS3D.Systems.Screens
         private void MoveAroundTarget()
         {
             // Smooth the distance and angle before using it
-            currentHorizontalAngle = Mathf.LerpAngle(currentHorizontalAngle, horizontalAngle, Time.deltaTime * AngleAcceleration);
-            currentDistance = Mathf.MoveTowards(currentDistance, cameraDistance, Time.deltaTime * DistanceAcceleration);
+            _currentHorizontalAngle = Mathf.LerpAngle(_currentHorizontalAngle, _horizontalAngle, Time.deltaTime * AngleAcceleration);
+            _currentDistance = Mathf.MoveTowards(_currentDistance, _cameraDistance, Time.deltaTime * DistanceAcceleration);
             // The position is determined by the orientation and the distance, where distance has an exponential effect.
-            Vector3 relativePosition = Quaternion.Euler(0, currentHorizontalAngle, verticalAngle) * new Vector3(Mathf.Pow(DistanceScaling, currentDistance), 0, 0);
+            Vector3 relativePosition = Quaternion.Euler(0, _currentHorizontalAngle, _verticalAngle) * new Vector3(Mathf.Pow(DistanceScaling, _currentDistance), 0, 0);
             // Determine the part of the target we want to follow
-            Vector3 targetPosition = target.transform.position + playerOffset;
+            Vector3 targetPosition = _target.transform.position + _playerOffset;
 
             // Look at that part from the correct position
             Position = targetPosition + relativePosition;
@@ -207,20 +207,20 @@ namespace SS3D.Systems.Screens
         private void TransitToNewTarget()
         {
             // The position is determined by the orientation and the distance, where distance has an exponential effect.
-            Vector3 relativePosition = Quaternion.Euler(0, currentHorizontalAngle, verticalAngle) * new Vector3(Mathf.Pow(DistanceScaling, currentDistance), 0, 0);
+            Vector3 relativePosition = Quaternion.Euler(0, _currentHorizontalAngle, _verticalAngle) * new Vector3(Mathf.Pow(DistanceScaling, _currentDistance), 0, 0);
             // End point of transition
-            Vector3 newPosition = target.transform.position + playerOffset + relativePosition;
+            Vector3 newPosition = _target.transform.position + _playerOffset + relativePosition;
             // If camera is close enough to the target, transition ends
-            if (Vector3.Distance(Position, newPosition) <= endTransitionDistance)
+            if (Vector3.Distance(Position, newPosition) <= _endTransitionDistance)
             {
-                inTransition = false;
+                _inTransition = false;
                 return;
             }
             //The lower the offset, the more transition slows down at the end
-            Vector3 newPositionOffset = Vector3.Normalize(newPosition - Position) * newPositionOffsetMult;
-            Position = Vector3.Lerp(Position, newPosition + newPositionOffset, transitionSpeed * Time.deltaTime);
-            Position += target.transform.position - prevTargetPostion;
-            prevTargetPostion = target.transform.position;
+            Vector3 newPositionOffset = Vector3.Normalize(newPosition - Position) * _newPositionOffsetMult;
+            Position = Vector3.Lerp(Position, newPosition + newPositionOffset, _transitionSpeed * Time.deltaTime);
+            Position += _target.transform.position - _prevTargetPostion;
+            _prevTargetPostion = _target.transform.position;
         }
         /// <summary>
         /// Set variables for moving to the new target
@@ -228,15 +228,15 @@ namespace SS3D.Systems.Screens
         /// <param name="newTarget"></param>
         private void TransitToNewTargetStart(GameObject newTarget)
         {
-            if (target == null)
+            if (_target == null)
                 return;
-            inTransition = true;
+            _inTransition = true;
             float distance = Vector3.Distance(transform.position, newTarget.transform.position);
             // Larger distance - larger speed
-            transitionSpeed = Math.Clamp(distance * TransitionAcceleration, _minTransitionSpeed, _maxTransitionSpeed);
+            _transitionSpeed = Math.Clamp(distance * TransitionAcceleration, _minTransitionSpeed, _maxTransitionSpeed);
             // Smoothes movement at the end
-            endTransitionDistance = 0.05f / transitionSpeed;
-            prevTargetPostion = newTarget.transform.position;
+            _endTransitionDistance = 0.05f / _transitionSpeed;
+            _prevTargetPostion = newTarget.transform.position;
         }
 
         /// <summary>
@@ -249,10 +249,10 @@ namespace SS3D.Systems.Screens
             CharacterController character = newTarget.GetComponent<CharacterController>();
             if (character)
             {
-                playerOffset = new Vector3(0, character.height);
+                _playerOffset = new Vector3(0, character.height);
             }
             TransitToNewTargetStart(newTarget);
-            target = newTarget;
+            _target = newTarget;
         }
     }
 }
