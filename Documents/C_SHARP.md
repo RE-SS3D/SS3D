@@ -78,26 +78,26 @@ For example:
 ```csharp
 public class MyClass 
 {
-    public int publicField;
-    private int packagePrivate;
-    private int myPrivate;
-    protected int myProtected;
+    public int PublicField;
+    private int _packagePrivate;
+    private int _myPrivate;
+    protected int _myProtected;
 }
 ```
 
 **BAD:**
 
 ```csharp
-private int _myPrivateVariable
+private int myPrivateVariable
 ```
 
 **GOOD:**
 
 ```csharp
-private int myPrivateVariable
+private int _myPrivateVariable
 ```
 
-Static fields are the exception and should be written in **PascalCase**:
+Static fields should be written in **PascalCase**:
 
 ```csharp
 public static int TheAnswer = 42;
@@ -476,16 +476,11 @@ Expect people to set the fields in the inspector and log warnings if they don't.
 
 **BAD:**
 ```csharp
-private GameObject someMember;
+private GameObject _someMember;
 
 private void Start() {
-    someMember = GameObject.Find("ObjectName");
+    _someMember = GameObject.Find("ObjectName");
 }
-```
-
-**GOOD:**
-```csharp
-public GameObject someMember;
 ```
 
 ### RequireComponent
@@ -496,10 +491,10 @@ Prefer RequireComponent and GetComponent over AddComponent. Having the component
 ```csharp
 public class : MonoBehaviour
 {
-    private AudioSource audioSource;
+    private AudioSource _audioSource;
 
     private void Start() {
-        audioSource = gameObject.AddCompenent<AudioSource>();
+        _audioSource = gameObject.AddCompenent<AudioSource>();
     }
 }
 ```
@@ -509,10 +504,10 @@ public class : MonoBehaviour
 [RequireComponent(typeof(AudioSource))]
 public class : MonoBehaviour
 {
-    private AudioSource audioSource;
+    private AudioSource _audioSource;
 
     private void Start() {
-        audioSource = GetCompenent<AudioSource>();
+        _audioSource = GetCompenent<AudioSource>();
     }
 }
 ```
@@ -525,11 +520,11 @@ Sometimes it's just nice to see them for debugging, even if we don't change them
 
 **OKAY:**
 ```csharp
-public GameObject someMember;
+public GameObject SomeMember;
 ```
 
 **BETTER:**
 ```csharp
-[SerializeField] private GameObject someMember;
-public GameObject SomeMember => someMember;
+[SerializeField] private GameObject _someMember;
+public GameObject SomeMember => _someMember;
 ```
