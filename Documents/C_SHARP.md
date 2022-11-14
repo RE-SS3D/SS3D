@@ -52,13 +52,13 @@ Namespaces should be used for major systems, such as Atmospherics, or Electrics.
 **BAD**:
 
 ```csharp
-com.ress3dclient.scripts.structures
+Structures.Door
 ```
 
 **GOOD**:
 
 ```csharp
-Structures.Door
+SS3D.Core.Structures.Door
 ```
 
 ### Classes & Interfaces
@@ -433,7 +433,8 @@ Avoid throwing exceptions. Instead log and error. Methods returning values shoul
 ```csharp
 public List<Transform> FindAThing(int arg){
     ...
-    if (notFound) {
+    if (notFound) 
+    {
         throw new NotFoundException();
     }
 }
@@ -443,7 +444,8 @@ public List<Transform> FindAThing(int arg){
 ```csharp
 public List<Transform> FindAThing(int arg){
     ...
-    if (notFound) {
+    if (notFound) 
+    {
         Debug.LogError("Thing not found");
         return null;
     }
@@ -457,14 +459,16 @@ We know what Start and Update does. Please remove their comments when you create
 ***NO:***
 ```csharp
 // Use this for initialization
-void Start() {
+void Start() 
+{
     ...
 }
 ```
 
 **YES:**
 ```csharp
-private void Start() {
+private void Start() 
+{
     ...
 }
 ```
@@ -478,14 +482,15 @@ Expect people to set the fields in the inspector and log warnings if they don't.
 ```csharp
 private GameObject _someMember;
 
-private void Start() {
+private void Start() 
+{
     _someMember = GameObject.Find("ObjectName");
 }
 ```
 
 ### RequireComponent
 
-Prefer RequireComponent and GetComponent over AddComponent. Having the components in the inspector let's us edit them. AddComponent limits us.
+Prefer RequireComponent and GetComponent over AddComponent. Having the components in the inspector lets us edit them. AddComponent limits us.
 
 **BAD:**
 ```csharp
@@ -493,7 +498,8 @@ public class : MonoBehaviour
 {
     private AudioSource _audioSource;
 
-    private void Start() {
+    private void Start() 
+    {
         _audioSource = gameObject.AddCompenent<AudioSource>();
     }
 }
@@ -506,7 +512,8 @@ public class : MonoBehaviour
 {
     private AudioSource _audioSource;
 
-    private void Start() {
+    private void Start() 
+    {
         _audioSource = GetCompenent<AudioSource>();
     }
 }
