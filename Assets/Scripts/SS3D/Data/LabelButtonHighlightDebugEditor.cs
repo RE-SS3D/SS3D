@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 
 namespace SS3D.Data
@@ -27,3 +28,4 @@ namespace SS3D.Data
         }
     }
 }
+#endif

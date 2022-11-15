@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Coimbra;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -29,6 +27,8 @@ namespace SS3D.Data
             return Assets[(int)icon].Asset as Sprite;
         }
 
+
+#if UNITY_EDITOR
         public void CreateEnum()
         {
             IEnumerable<string> assets = Assets.Select(reference => reference.SubObjectName);
@@ -45,5 +45,6 @@ namespace SS3D.Data
 
             return fullPath;
         }
+#endif
     }
 }
