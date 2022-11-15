@@ -33,7 +33,7 @@ namespace SS3D.Systems.GameModes
 
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
         {
-            if (e.RoundState == RoundState.Ending)
+            if (e.RoundState == RoundState.Ongoing)
             {
                 GenerateObjectiveList();
             }
@@ -55,12 +55,12 @@ namespace SS3D.Systems.GameModes
         [ObserversRpc]
         private void RpcGenerateObjectiveList(GamemodeObjectiveData gamemodeObjectives)
         {
-             Punpun.Panic(this, "recebi");
+            Punpun.Say(this, "ObjectiveList Generated");
         }
 
         private void HandleObjectiveStatusChanged(ref EventContext context, in ObjectiveStatusChangedEvent e)
         {
-            Punpun.Say(this, e.Objective.Title, Logs.ServerOnly);
+            Punpun.Say(this, e.Objective.Title + " - " + e.Objective.Status, Logs.ServerOnly);
         }
 
         private void HandleReadyPlayersChanged(ref EventContext context, in SpawnReadyPlayersEvent spawnReadyPlayersEvent)

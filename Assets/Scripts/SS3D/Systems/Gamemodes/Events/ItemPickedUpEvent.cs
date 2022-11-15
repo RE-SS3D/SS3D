@@ -1,17 +1,16 @@
 using Coimbra.Services.Events;
+using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
 namespace SS3D.Systems.GameModes.Events
 {
     public partial struct ItemPickedUpEvent : IEvent
     {
-        public readonly string ItemName;
-        public readonly string OwnerName;
+        public readonly Item ItemRef;
 
-        public ItemPickedUpEvent(string itemName, string ownerName)
+        public ItemPickedUpEvent(Item itemRef)
         {
-            ItemName = itemName;
-            OwnerName = ownerName;
+            ItemRef = itemRef;
         }
     }
 }

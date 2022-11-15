@@ -74,7 +74,7 @@ namespace SS3D.Systems.Storage.Interactions
                 hands.Pickup(target);
 
                 // and call the event for picking up items for the Game Mode System
-                new ItemPickedUpEvent(target.name, hands.name).Invoke(this);
+                new ItemPickedUpEvent(target).Invoke(this);
             }
 
             return false;

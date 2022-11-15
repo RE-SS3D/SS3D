@@ -12,6 +12,7 @@ namespace SS3D.Systems.GameModes.Objectives
         {
             Title = objective.Title;
             Status = objective.Status;
+            objective.InitializeObjective();
         }
 
         public GamemodeObjectiveData(string title, ObjectiveStatus status)
