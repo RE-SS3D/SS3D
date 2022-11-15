@@ -47,13 +47,17 @@ namespace SS3D.Systems.GameModes
         [Server]
         private void GenerateObjectiveList()
         {
-            GamemodeObjectiveData objectives = new(PossibleObjectives[0]);
+            List<GamemodeObjectiveData> objectives = new();
+            foreach (GamemodeObjective gamemodeObjective in PossibleObjectives)
+            {
+                objectives.Add(new(gamemodeObjective));
+            }
 
             RpcGenerateObjectiveList(objectives);
         }
 
         [ObserversRpc]
-        private void RpcGenerateObjectiveList(GamemodeObjectiveData gamemodeObjectives)
+        private void RpcGenerateObjectiveList(List<GamemodeObjectiveData> gamemodeObjectives)
         {
             Punpun.Say(this, "ObjectiveList Generated");
         }
