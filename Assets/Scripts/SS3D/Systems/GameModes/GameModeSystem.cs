@@ -7,11 +7,11 @@ namespace SS3D.Systems.GameModes
 {
     public sealed class GameModeSystem : NetworkedSystem
     {
-        public List<Objective> Objectives;
+        public GetNukeAuthCard GetNukeAuthCard = new GetNukeAuthCard();
 
-        private void Start()
+        private void Awake()
         {
-            Debug.Log("Initializing Game Mode System...");
+            GetNukeAuthCard.InitializeObjective();
         }
     }
 }

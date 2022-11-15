@@ -4,6 +4,7 @@ using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
+using SS3D.Systems.GameModes.Events;
 using UnityEngine;
 
 namespace SS3D.Systems.Storage.Interactions
@@ -71,6 +72,9 @@ namespace SS3D.Systems.Storage.Interactions
             {
                 // and then we run the function that adds it to the container
                 hands.Pickup(target);
+
+                // and call the event for picking up items for the Game Mode System
+                new ItemPickedUpEvent(target.name, hands.name).Invoke(this);
             }
 
             return false;
