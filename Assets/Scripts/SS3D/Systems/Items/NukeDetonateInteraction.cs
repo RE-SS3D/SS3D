@@ -48,8 +48,10 @@ namespace SS3D.Systems.Items
     
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            if ((interactionEvent.Source is NukeCard nukecard)
-                && (interactionEvent.Target is Nuke nuke))
+            IInteractionSource source = interactionEvent.Source;
+            IInteractionTarget target = interactionEvent.Target;
+
+            if (source is NukeCard _ && target is Nuke nuke)
             {
                 nuke.Detonate();
             }

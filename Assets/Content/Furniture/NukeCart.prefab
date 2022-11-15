@@ -51,7 +51,6 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 1871071288925904272}
   _networkObjectCache: {fileID: 1871071288925904272}
   _sprite: {fileID: 21300000, guid: fcc25846241b9df449f4be72085beafb, type: 3}
-  detonateEvent: {fileID: 11400000, guid: 589ed6e49f4603045baebac4d95da13c, type: 2}
 --- !u!33 &2658310834331958832
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -242,7 +241,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: -1
   _scenePathHash: 952082934
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 2814426511050947252
   _sceneNetworkObjects:
   - {fileID: 1871071288925904272}
   - {fileID: 0}

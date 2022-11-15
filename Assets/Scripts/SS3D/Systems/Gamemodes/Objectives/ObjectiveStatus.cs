@@ -4,6 +4,7 @@ namespace SS3D.Systems.GameModes.Objectives
     {
         InProgress,
         Success,
-        Failed
+        Failed,
+        Cancelled,
     }
 }
