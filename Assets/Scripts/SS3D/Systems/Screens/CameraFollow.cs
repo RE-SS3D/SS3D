@@ -40,14 +40,11 @@ namespace SS3D.Systems.Screens
         /// If distance between camera and end point less then this value, transition ends
         /// </summary>
         private float _endTransitionDistance;
-        /// <summary>
-        /// Offset value for the end point of transition. The lower the value, the more transition slows down at the end
-        /// </summary>
-        private float _newPositionOffsetMult = 0.1f;
+
         /// <summary>
         /// While in transition stores target's position at previous update 
         /// </summary>
-        private Vector3 _prevTargetPostion;
+        private Vector3 _prevTargetPosition;
         // Previous button downs for left and right axis movement
         private float _prevHorizontalAxisPress;
         private float _prevHorizontalRotation;
@@ -64,6 +61,10 @@ namespace SS3D.Systems.Screens
         private const float AngleAcceleration = 8f;
         private const float TransitionAcceleration = 0.4f;
         /// <summary>
+        /// Offset value for the end point of transition. The lower the value, the more transition slows down at the end
+        /// </summary>
+        private const float NewPositionOffsetMult = 0.1f;
+        /// <summary>
         /// The exponential effect of distance
         /// </summary>
         private const float DistanceScaling = 1.18f; 
@@ -72,8 +73,8 @@ namespace SS3D.Systems.Screens
         private const float VerticalRotationSensitivity = 80f;
 
         // Limits
-        private const float _minTransitionSpeed = 3f;
-        private const float _maxTransitionSpeed = 6f;
+        private const float MinTransitionSpeed = 3f;
+        private const float MaxTransitionSpeed = 6f;
 
         private const float MinVerticalAngle = 10f;
         private const float MaxVerticalAngle = 80f;
@@ -217,10 +218,10 @@ namespace SS3D.Systems.Screens
                 return;
             }
             //The lower the offset, the more transition slows down at the end
-            Vector3 newPositionOffset = Vector3.Normalize(newPosition - Position) * _newPositionOffsetMult;
+            Vector3 newPositionOffset = Vector3.Normalize(newPosition - Position) * NewPositionOffsetMult;
             Position = Vector3.Lerp(Position, newPosition + newPositionOffset, _transitionSpeed * Time.deltaTime);
-            Position += _target.transform.position - _prevTargetPostion;
-            _prevTargetPostion = _target.transform.position;
+            Position += _target.transform.position - _prevTargetPosition;
+            _prevTargetPosition = _target.transform.position;
         }
         /// <summary>
         /// Set variables for moving to the new target
@@ -233,18 +234,20 @@ namespace SS3D.Systems.Screens
             _inTransition = true;
             float distance = Vector3.Distance(transform.position, newTarget.transform.position);
             // Larger distance - larger speed
-            _transitionSpeed = Math.Clamp(distance * TransitionAcceleration, _minTransitionSpeed, _maxTransitionSpeed);
+            _transitionSpeed = Math.Clamp(distance * TransitionAcceleration, MinTransitionSpeed, MaxTransitionSpeed);
             // Smoothes movement at the end
             _endTransitionDistance = 0.05f / _transitionSpeed;
-            _prevTargetPostion = newTarget.transform.position;
+            _prevTargetPosition = newTarget.transform.position;
         }
 
         /// <summary>
         /// Update the target the camera is meant to follow
         /// </summary>
-        /// <param name="target">The target for the camera to follow</param>
+        /// <param name="newTarget">The target for the camera to follow</param>
         public void SetTarget(GameObject newTarget)
         {
+            if (_target)
+                Debug.Log(_target.transform.position);
             // Set the player height based on the character controller, if one is found
             CharacterController character = newTarget.GetComponent<CharacterController>();
             if (character)
