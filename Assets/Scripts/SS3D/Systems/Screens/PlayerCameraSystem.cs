@@ -12,6 +12,8 @@ namespace SS3D.Systems.Screens
         [SerializeField] private Camera _camera;
         [SerializeField] private CameraFollow _cameraFollow;
 
+        public Camera Camera => _camera;
+
         protected override void OnStart()
         {
             base.OnStart();
