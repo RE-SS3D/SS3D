@@ -7,6 +7,8 @@ using SS3D.Systems.GameModes.Events;
 using SS3D.Systems.GameModes.Objectives;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
+using SS3D.Systems.Rounds.Messages;
+using FishNet;
 
 namespace SS3D.Systems.GameModes
 {
@@ -41,7 +43,29 @@ namespace SS3D.Systems.GameModes
 
         public void FinishRound()
         {
+            Punpun.Panic(this, "All Objectives Completed, Round ending...");
+            ChangeRoundStateMessage changeRoundStateMessage = new(false);
+            ClientManager.Broadcast(changeRoundStateMessage);
+        }
 
+        public void CheckObjectivesCompleted()
+        {
+            int completedObjectives = 0;
+            foreach (GamemodeObjective gamemodeObjective in PossibleObjectives)
+            {
+                if (gamemodeObjective.Status != ObjectiveStatus.InProgress &&
+                    gamemodeObjective.Status != ObjectiveStatus.Cancelled)
+                {
+                    completedObjectives++;
+                }
+                Punpun.Say(this, gamemodeObjective.Title + " - " + gamemodeObjective.Status);
+            }
+
+            Punpun.Say(this, "Objectives Completed: " + completedObjectives + "/" + PossibleObjectives.Count);
+            if (completedObjectives == PossibleObjectives.Count)
+            {
+                FinishRound();
+            }
         }
 
         [Server]
@@ -64,7 +88,7 @@ namespace SS3D.Systems.GameModes
 
         private void HandleObjectiveStatusChanged(ref EventContext context, in ObjectiveStatusChangedEvent e)
         {
-            Punpun.Say(this, e.Objective.Title + " - " + e.Objective.Status, Logs.ServerOnly);
+            CheckObjectivesCompleted();
         }
 
         private void HandleReadyPlayersChanged(ref EventContext context, in SpawnReadyPlayersEvent spawnReadyPlayersEvent)

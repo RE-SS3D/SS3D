@@ -1,11 +1,7 @@
 using Coimbra.Services.Events;
 using FishNet.Object;
-using SS3D.Logging;
-using SS3D.Systems.Furniture;
 using SS3D.Systems.GameModes.Events;
 using SS3D.Systems.GameModes.Objectives;
-using SS3D.Systems.Items;
-using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes.Objectives.NukeObjectives
@@ -23,14 +19,12 @@ namespace SS3D.Systems.Gamemodes.Objectives.NukeObjectives
         [Server]
         public override void CheckCompleted()
         {
-            Status = ObjectiveStatus.Success;
+            Success();
         }
 
         private void HandleNukeDetonateEvent(ref EventContext context, in NukeDetonateEvent e)
         {
             CheckCompleted();
-
-            new ObjectiveStatusChangedEvent(this).Invoke(this);
         }
     }
 }

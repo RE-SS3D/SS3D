@@ -1,4 +1,4 @@
-﻿using SS3D.Systems.Entities;
+﻿using SS3D.Systems.GameModes.Events;
 using UnityEngine;
 
 namespace SS3D.Systems.GameModes.Objectives
@@ -11,5 +11,23 @@ namespace SS3D.Systems.GameModes.Objectives
         public abstract void InitializeObjective();
 
         public abstract void CheckCompleted();
+
+        public void Success()
+        {
+            if (Status == ObjectiveStatus.InProgress)
+            {
+                Status = ObjectiveStatus.Success;
+                new ObjectiveStatusChangedEvent(this).Invoke(this);
+            }
+        }
+
+        public void Failed()
+        {
+            if (Status == ObjectiveStatus.InProgress)
+            {
+                Status = ObjectiveStatus.Failed;
+                new ObjectiveStatusChangedEvent(this).Invoke(this);
+            }
+        }
     }
 }

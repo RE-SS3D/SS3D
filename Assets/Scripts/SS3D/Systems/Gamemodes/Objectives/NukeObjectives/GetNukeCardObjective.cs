@@ -1,6 +1,5 @@
 using Coimbra.Services.Events;
 using FishNet.Object;
-using SS3D.Logging;
 using SS3D.Systems.GameModes.Events;
 using SS3D.Systems.GameModes.Objectives;
 using SS3D.Systems.Items;
@@ -17,7 +16,7 @@ namespace SS3D.Systems.Gamemodes.Objectives.NukeObjectives
         public override void InitializeObjective()
         {
             ItemPickedUpEvent.AddListener(HandleItemPickedUpEvent);
-            Title = "Retrive the Nuclear Authentication Disk";
+            Title = "Retrieve the Nuclear Authentication Disk";
             Status = ObjectiveStatus.InProgress;
         }
 
@@ -26,7 +25,7 @@ namespace SS3D.Systems.Gamemodes.Objectives.NukeObjectives
         {
             if (ItemRef is NukeCard)
             {
-                Status = ObjectiveStatus.Success;
+                Success();
             }
         }
 
@@ -35,8 +34,6 @@ namespace SS3D.Systems.Gamemodes.Objectives.NukeObjectives
             ItemRef = e.ItemRef;
 
             CheckCompleted();
-
-            new ObjectiveStatusChangedEvent(this).Invoke(this);
         }
     }
 }

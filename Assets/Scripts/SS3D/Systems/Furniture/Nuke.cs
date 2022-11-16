@@ -18,8 +18,6 @@ namespace SS3D.Systems.Furniture
         {
             if (!IsServer) { return; }
 
-            Debug.Log("Boom!");
-
             RpcDetonate();
         }
 
@@ -27,8 +25,6 @@ namespace SS3D.Systems.Furniture
         private void RpcDetonate()
         {
             if (IsServer) { return; }
-
-            Debug.Log("Boom!");
         }
 
         IInteraction[] IInteractionTarget.CreateTargetInteractions(InteractionEvent interactionEvent)
