@@ -33,6 +33,7 @@ namespace SS3D.Systems.GameModes
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
         }
 
+        [Server]
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
         {
             if (e.RoundState == RoundState.Ongoing)
@@ -41,13 +42,32 @@ namespace SS3D.Systems.GameModes
             }
         }
 
+        [Server]
         public void FinishRound()
         {
             Punpun.Panic(this, "All Objectives Completed, Round ending...");
+
             ChangeRoundStateMessage changeRoundStateMessage = new(false);
             ClientManager.Broadcast(changeRoundStateMessage);
+
+            Dictionary<string, string> objectives = new Dictionary<string, string>();
+            foreach (GamemodeObjective gamemodeObjective in PossibleObjectives)
+            {
+                objectives.Add(gamemodeObjective.Title, gamemodeObjective.Status.ToString());
+            }
+            RpcFinishRound(objectives);
         }
 
+        [ObserversRpc]
+        public void RpcFinishRound(Dictionary<string, string> objectives)
+        {
+            foreach (KeyValuePair<string, string> gamemodeObjective in objectives)
+            {
+                Punpun.Say(this, gamemodeObjective.Key + " - " + gamemodeObjective.Value);
+            }
+        }
+
+        [Server]
         public void CheckObjectivesCompleted()
         {
             int completedObjectives = 0;
@@ -86,11 +106,13 @@ namespace SS3D.Systems.GameModes
             Punpun.Say(this, "ObjectiveList Generated");
         }
 
+        [Server]
         private void HandleObjectiveStatusChanged(ref EventContext context, in ObjectiveStatusChangedEvent e)
         {
             CheckObjectivesCompleted();
         }
 
+        [Server]
         private void HandleReadyPlayersChanged(ref EventContext context, in SpawnReadyPlayersEvent spawnReadyPlayersEvent)
         {
             List<string> players = spawnReadyPlayersEvent.ReadyPlayers;
