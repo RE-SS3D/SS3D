@@ -3,20 +3,18 @@ using System.Collections.Generic;
 using Coimbra.Services.Events;
 using FishNet.Object;
 using SS3D.Logging;
+using SS3D.Systems.GameModes.Modes;
 using SS3D.Systems.GameModes.Events;
 using SS3D.Systems.GameModes.Objectives;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Rounds.Messages;
-using FishNet;
 
 namespace SS3D.Systems.GameModes
 {
     public sealed class GamemodeSystem : NetworkedSystem
     {
-        public List<GamemodeObjective> PossibleObjectives;
-
-        private List<GamemodeObjective> _createdObjectives;
+        public Gamemode Gamemode;
 
         protected override void OnStart()
         {
@@ -28,6 +26,8 @@ namespace SS3D.Systems.GameModes
         [Server]
         private void Setup()
         {
+            Gamemode.GamemodeSystem = this;
+
             SpawnReadyPlayersEvent.AddListener(HandleReadyPlayersChanged);
             ObjectiveStatusChangedEvent.AddListener(HandleObjectiveStatusChanged);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
@@ -38,7 +38,7 @@ namespace SS3D.Systems.GameModes
         {
             if (e.RoundState == RoundState.Ongoing)
             {
-                GenerateObjectiveList();
+                GenerateObjectives();
             }
         }
 
@@ -46,76 +46,37 @@ namespace SS3D.Systems.GameModes
         public void FinishRound()
         {
             Punpun.Panic(this, "All Objectives Completed, Round ending...");
+            RpcFinishRound();
 
             ChangeRoundStateMessage changeRoundStateMessage = new(false);
             ClientManager.Broadcast(changeRoundStateMessage);
-
-            Dictionary<string, string> objectives = new Dictionary<string, string>();
-            foreach (GamemodeObjective gamemodeObjective in PossibleObjectives)
-            {
-                objectives.Add(gamemodeObjective.Title, gamemodeObjective.Status.ToString());
-            }
-            RpcFinishRound(objectives);
-        }
-
-        [ObserversRpc]
-        public void RpcFinishRound(Dictionary<string, string> objectives)
-        {
-            foreach (KeyValuePair<string, string> gamemodeObjective in objectives)
-            {
-                Punpun.Say(this, gamemodeObjective.Key + " - " + gamemodeObjective.Value);
-            }
         }
 
         [Server]
-        public void CheckObjectivesCompleted()
+        private void GenerateObjectives()
         {
-            int completedObjectives = 0;
-            foreach (GamemodeObjective gamemodeObjective in PossibleObjectives)
+            foreach (GamemodeObjective gamemodeObjective in Gamemode.PossibleObjectives)
             {
-                if (gamemodeObjective.Status != ObjectiveStatus.InProgress &&
-                    gamemodeObjective.Status != ObjectiveStatus.Cancelled)
-                {
-                    completedObjectives++;
-                }
-                Punpun.Say(this, gamemodeObjective.Title + " - " + gamemodeObjective.Status);
+                gamemodeObjective.InitializeObjective();
             }
-
-            Punpun.Say(this, "Objectives Completed: " + completedObjectives + "/" + PossibleObjectives.Count);
-            if (completedObjectives == PossibleObjectives.Count)
-            {
-                FinishRound();
-            }
-        }
-
-        [Server]
-        private void GenerateObjectiveList()
-        {
-            List<GamemodeObjectiveData> objectives = new();
-            foreach (GamemodeObjective gamemodeObjective in PossibleObjectives)
-            {
-                objectives.Add(new(gamemodeObjective));
-            }
-
-            RpcGenerateObjectiveList(objectives);
-        }
-
-        [ObserversRpc]
-        private void RpcGenerateObjectiveList(List<GamemodeObjectiveData> gamemodeObjectives)
-        {
-            Punpun.Say(this, "ObjectiveList Generated");
         }
 
         [Server]
         private void HandleObjectiveStatusChanged(ref EventContext context, in ObjectiveStatusChangedEvent e)
         {
-            CheckObjectivesCompleted();
+            Gamemode.CheckObjectivesCompleted();
         }
 
         [Server]
         private void HandleReadyPlayersChanged(ref EventContext context, in SpawnReadyPlayersEvent spawnReadyPlayersEvent)
         {
             List<string> players = spawnReadyPlayersEvent.ReadyPlayers;
+        }
+
+        [ObserversRpc]
+        public void RpcFinishRound()
+        {
+            Punpun.Panic(this, "The traitors have won!");
         }
     }
 }

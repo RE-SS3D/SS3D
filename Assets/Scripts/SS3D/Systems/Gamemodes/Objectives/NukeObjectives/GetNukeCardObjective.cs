@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes.Objectives.NukeObjectives
 {
-    [CreateAssetMenu(menuName = "Gamemode/Objectives/GetNukeCard", fileName = "GetNukeCard")]
+    [CreateAssetMenu(menuName = "Gamemodes/Objectives/GetNukeCard", fileName = "GetNukeCard")]
     public class GetNukeCardObjective : GamemodeObjective
     {
         Item ItemRef;

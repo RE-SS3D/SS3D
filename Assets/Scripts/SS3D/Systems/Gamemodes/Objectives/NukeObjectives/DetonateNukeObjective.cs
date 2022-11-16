@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes.Objectives.NukeObjectives
 {
-    [CreateAssetMenu(menuName = "Gamemode/Objectives/DetonateNuke", fileName = "DetonateNuke")]
+    [CreateAssetMenu(menuName = "Gamemodes/Objectives/DetonateNuke", fileName = "DetonateNuke")]
     public class DetonateNukeObjective : GamemodeObjective
     {
         public override void InitializeObjective()
