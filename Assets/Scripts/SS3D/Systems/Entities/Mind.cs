@@ -10,6 +10,6 @@ namespace SS3D.Systems.Entities
     /// </summary>
     public class Mind : NetworkBehaviour
     {
-        [SerializeField] private PlayerControllable _entity;
+        [SerializeField] private Entity _entity;
     }
 }

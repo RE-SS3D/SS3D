@@ -4,6 +4,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Entity;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Messages;
@@ -31,24 +32,24 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleSpawnedPlayersUpdated(ref EventContext context, in SpawnedPlayersUpdated e)
         {
-            SyncSpawnedPlayers();
+            UpdateJoinButtons();
         }
 
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
         {
-            SyncRoundState(e.RoundState);
+            UpdateJoinButtons(e.RoundState);
         }
 
-        private async void SyncSpawnedPlayers()
+        private async void UpdateJoinButtons()
         {
-            await UniTask.WaitUntil(() => GameSystems.Get<EntitySpawnSystem>() != null);
+            //await UniTask.WaitUntil(() => GameSystems.Get<EntitySpawnSystem>() != null);
+            //await UniTask.WaitUntil(() => GameSystems.Get<PlayerControlSystem>() != null);
+            
             EntitySpawnSystem spawnSystem = GameSystems.Get<EntitySpawnSystem>();
-
-            await UniTask.WaitUntil(() => GameSystems.Get<PlayerControlSystem>() != null);
             PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
 
             string ckey = playerControlSystem.GetCkey(LocalConnection);
-            bool isPlayedSpawned = spawnSystem.IsPlayedSpawned(ckey);
+            bool isPlayedSpawned = spawnSystem.IsPlayerSpawned(ckey);
 
             if (isPlayedSpawned)
             {
@@ -59,7 +60,7 @@ namespace SS3D.Systems.Lobby.UI
             }
         }
 
-        private async void SyncRoundState(RoundState roundState)
+        private async void UpdateJoinButtons(RoundState roundState)
         {
             await UniTask.WaitUntil(() => GameSystems.Get<EntitySpawnSystem>() != null);
             EntitySpawnSystem spawnSystem = GameSystems.Get<EntitySpawnSystem>();
@@ -68,7 +69,7 @@ namespace SS3D.Systems.Lobby.UI
             PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
 
             string ckey = playerControlSystem.GetCkey(LocalConnection);
-            bool isPlayedSpawned = spawnSystem.IsPlayedSpawned(ckey);
+            bool isPlayedSpawned = spawnSystem.IsPlayerSpawned(ckey);
 
             if (isPlayedSpawned && roundState == RoundState.Ongoing)
             {

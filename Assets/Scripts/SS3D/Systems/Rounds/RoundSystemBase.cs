@@ -41,10 +41,10 @@ namespace SS3D.Systems.Rounds
         protected CancellationTokenSource TickCancellationToken;
         private ServerManager _serverManager;
 
-        protected RoundState RoundState
+        public RoundState RoundState
         {
             get => _roundState;
-            set => _roundState = value;
+            protected set => _roundState = value;
         }
 
         protected int RoundSeconds
@@ -61,6 +61,8 @@ namespace SS3D.Systems.Rounds
             base.OnStartServer();
 
             _serverManager = InstanceFinder.ServerManager;
+            _roundState = RoundState.Stopped;
+
             ServerSubscribeToEvents();
         }
         

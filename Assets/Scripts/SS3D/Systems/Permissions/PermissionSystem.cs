@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Permissions.Events;
+using SS3D.Systems.PlayerControl;
 using UnityEngine;
 using File = System.IO.File;
 using Path = System.IO.Path;
@@ -31,12 +34,6 @@ namespace SS3D.Systems.Permissions
             base.OnStart();
 
             _userPermissions.OnChange += HandleUserPermissionsChanged;
-        }
-
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-
             SyncUserPermissions();
         }
 
@@ -64,6 +61,31 @@ namespace SS3D.Systems.Permissions
 
             return containsKey;
         }
+
+        public bool IsUserAuthorized(NetworkConnection user, ServerRoleTypes requiredPermission)
+        {
+            PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
+
+            string ckey = playerControlSystem.GetCkey(user);
+
+            return IsUserAuthorized(ckey, requiredPermission);
+        }
+
+        public bool IsUserAuthorized(string ckey, ServerRoleTypes requiredPermission)
+        {
+            if (ckey == null)
+            {
+                return false;
+            }
+
+            if (TryGetUserRole(ckey, out ServerRoleTypes userRole))
+            {
+                return (int)userRole >= (int)requiredPermission;
+            }
+
+            return false;
+        }
+
 
         [Server]
         public void ChangeUserPermission(string ckey, ServerRoleTypes role)
@@ -94,7 +116,6 @@ namespace SS3D.Systems.Permissions
             }
 
             HasLoadedPermissions = true;
-            SyncUserPermissions();
         }
 
         private void SyncUserPermissions()

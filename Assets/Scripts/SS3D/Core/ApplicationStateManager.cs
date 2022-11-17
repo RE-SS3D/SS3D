@@ -1,5 +1,6 @@
 using DG.Tweening;
 using SS3D.Data;
+using SS3D.Logging;
 using UDiscord;
 using UnityEngine;
 
@@ -40,7 +41,7 @@ namespace SS3D.Core
 
         public void InitializeApplication()
         {
-            Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing application");
+            Punpun.Say(typeof(ApplicationStateManager), "Initializing SS3D application");
             InitializeNetworkSession();
         }
 
@@ -64,8 +65,8 @@ namespace SS3D.Core
 
         private void InitializeSingleton()
         {
-            Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing Application State Manager singleton");
-            
+            Punpun.Say(typeof(ApplicationStateManager), "Initializing Application State Manager singleton");
+
             if (Instance == null)
             {
                 Instance = this;
@@ -74,13 +75,13 @@ namespace SS3D.Core
 
         private static void InitializeEssentialSystems()
         {
-            Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing essential systems");
+            Punpun.Say(typeof(ApplicationStateManager), "Initializing essential systems");
             DOTween.Init();
         }
 
         private static void InitializeNetworkSession() 
         {
-            Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing network session");
+            Punpun.Say(typeof(ApplicationStateManager), "Initializing network session");
             SessionNetworkHelper.InitiateNetworkSession();
         }
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SS3D.Systems.Entities.Data
+namespace SS3D.Systems.Entity.Data
 {
     public static class Animations
     {

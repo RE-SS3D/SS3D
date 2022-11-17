@@ -10,7 +10,7 @@ namespace SS3D.Systems.Entities.Humanoid
     /// Controls the movement for biped characters that use the same armature
     /// as the human model uses.
     /// </summary>
-    [RequireComponent(typeof(PlayerControllable))]
+    [RequireComponent(typeof(Entity))]
     [RequireComponent(typeof(HumanoidAnimatorController))]
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
@@ -20,7 +20,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         [Header("Components")] 
         [SerializeField] private CharacterController _characterController;
-        [SerializeField] private PlayerControllable _playerControllable;
+        [SerializeField] private Entity _entity;
 
         [Header("Movement Settings")]
         [SerializeField] private float _movementSpeed;
@@ -60,7 +60,7 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             _camera = GameSystems.Get<CameraSystem>().PlayerCamera;
 
-            _playerControllable.ControllingSoulChanged += HandleControllingSoulChanged;
+            _entity.ControllingSoulChanged += HandleControllingSoulChanged;
         }
 
         private void HandleControllingSoulChanged(Soul soul)

@@ -191,7 +191,7 @@ namespace SS3D.Systems.Storage.Containers
         /// </summary>
         public void OpenContainer(AttachedContainer container)
         {
-            container.AddObserver(GetComponent<PlayerControllable>());
+            container.AddObserver(GetComponent<Entities.Entity>());
             _openedContainers.Add(container);
             SetOpenState(container.gameObject, true);
             NetworkConnection client = Owner;
@@ -280,7 +280,7 @@ namespace SS3D.Systems.Storage.Containers
             }
 
             Hands hands = GetComponent<Hands>();
-            foreach (PlayerControllable observer in container.ObservingPlayers)
+            foreach (Entities.Entity observer in container.ObservingPlayers)
             {
                 // checks if the container is already viewed by another entity
                 if (hands.Inventory.HasContainer(container) && observer != hands)

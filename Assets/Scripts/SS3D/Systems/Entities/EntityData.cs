@@ -1,4 +1,4 @@
-﻿namespace SS3D.Systems.Entities
+﻿namespace SS3D.Systems.Entity
 {
     public struct EntityData
     {

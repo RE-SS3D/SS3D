@@ -6,8 +6,7 @@ using UnityEngine.AddressableAssets;
 
 namespace SS3D.Data
 {
-    [CreateAssetMenu(menuName = "Database/TileObjects", fileName = "TileObjects")]
-    public class TileObjectDatabase : ScriptableSettings
+    public class GameObjectDatabase : ScriptableSettings
     {
         public string EnumName;
         public List<AssetReference> Assets;
@@ -20,9 +19,9 @@ namespace SS3D.Data
             }
         }
 
-        public GameObject Get(TileObjects tileObject)
+        public GameObject Get(int index)
         {
-            return Assets[(int)tileObject].Asset as GameObject;
+            return Assets[index].Asset as GameObject;
         }
 
 #if UNITY_EDITOR

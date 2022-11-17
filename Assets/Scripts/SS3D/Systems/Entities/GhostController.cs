@@ -1,22 +1,32 @@
+using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Screens;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities
 {
     public class GhostController : NetworkedSpessBehaviour
     {
-        [SerializeField] private PlayerControllable _playerControllable;
+        [SerializeField] private Entity _entity;
 
         [Header("Movement Settings")]
         [SerializeField] private float _movementSpeed;
 
-        private CharacterController _characterController;
+        [SerializeField] private CharacterController _characterController;
+        [SerializeField] private Transform _movementTarget;
+        
         private Vector2 _input;
         private SpessBehaviour _camera;
         private Vector3 _targetMovement;
         private Vector3 _absoluteMovement;
-        private Transform _movementTarget;
         private Vector2 _smoothedInput;
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            _camera = GameSystems.Get<PlayerCameraSystem>().Camera.GetComponent<SpessBehaviour>();
+        }
 
         protected override void HandleUpdate(in float deltaTime)
         {

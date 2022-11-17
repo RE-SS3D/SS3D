@@ -2908,7 +2908,7 @@ GameObject:
   - component: {fileID: 2219108694782903046}
   - component: {fileID: 3989715289005515527}
   m_Layer: 11
-  m_Name: Human_Temporary
+  m_Name: Human
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2973,10 +2973,10 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 2
+  <PrefabId>k__BackingField: 18
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 3682879707339158369
+  <AssetPathHash>k__BackingField: 8407376057627714341
   _sceneNetworkObjects: []
 --- !u!114 &7255324433810104430
 MonoBehaviour:
@@ -3095,7 +3095,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _characterController: {fileID: 3812744165389046210}
-  _playerControllable: {fileID: 8336170331735268562}
+  _entity: {fileID: 8336170331735268562}
   _movementSpeed: 5
   _lerpMultiplier: 2
   _rotationLerpMultiplier: 6
@@ -3130,6 +3130,7 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
+  Id: 0
 --- !u!114 &5293420320943344825
 MonoBehaviour:
   m_ObjectHideFlags: 0

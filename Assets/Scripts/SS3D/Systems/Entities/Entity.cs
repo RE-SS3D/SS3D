@@ -1,19 +1,20 @@
 ﻿using System;
 using DG.Tweening;
-using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
+using SS3D.Data;
 using SS3D.Systems.Screens.Events;
-using UnityEngine;
 
 namespace SS3D.Systems.Entities
 {
     /// <summary>
     /// Base class for all things that can be controlled by a player
     /// </summary>
-    public class PlayerControllable : NetworkedSpessBehaviour
+    public class Entity : NetworkedSpessBehaviour
     {
+        public Data.Entities Id;
+
         public Action<Soul> ControllingSoulChanged;
 
         [SyncVar(OnChange = "SyncControllingSoul")] private Soul _controllingSoul;

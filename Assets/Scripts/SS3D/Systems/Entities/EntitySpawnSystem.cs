@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Coimbra.Services.Events;
@@ -6,14 +7,17 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Data;
 using SS3D.Logging;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Entities.Messages;
+using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Rounds.Messages;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace SS3D.Systems.Entities
 {
@@ -23,22 +27,60 @@ namespace SS3D.Systems.Entities
     public class EntitySpawnSystem : NetworkedSystem
     {
         [Header("Settings")]
-        [SerializeField] private List<PlayerControllable> _tempHuman;
         [SerializeField] private Transform _tempSpawnPoint;
+        
+        [SyncObject] private readonly SyncList<string> _spawnedPlayers = new();
 
-        [SyncObject]
-        private readonly SyncList<string> _spawnedPlayers = new();
-
-        private readonly List<PlayerControllable> _serverSpawnedPlayers = new();
+        private readonly List<Entity> _serverSpawnedPlayers = new();
         private bool _alreadySpawnedInitialPlayers;
 
-        public bool IsPlayedSpawned(string ckey) => _spawnedPlayers.Contains(ckey);
+        private Dictionary<Data.Entities, Entity> _entities;
+
+        public bool IsPlayerSpawned(string ckey) => _spawnedPlayers.Contains(ckey);
+
+        public bool IsPlayerSpawned(NetworkConnection connection) =>
+            _spawnedPlayers.Contains(GameSystems.Get<PlayerControlSystem>().GetCkey(connection));
+
+        public Entity GetEntityPrefab(Data.Entities entity) => _entities[entity]; 
 
         protected override void OnStart()
         {
             base.OnStart();
 
             _spawnedPlayers.OnChange += HandleSpawnedPlayersChanged;
+
+            LoadEntities();
+        }
+
+        /// <summary>
+        /// Loads all assets for entities
+        /// </summary>
+        private void LoadEntities()
+        {
+            List<AssetReference> assets = AssetData.Entities.Assets;
+
+            Entity getEntityFilter(AssetReference reference)
+            {
+                GameObject asset = reference.Asset as GameObject;
+                return asset!.GetComponent<Entity>();
+            }
+
+            List<Entity> entitiesList = assets.Select(getEntityFilter).ToList();
+
+            Dictionary<Data.Entities, Entity> entities = new();
+            Array values = Enum.GetValues(typeof(Data.Entities));
+
+            for (int index = 0; index < values.Length; index++)
+            {
+                Data.Entities id = (Data.Entities)values.GetValue(index);
+                Entity entity = entitiesList[index];
+
+                entity.Id = id;
+
+                entities.Add(id, entity);
+            }
+
+            _entities = entities;
         }
 
         public override void OnStartClient()
@@ -54,6 +96,7 @@ namespace SS3D.Systems.Entities
 
             ServerManager.RegisterBroadcast<RequestEmbarkMessage>(HandleRequestEmbark);
             ServerManager.RegisterBroadcast<RequestMindSwap>(HandleRequestMindSwap);
+            ServerManager.RegisterBroadcast<RequestJoinAsAdmin>(HandleRequestJoinAsAdmin);
 
             SpawnReadyPlayersEvent.AddListener(HandleSpawnReadyPlayers);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
@@ -72,8 +115,8 @@ namespace SS3D.Systems.Entities
         [Server]
         private void ProcessMindSwap(GameObject origin, GameObject target)
         {
-            PlayerControllable originControllable = origin.GetComponent<PlayerControllable>();
-            PlayerControllable targetControllable = target.GetComponent<PlayerControllable>();
+            Entity originControllable = origin.GetComponent<Entity>();
+            Entity targetControllable = target.GetComponent<Entity>();
 
             Soul originSoul = originControllable.ControllingSoul;
             Soul targetSoul = targetControllable.ControllingSoul;
@@ -87,15 +130,13 @@ namespace SS3D.Systems.Entities
         {
             RoundState roundState = e.RoundState;
 
-            if (roundState != RoundState.Stopped)
+            if (roundState == RoundState.Stopped)
             {
-                return;
+                _alreadySpawnedInitialPlayers = false;
+                _spawnedPlayers.Clear();  
+
+                DestroySpawnedPlayers();
             }
-
-            _alreadySpawnedInitialPlayers = false;
-            _spawnedPlayers.Clear();  
-
-            DestroySpawnedPlayers();
         }
 
         [Server]
@@ -114,16 +155,31 @@ namespace SS3D.Systems.Entities
             SpawnLatePlayer(ckey);
         }
 
+        [Server]
+        private void HandleRequestJoinAsAdmin(NetworkConnection networkConnection, RequestJoinAsAdmin requestJoinAsAdmin)
+        {
+            const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;
+
+            string author = requestJoinAsAdmin.Author.Ckey;
+            PermissionSystem permissionSystem = GameSystems.Get<PermissionSystem>();
+
+            bool isUserAuthorized = permissionSystem.IsUserAuthorized(author, requiredRole);
+            if (isUserAuthorized)
+            {
+                SpawnLatePlayer(author, Data.Entities.TilemapGhost);
+            }
+        }
+
         /// <summary>
         /// Spawns a player after the round has started
         /// </summary>
         /// <param name="ckey"></param>
         [Server]
-        private void SpawnLatePlayer(string ckey)
+        private void SpawnLatePlayer(string ckey, Data.Entities entityToSpawn = Data.Entities.Human)
         {
             if (!_spawnedPlayers.Contains(ckey) && _alreadySpawnedInitialPlayers)
             {
-                SpawnPlayer(ckey);
+                SpawnPlayer(ckey, entityToSpawn);
             }
         }
 
@@ -160,7 +216,7 @@ namespace SS3D.Systems.Entities
         [Server]
         private void DestroySpawnedPlayers()
         {
-            foreach (PlayerControllable player in _serverSpawnedPlayers)
+            foreach (Entity player in _serverSpawnedPlayers)
             {
                 player.ProcessDespawn();
             }
@@ -173,20 +229,22 @@ namespace SS3D.Systems.Entities
         /// </summary>
         /// <param name="ckey">Unique user key</param>
         [Server]
-        private void SpawnPlayer(string ckey)
+        private void SpawnPlayer(string ckey, Data.Entities entityToSpawn = Data.Entities.Human)
         {
             PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
 
             Soul soul = playerControlSystem.GetSoul(ckey);
             _spawnedPlayers.Add(ckey);
 
-            PlayerControllable controllable = Instantiate(_tempHuman[Random.Range(0, _tempHuman.Count)], _tempSpawnPoint.position, Quaternion.identity);
-            _serverSpawnedPlayers.Add(controllable);
+            Entity entity = GetEntityPrefab(entityToSpawn);
+            entity = Instantiate(entity, _tempSpawnPoint.position, Quaternion.identity);
 
-            ServerManager.Spawn(controllable.NetworkObject, soul.Owner);
-            controllable.SetControllingSoul(soul);
+            _serverSpawnedPlayers.Add(entity);
 
-            string message = $"Spawning player {soul.Ckey} on {controllable.name}";
+            ServerManager.Spawn(entity.NetworkObject, soul.Owner);
+            entity.SetControllingSoul(soul);
+
+            string message = $"Spawning player {soul.Ckey} on {entity.name}";
             Punpun.Say(this, message, Logs.ServerOnly); 
         }
 

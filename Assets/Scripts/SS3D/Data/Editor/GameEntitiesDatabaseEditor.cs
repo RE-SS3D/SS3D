@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace SS3D.Data
 {
-    [CustomEditor(typeof(TileObjectsDatabase))]
-    public class TileObjectDatabaseHighlightDebugEditor : Editor
+    [CustomEditor(typeof(EntitiesDatabase))]
+    public class GameEntitiesDatabaseEditor : Editor
     {
-        private TileObjectsDatabase _database;
+        private EntitiesDatabase _database;
 
         private void OnEnable()
         {
-            _database = (TileObjectsDatabase)target;
+            _database = (EntitiesDatabase)target;
         }
 
         public override void OnInspectorGUI()

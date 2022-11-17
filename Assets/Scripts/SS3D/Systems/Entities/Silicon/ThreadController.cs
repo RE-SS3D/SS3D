@@ -3,6 +3,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Screens;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Entities.Silicon
 {
@@ -18,7 +19,7 @@ namespace SS3D.Systems.Entities.Silicon
 
         [Header("Components")] 
         [SerializeField] private CharacterController _characterController;
-        [SerializeField] private PlayerControllable _playerControllable;
+        [FormerlySerializedAs("_playerControllable")] [SerializeField] private Entity _entity;
         
         [Header("Movement Settings")]
         [SerializeField] private float _movementSpeed;
@@ -49,7 +50,7 @@ namespace SS3D.Systems.Entities.Silicon
         {
             _camera = GameSystems.Get<CameraSystem>().PlayerCamera;
 
-            _playerControllable.ControllingSoulChanged += HandleControllingSoulChanged;
+            _entity.ControllingSoulChanged += HandleControllingSoulChanged;
         }
         
         protected override void HandleUpdate(in float deltaTime)

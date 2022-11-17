@@ -10,7 +10,7 @@ namespace SS3D.Systems.Storage.UI
         {
             // Connects ui clothing slots to containers on the creature
             Inventory inventory = transform.GetComponentInParent<InventoryUi>().Inventory;
-            GameObject creature = inventory.Hands.GetComponentInParent<PlayerControllable>().gameObject;
+            GameObject creature = inventory.Hands.GetComponentInParent<Entities.Entity>().gameObject;
             ClothingContainers clothingContainers = creature.GetComponent<ClothingContainers>();
             SingleItemContainerSlot[] slots = GetComponentsInChildren<SingleItemContainerSlot>();
             foreach (SingleItemContainerSlot slot in slots)

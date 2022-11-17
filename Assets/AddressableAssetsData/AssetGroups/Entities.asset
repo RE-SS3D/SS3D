@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Entities
+  m_EditorClassIdentifier: 
+  m_GroupName: Entities
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 7df77ec8cec8b2a4fb7452b33ff8b88d
+  m_SerializeEntries:
+  - m_GUID: 1c3eed1ea37ecc1448e41270cdc63486
+    m_Address: Assets/Content/Entities/Human/Human.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1e0e927431c9964488da2490d8a6c8d5
+    m_Address: Assets/Content/Entities/TilemapGhost.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 06c946c7c639138488b814e4448b82e4
+    m_Address: Assets/Content/Entities/Silicon/Engineer Borg/EngineerBorg.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 2d695bbe263d1ae4aadf225093ce3d89, type: 2}
+    - {fileID: 11400000, guid: 3b6ce6ee63c8c204c818c8477da3e6bb, type: 2}
