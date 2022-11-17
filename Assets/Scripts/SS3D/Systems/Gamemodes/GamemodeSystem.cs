@@ -27,8 +27,8 @@ namespace SS3D.Systems.GameModes
         private void Setup()
         {
             Gamemode.GamemodeSystem = this;
-
-            SpawnReadyPlayersEvent.AddListener(HandleReadyPlayersChanged);
+            Gamemode.InitializeGamemode();
+            
             ObjectiveStatusChangedEvent.AddListener(HandleObjectiveStatusChanged);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
         }
@@ -65,12 +65,6 @@ namespace SS3D.Systems.GameModes
         private void HandleObjectiveStatusChanged(ref EventContext context, in ObjectiveStatusChangedEvent e)
         {
             Gamemode.CheckObjectivesCompleted();
-        }
-
-        [Server]
-        private void HandleReadyPlayersChanged(ref EventContext context, in SpawnReadyPlayersEvent spawnReadyPlayersEvent)
-        {
-            List<string> players = spawnReadyPlayersEvent.ReadyPlayers;
         }
 
         [ObserversRpc]

@@ -10,6 +10,9 @@ namespace SS3D.Systems.GameModes.Modes
     {
         public List<GamemodeObjective> PossibleObjectives;
         [HideInInspector] public GamemodeSystem GamemodeSystem;
+        [HideInInspector] public List<string> Traitors;
+
+        public virtual void InitializeGamemode() { }
 
         [Server]
         public void CheckObjectivesCompleted()
