@@ -1,20 +1,21 @@
-﻿#if UNITY_EDITOR
-
-
-#endif
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Coimbra;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace SS3D.Data
 {
     [CreateAssetMenu(menuName = "Database/Icons", fileName = "Icons")]
-    public class IconDatabase : ScriptableSettings
+    public class  IconDatabase : ScriptableSettings
     {
         public string EnumName;
         public List<AssetReference> Assets;
+
 
         public void PreloadAssets()
         {
@@ -28,14 +29,22 @@ namespace SS3D.Data
         {
             return Assets[(int)icon].Asset as Sprite;
         }
-
 #if UNITY_EDITOR
         public void CreateEnum()
         {
             IEnumerable<string> assets = Assets.Select(reference => reference.SubObjectName);
-            string assetPath = AssetData.GetAssetPath(this);
 
-            CodeWriter.WriteEnum(assetPath, EnumName, assets);
+            CodeWriter.WriteEnum(GetAssetPath(), EnumName, assets);
+        }
+        
+        public string GetAssetPath()
+        {
+            MonoScript ms = MonoScript.FromScriptableObject(this);
+            string path = AssetDatabase.GetAssetPath(ms);
+
+            string fullPath = Directory.GetParent(path)?.FullName;
+
+            return fullPath;
         }
 #endif
     }
