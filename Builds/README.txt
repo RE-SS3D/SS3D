@@ -1,6 +1,9 @@
 SS3D: How the hell do I run this thing?
 
 Build your project here, do not push your build files.
+To see logs you need a development build.
+If you are experiencing problems with eternal "Connecting to server" screen you need a development build as well.
+
 Use Start SS3D Client - USERNAME.bat to join a server, we also have included template .bats so you know how to use them.
 
 # Command Line Arguments
