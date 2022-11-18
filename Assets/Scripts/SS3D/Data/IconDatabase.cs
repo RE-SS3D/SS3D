@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Coimbra;
+#if UNITY_EDITOR
 using UnityEditor;
-using UnityEditorInternal;
+#endif
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -15,6 +15,7 @@ namespace SS3D.Data
     {
         public string EnumName;
         public List<AssetReference> Assets;
+
 
         public void PreloadAssets()
         {
@@ -28,14 +29,14 @@ namespace SS3D.Data
         {
             return Assets[(int)icon].Asset as Sprite;
         }
-
+#if UNITY_EDITOR
         public void CreateEnum()
         {
             IEnumerable<string> assets = Assets.Select(reference => reference.SubObjectName);
 
             CodeWriter.WriteEnum(GetAssetPath(), EnumName, assets);
         }
-
+        
         public string GetAssetPath()
         {
             MonoScript ms = MonoScript.FromScriptableObject(this);
@@ -45,5 +46,6 @@ namespace SS3D.Data
 
             return fullPath;
         }
+#endif
     }
 }
