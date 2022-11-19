@@ -1,4 +1,4 @@
-### ![SS3D](Documents/Images/RESPACESTATION3D.png) Welcome to the offical repository for "RE: Space Station 3D" the game! RE:SS3D is an open-source resurrection of the original SS3D project, which was an impressive demo attempting to give the infamous [<img src="https://img.shields.io/badge/Space%20Station-13-red?style=flat-square" alt="Space Station 13">](https://spacestation13.com/) an extra dimension.
+### ![SS3D](Documents/Images/RESPACESTATION3D.png) RE:SS3D is an open-source resurrection of the [original SS3D](https://www.youtube.com/watch?v=VB7ddhayLKA&list=PLTkyYJ6zDmhoiQv5PJYT6oI766G4s60Av) project, which was an impressive demo attempting to give the infamous [<img src="https://img.shields.io/badge/Space%20Station-13-red?style=flat-square" alt="Space Station 13">](https://spacestation13.com/) an extra dimension.
 
 # DOWNLOADS:
 
@@ -65,11 +65,3 @@ PayPal is our monetary hub where all donations go before distribution to develop
 [<img src="Documents/Images/patreon.png" alt="Patreon" width="150" align="left">](https://www.patreon.com/ss3d)
 
 Patreon is our primary subscription-based donation platform with tiers (currently no extra benefit for different tiers).
-
-[<img src="Documents/Images/subscribestar.png" alt="SubscribeStar" width="150" align="left">](https://www.subscribestar.com/space-station-3d)
-
-Subscribestar is our other subscription-based donation platform. Has fewer features and isn't as popular as our PayPal.
-
-<img src="Documents/Images/crypto.png" alt="Crypto" width="150" align="left">
-
-"SpaceStation3D.crypto" is our crypto domain which currently routes BCH, BTC, ETH, & LTC payments. [Specific addresses can be found at the bottom of this page](https://github.com/RE-SS3D/SS3D/wiki/Sites-&-Resources).
