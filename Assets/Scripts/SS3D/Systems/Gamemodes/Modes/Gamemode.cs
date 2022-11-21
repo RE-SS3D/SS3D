@@ -36,5 +36,15 @@ namespace SS3D.Systems.GameModes.Modes
                 GamemodeSystem.FinishRound();
             }
         }
+
+        [Server]
+        public void FailOnGoingObjectives()
+        {
+            foreach (GamemodeObjective gamemodeObjective in PossibleObjectives)
+            {
+                if (gamemodeObjective.Status == ObjectiveStatus.InProgress)
+                    gamemodeObjective.Failed();
+            }
+        }
     }
 }

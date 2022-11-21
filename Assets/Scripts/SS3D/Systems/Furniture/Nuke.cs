@@ -16,15 +16,8 @@ namespace SS3D.Systems.Furniture
         [ServerRpc(RequireOwnership = false)]
         public void Detonate()
         {
-            if (!IsServer) { return; }
-
-            RpcDetonate();
-        }
-
-        [ObserversRpc]
-        private void RpcDetonate()
-        {
-            if (IsServer) { return; }
+            // Ends the round, regardless of how many objectives were completed
+            GameSystems.Get<GamemodeSystem>().FinishRound();
         }
 
         IInteraction[] IInteractionTarget.CreateTargetInteractions(InteractionEvent interactionEvent)

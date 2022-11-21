@@ -45,8 +45,7 @@ namespace SS3D.Systems.GameModes
         [Server]
         public void FinishRound()
         {
-            Punpun.Panic(this, "All Objectives Completed, Round ending...");
-            RpcFinishRound();
+            Gamemode.FailOnGoingObjectives();
 
             ChangeRoundStateMessage changeRoundStateMessage = new(false);
             ClientManager.Broadcast(changeRoundStateMessage);
@@ -65,12 +64,6 @@ namespace SS3D.Systems.GameModes
         private void HandleObjectiveStatusChanged(ref EventContext context, in ObjectiveStatusChangedEvent e)
         {
             Gamemode.CheckObjectivesCompleted();
-        }
-
-        [ObserversRpc]
-        public void RpcFinishRound()
-        {
-            Punpun.Panic(this, "The traitors have won!");
         }
     }
 }
