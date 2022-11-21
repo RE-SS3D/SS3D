@@ -3038,7 +3038,7 @@ MonoBehaviour:
   IgnoredParameters: []
   _animator: {fileID: 1252106768682846670}
   _smoothFloats: 1
-  _synchronizeInterval: 0.01
+  _interpolation: 2
   _clientAuthoritative: 1
   _sendToOwner: 0
 --- !u!95 &1252106768682846670
@@ -3164,6 +3164,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   Hands: {fileID: 3989715289005515527}
+  Body: {fileID: 8336170331735268562}
 --- !u!114 &3989715289005515527
 MonoBehaviour:
   m_ObjectHideFlags: 0

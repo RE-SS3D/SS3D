@@ -78,10 +78,10 @@ namespace SS3D.Systems.Storage.Interactions
 
 
                 try {
-                    string ckey = GameSystems.Get<PlayerControlSystem>().GetCkey(LocalConnection);
+                    string ckey = hands.Inventory.Body.ControllingSoul.Ckey;
 
                     // and call the event for picking up items for the Game Mode System
-                    new ItemPickedUpEvent(target, "bola").Invoke(this);
+                    new ItemPickedUpEvent(target, ckey).Invoke(this);
                 }
                 catch { Debug.Log("Couldn't get Player Ckey"); }
             }
