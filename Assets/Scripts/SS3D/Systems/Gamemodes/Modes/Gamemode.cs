@@ -12,7 +12,9 @@ namespace SS3D.Systems.GameModes.Modes
         [HideInInspector] public GamemodeSystem GamemodeSystem;
         [HideInInspector] public List<string> Traitors;
 
-        public virtual void InitializeGamemode() { }
+        public virtual void InitializeGamemode() {
+            Traitors = new List<string>();
+        }
 
         [Server]
         public void CheckObjectivesCompleted()
