@@ -15,7 +15,7 @@ namespace SS3D.Systems.Storage.Interactions
     // A pickup interaction is when you pick an item and
     // add it into a container (in this case, the hands)
     // you can only pick things that are not in a container
-    public class PickupInteraction : NetworkBehaviour, IInteraction
+    public class PickupInteraction : IInteraction
     {
         public Sprite Icon;
 
