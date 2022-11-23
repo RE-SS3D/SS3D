@@ -89,7 +89,7 @@ namespace SS3D.Systems.Rounds
             RoundState = RoundState.Ending;
             TickCancellationToken?.Cancel();
 
-            TimeSpan second = TimeSpan.FromSeconds(10);
+            TimeSpan second = TimeSpan.FromSeconds(3);
             await UniTask.Delay(second);
 
             Punpun.Say(this, "Ending round", Logs.ServerOnly);

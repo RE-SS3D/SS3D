@@ -79,6 +79,7 @@ namespace SS3D.Systems.GameModes
         private void HandleObjectiveStatusChanged(ref EventContext context, in ObjectiveStatusChangedEvent e)
         {
             Gamemode.CheckObjectivesCompleted();
+            GamemodeUI.ObjectivesUI.UpdateObjective(e.Objective);
         }
     }
 }
