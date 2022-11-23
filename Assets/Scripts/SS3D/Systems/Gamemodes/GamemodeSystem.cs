@@ -46,7 +46,12 @@ namespace SS3D.Systems.GameModes
             {
                 GenerateObjectives();
                 GamemodeUI.SetMainText("You are the Traitor!", Color.red);
-                GamemodeUI.FadeOutMainText();
+                GamemodeUI.FadeOutMainText(3f);
+            }
+
+            if (e.RoundState == RoundState.Ending)
+            {
+                GamemodeUI.FadeOutMainText(10f);
             }
         }
 
@@ -54,6 +59,7 @@ namespace SS3D.Systems.GameModes
         public void FinishRound()
         {
             Gamemode.FailOnGoingObjectives();
+            GamemodeUI.SetMainText("The Traitors have Won!", Color.red);
 
             ChangeRoundStateMessage changeRoundStateMessage = new(false);
             ClientManager.Broadcast(changeRoundStateMessage);

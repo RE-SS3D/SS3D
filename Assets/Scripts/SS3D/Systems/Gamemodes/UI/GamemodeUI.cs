@@ -15,20 +15,20 @@ namespace SS3D.Systems.GameModes.UI
             MainText.color = _color;
         }
 
-        public void FadeOutMainText()
+        public void FadeOutMainText(float time)
         {
-            StartCoroutine(FadeOut());
+            StartCoroutine(FadeOut(time));
         }
 
-        IEnumerator FadeOut()
+        IEnumerator FadeOut(float time)
         {
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(time);
             for (float _alpha = 1f; _alpha >= 0f; _alpha -= 0.1f)
             {
-                MainText.color = new Color(MainText.color.r, MainText.color.g, MainText.color.b, _alpha);
+                MainText.alpha = _alpha;
                 yield return null;
             }
-            MainText.color = new Color(MainText.color.r, MainText.color.g, MainText.color.b, 0f);
+            MainText.alpha = 0f;
         }
     }
 }
