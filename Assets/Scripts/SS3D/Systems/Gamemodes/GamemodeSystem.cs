@@ -17,7 +17,7 @@ namespace SS3D.Systems.GameModes
     public sealed class GamemodeSystem : NetworkedSystem
     {
         public Gamemode Gamemode;
-        public GamemodeUI GamemodeUI;
+        [SerializeField] private GamemodeUI GamemodeUI;
 
         protected override void OnStart()
         {
@@ -51,7 +51,7 @@ namespace SS3D.Systems.GameModes
 
             if (e.RoundState == RoundState.Ending)
             {
-                GamemodeUI.FadeOutMainText(10f);
+                GamemodeUI.FadeOutMainText(3f);
             }
         }
 
@@ -71,7 +71,7 @@ namespace SS3D.Systems.GameModes
             foreach (GamemodeObjective gamemodeObjective in Gamemode.PossibleObjectives)
             {
                 gamemodeObjective.InitializeObjective();
-                GamemodeUI.ObjectivesUI.AddObjective(gamemodeObjective.Title, gamemodeObjective);
+                GamemodeUI.ObjectivesView.AddObjective(gamemodeObjective.Title, gamemodeObjective);
             }
         }
 
@@ -79,7 +79,7 @@ namespace SS3D.Systems.GameModes
         private void HandleObjectiveStatusChanged(ref EventContext context, in ObjectiveStatusChangedEvent e)
         {
             Gamemode.CheckObjectivesCompleted();
-            GamemodeUI.ObjectivesUI.UpdateObjective(e.Objective);
+            GamemodeUI.ObjectivesView.UpdateObjective(e.Objective);
         }
     }
 }

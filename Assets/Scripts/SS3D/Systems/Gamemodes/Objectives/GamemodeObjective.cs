@@ -6,7 +6,7 @@ namespace SS3D.Systems.GameModes.Objectives
     public abstract class GamemodeObjective : ScriptableObject
     {
         public string Title { get; set; }
-        public ObjectiveStatus Status { get; set; }
+        public ObjectiveStatus Status { get; protected set; }
 
         public abstract void InitializeObjective();
 

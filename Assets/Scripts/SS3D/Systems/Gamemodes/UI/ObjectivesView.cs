@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace SS3D.Systems.GameModes.UI
 {
-    public class ObjectivesUI : MonoBehaviour
+    public class ObjectivesView : MonoBehaviour
     {
-        public GameObject ObjectivePrefab;
-        public Dictionary<TextMeshProUGUI, GamemodeObjective> Objectives =
+        [SerializeField] private GameObject ObjectivePrefab;
+        private Dictionary<TextMeshProUGUI, GamemodeObjective> Objectives =
             new Dictionary<TextMeshProUGUI, GamemodeObjective>();
         
         public void AddObjective(string Title, GamemodeObjective gamemodeObjective)
@@ -19,16 +19,22 @@ namespace SS3D.Systems.GameModes.UI
                     return;
             }
 
-                GameObject _gameObject;
+            TextMeshProUGUI _text = CreateObjective(Title);
+            Objectives.Add(_text, gamemodeObjective);
+        }
+
+        private TextMeshProUGUI CreateObjective(string title)
+        {
+            GameObject _gameObject;
             _gameObject = Instantiate(ObjectivePrefab);
             _gameObject.transform.parent = this.transform;
             _gameObject.GetComponent<RectTransform>().anchoredPosition
                 = new Vector2(-110f, -15f + (-15f * Objectives.Count));
 
             TextMeshProUGUI _text = _gameObject.GetComponent<TextMeshProUGUI>();
-            _text.text = Title + " -";
+            _text.text = title + " -";
 
-            Objectives.Add(_text, gamemodeObjective);
+            return _text;
         }
 
         public void UpdateObjective(GamemodeObjective gamemodeObjective)

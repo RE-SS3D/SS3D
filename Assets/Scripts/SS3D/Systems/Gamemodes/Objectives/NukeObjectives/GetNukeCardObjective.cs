@@ -15,9 +15,10 @@ namespace SS3D.Systems.Gamemodes.Objectives.NukeObjectives
     [CreateAssetMenu(menuName = "Gamemodes/Objectives/GetNukeCard", fileName = "GetNukeCard")]
     public class GetNukeCardObjective : GamemodeObjective
     {
-        Item ItemRef;
-        string Player;
+        private Item ItemRef;
+        private string Player;
 
+        [Server]
         public override void InitializeObjective()
         {
             ItemPickedUpEvent.AddListener(HandleItemPickedUpEvent);

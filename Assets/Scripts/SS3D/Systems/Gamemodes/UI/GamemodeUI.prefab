@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MainText: {fileID: 793263329173443515}
-  ObjectivesUI: {fileID: 3007841668745859523}
+  ObjectivesView: {fileID: 3007841668745859523}
 --- !u!114 &114573443145823088
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -244,7 +244,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ObjectivePrefab: {fileID: 928118663349895110, guid: a6ce46036fa568e4f913b095abe52413, type: 3}
-  Objectives: []
 --- !u!1 &8762970443483304003
 GameObject:
   m_ObjectHideFlags: 0

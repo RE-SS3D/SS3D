@@ -9,8 +9,8 @@ namespace SS3D.Systems.GameModes.Modes
     public class Gamemode : ScriptableObject
     {
         public List<GamemodeObjective> PossibleObjectives;
-        [HideInInspector] public GamemodeSystem GamemodeSystem;
-        [HideInInspector] public List<string> Traitors;
+        public GamemodeSystem GamemodeSystem { get; set; }
+        public List<string> Traitors { get; set; }
 
         public virtual void InitializeGamemode() {
             Traitors = new List<string>();
