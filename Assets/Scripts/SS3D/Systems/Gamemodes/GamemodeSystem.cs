@@ -9,12 +9,15 @@ using SS3D.Systems.GameModes.Objectives;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Rounds.Messages;
+using UnityEngine;
+using SS3D.Systems.GameModes.UI;
 
 namespace SS3D.Systems.GameModes
 {
     public sealed class GamemodeSystem : NetworkedSystem
     {
         public Gamemode Gamemode;
+        public GamemodeUI GamemodeUI;
 
         protected override void OnStart()
         {
@@ -28,7 +31,10 @@ namespace SS3D.Systems.GameModes
         {
             Gamemode.GamemodeSystem = this;
             Gamemode.InitializeGamemode();
-            
+
+            GamemodeUI = Instantiate(GamemodeUI);
+            GamemodeUI.transform.parent = this.transform;
+
             ObjectiveStatusChangedEvent.AddListener(HandleObjectiveStatusChanged);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
         }
@@ -39,6 +45,8 @@ namespace SS3D.Systems.GameModes
             if (e.RoundState == RoundState.Ongoing)
             {
                 GenerateObjectives();
+                GamemodeUI.SetMainText("You are the Traitor!", Color.red);
+                GamemodeUI.FadeOutMainText();
             }
         }
 
@@ -57,6 +65,7 @@ namespace SS3D.Systems.GameModes
             foreach (GamemodeObjective gamemodeObjective in Gamemode.PossibleObjectives)
             {
                 gamemodeObjective.InitializeObjective();
+                GamemodeUI.ObjectivesUI.AddObjective(gamemodeObjective.Title, gamemodeObjective);
             }
         }
 
