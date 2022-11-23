@@ -24,6 +24,8 @@ namespace SS3D.Systems.GameModes
             base.OnStart();
 
             Setup();
+            SetupUI();
+            RpcSetupUI();
         }
 
         [Server]
@@ -32,11 +34,22 @@ namespace SS3D.Systems.GameModes
             Gamemode.GamemodeSystem = this;
             Gamemode.InitializeGamemode();
 
-            GamemodeUI = Instantiate(GamemodeUI);
-            GamemodeUI.transform.parent = this.transform;
-
             ObjectiveStatusChangedEvent.AddListener(HandleObjectiveStatusChanged);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
+        }
+
+        [Server]
+        private void SetupUI()
+        {
+            GamemodeUI = Instantiate(GamemodeUI);
+            GamemodeUI.transform.parent = this.transform;
+        }
+
+        [ObserversRpc]
+        private void RpcSetupUI()
+        {
+            GamemodeUI = Instantiate(GamemodeUI);
+            GamemodeUI.transform.parent = this.transform;
         }
 
         [Server]
@@ -45,13 +58,7 @@ namespace SS3D.Systems.GameModes
             if (e.RoundState == RoundState.Ongoing)
             {
                 GenerateObjectives();
-                GamemodeUI.SetMainText("You are the Traitor!", Color.red);
-                GamemodeUI.FadeOutMainText(3f);
-            }
-
-            if (e.RoundState == RoundState.Ending)
-            {
-                GamemodeUI.FadeOutMainText(3f);
+                SetMainText("You are the Traitor!", Color.red, 3f);
             }
         }
 
@@ -59,7 +66,9 @@ namespace SS3D.Systems.GameModes
         public void FinishRound()
         {
             Gamemode.FailOnGoingObjectives();
-            GamemodeUI.SetMainText("The Traitors have Won!", Color.red);
+
+            SetMainText("The Traitors have Won!", Color.red, 3f);
+            RpcSetMainText("The Traitors have Won!", Color.red, 3f);
 
             ChangeRoundStateMessage changeRoundStateMessage = new(false);
             ClientManager.Broadcast(changeRoundStateMessage);
@@ -79,7 +88,34 @@ namespace SS3D.Systems.GameModes
         private void HandleObjectiveStatusChanged(ref EventContext context, in ObjectiveStatusChangedEvent e)
         {
             Gamemode.CheckObjectivesCompleted();
-            GamemodeUI.ObjectivesView.UpdateObjective(e.Objective);
+            UpdateObjectiveUI(e.Objective);
+        }
+
+        [Server]
+        void SetMainText(string text, Color color, float timer)
+        {
+            GamemodeUI.SetMainText(text, color);
+            GamemodeUI.FadeOutMainText(timer);
+        }
+
+        [ObserversRpc]
+        void RpcSetMainText(string text, Color color, float timer)
+        {
+            GamemodeUI.SetMainText(text, color);
+            GamemodeUI.FadeOutMainText(timer);
+        }
+
+        [Server]
+        void UpdateObjectiveUI(GamemodeObjective objective)
+        {
+            GamemodeUI.ObjectivesView.UpdateObjective(objective);
+            RpcUpdateObjectiveUI(objective);
+        }
+
+        [ObserversRpc]
+        void RpcUpdateObjectiveUI(GamemodeObjective objective)
+        {
+            GamemodeUI.ObjectivesView.UpdateObjective(objective);
         }
     }
 }
