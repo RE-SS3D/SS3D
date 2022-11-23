@@ -25,7 +25,12 @@ namespace SS3D.Systems.GameModes
 
             Setup();
             SetupUI();
-            RpcSetupUI();
+        }
+
+        private void SetupUI()
+        {
+            GamemodeUI = Instantiate(GamemodeUI);
+            GamemodeUI.transform.parent = this.transform;
         }
 
         [Server]
@@ -36,20 +41,6 @@ namespace SS3D.Systems.GameModes
 
             ObjectiveStatusChangedEvent.AddListener(HandleObjectiveStatusChanged);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
-        }
-
-        [Server]
-        private void SetupUI()
-        {
-            GamemodeUI = Instantiate(GamemodeUI);
-            GamemodeUI.transform.parent = this.transform;
-        }
-
-        [ObserversRpc]
-        private void RpcSetupUI()
-        {
-            GamemodeUI = Instantiate(GamemodeUI);
-            GamemodeUI.transform.parent = this.transform;
         }
 
         [Server]
@@ -96,6 +87,7 @@ namespace SS3D.Systems.GameModes
         {
             GamemodeUI.SetMainText(text, color);
             GamemodeUI.FadeOutMainText(timer);
+
         }
 
         [ObserversRpc]
