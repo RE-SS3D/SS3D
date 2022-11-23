@@ -8,9 +8,8 @@ namespace SS3D.Systems.GameModes.UI
     public class ObjectivesUI : MonoBehaviour
     {
         public GameObject ObjectivePrefab;
-        public List<TextMeshProUGUI> Objectives;
-        public List<GamemodeObjective> Objectives2;
-        public Dictionary<TextMeshProUGUI, GamemodeObjective> Objectives3;
+        public Dictionary<TextMeshProUGUI, GamemodeObjective> Objectives =
+            new Dictionary<TextMeshProUGUI, GamemodeObjective>();
         
         public void AddObjective(string Title, GamemodeObjective gamemodeObjective)
         {
@@ -23,8 +22,7 @@ namespace SS3D.Systems.GameModes.UI
             TextMeshProUGUI _text = _gameObject.GetComponent<TextMeshProUGUI>();
             _text.text = Title + " -";
 
-            Objectives.Add(_text);
-            Objectives2.Add(gamemodeObjective);
+            Objectives.Add(_text, gamemodeObjective);
         }
     }
 }
