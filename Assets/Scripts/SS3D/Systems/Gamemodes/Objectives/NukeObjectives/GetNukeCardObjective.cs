@@ -8,6 +8,8 @@ using SS3D.Systems.GameModes.Objectives;
 using SS3D.Systems.Items;
 using SS3D.Systems.Storage.Items;
 using System.Collections.Generic;
+using FishNet.Connection;
+using SS3D.Systems.PlayerControl;
 using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes.Objectives.NukeObjectives
@@ -15,36 +17,45 @@ namespace SS3D.Systems.Gamemodes.Objectives.NukeObjectives
     [CreateAssetMenu(menuName = "Gamemodes/Objectives/GetNukeCard", fileName = "GetNukeCard")]
     public class GetNukeCardObjective : GamemodeObjective
     {
-        private Item ItemRef;
-        private string Player;
+        private Item _caughtItem;
 
-        [Server]
+        private const string ObjectiveTitle = "Retrieve the Nuclear Authentication Disk"; 
+
         public override void InitializeObjective()
         {
             ItemPickedUpEvent.AddListener(HandleItemPickedUpEvent);
-            Title = "Retrieve the Nuclear Authentication Disk";
+
+            Title = ObjectiveTitle;
             Status = ObjectiveStatus.InProgress;
         }
 
-        [Server]
-        public override void CheckCompleted()
+        public override void FinalizeObjective()
         {
-            if (ItemRef is NukeCard)
+            if (_caughtItem is not NukeCard)
             {
-                List<string> Traitors = GameSystems.Get<GamemodeSystem>().Gamemode.Traitors;
-                if (Traitors.Contains(Player))
-                {
-                    Success();
-                }
+                return;
+            }
+
+            List<string> traitors = SystemLocator.Get<GamemodeSystem>().Antagonists;
+            string ckey = SystemLocator.Get<PlayerControlSystem>().GetCkey(Author);
+
+            if (traitors.Contains(ckey))
+            {
+                Succeed();
             }
         }
 
         private void HandleItemPickedUpEvent(ref EventContext context, in ItemPickedUpEvent e)
         {
-            ItemRef = e.ItemRef;
-            Player = e.Player;
+            Item item = e.Item;
 
-            CheckCompleted();
+            if (item is NukeCard)
+            {
+                _caughtItem = item;
+                FinalizeObjective();
+            }
         }
+
+        public GetNukeCardObjective(int id, string title, ObjectiveStatus status, NetworkConnection author) : base(id, title, status, author) { }
     }
 }

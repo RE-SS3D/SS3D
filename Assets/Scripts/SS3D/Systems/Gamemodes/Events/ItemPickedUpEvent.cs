@@ -5,12 +5,12 @@ namespace SS3D.Systems.GameModes.Events
 {
     public partial struct ItemPickedUpEvent : IEvent
     {
-        public readonly Item ItemRef;
+        public readonly Item Item;
         public readonly string Player;
 
-        public ItemPickedUpEvent(Item itemRef, string player)
+        public ItemPickedUpEvent(Item item, string player)
         {
-            ItemRef = itemRef;
+            Item = item;
             Player = player;
         }
     }

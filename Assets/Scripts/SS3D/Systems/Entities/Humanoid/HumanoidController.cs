@@ -58,7 +58,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void Setup()
         {
-            _camera = GameSystems.Get<CameraSystem>().PlayerCamera;
+            _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
 
             _playerControllable.ControllingSoulChanged += HandleControllingSoulChanged;
         }

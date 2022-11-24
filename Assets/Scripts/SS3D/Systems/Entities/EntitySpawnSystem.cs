@@ -175,7 +175,7 @@ namespace SS3D.Systems.Entities
         [Server]
         private void SpawnPlayer(string ckey)
         {
-            PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
+            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
 
             Soul soul = playerControlSystem.GetSoul(ckey);
             _spawnedPlayers.Add(ckey);

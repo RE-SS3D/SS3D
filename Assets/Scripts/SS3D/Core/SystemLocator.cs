@@ -9,7 +9,7 @@ namespace SS3D.Core
     /// <summary>
     /// Class used to get game systems, using generics and then making cache of said systems
     /// </summary>
-    public static class GameSystems
+    public static class SystemLocator
     {
         private static readonly Dictionary<Type, object> Systems = new();
 
@@ -42,7 +42,7 @@ namespace SS3D.Core
             }
 
             string message = $"Couldn't find system of {typeof(T).Name} in the scene";
-            Punpun.Panic(typeof(GameSystems), message, Logs.Important);
+            Punpun.Panic(typeof(SystemLocator), message, Logs.Important);
 
             return null;
         }

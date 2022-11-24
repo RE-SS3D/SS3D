@@ -47,7 +47,7 @@ namespace SS3D.Systems.Entities.Silicon
 
         private void Setup()
         {
-            _camera = GameSystems.Get<CameraSystem>().PlayerCamera;
+            _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
 
             _playerControllable.ControllingSoulChanged += HandleControllingSoulChanged;
         }

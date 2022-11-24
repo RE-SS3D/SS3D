@@ -21,7 +21,7 @@ namespace SS3D.Systems.GameModes.Modes
         [Server]
         private void HandleReadyPlayersChanged(ref EventContext context, in SpawnReadyPlayersEvent spawnReadyPlayersEvent)
         {
-            if (Traitors.Count != 0)
+            if (Antagonists.Count != 0)
                 return;
 
             List<string> players = spawnReadyPlayersEvent.ReadyPlayers;
@@ -29,7 +29,7 @@ namespace SS3D.Systems.GameModes.Modes
             var random = new System.Random();
             int index = random.Next(players.Count);
 
-            Traitors.Add(players[index]);
+            Antagonists.Add(players[index]);
         }
     }
 }

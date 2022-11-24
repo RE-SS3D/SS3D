@@ -1,49 +1,87 @@
-using FishNet.Object;
+using System;
 using SS3D.Logging;
 using SS3D.Systems.GameModes.Objectives;
 using System.Collections.Generic;
+using SS3D.Core;
 using UnityEngine;
 
 namespace SS3D.Systems.GameModes.Modes
 {
-    public class Gamemode : ScriptableObject
+    /// <summary>
+    /// Executes all gamemode related business.
+    /// </summary>
+    public class Gamemode : ScriptableObject, IGamemode
     {
-        public List<GamemodeObjective> PossibleObjectives;
-        public GamemodeSystem GamemodeSystem { get; set; }
-        public List<string> Traitors { get; set; }
+        public event Action OnFinished;
+        public event Action OnInitialized;
 
-        public virtual void InitializeGamemode() {
-            Traitors = new List<string>();
+        public event Action<GamemodeObjective> OnObjectiveInitialized; 
+        /// <summary>
+        /// All possible objective in the round
+        /// </summary>
+        [SerializeField] private List<GamemodeObjective> _possibleObjectives;
+        [SerializeField] private List<GamemodeObjective> _activeObjectives;
+        public List<string> Antagonists { get; set; }
+
+        public List<GamemodeObjective> ActiveObjectives => _activeObjectives;                                                                     
+
+        /// <summary>
+        /// Initializes the gamemode, it is virtual so custom initialization is possible.
+        /// </summary>
+        public virtual void InitializeGamemode()
+        {
+            Antagonists = new List<string>();
+
+            foreach (GamemodeObjective objective in _activeObjectives)
+            {
+                objective.InitializeObjective();
+                OnObjectiveInitialized?.Invoke(objective);
+            }
+
+            OnInitialized?.Invoke();
         }
 
-        [Server]
-        public void CheckObjectivesCompleted()
+        /// <summary>
+        /// Finishes the gamemode, it is virtual, so custom finishing is possible
+        /// </summary>
+        public void FinalizeGamemode()
         {
             int completedObjectives = 0;
-            foreach (GamemodeObjective gamemodeObjective in PossibleObjectives)
+            foreach (GamemodeObjective gamemodeObjective in _activeObjectives)
             {
-                if (gamemodeObjective.Status != ObjectiveStatus.InProgress &&
-                    gamemodeObjective.Status != ObjectiveStatus.Cancelled)
+                ObjectiveStatus status = gamemodeObjective.Status;
+
+                if (status != ObjectiveStatus.InProgress && status != ObjectiveStatus.Cancelled)
                 {
                     completedObjectives++;
                 }
-                Punpun.Say(this, gamemodeObjective.Title + " - " + gamemodeObjective.Status);
+
+                Punpun.Say(this, gamemodeObjective.Title + " - " + status);
             }
 
-            Punpun.Say(this, "Objectives Completed: " + completedObjectives + "/" + PossibleObjectives.Count);
-            if (completedObjectives == PossibleObjectives.Count)
+            Punpun.Say(this, "Objectives Completed: " + completedObjectives + "/" + _activeObjectives.Count);
+            if (completedObjectives != _activeObjectives.Count)
             {
-                GamemodeSystem.FinishRound();
+                return;
             }
+
+            // TEMPORARY: The gamemode will not finish the round
+            OnFinished?.Invoke();
         }
 
-        [Server]
+        /// <summary>
+        /// Fails all objectives once the round ends
+        /// </summary>
         public void FailOnGoingObjectives()
         {
-            foreach (GamemodeObjective gamemodeObjective in PossibleObjectives)
+            foreach (GamemodeObjective gamemodeObjective in _activeObjectives)
             {
-                if (gamemodeObjective.Status == ObjectiveStatus.InProgress)
-                    gamemodeObjective.Failed();
+                ObjectiveStatus status = gamemodeObjective.Status;
+
+                if (status == ObjectiveStatus.InProgress)
+                {
+                    gamemodeObjective.Fail();
+                }
             }
         }
     }

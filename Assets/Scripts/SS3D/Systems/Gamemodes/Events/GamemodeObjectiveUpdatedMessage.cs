@@ -1,13 +1,14 @@
 ﻿using Coimbra.Services.Events;
+using FishNet.Broadcast;
 using SS3D.Systems.GameModes.Objectives;
 
 namespace SS3D.Systems.GameModes.Events
 {
-    public partial struct ObjectiveStatusChangedEvent : IEvent
+    public struct GamemodeObjectiveUpdatedMessage : IBroadcast
     {
         public readonly GamemodeObjective Objective;
 
-        public ObjectiveStatusChangedEvent(GamemodeObjective objective)
+        public GamemodeObjectiveUpdatedMessage(GamemodeObjective objective)
         {
             Objective = objective;
         }

@@ -89,8 +89,8 @@ namespace SS3D.Systems.Rounds
         {
             const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;             
 
-            PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
-            PermissionSystem permissionSystem = GameSystems.Get<PermissionSystem>();
+            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
+            PermissionSystem permissionSystem = SystemLocator.Get<PermissionSystem>();
 
             // Gets the soul that matches the connection, uses the ckey as the user id
             string userCkey = playerControlSystem.GetCkey(conn);

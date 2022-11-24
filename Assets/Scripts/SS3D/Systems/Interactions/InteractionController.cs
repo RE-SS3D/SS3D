@@ -32,8 +32,8 @@ namespace SS3D.Systems.Interactions
         {
             base.OnStart();
 
-            _radialView = GameSystems.Get<RadialInteractionView>();
-            _camera = GameSystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+            _radialView = SystemLocator.Get<RadialInteractionView>();
+            _camera = SystemLocator.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
         }
 
         protected override void HandleUpdate(in float deltaTime)

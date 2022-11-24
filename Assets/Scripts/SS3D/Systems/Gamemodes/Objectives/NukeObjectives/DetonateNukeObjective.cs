@@ -1,4 +1,5 @@
 using Coimbra.Services.Events;
+using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Systems.GameModes.Events;
 using SS3D.Systems.GameModes.Objectives;
@@ -17,14 +18,16 @@ namespace SS3D.Systems.Gamemodes.Objectives.NukeObjectives
         }
 
         [Server]
-        public override void CheckCompleted()
+        public override void FinalizeObjective()
         {
-            Success();
+            Succeed();
         }
 
         private void HandleNukeDetonateEvent(ref EventContext context, in NukeDetonateEvent e)
         {
-            CheckCompleted();
+            FinalizeObjective();
         }
+
+        public DetonateNukeObjective(int id, string title, ObjectiveStatus status, NetworkConnection author) : base(id, title, status, author) { }
     }
 }

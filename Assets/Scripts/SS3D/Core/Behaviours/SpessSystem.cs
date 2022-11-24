@@ -8,7 +8,7 @@
         protected override void OnAwake()
         {
             base.OnAwake();
-            GameSystems.Register(this);
+            SystemLocator.Register(this);
         }
     }
 }

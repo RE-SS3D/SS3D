@@ -1,33 +1,54 @@
-﻿using SS3D.Systems.GameModes.Events;
+﻿using System;
+using FishNet.Connection;
 using UnityEngine;
 
 namespace SS3D.Systems.GameModes.Objectives
 {
-    public abstract class GamemodeObjective : ScriptableObject
+    public class GamemodeObjective : ScriptableObject, IGamemodeObjective
     {
+        public event Action<GamemodeObjective> OnGamemodeObjectiveUpdated; 
+
+        public int Id { get; set; }
         public string Title { get; set; }
-        public ObjectiveStatus Status { get; protected set; }
+        public ObjectiveStatus Status { get; set; }
+        public NetworkConnection Author { get; set; }
 
-        public abstract void InitializeObjective();
-
-        public abstract void CheckCompleted();
-
-        public void Success()
+        public GamemodeObjective(int id, string title, ObjectiveStatus status, NetworkConnection author)
         {
-            if (Status == ObjectiveStatus.InProgress)
-            {
-                Status = ObjectiveStatus.Success;
-                new ObjectiveStatusChangedEvent(this).Invoke(this);
-            }
+            Id = id;
+            Title = title;
+            Status = status;
+            Author = author;
         }
 
-        public void Failed()
+        public virtual void InitializeObjective() { }
+        public virtual void FinalizeObjective() { }
+
+        protected void Succeed()
         {
-            if (Status == ObjectiveStatus.InProgress)
+            if (Status != ObjectiveStatus.InProgress)
             {
-                Status = ObjectiveStatus.Failed;
-                new ObjectiveStatusChangedEvent(this).Invoke(this);
+                return;
             }
+
+            SetStatus(ObjectiveStatus.Success);
+        }
+
+        public void Fail()
+        {
+            if (Status != ObjectiveStatus.InProgress)
+            {
+                return;
+            }
+
+            SetStatus(ObjectiveStatus.Failed);
+            
+        }
+
+        public void SetStatus(ObjectiveStatus status)
+        {
+            Status = status;
+            OnGamemodeObjectiveUpdated?.Invoke(this);
         }
     }
 }

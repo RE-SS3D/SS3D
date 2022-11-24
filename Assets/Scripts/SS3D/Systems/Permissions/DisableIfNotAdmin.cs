@@ -38,7 +38,7 @@ namespace SS3D.Systems.Permissions
                 return;
             }
 
-            PermissionSystem permissionSystem = GameSystems.Get<PermissionSystem>();
+            PermissionSystem permissionSystem = SystemLocator.Get<PermissionSystem>();
 
             if (!permissionSystem.HasLoadedPermissions)
             {
