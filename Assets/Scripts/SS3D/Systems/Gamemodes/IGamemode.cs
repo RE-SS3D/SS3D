@@ -1,4 +1,4 @@
-﻿namespace SS3D.Systems.GameModes
+﻿namespace SS3D.Systems.Gamemodes
 {
     public interface IGamemode
     {

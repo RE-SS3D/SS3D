@@ -33,6 +33,7 @@ namespace SS3D.Systems.Entities
         private bool _alreadySpawnedInitialPlayers;
 
         public bool IsPlayedSpawned(string ckey) => _spawnedPlayers.Contains(ckey);
+        public List<PlayerControllable> SpawnedPlayers => _serverSpawnedPlayers;
 
         protected override void OnStart()
         {
@@ -178,9 +179,9 @@ namespace SS3D.Systems.Entities
             PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
 
             Soul soul = playerControlSystem.GetSoul(ckey);
-            _spawnedPlayers.Add(ckey);
-
             PlayerControllable controllable = Instantiate(_tempHuman[Random.Range(0, _tempHuman.Count)], _tempSpawnPoint.position, Quaternion.identity);
+            
+            _spawnedPlayers.Add(ckey);
             _serverSpawnedPlayers.Add(controllable);
 
             ServerManager.Spawn(controllable.NetworkObject, soul.Owner);

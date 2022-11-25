@@ -5,13 +5,12 @@ using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Systems.GameModes.Modes;
 using SS3D.Systems.GameModes.Events;
-using SS3D.Systems.GameModes.Objectives;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Rounds.Messages;
 using UnityEngine;
 
-namespace SS3D.Systems.GameModes
+namespace SS3D.Systems.Gamemodes
 {
     /// <summary>
     /// Controls the gamemode that the round will use
@@ -23,7 +22,7 @@ namespace SS3D.Systems.GameModes
         /// </summary>
         [SerializeField] private Gamemode _gamemode;
 
-        public List<string> Antagonists => _gamemode.Antagonists;
+        public List<string> Antagonists => _gamemode.RoundAntagonists;
 
         protected override void OnStart()
         {
@@ -61,7 +60,7 @@ namespace SS3D.Systems.GameModes
         {
             _gamemode.OnInitialized -= HandleGamemodeInitialized;
             _gamemode.OnFinished -= HandleGamemodeFinalized;
-            _gamemode.OnObjectiveInitialized -= HandleObjectiveInitialized;
+            _gamemode.OnObjectiveUpdated -= HandleObjectiveUpdated;
             
             _gamemode.FinalizeGamemode();
         }
@@ -74,7 +73,7 @@ namespace SS3D.Systems.GameModes
         {
             _gamemode.OnInitialized += HandleGamemodeInitialized;
             _gamemode.OnFinished += HandleGamemodeFinalized;
-            _gamemode.OnObjectiveInitialized += HandleObjectiveInitialized;
+            _gamemode.OnObjectiveUpdated += HandleObjectiveUpdated;
 
             _gamemode.InitializeGamemode();
         }
@@ -104,7 +103,7 @@ namespace SS3D.Systems.GameModes
         }
 
         [Server]
-        private void HandleObjectiveInitialized(GamemodeObjective objective)
+        private void HandleObjectiveUpdated(GamemodeObjective objective)
         {
             GamemodeObjectiveUpdatedMessage message = new(objective);
             NetworkConnection author = message.Objective.Author;

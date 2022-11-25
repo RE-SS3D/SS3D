@@ -1,7 +1,7 @@
 ﻿using FishNet.Connection;
 using FishNet.Serializing;
 
-namespace SS3D.Systems.GameModes.Objectives
+namespace SS3D.Systems.Gamemodes
 {
     public static class GamemodeObjectiveSerializer
     {

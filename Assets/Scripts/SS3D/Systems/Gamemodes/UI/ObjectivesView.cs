@@ -1,5 +1,5 @@
-using SS3D.Systems.GameModes.Objectives;
 using System.Collections.Generic;
+using SS3D.Systems.Gamemodes;
 using TMPro;
 using UnityEngine;
 

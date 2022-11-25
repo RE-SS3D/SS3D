@@ -1,18 +1,14 @@
-using Coimbra.Services.Events;
-using FishNet.Object;
-using SS3D.Core;
-using SS3D.Systems.GameModes;
-using SS3D.Systems.GameModes.Modes;
-using SS3D.Systems.GameModes.Events;
-using SS3D.Systems.GameModes.Objectives;
-using SS3D.Systems.Items;
-using SS3D.Systems.Storage.Items;
 using System.Collections.Generic;
+using Coimbra.Services.Events;
 using FishNet.Connection;
+using SS3D.Core;
+using SS3D.Systems.GameModes.Events;
+using SS3D.Systems.Items;
 using SS3D.Systems.PlayerControl;
+using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
-namespace SS3D.Systems.Gamemodes.Objectives.NukeObjectives
+namespace SS3D.Systems.Gamemodes.Objectives
 {
     [CreateAssetMenu(menuName = "Gamemodes/Objectives/GetNukeCard", fileName = "GetNukeCard")]
     public class GetNukeCardObjective : GamemodeObjective

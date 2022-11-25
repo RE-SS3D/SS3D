@@ -1,6 +1,6 @@
 ﻿using FishNet.Connection;
 
-namespace SS3D.Systems.GameModes.Objectives
+namespace SS3D.Systems.Gamemodes
 {
     public interface IGamemodeObjective
     {

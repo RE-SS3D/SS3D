@@ -1,4 +1,4 @@
-namespace SS3D.Systems.GameModes.Objectives
+namespace SS3D.Systems.Gamemodes
 {
     public enum ObjectiveStatus
     {

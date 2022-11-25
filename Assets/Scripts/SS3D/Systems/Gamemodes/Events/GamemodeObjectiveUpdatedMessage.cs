@@ -1,6 +1,6 @@
 ﻿using Coimbra.Services.Events;
 using FishNet.Broadcast;
-using SS3D.Systems.GameModes.Objectives;
+using SS3D.Systems.Gamemodes;
 
 namespace SS3D.Systems.GameModes.Events
 {

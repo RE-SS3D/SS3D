@@ -2,10 +2,9 @@ using Coimbra.Services.Events;
 using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Systems.GameModes.Events;
-using SS3D.Systems.GameModes.Objectives;
 using UnityEngine;
 
-namespace SS3D.Systems.Gamemodes.Objectives.NukeObjectives
+namespace SS3D.Systems.Gamemodes.Objectives
 {
     [CreateAssetMenu(menuName = "Gamemodes/Objectives/DetonateNuke", fileName = "DetonateNuke")]
     public class DetonateNukeObjective : GamemodeObjective

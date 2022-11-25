@@ -4,7 +4,7 @@ using SS3D.Systems.Items;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Data;
-using SS3D.Systems.GameModes;
+using SS3D.Systems.Gamemodes;
 using UnityEngine;
 
 namespace SS3D.Systems.Furniture

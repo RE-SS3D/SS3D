@@ -11,25 +11,6 @@ namespace SS3D.Systems.GameModes.Modes
     [CreateAssetMenu(menuName = "Gamemodes/Modes/NukeGamemode", fileName = "NukeGamemode")]
     public class NukeGamemode : Gamemode
     {
-        [Server]
-        public override void InitializeGamemode()
-        {
-            base.InitializeGamemode();
-            SpawnReadyPlayersEvent.AddListener(HandleReadyPlayersChanged);
-        }
 
-        [Server]
-        private void HandleReadyPlayersChanged(ref EventContext context, in SpawnReadyPlayersEvent spawnReadyPlayersEvent)
-        {
-            if (Antagonists.Count != 0)
-                return;
-
-            List<string> players = spawnReadyPlayersEvent.ReadyPlayers;
-
-            var random = new System.Random();
-            int index = random.Next(players.Count);
-
-            Antagonists.Add(players[index]);
-        }
     }
 }

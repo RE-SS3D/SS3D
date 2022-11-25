@@ -2,7 +2,7 @@
 using FishNet.Connection;
 using UnityEngine;
 
-namespace SS3D.Systems.GameModes.Objectives
+namespace SS3D.Systems.Gamemodes
 {
     public class GamemodeObjective : ScriptableObject, IGamemodeObjective
     {
@@ -21,7 +21,10 @@ namespace SS3D.Systems.GameModes.Objectives
             Author = author;
         }
 
-        public virtual void InitializeObjective() { }
+        public virtual void InitializeObjective()
+        {
+            SetStatus(ObjectiveStatus.InProgress);
+        }
         public virtual void FinalizeObjective() { }
 
         protected void Succeed()
@@ -48,6 +51,12 @@ namespace SS3D.Systems.GameModes.Objectives
         public void SetStatus(ObjectiveStatus status)
         {
             Status = status;
+            OnGamemodeObjectiveUpdated?.Invoke(this);
+        }
+
+        public void SetAuthor(NetworkConnection author)
+        {
+            Author = author;
             OnGamemodeObjectiveUpdated?.Invoke(this);
         }
     }
