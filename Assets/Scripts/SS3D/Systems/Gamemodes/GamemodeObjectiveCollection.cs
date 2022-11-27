@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes
@@ -27,16 +28,7 @@ namespace SS3D.Systems.Gamemodes
         {
             GamemodeObjectiveCollection clone = Instantiate(this);
 
-            List<GamemodeObjectiveCollectionEntry> entriesClone = new();
-
-            foreach (GamemodeObjectiveCollectionEntry entry in Entries)
-            {
-                GamemodeObjectiveCollectionEntry entryClone = Instantiate(entry);
-                entryClone.GamemodeObjective = Instantiate(entry.GamemodeObjective);
-
-                entriesClone.Add(entryClone);
-            }
-
+            List<GamemodeObjectiveCollectionEntry> entriesClone = Entries.Select(Instantiate).ToList();
             clone.Entries = entriesClone;
 
             return clone;
@@ -46,9 +38,11 @@ namespace SS3D.Systems.Gamemodes
         /// Gets an objective at an index
         /// </summary>
         /// <returns></returns>
-        public GamemodeObjective GetAt(int index)
+        public bool TryGetAt(int index, out GamemodeObjective objective, bool useAssignmentRestrictions = false)
         {
-            return Entries[index].GamemodeObjective;
+            bool hasObjective = Entries[index].TryGetObjective(out objective, useAssignmentRestrictions);
+
+            return hasObjective;
         }
     }
 }

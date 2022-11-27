@@ -24,5 +24,28 @@ namespace SS3D.Systems.Gamemodes
         public int RemainingAssignments;
 
         // TODO: Job restrictions 🤯🥸
+
+        /// <summary>
+        /// Tries to get an objective, instantiates it instead of getting the original.
+        /// </summary>
+        /// <param name="objective">The objective received.</param>
+        /// <param name="useRestrictions">Use the remaining assignments and prevent getting objectives when none are remaining.</param>
+        /// <returns></returns>
+        public bool TryGetObjective(out GamemodeObjective objective, bool useRestrictions = false)
+        {
+            if (useRestrictions)
+            {
+                if (RemainingAssignments == 0)
+                {
+                    objective = null;
+                    return false;
+                }
+
+                RemainingAssignments--;
+            }
+
+            objective = Instantiate(GamemodeObjective);
+            return true;
+        }
     }
 }

@@ -70,6 +70,7 @@ namespace SS3D.Systems.Gamemodes
             
             _gamemode.FinalizeGamemode();
 
+            // Removes the current gamemode.
             _gamemode = null;
         }
 

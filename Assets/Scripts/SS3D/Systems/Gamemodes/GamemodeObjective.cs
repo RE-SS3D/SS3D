@@ -26,6 +26,26 @@ namespace SS3D.Systems.Gamemodes
         /// <inheritdoc />
         public NetworkConnection Assignee { get; set; }
 
+        /// <summary>
+        /// Handy call to check objective success.
+        /// </summary>
+        public bool Succeeded => Status == ObjectiveStatus.Success;
+
+        /// <summary>
+        /// Handy call to check objective failure.
+        /// </summary>
+        public bool Failed => Status == ObjectiveStatus.Failed;
+
+        /// <summary>
+        /// Handy call to check objective cancellation.
+        /// </summary>
+        public bool Cancelled => Status == ObjectiveStatus.Cancelled;
+
+        /// <summary>
+        /// Handy call to check if the objective is in progress.
+        /// </summary>
+        public bool InProgress => Status == ObjectiveStatus.InProgress;
+
         public GamemodeObjective(int id, string title, ObjectiveStatus status, NetworkConnection author)
         {
             Id = id;

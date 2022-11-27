@@ -33,12 +33,12 @@ namespace SS3D.Systems.GameModes.Modes
         /// <summary>
         /// All possible objective in the round.
         /// </summary>
-        [SerializeField] private GamemodeObjectiveCollection _possibleObjectives;
+        public GamemodeObjectiveCollection PossibleObjectives;
 
         /// <summary>
         /// The current attributed objectives in a round.
         /// </summary>
-        [SerializeField] private List<GamemodeObjective> _roundObjectives;
+        private List<GamemodeObjective> _roundObjectives;
         
         /// <summary>
         /// All the antagonists spawned in the round.
@@ -73,28 +73,22 @@ namespace SS3D.Systems.GameModes.Modes
         }
 
         /// <summary>
-        /// Finalizes all objectives in the round.
+        /// Finalizes all objectives in the round. Checks their CheckCompletion
+        /// because sometimes an item has to be in the hand of some player for an objective to be completed.
         /// </summary>
         protected virtual void FinalizeObjectives()
         {
-            int completedObjectives = 0;
-
             foreach (GamemodeObjective objective in _roundObjectives)
             {
                 objective.CheckCompletion();
 
                 ObjectiveStatus status = objective.Status;
-                bool completed = objective.Status == ObjectiveStatus.Success;
 
-                if (completed)
-                {
-                    completedObjectives++;
-                }
-
-                Punpun.Say(this, objective.Title + " - " + status);
+                Punpun.Say(this, $"{objective.Title} - {status}");
             }
 
-            Punpun.Say(this, "Objectives Completed: " + completedObjectives + "/" + _roundObjectives.Count);
+            int succeededObjectives = _roundObjectives.Count(objective => objective.Succeeded);
+            Punpun.Say(this, $"Objectives Completed: {succeededObjectives}/{_roundObjectives.Count}");
         }
 
         /// <summary>
@@ -103,26 +97,31 @@ namespace SS3D.Systems.GameModes.Modes
         protected virtual void CreateObjectives()
         {
             EntitySpawnSystem entitySpawnSystem = SystemLocator.Get<EntitySpawnSystem>();
-            List<PlayerControllable> spawnedPlayers = entitySpawnSystem.SpawnedPlayers;
+            List<PlayerControllable> playersToAssign = entitySpawnSystem.SpawnedPlayers;
 
-            _possibleObjectives = _possibleObjectives.Clone();
-            int objectivesCount = _possibleObjectives.Count;
+            PossibleObjectives = PossibleObjectives.Clone();
+            int objectivesCount = PossibleObjectives.Count;
 
             // Attributes objectives to players while we still have players.
-            while (spawnedPlayers.Count != 0)
+            while (playersToAssign.Count != 0)
             {
                 int randomObjectiveIndex = Random.Range(0, objectivesCount);
 
-                GamemodeObjective objective = _possibleObjectives.GetAt(randomObjectiveIndex);
+                PossibleObjectives.TryGetAt(randomObjectiveIndex, out GamemodeObjective objective);
+                PlayerControllable player = playersToAssign.First();
 
-                PlayerControllable player = spawnedPlayers.First();
-                spawnedPlayers.RemoveAt(0);
+                playersToAssign.RemoveAt(0);
 
-                objective.SetAssignee(player.ControllingSoul.Owner);
-                objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
-
-                objective.InitializeObjective();
+                CreateAndAssignObjective(objective, player);
             }
+        }
+
+        protected virtual void CreateAndAssignObjective(GamemodeObjective objective, PlayerControllable player)
+        {
+            objective.SetAssignee(player.ControllingSoul.Owner);
+            objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
+
+            objective.InitializeObjective();
         }
 
         /// <summary>
@@ -130,13 +129,11 @@ namespace SS3D.Systems.GameModes.Modes
         /// </summary>
         public void FailOnGoingObjectives()
         {
-            foreach (GamemodeObjective gamemodeObjective in _roundObjectives)
+            foreach (GamemodeObjective objective in _roundObjectives)
             {
-                ObjectiveStatus status = gamemodeObjective.Status;
-
-                if (status == ObjectiveStatus.InProgress)
+                if (objective.InProgress)
                 {
-                    gamemodeObjective.Fail();
+                    objective.Fail();
                 }
             }
         }
