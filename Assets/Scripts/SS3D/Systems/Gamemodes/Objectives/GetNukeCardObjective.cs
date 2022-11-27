@@ -10,9 +10,16 @@ using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes.Objectives
 {
+    /// <summary>
+    /// An objective which the goal is to get the nuke card in hand.
+    /// A GamemodeObjective that listens to the ItemPickedUpEvent.
+    /// </summary>
     [CreateAssetMenu(menuName = "Gamemodes/Objectives/GetNukeCard", fileName = "GetNukeCard")]
     public class GetNukeCardObjective : GamemodeObjective
     {
+        /// <summary>
+        /// The item that was caught when the objective was completed.
+        /// </summary>
         private Item _caughtItem;
 
         private const string ObjectiveTitle = "Retrieve the Nuclear Authentication Disk"; 
@@ -33,7 +40,7 @@ namespace SS3D.Systems.Gamemodes.Objectives
             }
 
             List<string> traitors = SystemLocator.Get<GamemodeSystem>().Antagonists;
-            string ckey = SystemLocator.Get<PlayerControlSystem>().GetCkey(Author);
+            string ckey = SystemLocator.Get<PlayerControlSystem>().GetCkey(Assignee);
 
             if (traitors.Contains(ckey))
             {

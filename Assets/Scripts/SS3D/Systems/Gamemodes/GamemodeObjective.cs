@@ -9,6 +9,9 @@ namespace SS3D.Systems.Gamemodes
     /// </summary>
     public class GamemodeObjective : ScriptableObject, IGamemodeObjective
     {
+        /// <summary>
+        /// Called whenever an objective is updated.
+        /// </summary>
         public event Action<GamemodeObjective> OnGamemodeObjectiveUpdated;
 
         /// <inheritdoc />
@@ -21,14 +24,14 @@ namespace SS3D.Systems.Gamemodes
         public ObjectiveStatus Status { get; set; }
 
         /// <inheritdoc />
-        public NetworkConnection Author { get; set; }
+        public NetworkConnection Assignee { get; set; }
 
         public GamemodeObjective(int id, string title, ObjectiveStatus status, NetworkConnection author)
         {
             Id = id;
             Title = title;
             Status = status;
-            Author = author;
+            Assignee = author;
         }
 
         /// <inheritdoc />
@@ -38,9 +41,19 @@ namespace SS3D.Systems.Gamemodes
         }
 
         /// <inheritdoc />
-        public virtual void FinalizeObjective() { }
+        public virtual void FinalizeObjective()
+        {
+            // You could do something here I suppose.
+        }
 
-        protected void Succeed()
+        /// <inheritdoc />
+        public virtual void CheckCompletion()
+        {
+            // Makes sure everything is alright before finalizing the objective.
+        }
+
+        /// <inheritdoc />
+        public void Succeed()
         {
             if (Status != ObjectiveStatus.InProgress)
             {
@@ -50,6 +63,7 @@ namespace SS3D.Systems.Gamemodes
             SetStatus(ObjectiveStatus.Success);
         }
 
+        /// <inheritdoc />
         public void Fail()
         {
             if (Status != ObjectiveStatus.InProgress)
@@ -61,15 +75,23 @@ namespace SS3D.Systems.Gamemodes
             
         }
 
+        /// <summary>
+        /// Updates the status of the gamemode objective. Calls the OnGamemodeObjectiveUpdated event.
+        /// </summary>
+        /// <param name="status">The new status.</param>
         public void SetStatus(ObjectiveStatus status)
         {
             Status = status;
             OnGamemodeObjectiveUpdated?.Invoke(this);
         }
 
-        public void SetAuthor(NetworkConnection author)
+        /// <summary>
+        /// Sets a new author for the gamemode objective. Calls the OnGamemodeObjectiveUpdated event.
+        /// </summary>
+        /// <param name="assignee">The new assignee.</param>
+        public void SetAssignee(NetworkConnection assignee)
         {
-            Author = author;
+            Assignee = assignee;
             OnGamemodeObjectiveUpdated?.Invoke(this);
         }
     }

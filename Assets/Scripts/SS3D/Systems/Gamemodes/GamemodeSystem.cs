@@ -92,7 +92,7 @@ namespace SS3D.Systems.Gamemodes
         [Server]
         private void SendObjectiveToClients(GamemodeObjective objective)
         {
-            NetworkConnection author = objective.Author;
+            NetworkConnection author = objective.Assignee;
             GamemodeObjectiveUpdatedMessage message = new(objective);
 
             // TODO Add admins as receivers of this message

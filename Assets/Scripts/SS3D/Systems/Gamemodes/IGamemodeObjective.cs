@@ -19,7 +19,7 @@ namespace SS3D.Systems.Gamemodes
         /// <summary>
         /// Who is in charge of completing this objective.
         /// </summary>
-        public NetworkConnection Author { get; set; }
+        public NetworkConnection Assignee { get; set; }
 
         /// <summary>
         /// Initializes this objective.
@@ -30,6 +30,12 @@ namespace SS3D.Systems.Gamemodes
         /// Finalizes this objective.
         /// </summary>
         public void FinalizeObjective() {}
+
+        /// <summary>
+        /// Checks the completion once the round ends.
+        /// IE: The objective is the player having an item in the inventory.
+        /// </summary>
+        public void CheckCompletion() {}
 
         /// <summary>
         /// Changes the completion state to Success

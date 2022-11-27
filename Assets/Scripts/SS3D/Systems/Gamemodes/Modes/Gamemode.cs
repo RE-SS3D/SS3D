@@ -20,6 +20,7 @@ namespace SS3D.Systems.GameModes.Modes
         /// Called when we finalize the gamemode, sends all the objectives in that round.
         /// </summary>
         public event Action<List<GamemodeObjective>> OnFinished;
+        
         /// <summary>
         /// Called when we initialize the gamemode.
         /// </summary>
@@ -80,6 +81,8 @@ namespace SS3D.Systems.GameModes.Modes
 
             foreach (GamemodeObjective objective in _roundObjectives)
             {
+                objective.CheckCompletion();
+
                 ObjectiveStatus status = objective.Status;
                 bool completed = objective.Status == ObjectiveStatus.Success;
 
@@ -105,6 +108,7 @@ namespace SS3D.Systems.GameModes.Modes
             _possibleObjectives = _possibleObjectives.Clone();
             List<GamemodeObjectiveCollectionEntry> objectivesEntries = _possibleObjectives.Entries;
 
+            // Attributes objectives to players while we still have objectives or players.
             while (spawnedPlayers.Count != 0 && objectivesEntries.Count != 0)
             {
                 int randomObjectiveIndex = Random.Range(0, objectivesEntries.Count);
@@ -115,7 +119,7 @@ namespace SS3D.Systems.GameModes.Modes
                 PlayerControllable player = spawnedPlayers.First();
                 spawnedPlayers.RemoveAt(0);
 
-                objective.SetAuthor(player.ControllingSoul.Owner);
+                objective.SetAssignee(player.ControllingSoul.Owner);
                 objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
 
                 objective.InitializeObjective();

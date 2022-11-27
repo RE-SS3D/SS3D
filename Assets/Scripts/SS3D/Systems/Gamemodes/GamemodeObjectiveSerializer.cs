@@ -17,7 +17,7 @@ namespace SS3D.Systems.Gamemodes
             writer.WriteInt32(value.Id);
             writer.WriteString(value.Title);
             writer.WriteInt16((short)value.Status);
-            writer.WriteNetworkConnection(value.Author);
+            writer.WriteNetworkConnection(value.Assignee);
         }
 
         /// <summary>
