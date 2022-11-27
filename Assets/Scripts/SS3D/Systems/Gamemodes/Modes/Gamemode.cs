@@ -106,15 +106,14 @@ namespace SS3D.Systems.GameModes.Modes
             List<PlayerControllable> spawnedPlayers = entitySpawnSystem.SpawnedPlayers;
 
             _possibleObjectives = _possibleObjectives.Clone();
-            List<GamemodeObjectiveCollectionEntry> objectivesEntries = _possibleObjectives.Entries;
+            int objectivesCount = _possibleObjectives.Count;
 
-            // Attributes objectives to players while we still have objectives or players.
-            while (spawnedPlayers.Count != 0 && objectivesEntries.Count != 0)
+            // Attributes objectives to players while we still have players.
+            while (spawnedPlayers.Count != 0)
             {
-                int randomObjectiveIndex = Random.Range(0, objectivesEntries.Count);
+                int randomObjectiveIndex = Random.Range(0, objectivesCount);
 
-                GamemodeObjective objective = objectivesEntries[randomObjectiveIndex].GamemodeObjective;
-                objectivesEntries.RemoveAt(randomObjectiveIndex);
+                GamemodeObjective objective = _possibleObjectives.GetAt(randomObjectiveIndex);
 
                 PlayerControllable player = spawnedPlayers.First();
                 spawnedPlayers.RemoveAt(0);

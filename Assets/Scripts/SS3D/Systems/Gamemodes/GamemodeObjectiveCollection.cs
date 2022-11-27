@@ -9,7 +9,15 @@ namespace SS3D.Systems.Gamemodes
     [CreateAssetMenu(menuName = "GamemodeObjectiveCollection", fileName = "Gamemode/GamemodeObjectiveCollection", order = 0)]
     public class GamemodeObjectiveCollection : ScriptableObject
     {
+        /// <summary>
+        /// All the objectives in this collection.
+        /// </summary>
         public List<GamemodeObjectiveCollectionEntry> Entries;
+
+        /// <summary>
+        /// The amount of objectives in this collection.
+        /// </summary>
+        public int Count => Entries.Count;
 
         /// <summary>
         /// Clones the collection entry so you don't modify the SO file.
@@ -32,6 +40,15 @@ namespace SS3D.Systems.Gamemodes
             clone.Entries = entriesClone;
 
             return clone;
+        }
+
+        /// <summary>
+        /// Gets an objective at an index
+        /// </summary>
+        /// <returns></returns>
+        public GamemodeObjective GetAt(int index)
+        {
+            return Entries[index].GamemodeObjective;
         }
     }
 }
