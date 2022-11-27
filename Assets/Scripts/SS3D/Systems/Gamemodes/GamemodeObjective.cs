@@ -4,13 +4,23 @@ using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes
 {
+    /// <summary>
+    /// An objective in the gamemode.
+    /// </summary>
     public class GamemodeObjective : ScriptableObject, IGamemodeObjective
     {
-        public event Action<GamemodeObjective> OnGamemodeObjectiveUpdated; 
+        public event Action<GamemodeObjective> OnGamemodeObjectiveUpdated;
 
+        /// <inheritdoc />
         public int Id { get; set; }
+
+        /// <inheritdoc />
         public string Title { get; set; }
+
+        /// <inheritdoc />
         public ObjectiveStatus Status { get; set; }
+
+        /// <inheritdoc />
         public NetworkConnection Author { get; set; }
 
         public GamemodeObjective(int id, string title, ObjectiveStatus status, NetworkConnection author)
@@ -21,10 +31,13 @@ namespace SS3D.Systems.Gamemodes
             Author = author;
         }
 
+        /// <inheritdoc />
         public virtual void InitializeObjective()
         {
             SetStatus(ObjectiveStatus.InProgress);
         }
+
+        /// <inheritdoc />
         public virtual void FinalizeObjective() { }
 
         protected void Succeed()
