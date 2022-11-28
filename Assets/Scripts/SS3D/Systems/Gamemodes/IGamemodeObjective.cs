@@ -2,6 +2,9 @@
 
 namespace SS3D.Systems.Gamemodes
 {
+    /// <summary>
+    /// An objective in the gamemode.
+    /// </summary>
     public interface IGamemodeObjective
     {
         /// <summary>

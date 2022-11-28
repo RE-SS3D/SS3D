@@ -1,8 +1,12 @@
 using System.Collections.Generic;
+using Coimbra;
 using SS3D.Core.Behaviours;
 using Coimbra.Services.Events;
 using FishNet.Connection;
 using FishNet.Object;
+using SS3D.Core;
+using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Events;
 using SS3D.Systems.GameModes.Modes;
 using SS3D.Systems.GameModes.Events;
 using SS3D.Systems.Rounds;
@@ -38,8 +42,18 @@ namespace SS3D.Systems.Gamemodes
         /// </summary>
         [Server]
         private void Setup()
+        {   
+            _eventHandles.Add(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
+            _eventHandles.Add(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersChanged));
+        }
+
+        [Server]
+        private void HandleSpawnedPlayersChanged(ref EventContext context, in SpawnedPlayersUpdated e)
         {
-            RoundStateUpdated.AddListener(HandleRoundStateUpdated);
+            EntitySpawnSystem entitySpawnSystem = SystemLocator.Get<EntitySpawnSystem>();
+            PlayerControllable player = entitySpawnSystem.SpawnedPlayers.Last();
+
+            _gamemode.CreateLateJoinObjective(player);
         }
 
         /// <summary>
@@ -82,8 +96,8 @@ namespace SS3D.Systems.Gamemodes
         {
             _gamemode.FailOnGoingObjectives();
 
-            ChangeRoundStateMessage changeRoundStateMessage = new(false);
-            ClientManager.Broadcast(changeRoundStateMessage);
+            ChangeRoundStateMessage message = new(false);
+            ClientManager.Broadcast(message);
         }
 
         /// <summary>
@@ -139,6 +153,10 @@ namespace SS3D.Systems.Gamemodes
             // Not sure yet. Probably no logic will run here.
         }
 
+        /// <summary>
+        /// Called when an objective is updated, sends
+        /// </summary>
+        /// <param name="objective"></param>
         [Server]
         private void HandleObjectiveUpdated(GamemodeObjective objective)
         {

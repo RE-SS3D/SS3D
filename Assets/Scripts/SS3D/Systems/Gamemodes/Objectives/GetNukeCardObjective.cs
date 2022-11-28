@@ -14,7 +14,7 @@ namespace SS3D.Systems.Gamemodes.Objectives
     /// An objective which the goal is to get the nuke card in hand.
     /// A GamemodeObjective that listens to the ItemPickedUpEvent.
     /// </summary>
-    [CreateAssetMenu(menuName = "Gamemodes/Objectives/GetNukeCard", fileName = "GetNukeCard")]
+    [CreateAssetMenu(menuName = "Gamemode/Objectives/GetNukeCard", fileName = "GetNukeCard")]
     public class GetNukeCardObjective : GamemodeObjective
     {
         /// <summary>
@@ -22,16 +22,19 @@ namespace SS3D.Systems.Gamemodes.Objectives
         /// </summary>
         private Item _caughtItem;
 
-        private const string ObjectiveTitle = "Retrieve the Nuclear Authentication Disk"; 
+        private const string ObjectiveTitle = "Retrieve the Nuclear Authentication Disk";
 
+        /// <inheritdoc />
         public override void InitializeObjective()
         {
+            base.InitializeObjective();
+
             ItemPickedUpEvent.AddListener(HandleItemPickedUpEvent);
 
             Title = ObjectiveTitle;
-            Status = ObjectiveStatus.InProgress;
         }
 
+        /// <inheritdoc />
         public override void FinalizeObjective()
         {
             if (_caughtItem is not NukeCard)

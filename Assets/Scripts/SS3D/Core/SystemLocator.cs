@@ -11,6 +11,9 @@ namespace SS3D.Core
     /// </summary>
     public static class SystemLocator
     {
+        /// <summary>
+        /// A dictionary containing all the objects that registered themselves.
+        /// </summary>
         private static readonly Dictionary<Type, object> Systems = new();
 
         /// <summary>

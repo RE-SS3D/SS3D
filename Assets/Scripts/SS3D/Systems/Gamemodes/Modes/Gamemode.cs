@@ -29,7 +29,12 @@ namespace SS3D.Systems.GameModes.Modes
         /// Called whenever a gamemode objective is updated, used for quick access by the GamemodeSystem.
         /// </summary>
         public event Action<GamemodeObjective> OnObjectiveUpdated;
-        
+
+        /// <summary>
+        /// The display name of this gamemode.
+        /// </summary>
+        public string GamemodeName;
+
         /// <summary>
         /// All possible objective in the round.
         /// </summary>
@@ -63,7 +68,7 @@ namespace SS3D.Systems.GameModes.Modes
         }
 
         /// <summary>
-        /// Finishes the gamemode, it is virtual, so custom finishing is possible
+        /// Finishes the gamemode, it is virtual, so custom finishing is possible.
         /// </summary>
         public virtual void FinalizeGamemode()
         {
@@ -73,7 +78,7 @@ namespace SS3D.Systems.GameModes.Modes
         }
 
         /// <summary>
-        /// Finalizes all objectives in the round. Checks their CheckCompletion
+        /// Finalizes all objectives in the round. Checks their CheckCompletion,
         /// because sometimes an item has to be in the hand of some player for an objective to be completed.
         /// </summary>
         protected virtual void FinalizeObjectives()
@@ -99,24 +104,63 @@ namespace SS3D.Systems.GameModes.Modes
             EntitySpawnSystem entitySpawnSystem = SystemLocator.Get<EntitySpawnSystem>();
             List<PlayerControllable> playersToAssign = entitySpawnSystem.SpawnedPlayers;
 
+            // Clones the possible objectives list, to not alter the base file.
             PossibleObjectives = PossibleObjectives.Clone();
-            int objectivesCount = PossibleObjectives.Count;
 
             // Attributes objectives to players while we still have players.
             while (playersToAssign.Count != 0)
             {
-                int randomObjectiveIndex = Random.Range(0, objectivesCount);
-
-                PossibleObjectives.TryGetAt(randomObjectiveIndex, out GamemodeObjective objective);
+                (int, GamemodeObjective) randomObjective = GetRandomObjective();
+                
+                GamemodeObjective objective = randomObjective.Item2;
                 PlayerControllable player = playersToAssign.First();
 
                 playersToAssign.RemoveAt(0);
 
-                CreateAndAssignObjective(objective, player);
+                AssignObjective(objective, player);
             }
         }
 
-        protected virtual void CreateAndAssignObjective(GamemodeObjective objective, PlayerControllable player)
+        /// <summary>
+        /// Gets random objective, IMPORTANT: makes sure the PossiblesObjectives were cloned before calling this.
+        /// </summary>
+        /// <returns>A random objective and its index in the PossibleObjectives list.</returns>
+        protected virtual (int, GamemodeObjective) GetRandomObjective()
+        {
+            int objectivesCount = PossibleObjectives.Count;
+            int randomObjectiveIndex = Random.Range(0, objectivesCount);
+
+            PossibleObjectives.TryGetAt(randomObjectiveIndex, out GamemodeObjective objective);
+
+            return (randomObjectiveIndex, objective);
+        }
+
+        /// <summary>
+        /// Creates an objective for a player that joined after the round started.
+        /// </summary>
+        /// <param name="player">The player to assign the objective to.</param>
+        public virtual void CreateLateJoinObjective(PlayerControllable player)
+        {
+            EntitySpawnSystem entitySpawnSystem = SystemLocator.Get<EntitySpawnSystem>();
+
+            bool isPlayerSpawned = entitySpawnSystem.SpawnedPlayers.Contains(player);
+
+            if (isPlayerSpawned)
+            {
+                return;
+            }
+
+            (int, GamemodeObjective) objective = GetRandomObjective();
+
+            AssignObjective(objective.Item2, player);
+        }
+
+        /// <summary>
+        /// Creates and assigns an objective to a player.
+        /// </summary>
+        /// <param name="objective">The objective to assign a player to.</param>
+        /// <param name="player">The player to be assigned to the objective</param>
+        protected virtual void AssignObjective(GamemodeObjective objective, PlayerControllable player)
         {
             objective.SetAssignee(player.ControllingSoul.Owner);
             objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;

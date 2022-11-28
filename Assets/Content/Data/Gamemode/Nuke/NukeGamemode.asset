@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a6007886ef73cc4989c198db35c143f, type: 3}
   m_Name: NukeGamemode
   m_EditorClassIdentifier: 
-  PossibleObjectives:
-  - {fileID: 11400000, guid: 1d48ee66ca41a61498b0f4d33c7a2c19, type: 2}
-  - {fileID: 11400000, guid: da3e6f12aa68f8340b84005e6fe20c92, type: 2}
+  GamemodeName: Nuke
+  PossibleObjectives: {fileID: 11400000, guid: d6db1c751c9dcf848b8cd18d892262df, type: 2}

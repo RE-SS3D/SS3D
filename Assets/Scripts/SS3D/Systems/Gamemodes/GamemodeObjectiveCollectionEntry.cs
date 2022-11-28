@@ -5,7 +5,7 @@ namespace SS3D.Systems.Gamemodes
     /// <summary>
     /// Used to control GamemodeObjective distribution params.
     /// </summary>
-    [CreateAssetMenu(menuName = "GamemodeObjectiveCollectionEntry", fileName = "Gamemode/GamemodeObjectiveCollectionEntry", order = 0)]
+    [CreateAssetMenu(menuName = "Gamemode/GamemodeObjectiveCollectionEntry", fileName = "GamemodeObjectiveCollectionEntry", order = 0)]
     public class GamemodeObjectiveCollectionEntry : ScriptableObject
     {
         /// <summary>

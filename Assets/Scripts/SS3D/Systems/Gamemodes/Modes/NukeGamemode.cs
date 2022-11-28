@@ -8,9 +8,9 @@ using UnityEngine;
 
 namespace SS3D.Systems.GameModes.Modes
 {
-    [CreateAssetMenu(menuName = "Gamemodes/Modes/NukeGamemode", fileName = "NukeGamemode")]
-    public class NukeGamemode : Gamemode
-    {
-
-    }
+    /// <summary>
+    /// This gamemode is a basic test of the gamemode system, it just distributes the nuke objective to every player.
+    /// </summary>
+    [CreateAssetMenu(menuName = "Gamemode/Modes/NukeGamemode", fileName = "NukeGamemode")]
+    public class NukeGamemode : Gamemode { }
 }

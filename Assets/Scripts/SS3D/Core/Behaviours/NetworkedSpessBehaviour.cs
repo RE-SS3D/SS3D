@@ -17,7 +17,7 @@ namespace SS3D.Core.Behaviours
         private GameObject _gameObjectCache;
         private Transform _transformCache;
 
-        private readonly List<EventHandle> _eventHandles = new();
+        protected readonly List<EventHandle> _eventHandles = new();
 
         public Transform TransformCache
         {

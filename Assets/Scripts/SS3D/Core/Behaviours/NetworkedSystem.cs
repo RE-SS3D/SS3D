@@ -5,6 +5,9 @@
     /// </summary>
     public class NetworkedSystem : NetworkedSpessBehaviour
     {
+        /// <summary>
+        /// Registers the system on awake.
+        /// </summary>
         protected override void OnAwake()
         {
             base.OnAwake();

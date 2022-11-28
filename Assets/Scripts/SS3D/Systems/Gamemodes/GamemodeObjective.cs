@@ -4,9 +4,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes
 {
-    /// <summary>
-    /// An objective in the gamemode.
-    /// </summary>
+    /// <inheritdoc cref="SS3D.Systems.Gamemodes.IGamemodeObjective" />
     public class GamemodeObjective : ScriptableObject, IGamemodeObjective
     {
         /// <summary>
@@ -92,7 +90,6 @@ namespace SS3D.Systems.Gamemodes
             }
 
             SetStatus(ObjectiveStatus.Failed);
-            
         }
 
         /// <summary>

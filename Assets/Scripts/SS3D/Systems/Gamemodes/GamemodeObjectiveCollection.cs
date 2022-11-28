@@ -7,7 +7,7 @@ namespace SS3D.Systems.Gamemodes
     /// <summary>
     /// Used to store a list of GamemodeObjectiveCollectionEntry, in order to quick change them.
     /// </summary>
-    [CreateAssetMenu(menuName = "GamemodeObjectiveCollection", fileName = "Gamemode/GamemodeObjectiveCollection", order = 0)]
+    [CreateAssetMenu(menuName = "Gamemode/GamemodeObjectiveCollection", fileName = "Gamemode/GamemodeObjectiveCollection", order = 0)]
     public class GamemodeObjectiveCollection : ScriptableObject
     {
         /// <summary>

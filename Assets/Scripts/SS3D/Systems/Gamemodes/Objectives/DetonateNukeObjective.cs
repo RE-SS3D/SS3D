@@ -6,17 +6,22 @@ using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes.Objectives
 {
-    [CreateAssetMenu(menuName = "Gamemodes/Objectives/DetonateNuke", fileName = "DetonateNuke")]
+    /// <summary>
+    /// Objective which the goal is to detonate the nuke. 
+    /// </summary>
+    [CreateAssetMenu(menuName = "Gamemode/Objectives/DetonateNuke", fileName = "DetonateNuke")]
     public class DetonateNukeObjective : GamemodeObjective
     {
+        /// <inheritdoc />
         public override void InitializeObjective()
         {
+            base.InitializeObjective();
+
             NukeDetonateEvent.AddListener(HandleNukeDetonateEvent);
             Title = "Use it to activate the Nuclear Fission Explosive";
-            Status = ObjectiveStatus.InProgress;
         }
 
-        [Server]
+        /// <inheritdoc />
         public override void FinalizeObjective()
         {
             Succeed();
