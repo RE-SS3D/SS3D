@@ -1,9 +1,11 @@
 ﻿using System;
 using FishNet.Connection;
+using SS3D.Logging;
 using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes
 {
+    [Serializable]
     /// <inheritdoc cref="SS3D.Systems.Gamemodes.IGamemodeObjective" />
     public class GamemodeObjective : ScriptableObject, IGamemodeObjective
     {
@@ -109,6 +111,16 @@ namespace SS3D.Systems.Gamemodes
         public void SetAssignee(NetworkConnection assignee)
         {
             Assignee = assignee;
+            OnGamemodeObjectiveUpdated?.Invoke(this);
+        }
+
+        /// <summary>
+        /// Sets the new id for this objective.
+        /// </summary>
+        /// <param name="id"></param>
+        public void SetId(int id)
+        {
+            Id = id;
             OnGamemodeObjectiveUpdated?.Invoke(this);
         }
     }

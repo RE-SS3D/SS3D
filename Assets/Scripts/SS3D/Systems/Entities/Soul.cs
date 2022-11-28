@@ -19,13 +19,18 @@ namespace SS3D.Systems.Entities
         /// Unique client key, originally used in BYOND's user management, nostalgically used
         /// </summary>
         public string Ckey => _ckey;
+
         /// <summary>
         /// Used by FishNet Networking to update the variable and sync it across instances.
         /// This is also called by the server when the client enters the server to update his data
         /// </summary>
         public void UpdateCkey(string oldCkey, string newCkey, bool asServer)
         {
-            Punpun.Say(this, $"Updating player ckey {newCkey}");
+            if (oldCkey != newCkey)
+            {
+                Punpun.Say(this, $"Updating player ckey {newCkey}");
+            }
+
             _ckey = newCkey; 
             gameObject.name = "Soul: " + _ckey;
         }

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Coimbra;
+using System.Linq;
 using SS3D.Core.Behaviours;
 using Coimbra.Services.Events;
 using FishNet.Connection;
@@ -45,15 +45,24 @@ namespace SS3D.Systems.Gamemodes
         {   
             _eventHandles.Add(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
             _eventHandles.Add(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersChanged));
+            _eventHandles.Add(InitialPlayersSpawnedEvent.AddListener(HandleInitialPlayersSpawned));
+        }
+
+        private void HandleInitialPlayersSpawned(ref EventContext context, in InitialPlayersSpawnedEvent e)
+        {
+            InitializeGamemode();   
         }
 
         [Server]
         private void HandleSpawnedPlayersChanged(ref EventContext context, in SpawnedPlayersUpdated e)
         {
             EntitySpawnSystem entitySpawnSystem = SystemLocator.Get<EntitySpawnSystem>();
-            PlayerControllable player = entitySpawnSystem.SpawnedPlayers.Last();
+            PlayerControllable player = entitySpawnSystem.LastSpawned;
 
-            _gamemode.CreateLateJoinObjective(player);
+            if (player != null)
+            {
+                _gamemode.CreateLateJoinObjective(player);
+            }
         }
 
         /// <summary>
@@ -128,9 +137,6 @@ namespace SS3D.Systems.Gamemodes
         {
             switch (e.RoundState)
             {
-                case RoundState.Ongoing:
-                    InitializeGamemode();
-                    break;
                 case RoundState.Ending:
                     FinalizeGamemode();
                     break;

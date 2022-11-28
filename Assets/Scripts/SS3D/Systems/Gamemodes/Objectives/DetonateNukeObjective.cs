@@ -18,7 +18,8 @@ namespace SS3D.Systems.Gamemodes.Objectives
             base.InitializeObjective();
 
             NukeDetonateEvent.AddListener(HandleNukeDetonateEvent);
-            Title = "Use it to activate the Nuclear Fission Explosive";
+
+            Title = "Kaboom*: Activate the Nuclear Fission Explosive";
         }
 
         /// <inheritdoc />

@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using SS3D.Core;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Gamemodes;
+using SS3D.Utils;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -61,7 +63,8 @@ namespace SS3D.Systems.GameModes.Modes
         public virtual void InitializeGamemode()
         {
             RoundAntagonists = new List<string>();
-            
+            _roundObjectives = new List<GamemodeObjective>();
+
             CreateObjectives();
 
             OnInitialized?.Invoke();
@@ -101,6 +104,8 @@ namespace SS3D.Systems.GameModes.Modes
         /// </summary>
         protected virtual void CreateObjectives()
         {
+            Punpun.Say(this, "Creating initial objectives", Logs.ServerOnly);
+
             EntitySpawnSystem entitySpawnSystem = SystemLocator.Get<EntitySpawnSystem>();
             List<PlayerControllable> playersToAssign = entitySpawnSystem.SpawnedPlayers;
 
@@ -162,10 +167,19 @@ namespace SS3D.Systems.GameModes.Modes
         /// <param name="player">The player to be assigned to the objective</param>
         protected virtual void AssignObjective(GamemodeObjective objective, PlayerControllable player)
         {
-            objective.SetAssignee(player.ControllingSoul.Owner);
             objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
 
+            objective.SetAssignee(player.ControllingSoul.Owner);
+            objective.SetId(_roundObjectives.Count);
+
             objective.InitializeObjective();
+
+            _roundObjectives.Add(objective);
+
+            string title = $"[{objective.Id}/{objective.Title}]".Colorize(LogColors.Blue);
+            string playerName = $"[{player.name}]".Colorize(LogColors.Blue);
+
+            Punpun.Say(this, $"Objective initialized {title} for {playerName}", Logs.ServerOnly);
         }
 
         /// <summary>

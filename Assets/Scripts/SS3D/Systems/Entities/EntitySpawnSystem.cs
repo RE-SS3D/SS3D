@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Coimbra;
 using Coimbra.Services.Events;
 using FishNet.Connection;
 using FishNet.Object;
@@ -34,6 +35,7 @@ namespace SS3D.Systems.Entities
 
         public bool IsPlayedSpawned(string ckey) => _spawnedPlayers.Contains(ckey);
         public List<PlayerControllable> SpawnedPlayers => _serverSpawnedPlayers;
+        public PlayerControllable LastSpawned => _serverSpawnedPlayers.Count != 0 ? _serverSpawnedPlayers.Last() : null;
 
         protected override void OnStart()
         {
@@ -153,6 +155,8 @@ namespace SS3D.Systems.Entities
             }
 
             _alreadySpawnedInitialPlayers = true;
+            InitialPlayersSpawnedEvent initialPlayersSpawnedEvent = new(_serverSpawnedPlayers);
+            initialPlayersSpawnedEvent.Invoke(this);
         }
 
         /// <summary>

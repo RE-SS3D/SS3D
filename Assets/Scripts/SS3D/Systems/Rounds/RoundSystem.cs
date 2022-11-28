@@ -67,12 +67,10 @@ namespace SS3D.Systems.Rounds
             while (IsWarmingUp && RoundSeconds > 0)
             {
                 await UniTask.Delay(second, cancellationToken: TickCancellationToken.Token);
-
                 RoundSeconds--;
             }
 
             RoundState = RoundState.Ongoing;
-
             Punpun.Say(this, "Starting round tick", Logs.ServerOnly);
 
             while (IsOngoing)
