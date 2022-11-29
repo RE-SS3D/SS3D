@@ -250,10 +250,10 @@ RectTransform:
   m_Father: {fileID: 753628596}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 11}
-  m_SizeDelta: {x: 1160, y: 230}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: 0, y: 151}
+  m_SizeDelta: {x: -60, y: 230}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &181528522
 MonoBehaviour:
@@ -604,7 +604,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1715766333}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99998724
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1905,7 +1905,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 2, y: -229.99948}
+  m_AnchoredPosition: {x: 2, y: -229.99924}
   m_SizeDelta: {x: -2, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1160125841
@@ -1942,7 +1942,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Delete later
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b15191f8467876c41b08ab0e8d015414, type: 2}
   m_sharedMaterial: {fileID: 6294272732967332687, guid: b15191f8467876c41b08ab0e8d015414, type: 2}

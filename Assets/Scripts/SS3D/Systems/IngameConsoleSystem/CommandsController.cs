@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
-namespace SS3D.UI.IngameConsole
+namespace SS3D.Systems.IngameConsoleSystem
 {
     public class CommandsController
     {
+        // TODO: implement permissions control through attribute
         private struct CommandInfo
         {
             public MethodInfo CommandMethod;
@@ -51,33 +53,38 @@ namespace SS3D.UI.IngameConsole
 
             if (_allMethods.ContainsKey(splittedCommand[0]))
             {
+                MethodInfo commandMethod = _allMethods[splittedCommand[0]].CommandMethod;
                 object[] args;
                 if (splittedCommand.Length > 1)
                 {
-                    ParameterInfo[] commandParameterInfos = _allMethods[splittedCommand[0]].CommandMethod.GetParameters();
-                    if (splittedCommand.Length - 1 != commandParameterInfos.Length)
+                    List<object> temp = splittedCommand.ToList().GetRange(1, splittedCommand.Length - 1)
+                        .Select(x => (object)x).ToList();
+                    int paramsLength = commandMethod.GetParameters().Length;
+                    if (!commandMethod.GetParameters().Any(x => x.ParameterType.IsArray))
                     {
-                        return "Wrong args. \"Type (command) help\"";
+                        args = temp.ToArray();
                     }
-                    args = splittedCommand.ToList().GetRange(1, splittedCommand.Length - 1).ToArray();
-                    args = Array.ConvertAll(args, item => (object)item);
-                    try
+                    else
                     {
-                        for (int i = 0; i < commandParameterInfos.Length; i++)
-                        {
-                            args[i] = Convert.ChangeType(args[i], commandParameterInfos[i].ParameterType);
-                        }
-                    }
-                    catch (FormatException)
-                    {
-                        return "Wrong args. Type \"(command) help\"";
+                        List<object> temp2 = temp.GetRange(paramsLength - 1, temp.Count - paramsLength + 1).ToList();
+                        temp.RemoveRange(paramsLength - 1, temp.Count - paramsLength + 1);
+                        temp.Add(temp2.ToArray());
+                        args = temp.ToArray();
                     }
                 }
                 else
                 {
                     args = new object[] {};
                 }
-                return (string)_allMethods[splittedCommand[0]].CommandMethod.Invoke(null, args);
+
+                try
+                {
+                    return (string)commandMethod.Invoke(null, args);
+                }
+                catch (Exception)
+                {
+                    return "Wrong args. Type \"(command) help\"";
+                }
             }
                 
             return "nothing";

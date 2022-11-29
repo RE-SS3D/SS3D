@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SS3D.UI.IngameConsole
+namespace SS3D.Systems.IngameConsoleSystem
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class ShortDescriptionAttribute : Attribute
