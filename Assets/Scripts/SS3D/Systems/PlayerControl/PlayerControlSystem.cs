@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using FishNet.Connection;
 using FishNet.Object;
@@ -23,8 +24,11 @@ namespace SS3D.Systems.PlayerControl
         [SerializeField] private NetworkObject _unauthorizedUserPrefab;
         [SerializeField] private NetworkObject _soulPrefab;
 
-        [SyncObject] public readonly SyncList<Soul> ServerSouls = new();
-        [SyncObject] public readonly SyncList<Soul> OnlineSouls = new();
+        [SyncObject] private readonly SyncList<Soul> _serverSouls = new();
+        public List<Soul> ServerSouls => _serverSouls.ToList();
+
+        [SyncObject] private readonly SyncList<Soul> _onlineSouls = new();
+        public List<Soul> OnlineSouls => _onlineSouls.ToList();
 
         protected override void OnStart()
         {
@@ -44,8 +48,8 @@ namespace SS3D.Systems.PlayerControl
 
         private void AddEventListeners()
         {
-            ServerSouls.OnChange += HandleServerSoulsChanged;
-            OnlineSouls.OnChange += HandleOnlineSouls;
+            _serverSouls.OnChange += HandleServerSoulsChanged;
+            _onlineSouls.OnChange += HandleOnlineSouls;
         }
 
         private void HandleRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs remoteConnectionStateArgs)
@@ -67,7 +71,7 @@ namespace SS3D.Systems.PlayerControl
 
             Soul soul = changeType == ChangeType.Addition ? newItem : oldItem;
 
-            OnlineSoulsChanged serverSoulsChanged = new(OnlineSouls.ToList(), changeType, soul);
+            OnlineSoulsChanged serverSoulsChanged = new(_onlineSouls.ToList(), changeType, soul);
             serverSoulsChanged.Invoke(this);
         }
 
@@ -77,7 +81,7 @@ namespace SS3D.Systems.PlayerControl
 
             Soul soul = changeType == ChangeType.Addition ? newItem : oldItem;
 
-            ServerSoulsChanged serverSoulsChanged = new(ServerSouls.ToList(), changeType, soul);
+            ServerSoulsChanged serverSoulsChanged = new(_serverSouls.ToList(), changeType, soul);
             serverSoulsChanged.Invoke(this);
         }
 
@@ -115,7 +119,7 @@ namespace SS3D.Systems.PlayerControl
                 match = Instantiate(_soulPrefab).GetComponent<Soul>();
                 match.UpdateCkey(string.Empty, ckey, true);
 
-                ServerSouls.Add(match);
+                _serverSouls.Add(match);
 
                 ServerManager.Spawn(match.gameObject);
             }
@@ -127,7 +131,7 @@ namespace SS3D.Systems.PlayerControl
             NetworkObject networkObject = match.NetworkObject;
             networkObject.GiveOwnership(conn);
             
-            OnlineSouls.Add(match);
+            _onlineSouls.Add(match);
         }
 
         [Server]
@@ -150,7 +154,7 @@ namespace SS3D.Systems.PlayerControl
                 Soul soul = networkIdentity.GetComponent<Soul>();
                 if (soul != null)
                 {
-                    OnlineSouls.Remove(soul);
+                    _onlineSouls.Remove(soul);
                     soul.RemoveOwnership();
                     return;
                 }
@@ -162,17 +166,17 @@ namespace SS3D.Systems.PlayerControl
 
         public string GetCkey(NetworkConnection conn)
         {
-            return ServerSouls.Find(soul => soul.Owner == conn)?.Ckey;
+            return _serverSouls.Find(soul => soul.Owner == conn)?.Ckey;
         }
 
         public Soul GetSoul(string ckey)
         {
-            return ServerSouls.Find(soul => soul.Ckey == ckey);
+            return _serverSouls.Find(soul => soul.Ckey == ckey);
         }
 
         public Soul GetSoul(NetworkConnection conn)
         {
-            return ServerSouls.Find(soul => soul.Owner == conn);
+            return _serverSouls.Find(soul => soul.Owner == conn);
         }
     }
 }
