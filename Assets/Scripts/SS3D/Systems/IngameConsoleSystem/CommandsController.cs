@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem
 {
@@ -16,14 +15,16 @@ namespace SS3D.Systems.IngameConsoleSystem
             public string LongDescription;
         }
 
-        private Dictionary<string, CommandInfo> _allMethods = new();
+        private readonly Dictionary<string, CommandInfo> _allMethods = new();
         public CommandsController()
         {
             MethodInfo[] methodInfos = typeof(CommandsContainer).GetMethods(BindingFlags.Public|BindingFlags.Static);
             foreach (MethodInfo i in methodInfos)
             {
-                CommandInfo method = new CommandInfo();
-                method.CommandMethod = i;
+                CommandInfo method = new CommandInfo
+                {
+                    CommandMethod = i
+                };
                 foreach (Attribute j in i.GetCustomAttributes())
                 {
                     if (j is ShortDescriptionAttribute shortDescription)
@@ -37,27 +38,27 @@ namespace SS3D.Systems.IngameConsoleSystem
 
         public string ProcessCommand(string command)
         {
-            string[] splittedCommand = command.Split(' ');
-            if (splittedCommand[0] == "help")
+            string[] splitCommand = command.Split(' ');
+            if (splitCommand[0] == "help")
             {
                 return HelpCommand();
             }
 
-            if (splittedCommand.Length > 1)
+            if (splitCommand.Length > 1)
             {
-                if (splittedCommand[1] == "help")
+                if (splitCommand[1] == "help")
                 {
                     return LongHelpCommand(command);
                 }
             }
 
-            if (_allMethods.ContainsKey(splittedCommand[0]))
+            if (_allMethods.ContainsKey(splitCommand[0]))
             {
-                MethodInfo commandMethod = _allMethods[splittedCommand[0]].CommandMethod;
+                MethodInfo commandMethod = _allMethods[splitCommand[0]].CommandMethod;
                 object[] args;
-                if (splittedCommand.Length > 1)
+                if (splitCommand.Length > 1)
                 {
-                    List<object> temp = splittedCommand.ToList().GetRange(1, splittedCommand.Length - 1)
+                    List<object> temp = splitCommand.ToList().GetRange(1, splitCommand.Length - 1)
                         .Select(x => (object)x).ToList();
                     int paramsLength = commandMethod.GetParameters().Length;
                     if (!commandMethod.GetParameters().Any(x => x.ParameterType.IsArray))
@@ -81,16 +82,15 @@ namespace SS3D.Systems.IngameConsoleSystem
                 {
                     return (string)commandMethod.Invoke(null, args);
                 }
-                catch (Exception)
+                catch (TargetParameterCountException)
                 {
                     return "Wrong args. Type \"(command) help\"";
                 }
             }
-                
             return "nothing";
         }
 
-        public string HelpCommand()
+        private string HelpCommand()
         {
             string ret = "";
             foreach (KeyValuePair<string, CommandInfo> i in _allMethods)
@@ -101,7 +101,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             return ret;
         }
 
-        public string LongHelpCommand(string command)
+        private string LongHelpCommand(string command)
         {
             return _allMethods[command.Split(' ')[0]].LongDescription;
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Coimbra;
+using FishNet;
 using SS3D.Core.Behaviours;
 using TMPro;
 using UnityEngine;

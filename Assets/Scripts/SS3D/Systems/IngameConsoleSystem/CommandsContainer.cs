@@ -4,22 +4,30 @@ using System.Diagnostics;
 using System.Linq;
 using SS3D.Core;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
 using UnityEngine.Device;
+using Debug = UnityEngine.Debug;
 
 namespace SS3D.Systems.IngameConsoleSystem
 {
     public static class CommandsContainer
     {
-        private const string wrongArgsText = "Wrong args. Type \"(command) help\"";
+        private const string WrongArgsText = "Wrong args. Type \"(command) help\"";
         [ShortDescription("Repeat your string")]
         [LongDescription("echo (number) (your string)")]
-        // TODO: actually take da string
         public static string Echo(string times, params object[] a)
         {
-            string[] target = Array.ConvertAll(a, item => (string)item);
-            return String.Concat(Enumerable.Repeat(String.Join(" ", a), Int32.Parse(times)));
+            try
+            {
+                Int32.Parse(times);
             }
+            catch (FormatException)
+            {
+                return WrongArgsText;
+            }
+            return String.Concat(Enumerable.Repeat(String.Join(" ", a), Int32.Parse(times)));
+        }
         [ShortDescription("Close app")]
         [LongDescription("Close app")]
         public static string Quit()
@@ -58,6 +66,22 @@ namespace SS3D.Systems.IngameConsoleSystem
                 ret += i.Ckey + "\t";
             }
             return ret;
+        }
+
+        public static string ChangePerms(string ckey, string role)
+        {
+            string[] roleNames = typeof(ServerRoleTypes).GetFields().Select(item => item.Name).ToArray();
+            string foundRoleName = Array.Find(roleNames, item => item.ToLower() == role);
+            if (foundRoleName != null)
+            {
+                ServerRoleTypes.TryParse(foundRoleName, out ServerRoleTypes foundRole);
+                GameSystems.Get<PermissionSystem>().ChangeUserPermission(ckey, foundRole);
+                return "Done";
+            }
+            else
+            {
+                return WrongArgsText;
+            }
         }
     }
 }
