@@ -11,15 +11,26 @@ namespace SS3D.Systems.IngameConsoleSystem
     public class ConsoleController : SpessBehaviour
     {
         [SerializeField] private RectTransform _consolePanel;
+        /// <summary>
+        /// Object, that contains command responses
+        /// </summary>
         [SerializeField] private GameObject _contentContainer;
+        /// <summary>
+        /// Opening/closing speed
+        /// </summary>
         [SerializeField] private float _movingSpeed = 2500f;
         [SerializeField] private TMP_InputField _inputField;
+        // Used for opening/closing
         private bool _isSliding = false;
         private bool _isShowed = false;
         private Vector2 _targetPointMax;
         private Vector2 _targetPointMin;
+        /// <summary>
+        /// Text field with command responses in _contentContainer
+        /// </summary>
         private TextMeshProUGUI _textField;
         private CommandsController _commandsController;
+        // Used for choosing command via arrows
         [SerializeField] private List<string> _allPrevCommands = new() {""};
         private int _chosenPrevCommand = 0;
 
@@ -66,14 +77,11 @@ namespace SS3D.Systems.IngameConsoleSystem
             {
                 return 1;
             }
-
             if (Input.GetKeyDown(KeyCode.DownArrow))
             {
                 return -1;
             }
-
             return 0;
-
         }
 
         private void Slide()
@@ -86,7 +94,9 @@ namespace SS3D.Systems.IngameConsoleSystem
                 _isShowed = !_isShowed;
             }
         }
-
+        /// <summary>
+        /// Handle command taking from input field and showing a response 
+        /// </summary>
         public void ProcessCommand()
         {
             string command = _inputField.text;

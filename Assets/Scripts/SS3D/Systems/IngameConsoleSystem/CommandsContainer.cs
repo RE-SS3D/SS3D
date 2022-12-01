@@ -18,15 +18,16 @@ namespace SS3D.Systems.IngameConsoleSystem
         [LongDescription("echo (number) (your string)")]
         public static string Echo(string times, params object[] a)
         {
+            int timesNumber;
             try
             {
-                Int32.Parse(times);
+                timesNumber = Int32.Parse(times);
             }
             catch (FormatException)
             {
                 return WrongArgsText;
             }
-            return String.Concat(Enumerable.Repeat(String.Join(" ", a), Int32.Parse(times)));
+            return String.Concat(Enumerable.Repeat(string.Join(" ", a), timesNumber));
         }
         [ShortDescription("Close app")]
         [LongDescription("Close app")]
@@ -67,7 +68,8 @@ namespace SS3D.Systems.IngameConsoleSystem
             }
             return ret;
         }
-
+        [ShortDescription("Change user permission")]
+        [LongDescription("changeperms (user ckey) (required role)")]
         public static string ChangePerms(string ckey, string role)
         {
             string[] roleNames = typeof(ServerRoleTypes).GetFields().Select(item => item.Name).ToArray();

@@ -7,14 +7,15 @@ namespace SS3D.Systems.IngameConsoleSystem
 {
     public class CommandsController
     {
-        // TODO: implement permissions control through attribute
         private struct CommandInfo
         {
             public MethodInfo CommandMethod;
             public string ShortDescription;
             public string LongDescription;
         }
-
+        /// <summary>
+        /// Contains all command infos and their names in lowercase
+        /// </summary>
         private readonly Dictionary<string, CommandInfo> _allMethods = new();
         public CommandsController()
         {
@@ -35,7 +36,11 @@ namespace SS3D.Systems.IngameConsoleSystem
                 _allMethods.Add(i.Name.ToLower(), method);
             }
         }
-
+        /// <summary>
+        /// Find and call command
+        /// </summary>
+        /// <param name="command">Command and its args separated by spaces</param>
+        /// <returns>Command response</returns>
         public string ProcessCommand(string command)
         {
             string[] splitCommand = command.Split(' ');
@@ -43,7 +48,6 @@ namespace SS3D.Systems.IngameConsoleSystem
             {
                 return HelpCommand();
             }
-
             if (splitCommand.Length > 1)
             {
                 if (splitCommand[1] == "help")
@@ -51,7 +55,7 @@ namespace SS3D.Systems.IngameConsoleSystem
                     return LongHelpCommand(command);
                 }
             }
-
+            // Find proper command body ant prepare correct args
             if (_allMethods.ContainsKey(splitCommand[0]))
             {
                 MethodInfo commandMethod = _allMethods[splitCommand[0]].CommandMethod;
@@ -67,6 +71,7 @@ namespace SS3D.Systems.IngameConsoleSystem
                     }
                     else
                     {
+                        // If command requires dynamic args, provide it
                         List<object> temp2 = temp.GetRange(paramsLength - 1, temp.Count - paramsLength + 1).ToList();
                         temp.RemoveRange(paramsLength - 1, temp.Count - paramsLength + 1);
                         temp.Add(temp2.ToArray());
@@ -89,7 +94,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             }
             return "nothing";
         }
-
+        /// <returns>All available commands with short descriptions as string</returns>
         private string HelpCommand()
         {
             string ret = "";
@@ -100,7 +105,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 
             return ret;
         }
-
+        /// <returns>Exact command with long descriptiption as string</returns>
         private string LongHelpCommand(string command)
         {
             return _allMethods[command.Split(' ')[0]].LongDescription;
