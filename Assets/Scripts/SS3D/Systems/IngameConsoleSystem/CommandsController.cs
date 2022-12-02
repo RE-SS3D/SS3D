@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem
 {
@@ -29,7 +30,7 @@ namespace SS3D.Systems.IngameConsoleSystem
                 foreach (Attribute j in i.GetCustomAttributes())
                 {
                     if (j is ShortDescriptionAttribute shortDescription)
-                        method.ShortDescription = shortDescription.Descrition;
+                        method.ShortDescription = shortDescription.Description;
                     else if (j is LongDescriptionAttribute longDescription)
                         method.LongDescription = longDescription.Description;
                 }
@@ -44,7 +45,8 @@ namespace SS3D.Systems.IngameConsoleSystem
         public string ProcessCommand(string command)
         {
             string[] splitCommand = command.Split(' ');
-            if (splitCommand[0] == "help")
+            string commandName = splitCommand[0]; 
+            if (commandName == "help")
             {
                 return HelpCommand();
             }
@@ -78,14 +80,14 @@ namespace SS3D.Systems.IngameConsoleSystem
 
                 try
                 {
-                    Console.WriteLine((string)commandMethod.Invoke(null, args.ToArray()));
+                    return (string)commandMethod.Invoke(null, args.ToArray());
                 }
                 catch (TargetParameterCountException)
                 {
                     return "Wrong args. Type \"(command) help\"";
                 }
-            }
-            return "nothing";
+            } 
+            return "No such command exists";
         }
         /// <returns>All available commands with short descriptions as string</returns>
         private string HelpCommand()
@@ -98,7 +100,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 
             return ret;
         }
-        /// <returns>Exact command with long descriptiption as string</returns>
+        /// <returns>Exact command with long description as string</returns>
         private string LongHelpCommand(string command)
         {
             return _allMethods[command.Split(' ')[0]].LongDescription;

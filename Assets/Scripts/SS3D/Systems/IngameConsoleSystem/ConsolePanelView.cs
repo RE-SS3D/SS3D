@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Coimbra;
-using FishNet;
 using SS3D.Core.Behaviours;
 using TMPro;
 using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem
 {
-    public class ConsoleController : SpessBehaviour
+    public class ConsolePanelView : SpessBehaviour
     {
         [SerializeField] private RectTransform _consolePanel;
         /// <summary>
@@ -38,6 +37,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         {
             base.OnStart();
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
+            //_inputField.resetOnDeActivation = true;
             _commandsController = new CommandsController();
         }
 
@@ -58,9 +58,17 @@ namespace SS3D.Systems.IngameConsoleSystem
             {
                 _isSliding = true;
                 if (_isShowed)
+                {
                     _targetPointMin = Vector2.zero;
+                    _inputField.ReleaseSelection();
+                    _inputField.DeactivateInputField();
+                }
                 else
+                {
                     _targetPointMin = new Vector2(0, -_consolePanel.rect.height);
+                    _inputField.Select();
+                    _inputField.ActivateInputField();
+                }
                 _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             }
 
@@ -99,6 +107,8 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// </summary>
         public void ProcessCommand()
         {
+            if (_isSliding)
+                return;
             string command = _inputField.text;
             AddText("> <color=#742F27>" + command + "</color>");
             _allPrevCommands.RemoveLast();

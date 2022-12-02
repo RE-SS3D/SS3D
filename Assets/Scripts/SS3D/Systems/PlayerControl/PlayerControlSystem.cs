@@ -28,7 +28,7 @@ namespace SS3D.Systems.PlayerControl
         public IList<Soul> ServerSouls => _serverSouls;
 
         [SyncObject] private readonly SyncList<Soul> _onlineSouls = new();
-        public List<Soul> OnlineSouls => _onlineSouls.ToList();
+        public IList<Soul> OnlineSouls => _onlineSouls;
 
         protected override void OnStart()
         {

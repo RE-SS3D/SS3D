@@ -7,7 +7,6 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
 using UnityEngine.Device;
-using Debug = UnityEngine.Debug;
 
 namespace SS3D.Systems.IngameConsoleSystem
 {
@@ -82,7 +81,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             }
             else
             {
-                return WrongArgsText;
+                return "This role doesn't exist";
             }
         }
     }
