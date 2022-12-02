@@ -37,7 +37,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         protected override void OnStart()
         {
             base.OnStart();
-            _textField = _contentContainer.GetComponent(typeof(TextMeshProUGUI)) as TextMeshProUGUI;
+            _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
             _commandsController = new CommandsController();
         }
 
