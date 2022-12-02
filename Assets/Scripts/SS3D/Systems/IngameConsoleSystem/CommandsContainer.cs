@@ -61,7 +61,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         public static string SoulList()
         {
             string ret = "";
-            List<Soul> souls = GameSystems.Get<PlayerControlSystem>().ServerSouls.ToList();
+            IList<Soul> souls = GameSystems.Get<PlayerControlSystem>().ServerSouls;
             foreach (Soul i in souls)
             {
                 ret += i.Ckey + "\t";
