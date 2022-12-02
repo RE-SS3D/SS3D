@@ -56,36 +56,29 @@ namespace SS3D.Systems.IngameConsoleSystem
                 }
             }
             // Find proper command body ant prepare correct args
-            if (_allMethods.ContainsKey(splitCommand[0]))
+            if (_allMethods.ContainsKey(commandName))
             {
-                MethodInfo commandMethod = _allMethods[splitCommand[0]].CommandMethod;
-                object[] args;
+                MethodInfo commandMethod = _allMethods[commandName].CommandMethod;
+                int paramsLength = commandMethod.GetParameters().Length;
+                List<object> args = new List<object>();
+
                 if (splitCommand.Length > 1)
                 {
-                    List<object> temp = splitCommand.ToList().GetRange(1, splitCommand.Length - 1)
-                        .Select(x => (object)x).ToList();
-                    int paramsLength = commandMethod.GetParameters().Length;
-                    if (!commandMethod.GetParameters().Any(x => x.ParameterType.IsArray))
+                    // Check if the command takes an array
+                    if (commandMethod.GetParameters().Any(x => x.ParameterType.IsArray))
                     {
-                        args = temp.ToArray();
+                        args.AddRange(splitCommand.Skip(1).Take(paramsLength - 1));
+                        args.Add(splitCommand.Skip(paramsLength).ToArray());
                     }
                     else
                     {
-                        // If command requires dynamic args, provide it
-                        List<object> temp2 = temp.GetRange(paramsLength - 1, temp.Count - paramsLength + 1).ToList();
-                        temp.RemoveRange(paramsLength - 1, temp.Count - paramsLength + 1);
-                        temp.Add(temp2.ToArray());
-                        args = temp.ToArray();
+                        args.AddRange(splitCommand.Skip(1));
                     }
-                }
-                else
-                {
-                    args = new object[] {};
                 }
 
                 try
                 {
-                    return (string)commandMethod.Invoke(null, args);
+                    Console.WriteLine((string)commandMethod.Invoke(null, args.ToArray()));
                 }
                 catch (TargetParameterCountException)
                 {
