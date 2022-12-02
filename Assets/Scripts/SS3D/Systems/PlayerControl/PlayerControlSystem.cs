@@ -25,7 +25,7 @@ namespace SS3D.Systems.PlayerControl
         [SerializeField] private NetworkObject _soulPrefab;
 
         [SyncObject] private readonly SyncList<Soul> _serverSouls = new();
-        public List<Soul> ServerSouls => _serverSouls.ToList();
+        public IList<Soul> ServerSouls => _serverSouls;
 
         [SyncObject] private readonly SyncList<Soul> _onlineSouls = new();
         public List<Soul> OnlineSouls => _onlineSouls.ToList();
