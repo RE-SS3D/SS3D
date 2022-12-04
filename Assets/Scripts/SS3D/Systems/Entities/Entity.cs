@@ -36,7 +36,6 @@ namespace SS3D.Systems.Entities
 
         private void OnSpawn()
         {
-            UpdateCameraFollow();
             ControllingSoulChanged?.Invoke(ControllingSoul);
         }
 
@@ -44,13 +43,6 @@ namespace SS3D.Systems.Entities
         public void ProcessDespawn()
         {
             TransformCache.DOScale(0, ScaleInDuration).SetEase(Ease.OutElastic).OnComplete(() => ServerManager.Despawn(GameObjectCache));
-        }
-
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-
-            UpdateCameraFollow();
         }
 
         private void UpdateCameraFollow()
