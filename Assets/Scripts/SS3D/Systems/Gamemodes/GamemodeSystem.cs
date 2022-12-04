@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using SS3D.Core.Behaviours;
 using Coimbra.Services.Events;
 using FishNet.Connection;
@@ -22,7 +21,7 @@ namespace SS3D.Systems.Gamemodes
     public sealed class GamemodeSystem : NetworkedSystem
     {
         /// <summary>
-        /// The gamemode that is being used
+        /// The gamemode that is being used.
         /// </summary>
         [SerializeField] private Gamemode _gamemode;
 
@@ -37,8 +36,15 @@ namespace SS3D.Systems.Gamemodes
             Setup();
         }
 
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+
+            CmdGetCurrentClientObjectives();
+        }
+
         /// <summary>
-        /// Prepares the gamemode
+        /// Prepares the gamemode.
         /// </summary>
         [Server]
         private void Setup()
@@ -46,23 +52,6 @@ namespace SS3D.Systems.Gamemodes
             _eventHandles.Add(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
             _eventHandles.Add(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersChanged));
             _eventHandles.Add(InitialPlayersSpawnedEvent.AddListener(HandleInitialPlayersSpawned));
-        }
-
-        private void HandleInitialPlayersSpawned(ref EventContext context, in InitialPlayersSpawnedEvent e)
-        {
-            InitializeGamemode();   
-        }
-
-        [Server]
-        private void HandleSpawnedPlayersChanged(ref EventContext context, in SpawnedPlayersUpdated e)
-        {
-            EntitySpawnSystem entitySpawnSystem = SystemLocator.Get<EntitySpawnSystem>();
-            PlayerControllable player = entitySpawnSystem.LastSpawned;
-
-            if (player != null)
-            {
-                _gamemode.CreateLateJoinObjective(player);
-            }
         }
 
         /// <summary>
@@ -130,6 +119,45 @@ namespace SS3D.Systems.Gamemodes
         }
 
         /// <summary>
+        /// Asks the server for the current GamemodeObjectives for a client that joined late.
+        /// </summary>
+        /// <param name="sender">Who asked the objectives.</param>
+        [ServerRpc(RequireOwnership = false)]
+        private void CmdGetCurrentClientObjectives(NetworkConnection sender = null)
+        {
+            List<GamemodeObjective> gamemodeObjectives = _gamemode.GetPlayerObjectives(sender);
+
+            foreach (GamemodeObjective gamemodeObjective in gamemodeObjectives)
+            {
+                SendObjectiveToClients(gamemodeObjective);
+            }
+        }
+
+        /// <summary>
+        /// Called whenever the ready players are spawned at the start of the round.          
+        /// </summary>
+        [Server]
+        private void HandleInitialPlayersSpawned(ref EventContext context, in InitialPlayersSpawnedEvent e)
+        {
+            InitializeGamemode();   
+        }
+
+        /// <summary>
+        /// Called whenever a new player is spawned.
+        /// </summary>
+        [Server]
+        private void HandleSpawnedPlayersChanged(ref EventContext context, in SpawnedPlayersUpdated e)
+        {
+            EntitySpawnSystem entitySpawnSystem = SystemLocator.Get<EntitySpawnSystem>();
+            PlayerControllable player = entitySpawnSystem.LastSpawned;
+
+            if (player != null)
+            {
+                _gamemode.CreateLateJoinObjective(player);
+            }
+        }
+
+        /// <summary>
         /// Called whenever the round state is updated.
         /// </summary>
         [Server]
@@ -153,6 +181,9 @@ namespace SS3D.Systems.Gamemodes
              // TODO: Send clients all objectives in that round.
         }
 
+        /// <summary>
+        /// Called once the gamemode is initialized.
+        /// </summary>
         [Server]
         private void HandleGamemodeInitialized()
         {
@@ -160,9 +191,9 @@ namespace SS3D.Systems.Gamemodes
         }
 
         /// <summary>
-        /// Called when an objective is updated, sends
+        /// Called when an objective is updated, sends it to the client.
         /// </summary>
-        /// <param name="objective"></param>
+        /// <param name="objective">The objective to be sent.</param>
         [Server]
         private void HandleObjectiveUpdated(GamemodeObjective objective)
         {

@@ -2,6 +2,7 @@ using System;
 using SS3D.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Events;
@@ -55,7 +56,14 @@ namespace SS3D.Systems.GameModes.Modes
         /// <summary>
         /// The objectives in the current round.
         /// </summary>
-        public List<GamemodeObjective> RoundObjectives => _roundObjectives;                                                                     
+        public List<GamemodeObjective> RoundObjectives => _roundObjectives;
+
+        /// <summary>
+        /// Gets the objectives for a specific player.1
+        /// </summary>
+        /// <param name="assignee">The player whose objectives will be retrieved.</param>
+        /// <returns></returns>
+        public List<GamemodeObjective> GetPlayerObjectives(NetworkConnection assignee) => _roundObjectives.Where(objective => objective.Assignee == assignee).ToList();
 
         /// <summary>
         /// Initializes the gamemode, it is virtual so custom initialization is possible.
