@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using FishNet.Connection;
 using FishNet.Object;
@@ -23,10 +24,11 @@ namespace SS3D.Systems.PlayerControl
         [SerializeField] private NetworkObject _unauthorizedUserPrefab;
         [SerializeField] private NetworkObject _soulPrefab;
 
-        [SyncObject]
-        private readonly SyncList<Soul> _serverSouls = new();
-        [SyncObject] 
-        private readonly SyncList<Soul> _onlineSouls = new();
+        [SyncObject] private readonly SyncList<Soul> _serverSouls = new();
+        public IList<Soul> ServerSouls => _serverSouls;
+
+        [SyncObject] private readonly SyncList<Soul> _onlineSouls = new();
+        public IList<Soul> OnlineSouls => _onlineSouls;
 
         protected override void OnStart()
         {
