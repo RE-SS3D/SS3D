@@ -48,7 +48,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         public static string PlayerList()
         {
             string ret = "";
-            List<Soul> souls = GameSystems.Get<PlayerControlSystem>().OnlineSouls.ToList();
+            List<Soul> souls = SystemLocator.Get<PlayerControlSystem>().OnlineSouls.ToList();
             foreach (Soul i in souls)
             {
                 ret += i.Ckey + "\t";
@@ -60,7 +60,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         public static string SoulList()
         {
             string ret = "";
-            IList<Soul> souls = GameSystems.Get<PlayerControlSystem>().ServerSouls;
+            IList<Soul> souls = SystemLocator.Get<PlayerControlSystem>().ServerSouls;
             foreach (Soul i in souls)
             {
                 ret += i.Ckey + "\t";
@@ -76,7 +76,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             if (foundRoleName != null)
             {
                 ServerRoleTypes.TryParse(foundRoleName, out ServerRoleTypes foundRole);
-                GameSystems.Get<PermissionSystem>().ChangeUserPermission(ckey, foundRole);
+                SystemLocator.Get<PermissionSystem>().ChangeUserPermission(ckey, foundRole);
                 return "Done";
             }
             else
