@@ -7,7 +7,7 @@ namespace SS3D.Systems.GameModes.UI
     public class GamemodeUI : MonoBehaviour
     {
         public TextMeshProUGUI MainText;
-        public ObjectivesView ObjectivesView;
+        public GamemodeObjectivesView _gamemodeObjectivesView;
 
         public void SetMainText(string _text, Color _color)
         {

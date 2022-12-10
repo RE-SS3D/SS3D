@@ -254,7 +254,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _unreliableMTU: 1023
-  _ipv4BindAddress: 
+  _ipv4BindAddress: 0.0.0.0
   _ipv6BindAddress: 
   _port: 4554
   _maximumClients: 100
