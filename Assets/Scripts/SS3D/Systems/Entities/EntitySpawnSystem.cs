@@ -21,7 +21,7 @@ namespace SS3D.Systems.Entities
     /// <summary>
     /// Controls player spawning.
     /// </summary>
-    public class EntitySpawnSystem : NetworkedSystem
+    public class EntitySpawnSystem : NetworkSystem
     {
         [Header("Settings")]
         [SerializeField] private List<PlayerControllable> _tempHuman;

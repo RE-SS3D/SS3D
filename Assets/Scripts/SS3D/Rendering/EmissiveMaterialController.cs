@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SS3D.Rendering
 {
-    public class EmissiveMaterialController : SpessBehaviour
+    public class EmissiveMaterialController : Actor
     {
         [Range(0, 2f)]
         [SerializeField] private float _emissionIntensity;

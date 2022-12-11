@@ -18,7 +18,7 @@ namespace SS3D.Systems.Lobby.UI
     /// <summary>
     /// Controls a button that starts or stops a round
     /// </summary>
-    public class ChangeRoundStateView : SpessBehaviour
+    public class ChangeRoundStateView : Actor
     {
         [SerializeField][NotNull] private ToggleLabelButton _startRoundButton;
 

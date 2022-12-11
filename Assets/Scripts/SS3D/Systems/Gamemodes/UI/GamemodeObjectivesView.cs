@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.GameModes.UI
 {
-    public class GamemodeObjectivesView : NetworkedSpessBehaviour
+    public class GamemodeObjectivesView : NetworkActor
     {
         private GamemodeObjectivePanelView _objectivePanelView;
 

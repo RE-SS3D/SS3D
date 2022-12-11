@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace SS3D.Systems.Interactions
 {
-    public class RadialInteractionButton : SpessBehaviour, IPointerEnterHandler
+    public class RadialInteractionButton : Actor, IPointerEnterHandler
     {
         public bool Occupied;
 

@@ -9,7 +9,7 @@ namespace SS3D.Systems.Screens
     /// This handles the camera following the player when it is spawned.
     /// Also controls the rotation and zoom 
     /// </summary>
-    public class CameraFollow : SpessBehaviour
+    public class CameraFollow : Actor
     {
         /// <summary>
         /// The object to follow

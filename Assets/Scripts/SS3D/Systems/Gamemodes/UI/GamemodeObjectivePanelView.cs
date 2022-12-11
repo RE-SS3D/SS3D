@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.GameModes.UI
 {
-    public class GamemodeObjectivePanelView : SpessBehaviour
+    public class GamemodeObjectivePanelView : Actor
     {
         private GamemodeObjectiveItemView _itemViewPrefab;
         private GameObject _content;

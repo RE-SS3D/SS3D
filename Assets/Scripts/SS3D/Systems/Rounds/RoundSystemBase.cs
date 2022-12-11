@@ -24,7 +24,7 @@ namespace SS3D.Systems.Rounds
     /// <summary>
     /// Base for the round system, done here to avoid too much code in the round system 
     /// </summary>
-    public class RoundSystemBase : NetworkedSystem
+    public class RoundSystemBase : NetworkSystem
     {
         /// <summary>
         /// The current round state.

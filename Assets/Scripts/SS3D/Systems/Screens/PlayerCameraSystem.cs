@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Screens
 {
-    public class PlayerCameraSystem  : SpessSystem
+    public class PlayerCameraSystem  : Core.Behaviours.System
     {
         [SerializeField] private Camera _camera;
         [SerializeField] private CameraFollow _cameraFollow;

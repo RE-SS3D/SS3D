@@ -17,7 +17,7 @@ namespace SS3D.Systems.PlayerControl
     /// <summary>
     /// Controls the player flux, when users want to authenticate, rejoin the game, leave the game
     /// </summary>
-    public sealed class PlayerControlSystem : NetworkedSystem
+    public sealed class PlayerControlSystem : NetworkSystem
     {
         [FormerlySerializedAs("_userPrefab")]
         [Header("Settings")]

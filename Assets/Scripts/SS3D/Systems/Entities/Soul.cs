@@ -11,7 +11,7 @@ namespace SS3D.Systems.Entities
     /// Unique, persistent object that the player owns, it manages what character it is controlling and stores other player data.
     /// </summary>
     [Serializable]
-    public sealed class Soul : NetworkedSpessBehaviour
+    public sealed class Soul : NetworkActor
     {
         [SyncVar(OnChange = nameof(UpdateCkey))] private string _ckey;
 

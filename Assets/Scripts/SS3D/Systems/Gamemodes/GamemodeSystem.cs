@@ -18,7 +18,7 @@ namespace SS3D.Systems.Gamemodes
     /// <summary>
     /// Controls the gamemode that the round will use. Does all the networking magic.
     /// </summary>
-    public sealed class GamemodeSystem : NetworkedSystem
+    public sealed class GamemodeSystem : NetworkSystem
     {
         /// <summary>
         /// The gamemode that is being used.

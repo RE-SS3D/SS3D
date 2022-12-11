@@ -3,7 +3,7 @@
     /// <summary>
     /// Used on networked objects that wont have two of the same time. Should not be instantiated at runtime.
     /// </summary>
-    public class NetworkedSystem : NetworkedSpessBehaviour
+    public class NetworkSystem : NetworkActor
     {
         /// <summary>
         /// Registers the system on awake.

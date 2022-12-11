@@ -17,7 +17,7 @@ namespace SS3D.Systems.Interactions
     /// <summary>
     /// Attached to the player, initiates interactions.
     /// </summary>
-    public sealed class InteractionController : NetworkedSpessBehaviour
+    public sealed class InteractionController : NetworkActor
     {
         /// <summary>
         /// Mask for physics to use when finding targets

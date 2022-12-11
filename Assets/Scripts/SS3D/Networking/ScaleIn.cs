@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SS3D.Networking
 {
-    public class ScaleIn : NetworkedSpessBehaviour
+    public class ScaleIn : NetworkActor
     {
         public Transform ObjectToScale;
 

@@ -12,7 +12,7 @@ namespace SS3D.UI.Buttons
     /// Custom SS3D button, works similarly as Unity's
     /// </summary>
     [AddComponentMenu("| SS3D/UI/Label Button")]
-    public class LabelButton : SpessBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler, IPointerDownHandler
+    public class LabelButton : Actor, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler, IPointerDownHandler
     {
         public event Action<bool, MouseButtonType> OnPressed;
         public event Action<bool> OnPressedDown; 

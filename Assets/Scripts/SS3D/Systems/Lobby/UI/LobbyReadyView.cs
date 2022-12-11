@@ -13,7 +13,7 @@ using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 
 namespace SS3D.Systems.Lobby.UI
 {
-    public sealed class LobbyReadyView : NetworkedSpessBehaviour
+    public sealed class LobbyReadyView : NetworkActor
     {
         [SerializeField] private ToggleLabelButton _readyButton;
         [SerializeField] private LabelButton _embarkButton;

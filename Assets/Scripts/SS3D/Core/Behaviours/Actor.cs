@@ -10,7 +10,7 @@ namespace SS3D.Core.Behaviours
     /// Used to optimize all GameObjects, avoid MonoBehaviours
     /// </summary>
     [Tooltip("Used to optimize all GameObjects, avoid MonoBehaviours")]
-    public class SpessBehaviour : MonoBehaviour
+    public class Actor : MonoBehaviour
     {
         private GameObject _gameObjectCache;
         private Transform _transformCache;

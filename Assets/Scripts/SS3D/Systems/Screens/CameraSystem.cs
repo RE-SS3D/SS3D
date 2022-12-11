@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace SS3D.Systems.Screens
 {
-    public class CameraSystem : SpessSystem
+    public class CameraSystem : Core.Behaviours.System
     {
-        [SerializeField] private SpessBehaviour _playerCamera;
+        [SerializeField] private Actor _playerCamera;
 
-        public SpessBehaviour PlayerCamera => _playerCamera;
+        public Actor PlayerCamera => _playerCamera;
     }
 }

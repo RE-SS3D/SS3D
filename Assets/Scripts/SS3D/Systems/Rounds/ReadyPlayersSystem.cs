@@ -19,7 +19,7 @@ namespace SS3D.Systems.Rounds
     /// <summary>
     /// Sets what players are ready or not.
     /// </summary>
-    public class ReadyPlayersSystem : NetworkedSystem
+    public class ReadyPlayersSystem : NetworkSystem
     {
         [SyncObject] private readonly SyncList<string> _readyPlayers = new();
 

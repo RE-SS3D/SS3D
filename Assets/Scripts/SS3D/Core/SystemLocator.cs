@@ -36,7 +36,7 @@ namespace SS3D.Core
         /// </summary>
         /// <typeparam name="T">The Type of object you want to get.</typeparam>
         /// <returns></returns>
-        public static T Get<T>() where T : Object
+        public static T Get<T>() where T : MonoBehaviour
         {
             if (Systems.TryGetValue(typeof(T), out object match))
             {

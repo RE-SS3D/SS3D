@@ -15,7 +15,7 @@ namespace SS3D.Systems.Permissions
     /// <summary>
     /// TODO: Make a simple permission system based on a .txt file to avoid non-admins from starting a round
     /// </summary>
-    public sealed class PermissionSystem : NetworkedSystem
+    public sealed class PermissionSystem : NetworkSystem
     {
         private const string EditorPermissionFilePath = "/Builds/Config/permissions.txt";
         private const string PermissionFilePath = "/Config/permissions.txt";

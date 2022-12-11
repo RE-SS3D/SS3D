@@ -12,7 +12,7 @@ namespace SS3D.Systems.Storage.Containers
     /// <summary>
     /// A container attached to a gameobject
     /// </summary>
-    public class AttachedContainer : NetworkedSpessBehaviour
+    public class AttachedContainer : NetworkActor
     {
         /// <summary>
         /// The creatures looking at this container

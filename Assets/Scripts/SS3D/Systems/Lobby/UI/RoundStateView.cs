@@ -14,7 +14,7 @@ namespace SS3D.Systems.Lobby.UI
     /// <summary>
     /// Handles the lobby countdown view
     /// </summary>
-    public class RoundStateView : SpessBehaviour
+    public class RoundStateView : Actor
     {
         [SerializeField][NotNull] private TMP_Text _roundCountdownText;
 

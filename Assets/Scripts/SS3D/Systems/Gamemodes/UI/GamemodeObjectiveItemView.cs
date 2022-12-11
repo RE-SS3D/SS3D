@@ -4,7 +4,7 @@ using TMPro;
 
 namespace SS3D.Systems.GameModes.UI
 {
-    public class GamemodeObjectiveItemView : SpessBehaviour
+    public class GamemodeObjectiveItemView : Actor
     {
         public GamemodeObjective Objective;
         public TMP_Text _text;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Entities.Debug
 {
-    public class MindSwapDebug : NetworkedSpessBehaviour
+    public class MindSwapDebug : NetworkActor
     {
         public GameObject Origin;
         public GameObject Target;

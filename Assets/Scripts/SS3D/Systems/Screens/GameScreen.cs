@@ -11,7 +11,7 @@ namespace SS3D.Systems.Screens
     /// <summary>
     /// Controls a screen that can be activated and deactivated globally using events
     /// </summary>
-    public class GameScreen : SpessBehaviour
+    public class GameScreen : Actor
     {
         [SerializeField] private ScreenType _screenType;
         [SerializeField] private CanvasGroup _canvasGroup;

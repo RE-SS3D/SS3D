@@ -11,7 +11,7 @@ namespace SS3D.Systems.Entities.Silicon
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
-    public class ThreadController : NetworkedSpessBehaviour
+    public class ThreadController : NetworkActor
     {
         public event Action<float> OnSpeedChanged;
         public event Action<bool> OnPowerChanged; 
@@ -36,7 +36,7 @@ namespace SS3D.Systems.Entities.Silicon
         
         private float _smoothedX;
         private float _smoothedY;
-        private SpessBehaviour _camera;
+        private Actor _camera;
 
         protected override void OnStart()
         {
