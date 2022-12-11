@@ -4,10 +4,11 @@ using Coimbra;
 using SS3D.Core.Behaviours;
 using TMPro;
 using UnityEngine;
+using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Systems.IngameConsoleSystem
 {
-    public class ConsolePanelView : SpessBehaviour
+    public class ConsolePanelView : Actor
     {
         [SerializeField] private RectTransform _consolePanel;
         /// <summary>
