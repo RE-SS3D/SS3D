@@ -12,11 +12,12 @@ namespace SS3D.Systems.Entities
     /// <summary>
     /// Base class for all things that can be controlled by a player
     /// </summary>
+    [Serializable]
     public class PlayerControllable : NetworkActor
     {
         public Action<Soul> ControllingSoulChanged;
 
-        [SyncVar(OnChange = "SyncControllingSoul")] private Soul _controllingSoul;
+        [SerializeField] [SyncVar(OnChange = "SyncControllingSoul")] private Soul _controllingSoul;
 
         public Soul ControllingSoul
         {

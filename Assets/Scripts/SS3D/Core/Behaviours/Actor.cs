@@ -15,13 +15,15 @@ namespace SS3D.Core.Behaviours
         private GameObject _gameObjectCache;
         private Transform _transformCache;
 
+        private bool _initialized;
+
         private readonly List<EventHandle> _eventHandles = new();
 
         public Transform TransformCache
         {
             get
             {
-                if (_transformCache == null)
+                if (!_initialized)
                 {
                     _transformCache = transform;
                 }
@@ -35,7 +37,7 @@ namespace SS3D.Core.Behaviours
         {
             get
             {
-                if (_gameObjectCache == null)
+                if (!_initialized)
                 {
                     _gameObjectCache = gameObject;
 
@@ -85,6 +87,8 @@ namespace SS3D.Core.Behaviours
         public void SetParent(Transform parent) => TransformCache.SetParent(parent);
         public void LookAt(Transform target) => TransformCache.LookAt(target);
         public void LookAt(Vector3 target) => TransformCache.LookAt(target);
+
+        public void AddHandle(EventHandle handle) => _eventHandles.Add(handle);
 
         public Vector3 LocalPosition
         {
@@ -138,6 +142,8 @@ namespace SS3D.Core.Behaviours
         {
             TransformCache = transform;
             GameObjectCache = gameObject;
+
+            _initialized = true;
         }
 
         private void AddEventListeners()

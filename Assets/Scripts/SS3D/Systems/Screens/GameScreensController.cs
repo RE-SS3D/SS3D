@@ -35,7 +35,7 @@ namespace SS3D.Systems.Screens
                 return;
             }
 
-            bool isPlayerSpawned = e.SpawnedPlayers.Contains(soul.Ckey);
+            bool isPlayerSpawned = e.SpawnedPlayers.Find(controllable => controllable.ControllingSoul == soul);
 
             if (!isPlayerSpawned)
             {

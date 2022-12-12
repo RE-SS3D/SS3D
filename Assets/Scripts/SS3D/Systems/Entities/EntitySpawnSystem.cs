@@ -28,14 +28,13 @@ namespace SS3D.Systems.Entities
         [SerializeField] private Transform _tempSpawnPoint;
 
         [SyncObject]
-        private readonly SyncList<string> _spawnedPlayers = new();
+        private readonly SyncList<PlayerControllable> _spawnedPlayers = new();
 
-        private readonly List<PlayerControllable> _serverSpawnedPlayers = new();
         private bool _alreadySpawnedInitialPlayers;
 
-        public bool IsPlayedSpawned(string ckey) => _spawnedPlayers.Contains(ckey);
-        public List<PlayerControllable> SpawnedPlayers => _serverSpawnedPlayers;
-        public PlayerControllable LastSpawned => _serverSpawnedPlayers.Count != 0 ? _serverSpawnedPlayers.Last() : null;
+        public bool IsPlayedSpawned(string ckey) => _spawnedPlayers.Find(controllable => controllable.ControllingSoul.Ckey == ckey);
+        public List<PlayerControllable> SpawnedPlayers => _spawnedPlayers.ToList();
+        public PlayerControllable LastSpawned => _spawnedPlayers.Count != 0 ? _spawnedPlayers.Last() : null;
 
         protected override void OnStart()
         {
@@ -67,7 +66,7 @@ namespace SS3D.Systems.Entities
             ProcessMindSwap(m.Origin, m.Target);
         }
 
-        private void HandleSpawnedPlayersChanged(SyncListOperation op, int index, string olditem, string newitem, bool asserver)
+        private void HandleSpawnedPlayersChanged(SyncListOperation op, int index, PlayerControllable olditem, PlayerControllable newitem, bool asserver)
         {
             SyncSpawnedPlayers();
         }
@@ -121,7 +120,7 @@ namespace SS3D.Systems.Entities
         [Server]
         private void SpawnLatePlayer(string ckey)
         {
-            if (!_spawnedPlayers.Contains(ckey) && _alreadySpawnedInitialPlayers)
+            if (!_spawnedPlayers.Find(controllable => controllable.ControllingSoul.Ckey == ckey) && _alreadySpawnedInitialPlayers)
             {
                 SpawnPlayer(ckey);
             }
@@ -152,7 +151,7 @@ namespace SS3D.Systems.Entities
             }
 
             _alreadySpawnedInitialPlayers = true;
-            InitialPlayersSpawnedEvent initialPlayersSpawnedEvent = new(_serverSpawnedPlayers);
+            InitialPlayersSpawnedEvent initialPlayersSpawnedEvent = new(SpawnedPlayers);
             initialPlayersSpawnedEvent.Invoke(this);
         }
 
@@ -162,15 +161,14 @@ namespace SS3D.Systems.Entities
         [Server]
         private void DestroySpawnedPlayers()
         {
-            foreach (PlayerControllable player in _serverSpawnedPlayers)
+            foreach (PlayerControllable player in SpawnedPlayers)
             {
                 ServerManager.Despawn(player.NetworkObject);
-                player.Destroy();
+                player.GameObjectCache.Destroy();
             }
 
             _alreadySpawnedInitialPlayers = false;
             _spawnedPlayers.Clear(); 
-            _serverSpawnedPlayers.Clear();
         }
 
         /// <summary>
@@ -185,8 +183,7 @@ namespace SS3D.Systems.Entities
             Soul soul = playerControlSystem.GetSoul(ckey);
             PlayerControllable controllable = Instantiate(_tempHuman[Random.Range(0, _tempHuman.Count)], _tempSpawnPoint.position, Quaternion.identity);
             
-            _spawnedPlayers.Add(ckey);
-            _serverSpawnedPlayers.Add(controllable);
+            _spawnedPlayers.Add(controllable);
 
             ServerManager.Spawn(controllable.NetworkObject, soul.Owner);
             controllable.SetControllingSoul(soul);
@@ -202,7 +199,7 @@ namespace SS3D.Systems.Entities
 
         private void SyncSpawnedPlayers()
         {
-            SpawnedPlayersUpdated spawnedPlayersUpdated = new(_spawnedPlayers.ToList());
+            SpawnedPlayersUpdated spawnedPlayersUpdated = new(SpawnedPlayers);
             spawnedPlayersUpdated.Invoke(this);
         }
     }

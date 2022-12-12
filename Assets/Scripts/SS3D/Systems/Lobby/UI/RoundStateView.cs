@@ -31,8 +31,8 @@ namespace SS3D.Systems.Lobby.UI
 
         private void SubscribeToEvents()
         {
-            RoundStateUpdated.AddListener(HandleRoundStateUpdated);
-            RoundTickUpdated.AddListener(HandleRoundTickUpdated);
+            AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
+            AddHandle(RoundTickUpdated.AddListener(HandleRoundTickUpdated));
         }
 
         private void HandleRoundTickUpdated(ref EventContext context, in RoundTickUpdated roundTickUpdated)
