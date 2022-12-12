@@ -76,6 +76,11 @@ namespace SS3D.Systems.Gamemodes
         [Server]
         private void FinalizeGamemode()
         {
+            if (_gamemode == null)
+            {
+                return;
+            }
+
             _gamemode.OnInitialized -= HandleGamemodeInitialized;
             _gamemode.OnFinished -= HandleGamemodeFinalized;
             _gamemode.OnObjectiveUpdated -= HandleObjectiveUpdated;

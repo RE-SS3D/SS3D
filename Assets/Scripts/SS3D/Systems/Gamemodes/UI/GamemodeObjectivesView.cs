@@ -9,11 +9,11 @@ namespace SS3D.Systems.GameModes.UI
 {
     public class GamemodeObjectivesView : NetworkActor
     {
-        private GamemodeObjectivePanelView _objectivePanelView;
+        [SerializeField] private GamemodeObjectivePanelView _objectivePanelView;
 
-        protected override void OnStart()
+        public override void OnStartClient()
         {
-            base.OnStart();
+            base.OnStartClient();
 
             ClientManager.RegisterBroadcast<GamemodeObjectiveUpdatedMessage>(HandleGamemodeObjectiveUpdated);
         }

@@ -31,7 +31,7 @@ namespace SS3D.Systems.Gamemodes.Objectives
 
             ItemPickedUpEvent.AddListener(HandleItemPickedUpEvent);
 
-            Title = ObjectiveTitle;
+            SetTitle(ObjectiveTitle); 
         }
 
         /// <inheritdoc />
@@ -61,7 +61,5 @@ namespace SS3D.Systems.Gamemodes.Objectives
                 FinalizeObjective();
             }
         }
-
-        public GetNukeCardObjective(int id, string title, ObjectiveStatus status, NetworkConnection author) : base(id, title, status, author) { }
     }
 }

@@ -93,10 +93,7 @@ namespace SS3D.Systems.Entities
             if (roundState != RoundState.Stopped)
             {
                 return;
-            }
-
-            _alreadySpawnedInitialPlayers = false;
-            _spawnedPlayers.Clear();  
+            } 
 
             DestroySpawnedPlayers();
         }
@@ -167,9 +164,12 @@ namespace SS3D.Systems.Entities
         {
             foreach (PlayerControllable player in _serverSpawnedPlayers)
             {
-                player.ProcessDespawn();
+                ServerManager.Despawn(player.NetworkObject);
+                player.Destroy();
             }
 
+            _alreadySpawnedInitialPlayers = false;
+            _spawnedPlayers.Clear(); 
             _serverSpawnedPlayers.Clear();
         }
 

@@ -184,7 +184,7 @@ namespace SS3D.Systems.GameModes.Modes
 
             _roundObjectives.Add(objective);
 
-            string title = $"[{objective.Id}/{objective.Title}]".Colorize(LogColors.Blue);
+            string title = $"[{objective.Id}/{objective.Title}]";
             string playerName = $"[{player.name}]".Colorize(LogColors.Blue);
 
             Punpun.Say(this, $"Objective initialized {title} for {playerName}", Logs.ServerOnly);

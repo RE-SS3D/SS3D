@@ -1,27 +1,33 @@
 ﻿using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using SS3D.Systems.Gamemodes;
+using SS3D.Utils;
 using TMPro;
+using UnityEngine;
 
 namespace SS3D.Systems.GameModes.UI
 {
     public class GamemodeObjectiveItemView : Actor
     {
-        public GamemodeObjective Objective;
-        public TMP_Text _text;
+        [SerializeField] private GamemodeObjective _objective;
+        [SerializeField] private TMP_Text _text;
 
         public void UpdateObjective(GamemodeObjective objective)
         {
-            if (Objective == null)
+            if (_objective == null)
             {
-                Objective = objective;
+                _objective = objective;
             }
 
-            if (objective.Id != Objective.Id)
+            if (objective.Id != _objective.Id)
             {
                 return;
             }
 
-            _text.SetText($"{objective.Id} - {objective.Status} - {objective.Title}");
+            string type = objective.GetType().ToString();
+
+            string status = objective.Status == ObjectiveStatus.Success ? "<sprite name=\"approve\">" : "<sprite name=\"deny\">";
+            _text.SetText($"{objective.Id} - {objective.Title} {status}");
         }
     }
 }

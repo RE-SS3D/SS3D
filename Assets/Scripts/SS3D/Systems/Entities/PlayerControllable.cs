@@ -38,12 +38,6 @@ namespace SS3D.Systems.Entities
             ControllingSoulChanged?.Invoke(ControllingSoul);
         }
 
-        [Server]
-        public void ProcessDespawn()
-        {
-            TransformCache.DOScale(0, ScaleInDuration).SetEase(Ease.OutElastic).OnComplete(() => ServerManager.Despawn(GameObjectCache));
-        }
-
         private void UpdateCameraFollow()
         {
             if (!IsOwner)

@@ -15,11 +15,11 @@ namespace SS3D.Systems.Gamemodes.Objectives
         /// <inheritdoc />
         public override void InitializeObjective()
         {
-            base.InitializeObjective();
+            SetStatus(ObjectiveStatus.InProgress);
 
             NukeDetonateEvent.AddListener(HandleNukeDetonateEvent);
 
-            Title = "Kaboom*: Activate the Nuclear Fission Explosive";
+            SetTitle("Kaboom*: Activate the Nuclear Fission Explosive");
         }
 
         /// <inheritdoc />
@@ -28,11 +28,14 @@ namespace SS3D.Systems.Gamemodes.Objectives
             Succeed();
         }
 
+        public override void CheckCompletion()
+        {
+            
+        }
+
         private void HandleNukeDetonateEvent(ref EventContext context, in NukeDetonateEvent e)
         {
             FinalizeObjective();
         }
-
-        public DetonateNukeObjective(int id, string title, ObjectiveStatus status, NetworkConnection author) : base(id, title, status, author) { }
     }
 }

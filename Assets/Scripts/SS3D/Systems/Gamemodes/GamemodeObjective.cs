@@ -14,17 +14,22 @@ namespace SS3D.Systems.Gamemodes
         /// </summary>
         public event Action<GamemodeObjective> OnGamemodeObjectiveUpdated;
 
-        /// <inheritdoc />
-        public int Id { get; set; }
+        private int _id;
+        private string _title;
+        private ObjectiveStatus _status;
+        private NetworkConnection _assignee;
 
         /// <inheritdoc />
-        public string Title { get; set; }
+        public int Id => _id;
 
         /// <inheritdoc />
-        public ObjectiveStatus Status { get; set; }
+        public string Title => _title;
 
         /// <inheritdoc />
-        public NetworkConnection Assignee { get; set; }
+        public ObjectiveStatus Status => _status;
+
+        /// <inheritdoc />
+        public NetworkConnection Assignee => _assignee;
 
         /// <summary>
         /// Handy call to check objective success.
@@ -41,18 +46,11 @@ namespace SS3D.Systems.Gamemodes
         /// </summary>
         public bool Cancelled => Status == ObjectiveStatus.Cancelled;
 
+
         /// <summary>
         /// Handy call to check if the objective is in progress.
         /// </summary>
         public bool InProgress => Status == ObjectiveStatus.InProgress;
-
-        public GamemodeObjective(int id, string title, ObjectiveStatus status, NetworkConnection author)
-        {
-            Id = id;
-            Title = title;
-            Status = status;
-            Assignee = author;
-        }
 
         /// <inheritdoc />
         public virtual void InitializeObjective()
@@ -100,7 +98,7 @@ namespace SS3D.Systems.Gamemodes
         /// <param name="status">The new status.</param>
         public void SetStatus(ObjectiveStatus status)
         {
-            Status = status;
+            _status = status;
             OnGamemodeObjectiveUpdated?.Invoke(this);
         }
 
@@ -110,7 +108,7 @@ namespace SS3D.Systems.Gamemodes
         /// <param name="assignee">The new assignee.</param>
         public void SetAssignee(NetworkConnection assignee)
         {
-            Assignee = assignee;
+            _assignee = assignee;
             OnGamemodeObjectiveUpdated?.Invoke(this);
         }
 
@@ -120,7 +118,13 @@ namespace SS3D.Systems.Gamemodes
         /// <param name="id"></param>
         public void SetId(int id)
         {
-            Id = id;
+            _id = id;
+            OnGamemodeObjectiveUpdated?.Invoke(this);
+        }
+
+        public void SetTitle(string title)
+        {
+            _title = title;
             OnGamemodeObjectiveUpdated?.Invoke(this);
         }
     }

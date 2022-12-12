@@ -10,19 +10,19 @@ namespace SS3D.Systems.Gamemodes
         /// <summary>
         /// Unique ID used for instantiated objectives, the Gamemode object takes care of that.
         /// </summary>
-        public int Id { get; set; }
+        public int Id { get; }
         /// <summary>
         /// The title of the objective, IE:"Steal the HOS jacket".
         /// </summary>
-        public string Title { get; set; }
+        public string Title { get; }
         /// <summary>
         /// The completion status of that objective.
         /// </summary>
-        public ObjectiveStatus Status { get; set; }
+        public ObjectiveStatus Status { get; }
         /// <summary>
         /// Who is in charge of completing this objective.
         /// </summary>
-        public NetworkConnection Assignee { get; set; }
+        public NetworkConnection Assignee { get; }
 
         /// <summary>
         /// Initializes this objective.

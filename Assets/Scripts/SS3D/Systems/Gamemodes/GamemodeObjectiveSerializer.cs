@@ -1,5 +1,6 @@
 ﻿using FishNet.Connection;
 using FishNet.Serializing;
+using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes
 {
@@ -28,9 +29,14 @@ namespace SS3D.Systems.Gamemodes
             int id = reader.ReadInt32();
             string title = reader.ReadString();
             ObjectiveStatus objectiveStatus = (ObjectiveStatus)reader.ReadInt16();
-            NetworkConnection author = reader.ReadNetworkConnection();
+            NetworkConnection assignee = reader.ReadNetworkConnection();
 
-            GamemodeObjective objective = new(id, title, objectiveStatus, author);
+            GamemodeObjective objective = ScriptableObject.CreateInstance<GamemodeObjective>();
+            
+            objective.SetId(id);
+            objective.SetTitle(title);
+            objective.SetStatus(objectiveStatus);
+            objective.SetAssignee(assignee);
 
             return objective;
         }
