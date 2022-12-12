@@ -5,7 +5,7 @@ using SS3D.Utils;
 using TMPro;
 using UnityEngine;
 
-namespace SS3D.Systems.GameModes.UI
+namespace SS3D.Systems.Gamemodes.UI
 {
     public class GamemodeObjectiveItemView : Actor
     {
@@ -28,6 +28,7 @@ namespace SS3D.Systems.GameModes.UI
 
             string status = objective.Status == ObjectiveStatus.Success ? "<sprite name=\"approve\">" : "<sprite name=\"deny\">";
             _text.SetText($"{objective.Id} - {objective.Title} {status}");
+            _text.color = objective.Status == ObjectiveStatus.Success ? Color.green : Color.red;
         }
     }
 }

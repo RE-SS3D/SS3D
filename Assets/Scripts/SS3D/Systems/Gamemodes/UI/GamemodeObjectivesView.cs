@@ -5,7 +5,7 @@ using SS3D.Systems.GameModes.Events;
 using TMPro;
 using UnityEngine;
 
-namespace SS3D.Systems.GameModes.UI
+namespace SS3D.Systems.Gamemodes.UI
 {
     public class GamemodeObjectivesView : NetworkActor
     {

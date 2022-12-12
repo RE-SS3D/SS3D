@@ -5,7 +5,7 @@ using SS3D.Systems.GameModes.Events;
 using SS3D.Utils;
 using UnityEngine;
 
-namespace SS3D.Systems.GameModes.UI
+namespace SS3D.Systems.Gamemodes.UI
 {
     public class GamemodeObjectivePanelView : Actor
     {
@@ -21,6 +21,7 @@ namespace SS3D.Systems.GameModes.UI
             base.OnStart();
 
             _gamemodeObjectiveItems = new Dictionary<int, GamemodeObjectiveItemView>();
+            _fade.SetFade(false);
         }
 
         protected override void HandleUpdate(in float deltaTime)

@@ -37,7 +37,7 @@ namespace SS3D.Systems.Rounds
         {
             base.OnStartClient();
 
-            _readyPlayers.OnChange += SetReadyPlayers;
+            _readyPlayers.OnChange += HandleReadyPlayersChanged;
             SyncReadyPlayers();
         }
 
@@ -109,7 +109,7 @@ namespace SS3D.Systems.Rounds
             }
         }
 
-        private void SetReadyPlayers(SyncListOperation op, int index, string s, string newItem1, bool asServer)
+        private void HandleReadyPlayersChanged(SyncListOperation op, int index, string s, string newItem1, bool asServer)
         {
             SyncReadyPlayers();
         }
