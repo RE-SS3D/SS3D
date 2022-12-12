@@ -30,6 +30,7 @@ namespace SS3D.Tilemaps.Objects
             SetupAssetsPerLayer();
         }
 
+        [ContextMenu("Stress test")]
         public async UniTask StressTest()
         {
             const int testSize = 25;
