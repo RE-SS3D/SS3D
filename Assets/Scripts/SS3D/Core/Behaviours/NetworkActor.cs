@@ -90,6 +90,8 @@ namespace SS3D.Core.Behaviours
         public void LookAt(Transform target) => TransformCache.LookAt(target);
         public void LookAt(Vector3 target) => TransformCache.LookAt(target);
 
+        public void AddHandle(EventHandle handle) => _eventHandles.Add(handle);
+
         public Vector3 LocalPosition
         {
             get => TransformCache.localPosition;

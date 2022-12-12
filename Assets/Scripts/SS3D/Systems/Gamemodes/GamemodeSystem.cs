@@ -3,6 +3,7 @@ using SS3D.Core.Behaviours;
 using Coimbra.Services.Events;
 using FishNet.Connection;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Events;
@@ -23,7 +24,9 @@ namespace SS3D.Systems.Gamemodes
         /// <summary>
         /// The gamemode that is being used.
         /// </summary>
-        [SerializeField] private Gamemode _gamemode;
+        [SyncVar] 
+        [SerializeField]
+        private Gamemode _gamemode;
 
         /// <summary>
         /// Antagonist list in the round. Currently unused.
@@ -49,9 +52,9 @@ namespace SS3D.Systems.Gamemodes
         [Server]
         private void Setup()
         {   
-            _eventHandles.Add(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
-            _eventHandles.Add(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersChanged));
-            _eventHandles.Add(InitialPlayersSpawnedEvent.AddListener(HandleInitialPlayersSpawned));
+            AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
+            AddHandle(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersChanged));
+            AddHandle(InitialPlayersSpawnedEvent.AddListener(HandleInitialPlayersSpawned));
         }
 
         /// <summary>
@@ -86,9 +89,10 @@ namespace SS3D.Systems.Gamemodes
             _gamemode.OnObjectiveUpdated -= HandleObjectiveUpdated;
             
             _gamemode.FinalizeGamemode();
+            _gamemode.ResetGamemode();
 
             // Removes the current gamemode.
-            _gamemode = null;
+            // _gamemode = null;
         }
 
         /// <summary>

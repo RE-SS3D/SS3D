@@ -88,6 +88,11 @@ namespace SS3D.Systems.GameModes.Modes
             OnFinished?.Invoke(_roundObjectives);
         }
 
+        public void ResetGamemode()
+        {
+            _roundObjectives.Clear();
+        }
+
         /// <summary>
         /// Finalizes all objectives in the round. Checks their CheckCompletion,
         /// because sometimes an item has to be in the hand of some player for an objective to be completed.
