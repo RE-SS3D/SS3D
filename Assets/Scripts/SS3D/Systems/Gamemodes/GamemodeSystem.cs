@@ -134,7 +134,17 @@ namespace SS3D.Systems.Gamemodes
         [ServerRpc(RequireOwnership = false)]
         private void CmdGetCurrentClientObjectives(NetworkConnection sender = null)
         {
+            if (_gamemode == null)
+            {
+                return;
+            }
+
             List<GamemodeObjective> gamemodeObjectives = _gamemode.GetPlayerObjectives(sender);
+
+            if (gamemodeObjectives == null)
+            {
+                return;
+            }
 
             foreach (GamemodeObjective gamemodeObjective in gamemodeObjectives)
             {

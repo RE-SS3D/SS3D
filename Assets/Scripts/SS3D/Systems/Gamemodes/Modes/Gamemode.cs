@@ -63,7 +63,7 @@ namespace SS3D.Systems.GameModes.Modes
         /// </summary>
         /// <param name="assignee">The player whose objectives will be retrieved.</param>
         /// <returns></returns>
-        public List<GamemodeObjective> GetPlayerObjectives(NetworkConnection assignee) => _roundObjectives.Where(objective => objective.Assignee == assignee).ToList();
+        public List<GamemodeObjective> GetPlayerObjectives(NetworkConnection assignee) => _roundObjectives?.Where(objective => objective.Assignee == assignee).ToList();
 
         /// <summary>
         /// Initializes the gamemode, it is virtual so custom initialization is possible.
@@ -180,11 +180,10 @@ namespace SS3D.Systems.GameModes.Modes
         /// <param name="player">The player to be assigned to the objective</param>
         protected virtual void AssignObjective(GamemodeObjective objective, PlayerControllable player)
         {
-            objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
-
             objective.SetAssignee(player.ControllingSoul.Owner);
             objective.SetId(_roundObjectives.Count);
 
+            objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
             objective.InitializeObjective();
 
             _roundObjectives.Add(objective);
