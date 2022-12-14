@@ -1,5 +1,6 @@
 ﻿using Coimbra.Services.Events;
 using DG.Tweening;
+using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Screens.Events;
@@ -10,11 +11,13 @@ namespace SS3D.Systems.Screens
     /// <summary>
     /// Controls a screen that can be activated and deactivated globally using events
     /// </summary>
-    public class GameScreen : SpessBehaviour
+    public class GameScreen : Actor
     {
         [SerializeField] private ScreenType _screenType;
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Transform _holder;
+
+        private Sequence _sequence;
 
         private static ScreenType LastScreen { get; set; }
 
@@ -29,6 +32,7 @@ namespace SS3D.Systems.Screens
             Setup();
         }
 
+        [Client]
         private void Setup()
         {
             LastScreen = ScreenType.None;
@@ -45,6 +49,7 @@ namespace SS3D.Systems.Screens
             ChangeCameraEvent.AddListener(HandleChangeCamera);
         }
 
+        [Client]
         private void HandleChangeGameScreen(ref EventContext context, in ChangeGameScreenEvent e)
         {
             ScreenType screenType = e.Screen;
@@ -52,39 +57,34 @@ namespace SS3D.Systems.Screens
             SetScreenState(screenType);
         }
 
+        [Client]
         private void HandleChangeCamera(ref EventContext context, in ChangeCameraEvent e)
         {
             ChangeGameScreenEvent changeGameScreenEvent = new(ScreenType.None);
             changeGameScreenEvent.Invoke(this);
         }
 
+        [Client]
         private void SetScreenState(ScreenType nextScreen, bool forceInstant = false)
         {
+            _sequence?.Kill();
+            _sequence = DOTween.Sequence();
+
             LastScreen = nextScreen;
 
             bool matchesScreenType = nextScreen == _screenType;
+
             float fadeDuration = forceInstant ? 0 : FadeDuration;
             float scaleDuration = forceInstant ? 0 : ScaleDuration;
 
             float targetFade = matchesScreenType ? 1 : 0;
-
-            float initScale = matchesScreenType ? ScaleInScale : 1;
             float targetScale = matchesScreenType ? 1 : ScaleInScale;
 
-            _holder.localScale = new Vector3(initScale, initScale, initScale);
             _holder.DOScale(targetScale, scaleDuration).SetEase(Ease.OutQuart);
 
             _canvasGroup.DOFade(targetFade, fadeDuration).SetEase(Ease.OutCirc);
             _canvasGroup.interactable = matchesScreenType;
             _canvasGroup.blocksRaycasts = matchesScreenType;
-
-            if (LastScreen != nextScreen)
-            {
-                return;
-            }
-
-            string message = $"Game screen changed to {nextScreen}";
-            Punpun.Say(this, message);
         }
     }
 }

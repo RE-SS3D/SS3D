@@ -14,7 +14,7 @@ namespace SS3D.Systems.Entities.Humanoid
     [RequireComponent(typeof(HumanoidAnimatorController))]
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
-    public class HumanoidController : NetworkedSpessBehaviour
+    public class HumanoidController : NetworkActor
     {
         public event Action<float> OnSpeedChanged;
 
@@ -44,7 +44,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private float _smoothedX;
         private float _smoothedY;
-        private SpessBehaviour _camera;
+        private Actor _camera;
 
         private const float WalkAnimatorValue = .3f;
         private const float RunAnimatorValue = 1f;
@@ -58,7 +58,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void Setup()
         {
-            _camera = GameSystems.Get<CameraSystem>().PlayerCamera;
+            _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
 
             _playerControllable.ControllingSoulChanged += HandleControllingSoulChanged;
         }

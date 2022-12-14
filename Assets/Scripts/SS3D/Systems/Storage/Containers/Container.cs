@@ -12,7 +12,7 @@ namespace SS3D.Systems.Storage.Containers
     /// <summary>
     /// Stores items in a 2 dimensional container
     /// </summary>
-    public sealed class Container : NetworkedSpessBehaviour
+    public sealed class Container : NetworkActor
     {
         /// <summary>
         /// Called when the contents of the container change

@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 
 namespace SS3D.Networking
 {
-    public class NetworkPhysicsDebug : NetworkedSpessBehaviour
+    public class NetworkPhysicsDebug : NetworkActor
     {
         public List<GameObject> SodaCans;
         public int SpawnQuantity = 2;

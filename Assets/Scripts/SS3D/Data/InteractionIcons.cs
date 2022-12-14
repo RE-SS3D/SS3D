@@ -7,6 +7,7 @@ namespace SS3D.Data
         Open = 2, 
         Power = 3, 
         Honk = 4, 
+        Nuke = 5, 
     }
 }
 

@@ -399,7 +399,7 @@ namespace FishNet.Managing.Server
                 if (args.ConnectionState == RemoteConnectionState.Started)
                 {
                     NetworkManager.Log($"Remote connection started for Id {id}.");
-                    NetworkConnection conn = new NetworkConnection(NetworkManager, id);
+                    NetworkConnection conn = new NetworkConnection(NetworkManager, id, true);
                     Clients.Add(args.ConnectionId, conn);
 
                     OnRemoteConnectionState?.Invoke(conn, args);
@@ -544,7 +544,7 @@ namespace FishNet.Managing.Server
                         NetworkManager.TransportManager.Transport.StopConnection(args.ConnectionId, true);
                         return;
                     }
-                    conn.LastPacketTick = tick;
+                    conn.SetLastPacketTick(tick);
                     /* If connection isn't authenticated and isn't a broadcast
                      * then disconnect client. If a broadcast then process
                      * normally; client may still become disconnected if the broadcast

@@ -9,7 +9,7 @@ namespace SS3D.Systems.Screens
     /// This handles the camera following the player when it is spawned.
     /// Also controls the rotation and zoom 
     /// </summary>
-    public class CameraFollow : SpessBehaviour
+    public class CameraFollow : Actor
     {
         /// <summary>
         /// The object to follow
@@ -246,8 +246,6 @@ namespace SS3D.Systems.Screens
         /// <param name="newTarget">The target for the camera to follow</param>
         public void SetTarget(GameObject newTarget)
         {
-            if (_target)
-                Debug.Log(_target.transform.position);
             // Set the player height based on the character controller, if one is found
             CharacterController character = newTarget.GetComponent<CharacterController>();
             if (character)

@@ -21,7 +21,12 @@ namespace SS3D.Systems.Storage.Containers
         /// The hands used by this inventory
         /// </summary>
         public Hands Hands;
-        
+
+        /// <summary>
+        /// The controllable body of the owning player
+        /// </summary>
+        public PlayerControllable Body;
+
         private readonly List<AttachedContainer> _openedContainers = new();
         private float _nextAccessCheck;
 

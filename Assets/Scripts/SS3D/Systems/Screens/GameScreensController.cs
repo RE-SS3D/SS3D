@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Screens
 {
-    public sealed class GameScreensController : NetworkedSpessBehaviour
+    public sealed class GameScreensController : NetworkActor
     {
         [SerializeField] private bool _blockNone;
         [SerializeField] private bool _menuOpen;
@@ -27,15 +27,7 @@ namespace SS3D.Systems.Screens
 
         private void HandleSpawnedPlayersUpdated(ref EventContext context, in SpawnedPlayersUpdated e)
         {
-            PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
-            Soul soul = playerControlSystem.GetSoul(LocalConnection);
-
-            if (soul == null)
-            {
-                return;
-            }
-
-            bool isPlayerSpawned = e.SpawnedPlayers.Contains(soul.Ckey);
+            bool isPlayerSpawned = e.SpawnedPlayers.Find(controllable => controllable.Owner == LocalConnection);
 
             if (!isPlayerSpawned)
             {

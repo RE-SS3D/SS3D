@@ -7,17 +7,20 @@ using Object = UnityEngine.Object;
 namespace SS3D.Core
 {
     /// <summary>
-    /// Class used to get game systems, using generics and then making cache of said systems
+    /// Class used to get game systems, using generics and then making cache of said systems.
     /// </summary>
-    public static class GameSystems
+    public static class SystemLocator
     {
+        /// <summary>
+        /// A dictionary containing all the objects that registered themselves.
+        /// </summary>
         private static readonly Dictionary<Type, object> Systems = new();
 
         /// <summary>
-        /// Registers a system in the dictionary so we don't have to use find object of type
+        /// Registers a system in the dictionary so we don't have to use find object of type.
         /// </summary>
-        /// <param name="system"></param>
-        /// <typeparam name="T"></typeparam>
+        /// <param name="system">The object to be stored.</param>
+        /// <typeparam name="T">The Type of that object.</typeparam>
         public static void Register(MonoBehaviour system)
         {
             Type type = system.GetType();
@@ -28,13 +31,12 @@ namespace SS3D.Core
             }
         }
 
-        // ReSharper disable Unity.PerformanceAnalysis
         /// <summary>
         /// Gets any system at runtime, make sure there's no duplicates of said system before using.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The Type of object you want to get.</typeparam>
         /// <returns></returns>
-        public static T Get<T>() where T : Object
+        public static T Get<T>() where T : MonoBehaviour
         {
             if (Systems.TryGetValue(typeof(T), out object match))
             {
@@ -42,7 +44,7 @@ namespace SS3D.Core
             }
 
             string message = $"Couldn't find system of {typeof(T).Name} in the scene";
-            Punpun.Panic(typeof(GameSystems), message, Logs.Important);
+            Punpun.Panic(typeof(SystemLocator), message, Logs.Important);
 
             return null;
         }

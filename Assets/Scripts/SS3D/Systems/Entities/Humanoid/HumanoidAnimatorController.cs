@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Entities.Humanoid
 {
-    public class HumanoidAnimatorController : SpessBehaviour
+    public class HumanoidAnimatorController : Actor
     {
         [SerializeField] private HumanoidController _movementController;
 

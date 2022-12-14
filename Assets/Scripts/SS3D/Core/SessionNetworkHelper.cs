@@ -16,7 +16,7 @@ namespace SS3D.Core
     ///
     /// TODO: Could use a refactor
     /// </summary>
-    public sealed class SessionNetworkHelper : SpessBehaviour
+    public sealed class SessionNetworkHelper : Actor
     {
         private static List<string> _commandLineArgs;
 

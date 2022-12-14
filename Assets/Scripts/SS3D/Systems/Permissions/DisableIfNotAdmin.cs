@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Permissions
 {
-    public class DisableIfNotAdmin : NetworkedSpessBehaviour
+    public class DisableIfNotAdmin : NetworkActor
     {
         private string _ckey;
 
@@ -38,7 +38,7 @@ namespace SS3D.Systems.Permissions
                 return;
             }
 
-            PermissionSystem permissionSystem = GameSystems.Get<PermissionSystem>();
+            PermissionSystem permissionSystem = SystemLocator.Get<PermissionSystem>();
 
             if (!permissionSystem.HasLoadedPermissions)
             {

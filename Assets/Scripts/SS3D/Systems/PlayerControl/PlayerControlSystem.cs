@@ -17,7 +17,7 @@ namespace SS3D.Systems.PlayerControl
     /// <summary>
     /// Controls the player flux, when users want to authenticate, rejoin the game, leave the game
     /// </summary>
-    public sealed class PlayerControlSystem : NetworkedSystem
+    public sealed class PlayerControlSystem : NetworkSystem
     {
         [FormerlySerializedAs("_userPrefab")]
         [Header("Settings")]
@@ -25,9 +25,10 @@ namespace SS3D.Systems.PlayerControl
         [SerializeField] private NetworkObject _soulPrefab;
 
         [SyncObject] private readonly SyncList<Soul> _serverSouls = new();
-        public IList<Soul> ServerSouls => _serverSouls;
 
         [SyncObject] private readonly SyncList<Soul> _onlineSouls = new();
+
+        public IList<Soul> ServerSouls => _serverSouls;
         public IList<Soul> OnlineSouls => _onlineSouls;
 
         protected override void OnStart()
