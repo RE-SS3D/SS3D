@@ -7,6 +7,7 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Logging;
+using SS3D.Tilemaps.Adjacency;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Random = UnityEngine.Random;
@@ -16,6 +17,7 @@ namespace SS3D.Tilemaps.Objects
     public class TileObjectSystem : NetworkedSystem
     {
         private TileSystem _tileSystem;
+        private TileAdjacencySystem _tileAdjacencySystem;
 
         public static Dictionary<TileLayer, List<TileObject>> AssetsPerLayer;
         public static Dictionary<TileObjects, TileObject> Assets;
@@ -25,7 +27,8 @@ namespace SS3D.Tilemaps.Objects
             base.OnStart();
 
             _tileSystem = GameSystems.Get<TileSystem>();
-            
+            _tileAdjacencySystem = GameSystems.Get<TileAdjacencySystem>();
+
             SetupAssets();
             SetupAssetsPerLayer();
         }
