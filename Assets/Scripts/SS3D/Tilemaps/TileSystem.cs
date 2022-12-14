@@ -1,37 +1,55 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
+using SS3D.Tilemaps.Events;
 using UnityEngine;
 
 namespace SS3D.Tilemaps
 {
+    /// <summary>
+    /// The tile system creates an abstract tile in empty spaces.
+    /// </summary>
     public class TileSystem : NetworkedSystem
     {
-        [SyncObject] private readonly SyncDictionary<Vector3Int, Tile> _tiles = new();
+        /// <summary>
+        /// All the created tiles in the system.
+        /// </summary>
+        public Dictionary<Vector3Int, TileData?> Tiles { get; } = new();
 
-        public Tile TilePrefab;
-
-        public Dictionary<Vector3Int, Tile> Tiles => _tiles.GetCollection(true);
-
-        protected override void OnStart()
+        /// <summary>
+        /// Gets a tile at a position, if no tiles is found a new one is created.
+        /// </summary>
+        /// <param name="position">The position for that tile.</param>
+        /// <returns>The tile at that position.</returns>
+        [Server]
+        public TileData GetTile(Vector3Int position)
         {
-            base.OnStart();
+            TileData? nullableTile = GetTileNullable(position);
 
-            _tiles.OnChange += HandleTilesChanged;
+            if (nullableTile == null)
+            {
+                Punpun.Panic(this, $"Couldn't find tile at {position.ToString()}", Logs.ServerOnly);
+                throw new Exception("Something went extremely wrong within TileSystem.GetTile().");
+            }
+
+            TileData tile = (TileData) nullableTile;
+            return tile;
         }
 
-        private void HandleTilesChanged(SyncDictionaryOperation op, Vector3Int position, Tile tile, bool asServer)
+        /// <summary>
+        /// Gets a tile at a position, the difference from GetTile is that this makes TileData nullable, so we can have null tiles with no problem.
+        /// This avoids us having a tile at a certain key with empty data for no reason.
+        /// </summary>
+        /// <param name="position">The position for that tile.</param>
+        /// <returns>The tile at that position.</returns>
+        [Server]
+        private TileData? GetTileNullable(Vector3Int position)
         {
-            TileChangedEvent tileChangedEvent = new(tile);
-
-            tileChangedEvent.Invoke(this);
-        }
-
-        public Tile GetTile(Vector3Int position)
-        {
-            if (_tiles.TryGetValue(position, out Tile tile))
+            if (Tiles.TryGetValue(position, out TileData? tile))
             {
                 return tile;
             }
@@ -45,8 +63,14 @@ namespace SS3D.Tilemaps
             return null;
         }
 
+        /// <summary>
+        /// Tries to place a tile at a position.
+        /// </summary>
+        /// <param name="position">The position for that tile.</param>
+        /// <param name="placedTile">The tile at that position.</param>
+        /// <returns></returns>
         [Server]
-        public bool TryPlaceTile(Vector3Int position, out Tile placedTile)
+        private bool TryPlaceTile(Vector3Int position, out TileData? placedTile)
         {
             if (!IsPositionEmpty(position))
             {
@@ -54,32 +78,30 @@ namespace SS3D.Tilemaps
                 return false;
             }
 
-            Tile newTile = Instantiate(TilePrefab, TransformCache);
-            ServerManager.Spawn(newTile.GameObjectCache);
+            placedTile = new TileData(position);
+            Tiles.Add(position, placedTile);
 
-            if (_tiles.TryGetValue(position, out Tile tile))
-            {
-                if (tile == null)
-                {
-                    _tiles.Add(position, newTile);   
-                }
-            }
-            else
-            {
-                _tiles.Add(position, newTile);
-            }
-
-            newTile.Position = position;
-            placedTile = newTile;
             return true;
         }
 
+        /// <summary>
+        /// Checks if a position is empty
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        [Server]
         private bool IsPositionEmpty(Vector3Int position)
         {
-            _tiles.TryGetValue(position, out Tile tile);
+            Tiles.TryGetValue(position, out TileData? tile);
 
             return tile == null;
         }
 
+        [Server]
+        private void HandleTilesChanged(SyncDictionaryOperation op, Vector3Int position, TileData? tile, bool asServer)
+        {
+            TileChangedEvent tileChangedEvent = new(tile);
+            tileChangedEvent.Invoke(this);
+        }
     }
 }

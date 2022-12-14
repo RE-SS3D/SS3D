@@ -2,6 +2,7 @@
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Tilemaps;
+using SS3D.Tilemaps.Enums;
 using SS3D.Tilemaps.Objects;
 using UnityEngine;
 using UnityEngine.UI;
@@ -46,9 +47,9 @@ namespace SS3D.Systems.Tilemaps
 
         private void InitializeItemList()
         {
-            Dictionary<TileLayer, List<TileObject>> assets = TileObjectSystem.AssetsPerLayer;
+            Dictionary<TileObjectLayer, List<TileObject>> assets = TileObjectSystem.AssetsPerLayer;
 
-            foreach (KeyValuePair<TileLayer, List<TileObject>> asset in assets)
+            foreach (KeyValuePair<TileObjectLayer, List<TileObject>> asset in assets)
             {
                 foreach (TileObject tileObject in asset.Value)
                 {

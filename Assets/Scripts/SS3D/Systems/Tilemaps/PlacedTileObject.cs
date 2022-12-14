@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FishNet;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Tilemaps;
+using SS3D.Tilemaps.Enums;
 using SS3D.Utils;
 using UnityEngine;
 
@@ -39,7 +40,7 @@ namespace SS3D.Systems.Tile
             placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
 
             // Alternative name is required for walls as they can occupy the same tile
-            if (TileHelper.ContainsSubLayers(tileObjectSo.layer))
+            if (TileHelper.ContainsSubLayers(tileObjectSo._objectLayer))
                 placedGameObject.name += "_" + TileHelper.GetDirectionIndex(dir);
 
             PlacedTileObject placedObject = placedGameObject.GetComponent<PlacedTileObject>();
@@ -178,9 +179,9 @@ namespace SS3D.Systems.Tile
             return _dir;
         }
 
-        public TileLayer GetLayer()
+        public TileObjectLayer GetLayer()
         {
-            return _tileObjectSo.layer;
+            return _tileObjectSo._objectLayer;
         }
     }
 }

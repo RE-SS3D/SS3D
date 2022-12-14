@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SS3D.Tilemaps;
+using SS3D.Tilemaps.Enums;
 using UnityEngine;
 using static SS3D.Systems.Tile.TileRestrictions;
 
@@ -86,13 +87,13 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Set all objects either enabled or disabled for a layer.
         /// </summary>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <param name="enabled"></param>
-        public void SetEnabled(TileLayer layer, bool enabled)
+        public void SetEnabled(TileObjectLayer objectLayer, bool enabled)
         {
             foreach (TileChunk chunk in _chunks.Values)
             {
-                chunk.SetEnabled(layer, enabled);
+                chunk.SetEnabled(objectLayer, enabled);
             }
         }
 
@@ -209,7 +210,7 @@ namespace SS3D.Systems.Tile
             TileChunk chunk = GetOrCreateChunk(position);
             Vector2Int vector = chunk.GetXY(position);
             Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
-            TileLayer layer = tileObjectSo.layer;
+            TileObjectLayer objectLayer = tileObjectSo._objectLayer;
 
             List<Vector2Int> gridPositionList = tileObjectSo.GetGridPositionList(placedObjectOrigin, dir);
 
@@ -227,12 +228,12 @@ namespace SS3D.Systems.Tile
                     continue;
                 }
 
-                if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
+                if (chunk.GetTileObject(objectLayer, gridPosition.x, gridPosition.y) == null)
                 {
                     // We got a chunk edge case in which a multi tile object is outside of the chunk
                     Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
                     TileChunk nextChunk = GetOrCreateChunk(offEdgeObjectPosition);
-                    if (!nextChunk.GetTileObject(layer, offEdgeObjectPosition).IsEmpty(subLayerIndex))
+                    if (!nextChunk.GetTileObject(objectLayer, offEdgeObjectPosition).IsEmpty(subLayerIndex))
                     {
                         canBuild = false;
                         break;
@@ -241,7 +242,7 @@ namespace SS3D.Systems.Tile
                 }
                 else
                 {
-                    if (!chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).IsEmpty(subLayerIndex))
+                    if (!chunk.GetTileObject(objectLayer, gridPosition.x, gridPosition.y).IsEmpty(subLayerIndex))
                     {
                         canBuild = false;
                         break;
@@ -263,8 +264,8 @@ namespace SS3D.Systems.Tile
         /// <param name="dir">Direction the object is facing</param
         public void SetTileObject(int subLayerIndex, TileObjectSo tileObjectSo, Vector3 position, Direction dir)
         {
-            TileLayer layer = tileObjectSo.layer;
-            GameObject layerObject = GetOrCreateLayerObject(layer);
+            TileObjectLayer objectLayer = tileObjectSo._objectLayer;
+            GameObject layerObject = GetOrCreateLayerObject(objectLayer);
 
             // Get the right chunk
             TileChunk chunk = GetOrCreateChunk(position);
@@ -288,18 +289,18 @@ namespace SS3D.Systems.Tile
 
                 foreach (Vector2Int gridPosition in gridPositionList)
                 {
-                    if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
+                    if (chunk.GetTileObject(objectLayer, gridPosition.x, gridPosition.y) == null)
                     {
                         // We got a chunk edge case in which a multi tile object is outside of the chunk
                         Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
                         TileChunk nextChunk = GetOrCreateChunk(offEdgeObjectPosition);
-                        nextChunk.GetTileObject(layer, offEdgeObjectPosition).SetPlacedObject(placedObject, subLayerIndex);
+                        nextChunk.GetTileObject(objectLayer, offEdgeObjectPosition).SetPlacedObject(placedObject, subLayerIndex);
                     }
                     else
                     {
-                        chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject, subLayerIndex);
+                        chunk.GetTileObject(objectLayer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject, subLayerIndex);
                     }
-                    UpdateAdjacencies(layer, position);
+                    UpdateAdjacencies(objectLayer, position);
                 }
             }
             else
@@ -318,8 +319,8 @@ namespace SS3D.Systems.Tile
         /// <param name="dir"></param>
         public void LoadTileObject(int subLayerIndex, TileObjectSo tileObjectSo, PlacedTileObject placedObject, Vector3 position, Direction dir)
         {
-            TileLayer layer = tileObjectSo.layer;
-            GameObject layerObject = GetOrCreateLayerObject(layer);
+            TileObjectLayer objectLayer = tileObjectSo._objectLayer;
+            GameObject layerObject = GetOrCreateLayerObject(objectLayer);
 
             // Get the right chunk
             TileChunk chunk = GetOrCreateChunk(position);
@@ -336,16 +337,16 @@ namespace SS3D.Systems.Tile
 
             foreach (Vector2Int gridPosition in gridPositionList)
             {
-                if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
+                if (chunk.GetTileObject(objectLayer, gridPosition.x, gridPosition.y) == null)
                 {
                     // We got a chunk edge case in which a multi tile object is outside of the chunk
                     Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
                     TileChunk nextChunk = GetOrCreateChunk(offEdgeObjectPosition);
-                    nextChunk.GetTileObject(layer, offEdgeObjectPosition).SetPlacedObject(placedObject, subLayerIndex);
+                    nextChunk.GetTileObject(objectLayer, offEdgeObjectPosition).SetPlacedObject(placedObject, subLayerIndex);
                 }
                 else
                 {
-                    chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject, subLayerIndex);
+                    chunk.GetTileObject(objectLayer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject, subLayerIndex);
                 }
             }
         }
@@ -353,20 +354,20 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Clear a PlacedTileObject at a given world position and layer.
         /// </summary>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <param name="subLayerIndex"></param>
         /// <param name="position"></param>
-        public void ClearTileObject(TileLayer layer, int subLayerIndex, Vector3 position)
+        public void ClearTileObject(TileObjectLayer objectLayer, int subLayerIndex, Vector3 position)
         {
             TileChunk chunk = GetOrCreateChunk(position);
 
             Vector2Int vector = chunk.GetXY(position);
-            PlacedTileObject placedObject = chunk.GetTileObject(layer, vector.x, vector.y).GetPlacedObject(subLayerIndex);
+            PlacedTileObject placedObject = chunk.GetTileObject(objectLayer, vector.x, vector.y).GetPlacedObject(subLayerIndex);
 
             if (placedObject != null)
             {
                 // Destroy any objects that are on top
-                foreach (var topPlacedObject in GetToBeDestroyedObjects(this, layer, position))
+                foreach (var topPlacedObject in GetToBeDestroyedObjects(this, objectLayer, position))
                 {
                     topPlacedObject.ClearAllPlacedObjects();
                 }
@@ -374,19 +375,19 @@ namespace SS3D.Systems.Tile
                 List<Vector2Int> gridPositionList = placedObject.GetGridPositionList();
                 foreach (Vector2Int gridPosition in gridPositionList)
                 {
-                    if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
+                    if (chunk.GetTileObject(objectLayer, gridPosition.x, gridPosition.y) == null)
                     {
                         // We got a chunk edge case in which a multi tile object is outside of the chunk
                         Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
                         TileChunk nextChunk = GetOrCreateChunk(offEdgeObjectPosition);
-                        nextChunk.GetTileObject(layer, offEdgeObjectPosition).ClearPlacedObject(subLayerIndex);
+                        nextChunk.GetTileObject(objectLayer, offEdgeObjectPosition).ClearPlacedObject(subLayerIndex);
                     }
                     else
                     {
-                        chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).ClearPlacedObject(subLayerIndex);
+                        chunk.GetTileObject(objectLayer, gridPosition.x, gridPosition.y).ClearPlacedObject(subLayerIndex);
                     }
 
-                    UpdateAdjacencies(layer, position);
+                    UpdateAdjacencies(objectLayer, position);
                 }
             }
 
@@ -396,25 +397,25 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Returns a TileObject at a given layer and world position.
         /// </summary>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <param name="worldPosition"></param>
         /// <returns></returns>
-        public TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
+        public TileObject GetTileObject(TileObjectLayer objectLayer, Vector3 worldPosition)
         {
             TileChunk chunk = GetOrCreateChunk(worldPosition);
-            return chunk.GetTileObject(layer, worldPosition);
+            return chunk.GetTileObject(objectLayer, worldPosition);
         }
 
-        private void UpdateAdjacencies(TileLayer layer, Vector3 worldPosition)
+        private void UpdateAdjacencies(TileObjectLayer objectLayer, Vector3 worldPosition)
         {
             PlacedTileObject[] adjacentObjects = new PlacedTileObject[8];
-            TileObject currentTileObject = GetTileObject(layer, worldPosition);
+            TileObject currentTileObject = GetTileObject(objectLayer, worldPosition);
 
             // Find the neighbours in each direction
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
                 Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
-                TileObject neighbour = GetTileObject(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2));
+                TileObject neighbour = GetTileObject(objectLayer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2));
 
                 adjacentObjects[(int)direction] = neighbour.GetPlacedObject(0);
                 neighbour.GetPlacedObject(0)?.UpdateSingleAdjacency(TileHelper.GetOpposite(direction), currentTileObject.GetPlacedObject(0));
@@ -435,7 +436,7 @@ namespace SS3D.Systems.Tile
             // Loop through every single tile object...
             foreach (TileChunk chunk in tempChunkList)
             {
-                foreach (TileLayer layer in TileHelper.GetTileLayers())
+                foreach (TileObjectLayer layer in TileHelper.GetTileLayers())
                 {
                     for (int x = 0; x < chunk.GetWidth(); x++)
                     {
@@ -459,18 +460,18 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Retrieves neighbouring objects for a given position and layer.
         /// </summary>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <param name="subLayerIndex"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        public PlacedTileObject[] GetNeighbourObjects(TileLayer layer, int subLayerIndex, Vector3 position)
+        public PlacedTileObject[] GetNeighbourObjects(TileObjectLayer objectLayer, int subLayerIndex, Vector3 position)
         {
             PlacedTileObject[] adjacentObjects = new PlacedTileObject[8];
 
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
                 Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
-                TileObject neighbour = GetTileObject(layer, position + new Vector3(vector.Item1, 0, vector.Item2));
+                TileObject neighbour = GetTileObject(objectLayer, position + new Vector3(vector.Item1, 0, vector.Item2));
 
                 adjacentObjects[(int)direction] = neighbour.GetPlacedObject(subLayerIndex);
             }
@@ -517,8 +518,8 @@ namespace SS3D.Systems.Tile
                 // Loop through every tile object in chunk
                 foreach (TileObject.TileSaveObject tileObjectSaveObject in chunk.tileObjectSaveObjectArray)
                 {
-                    TileLayer layer = tileObjectSaveObject.layer;
-                    for (int subLayerIndex = 0; subLayerIndex < TileHelper.GetSubLayerSize(layer); subLayerIndex++)
+                    TileObjectLayer objectLayer = tileObjectSaveObject._objectLayer;
+                    for (int subLayerIndex = 0; subLayerIndex < TileHelper.GetSubLayerSize(objectLayer); subLayerIndex++)
                     {
                         string objectName = tileObjectSaveObject.placedSaveObjects[subLayerIndex].tileObjectSOName;
                         if (objectName.Equals(""))
@@ -532,7 +533,7 @@ namespace SS3D.Systems.Tile
 
                             // Find the object and set it up again...
                             Vector3 position = TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition);
-                            PlacedTileObject placedTileObject = FindChild(layer, subLayerIndex, position)?.GetComponent<PlacedTileObject>();
+                            PlacedTileObject placedTileObject = FindChild(objectLayer, subLayerIndex, position)?.GetComponent<PlacedTileObject>();
 
                             if (!placedTileObject)
                             {
@@ -555,17 +556,17 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Finds a PlacedTileObject for a given layer and position. Is used during softloading to retrieve the matching gameobject.
         /// </summary>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <param name="subLayerIndex"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        private GameObject FindChild(TileLayer layer, int subLayerIndex, Vector3 position)
+        private GameObject FindChild(TileObjectLayer objectLayer, int subLayerIndex, Vector3 position)
         {
-            Transform layerObjectTransform = GetOrCreateLayerObject(layer).transform;
+            Transform layerObjectTransform = GetOrCreateLayerObject(objectLayer).transform;
 
             // For walls, multiple object can exist at the same location. 
             // So use the naming convention to determine at which rotation it is placed
-            bool sameTile = TileHelper.ContainsSubLayers(layer);
+            bool sameTile = TileHelper.ContainsSubLayers(objectLayer);
 
             for (int i = 0; i < layerObjectTransform.childCount; i++)
             {
@@ -589,17 +590,17 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Get or creates an empty gameobject that used to storing that layer's PlacedTileObjects.
         /// </summary>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <returns></returns>
-        private GameObject GetOrCreateLayerObject(TileLayer layer)
+        private GameObject GetOrCreateLayerObject(TileObjectLayer objectLayer)
         {
             for (int i = 0; i < transform.childCount; i++)
             {
-                if (transform.GetChild(i).name == layer.ToString())
+                if (transform.GetChild(i).name == objectLayer.ToString())
                     return transform.GetChild(i).gameObject;
             }
 
-            GameObject layerObject = new(layer.ToString());
+            GameObject layerObject = new(objectLayer.ToString());
             layerObject.transform.SetParent(transform);
             return layerObject;
         }

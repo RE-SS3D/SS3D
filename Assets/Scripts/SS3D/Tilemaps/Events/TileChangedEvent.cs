@@ -1,12 +1,12 @@
 ﻿using Coimbra.Services.Events;
 
-namespace SS3D.Tilemaps
+namespace SS3D.Tilemaps.Events
 {
     public partial struct TileChangedEvent : IEvent
     {
-        public Tile Tile;
+        public TileData? Tile;
 
-        public TileChangedEvent(Tile tile)
+        public TileChangedEvent(TileData? tile)
         {
             Tile = tile;
         }

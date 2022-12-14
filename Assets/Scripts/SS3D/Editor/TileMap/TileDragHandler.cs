@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using SS3D.Systems.Tile;
 using SS3D.Tilemaps;
+using SS3D.Tilemaps.Enums;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -179,12 +180,12 @@ namespace SS3D.Editor.TileMap
                 {
                     if (DeleteTiles)
                     {
-                        _tileManager.ClearTileObject(_map, SelectedLayer, 0, new Vector3(x, 0, y));
+                        _tileManager.ClearTileObject(_map, SelectedObjectLayer, 0, new Vector3(x, 0, y));
                     }
                     else
                     {
                         if (AllowOverwrite)
-                            _tileManager.ClearTileObject(_map, SelectedLayer, 0, new Vector3(x, 0, y));
+                            _tileManager.ClearTileObject(_map, SelectedObjectLayer, 0, new Vector3(x, 0, y));
 
                         _tileManager.SetTileObject(_map, _subLayerIndex, _tileObjectSo, new Vector3(x, 0, y), _selectedDir);
                     }
@@ -242,7 +243,7 @@ namespace SS3D.Editor.TileMap
 
         public bool DeleteTiles { get; set; }
         public bool AllowOverwrite { get; set; }
-        public TileLayer SelectedLayer { get; set; }
+        public TileObjectLayer SelectedObjectLayer { get; set; }
     }
 
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SS3D.Tilemaps;
+using SS3D.Tilemaps.Enums;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -10,7 +11,7 @@ namespace SS3D.Systems.Tile
     [CreateAssetMenu(fileName = "TileObjectSo", menuName = "TileMap/TileObjectSo", order = 0)]
     public class TileObjectSo : ScriptableObject
     {
-        public TileLayer layer;
+        public TileObjectLayer _objectLayer;
         
         [Tooltip("A name for the object. Make sure it is unique.")]
         public string nameString;

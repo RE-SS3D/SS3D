@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SS3D.Tilemaps;
+using SS3D.Tilemaps.Enums;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -28,7 +29,7 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public struct TileGrid
         {
-            public TileLayer Layer;
+            public TileObjectLayer ObjectLayer;
             public TileObject[] TileObjectsGrid;
         }
 
@@ -73,22 +74,22 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Create a new empty grid for a given layer.
         /// </summary>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <returns></returns>
-        private TileGrid CreateGrid(TileLayer layer)
+        private TileGrid CreateGrid(TileObjectLayer objectLayer)
         {
-            TileGrid grid = new TileGrid { Layer = layer };
+            TileGrid grid = new TileGrid { ObjectLayer = objectLayer };
 
             int gridSize = _width * _height;
             grid.TileObjectsGrid = new TileObject[gridSize];
 
-            int subLayerSize = TileHelper.GetSubLayerSize(layer);
+            int subLayerSize = TileHelper.GetSubLayerSize(objectLayer);
 
             for (int x = 0; x < _width; x++)
             {
                 for (int y = 0; y < _height; y++)
                 {
-                    grid.TileObjectsGrid[y * _width + x] = new TileObject(this, layer, x, y, subLayerSize);
+                    grid.TileObjectsGrid[y * _width + x] = new TileObject(this, objectLayer, x, y, subLayerSize);
                 }
             }
 
@@ -102,7 +103,7 @@ namespace SS3D.Systems.Tile
         {
             _tileGridList = new List<TileGrid>();
 
-            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            foreach (TileObjectLayer layer in TileHelper.GetTileLayers())
             {
                 _tileGridList.Add(CreateGrid(layer));
             }
@@ -162,7 +163,7 @@ namespace SS3D.Systems.Tile
         {
             bool empty = true;
 
-            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            foreach (TileObjectLayer layer in TileHelper.GetTileLayers())
             {
                 for (int x = 0; x < _width; x++)
                 {
@@ -181,17 +182,17 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Sets all gameobjects for a given layer to either enabled or disabled.
         /// </summary>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <param name="enabled"></param>
-        public void SetEnabled(TileLayer layer, bool enabled)
+        public void SetEnabled(TileObjectLayer objectLayer, bool enabled)
         {
             for (int x = 0; x < _width; x++)
             {
                 for (int y = 0; y < _height; y++)
                 {
-                    for (int i = 0; i < TileHelper.GetSubLayerSize(layer); i++)
+                    for (int i = 0; i < TileHelper.GetSubLayerSize(objectLayer); i++)
                     {
-                        GetTileObject(layer, x, y).GetPlacedObject(i)?.gameObject.SetActive(enabled);
+                        GetTileObject(objectLayer, x, y).GetPlacedObject(i)?.gameObject.SetActive(enabled);
                     }
                 }
             }
@@ -200,15 +201,15 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Sets a TileObject value for a given x and y.
         /// </summary>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="value"></param>
-        public void SetTileObject(TileLayer layer, int x, int y, TileObject value)
+        public void SetTileObject(TileObjectLayer objectLayer, int x, int y, TileObject value)
         {
             if (x >= 0 && y >= 0 && x < _width && y < _height)
             {
-                _tileGridList[(int)layer].TileObjectsGrid[y * _width + x] = value;
+                _tileGridList[(int)objectLayer].TileObjectsGrid[y * _width + x] = value;
                 TriggerGridObjectChanged(x, y);
             }
         }
@@ -216,27 +217,27 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Sets a TileObject value for a given worldposition.
         /// </summary>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <param name="worldPosition"></param>
         /// <param name="value"></param>
-        public void SetTileObject(TileLayer layer, Vector3 worldPosition, TileObject value)
+        public void SetTileObject(TileObjectLayer objectLayer, Vector3 worldPosition, TileObject value)
         {
             Vector2Int vector = GetXY(worldPosition);
-            SetTileObject(layer, vector.x, vector.y, value);
+            SetTileObject(objectLayer, vector.x, vector.y, value);
         }
 
         /// <summary>
         /// Gets a TileObject value for a given x and y.
         /// </summary>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public TileObject GetTileObject(TileLayer layer, int x, int y)
+        public TileObject GetTileObject(TileObjectLayer objectLayer, int x, int y)
         {
             if (x >= 0 && y >= 0 && x < _width && y < _height)
             {
-                return _tileGridList[(int)layer].TileObjectsGrid[y * _width + x];
+                return _tileGridList[(int)objectLayer].TileObjectsGrid[y * _width + x];
             }
             else
             {
@@ -247,13 +248,13 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Gets a TileObject value for a given worldposition.
         /// </summary>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <param name="worldPosition"></param>
         /// <returns></returns>
-        public TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
+        public TileObject GetTileObject(TileObjectLayer objectLayer, Vector3 worldPosition)
         {
             Vector2Int vector = GetXY(worldPosition);
-            return GetTileObject(layer, vector.x, vector.y);
+            return GetTileObject(objectLayer, vector.x, vector.y);
         }
 
         public void TriggerGridObjectChanged(int x, int y)
@@ -266,7 +267,7 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public void Clear()
         {
-            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            foreach (TileObjectLayer layer in TileHelper.GetTileLayers())
             {
                 for (int x = 0; x < _width; x++)
                 {
@@ -293,7 +294,7 @@ namespace SS3D.Systems.Tile
         {
             List<TileObject.TileSaveObject> tileObjectSaveObjectList = new List<TileObject.TileSaveObject>();
 
-            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            foreach (TileObjectLayer layer in TileHelper.GetTileLayers())
             {
                 for (int x = 0; x < _width; x++)
                 {

@@ -8,6 +8,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Logging;
 using SS3D.Tilemaps.Adjacency;
+using SS3D.Tilemaps.Enums;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Random = UnityEngine.Random;
@@ -19,7 +20,7 @@ namespace SS3D.Tilemaps.Objects
         private TileSystem _tileSystem;
         private TileAdjacencySystem _tileAdjacencySystem;
 
-        public static Dictionary<TileLayer, List<TileObject>> AssetsPerLayer;
+        public static Dictionary<TileObjectLayer, List<TileObject>> AssetsPerLayer;
         public static Dictionary<TileObjects, TileObject> Assets;
 
         protected override void OnStart()
@@ -29,8 +30,8 @@ namespace SS3D.Tilemaps.Objects
             _tileSystem = GameSystems.Get<TileSystem>();
             _tileAdjacencySystem = GameSystems.Get<TileAdjacencySystem>();
 
-            SetupAssets();
-            SetupAssetsPerLayer();
+            LoadAssets();
+            LoadAssetsPerLayer();
         }
 
         [ContextMenu("Stress test")]
@@ -66,22 +67,22 @@ namespace SS3D.Tilemaps.Objects
             Punpun.Say(this, $"Stress test tilemap: {changedTiles} changed tiles", Logs.ServerOnly);
         }
 
-        private static void SetupAssetsPerLayer()
+        private static void LoadAssetsPerLayer()
         {
-            int layerCount = Enum.GetNames(typeof(TileLayer)).Length;
+            int layerCount = Enum.GetNames(typeof(TileObjectLayer)).Length;
 
-            Dictionary<TileLayer, List<TileObject>> assetReferences = new();
+            Dictionary<TileObjectLayer, List<TileObject>> assetReferences = new();
 
             for (int i = 0; i < layerCount; i++)
             {
-                TileLayer layer = (TileLayer)i;
-                assetReferences[layer] = Assets.Values.Where(pair => pair.Layer == layer).ToList();
+                TileObjectLayer objectLayer = (TileObjectLayer)i;
+                assetReferences[objectLayer] = Assets.Values.Where(pair => pair._objectLayer == objectLayer).ToList();
             }
 
             AssetsPerLayer = assetReferences;
         }
 
-        private static void SetupAssets()
+        private static void LoadAssets()
         {
             List<AssetReference> assets = AssetData.TileObjects.Assets;
             Dictionary<TileObjects, TileObject> dictionary = new();
@@ -108,14 +109,20 @@ namespace SS3D.Tilemaps.Objects
         [Server]
         public bool TryAddTileObject(Vector3Int position, Vector3 rotation, TileObjects tileObject, out TileObject placedTileObject, bool replace = false)
         {
-            Tile tile = _tileSystem.GetTile(position);
+            TileData? nullableTile = _tileSystem.GetTile(position);
+            TileData tileData = default;
+
+            if (nullableTile != null)
+            {
+                tileData = (TileData)nullableTile;
+            }
 
             TileObject prefab = Assets[tileObject];
 
-            TileLayer layer = prefab.Layer;
+            TileObjectLayer objectLayer = prefab._objectLayer;
             Quaternion quaternion = Quaternion.Euler(rotation);
 
-            if (!tile.IsLayerEmpty(prefab.Layer))
+            if (!tileData.IsLayerEmpty(prefab._objectLayer))
             {
                 if (!replace)
                 {
@@ -123,17 +130,18 @@ namespace SS3D.Tilemaps.Objects
                     return false;
                 }
 
-                tile.DestroyObjectAt(layer);
+                tileData.DestroyObjectAt(objectLayer);
             }
 
 
-            placedTileObject = Instantiate(prefab, position, quaternion, tile.TransformCache);
-            ServerManager.Spawn(placedTileObject.GameObjectCache);
+            // placedTileObject = Instantiate(prefab, position, quaternion, tile.TransformCache);
+            // ServerManager.Spawn(placedTileObject.GameObjectCache);
 
-            placedTileObject.SetPositionAndRotation(position, quaternion);
+            // placedTileObject.SetPositionAndRotation(position, quaternion);
 
-            tile.AddObjectAt(layer, placedTileObject);
+            // tile.AddObjectAt(layer, placedTileObject);
 
+            placedTileObject = null;
             return false;
         }
     }

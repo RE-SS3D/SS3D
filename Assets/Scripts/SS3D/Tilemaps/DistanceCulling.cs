@@ -40,11 +40,17 @@ namespace SS3D.Tilemaps
 
             while (true)
             {
-                Dictionary<Vector3Int, Tile> tiles = _tileSystem.Tiles;
+                Dictionary<Vector3Int, TileData?> tiles = _tileSystem.Tiles;
 
-                foreach (KeyValuePair<Vector3Int, Tile> tile in tiles)
+                foreach (KeyValuePair<Vector3Int, TileData?> keyValuePair in tiles)
                 {
-                    ProcessTileDistance(tile.Key, tile.Value);
+                    if (keyValuePair.Value == null)
+                    {
+                        continue;
+                    }
+
+                    TileData tile = (TileData)keyValuePair.Value;
+                    ProcessTileDistance(keyValuePair.Key, tile);
                 }
 
                 if (_cancellationTokenSource.IsCancellationRequested)
@@ -56,13 +62,13 @@ namespace SS3D.Tilemaps
             }
         }
 
-        private void ProcessTileDistance(Vector3Int position, Tile tile)
+        private void ProcessTileDistance(Vector3Int position, TileData tileData)
         {
             float distance = Vector3.Distance(Position, position);
 
             bool reachedThreshold = distance >= _distanceThreshold; 
 
-            foreach (TileObject value in tile.Objects.Values)
+            foreach (TileObject value in tileData.Objects.Values)
             {
                 foreach (Component component in value.Renderers)
                 {

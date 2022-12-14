@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Tilemaps;
-
+using SS3D.Tilemaps.Enums;
 using UnityEditor;
 using UnityEngine;
 
@@ -47,7 +47,7 @@ namespace SS3D.Editor.TileMap
         private bool _enableVisualHelp = true;
         private double _lastPlacementTime;
         private bool _deleteTiles;
-        private TileLayer _selectedLayer;
+        private TileObjectLayer _selectedObjectLayer;
         private TileObjectSo _selectedObjectSo;
         private bool _enablePlacement;
         private Direction _selectedDir = Direction.North;
@@ -251,7 +251,7 @@ namespace SS3D.Editor.TileMap
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Selected layer:");
-            _selectedLayer = (TileLayer)EditorGUILayout.EnumPopup(_selectedLayer);
+            _selectedObjectLayer = (TileObjectLayer)EditorGUILayout.EnumPopup(_selectedObjectLayer);
             EditorGUILayout.EndHorizontal();
             if (EditorGUI.EndChangeCheck())
             {
@@ -361,7 +361,7 @@ namespace SS3D.Editor.TileMap
                     DestroyGhost();
                     
                     _dragHandler = new TileDragHandler(_tileManager, this, GetCurrentMap(), GetSubLayerIndex(), _selectedObjectSo, _selectedDir, dragPosition);
-                    _dragHandler.SelectedLayer = _selectedLayer;
+                    _dragHandler.SelectedObjectLayer = _selectedObjectLayer;
                     _dragHandler.AllowOverwrite = _overwriteAllowed;
 
                     if (_deleteTiles)
@@ -390,13 +390,13 @@ namespace SS3D.Editor.TileMap
                 _lastPlacement = snappedPosition;
                 if (_deleteTiles)
                 {
-                    _tileManager.ClearTileObject(GetCurrentMap(), _selectedLayer, GetSubLayerIndex(), snappedPosition);
+                    _tileManager.ClearTileObject(GetCurrentMap(), _selectedObjectLayer, GetSubLayerIndex(), snappedPosition);
                 }
                 else
                 {
                     if (_overwriteAllowed)
                     {
-                        _tileManager.ClearTileObject(GetCurrentMap(), _selectedLayer, GetSubLayerIndex(), snappedPosition);
+                        _tileManager.ClearTileObject(GetCurrentMap(), _selectedObjectLayer, GetSubLayerIndex(), snappedPosition);
                     }
                     _tileManager.SetTileObject(GetCurrentMap(), GetSubLayerIndex(), _selectedObjectSo, snappedPosition, _selectedDir);
                 }
@@ -417,13 +417,13 @@ namespace SS3D.Editor.TileMap
         /// <returns>Sublayer index to use</returns>
         private int GetSubLayerIndex()
         {
-            switch (_selectedLayer)
+            switch (_selectedObjectLayer)
             {
-                case TileLayer.Plenum:
-                case TileLayer.Atmos:
-                case TileLayer.Turf:
-                case TileLayer.Wire:
-                case TileLayer.Disposal:
+                case TileObjectLayer.Plenum:
+                // case TileObjectLayer.Atmos:
+                case TileObjectLayer.Turf:
+                case TileObjectLayer.FloorObject:
+                case TileObjectLayer.Disposal:
                 // case TileLayer.PipeLeft:
                 // case TileLayer.PipeMiddle:
                 // case TileLayer.PipeRight:
@@ -548,7 +548,7 @@ namespace SS3D.Editor.TileMap
         {
             EditorGUI.indentLevel++;
             // Draw for each layer in the tilemap
-            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            foreach (TileObjectLayer layer in TileHelper.GetTileLayers())
             {
                 int i = (int)layer;
                 if (_layerVisibilitySelection[i] == EditorGUILayout.Toggle(layer.ToString(), _layerVisibilitySelection[i]))
@@ -616,7 +616,7 @@ namespace SS3D.Editor.TileMap
         private void UpdateTileVisibility()
         {
             Systems.Tile.TileMap map = GetCurrentMap();
-            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            foreach (TileObjectLayer layer in TileHelper.GetTileLayers())
             {
                 bool visible = _layerVisibilitySelection[(int)layer];
                 map.SetEnabled(layer, visible);
@@ -666,16 +666,16 @@ namespace SS3D.Editor.TileMap
         /// <summary>
         /// Load all TileObjectSO for a specific layer.
         /// </summary>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <param name="assetName"></param>
-        private void LoadAssetLayer(TileLayer layer, string assetName = "")
+        private void LoadAssetLayer(TileObjectLayer objectLayer, string assetName = "")
         {
             assetDisplayList.Clear();
             _assetDisplayIcons.Clear();
 
             for (int i = 0; i < _assetList.Count; i++)
             {
-                if (_assetList[i].layer != layer)
+                if (_assetList[i]._objectLayer != objectLayer)
                 {
                     continue;
                 }
@@ -700,7 +700,7 @@ namespace SS3D.Editor.TileMap
             Focus();
 
             if (updateAssets)
-                LoadAssetLayer(_selectedLayer, _searchString);
+                LoadAssetLayer(_selectedObjectLayer, _searchString);
 
             if (assetDisplayList.Count > _assetIndex)
             {

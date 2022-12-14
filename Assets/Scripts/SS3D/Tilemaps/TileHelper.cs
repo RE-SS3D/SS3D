@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using SS3D.Tilemaps.Enums;
 using UnityEngine;
 
 namespace SS3D.Tilemaps
 {
     public static class TileHelper
     {
-        private static TileLayer[] tileLayers;
+        private static TileObjectLayer[] tileLayers;
         
-        public static TileLayer[] GetTileLayers()
+        public static TileObjectLayer[] GetTileLayers()
         {
             if (tileLayers == null)
             {
-                tileLayers = (TileLayer[]) Enum.GetValues(typeof(TileLayer));
+                tileLayers = (TileObjectLayer[]) Enum.GetValues(typeof(TileObjectLayer));
             }
             return tileLayers;
         }
 
-        public static bool ContainsSubLayers(TileLayer layer)
+        public static bool ContainsSubLayers(TileObjectLayer objectLayer)
         {
-            switch (layer)
+            switch (objectLayer)
             {
                 // case TileLayer.HighWallMount:
                 // case TileLayer.LowWallMount:
@@ -30,9 +31,9 @@ namespace SS3D.Tilemaps
             }
         }
 
-        public static int GetSubLayerSize(TileLayer layer)
+        public static int GetSubLayerSize(TileObjectLayer objectLayer)
         {
-            switch(layer)
+            switch(objectLayer)
             {
                 // case TileLayer.HighWallMount:
                 // case TileLayer.LowWallMount:

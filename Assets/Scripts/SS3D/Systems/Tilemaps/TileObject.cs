@@ -1,5 +1,6 @@
 ﻿using System;
 using SS3D.Tilemaps;
+using SS3D.Tilemaps.Enums;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -15,22 +16,22 @@ namespace SS3D.Systems.Tile
         [Serializable]
         public class TileSaveObject
         {
-            public TileLayer layer;
+            public TileObjectLayer _objectLayer;
             public int x;
             public int y;
             public PlacedTileObject.PlacedSaveObject[] placedSaveObjects;
         }
 
         private TileChunk map;
-        private TileLayer layer;
+        private TileObjectLayer _objectLayer;
         private int x;
         private int y;
         public PlacedTileObject[] placedObjects;
 
-        public TileObject(TileChunk map, TileLayer layer, int x, int y, int subLayerSize)
+        public TileObject(TileChunk map, TileObjectLayer objectLayer, int x, int y, int subLayerSize)
         {
             this.map = map;
-            this.layer = layer;
+            this._objectLayer = objectLayer;
             this.x = x;
             this.y = y;
             placedObjects = new PlacedTileObject[subLayerSize];
@@ -109,7 +110,7 @@ namespace SS3D.Systems.Tile
         public bool IsCompletelyEmpty()
         {
             bool occupied = false;
-            for (int i = 0; i < TileHelper.GetSubLayerSize(layer); i++)
+            for (int i = 0; i < TileHelper.GetSubLayerSize(_objectLayer); i++)
             {
                 occupied |= !IsEmpty(i);
             }
@@ -138,7 +139,7 @@ namespace SS3D.Systems.Tile
 
             return new TileSaveObject
             {
-                layer = layer,
+                _objectLayer = _objectLayer,
                 x = x,
                 y = y,
                 placedSaveObjects = placedSaveObjects,

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SS3D.Tilemaps;
+using SS3D.Tilemaps.Enums;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -37,16 +38,16 @@ namespace SS3D.Systems.Tile
         public static bool CanBuild(TileMap map, Vector3 position, int subLayerIndex, TileObjectSo tileObjectSo, Direction dir)
         {
             TileManager tileManager = TileManager.Instance;
-            TileLayer placedLayer = tileObjectSo.layer;
+            TileObjectLayer placedObjectLayer = tileObjectSo._objectLayer;
             TileObject[] tileObjects = new TileObject[TileHelper.GetTileLayers().Length];
 
-            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            foreach (TileObjectLayer layer in TileHelper.GetTileLayers())
             {
                 tileObjects[(int)layer] = map.GetTileObject(layer, position);
             }
 
             // Cannot build anything unless a plenum is placed
-            if (placedLayer != TileLayer.Plenum && !CanBuildOnPlenum(map, position, tileObjectSo, dir))
+            if (placedObjectLayer != TileObjectLayer.Plenum && !CanBuildOnPlenum(map, position, tileObjectSo, dir))
                 return false;
 
             // No wall mounts on non-walls
@@ -54,7 +55,7 @@ namespace SS3D.Systems.Tile
             //     (placedLayer == TileLayer.LowWallMount || placedLayer == TileLayer.HighWallMount))
             //     return false;
 
-            switch (placedLayer)
+            switch (placedObjectLayer)
             {
                 // case TileLayer.LowWallMount:
                 // case TileLayer.HighWallMount:
@@ -96,7 +97,7 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         private static bool CanBuildWallAttachment(TileMap map, Vector3 position, TileObjectSo wallAttachment, Direction dir)
         {
-            TileObject wallObject = map.GetTileObject(TileLayer.Turf, position);
+            TileObject wallObject = map.GetTileObject(TileObjectLayer.Turf, position);
             // Cannot build when there isn't a wall
             if (wallObject.IsCompletelyEmpty() || wallObject.GetPlacedObject(0).GetGenericType() != TileObjectGenericType.Wall)
                 return false;
@@ -106,7 +107,7 @@ namespace SS3D.Systems.Tile
             //     return false;
 
             // Cannot build wall mount if it collides with the next wall
-            PlacedTileObject[] adjacentObjects = map.GetNeighbourObjects(TileLayer.Turf, 0, position);
+            PlacedTileObject[] adjacentObjects = map.GetNeighbourObjects(TileObjectLayer.Turf, 0, position);
             if (adjacentObjects[(int)dir] && adjacentObjects[(int)dir].GetGenericType() == TileObjectGenericType.Wall)
                 return false;
 
@@ -123,7 +124,7 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         private static bool CanBuildOnPlenum(TileMap map, Vector3 position, TileObjectSo plenumAttachment, Direction dir)
         {
-            TileObject plenumObject = map.GetTileObject(TileLayer.Plenum, position);
+            TileObject plenumObject = map.GetTileObject(TileObjectLayer.Plenum, position);
 
             // No plenum means we cannot build anything on top
             if (plenumObject.IsCompletelyEmpty())
@@ -146,19 +147,19 @@ namespace SS3D.Systems.Tile
         /// Returns a list of TileObjects that will be destroyed if an object on the given layer is destroyed.
         /// </summary>
         /// <param name="map"></param>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        public static List<TileObject> GetToBeDestroyedObjects(TileMap map, TileLayer layer, Vector3 position)
+        public static List<TileObject> GetToBeDestroyedObjects(TileMap map, TileObjectLayer objectLayer, Vector3 position)
         {
             List<TileObject> toBeDestroyedList = new List<TileObject>();
 
             // Remove everything when the plenum is missing
-            if (layer == TileLayer.Plenum)
+            if (objectLayer == TileObjectLayer.Plenum)
             {
-                foreach (TileLayer layerToCheck in TileHelper.GetTileLayers())
+                foreach (TileObjectLayer layerToCheck in TileHelper.GetTileLayers())
                 {
-                    if (layerToCheck == TileLayer.Plenum)
+                    if (layerToCheck == TileObjectLayer.Plenum)
                         continue;
 
                     toBeDestroyedList.Add(map.GetTileObject(layerToCheck, position));

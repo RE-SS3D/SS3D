@@ -1,4 +1,4 @@
-﻿namespace SS3D.Systems.PlayerControl
+﻿namespace SS3D.Utils
 {
     public enum ChangeType
     {

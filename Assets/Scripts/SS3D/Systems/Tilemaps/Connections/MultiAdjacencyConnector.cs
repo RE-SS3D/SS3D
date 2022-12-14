@@ -2,6 +2,7 @@
 using FishNet.Object;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using SS3D.Tilemaps;
+using SS3D.Tilemaps.Enums;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -145,11 +146,11 @@ namespace SS3D.Systems.Tile.Connections
             if (CrossConnectAllowed)
             {
                 // Hacky way to find which layer the tileObjectSO is
-                TileLayer layer = GetComponent<PlacedTileObject>().GetLayer();
+                TileObjectLayer objectLayer = GetComponent<PlacedTileObject>().GetLayer();
 
                 for (int i = 0; i < neighbourObjects.Length; i++)
                 {
-                    UpdateAllOnDirection((Direction)i, layer);
+                    UpdateAllOnDirection((Direction)i, objectLayer);
                 }
             }
             else
@@ -163,19 +164,19 @@ namespace SS3D.Systems.Tile.Connections
         /// Needs to know it's own layer to see if the value can be set to null.
         /// </summary>
         /// <param name="dir"></param>
-        /// <param name="ownLayer"></param>
-        private void UpdateAllOnDirection(Direction dir, TileLayer ownLayer)
+        /// <param name="ownObjectLayer"></param>
+        private void UpdateAllOnDirection(Direction dir, TileObjectLayer ownObjectLayer)
         {
             TileMap map = GetComponentInParent<TileMap>();
 
             bool changed = false;
-            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            foreach (TileObjectLayer layer in TileHelper.GetTileLayers())
             {
                 // Get the neighbour for a given direction
                 Tuple<int, int> vector = TileHelper.ToCardinalVector(dir);
                 TileObject neighbour = map.GetTileObject(layer, transform.position + new Vector3(vector.Item1, 0, vector.Item2));
 
-                if ((!neighbour.GetPlacedObject(0) || !neighbour.GetPlacedObject(0).HasAdjacencyConnector()) && layer != ownLayer)
+                if ((!neighbour.GetPlacedObject(0) || !neighbour.GetPlacedObject(0).HasAdjacencyConnector()) && layer != ownObjectLayer)
                 {
                     continue;
                 }
@@ -339,7 +340,7 @@ namespace SS3D.Systems.Tile.Connections
             }
 
             {
-                foreach (TileLayer layer in TileHelper.GetTileLayers())
+                foreach (TileObjectLayer layer in TileHelper.GetTileLayers())
                 {
                     for (int i = 0; i < neighbourObjects.Length; i++)
                     {

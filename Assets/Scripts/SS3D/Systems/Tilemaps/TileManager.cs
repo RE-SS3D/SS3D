@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SS3D.Tilemaps;
+using SS3D.Tilemaps.Enums;
 using SS3D.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -313,25 +314,25 @@ namespace SS3D.Systems.Tile
         /// Clears a PlacedTileObject at a given layer and position.
         /// </summary>
         /// <param name="map"></param>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <param name="subLayerIndex"></param>
         /// <param name="position"></param>
-        public void ClearTileObject(TileMap map, TileLayer layer, int subLayerIndex, Vector3 position)
+        public void ClearTileObject(TileMap map, TileObjectLayer objectLayer, int subLayerIndex, Vector3 position)
         {
-            map.ClearTileObject(layer, subLayerIndex, position);
+            map.ClearTileObject(objectLayer, subLayerIndex, position);
         }
 
         /// <summary>
         /// Simplified version of ClearTileObject(). Assumes the main map is used and no sub layers are needed.
         /// </summary>
-        /// <param name="layer"></param>
+        /// <param name="objectLayer"></param>
         /// <param name="position"></param>
-        public void ClearTileObject(TileLayer layer, Vector3 position)
+        public void ClearTileObject(TileObjectLayer objectLayer, Vector3 position)
         {
             // if (layer == TileLayer.HighWallMount || layer == TileLayer.LowWallMount)
                 Debug.LogError("Simplified function CanBuild() is used. Do not use this function with layers where a sub index is required!");
 
-            ClearTileObject(GetMainMap(), layer, 0, position);
+            ClearTileObject(GetMainMap(), objectLayer, 0, position);
         }
 
         /// <summary>
