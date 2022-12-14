@@ -21,12 +21,19 @@ namespace SS3D.Systems.Lobby.UI
         private int _seconds;
         private RoundState _roundState;
 
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            SubscribeToEvents();
+        }
+
         protected override void OnStart()
         {
             base.OnStart();
 
             UpdateRoundCountDownText();
-            SubscribeToEvents();
         }
 
         private void SubscribeToEvents()

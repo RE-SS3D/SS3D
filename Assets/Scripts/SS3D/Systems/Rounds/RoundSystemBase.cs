@@ -171,7 +171,7 @@ namespace SS3D.Systems.Rounds
                 return;
             }
 
-            RoundTickUpdated roundTickUpdated = new(_currentTimerSeconds);
+            RoundTickUpdated roundTickUpdated = new(newValue);
             roundTickUpdated.Invoke(this);
         }
 
@@ -187,7 +187,7 @@ namespace SS3D.Systems.Rounds
 
             Punpun.Say(this, _roundState.ToString(), Logs.ServerOnly);
 
-            RoundStateUpdated roundStateUpdated = new(_roundState);
+            RoundStateUpdated roundStateUpdated = new(newValue);
             roundStateUpdated.Invoke(this);
         }
     }
