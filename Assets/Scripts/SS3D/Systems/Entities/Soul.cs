@@ -26,6 +26,11 @@ namespace SS3D.Systems.Entities
         /// </summary>
         public void UpdateCkey(string oldCkey, string newCkey, bool asServer)
         {
+            if (!asServer && IsHost)
+            {
+                return;
+            }
+
             if (oldCkey != newCkey)
             {
                 Punpun.Say(this, $"Updating player ckey {newCkey}");

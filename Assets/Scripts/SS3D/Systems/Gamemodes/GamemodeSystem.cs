@@ -63,7 +63,7 @@ namespace SS3D.Systems.Gamemodes
         [Server]
         private void InitializeGamemode()
         {
-            // Creates an instance of the SO, to avoid using the file.
+            // Creates an instance of the SO, to avoid using the file. 
             _gamemode = Instantiate(_gamemode);
 
             _gamemode.OnInitialized += HandleGamemodeInitialized;
@@ -167,6 +167,11 @@ namespace SS3D.Systems.Gamemodes
         [Server]
         private void HandleSpawnedPlayersChanged(ref EventContext context, in SpawnedPlayersUpdated e)
         {
+            if (!_gamemode.IsInitialized)
+            {
+                return;
+            }
+
             EntitySpawnSystem entitySpawnSystem = SystemLocator.Get<EntitySpawnSystem>();
             PlayerControllable player = entitySpawnSystem.LastSpawned;
 

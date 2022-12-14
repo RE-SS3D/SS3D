@@ -24,8 +24,11 @@ namespace SS3D.Systems.Entities
     public class EntitySpawnSystem : NetworkSystem
     {
         [Header("Settings")]
-        [SerializeField] private List<PlayerControllable> _tempHuman;
-        [SerializeField] private Transform _tempSpawnPoint;
+        [SerializeField]
+        private List<PlayerControllable> _tempHuman;
+
+        [SerializeField] 
+        private Transform _tempSpawnPoint;
 
         [SyncObject]
         private readonly SyncList<PlayerControllable> _spawnedPlayers = new();
@@ -33,6 +36,7 @@ namespace SS3D.Systems.Entities
         private bool _alreadySpawnedInitialPlayers;
 
         public bool IsPlayedSpawned(string ckey) => _spawnedPlayers.Find(controllable => controllable.ControllingSoul.Ckey == ckey);
+        public bool IsPlayedSpawned(NetworkConnection networkConnection) => _spawnedPlayers.Find(controllable => controllable.Owner == networkConnection);
         public List<PlayerControllable> SpawnedPlayers => _spawnedPlayers.ToList();
         public PlayerControllable LastSpawned => _spawnedPlayers.Count != 0 ? _spawnedPlayers.Last() : null;
 
@@ -64,11 +68,6 @@ namespace SS3D.Systems.Entities
         private void HandleRequestMindSwap(NetworkConnection conn, RequestMindSwap m)
         {
             ProcessMindSwap(m.Origin, m.Target);
-        }
-
-        private void HandleSpawnedPlayersChanged(SyncListOperation op, int index, PlayerControllable olditem, PlayerControllable newitem, bool asserver)
-        {
-            SyncSpawnedPlayers();
         }
 
         [Server]
@@ -138,11 +137,9 @@ namespace SS3D.Systems.Entities
                 return;
             }
 
-            if (players == null || players.Count == 0)
+            if (players.Count == 0)
             {
-                _alreadySpawnedInitialPlayers = true;
                 Punpun.Say(this, "No players to spawn", Logs.ServerOnly);
-                return;
             }
 
             foreach (string ckey in players)
@@ -182,18 +179,28 @@ namespace SS3D.Systems.Entities
 
             Soul soul = playerControlSystem.GetSoul(ckey);
             PlayerControllable controllable = Instantiate(_tempHuman[Random.Range(0, _tempHuman.Count)], _tempSpawnPoint.position, Quaternion.identity);
-            
-            _spawnedPlayers.Add(controllable);
 
             ServerManager.Spawn(controllable.NetworkObject, soul.Owner);
             controllable.SetControllingSoul(soul);
+
+            _spawnedPlayers.Add(controllable);
 
             string message = $"Spawning player {soul.Ckey} on {controllable.name}";
             Punpun.Say(this, message, Logs.ServerOnly); 
         }
 
-        private void SetSpawnedPlayers(SyncListOperation op, int index, string old, string player, bool asServer)
+        private void HandleSpawnedPlayersChanged(SyncListOperation op, int index, PlayerControllable old, PlayerControllable @new, bool asServer)
         {
+            if (op == SyncListOperation.Complete)
+            {
+                return;
+            }
+
+            if (!asServer && IsHost)
+            {
+                return;
+            }
+
             SyncSpawnedPlayers();
         }
 

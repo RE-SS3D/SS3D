@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
-using SS3D.Core.Behaviours;
+using Coimbra;
+using Coimbra.Services.Events;
 using SS3D.Systems.Gamemodes;
 using SS3D.Systems.GameModes.Events;
+using SS3D.Systems.Rounds;
+using SS3D.Systems.Rounds.Events;
 using SS3D.Utils;
 using UnityEngine;
+using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Systems.Gamemodes.UI
 {
@@ -16,11 +20,29 @@ namespace SS3D.Systems.Gamemodes.UI
 
         private Dictionary<int, GamemodeObjectiveItemView> _gamemodeObjectiveItems;
 
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            _gamemodeObjectiveItems = new Dictionary<int, GamemodeObjectiveItemView>();
+
+            RoundStateUpdated.AddListener(HandleRoundStateUpdated);
+        }
+
+        private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
+        {
+            RoundState roundState = e.RoundState;
+
+            if (roundState == RoundState.Stopped)
+            {
+                ClearObjectivesList();
+            }
+        }
+
         protected override void OnStart()
         {
             base.OnStart();
 
-            _gamemodeObjectiveItems = new Dictionary<int, GamemodeObjectiveItemView>();
             _fade.SetFade(false);
         }
 
@@ -65,6 +87,16 @@ namespace SS3D.Systems.Gamemodes.UI
 
             _gamemodeObjectiveItems.Add(objective.Id, itemView);
             itemView.UpdateObjective(objective);
+        }
+
+        private void ClearObjectivesList()
+        {
+            foreach (KeyValuePair<int,GamemodeObjectiveItemView> view in _gamemodeObjectiveItems)
+            {
+                view.Value.GameObjectCache.Destroy();
+            }
+
+            _gamemodeObjectiveItems.Clear();
         }
     }
 }

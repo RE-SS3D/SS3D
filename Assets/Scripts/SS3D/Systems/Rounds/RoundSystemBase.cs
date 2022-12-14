@@ -166,7 +166,10 @@ namespace SS3D.Systems.Rounds
         /// </summary>
         private void SetCurrentTimerSeconds(int oldValue, int newValue, bool asServer)
         {
-            _currentTimerSeconds = newValue;
+            if (!asServer && IsHost)
+            {
+                return;
+            }
 
             RoundTickUpdated roundTickUpdated = new(_currentTimerSeconds);
             roundTickUpdated.Invoke(this);
@@ -177,8 +180,11 @@ namespace SS3D.Systems.Rounds
         /// </summary>
         private void SetRoundState(RoundState oldValue, RoundState newValue, bool asServer)
         {
-            _roundState = newValue;
-            
+            if (!asServer && IsHost)
+            {
+                return;
+            }
+
             Punpun.Say(this, _roundState.ToString(), Logs.ServerOnly);
 
             RoundStateUpdated roundStateUpdated = new(_roundState);

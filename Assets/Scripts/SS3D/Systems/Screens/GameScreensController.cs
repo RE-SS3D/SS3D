@@ -27,15 +27,7 @@ namespace SS3D.Systems.Screens
 
         private void HandleSpawnedPlayersUpdated(ref EventContext context, in SpawnedPlayersUpdated e)
         {
-            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
-            Soul soul = playerControlSystem.GetSoul(LocalConnection);
-
-            if (soul == null)
-            {
-                return;
-            }
-
-            bool isPlayerSpawned = e.SpawnedPlayers.Find(controllable => controllable.ControllingSoul == soul);
+            bool isPlayerSpawned = e.SpawnedPlayers.Find(controllable => controllable.Owner == LocalConnection);
 
             if (!isPlayerSpawned)
             {

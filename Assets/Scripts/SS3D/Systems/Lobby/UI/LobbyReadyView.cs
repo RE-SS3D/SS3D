@@ -41,14 +41,9 @@ namespace SS3D.Systems.Lobby.UI
 
         private async void SyncSpawnedPlayers()
         {
-            await UniTask.WaitUntil(() => SystemLocator.Get<EntitySpawnSystem>() != null);
             EntitySpawnSystem spawnSystem = SystemLocator.Get<EntitySpawnSystem>();
 
-            await UniTask.WaitUntil(() => SystemLocator.Get<PlayerControlSystem>() != null);
-            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
-
-            string ckey = playerControlSystem.GetCkey(LocalConnection);
-            bool isPlayedSpawned = spawnSystem.IsPlayedSpawned(ckey);
+            bool isPlayedSpawned = spawnSystem.IsPlayedSpawned(LocalConnection);
 
             if (isPlayedSpawned)
             {
@@ -61,14 +56,9 @@ namespace SS3D.Systems.Lobby.UI
 
         private async void SyncRoundState(RoundState roundState)
         {
-            await UniTask.WaitUntil(() => SystemLocator.Get<EntitySpawnSystem>() != null);
             EntitySpawnSystem spawnSystem = SystemLocator.Get<EntitySpawnSystem>();
 
-            await UniTask.WaitUntil(() => SystemLocator.Get<PlayerControlSystem>() != null);
-            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
-
-            string ckey = playerControlSystem.GetCkey(LocalConnection);
-            bool isPlayedSpawned = spawnSystem.IsPlayedSpawned(ckey);
+            bool isPlayedSpawned = spawnSystem.IsPlayedSpawned(LocalConnection);
 
             if (isPlayedSpawned && roundState == RoundState.Ongoing)
             {
@@ -91,9 +81,13 @@ namespace SS3D.Systems.Lobby.UI
                 _readyButton.Pressed = false;
                 _readyButton.Disabled = false;
                 _readyButton.SetActive(true);
+
+                _embarkButton.Pressed = false;
                 _embarkButton.Disabled = true;
+                _embarkButton.Highlighted = false;
+
                 _embarkButton.SetActive(false);
-            }
+            }                                           
         }
 
         private void HandleEmbarkButtonPressed(bool pressed)

@@ -46,7 +46,6 @@ namespace SS3D.Systems.Gamemodes
         /// </summary>
         public bool Cancelled => Status == ObjectiveStatus.Cancelled;
 
-
         /// <summary>
         /// Handy call to check if the objective is in progress.
         /// </summary>

@@ -67,7 +67,7 @@ namespace SS3D.UI.Buttons
         public bool Highlighted
         {
             get => _highlighted;
-            private set
+            set
             {
                 _highlighted = value; 
                 OnHighlightChanged?.Invoke(_highlighted);

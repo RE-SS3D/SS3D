@@ -2,6 +2,7 @@ using System;
 using SS3D.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using Coimbra;
 using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Systems.Entities;
@@ -47,6 +48,8 @@ namespace SS3D.Systems.GameModes.Modes
         /// The current attributed objectives in a round.
         /// </summary>
         private List<GamemodeObjective> _roundObjectives;
+
+        private bool _isInitialized;
         
         /// <summary>
         /// All the antagonists spawned in the round.
@@ -57,6 +60,8 @@ namespace SS3D.Systems.GameModes.Modes
         /// The objectives in the current round.
         /// </summary>
         public List<GamemodeObjective> RoundObjectives => _roundObjectives;
+
+        public bool IsInitialized => _isInitialized;
 
         /// <summary>
         /// Gets the objectives for a specific player.1
@@ -75,6 +80,7 @@ namespace SS3D.Systems.GameModes.Modes
 
             CreateObjectives();
 
+            _isInitialized = true;
             OnInitialized?.Invoke();
         }
 
@@ -83,8 +89,9 @@ namespace SS3D.Systems.GameModes.Modes
         /// </summary>
         public virtual void FinalizeGamemode()
         {
-            FinalizeObjectives(); 
+            FinalizeObjectives();
 
+            _isInitialized = false;
             OnFinished?.Invoke(_roundObjectives);
         }
 
@@ -99,6 +106,16 @@ namespace SS3D.Systems.GameModes.Modes
         /// </summary>
         protected virtual void FinalizeObjectives()
         {
+            CheckAllObjectivesCompletion();
+
+            int succeededObjectives = _roundObjectives.Count(objective => objective.Succeeded);
+            Punpun.Say(this, $"Objectives Completed: {succeededObjectives}/{_roundObjectives.Count}");
+
+            DestroyAllObjectives();
+        }
+
+        private void CheckAllObjectivesCompletion()
+        {
             foreach (GamemodeObjective objective in _roundObjectives)
             {
                 objective.CheckCompletion();
@@ -107,9 +124,15 @@ namespace SS3D.Systems.GameModes.Modes
 
                 Punpun.Say(this, $"{objective.Title} - {status}");
             }
+        }
 
-            int succeededObjectives = _roundObjectives.Count(objective => objective.Succeeded);
-            Punpun.Say(this, $"Objectives Completed: {succeededObjectives}/{_roundObjectives.Count}");
+        private void DestroyAllObjectives()
+        {
+            foreach (GamemodeObjective gamemodeObjective in _roundObjectives)
+            {
+                gamemodeObjective.Destroy();
+            }
+            _roundObjectives.Clear();
         }
 
         /// <summary>
@@ -159,15 +182,6 @@ namespace SS3D.Systems.GameModes.Modes
         /// <param name="player">The player to assign the objective to.</param>
         public virtual void CreateLateJoinObjective(PlayerControllable player)
         {
-            EntitySpawnSystem entitySpawnSystem = SystemLocator.Get<EntitySpawnSystem>();
-
-            bool isPlayerSpawned = entitySpawnSystem.SpawnedPlayers.Contains(player);
-
-            if (isPlayerSpawned)
-            {
-                return;
-            }
-
             (int, GamemodeObjective) objective = GetRandomObjective();
 
             AssignObjective(objective.Item2, player);

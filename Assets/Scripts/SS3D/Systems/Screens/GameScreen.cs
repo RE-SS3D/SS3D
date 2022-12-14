@@ -17,6 +17,8 @@ namespace SS3D.Systems.Screens
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Transform _holder;
 
+        private Sequence _sequence;
+
         private static ScreenType LastScreen { get; set; }
 
         private const float ScaleInScale = 1.15f;
@@ -65,6 +67,9 @@ namespace SS3D.Systems.Screens
         [Client]
         private void SetScreenState(ScreenType nextScreen, bool forceInstant = false)
         {
+            _sequence?.Kill();
+            _sequence = DOTween.Sequence();
+
             LastScreen = nextScreen;
 
             bool matchesScreenType = nextScreen == _screenType;
@@ -73,11 +78,8 @@ namespace SS3D.Systems.Screens
             float scaleDuration = forceInstant ? 0 : ScaleDuration;
 
             float targetFade = matchesScreenType ? 1 : 0;
-
-            float initScale = matchesScreenType ? ScaleInScale : 1;
             float targetScale = matchesScreenType ? 1 : ScaleInScale;
 
-            _holder.localScale = new Vector3(initScale, initScale, initScale);
             _holder.DOScale(targetScale, scaleDuration).SetEase(Ease.OutQuart);
 
             _canvasGroup.DOFade(targetFade, fadeDuration).SetEase(Ease.OutCirc);
