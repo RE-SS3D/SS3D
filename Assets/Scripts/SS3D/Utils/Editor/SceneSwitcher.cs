@@ -11,23 +11,26 @@ namespace SS3D.Utils.Editor
 	{
 		static SceneSwitchLeftButton()
 		{
-			ToolbarExtender.LeftToolbarGUI.Add(OnToolbarGUI);
+			ToolbarExtender.RightToolbarGUI.Add(OnToolbarGUI);
 		}
 
 		private static void OnToolbarGUI()
 		{
 			GUILayout.FlexibleSpace();
 
-			if (GUILayout.Button(new GUIContent("Startup", "Load Scene Startup, use this to start the game"),
-				    new[] { GUILayout.Width(65), GUILayout.Height(19) }))
+			GUILayout.Label("Scene loader:");
+			GUILayout.Space(10);
+
+			if (GUILayout.Button(new GUIContent("Core", "Load Scene Startup, use this to start the game"),
+				    new[] { GUILayout.Width(50), GUILayout.Height(19) }))
 			{
-				SceneHelper.StartScene("Startup");
+				SceneHelper.StartScene("Core");
 			}
 
-			if (GUILayout.Button(new GUIContent("Lobby", "Load Scene Lobby, use this to develop in-game stuff"),
-				    new[] { GUILayout.Width(65), GUILayout.Height(19) }))
+			if (GUILayout.Button(new GUIContent("Game", "Load Scene Lobby, use this to develop in-game stuff"),
+				    new[] { GUILayout.Width(50), GUILayout.Height(19) }))
 			{
-				SceneHelper.StartScene("Lobby");
+				SceneHelper.StartScene("Game");
 			}
 		}
 	}
