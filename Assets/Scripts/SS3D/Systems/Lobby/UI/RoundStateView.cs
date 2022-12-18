@@ -14,25 +14,32 @@ namespace SS3D.Systems.Lobby.UI
     /// <summary>
     /// Handles the lobby countdown view
     /// </summary>
-    public class RoundStateView : SpessBehaviour
+    public class RoundStateView : Actor
     {
         [SerializeField][NotNull] private TMP_Text _roundCountdownText;
 
         private int _seconds;
         private RoundState _roundState;
 
+
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            SubscribeToEvents();
+        }
+
         protected override void OnStart()
         {
             base.OnStart();
 
             UpdateRoundCountDownText();
-            SubscribeToEvents();
         }
 
         private void SubscribeToEvents()
         {
-            RoundStateUpdated.AddListener(HandleRoundStateUpdated);
-            RoundTickUpdated.AddListener(HandleRoundTickUpdated);
+            AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
+            AddHandle(RoundTickUpdated.AddListener(HandleRoundTickUpdated));
         }
 
         private void HandleRoundTickUpdated(ref EventContext context, in RoundTickUpdated roundTickUpdated)

@@ -13,7 +13,7 @@ using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
 
 namespace SS3D.Systems.Lobby.UI
 {
-    public sealed class LobbyReadyView : NetworkedSpessBehaviour
+    public sealed class LobbyReadyView : NetworkActor
     {
         [SerializeField] private ToggleLabelButton _readyButton;
         [SerializeField] private LabelButton _embarkButton;
@@ -41,14 +41,9 @@ namespace SS3D.Systems.Lobby.UI
 
         private async void SyncSpawnedPlayers()
         {
-            await UniTask.WaitUntil(() => GameSystems.Get<EntitySpawnSystem>() != null);
-            EntitySpawnSystem spawnSystem = GameSystems.Get<EntitySpawnSystem>();
+            EntitySpawnSystem spawnSystem = SystemLocator.Get<EntitySpawnSystem>();
 
-            await UniTask.WaitUntil(() => GameSystems.Get<PlayerControlSystem>() != null);
-            PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
-
-            string ckey = playerControlSystem.GetCkey(LocalConnection);
-            bool isPlayedSpawned = spawnSystem.IsPlayedSpawned(ckey);
+            bool isPlayedSpawned = spawnSystem.IsPlayedSpawned(LocalConnection);
 
             if (isPlayedSpawned)
             {
@@ -61,14 +56,9 @@ namespace SS3D.Systems.Lobby.UI
 
         private async void SyncRoundState(RoundState roundState)
         {
-            await UniTask.WaitUntil(() => GameSystems.Get<EntitySpawnSystem>() != null);
-            EntitySpawnSystem spawnSystem = GameSystems.Get<EntitySpawnSystem>();
+            EntitySpawnSystem spawnSystem = SystemLocator.Get<EntitySpawnSystem>();
 
-            await UniTask.WaitUntil(() => GameSystems.Get<PlayerControlSystem>() != null);
-            PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
-
-            string ckey = playerControlSystem.GetCkey(LocalConnection);
-            bool isPlayedSpawned = spawnSystem.IsPlayedSpawned(ckey);
+            bool isPlayedSpawned = spawnSystem.IsPlayedSpawned(LocalConnection);
 
             if (isPlayedSpawned && roundState == RoundState.Ongoing)
             {
@@ -91,14 +81,18 @@ namespace SS3D.Systems.Lobby.UI
                 _readyButton.Pressed = false;
                 _readyButton.Disabled = false;
                 _readyButton.SetActive(true);
+
+                _embarkButton.Pressed = false;
                 _embarkButton.Disabled = true;
+                _embarkButton.Highlighted = false;
+
                 _embarkButton.SetActive(false);
-            }
+            }                                           
         }
 
         private void HandleEmbarkButtonPressed(bool pressed)
         {
-            PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
+            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
 
             string ckey = playerControlSystem.GetCkey(LocalConnection);
             RequestEmbarkMessage requestEmbarkMessage = new(ckey);
@@ -108,7 +102,7 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleReadyButtonPressed(bool pressed)
         {
-            PlayerControlSystem playerControlSystem = GameSystems.Get<PlayerControlSystem>();
+            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
 
             string ckey = playerControlSystem.GetCkey(LocalConnection);
             ChangePlayerReadyMessage playerReadyMessage = new(ckey, pressed);

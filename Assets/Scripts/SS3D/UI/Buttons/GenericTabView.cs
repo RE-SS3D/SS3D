@@ -9,7 +9,7 @@ namespace SS3D.UI.Buttons
     /// Generic class to manage a simple tab/panel UI
     /// </summary>
     [RequiredLayer("UI")]
-    public sealed class GenericTabView : SpessBehaviour
+    public sealed class GenericTabView : Actor
     {
         [SerializeField] private bool _active;
         [SerializeField] [NotNull] private Transform _panelUI;

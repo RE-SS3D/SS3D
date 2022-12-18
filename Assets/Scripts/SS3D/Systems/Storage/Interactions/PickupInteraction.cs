@@ -4,7 +4,11 @@ using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
+using SS3D.Systems.GameModes.Events;
 using UnityEngine;
+using SS3D.Core;
+using SS3D.Systems.PlayerControl;
+using FishNet.Object;
 
 namespace SS3D.Systems.Storage.Interactions
 {
@@ -71,6 +75,15 @@ namespace SS3D.Systems.Storage.Interactions
             {
                 // and then we run the function that adds it to the container
                 hands.Pickup(target);
+
+
+                try {
+                    string ckey = hands.Inventory.Body.ControllingSoul.Ckey;
+
+                    // and call the event for picking up items for the Game Mode System
+                    new ItemPickedUpEvent(target, ckey).Invoke(this);
+                }
+                catch { Debug.Log("Couldn't get Player Ckey"); }
             }
 
             return false;

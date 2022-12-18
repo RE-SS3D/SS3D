@@ -13,7 +13,7 @@ namespace SS3D.Systems.Interactions
     /// <summary>
     /// Controls the UI for a radial interaction menu
     /// </summary>
-    public sealed class RadialInteractionView : SpessSystem
+    public sealed class RadialInteractionView : Core.Behaviours.System
     {
         public event Action<IInteraction> OnInteractionSelected;
 

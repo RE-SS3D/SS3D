@@ -2,13 +2,14 @@
 using SS3D.Core.Behaviours;
 using UnityEngine;
 using UnityEngine.UI;
+using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Interactions
 {
     /// <summary>
     /// Manages loading bar progress, should be attached to loading bar prefab
     /// </summary>
-    public class LoadingBar : SpessBehaviour
+    public class LoadingBar : Actor
     {
         public float StartTime { get; set; }
         public float Duration { get; set; }

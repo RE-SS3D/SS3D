@@ -18,6 +18,8 @@ namespace SS3D.Utils
         [SerializeField] private float _transitionDuration;
         [SerializeField] private State _intendedState;
         [SerializeField] private bool _fadeOnStart;
+
+        private Sequence _sequence;
         
         private bool _currentState;
 
@@ -45,6 +47,7 @@ namespace SS3D.Utils
         public void SetFade(bool state)
         {
             _intendedState = state ? State.On : State.Off;
+            ProcessFade();
         }
 
         public void SetTransitionDuration(float duration)
@@ -54,6 +57,9 @@ namespace SS3D.Utils
 
         public void ProcessFade(Action callback = null)
         {
+            _sequence?.Kill();
+            _sequence = DOTween.Sequence();
+  
             _root.SetActive(true);      
 
             bool fadeOut = _intendedState == State.On;

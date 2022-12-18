@@ -19,7 +19,7 @@ namespace SS3D.Systems.Rounds
     /// <summary>
     /// Sets what players are ready or not.
     /// </summary>
-    public class ReadyPlayersSystem : NetworkedSystem
+    public class ReadyPlayersSystem : NetworkSystem
     {
         [SyncObject] private readonly SyncList<string> _readyPlayers = new();
 
@@ -37,7 +37,7 @@ namespace SS3D.Systems.Rounds
         {
             base.OnStartClient();
 
-            _readyPlayers.OnChange += SetReadyPlayers;
+            _readyPlayers.OnChange += HandleReadyPlayersChanged;
             SyncReadyPlayers();
         }
 
@@ -81,7 +81,7 @@ namespace SS3D.Systems.Rounds
         [Server]
         private void HandleChangePlayerReady(NetworkConnection sender, ChangePlayerReadyMessage m)
         {
-            Soul soul = GameSystems.Get<PlayerControlSystem>().GetSoul(m.Ckey);
+            Soul soul = SystemLocator.Get<PlayerControlSystem>().GetSoul(m.Ckey);
 
             SetPlayerReady(soul, m.Ready);
         }
@@ -109,7 +109,7 @@ namespace SS3D.Systems.Rounds
             }
         }
 
-        private void SetReadyPlayers(SyncListOperation op, int index, string s, string newItem1, bool asServer)
+        private void HandleReadyPlayersChanged(SyncListOperation op, int index, string s, string newItem1, bool asServer)
         {
             SyncReadyPlayers();
         }

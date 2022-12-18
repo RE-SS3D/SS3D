@@ -8,7 +8,7 @@ namespace SS3D.Interactions
     /// Basically a copy of HumanoidBOdyPartTargetSelector.cs
     /// This manages intent and it's done to easily support other intents
     /// </summary>
-    public class IntentController : SpessBehaviour
+    public class IntentController : Actor
     {
         private IntentType _selectedIntent;
 

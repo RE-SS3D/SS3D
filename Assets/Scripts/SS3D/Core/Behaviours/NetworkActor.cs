@@ -2,26 +2,30 @@
 using Coimbra.Services;
 using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
+using FishNet.Object;
 using UnityEngine;
 
+// ReSharper disable InconsistentNaming
 namespace SS3D.Core.Behaviours
 {
     /// <summary>
-    /// Used to optimize all GameObjects, avoid MonoBehaviours
+    /// Used to optimize all NetworkObjects, avoid MonoBehaviours
     /// </summary>
     [Tooltip("Used to optimize all GameObjects, avoid MonoBehaviours")]
-    public class SpessBehaviour : MonoBehaviour
+    public class NetworkActor : NetworkBehaviour
     {
         private GameObject _gameObjectCache;
         private Transform _transformCache;
 
-        private readonly List<EventHandle> _eventHandles = new();
+        private bool _initialized;
+
+        protected readonly List<EventHandle> _eventHandles = new();
 
         public Transform TransformCache
         {
             get
             {
-                if (_transformCache == null)
+                if (!_initialized)
                 {
                     _transformCache = transform;
                 }
@@ -35,7 +39,7 @@ namespace SS3D.Core.Behaviours
         {
             get
             {
-                if (_gameObjectCache == null)
+                if (!_initialized)
                 {
                     _gameObjectCache = gameObject;
 
@@ -85,6 +89,8 @@ namespace SS3D.Core.Behaviours
         public void SetParent(Transform parent) => TransformCache.SetParent(parent);
         public void LookAt(Transform target) => TransformCache.LookAt(target);
         public void LookAt(Vector3 target) => TransformCache.LookAt(target);
+
+        public void AddHandle(EventHandle handle) => _eventHandles.Add(handle);
 
         public Vector3 LocalPosition
         {
@@ -138,6 +144,8 @@ namespace SS3D.Core.Behaviours
         {
             TransformCache = transform;
             GameObjectCache = gameObject;
+
+            _initialized = true;
         }
 
         private void AddEventListeners()
@@ -162,6 +170,7 @@ namespace SS3D.Core.Behaviours
         private void OnPreUpdate(ref EventContext context, in LastPreUpdateEvent e) { HandlePreUpdate(e.DeltaTime); }
         private void OnUpdate(ref EventContext context, in UpdateEvent e) { HandleUpdate(e.DeltaTime); }
         private void OnLateUpdate(ref EventContext context, in LateUpdateEvent e) { HandleLateUpdate(e.DeltaTime); }
+
         #endregion
 
         #region EVENT_CALLBACKS

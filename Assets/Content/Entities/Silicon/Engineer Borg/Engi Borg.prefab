@@ -1402,7 +1402,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 8
+  <PrefabId>k__BackingField: 9
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 9988794035435604749
@@ -1479,7 +1479,7 @@ MonoBehaviour:
   IgnoredParameters: []
   _animator: {fileID: 1669376080218637799}
   _smoothFloats: 1
-  _synchronizeInterval: 0.1
+  _interpolation: 2
   _clientAuthoritative: 1
   _sendToOwner: 0
 --- !u!95 &1669376080218637799
@@ -1571,6 +1571,7 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 1019513474262773944}
   _networkObjectCache: {fileID: 1019513474262773944}
+  _controllingSoul: {fileID: 0}
 --- !u!1 &6250850031364791032
 GameObject:
   m_ObjectHideFlags: 0

@@ -66,19 +66,17 @@ namespace FishNet.Object
         {
             if (!force)
             {
-                if (NetworkObserver != null && !NetworkObserver.UpdateHostVisibility)
+                if (!NetworkObserver.UpdateHostVisibility)
                     return;
             }
 
             if (!_renderersPopulated)
             {
-                UpdateRenderersInternal(true);
+                UpdateRenderersInternal(false);
                 _renderersPopulated = true;
             }
-            else
-            {
-                UpdateRenderVisibility(visible);
-            }
+
+            UpdateRenderVisibility(visible);
         }
 
         /// <summary>
@@ -98,12 +96,26 @@ namespace FishNet.Object
         /// <param name="visible"></param>
         private void UpdateRenderVisibility(bool visible)
         {
+            bool rebuildRenderers = false;
+
             Renderer[] rs = _renderers;
             int count = rs.Length;
             for (int i = 0; i < count; i++)
-                rs[i].enabled = visible;
+            {
+                Renderer r = rs[i];
+                if (r == null)
+                {
+                    rebuildRenderers = true;
+                    break;
+                }
+
+                r.enabled = visible;
+            }
 
             _lastClientHostVisibility = visible;
+            //If to rebuild then do so, while updating visibility.
+            if (rebuildRenderers)
+                UpdateRenderers(true);
         }
 
         /// <summary>
@@ -114,13 +126,12 @@ namespace FishNet.Object
             if (_networkObserverInitiliazed)
                 return;
 
-            NetworkObserver = GetComponent<NetworkObserver>();
-            NetworkManager.ObserverManager.AddDefaultConditions(this, ref NetworkObserver);
+            NetworkObserver = NetworkManager.ObserverManager.AddDefaultConditions(this);
         }
-  
+
 
         /// <summary>
-        /// Removes a connection from observers for this object.
+        /// Removes a connection from observers for this object returning if the connection was removed.
         /// </summary>
         /// <param name="connection"></param>
         internal bool RemoveObserver(NetworkConnection connection)
@@ -165,29 +176,16 @@ namespace FishNet.Object
             }
 
             int startCount = Observers.Count;
-            //Not using observer system, this object is seen by everything.
-            if (NetworkObserver == null)
-            {
-                bool added = Observers.Add(connection);
-                if (added)
-                    TryInvokeOnObserversActive(startCount);
+            ObserverStateChange osc = NetworkObserver.RebuildObservers(connection, timedOnly);
+            if (osc == ObserverStateChange.Added)
+                Observers.Add(connection);
+            else if (osc == ObserverStateChange.Removed)
+                Observers.Remove(connection);
 
-                return (added) ? ObserverStateChange.Added : ObserverStateChange.Unchanged;
-            }
-            else
-            {
-                ObserverStateChange osc = NetworkObserver.RebuildObservers(connection, timedOnly);
-                if (osc == ObserverStateChange.Added)
-                    Observers.Add(connection);
-                else if (osc == ObserverStateChange.Removed)
-                    Observers.Remove(connection);
+            if (osc != ObserverStateChange.Unchanged)
+                TryInvokeOnObserversActive(startCount);
 
-                if (osc != ObserverStateChange.Unchanged)
-                    TryInvokeOnObserversActive(startCount);
-
-                return osc;
-            }
-
+            return osc;
         }
 
         /// <summary>
