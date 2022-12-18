@@ -4,6 +4,7 @@ using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Storage.Items;
+using SS3D.Systems.Storage.UI;
 using UnityEngine;
 
 namespace SS3D.Systems.Storage.Containers
@@ -30,8 +31,14 @@ namespace SS3D.Systems.Storage.Containers
         public event ContainerEventHandler ContainerOpened;
         public event ContainerEventHandler ContainerClosed;
 
+        public InventoryUi InventoryUi { get; private set; }
+
         public void Awake()
         {
+            InventoryUi = FindObjectOfType<InventoryUi>(true);
+            InventoryUi.Inventory = this;
+            InventoryUi.gameObject.SetActive(true);
+            
             Hands.Inventory = this;
         }
 
