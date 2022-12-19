@@ -273,37 +273,45 @@ namespace SS3D.Systems.Tile
             // Test Can Build
             List<Vector2Int> gridPositionList = tileObjectSo.GetGridPositionList(placedObjectOrigin, dir);
 
-            if (CanBuild(subLayerIndex, tileObjectSo, position, dir, CheckRestrictions.Everything))
-            {
-                // Get the chunk again as it may be deleted in CanBuild()
-                chunk = GetOrCreateChunk(position);
-
-                Vector2Int rotationOffset = TileObjectSo.GetRotationOffset(dir);
-                Vector3 placedObjectWorldPosition = chunk.GetWorldPosition(placedObjectOrigin.x, placedObjectOrigin.y) + 
-                    tileObjectSo.prefab.transform.position + new Vector3(rotationOffset.x, 0, rotationOffset.y) * chunk.GetTileSize();
-
-                PlacedTileObject placedObject = PlacedTileObject.Create(placedObjectWorldPosition, placedObjectOrigin, dir, tileObjectSo);
-                placedObject.transform.SetParent(layerObject.transform);
-
-                foreach (Vector2Int gridPosition in gridPositionList)
-                {
-                    if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
-                    {
-                        // We got a chunk edge case in which a multi tile object is outside of the chunk
-                        Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
-                        TileChunk nextChunk = GetOrCreateChunk(offEdgeObjectPosition);
-                        nextChunk.GetTileObject(layer, offEdgeObjectPosition).SetPlacedObject(placedObject, subLayerIndex);
-                    }
-                    else
-                    {
-                        chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).SetPlacedObject(placedObject, subLayerIndex);
-                    }
-                    UpdateAdjacencies(layer, position);
-                }
-            }
-            else
+            if (!CanBuild(subLayerIndex, tileObjectSo, position, dir, CheckRestrictions.Everything))
             {
                 Debug.LogWarning("Cannot build here");
+                return;
+            }
+
+            // Get the chunk again as it may be deleted in CanBuild()
+            chunk = GetOrCreateChunk(position);
+
+            Vector2Int rotationOffset = TileObjectSo.GetRotationOffset(dir);
+            Vector3 rotation = new(rotationOffset.x, 0, rotationOffset.y);
+
+            Vector3 prefabPosition = tileObjectSo.prefab.transform.position;
+            Vector3 worldPosition = chunk.GetWorldPosition(placedObjectOrigin.x, placedObjectOrigin.y);
+
+            float tileSize = chunk.GetTileSize();
+
+            Vector3 placedObjectWorldPosition = worldPosition + prefabPosition + rotation * tileSize;
+
+            PlacedTileObject placedObject = PlacedTileObject.Create(placedObjectWorldPosition, placedObjectOrigin, dir, tileObjectSo);
+            placedObject.transform.SetParent(layerObject.transform);
+
+            foreach (Vector2Int gridPosition in gridPositionList)
+            {
+                if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
+                {
+                    // We got a chunk edge case in which a multi tile object is outside of the chunk
+                    Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
+                    TileChunk nextChunk = GetOrCreateChunk(offEdgeObjectPosition);
+                    nextChunk.GetTileObject(layer, offEdgeObjectPosition)
+                        .SetPlacedObject(placedObject, subLayerIndex);
+                }
+                else
+                {
+                    chunk.GetTileObject(layer, gridPosition.x, gridPosition.y)
+                        .SetPlacedObject(placedObject, subLayerIndex);
+                }
+
+                UpdateAdjacencies(layer, position);
             }
         }
 
@@ -365,7 +373,7 @@ namespace SS3D.Systems.Tile
             if (placedObject != null)
             {
                 // Destroy any objects that are on top
-                foreach (var topPlacedObject in GetToBeDestroyedObjects(this, layer, position))
+                foreach (TileObject topPlacedObject in GetToBeDestroyedObjects(this, layer, position))
                 {
                     topPlacedObject.ClearAllPlacedObjects();
                 }

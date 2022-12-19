@@ -53,7 +53,9 @@ namespace SS3D.Systems.Tile
         public void ClearPlacedObject(int subLayerIndex)
         {
             if (placedObjects[subLayerIndex] != null)
+            {
                 placedObjects[subLayerIndex].DestroySelf();
+            }
 
             placedObjects[subLayerIndex] = null;
             map.TriggerGridObjectChanged(x, y);
@@ -64,9 +66,17 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public void ClearAllPlacedObjects()
         {
+            if (placedObjects == null)
+            {
+                return;
+            }
+
             foreach (PlacedTileObject placedObject in placedObjects)
             {
-                placedObject.DestroySelf();
+                if (placedObject != null)
+                {
+                    placedObject.DestroySelf();
+                }
             }
 
             map.TriggerGridObjectChanged(x, y);

@@ -50,7 +50,7 @@ namespace SS3D.Editor.TileMap
         private Direction _selectedDir = Direction.North;
         private GameObject _ghostObject;
 
-        [MenuItem("RE:SS3D Editor Tools/TileMap Editor")]
+        [MenuItem("RE:SS3D Editor Tools/TileMap Editor")]                            
         public static void ShowWindow()
         {
             // This bullshit makes the icon and the name appear on the editor
