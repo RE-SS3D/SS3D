@@ -32,7 +32,6 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo)
         {
-
             GameObject placedGameObject = EditorAndRuntime.InstantiatePrefab(tileObjectSo.prefab);
             placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
 
@@ -48,7 +47,7 @@ namespace SS3D.Systems.Tile
 
             placedObject.Setup(tileObjectSo, origin, dir);
 
-            if (InstanceFinder.ServerManager?.Started ?? false)
+            if (InstanceFinder.ServerManager != null)
             {
                 InstanceFinder.ServerManager.Spawn(placedGameObject);
             }
