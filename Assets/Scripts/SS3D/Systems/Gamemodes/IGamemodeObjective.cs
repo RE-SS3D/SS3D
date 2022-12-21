@@ -30,6 +30,11 @@ namespace SS3D.Systems.Gamemodes
         public void InitializeObjective() {}
 
         /// <summary>
+        /// Adds any required event listeners.
+        /// </summary>
+        public void AddEventListeners() { }
+
+        /// <summary>
         /// Finalizes this objective.
         /// </summary>
         public void FinalizeObjective() {}

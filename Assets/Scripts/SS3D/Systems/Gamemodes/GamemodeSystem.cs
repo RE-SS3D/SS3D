@@ -84,7 +84,14 @@ namespace SS3D.Systems.Gamemodes
                 playerCkeys.Add(playerControlSystem.GetCkey(playersToAssign[i].Owner));
             }
 
+            // Actually initialize the gamemode
             _gamemode.InitializeGamemode(playerCkeys);
+
+            // Add event listeners
+            foreach (var objective in _gamemode.RoundObjectives)
+            {
+                objective.AddEventListeners();
+            }
         }
 
         /// <summary>

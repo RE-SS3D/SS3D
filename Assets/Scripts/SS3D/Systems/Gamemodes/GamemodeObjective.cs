@@ -1,6 +1,6 @@
-﻿using System;
-using FishNet.Connection;
-using SS3D.Logging;
+﻿using Coimbra.Services.Events;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes
@@ -18,6 +18,8 @@ namespace SS3D.Systems.Gamemodes
         private string _title;
         private ObjectiveStatus _status;
         private string _assigneeCkey;
+
+        [SerializeField] public List<IEvent> ListensToEvent;
 
         /// <inheritdoc />
         public int Id => _id;
@@ -126,5 +128,8 @@ namespace SS3D.Systems.Gamemodes
             _title = title;
             OnGamemodeObjectiveUpdated?.Invoke(this);
         }
+
+        /// <inheritdoc />
+        public virtual void AddEventListeners() { }
     }
 }

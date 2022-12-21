@@ -1,6 +1,4 @@
 using Coimbra.Services.Events;
-using FishNet.Connection;
-using FishNet.Object;
 using SS3D.Systems.GameModes.Events;
 using UnityEngine;
 
@@ -15,11 +13,15 @@ namespace SS3D.Systems.Gamemodes.Objectives
         /// <inheritdoc />
         public override void InitializeObjective()
         {
-            SetStatus(ObjectiveStatus.InProgress);
-
-            NukeDetonateEvent.AddListener(HandleNukeDetonateEvent);
+            base.InitializeObjective();
 
             SetTitle("Kaboom*: Activate the Nuclear Fission Explosive");
+        }
+
+        /// <inheritdoc />
+        public override void AddEventListeners()
+        {
+            NukeDetonateEvent.AddListener(HandleNukeDetonateEvent);
         }
 
         /// <inheritdoc />

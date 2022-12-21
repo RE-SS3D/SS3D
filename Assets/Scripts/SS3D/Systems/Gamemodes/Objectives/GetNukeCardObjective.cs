@@ -29,9 +29,13 @@ namespace SS3D.Systems.Gamemodes.Objectives
         {
             base.InitializeObjective();
 
-            ItemPickedUpEvent.AddListener(HandleItemPickedUpEvent);
-
             SetTitle(ObjectiveTitle); 
+        }
+
+        /// <inheritdoc />
+        public override void AddEventListeners()
+        {
+            ItemPickedUpEvent.AddListener(HandleItemPickedUpEvent);
         }
 
         /// <inheritdoc />

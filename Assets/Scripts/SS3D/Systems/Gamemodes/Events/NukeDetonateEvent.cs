@@ -1,5 +1,4 @@
 using Coimbra.Services.Events;
-using FishNet.Connection;
 using SS3D.Systems.Furniture;
 
 namespace SS3D.Systems.GameModes.Events
