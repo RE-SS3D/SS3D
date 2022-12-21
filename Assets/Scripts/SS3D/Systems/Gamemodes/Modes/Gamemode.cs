@@ -3,10 +3,6 @@ using SS3D.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
-using FishNet.Connection;
-using SS3D.Core;
-using SS3D.Systems.Entities;
-using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Gamemodes;
 using SS3D.Utils;
 using UnityEngine;
@@ -64,21 +60,23 @@ namespace SS3D.Systems.GameModes.Modes
         public bool IsInitialized => _isInitialized;
 
         /// <summary>
-        /// Gets the objectives for a specific player.1
+        /// Gets the objectives for a specific player.
         /// </summary>
         /// <param name="assignee">The player whose objectives will be retrieved.</param>
         /// <returns></returns>
-        public List<GamemodeObjective> GetPlayerObjectives(NetworkConnection assignee) => _roundObjectives?.Where(objective => objective.Assignee == assignee).ToList();
+        public List<GamemodeObjective> GetPlayerObjectives(string assigneeCkey) => _roundObjectives?.Where(objective => objective.AssigneeCkey == assigneeCkey).ToList();
 
         /// <summary>
         /// Initializes the gamemode, it is virtual so custom initialization is possible.
         /// </summary>
-        public virtual void InitializeGamemode()
+        /// <param name="spawnedPlayersCkeys">List of Ckeys for all players spawning at initialization.</param>
+
+        public virtual void InitializeGamemode(List<string> spawnedPlayersCkeys)
         {
             RoundAntagonists = new List<string>();
             _roundObjectives = new List<GamemodeObjective>();
 
-            CreateObjectives();
+            CreateObjectives(spawnedPlayersCkeys);
 
             _isInitialized = true;
             OnInitialized?.Invoke();
@@ -138,27 +136,24 @@ namespace SS3D.Systems.GameModes.Modes
         /// <summary>
         /// Creates the objectives for the round players. This base method assigns a single objective for each player.
         /// </summary>
-        protected virtual void CreateObjectives()
+        protected virtual void CreateObjectives(List<string> spawnedPlayersCkeys)
         {
             Punpun.Say(this, "Creating initial objectives", Logs.ServerOnly);
-
-            EntitySpawnSystem entitySpawnSystem = SystemLocator.Get<EntitySpawnSystem>();
-            List<PlayerControllable> playersToAssign = entitySpawnSystem.SpawnedPlayers;
 
             // Clones the possible objectives list, to not alter the base file.
             PossibleObjectives = PossibleObjectives.Clone();
 
             // Attributes objectives to players while we still have players.
-            while (playersToAssign.Count != 0)
+            while (spawnedPlayersCkeys.Count != 0)
             {
                 (int, GamemodeObjective) randomObjective = GetRandomObjective();
                 
                 GamemodeObjective objective = randomObjective.Item2;
-                PlayerControllable player = playersToAssign.First();
+                string playerCkey = spawnedPlayersCkeys.First();
 
-                playersToAssign.RemoveAt(0);
+                spawnedPlayersCkeys.RemoveAt(0);
 
-                AssignObjective(objective, player);
+                AssignObjective(objective, playerCkey);
             }
         }
 
@@ -180,11 +175,11 @@ namespace SS3D.Systems.GameModes.Modes
         /// Creates an objective for a player that joined after the round started.
         /// </summary>
         /// <param name="player">The player to assign the objective to.</param>
-        public virtual void CreateLateJoinObjective(PlayerControllable player)
+        public virtual void CreateLateJoinObjective(string playerCkey)
         {
             (int, GamemodeObjective) objective = GetRandomObjective();
 
-            AssignObjective(objective.Item2, player);
+            AssignObjective(objective.Item2, playerCkey);
         }
 
         /// <summary>
@@ -192,9 +187,9 @@ namespace SS3D.Systems.GameModes.Modes
         /// </summary>
         /// <param name="objective">The objective to assign a player to.</param>
         /// <param name="player">The player to be assigned to the objective</param>
-        protected virtual void AssignObjective(GamemodeObjective objective, PlayerControllable player)
+        protected virtual void AssignObjective(GamemodeObjective objective, string playerCkey)
         {
-            objective.SetAssignee(player.ControllingSoul.Owner);
+            objective.SetAssignee(playerCkey);
             objective.SetId(_roundObjectives.Count);
 
             objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
@@ -203,7 +198,7 @@ namespace SS3D.Systems.GameModes.Modes
             _roundObjectives.Add(objective);
 
             string title = $"[{objective.Id}/{objective.Title}]";
-            string playerName = $"[{player.name}]".Colorize(LogColors.Blue);
+            string playerName = $"[{playerCkey}]".Colorize(LogColors.Blue);
 
             Punpun.Say(this, $"Objective initialized {title} for {playerName}", Logs.ServerOnly);
         }

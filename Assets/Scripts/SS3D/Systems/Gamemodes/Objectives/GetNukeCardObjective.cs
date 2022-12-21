@@ -43,9 +43,8 @@ namespace SS3D.Systems.Gamemodes.Objectives
             }
 
             List<string> traitors = SystemLocator.Get<GamemodeSystem>().Antagonists;
-            string ckey = SystemLocator.Get<PlayerControlSystem>().GetCkey(Assignee);
 
-            if (traitors.Contains(ckey))
+            if (traitors.Contains(AssigneeCkey))
             {
                 Succeed();
             }

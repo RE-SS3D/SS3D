@@ -35,7 +35,8 @@ namespace SS3D.Systems.Gamemodes.Objectives
 
         private void HandleNukeDetonateEvent(ref EventContext context, in NukeDetonateEvent e)
         {
-            if (e.Author == Assignee)
+
+            if (e.Author == AssigneeCkey)
             {
                 FinalizeObjective();
             }

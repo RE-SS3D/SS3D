@@ -22,7 +22,7 @@ namespace SS3D.Systems.Gamemodes
         /// <summary>
         /// Who is in charge of completing this objective.
         /// </summary>
-        public NetworkConnection Assignee { get; }
+        public string AssigneeCkey { get; }
 
         /// <summary>
         /// Initializes this objective.

@@ -17,7 +17,7 @@ namespace SS3D.Systems.Gamemodes
         private int _id;
         private string _title;
         private ObjectiveStatus _status;
-        private NetworkConnection _assignee;
+        private string _assigneeCkey;
 
         /// <inheritdoc />
         public int Id => _id;
@@ -29,7 +29,7 @@ namespace SS3D.Systems.Gamemodes
         public ObjectiveStatus Status => _status;
 
         /// <inheritdoc />
-        public NetworkConnection Assignee => _assignee;
+        public string AssigneeCkey => _assigneeCkey;
 
         /// <summary>
         /// Handy call to check objective success.
@@ -105,9 +105,9 @@ namespace SS3D.Systems.Gamemodes
         /// Sets a new author for the gamemode objective. Calls the OnGamemodeObjectiveUpdated event.
         /// </summary>
         /// <param name="assignee">The new assignee.</param>
-        public void SetAssignee(NetworkConnection assignee)
+        public void SetAssignee(string assigneeCkey)
         {
-            _assignee = assignee;
+            _assigneeCkey = assigneeCkey;
             OnGamemodeObjectiveUpdated?.Invoke(this);
         }
 
