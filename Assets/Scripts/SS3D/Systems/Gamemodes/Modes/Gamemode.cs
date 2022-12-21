@@ -95,7 +95,7 @@ namespace SS3D.Systems.GameModes.Modes
 
         public void ResetGamemode()
         {
-            _roundObjectives.Clear();
+            DestroyAllObjectives();
         }
 
         /// <summary>
@@ -105,11 +105,11 @@ namespace SS3D.Systems.GameModes.Modes
         protected virtual void FinalizeObjectives()
         {
             CheckAllObjectivesCompletion();
+            FailOnGoingObjectives();
 
             int succeededObjectives = _roundObjectives.Count(objective => objective.Succeeded);
             Punpun.Say(this, $"Objectives Completed: {succeededObjectives}/{_roundObjectives.Count}");
 
-            DestroyAllObjectives();
         }
 
         private void CheckAllObjectivesCompletion()
@@ -206,7 +206,7 @@ namespace SS3D.Systems.GameModes.Modes
         /// <summary>
         /// Fails all objectives once the round ends.
         /// </summary>
-        public void FailOnGoingObjectives()
+        private void FailOnGoingObjectives()
         {
             foreach (GamemodeObjective objective in _roundObjectives)
             {

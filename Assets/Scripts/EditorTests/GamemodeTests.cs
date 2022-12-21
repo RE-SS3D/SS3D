@@ -160,6 +160,83 @@ namespace EditorTests.Gamemodes
         }
 
         /// <summary>
+        /// Test to confirm that all objectives are no longer In Progress when the Gamemode is finalized.
+        /// </summary>
+        /// <param name="sut">Gamemode (acquired from TestCaseSource) as the System Under Test</param>
+        [Test]
+        [TestCaseSource(nameof(AllGamemodes))]
+        public void FinalizeGamemodeChangesAllObjectivesFromInProgress(Gamemode sut)
+        {
+
+            // ARRANGE
+            const int NUMBER_OF_PLAYERS_TO_TEST = 32;
+            List<string> Ckeys = SampleCkeys(NUMBER_OF_PLAYERS_TO_TEST);
+            sut.InitializeGamemode(Ckeys);
+            Assert.IsTrue(sut.RoundObjectives.Count > 0);
+
+            // ACT
+            sut.FinalizeGamemode();
+
+            // ASSERT
+            Assert.IsTrue(sut.RoundObjectives.Count > 0);
+            foreach(GamemodeObjective objective in sut.RoundObjectives)
+            {
+                Assert.IsFalse(objective.InProgress);
+            }
+        }
+
+        /// <summary>
+        /// Test to confirm that all objectives are no longer In Progress when the Gamemode is finalized.
+        /// </summary>
+        /// <param name="sut">Gamemode (acquired from TestCaseSource) as the System Under Test</param>
+        [Test]
+        [TestCaseSource(nameof(AllGamemodes))]
+        public void FinalizeGamemodeDoesNotChangeStatusOfCompletedObjectives(Gamemode sut)
+        {
+
+            // ARRANGE
+            const int NUMBER_OF_PLAYERS_TO_TEST = 32;
+            List<string> Ckeys = SampleCkeys(NUMBER_OF_PLAYERS_TO_TEST);
+            sut.InitializeGamemode(Ckeys);
+            Assert.IsTrue(sut.RoundObjectives.Count > 0);
+
+            // ACT
+            sut.RoundObjectives[0].Succeed();
+            sut.RoundObjectives[1].Cancel();
+            sut.FinalizeGamemode();
+
+            // ASSERT
+            Assert.IsTrue(sut.RoundObjectives[0].Succeeded);
+            Assert.IsTrue(sut.RoundObjectives[1].Cancelled);
+            for (int i = 2; i < sut.RoundObjectives.Count; i++)
+            {
+                Assert.IsTrue(sut.RoundObjectives[i].Failed);
+            }
+        }
+
+        /// <summary>
+        /// Test to confirm that all objectives are cleared when the Gamemode is reset.
+        /// </summary>
+        /// <param name="sut">Gamemode (acquired from TestCaseSource) as the System Under Test</param>
+        [Test]
+        [TestCaseSource(nameof(AllGamemodes))]
+        public void ResetGamemodeClearsAllObjectives(Gamemode sut)
+        {
+
+            // ARRANGE
+            const int NUMBER_OF_PLAYERS_TO_TEST = 32;
+            List<string> Ckeys = SampleCkeys(NUMBER_OF_PLAYERS_TO_TEST);
+            sut.InitializeGamemode(Ckeys);
+            Assert.IsTrue(sut.RoundObjectives.Count > 0);
+
+            // ACT
+            sut.ResetGamemode();
+
+            // ASSERT
+            Assert.IsTrue(sut.RoundObjectives.Count == 0);
+        }
+
+        /// <summary>
         /// Test to confirm that individual objectives all initialize without error.
         /// </summary>
         /// <param name="sut">Gamemode (acquired from TestCaseSource) as the System Under Test</param>

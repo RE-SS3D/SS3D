@@ -83,6 +83,17 @@ namespace SS3D.Systems.Gamemodes
         }
 
         /// <inheritdoc />
+        public void Cancel()
+        {
+            if (Status != ObjectiveStatus.InProgress)
+            {
+                return;
+            }
+
+            SetStatus(ObjectiveStatus.Cancelled);
+        }
+
+        /// <inheritdoc />
         public void Fail()
         {
             if (Status != ObjectiveStatus.InProgress)

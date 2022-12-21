@@ -122,8 +122,6 @@ namespace SS3D.Systems.Gamemodes
         [Server]
         public void EndRound()
         {
-            _gamemode.FailOnGoingObjectives();
-
             ChangeRoundStateMessage message = new(false);
             ClientManager.Broadcast(message);
         }

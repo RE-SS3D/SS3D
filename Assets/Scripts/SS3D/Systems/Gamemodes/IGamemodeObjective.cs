@@ -54,5 +54,10 @@ namespace SS3D.Systems.Gamemodes
         /// Changes the completion state to Failure.
         /// </summary>
         public void Fail() {}
+
+        /// <summary>
+        /// Changes the completion state to Cancelled.
+        /// </summary>
+        public void Cancel() { }
     }
 }
