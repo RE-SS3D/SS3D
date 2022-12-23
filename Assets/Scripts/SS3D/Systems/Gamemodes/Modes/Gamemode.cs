@@ -45,6 +45,11 @@ namespace SS3D.Systems.GameModes.Modes
         /// </summary>
         private List<GamemodeObjective> _roundObjectives;
 
+        /// <summary>
+        /// The next objective identifier to be allocated
+        /// </summary>
+        private int _nextObjectiveId;
+
         private bool _isInitialized;
         
         /// <summary>
@@ -190,6 +195,7 @@ namespace SS3D.Systems.GameModes.Modes
         protected virtual void AssignObjective(GamemodeObjective objective, string playerCkey)
         {
             objective.SetAssignee(playerCkey);
+
             objective.SetId(_roundObjectives.Count);
 
             objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
@@ -223,7 +229,45 @@ namespace SS3D.Systems.GameModes.Modes
         /// <param name="objective">The objective that was updated.</param>
         private void HandleGamemodeObjectiveUpdated(GamemodeObjective objective)
         {
+            FinalizeSharedObjective(objective);
             OnObjectiveUpdated?.Invoke(objective);
+        }
+
+        /// <summary>
+        /// Finalizes any objective that is shared with other players (whether co-opererative or competitive)
+        /// once one of the players has triggered completion.
+        /// </summary>
+        /// <param name="triggerObjective">The objective that was completed</param>
+        private void FinalizeSharedObjective(GamemodeObjective triggerObjective)
+        {
+            // Finalization is only valid if the trigger objective has succeeded, and it is a shared objective. Exit early if invalid.
+            if (triggerObjective.CollaborationType == CollaborationType.Individual) return;
+            if (!triggerObjective.Succeeded) return;
+
+            // Find all other objectives that need to be resolved. Exit early if there are none.
+            List<GamemodeObjective> sharedObjectives = _roundObjectives?.Where(sharedObjective => sharedObjective.Id == triggerObjective.Id).ToList();
+            if (sharedObjectives.Count == 0) return;
+
+            // Determine the status of remaining participants
+            ObjectiveStatus statusOfRemainingParticipants;
+            if (triggerObjective.CollaborationType == CollaborationType.Cooperative)
+            {
+                statusOfRemainingParticipants = ObjectiveStatus.Success;
+            }
+            else
+            {
+                statusOfRemainingParticipants = ObjectiveStatus.Failed;
+            }
+
+            // Set the status of remaining participants
+            foreach (GamemodeObjective objective in sharedObjectives)
+            {
+                // Only set the status if In Progress - some may have been cancelled etc.
+                if (objective.InProgress)
+                {
+                    objective.SetStatus(statusOfRemainingParticipants);
+                }
+            }
         }
     }
 }

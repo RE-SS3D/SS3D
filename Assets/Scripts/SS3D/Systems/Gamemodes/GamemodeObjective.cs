@@ -15,11 +15,17 @@ namespace SS3D.Systems.Gamemodes
         public event Action<GamemodeObjective> OnGamemodeObjectiveUpdated;
 
         private int _id;
-        private string _title;
+        [SerializeField] private string _title;
+        [SerializeField] private CollaborationType _collaborationType;
+        [SerializeField] private Alignment _alignmentRequirement;
         private ObjectiveStatus _status;
         private string _assigneeCkey;
 
         [SerializeField] public List<IEvent> ListensToEvent;
+
+        public CollaborationType CollaborationType => _collaborationType;
+
+        public Alignment AlignmentRequirement => _alignmentRequirement;
 
         /// <inheritdoc />
         public int Id => _id;
