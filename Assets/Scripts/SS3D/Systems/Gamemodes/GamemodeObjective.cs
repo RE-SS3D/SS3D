@@ -18,6 +18,8 @@ namespace SS3D.Systems.Gamemodes
         [SerializeField] private string _title;
         [SerializeField] private CollaborationType _collaborationType;
         [SerializeField] private Alignment _alignmentRequirement;
+        [SerializeField] private int _minAssignees = 1;
+        [SerializeField] private int _maxAssignees = 1;
         private ObjectiveStatus _status;
         private string _assigneeCkey;
 
@@ -26,6 +28,24 @@ namespace SS3D.Systems.Gamemodes
         public CollaborationType CollaborationType => _collaborationType;
 
         public Alignment AlignmentRequirement => _alignmentRequirement;
+
+        /// <summary>
+        /// The minimum number of assignees for this objective
+        /// </summary>
+        public int MinAssignees
+        {
+            get => _minAssignees;
+            set => _minAssignees = value;
+        }
+
+        /// <summary>
+        /// The maximum number of assignees for this objective
+        /// </summary>
+        public int MaxAssignees
+        {
+            get => _maxAssignees; 
+            set => _maxAssignees = value;
+        }
 
         /// <inheritdoc />
         public int Id => _id;

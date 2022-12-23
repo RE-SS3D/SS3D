@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9253ad36116969e45a26f5ebbd25ebba, type: 3}
   m_Name: GetNukeCard
   m_EditorClassIdentifier: 
-  _id: 0
   _title: 
   _collaborationType: 0
-  _eligibleAssignees: 1
+  _alignmentRequirement: 1
+  _minAssignees: 1
+  _maxAssignees: 1

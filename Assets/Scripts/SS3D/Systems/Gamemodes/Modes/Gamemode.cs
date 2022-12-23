@@ -145,35 +145,95 @@ namespace SS3D.Systems.GameModes.Modes
         {
             Punpun.Say(this, "Creating initial objectives", Logs.ServerOnly);
 
+            // Determine the minimum number of assignees (so every gets an objective)
+            int numberOfPlayers = spawnedPlayersCkeys.Count;
+
+            // Populate a list of objective entries
+            CreateRoundStartObjectives(numberOfPlayers);
+
+            // Assign players to those objective entries
+            AssignRoundStartObjectives(spawnedPlayersCkeys);
+        }
+
+        /// <summary>
+        /// Very basic implementation of objective assignment. This method simply assigns 
+        /// pre-generated objectives sequentially to the list of Ckeys.
+        /// </summary>
+        /// <param name="CKeysToAssign">List of Ckeys to assign objectives to</param>
+        protected virtual void AssignRoundStartObjectives(List<string> CKeysToAssign)
+        {
+            // Validate that input is correct.
+            if (CKeysToAssign.Count != RoundObjectives.Count)
+            {
+                Punpun.Panic(this, $"Number of objective entries ({RoundObjectives.Count}) and players ({CKeysToAssign.Count}) do not match!");
+            }
+
+            // Sequentially assign objectives
+            for (int i = 0; i < CKeysToAssign.Count; i++)
+            {
+                AssignObjective(RoundObjectives[i], CKeysToAssign[i]);
+            }
+        }
+
+        private void CreateRoundStartObjectives(int numberToCreate)
+        {
             // Clones the possible objectives list, to not alter the base file.
             PossibleObjectives = PossibleObjectives.Clone();
 
-            // Attributes objectives to players while we still have players.
-            while (spawnedPlayersCkeys.Count != 0)
+            // Create all the objectives
+            while (RoundObjectives.Count < numberToCreate)
             {
-                (int, GamemodeObjective) randomObjective = GetRandomObjective();
-                
-                GamemodeObjective objective = randomObjective.Item2;
-                string playerCkey = spawnedPlayersCkeys.First();
+                // Get a possible objective
+                GamemodeObjective objective = GetRandomObjective();
 
-                spawnedPlayersCkeys.RemoveAt(0);
+                // Check validity of that objective
+                bool validObjective = true;
+                if (objective == null)
+                {
+                    // No objective was returned
+                    validObjective = false;    
+                }
+                else if(objective.MinAssignees > numberToCreate - RoundObjectives.Count)
+                {
+                    // We don't have enough players needing objectives to meet min player requirement.
+                    validObjective = false;
+                }
 
-                AssignObjective(objective, playerCkey);
+                // If it is valid, put an entry into RoundObjectives for each player who will be assigned.
+                if (validObjective)
+                {
+                    int listEntries = Math.Max(objective.MaxAssignees, numberToCreate - RoundObjectives.Count);
+                    for (int i = 0; i < listEntries; i++)
+                    {
+                        AddObjectiveToRoundObjectives(_nextObjectiveId, objective);
+                    }
+                    _nextObjectiveId++;
+                }
             }
+        }
+
+        private void AddObjectiveToRoundObjectives(int objectiveId, GamemodeObjective objective)
+        {
+            objective.SetId(_roundObjectives.Count);
+
+            objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
+            objective.InitializeObjective();
+
+            _roundObjectives.Add(objective);
         }
 
         /// <summary>
         /// Gets random objective, IMPORTANT: makes sure the PossiblesObjectives were cloned before calling this.
         /// </summary>
         /// <returns>A random objective and its index in the PossibleObjectives list.</returns>
-        protected virtual (int, GamemodeObjective) GetRandomObjective()
+        protected virtual GamemodeObjective GetRandomObjective()
         {
             int objectivesCount = PossibleObjectives.Count;
             int randomObjectiveIndex = Random.Range(0, objectivesCount);
 
             PossibleObjectives.TryGetAt(randomObjectiveIndex, out GamemodeObjective objective);
 
-            return (randomObjectiveIndex, objective);
+            return objective;
         }
 
         /// <summary>
@@ -182,9 +242,10 @@ namespace SS3D.Systems.GameModes.Modes
         /// <param name="player">The player to assign the objective to.</param>
         public virtual void CreateLateJoinObjective(string playerCkey)
         {
-            (int, GamemodeObjective) objective = GetRandomObjective();
-
-            AssignObjective(objective.Item2, playerCkey);
+            GamemodeObjective objective = GetRandomObjective();
+            AddObjectiveToRoundObjectives(_nextObjectiveId, objective);
+            AssignObjective(objective, playerCkey);
+            _nextObjectiveId++;
         }
 
         /// <summary>
@@ -196,12 +257,7 @@ namespace SS3D.Systems.GameModes.Modes
         {
             objective.SetAssignee(playerCkey);
 
-            objective.SetId(_roundObjectives.Count);
 
-            objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
-            objective.InitializeObjective();
-
-            _roundObjectives.Add(objective);
 
             string title = $"[{objective.Id}/{objective.Title}]";
             string playerName = $"[{playerCkey}]".Colorize(LogColors.Blue);
