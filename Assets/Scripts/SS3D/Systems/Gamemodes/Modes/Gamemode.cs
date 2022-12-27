@@ -202,9 +202,13 @@ namespace SS3D.Systems.GameModes.Modes
                 // If it is valid, put an entry into RoundObjectives for each player who will be assigned.
                 if (validObjective)
                 {
-                    int listEntries = Math.Max(objective.MaxAssignees, numberToCreate - RoundObjectives.Count);
+                    int listEntries = Math.Min(objective.MaxAssignees, numberToCreate - RoundObjectives.Count);
                     for (int i = 0; i < listEntries; i++)
                     {
+                        // Duplicate the objective so that we aren't simply reassigning the same one.
+                        // GamemodeObjective duplicateObjective = ScriptableObject.Instantiate(objective);
+
+                        // Add it to the round objectives list
                         AddObjectiveToRoundObjectives(_nextObjectiveId, objective);
                     }
                     _nextObjectiveId++;

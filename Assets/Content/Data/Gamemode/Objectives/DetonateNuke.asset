@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DetonateNuke
   m_EditorClassIdentifier: 
   _title: 
-  _collaborationType: 0
+  _collaborationType: 1
   _alignmentRequirement: 1
   _minAssignees: 1
-  _maxAssignees: 1
+  _maxAssignees: 10
