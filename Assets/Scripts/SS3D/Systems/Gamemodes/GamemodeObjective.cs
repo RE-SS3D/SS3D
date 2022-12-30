@@ -1,6 +1,6 @@
-﻿using System;
-using FishNet.Connection;
-using SS3D.Logging;
+﻿using Coimbra.Services.Events;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Gamemodes
@@ -17,7 +17,9 @@ namespace SS3D.Systems.Gamemodes
         private int _id;
         private string _title;
         private ObjectiveStatus _status;
-        private NetworkConnection _assignee;
+        private string _assigneeCkey;
+
+        [SerializeField] public List<IEvent> ListensToEvent;
 
         /// <inheritdoc />
         public int Id => _id;
@@ -29,7 +31,7 @@ namespace SS3D.Systems.Gamemodes
         public ObjectiveStatus Status => _status;
 
         /// <inheritdoc />
-        public NetworkConnection Assignee => _assignee;
+        public string AssigneeCkey => _assigneeCkey;
 
         /// <summary>
         /// Handy call to check objective success.
@@ -81,6 +83,17 @@ namespace SS3D.Systems.Gamemodes
         }
 
         /// <inheritdoc />
+        public void Cancel()
+        {
+            if (Status != ObjectiveStatus.InProgress)
+            {
+                return;
+            }
+
+            SetStatus(ObjectiveStatus.Cancelled);
+        }
+
+        /// <inheritdoc />
         public void Fail()
         {
             if (Status != ObjectiveStatus.InProgress)
@@ -105,9 +118,9 @@ namespace SS3D.Systems.Gamemodes
         /// Sets a new author for the gamemode objective. Calls the OnGamemodeObjectiveUpdated event.
         /// </summary>
         /// <param name="assignee">The new assignee.</param>
-        public void SetAssignee(NetworkConnection assignee)
+        public void SetAssignee(string assigneeCkey)
         {
-            _assignee = assignee;
+            _assigneeCkey = assigneeCkey;
             OnGamemodeObjectiveUpdated?.Invoke(this);
         }
 
@@ -126,5 +139,8 @@ namespace SS3D.Systems.Gamemodes
             _title = title;
             OnGamemodeObjectiveUpdated?.Invoke(this);
         }
+
+        /// <inheritdoc />
+        public virtual void AddEventListeners() { }
     }
 }

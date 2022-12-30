@@ -5,6 +5,8 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Entities;
 using UnityEngine;
 using SS3D.Systems.GameModes.Events;
+using SS3D.Core;
+using SS3D.Systems.PlayerControl;
 
 namespace SS3D.Systems.Items
 {
@@ -56,7 +58,9 @@ namespace SS3D.Systems.Items
             if (source is NukeCard _ && target is Nuke nuke)
             {
                 nuke.Detonate();
-                new NukeDetonateEvent(nuke, source.GetComponentInTree<PlayerControllable>().Owner).Invoke(this);
+                PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
+
+                new NukeDetonateEvent(nuke, playerControlSystem.GetCkey(source.GetComponentInTree<PlayerControllable>().Owner)).Invoke(this);
             }
             return false;
         }

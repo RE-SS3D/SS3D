@@ -29,9 +29,13 @@ namespace SS3D.Systems.Gamemodes.Objectives
         {
             base.InitializeObjective();
 
-            ItemPickedUpEvent.AddListener(HandleItemPickedUpEvent);
-
             SetTitle(ObjectiveTitle); 
+        }
+
+        /// <inheritdoc />
+        public override void AddEventListeners()
+        {
+            ItemPickedUpEvent.AddListener(HandleItemPickedUpEvent);
         }
 
         /// <inheritdoc />
@@ -43,9 +47,8 @@ namespace SS3D.Systems.Gamemodes.Objectives
             }
 
             List<string> traitors = SystemLocator.Get<GamemodeSystem>().Antagonists;
-            string ckey = SystemLocator.Get<PlayerControlSystem>().GetCkey(Assignee);
 
-            if (traitors.Contains(ckey))
+            if (traitors.Contains(AssigneeCkey))
             {
                 Succeed();
             }
