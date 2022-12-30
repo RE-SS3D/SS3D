@@ -22,11 +22,14 @@ namespace SS3D.Systems.Gamemodes.Objectives
         [SerializeField] private string _targetItemId;
 
         /// <summary>
-        /// The item that was caught when the objective was completed.
+        /// The item that was picked up.
         /// </summary>
         private string _caughtItemId;
 
-        [SerializeField] private string ObjectiveTitle;
+        /// <summary>
+        /// The player that picked up the item.
+        /// </summary>
+        private string _caughtPlayerCkey;
 
         /// <inheritdoc />
         public override void InitializeObjective()
@@ -43,27 +46,24 @@ namespace SS3D.Systems.Gamemodes.Objectives
         /// <inheritdoc />
         public override void FinalizeObjective()
         {
-            // Confirm correct item has been picked up
-            if (!_caughtItemId.Equals(_targetItemId))
+            // Confirm correct item has been picked up by the correct player
+            if (!_caughtItemId.Equals(_targetItemId) || !_caughtPlayerCkey.Equals(AssigneeCkey))
             {
                 return;
             }
-
-            List<string> traitors = SystemLocator.Get<GamemodeSystem>().Antagonists;
-
-            if (traitors.Contains(AssigneeCkey))
-            {
-                Succeed();
-            }
+            Succeed();
         }
 
         private void HandleItemPickedUpEvent(ref EventContext context, in ItemPickedUpEvent e)
         {
             string itemId = e.Item.ItemId;
+            string playerCkey = e.Player;
 
-            if (itemId.Equals(_targetItemId))
+            if (itemId.Equals(_targetItemId) && playerCkey.Equals(AssigneeCkey))
             {
                 _caughtItemId = itemId;
+                _caughtPlayerCkey = playerCkey;
+
                 FinalizeObjective();
             }
         }

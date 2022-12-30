@@ -210,7 +210,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 4819234911439508660}
   _networkObjectCache: {fileID: 4819234911439508660}
-  _itemId: 
+  _itemId: nukeCard
   _name: Nuke card
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 6351433192589740835}

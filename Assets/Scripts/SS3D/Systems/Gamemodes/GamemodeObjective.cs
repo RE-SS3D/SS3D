@@ -25,6 +25,30 @@ namespace SS3D.Systems.Gamemodes
 
         [SerializeField] public List<IEvent> ListensToEvent;
 
+        /// <summary>
+        /// No-arg constructor
+        /// </summary>
+        public GamemodeObjective()
+        {
+        }
+
+        /// <summary>
+        /// Constructor allowing creation of specific objective data.
+        /// </summary>
+        /// <param name="title">Title of the objective (visible to player)</param>
+        /// <param name="collaborationType">Whether the objective is individual, competitive or cooperative</param>
+        /// <param name="alignment">Whether the objective is valid for antagonists, non-antagonists or both</param>
+        /// <param name="minAssignees">Minimum number of players required for this objective</param>
+        /// <param name="maxAssignees">Maximum number of players required for this objective</param>
+        public GamemodeObjective(string title, CollaborationType collaborationType, Alignment alignment, int minAssignees, int maxAssignees)
+        {
+            this._title = title;
+            this._collaborationType = collaborationType;
+            this._alignmentRequirement = alignment;
+            this._minAssignees = Math.Max(minAssignees, 1);
+            this._maxAssignees = Math.Max(maxAssignees, _minAssignees);
+        }
+
         public CollaborationType CollaborationType => _collaborationType;
 
         public Alignment AlignmentRequirement => _alignmentRequirement;

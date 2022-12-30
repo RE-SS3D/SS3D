@@ -155,6 +155,7 @@ namespace EditorTests.Gamemodes
             {
                 // Every player should have at least one objective
                 Assert.IsTrue(sut.GetPlayerObjectives(key).Count > 0);
+                if (SHOW_DEBUG) Debug.Log(sut.GetPlayerObjectives(key).Count > 0);
                 if (SHOW_DEBUG) Debug.Log($"{key} has {sut.GetPlayerObjectives(key).Count} objectives");
             }
         }
@@ -162,15 +163,14 @@ namespace EditorTests.Gamemodes
         /// <summary>
         /// Test to confirm that all objectives are no longer In Progress when the Gamemode is finalized.
         /// </summary>
-        /// <param name="sut">Gamemode (acquired from TestCaseSource) as the System Under Test</param>
         [Test]
-        [TestCaseSource(nameof(AllGamemodes))]
-        public void FinalizeGamemodeChangesAllObjectivesFromInProgress(Gamemode sut)
+        public void FinalizeGamemodeChangesAllObjectivesFromInProgress()
         {
 
             // ARRANGE
             const int NUMBER_OF_PLAYERS_TO_TEST = 32;
             List<string> Ckeys = SampleCkeys(NUMBER_OF_PLAYERS_TO_TEST);
+            Gamemode sut = CreateGamemodeWithSingleObjective(CollaborationType.Individual);
             sut.InitializeGamemode(Ckeys);
             Assert.IsTrue(sut.RoundObjectives.Count > 0);
 
@@ -188,15 +188,14 @@ namespace EditorTests.Gamemodes
         /// <summary>
         /// Test to confirm that all objectives are no longer In Progress when the Gamemode is finalized.
         /// </summary>
-        /// <param name="sut">Gamemode (acquired from TestCaseSource) as the System Under Test</param>
         [Test]
-        [TestCaseSource(nameof(AllGamemodes))]
-        public void FinalizeGamemodeDoesNotChangeStatusOfCompletedObjectives(Gamemode sut)
+        public void FinalizeGamemodeDoesNotChangeStatusOfCompletedObjectives()
         {
 
             // ARRANGE
             const int NUMBER_OF_PLAYERS_TO_TEST = 32;
             List<string> Ckeys = SampleCkeys(NUMBER_OF_PLAYERS_TO_TEST);
+            Gamemode sut = CreateGamemodeWithSingleObjective(CollaborationType.Individual);
             sut.InitializeGamemode(Ckeys);
             Assert.IsTrue(sut.RoundObjectives.Count > 0);
 
@@ -215,17 +214,74 @@ namespace EditorTests.Gamemodes
         }
 
         /// <summary>
+        /// Test to confirm that when one player succeeds in a multi-participant cooperative objective, all other players
+        /// involved in that objective also succeed.
+        /// </summary>
+        [Test]
+        public void CooperativeObjectivesSucceedWhenOnePlayerCompletesThem()
+        {
+
+            // ARRANGE
+            const int NUMBER_OF_PLAYERS_TO_TEST = 32;
+            const int PLAYERS_PER_OBJECTIVE = 8;
+            List<string> Ckeys = SampleCkeys(NUMBER_OF_PLAYERS_TO_TEST);
+            Gamemode sut = CreateGamemodeWithSingleObjective(CollaborationType.Cooperative, PLAYERS_PER_OBJECTIVE, PLAYERS_PER_OBJECTIVE);
+            sut.InitializeGamemode(Ckeys);
+
+            // ACT
+            sut.RoundObjectives[0].Succeed();
+
+            // ASSERT
+            int countOfSucceededObjectives = 0;
+            for (int i = 0; i < sut.RoundObjectives.Count; i++)
+            {
+                if (sut.RoundObjectives[i].Succeeded) countOfSucceededObjectives++;
+            }
+            Assert.IsTrue(countOfSucceededObjectives == PLAYERS_PER_OBJECTIVE);
+        }
+
+        /// <summary>
+        /// Test to confirm that when one player succeeds in a multi-participant cooperative objective, all other players
+        /// involved in that objective also succeed.
+        /// </summary>
+        [Test]
+        public void CompetitiveObjectivesFailWhenOnePlayerCompletesThem()
+        {
+
+            // ARRANGE
+            const int NUMBER_OF_PLAYERS_TO_TEST = 32;
+            const int PLAYERS_PER_OBJECTIVE = 8;
+            List<string> Ckeys = SampleCkeys(NUMBER_OF_PLAYERS_TO_TEST);
+            Gamemode sut = CreateGamemodeWithSingleObjective(CollaborationType.Competitive, PLAYERS_PER_OBJECTIVE, PLAYERS_PER_OBJECTIVE);
+            sut.InitializeGamemode(Ckeys);
+
+            // ACT
+            sut.RoundObjectives[0].Succeed();
+
+            // ASSERT
+            int countOfSucceededObjectives = 0;
+            int countOfFailedObjectives = 0;
+            for (int i = 0; i < sut.RoundObjectives.Count; i++)
+            {
+                if (sut.RoundObjectives[i].Succeeded) countOfSucceededObjectives++;
+                if (sut.RoundObjectives[i].Failed) countOfFailedObjectives++;
+            }
+
+            Assert.IsTrue(countOfSucceededObjectives == 1);
+            Assert.IsTrue(countOfFailedObjectives == PLAYERS_PER_OBJECTIVE - 1);
+        }
+
+        /// <summary>
         /// Test to confirm that all objectives are cleared when the Gamemode is reset.
         /// </summary>
-        /// <param name="sut">Gamemode (acquired from TestCaseSource) as the System Under Test</param>
         [Test]
-        [TestCaseSource(nameof(AllGamemodes))]
-        public void ResetGamemodeClearsAllObjectives(Gamemode sut)
+        public void ResetGamemodeClearsAllObjectives()
         {
 
             // ARRANGE
             const int NUMBER_OF_PLAYERS_TO_TEST = 32;
             List<string> Ckeys = SampleCkeys(NUMBER_OF_PLAYERS_TO_TEST);
+            Gamemode sut = CreateGamemodeWithSingleObjective(CollaborationType.Individual);
             sut.InitializeGamemode(Ckeys);
             Assert.IsTrue(sut.RoundObjectives.Count > 0);
 
@@ -324,6 +380,27 @@ namespace EditorTests.Gamemodes
                 ckeys.Add($"player_{i}");
             }
             return ckeys;
+        }
+
+        private Gamemode CreateGamemodeWithSingleObjective(CollaborationType collaborationType, int maxAssigneesPerObjective = 1, int minAssigneesPerObjective = 1)
+        {
+            Gamemode gamemode = new Gamemode();
+
+            GamemodeObjective gamemodeObjective = ObjectiveFactory.Create("Sample Objective", collaborationType, Alignment.Any, minAssigneesPerObjective, maxAssigneesPerObjective);
+
+            GamemodeObjectiveCollectionEntry collectionEntry = new GamemodeObjectiveCollectionEntry();
+            collectionEntry.GamemodeObjective = gamemodeObjective;
+            collectionEntry.AssignmentProbability = 100f;
+            collectionEntry.RemainingAssignments = 1000;
+
+            GamemodeObjectiveCollection collection = new GamemodeObjectiveCollection();
+            collection.Entries = new List<GamemodeObjectiveCollectionEntry>();
+            collection.Entries.Add(collectionEntry);
+
+            gamemode.PossibleObjectives = collection;
+
+            return gamemode;
+
         }
 
 

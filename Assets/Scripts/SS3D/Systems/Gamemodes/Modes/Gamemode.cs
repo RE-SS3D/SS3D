@@ -14,6 +14,7 @@ namespace SS3D.Systems.GameModes.Modes
     /// Executes all gamemode related business. Manipulates the gamemode objectives.
     /// All that is run here is server-only.
     /// </summary>
+    [CreateAssetMenu(menuName = "Gamemode/Modes/Gamemode", fileName = "NewGamemode")]
     public class Gamemode : ScriptableObject, IGamemode
     {
         /// <summary>
@@ -157,7 +158,8 @@ namespace SS3D.Systems.GameModes.Modes
 
         /// <summary>
         /// Very basic implementation of objective assignment. This method simply assigns 
-        /// pre-generated objectives sequentially to the list of Ckeys.
+        /// pre-generated objectives sequentially to the list of Ckeys. Can be overridden for
+        /// custom objective assignment.
         /// </summary>
         /// <param name="CKeysToAssign">List of Ckeys to assign objectives to</param>
         protected virtual void AssignRoundStartObjectives(List<string> CKeysToAssign)
@@ -206,10 +208,10 @@ namespace SS3D.Systems.GameModes.Modes
                     for (int i = 0; i < listEntries; i++)
                     {
                         // Duplicate the objective so that we aren't simply reassigning the same one.
-                        // GamemodeObjective duplicateObjective = ScriptableObject.Instantiate(objective);
+                        GamemodeObjective duplicateObjective = ObjectiveFactory.Duplicate(objective);
 
                         // Add it to the round objectives list
-                        AddObjectiveToRoundObjectives(_nextObjectiveId, objective);
+                        AddObjectiveToRoundObjectives(_nextObjectiveId, duplicateObjective);
                     }
                     _nextObjectiveId++;
                 }
@@ -218,7 +220,7 @@ namespace SS3D.Systems.GameModes.Modes
 
         private void AddObjectiveToRoundObjectives(int objectiveId, GamemodeObjective objective)
         {
-            objective.SetId(_roundObjectives.Count);
+            objective.SetId(objectiveId);
 
             objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
             objective.InitializeObjective();
