@@ -221,10 +221,8 @@ namespace SS3D.Systems.GameModes.Modes
         private void AddObjectiveToRoundObjectives(int objectiveId, GamemodeObjective objective)
         {
             objective.SetId(objectiveId);
-
-            objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
             objective.InitializeObjective();
-
+            objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
             _roundObjectives.Add(objective);
         }
 

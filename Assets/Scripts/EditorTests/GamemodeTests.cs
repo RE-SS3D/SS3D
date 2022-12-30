@@ -155,7 +155,6 @@ namespace EditorTests.Gamemodes
             {
                 // Every player should have at least one objective
                 Assert.IsTrue(sut.GetPlayerObjectives(key).Count > 0);
-                if (SHOW_DEBUG) Debug.Log(sut.GetPlayerObjectives(key).Count > 0);
                 if (SHOW_DEBUG) Debug.Log($"{key} has {sut.GetPlayerObjectives(key).Count} objectives");
             }
         }
@@ -290,6 +289,28 @@ namespace EditorTests.Gamemodes
 
             // ASSERT
             Assert.IsTrue(sut.RoundObjectives.Count == 0);
+        }
+
+        /// <summary>
+        /// Test to confirm that late joining players also get objectives.
+        /// </summary>
+        [Test]
+        public void LateJoiningPlayersGetObjectives()
+        {
+
+            // ARRANGE
+            const int NUMBER_OF_PLAYERS_TO_TEST = 4;
+            const string lateJoinPlayerCkey = "lateJoinPlayer";
+            List<string> Ckeys = SampleCkeys(NUMBER_OF_PLAYERS_TO_TEST);
+            Gamemode sut = CreateGamemodeWithSingleObjective(CollaborationType.Individual);
+            sut.InitializeGamemode(Ckeys);
+
+            // ACT
+            sut.CreateLateJoinObjective(lateJoinPlayerCkey);
+
+            // ASSERT
+            Assert.IsTrue(sut.RoundObjectives[sut.RoundObjectives.Count - 1].AssigneeCkey.Equals(lateJoinPlayerCkey));
+            Assert.IsTrue(sut.RoundObjectives[sut.RoundObjectives.Count - 1].InProgress);
         }
 
         /// <summary>
