@@ -150,7 +150,9 @@ namespace SS3D.Systems.Storage.Containers
 
             void handleItemRemoved(Item item)
             {
-                item.Unfreeze();
+                // Only unfreeze the item if it was not just placed into another container
+                if(item.Container == null)
+                    item.Unfreeze();
                 // Restore visibility
                 if (ContainerDescriptor.HideItems)
                 {
