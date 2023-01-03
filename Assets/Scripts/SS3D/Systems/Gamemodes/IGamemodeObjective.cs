@@ -22,12 +22,17 @@ namespace SS3D.Systems.Gamemodes
         /// <summary>
         /// Who is in charge of completing this objective.
         /// </summary>
-        public NetworkConnection Assignee { get; }
+        public string AssigneeCkey { get; }
 
         /// <summary>
         /// Initializes this objective.
         /// </summary>
         public void InitializeObjective() {}
+
+        /// <summary>
+        /// Adds any required event listeners.
+        /// </summary>
+        public void AddEventListeners() { }
 
         /// <summary>
         /// Finalizes this objective.
@@ -49,5 +54,10 @@ namespace SS3D.Systems.Gamemodes
         /// Changes the completion state to Failure.
         /// </summary>
         public void Fail() {}
+
+        /// <summary>
+        /// Changes the completion state to Cancelled.
+        /// </summary>
+        public void Cancel() { }
     }
 }

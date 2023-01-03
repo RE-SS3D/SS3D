@@ -1,3 +1,4 @@
+using Coimbra;
 using DG.Tweening;
 using SS3D.Data;
 using UDiscord;
@@ -34,8 +35,14 @@ namespace SS3D.Core
 
         private void InitializeSubsystems()
         {
-            DiscordManager.Initialize();
-
+            if (EnableDiscordIntegration)
+            {
+                DiscordManager.Initialize();
+            }
+            else
+            {
+                FindObjectOfType<DiscordManager>().Destroy();
+            }
             Database.Icons.PreloadAssets();
         }
 

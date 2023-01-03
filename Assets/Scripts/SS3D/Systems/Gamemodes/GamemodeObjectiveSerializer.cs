@@ -18,7 +18,7 @@ namespace SS3D.Systems.Gamemodes
             writer.WriteInt32(value.Id);
             writer.WriteString(value.Title);
             writer.WriteInt16((short)value.Status);
-            writer.WriteNetworkConnection(value.Assignee);
+            writer.WriteString(value.AssigneeCkey);
         }
 
         /// <summary>
@@ -29,14 +29,14 @@ namespace SS3D.Systems.Gamemodes
             int id = reader.ReadInt32();
             string title = reader.ReadString();
             ObjectiveStatus objectiveStatus = (ObjectiveStatus)reader.ReadInt16();
-            NetworkConnection assignee = reader.ReadNetworkConnection();
+            string assigneeCkey = reader.ReadString();
 
             GamemodeObjective objective = ScriptableObject.CreateInstance<GamemodeObjective>();
             
             objective.SetId(id);
             objective.SetTitle(title);
             objective.SetStatus(objectiveStatus);
-            objective.SetAssignee(assignee);
+            objective.SetAssignee(assigneeCkey);
 
             return objective;
         }

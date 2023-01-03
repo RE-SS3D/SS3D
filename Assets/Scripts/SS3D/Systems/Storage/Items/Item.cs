@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using FishNet.Component.Transforming;
 using FishNet.Object;
+using SS3D.Attributes;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Logging;
 using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Interactions;
 using UnityEditor;
@@ -19,6 +21,7 @@ namespace SS3D.Systems.Storage.Items
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(NetworkTransform))]
+    [RequiredLayer("Items")]
     public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget
     {
         [Header("Item settings")]
@@ -77,10 +80,11 @@ namespace SS3D.Systems.Storage.Items
         {
             _sprite = null;
 
-            // Add a warning if an item is not on the Item layer (layer 16).
-            if (gameObject.layer != 16)
+            // Add a warning if an item is not on the Items layer (layer 10).
+            // Not really needed any more because of the RequiredLayer attribute.
+            if (gameObject.layer != 10)
             {
-                Debug.LogWarning("Item " + _name + " is on layer " + gameObject.layer);
+                Punpun.Yell(this, $"Item {_name} is on {LayerMask.LayerToName(gameObject.layer)} layer. Should be on Items layer.");
             }
         }
 
