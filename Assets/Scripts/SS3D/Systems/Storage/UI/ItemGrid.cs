@@ -182,7 +182,7 @@ namespace SS3D.Systems.Storage.UI
             }
         }
         
-        public override void OnItemDrop(ItemDisplay display)
+        public override void OnItemDisplayDrop(ItemDisplay display)
         {
             Item item = display.Item;
             Vector2Int size = item.Size;
@@ -201,7 +201,7 @@ namespace SS3D.Systems.Storage.UI
                 return;
             }
 
-            display.DropAccepted = true;
+            display.ShouldDrop = true;
             CreateItemDisplay(display.Item, slot);
             Inventory.ClientTransferItem(item, slot, AttachedContainer);
         }
