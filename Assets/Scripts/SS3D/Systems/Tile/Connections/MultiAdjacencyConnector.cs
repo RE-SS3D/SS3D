@@ -1,5 +1,6 @@
 ﻿using System;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -14,7 +15,7 @@ namespace SS3D.Systems.Tile.Connections
         /// <summary>
         /// Determines which adjacency type should be used.
         /// </summary>
-        public AdjacencyType selectedAdjacencyType;
+        [FormerlySerializedAs("selectedAdjacencyType")] public AdjacencyType SelectedAdjacencyType;
 
         /// <summary>
         /// A type that specifies to which objects to connect to. Must be set if cross connect is used.
@@ -34,14 +35,14 @@ namespace SS3D.Systems.Tile.Connections
         [Tooltip("Bool that determines if objects on different layers are allowed to connect to each other.")]
         public bool CrossConnectAllowed;
 
-        [SerializeField] private SimpleConnector simpleAdjacency;
-        [SerializeField] private AdvancedConnector advancedAdjacency;
-        [SerializeField] private OffsetConnector offsetAdjacency;
+        [FormerlySerializedAs("simpleAdjacency")] [SerializeField] private SimpleConnector _simpleAdjacency;
+        [FormerlySerializedAs("advancedAdjacency")] [SerializeField] private AdvancedConnector _advancedAdjacency;
+        [FormerlySerializedAs("offsetAdjacency")] [SerializeField] private OffsetConnector _offsetAdjacency;
 
         /// <summary>
         /// Keeps track of adjacenc connections. Do not directly modify! Use the sync functions instead.
         /// </summary>
-        //[SyncVar(hook = nameof(SyncAdjacentConnections))]
+        [SyncVar(OnChange = nameof(SyncAdjacentConnections))]
         private byte _adjacentConnections;
 
         /// <summary>
@@ -102,22 +103,23 @@ namespace SS3D.Systems.Tile.Connections
         /// <summary>
         /// Syncs adjacent connections with clients. Use this function to modify the attribute.
         /// </summary>
-        /// <param name="oldConnections"></param>
-        /// <param name="newConnections"></param>
-        private void SyncAdjacentConnections(byte oldConnections, byte newConnections)
+        private void SyncAdjacentConnections(byte oldValue, byte newValue, bool asServer)
         {
+            if (asServer)
+            {
+                return;
+            }
+
             EnsureInit();
-            _adjacentConnections = newConnections;
-            _adjacencyMap.DeserializeFromByte(_adjacentConnections);
+            _adjacencyMap.DeserializeFromByte(newValue);
             UpdateMeshAndDirection();
         }
 
         /// <summary>
         /// Syncs blocked connections with clients. Use this function to modify the attribute.
         /// </summary>
-        /// <param name="oldConnections"></param>
         /// <param name="newConnections"></param>
-        private void SyncBlockedConnections(byte oldConnections, byte newConnections)
+        private void SyncBlockedConnections(byte newConnections)
         {
             EnsureInit();
             BlockedConnections = newConnections;
@@ -131,8 +133,7 @@ namespace SS3D.Systems.Tile.Connections
         {
             base.OnStartClient();
             EnsureInit();
-            SyncAdjacentConnections(_adjacentConnections, _adjacentConnections);
-            SyncBlockedConnections(BlockedConnections, EditorBlockedConnections);
+            SyncBlockedConnections(EditorBlockedConnections);
         }
 
         /// <summary>
@@ -257,12 +258,13 @@ namespace SS3D.Systems.Tile.Connections
                 // Check for specific
                 isConnected &= placedObject.GetSpecificType() == _specificType || _specificType == TileObjectSpecificType.None;
 
-                 
+
                 isConnected &= ((BlockedConnections >> (int) dir) & 0x1) == 0;
             }
             bool isUpdated = _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
             byte connections = _adjacencyMap.SerializeToByte();
-            SyncAdjacentConnections(connections, connections);
+
+            _adjacentConnections = connections;
 
             // Cross connect will override adjacents for other layers, so return isConnected instead.
             return CrossConnectAllowed ? isConnected : isUpdated;
@@ -276,7 +278,7 @@ namespace SS3D.Systems.Tile.Connections
         public void SetBlockedDirection(Direction dir, bool value)
         {
             _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, value));
-            SyncBlockedConnections(BlockedConnections, _adjacencyMap.SerializeToByte());
+            SyncBlockedConnections(_adjacencyMap.SerializeToByte());
             EditorBlockedConnections = BlockedConnections;
             _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, !value));
             UpdateMeshAndDirection();
@@ -287,7 +289,7 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         public void UpdateBlockedFromEditor()
         {
-            SyncBlockedConnections(BlockedConnections, EditorBlockedConnections);
+            SyncBlockedConnections(EditorBlockedConnections);
         }
 
         /// <summary>
@@ -295,17 +297,17 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         private void UpdateMeshAndDirection()
         {
-            MeshDirectionInfo info = new MeshDirectionInfo();
-            switch (selectedAdjacencyType)
+            MeshDirectionInfo info = new();
+            switch (SelectedAdjacencyType)
             {
                 case AdjacencyType.Simple:
-                    info = simpleAdjacency.GetMeshAndDirection(_adjacencyMap);
+                    info = _simpleAdjacency.GetMeshAndDirection(_adjacencyMap);
                     break;
                 case AdjacencyType.Advanced:
-                    info = advancedAdjacency.GetMeshAndDirection(_adjacencyMap);
+                    info = _advancedAdjacency.GetMeshAndDirection(_adjacencyMap);
                     break;
                 case AdjacencyType.Offset:
-                    info = offsetAdjacency.GetMeshAndDirection(_adjacencyMap);
+                    info = _offsetAdjacency.GetMeshAndDirection(_adjacencyMap);
                     break;
             }
 
@@ -316,7 +318,12 @@ namespace SS3D.Systems.Tile.Connections
 
             _filter.mesh = info.Mesh;
 
-            transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, info.Rotation, transform.localRotation.eulerAngles.z);
+            Quaternion localRotation = transform.localRotation;
+            Vector3 eulerRotation = localRotation.eulerAngles;
+
+            localRotation = Quaternion.Euler(eulerRotation.x, info.Rotation, eulerRotation.z);
+
+            transform.localRotation = localRotation;
         }
 
         /// <summary>

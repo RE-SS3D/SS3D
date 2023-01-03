@@ -1,4 +1,5 @@
-﻿using SS3D.Systems.Tile;
+﻿#if UNITY_EDITOR
+using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using UnityEditor;
@@ -79,7 +80,7 @@ namespace SS3D.Editor.TileMap
 
             // Get all neighbours
             PlacedTileObject[] neighbourObjects = map.GetNeighbourObjects(placedObject.GetLayer(), 0, placedObject.transform.position);
-                    
+
             for (int i = 0; i < neighbourObjects.Length; i++)
             {
                 MultiAdjacencyConnector adjacencyNeighbour = neighbourObjects[i]?.gameObject.GetComponent<MultiAdjacencyConnector>();
@@ -134,3 +135,4 @@ namespace SS3D.Editor.TileMap
         }
     }
 }
+#endif

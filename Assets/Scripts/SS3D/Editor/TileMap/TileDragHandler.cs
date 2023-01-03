@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using SS3D.Systems.Tile;
 using UnityEditor;
@@ -40,10 +41,10 @@ namespace SS3D.Editor.TileMap
 
         /**
          * Warning: Here be dragons.
-         * 
+         *
          * This code handles creating the square showing a dragging rectangle of tiles on the screen
          * It has to deal with any number of rows or columns changing, even to the point where the rectangle may flip axes.
-         * 
+         *
          * TODO: Deal with if the index is out-of-bounds.
          */
         public void HandleDrag(Vector3Int mousePosition)
@@ -67,7 +68,7 @@ namespace SS3D.Editor.TileMap
             int columnLength = 1 + Math.Abs(columnEnd - columnStart);
 
             // Update columns
-            int columnDiff = mousePosition.y - prevPosition.y; 
+            int columnDiff = mousePosition.y - prevPosition.y;
 
             if (columnDiff * columnInc < 0)
             {
@@ -244,3 +245,4 @@ namespace SS3D.Editor.TileMap
     }
 
 }
+#endif

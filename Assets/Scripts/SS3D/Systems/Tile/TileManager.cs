@@ -10,13 +10,13 @@ namespace SS3D.Systems.Tile
 {
     /// <summary>
     /// Manager class that is used for managing all tiles. Scripts that want to interact with the TileMap should do it via this class.
-    /// 
+    ///
     /// Contrary to the previous tilemap implementation you will notice little networking here.
     /// The deliberate choice was made to keep the manager fully server-only for easier object synchronization and preventing
     /// cheating as clients do not have full knowledge of the tilemap.
-    /// 
+    ///
     /// Only PlacedTileObject.Create uses Mirror's spawn function. Everything else is handled by objects and Mirror itself.
-    /// 
+    ///
     /// See MultiAdjacencyConnector.cs as an example.
     /// </summary>
     [ExecuteAlways]
@@ -77,7 +77,7 @@ namespace SS3D.Systems.Tile
                 _tileObjectSOs = listTileObjectSO.ToArray();
 #else
                 Resources.LoadAll<TileObjectSo>("");
-                tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSo>();
+                _tileObjectSOs = Resources.FindObjectsOfTypeAll<TileObjectSo>();
 #endif
 
                 LoadAll(true);
@@ -121,7 +121,7 @@ namespace SS3D.Systems.Tile
                     if (this)
                         Reinitialize();
                 };
-                
+
             }
         }
 #endif
@@ -432,7 +432,7 @@ namespace SS3D.Systems.Tile
                 _mapList.Add(map);
             }
 
-            
+
         }
 
         /// <summary>

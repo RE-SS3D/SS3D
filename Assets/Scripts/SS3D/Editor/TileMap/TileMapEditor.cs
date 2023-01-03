@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
@@ -50,7 +51,7 @@ namespace SS3D.Editor.TileMap
         private Direction _selectedDir = Direction.North;
         private GameObject _ghostObject;
 
-        [MenuItem("RE:SS3D Editor Tools/TileMap Editor")]                            
+        [MenuItem("RE:SS3D Editor Tools/TileMap Editor")]
         public static void ShowWindow()
         {
             // This bullshit makes the icon and the name appear on the editor
@@ -110,7 +111,7 @@ namespace SS3D.Editor.TileMap
             {
                 DisplaySaveWarning();
                 _tileManager.LoadAll(false);
-            }   
+            }
 
             DestroyGhost();
 
@@ -335,7 +336,7 @@ namespace SS3D.Editor.TileMap
                     }
 
                     DestroyGhost();
-                    
+
                     _dragHandler = new TileDragHandler(_tileManager, this, GetCurrentMap(), GetSubLayerIndex(), _selectedObjectSo, _selectedDir, dragPosition);
                     _dragHandler.SelectedLayer = _selectedLayer;
                     _dragHandler.AllowOverwrite = _overwriteAllowed;
@@ -358,7 +359,7 @@ namespace SS3D.Editor.TileMap
             }
 
             else if ((Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag) && Event.current.button == 0
-                && (EditorApplication.timeSinceStartup - _lastPlacementTime > 0.5 
+                && (EditorApplication.timeSinceStartup - _lastPlacementTime > 0.5
                 || _lastPlacement != snappedPosition))
             {
                 _madeChanges = true;
@@ -387,7 +388,7 @@ namespace SS3D.Editor.TileMap
         }
 
         /// <summary>
-        /// Determines which sublayer should be used based on the currently selected rotation. 
+        /// Determines which sublayer should be used based on the currently selected rotation.
         /// Only applies to walls and overlaysfor now.
         /// </summary>
         /// <returns>Sublayer index to use</returns>
@@ -434,7 +435,7 @@ namespace SS3D.Editor.TileMap
             GUILayout.Label("Press 'R' to rotate an object");
             GUILayout.Label("Current rotation: " + _selectedDir.ToString());
             GUILayout.Label("Press Escape to leave placement mode");
-            
+
             GUILayout.EndArea();
 
             Handles.EndGUI();
@@ -634,7 +635,7 @@ namespace SS3D.Editor.TileMap
                 _assetList.Add(asset);
             }
 
-            
+
         }
 
         /// <summary>
@@ -724,3 +725,4 @@ namespace SS3D.Editor.TileMap
         }
     }
 }
+#endif
