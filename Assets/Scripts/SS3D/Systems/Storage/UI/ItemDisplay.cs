@@ -74,6 +74,9 @@ namespace SS3D.Systems.Storage.UI
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            // Only allow to drag with a left click.
+            if(eventData.button != PointerEventData.InputButton.Left) return;
+
             _oldParent = transform.parent;
             if (InventoryDisplayElement == null)
             {
@@ -91,12 +94,18 @@ namespace SS3D.Systems.Storage.UI
 
         public void OnDrag(PointerEventData eventData)
         {
+            // Only allow to drag with a left click.
+            if (eventData.button != PointerEventData.InputButton.Left) return;
+
             Vector3 diff = Input.mousePosition - _startMousePosition;
             transform.position = _startPosition + diff;
         }
         
         public void OnEndDrag(PointerEventData eventData)
         {
+            // Only allow to drag with a left click.
+            if (eventData.button != PointerEventData.InputButton.Left) return;
+
             _slotImage.raycastTarget = true;
 
             transform.SetParent(_oldParent, false);
