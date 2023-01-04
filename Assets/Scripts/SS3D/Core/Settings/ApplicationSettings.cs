@@ -16,7 +16,7 @@ namespace SS3D.Core.Settings
         /// Defined via command line args when in a built executable or the EditorServerCkey when in the Editor.
         /// </summary>
         [HideInInspector]
-        public string Ckey;
+        public string Ckey = string.Empty;
 
         /// <summary>
         /// The server address used when we start connecting to a server.
