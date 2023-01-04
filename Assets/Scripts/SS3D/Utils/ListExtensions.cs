@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
-namespace SS3D.Core.Utils
+namespace SS3D.Utils
 {
-    public static class ListExtensions       
+    public static class ListExtensions
     {
         public static bool IsNullOrEmpty<T>(this List<T> list)
         {

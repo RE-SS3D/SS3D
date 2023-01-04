@@ -9,7 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ad70174b079c2f4ebc7931d3dd1af6f, type: 3}
-  m_Name: DefaultPrefabObjects
+  m_Script: {fileID: 11500000, guid: 890a57b29b24482196b55e1ac5de1b43, type: 3}
+  m_Name: ApplicationSettings
   m_EditorClassIdentifier: 
-  _prefabs: []
+  _preload: 1
+  _type: 0
+  Ckey: dauehfuac
+  ServerAddress: 127.0.0.1
+  NetworkType: 2
+  SkipIntro: 1
+  EnableDiscord: 0
+  EditorServerAddress: 127.0.0.1
+  EditorServerCkey: editorUser
