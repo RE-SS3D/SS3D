@@ -161,29 +161,29 @@ namespace SS3D.Systems.GameModes.Modes
         /// pre-generated objectives sequentially to the list of Ckeys. Can be overridden for
         /// custom objective assignment.
         /// </summary>
-        /// <param name="CKeysToAssign">List of Ckeys to assign objectives to</param>
-        protected virtual void AssignRoundStartObjectives(List<string> CKeysToAssign)
+        /// <param name="ckeysToAssign">List of Ckeys to assign objectives to</param>
+        protected virtual void AssignRoundStartObjectives(List<string> ckeysToAssign)
         {
             // Validate that input is correct.
-            if (CKeysToAssign.Count != RoundObjectives.Count)
+            if (ckeysToAssign.Count != RoundObjectives.Count)
             {
-                Punpun.Panic(this, $"Number of objective entries ({RoundObjectives.Count}) and players ({CKeysToAssign.Count}) do not match!");
+                Punpun.Panic(this, $"Number of objective entries ({RoundObjectives.Count}) and players ({ckeysToAssign.Count}) do not match!");
             }
 
             // Sequentially assign objectives
-            for (int i = 0; i < CKeysToAssign.Count; i++)
+            for (int i = 0; i < ckeysToAssign.Count; i++)
             {
-                AssignObjective(RoundObjectives[i], CKeysToAssign[i]);
+                AssignObjective(RoundObjectives[i], ckeysToAssign[i]);
             }
         }
 
-        private void CreateRoundStartObjectives(int numberToCreate)
+        private void CreateRoundStartObjectives(int amountToCreate)
         {
             // Clones the possible objectives list, to not alter the base file.
             PossibleObjectives = PossibleObjectives.Clone();
 
             // Create all the objectives
-            while (RoundObjectives.Count < numberToCreate)
+            while (RoundObjectives.Count < amountToCreate)
             {
                 // Get a possible objective
                 GamemodeObjective objective = GetRandomObjective();
@@ -195,7 +195,7 @@ namespace SS3D.Systems.GameModes.Modes
                     // No objective was returned
                     validObjective = false;    
                 }
-                else if(objective.MinAssignees > numberToCreate - RoundObjectives.Count)
+                else if(objective.MinAssignees > amountToCreate - RoundObjectives.Count)
                 {
                     // We don't have enough players needing objectives to meet min player requirement.
                     validObjective = false;
@@ -204,7 +204,7 @@ namespace SS3D.Systems.GameModes.Modes
                 // If it is valid, put an entry into RoundObjectives for each player who will be assigned.
                 if (validObjective)
                 {
-                    int listEntries = Math.Min(objective.MaxAssignees, numberToCreate - RoundObjectives.Count);
+                    int listEntries = Math.Min(objective.MaxAssignees, amountToCreate - RoundObjectives.Count);
                     for (int i = 0; i < listEntries; i++)
                     {
                         // Duplicate the objective so that we aren't simply reassigning the same one.
@@ -301,8 +301,7 @@ namespace SS3D.Systems.GameModes.Modes
         private void FinalizeSharedObjective(GamemodeObjective triggerObjective)
         {
             // Finalization is only valid if the trigger objective has succeeded, and it is a shared objective. Exit early if invalid.
-            if (triggerObjective.CollaborationType == CollaborationType.Individual) return;
-            if (!triggerObjective.Succeeded) return;
+            if (triggerObjective.CollaborationType == CollaborationType.Individual || !triggerObjective.Succeeded) return;
 
             // Find all other objectives that need to be resolved. Exit early if there are none.
             List<GamemodeObjective> sharedObjectives = _roundObjectives?.Where(sharedObjective => sharedObjective.Id == triggerObjective.Id).ToList();

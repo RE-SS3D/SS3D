@@ -42,11 +42,11 @@ namespace SS3D.Systems.Gamemodes
         /// <param name="maxAssignees">Maximum number of players required for this objective</param>
         public GamemodeObjective(string title, CollaborationType collaborationType, Alignment alignment, int minAssignees, int maxAssignees)
         {
-            this._title = title;
-            this._collaborationType = collaborationType;
-            this._alignmentRequirement = alignment;
-            this._minAssignees = Math.Max(minAssignees, 1);
-            this._maxAssignees = Math.Max(maxAssignees, _minAssignees);
+            _title = title;
+            _collaborationType = collaborationType;
+            _alignmentRequirement = alignment;
+            _minAssignees = Math.Max(minAssignees, 1);
+            _maxAssignees = Math.Max(maxAssignees, _minAssignees);
         }
 
         public CollaborationType CollaborationType => _collaborationType;

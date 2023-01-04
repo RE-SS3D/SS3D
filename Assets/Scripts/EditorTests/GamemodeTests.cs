@@ -219,7 +219,6 @@ namespace EditorTests.Gamemodes
         [Test]
         public void CooperativeObjectivesSucceedWhenOnePlayerCompletesThem()
         {
-
             // ARRANGE
             const int NUMBER_OF_PLAYERS_TO_TEST = 32;
             const int PLAYERS_PER_OBJECTIVE = 8;
@@ -246,7 +245,6 @@ namespace EditorTests.Gamemodes
         [Test]
         public void CompetitiveObjectivesFailWhenOnePlayerCompletesThem()
         {
-
             // ARRANGE
             const int NUMBER_OF_PLAYERS_TO_TEST = 32;
             const int PLAYERS_PER_OBJECTIVE = 8;
@@ -276,7 +274,6 @@ namespace EditorTests.Gamemodes
         [Test]
         public void ResetGamemodeClearsAllObjectives()
         {
-
             // ARRANGE
             const int NUMBER_OF_PLAYERS_TO_TEST = 32;
             List<string> Ckeys = SampleCkeys(NUMBER_OF_PLAYERS_TO_TEST);
@@ -297,7 +294,6 @@ namespace EditorTests.Gamemodes
         [Test]
         public void LateJoiningPlayersGetObjectives()
         {
-
             // ARRANGE
             const int NUMBER_OF_PLAYERS_TO_TEST = 4;
             const string lateJoinPlayerCkey = "lateJoinPlayer";
@@ -421,11 +417,7 @@ namespace EditorTests.Gamemodes
             gamemode.PossibleObjectives = collection;
 
             return gamemode;
-
         }
-
-
-
         #endregion
     }
 }

@@ -7,7 +7,6 @@ namespace SS3D.Systems.Gamemodes
     /// </summary>
     public static class ObjectiveFactory
     {
-
         public static GamemodeObjective Duplicate(GamemodeObjective objective)
         {
             GamemodeObjective newObjective = ScriptableObject.Instantiate(objective);
@@ -22,6 +21,5 @@ namespace SS3D.Systems.Gamemodes
 
             return newObjective;
         }
-
     }
 }
