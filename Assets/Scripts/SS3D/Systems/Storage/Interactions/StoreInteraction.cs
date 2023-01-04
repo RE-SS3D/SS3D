@@ -30,7 +30,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Database.Icons.Get(InteractionIcons.Discard);
+            return Icon != null ? Icon : AssetData.Get(InteractionIcons.Discard);
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -56,7 +56,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Hands hands = interactionEvent.Source.GetComponent<Hands>(); 
+            Hands hands = interactionEvent.Source.GetComponent<Hands>();
             _containerDescriptor.AttachedContainer.Container.AddItem(hands.ItemInHand);
 
             return false;

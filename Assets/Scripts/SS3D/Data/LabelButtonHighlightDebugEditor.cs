@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace SS3D.Data
 {
-    [CustomEditor(typeof(IconDatabase))]
+    [CustomEditor(typeof(InteractionIconsDatabase))]
     public class LabelButtonHighlightDebugEditor : Editor
     {
-        private IconDatabase _database;
+        private InteractionIconsDatabase _database;
 
         private void OnEnable()
         {
-            _database = (IconDatabase)target;
+            _database = (InteractionIconsDatabase)target;
         }
 
         public override void OnInspectorGUI()
@@ -22,7 +22,7 @@ namespace SS3D.Data
 
             if (GUILayout.Button($"Create Enum", GUILayout.Width(500)))
             {
-                _database.CreateEnum();
+                AssetData.CreateEnum(_database, _database.EnumName, _database.Assets);
             }
 
         }

@@ -2,6 +2,7 @@ using Coimbra;
 using DG.Tweening;
 using SS3D.Data;
 using UDiscord;
+using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace SS3D.Core
@@ -43,7 +44,7 @@ namespace SS3D.Core
             {
                 FindObjectOfType<DiscordManager>().Destroy();
             }
-            Database.Icons.PreloadAssets();
+            AssetData.InitializeAssets();
         }
 
         public void InitializeApplication()
@@ -73,7 +74,7 @@ namespace SS3D.Core
         private void InitializeSingleton()
         {
             Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing Application State Manager singleton");
-            
+
             if (Instance == null)
             {
                 Instance = this;
@@ -86,7 +87,7 @@ namespace SS3D.Core
             DOTween.Init();
         }
 
-        private static void InitializeNetworkSession() 
+        private static void InitializeNetworkSession()
         {
             Debug.Log($"[{nameof(ApplicationStateManager)}] - Initializing network session");
             SessionNetworkHelper.InitiateNetworkSession();
