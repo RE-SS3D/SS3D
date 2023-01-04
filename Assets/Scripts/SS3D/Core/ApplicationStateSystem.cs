@@ -1,4 +1,3 @@
-using System;
 using Coimbra;
 using DG.Tweening;
 using SS3D.Core.Settings;
@@ -6,7 +5,6 @@ using SS3D.Core.Utils;
 using SS3D.Data;
 using SS3D.Logging;
 using UDiscord;
-using UnityEngine;
 
 namespace SS3D.Core
 {
