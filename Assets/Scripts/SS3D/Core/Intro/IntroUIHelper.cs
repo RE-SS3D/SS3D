@@ -1,4 +1,6 @@
+using Coimbra;
 using DG.Tweening;
+using SS3D.Core.Settings;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,7 +15,7 @@ namespace SS3D.Core.Intro
         [Header("UI")]
         [SerializeField] private CanvasGroup _introUiCanvasGroup;
         [FormerlySerializedAs("_connectionUiFade")] [SerializeField] private CanvasGroup _connectionUiCanvasGroup;
-        
+
         [Header("Settings")]
         [SerializeField] private float _fadeInDuration;
         [SerializeField] private float _fadeOutDuration;
@@ -29,10 +31,15 @@ namespace SS3D.Core.Intro
 
         private void Setup()
         {
-            if (ApplicationStateManager.SkipIntro)
+            ApplicationSettings applicationSettings = ScriptableSettings.GetOrFind<ApplicationSettings>();
+
+            if (applicationSettings.SkipIntro)
             {
                 Destroy(_temporaryAudioSource);
-                ApplicationStateManager.Instance.InitializeApplication();
+
+                ApplicationStateSystem applicationStateSystem = SystemLocator.Get<ApplicationStateSystem>();
+                applicationStateSystem.InitializeApplication();
+
                 _introUiCanvasGroup.alpha = 0;
                 _connectionUiCanvasGroup.alpha = 1;
             }
@@ -51,7 +58,9 @@ namespace SS3D.Core.Intro
             {
                 _introUiCanvasGroup.DOFade(0, _fadeOutDuration).SetDelay(_splashScreenFreezeDuration).OnComplete(() =>
                 {
-                    ApplicationStateManager.Instance.InitializeApplication();
+                    ApplicationStateSystem applicationStateSystem = SystemLocator.Get<ApplicationStateSystem>();
+                    applicationStateSystem.InitializeApplication();
+
                     _connectionUiCanvasGroup.DOFade(1, _fadeInDuration).SetDelay(2);
                 });
             }).SetEase(Ease.InCubic);

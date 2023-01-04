@@ -23,9 +23,9 @@ namespace SS3D.Core.Utils
         private void HandleApplicationStarted(ref EventContext context, in ApplicationStartedEvent e)
         {
             string ckey = e.Ckey.Colorize(LogColors.GetLogColor(Logs.Generic));
-            string mode = e.ApplicationMode.ToString().Colorize(LogColors.GetLogColor(Logs.Physics));
+            string mode = e.NetworkType.ToString().Colorize(LogColors.GetLogColor(Logs.Physics));
             string appName = Application.productName.Colorize(LogColors.GetLogColor(Logs.Important));
-            string appVersion = $"v{Application.version}".Colorize(LogColors.GetLogColor(Logs.ServerOnly));
+            string appVersion = $"{Application.version}".Colorize(LogColors.GetLogColor(Logs.ServerOnly));
             string unityVersion = $"{Application.unityVersion}".Colorize(LogColors.GetLogColor(Logs.ClientOnly));
 
             string date = $"{DateTime.Now.Day:00}/{DateTime.Now.Month:00}/{DateTime.Now.Year:0000}".Colorize(LogColors.GetLogColor(Logs.Generic));
