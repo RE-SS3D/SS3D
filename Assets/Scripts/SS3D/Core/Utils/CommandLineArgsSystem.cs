@@ -68,7 +68,6 @@ namespace SS3D.Core.Utils
                 string ckey = arg.Replace(CommandLineArgs.Ckey, "");
 
                 _applicationSettings.Ckey = ckey;
-                LocalPlayerAccountUtility.UpdateCkey(ckey);
             }
 
             if (arg.Contains(CommandLineArgs.SkipIntro))
@@ -85,6 +84,9 @@ namespace SS3D.Core.Utils
             {
                 _applicationSettings.NetworkType = NetworkType.ServerOnly;
             }
+
+            LocalPlayer.UpdateCkey(_applicationSettings.Ckey);
+
         }
 
         /// <summary>

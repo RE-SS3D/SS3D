@@ -1,5 +1,6 @@
 using FishNet;
 using FishNet.Object;
+using SS3D.Core.Settings;
 using SS3D.Core.Utils;
 using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
@@ -21,7 +22,7 @@ namespace SS3D.Networking
         [Client]
         private void Setup()
         {
-            string ckey = LocalPlayerAccountUtility.Ckey;
+            string ckey = LocalPlayer.Ckey;
 
             bool testingServerOnlyInEditor = IsServer && !IsHost && Application.isEditor;
             if (testingServerOnlyInEditor)
