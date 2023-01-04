@@ -96,7 +96,9 @@ namespace SS3D.Editor.TileMap
 
                 // Set their opposite side blocked
                 AdjacencyMap adjacencyMap = new();
-                adjacencyMap.DeserializeFromByte((byte)neighbourProperty.intValue);
+                AdjacencyData[] adjacencyData = AdjacencyMap.DeserializeFromByte((byte)neighbourProperty.intValue);
+                adjacencyMap.Connections = adjacencyData;
+
                 adjacencyMap.SetConnection(TileHelper.GetOpposite((Direction) i), new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, _blocked[i]));
                 neighbourProperty.intValue = adjacencyMap.SerializeToByte();
 

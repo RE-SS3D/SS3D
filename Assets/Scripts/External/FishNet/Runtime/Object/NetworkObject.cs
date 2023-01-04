@@ -432,12 +432,6 @@ namespace FishNet.Object
                 //Not possible for index to be 0 and nested.
                 if (IsNested)
                     return;
-                byte maxNobs = 255;
-                if (GetComponentsInChildren<NetworkObject>(true).Length > maxNobs)
-                {
-                    Debug.LogError($"The number of child NetworkObjects on {gameObject.name} exceeds the maximum of {maxNobs}.");
-                    return;
-                }
             }
 
             ComponentIndex = componentIndex;

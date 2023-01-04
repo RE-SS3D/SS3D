@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SS3D.Core;
 using UnityEngine;
 using static SS3D.Systems.Tile.TileRestrictions;
 
@@ -42,7 +43,7 @@ namespace SS3D.Systems.Tile
         public bool IsMain { get; set; }
 
         private string _mapName;
-        private TileManager _tileManager;
+        private TileSystem _tileSystem;
 
         /// <summary>
         /// Creates a new TileMap.
@@ -66,7 +67,7 @@ namespace SS3D.Systems.Tile
         public void Setup(string mapName)
         {
             _chunks = new Dictionary<Vector2Int, TileChunk>();
-            _tileManager = TileManager.Instance;
+            _tileSystem = SystemLocator.Get<TileSystem>();
             this.name = mapName;
             _mapName = mapName;
         }
@@ -514,7 +515,7 @@ namespace SS3D.Systems.Tile
         /// <param name="softLoad"></param>
         public void Load(MapSaveObject saveObject, bool softLoad)
         {
-            if (!_tileManager) _tileManager = FindObjectOfType<TileManager>();
+            if (!_tileSystem) _tileSystem = FindObjectOfType<TileSystem>();
 
             IsMain = saveObject.isMain;
 
@@ -535,7 +536,7 @@ namespace SS3D.Systems.Tile
 
                         if (softLoad)
                         {
-                            TileObjectSo tileObjectSo = _tileManager.GetTileObjectSO(objectName);
+                            TileObjectSo tileObjectSo = _tileSystem.GetTileObjectSO(objectName);
 
                             // Find the object and set it up again...
                             Vector3 position = TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition);
@@ -551,7 +552,7 @@ namespace SS3D.Systems.Tile
                         }
                         else
                         {
-                            _tileManager.SetTileObject(this, subLayerIndex, objectName, TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition)
+                            _tileSystem.SetTileObject(this, subLayerIndex, objectName, TileHelper.GetWorldPosition(tileObjectSaveObject.x, tileObjectSaveObject.y, chunk.tileSize, chunk.originPosition)
                                 , tileObjectSaveObject.placedSaveObjects[subLayerIndex].dir);
                         }
                     }

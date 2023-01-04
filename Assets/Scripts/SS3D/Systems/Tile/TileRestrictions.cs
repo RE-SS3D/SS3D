@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SS3D.Core;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -35,7 +36,7 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         public static bool CanBuild(TileMap map, Vector3 position, int subLayerIndex, TileObjectSo tileObjectSo, Direction dir)
         {
-            TileManager tileManager = TileManager.Instance;
+            TileSystem tileSystem = SystemLocator.Get<TileSystem>();
             TileLayer placedLayer = tileObjectSo.layer;
             TileObject[] tileObjects = new TileObject[TileHelper.GetTileLayers().Length];
 

@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using SS3D.Core;
 using SS3D.Systems.Tile;
 using SS3D.Systems.Tile.Connections;
 using UnityEditor;
@@ -15,7 +16,7 @@ namespace SS3D.Editor.TileMap
     {
         private const int MaxTileMapSize = 500;
 
-        private TileManager _tileManager;
+        private TileSystem _tileSystem;
 
         // Selection grid
         private string _searchString = "";
@@ -76,16 +77,18 @@ namespace SS3D.Editor.TileMap
         {
             // Initialize variables
             _loadingTextures = true;
-            _tileManager = FindObjectOfType<TileManager>();
+            _tileSystem = FindObjectOfType<TileSystem>();
             _selectedDir = Direction.North;
 
-            if (_tileManager == null)
+            if (_tileSystem == null)
             {
                 EditorApplication.delayCall += () =>
                 {
-                    if (TileManager.Instance && TileManager.Instance.IsInitialized)
+                    TileSystem tileSystem = SystemLocator.Get<TileSystem>();
+
+                    if (tileSystem.IsInitialized)
                     {
-                        _tileManager = TileManager.Instance;
+                        _tileSystem = tileSystem;
                     }
                     else
                     {
@@ -110,8 +113,8 @@ namespace SS3D.Editor.TileMap
             if (_madeChanges)
             {
                 DisplaySaveWarning();
-                _tileManager.LoadAll(false);
-            }
+                _tileSystem.LoadAll(false);
+            }   
 
             DestroyGhost();
 
@@ -120,7 +123,7 @@ namespace SS3D.Editor.TileMap
 
         public void OnGUI()
         {
-            if (_tileManager == null)
+            if (_tileSystem == null)
                 return;
 
             if (_loadingTextures)
@@ -135,7 +138,7 @@ namespace SS3D.Editor.TileMap
             }
 
             EditorGUI.BeginChangeCheck();
-            _selectedTileMapIndex = EditorGUILayout.Popup("Active tilemap:", _selectedTileMapIndex, _tileManager.GetTileMapNames());
+            _selectedTileMapIndex = EditorGUILayout.Popup("Active tilemap:", _selectedTileMapIndex, _tileSystem.GetTileMapNames());
             if (EditorGUI.EndChangeCheck())
             {
                 FillGridOptions(GetCurrentMap());
@@ -155,17 +158,17 @@ namespace SS3D.Editor.TileMap
                 if (GUILayout.Button("New"))
                 {
                     _madeChanges = true;
-                    _tileManager.CreateEmptyMap();
+                    _tileSystem.CreateEmptyMap();
                     RefreshMapList();
                 }
                 if (GUILayout.Button("Delete"))
                 {
                     if (EditorUtility.DisplayDialog("Remove TileMap",
-                        "Are you sure that you want to remove '" + _tileManager.GetTileMapNames()[_selectedTileMapIndex] + "'?"
+                        "Are you sure that you want to remove '" + _tileSystem.GetTileMapNames()[_selectedTileMapIndex] + "'?"
                         , "Ok", "Cancel"))
                     {
                         _madeChanges = true;
-                        _tileManager.RemoveMap(GetCurrentMap());
+                        _tileSystem.RemoveMap(GetCurrentMap());
                         RefreshMapList();
                     }
                 }
@@ -176,14 +179,14 @@ namespace SS3D.Editor.TileMap
                         DisplaySaveWarning();
                         _madeChanges = false;
                     }
-                    _tileManager.LoadAll(false);
+                    _tileSystem.LoadAll(false);
                     RefreshMapList();
                 }
-                if (GUILayout.Button("Save")) { _tileManager.SaveAll(); _madeChanges = false; }
+                if (GUILayout.Button("Save")) { _tileSystem.SaveAll(); _madeChanges = false; }
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.Space();
-                if (_tileManager.GetTileMaps().Count > 0)
+                if (_tileSystem.GetTileMaps().Count > 0)
                 {
                     EditorGUILayout.BeginVertical();
                     _showTileGrid = EditorGUILayout.Toggle("Display chunks: ", _showTileGrid);
@@ -208,7 +211,7 @@ namespace SS3D.Editor.TileMap
             EditorGUILayout.EndFoldoutHeaderGroup();
 
             // Return if no map is selected
-            if (_tileManager.GetTileMaps().Count == 0)
+            if (_tileSystem.GetTileMaps().Count == 0)
                 return;
 
             // Change the visibility of different tilemap layers
@@ -264,7 +267,7 @@ namespace SS3D.Editor.TileMap
         /// </summary>
         private void ApplySettings()
         {
-            Systems.Tile.TileMap map = _tileManager.GetTileMaps()[_selectedTileMapIndex];
+            Systems.Tile.TileMap map = _tileSystem.GetTileMaps()[_selectedTileMapIndex];
             map.SetName(_selectedName);
             map.IsMain = _isMainMap;
 
@@ -273,7 +276,7 @@ namespace SS3D.Editor.TileMap
 
         private void OnSceneGUI(SceneView sceneView)
         {
-            if (!_tileManager || _tileManager.GetTileMaps().Count == 0)
+            if (!_tileSystem || _tileSystem.GetTileMaps().Count == 0)
                 return;
 
             if (_showTileGrid)
@@ -336,8 +339,8 @@ namespace SS3D.Editor.TileMap
                     }
 
                     DestroyGhost();
-
-                    _dragHandler = new TileDragHandler(_tileManager, this, GetCurrentMap(), GetSubLayerIndex(), _selectedObjectSo, _selectedDir, dragPosition);
+                    
+                    _dragHandler = new TileDragHandler(_tileSystem, this, GetCurrentMap(), GetSubLayerIndex(), _selectedObjectSo, _selectedDir, dragPosition);
                     _dragHandler.SelectedLayer = _selectedLayer;
                     _dragHandler.AllowOverwrite = _overwriteAllowed;
 
@@ -367,15 +370,15 @@ namespace SS3D.Editor.TileMap
                 _lastPlacement = snappedPosition;
                 if (_deleteTiles)
                 {
-                    _tileManager.ClearTileObject(GetCurrentMap(), _selectedLayer, GetSubLayerIndex(), snappedPosition);
+                    _tileSystem.ClearTileObject(GetCurrentMap(), _selectedLayer, GetSubLayerIndex(), snappedPosition);
                 }
                 else
                 {
                     if (_overwriteAllowed)
                     {
-                        _tileManager.ClearTileObject(GetCurrentMap(), _selectedLayer, GetSubLayerIndex(), snappedPosition);
+                        _tileSystem.ClearTileObject(GetCurrentMap(), _selectedLayer, GetSubLayerIndex(), snappedPosition);
                     }
-                    _tileManager.SetTileObject(GetCurrentMap(), GetSubLayerIndex(), _selectedObjectSo, snappedPosition, _selectedDir);
+                    _tileSystem.SetTileObject(GetCurrentMap(), GetSubLayerIndex(), _selectedObjectSo, snappedPosition, _selectedDir);
                 }
             }
 
@@ -446,7 +449,7 @@ namespace SS3D.Editor.TileMap
         /// </summary>
         private void RefreshMapList()
         {
-            _selectedTileMapIndex = _tileManager.GetTileMaps().Count - 1;
+            _selectedTileMapIndex = _tileSystem.GetTileMaps().Count - 1;
             if (_selectedTileMapIndex >= 0)
             {
                 FillGridOptions(GetCurrentMap());
@@ -455,7 +458,7 @@ namespace SS3D.Editor.TileMap
 
         private Systems.Tile.TileMap GetCurrentMap()
         {
-            return _tileManager.GetTileMaps()[_selectedTileMapIndex];
+            return _tileSystem.GetTileMaps()[_selectedTileMapIndex];
         }
 
         private void FillGridOptions(Systems.Tile.TileMap map)
@@ -476,7 +479,7 @@ namespace SS3D.Editor.TileMap
             // Rendering
             if (_deleteTiles)
                 Handles.color = Color.red;
-            else if (!_deleteTiles && !_tileManager.CanBuild(GetCurrentMap(), GetSubLayerIndex(), _selectedObjectSo, cell, _selectedDir, _overwriteAllowed))
+            else if (!_deleteTiles && !_tileSystem.CanBuild(GetCurrentMap(), GetSubLayerIndex(), _selectedObjectSo, cell, _selectedDir, _overwriteAllowed))
                 Handles.color = Color.yellow;
             else
                 Handles.color = Color.green;
@@ -567,7 +570,7 @@ namespace SS3D.Editor.TileMap
             }
             _ghostObject.name = "Ghost object";
             _ghostObject.tag = "EditorOnly";
-            _ghostObject.transform.SetParent(_tileManager.transform);
+            _ghostObject.transform.SetParent(_tileSystem.transform);
             _ghostObject.SetActive(false);
         }
 
@@ -720,7 +723,7 @@ namespace SS3D.Editor.TileMap
                     "Do you want to save changes?"
                     , "Yes", "No"))
             {
-                _tileManager.SaveAll();
+                _tileSystem.SaveAll();
             }
         }
     }

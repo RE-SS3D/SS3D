@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SS3D.Core;
 using UnityEngine;
 
 namespace SS3D.Systems.Tile
@@ -55,7 +56,7 @@ namespace SS3D.Systems.Tile
         private readonly float _tileSize;
         private readonly Vector3 _originPosition;
         private List<TileGrid> _tileGridList;
-        private TileManager _tileManager;
+        private TileSystem _tileSystem;
 
         public TileChunk(Vector2Int chunkKey, int width, int height, float tileSize, Vector3 originPosition)
         {
@@ -66,7 +67,7 @@ namespace SS3D.Systems.Tile
             _originPosition = originPosition;
 
             CreateAllGrids();
-            _tileManager = TileManager.Instance;
+            _tileSystem = SystemLocator.Get<TileSystem>();
         }
 
         /// <summary>

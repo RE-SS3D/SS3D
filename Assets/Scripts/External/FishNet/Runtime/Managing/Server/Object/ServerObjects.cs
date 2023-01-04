@@ -31,7 +31,7 @@ namespace FishNet.Managing.Server
         /// <summary>
         /// Cached ObjectIds which may be used when exceeding available ObjectIds.
         /// </summary>
-        private Queue<int> _objectIdCache = new Queue<int>();
+        private List<uint> _objectIds = new List<uint>();
         /// <summary>
         /// NetworkBehaviours which have dirty SyncVars.
         /// </summary>
@@ -148,7 +148,7 @@ namespace FishNet.Managing.Server
                 {
                     base.DespawnSpawnedWithoutSynchronization(true);
                     base.SceneObjects.Clear();
-                    _objectIdCache.Clear();
+                    _objectIds.Clear();
                     base.NetworkManager.ClearClientsCollection(base.NetworkManager.ServerManager.Clients);
                 }
             }
@@ -201,25 +201,7 @@ namespace FishNet.Managing.Server
         /// </summary>
         private void BuildObjectIdCache()
         {
-            _objectIdCache.Clear();
-
-            /* Shuffle Ids to make it more difficult
-             * for clients to track spawned object
-             * count. */
-            List<int> shuffledCache = new List<int>();
-            for (int i = 0; i < short.MaxValue; i++)
-                shuffledCache.Add(i);
-            /* Only shuffle when NOT in editor and not
-             * development build.
-             * Debugging could be easier when Ids are ordered. */
-#if !UNITY_EDITOR && !DEVELOPMENT_BUILD
-            shuffledCache.Shuffle();
-#endif
-            //Add shuffled to objectIdCache.
-            //Build Id cache.
-            int cacheCount = shuffledCache.Count;
-            for (int i = 0; i < cacheCount; i++)
-                _objectIdCache.Enqueue(shuffledCache[i]);
+            _objectIds = new List<uint>();
         }
         /// <summary>
         /// Caches a NetworkObject ObjectId.
@@ -227,8 +209,7 @@ namespace FishNet.Managing.Server
         /// <param name="nob"></param>
         private void CacheObjectId(NetworkObject nob)
         {
-            if (nob.ObjectId >= 0)
-                _objectIdCache.Enqueue(nob.ObjectId);
+
         }
 
         /// <summary>
@@ -237,17 +218,10 @@ namespace FishNet.Managing.Server
         /// <returns></returns>
         protected internal override int GetNextNetworkObjectId()
         {
-            //Either something went wrong or user actually managed to spawn ~32K networked objects.
-            if (_objectIdCache.Count == 0)
-            {
-                if (base.NetworkManager.CanLog(LoggingType.Error))
-                    Debug.LogError($"No more available ObjectIds. How the heck did you manage to have {short.MaxValue} objects spawned at once?");
-                return -1;
-            }
-            else
-            {
-                return _objectIdCache.Dequeue();
-            }
+            uint id = (uint)_objectIds.Count;
+            _objectIds.Add(id);    
+                                       
+            return (int)id;
         }
         #endregion
 

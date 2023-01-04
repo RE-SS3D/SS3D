@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Palette
-  m_Shader: {fileID: 2, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: de627b8811c79fd4bab9ed7129a7f5d0, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _GLOSSYREFLECTIONS_OFF
@@ -95,7 +95,7 @@ Material:
     - _Lumin: 0.703
     - _MaxLight: 1
     - _Metallic: 0
-    - _MinLight: 0.211
+    - _MinLight: 0.637
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Offset: 0.635

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using FishNet;
+using FishNet.Object;
+using SS3D.Core.Behaviours;
 using SS3D.Systems.Tile.Connections;
 using UnityEngine;
 
@@ -9,7 +11,7 @@ namespace SS3D.Systems.Tile
     /// <summary>
     /// Class that is attached to every GameObject placed on the TileMap. 
     /// </summary>
-    public class PlacedTileObject : MonoBehaviour
+    public class PlacedTileObject : NetworkActor
     {
         /// <summary>
         /// SaveObject that contains all information required to reconstruct the object.
@@ -47,7 +49,7 @@ namespace SS3D.Systems.Tile
 
             placedObject.Setup(tileObjectSo, origin, dir);
 
-            if (InstanceFinder.ServerManager != null)
+            if (InstanceFinder.ServerManager != null && placedObject.GetComponent<NetworkObject>() != null)
             {
                 InstanceFinder.ServerManager.Spawn(placedGameObject);
             }

@@ -13,9 +13,10 @@ namespace SS3D.Editor.TileMap
      */
     public class TileDragHandler
     {
-        public TileDragHandler(TileManager tileManager, TileMapEditor mapEditor, SS3D.Systems.Tile.TileMap map, int subLayerIndex, TileObjectSo tileObjectSo, Direction selectedDir, Vector3Int snappedPosition)
+        public TileDragHandler(TileSystem tileSystem, TileMapEditor mapEditor, SS3D.Systems.Tile.TileMap map,
+            int subLayerIndex, TileObjectSo tileObjectSo, Direction selectedDir, Vector3Int snappedPosition)
         {
-            _tileManager = tileManager;
+            _tileSystem = tileSystem;
             _mapEditor = mapEditor;
             _map = map;
             _subLayerIndex = subLayerIndex;
@@ -35,7 +36,7 @@ namespace SS3D.Editor.TileMap
             ghostObject.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             ghostObject.name = "Ghost object";
             ghostObject.tag = "EditorOnly";
-            ghostObject.transform.SetParent(_tileManager.transform);
+            ghostObject.transform.SetParent(_tileSystem.transform);
             return ghostObject;
         }
 
@@ -80,6 +81,7 @@ namespace SS3D.Editor.TileMap
                     {
                         Object.DestroyImmediate(_dragTiles[columnLength * i + j].gameObject);
                     }
+
                     if (columnLength - minColumn > 0)
                         _dragTiles.RemoveRange(columnLength * i + minColumn, columnLength - minColumn);
                 }
@@ -96,11 +98,13 @@ namespace SS3D.Editor.TileMap
                     columnInc = -columnInc;
                 }
             }
+
             if (columnDiff * columnInc > 0)
             {
                 for (int i = rowLength - 1; i >= 0; i--)
-                { // Go backwards so we can add and remove from array without messing with indices
-                  // Add tiles from (but excluding) columnEnd, up to (and including) columnEnd + columnDiff
+                {
+                    // Go backwards so we can add and remove from array without messing with indices
+                    // Add tiles from (but excluding) columnEnd, up to (and including) columnEnd + columnDiff
                     for (int j = columnLength; j < columnLength + Math.Abs(columnDiff); j++)
                     {
                         GameObject tile = CreateGhost();
@@ -127,6 +131,7 @@ namespace SS3D.Editor.TileMap
                         Object.DestroyImmediate(_dragTiles[columnLength * i + j]);
                     }
                 }
+
                 if (rowLength - minRow > 0)
                     _dragTiles.RemoveRange(minRow * columnLength, (rowLength - minRow) * columnLength);
 
@@ -142,6 +147,7 @@ namespace SS3D.Editor.TileMap
                     rowInc = -rowInc;
                 }
             }
+
             if (rowDiff * rowInc > 0)
             {
                 for (int i = rowLength; i < rowLength + Math.Abs(rowDiff); i++)
@@ -178,14 +184,15 @@ namespace SS3D.Editor.TileMap
                 {
                     if (DeleteTiles)
                     {
-                        _tileManager.ClearTileObject(_map, SelectedLayer, 0, new Vector3(x, 0, y));
+                        _tileSystem.ClearTileObject(_map, SelectedLayer, 0, new Vector3(x, 0, y));
                     }
                     else
                     {
                         if (AllowOverwrite)
-                            _tileManager.ClearTileObject(_map, SelectedLayer, 0, new Vector3(x, 0, y));
+                            _tileSystem.ClearTileObject(_map, SelectedLayer, 0, new Vector3(x, 0, y));
 
-                        _tileManager.SetTileObject(_map, _subLayerIndex, _tileObjectSo, new Vector3(x, 0, y), _selectedDir);
+                        _tileSystem.SetTileObject(_map, _subLayerIndex, _tileObjectSo, new Vector3(x, 0, y),
+                            _selectedDir);
                     }
                 }
             }
@@ -229,7 +236,7 @@ namespace SS3D.Editor.TileMap
             }
         }
 
-        private readonly TileManager _tileManager;
+        private readonly TileSystem _tileSystem;
         private readonly TileMapEditor _mapEditor;
         private readonly SS3D.Systems.Tile.TileMap _map;
         private readonly int _subLayerIndex;
@@ -243,6 +250,5 @@ namespace SS3D.Editor.TileMap
         public bool AllowOverwrite { get; set; }
         public TileLayer SelectedLayer { get; set; }
     }
-
 }
 #endif

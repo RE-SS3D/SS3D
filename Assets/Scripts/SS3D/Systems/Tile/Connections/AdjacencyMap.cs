@@ -27,7 +27,11 @@ namespace SS3D.Systems.Tile.Connections
             };
         }
 
-        public AdjacencyData[] Connections => _connections;
+        public AdjacencyData[] Connections
+        {
+            get => _connections;
+            set => _connections = value;
+        }
 
         public bool HasConnection(Direction direction)
         {
@@ -105,7 +109,7 @@ namespace SS3D.Systems.Tile.Connections
             return (from index in directionIndexes where _connections[index].Exists select (Direction) index).ToList();
         }
         
-        public void DeserializeFromByte(byte bytemap)
+        public static AdjacencyData[] DeserializeFromByte(byte bytemap)
         {
             BitArray bits = new(new[] { bytemap });
             AdjacencyData[] adjacencyData = new AdjacencyData[8];
@@ -114,7 +118,7 @@ namespace SS3D.Systems.Tile.Connections
                 adjacencyData[i] = new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, bits[i]);
             }
 
-            _connections = adjacencyData;
+            return adjacencyData;
         }
 
         public byte SerializeToByte()

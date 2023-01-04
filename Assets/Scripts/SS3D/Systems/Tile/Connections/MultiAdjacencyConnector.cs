@@ -45,6 +45,9 @@ namespace SS3D.Systems.Tile.Connections
         [SyncVar(OnChange = nameof(SyncAdjacentConnections))]
         private byte _adjacentConnections;
 
+        [SyncVar(OnChange = nameof(SyncBlockedConnections))]
+        private byte _blockedConnections;
+
         /// <summary>
         /// As syncvars cannot be directly modified. This field is used by the AdjacencyEditor.
         /// </summary>
@@ -54,23 +57,27 @@ namespace SS3D.Systems.Tile.Connections
         /// <summary>
         /// Keeps track of blocked connections. Do not directly modify! Use the sync functions instead.
         /// </summary>
-        private byte BlockedConnections { get; set; }
+
+        private byte BlockedConnections
+        {
+            get => _blockedConnections;
+            set => _blockedConnections = value;
+        }
 
         private AdjacencyMap _adjacencyMap;
         private MeshFilter _filter;
 
-        public void Awake()
-        {
-            EnsureInit();
-            UpdateBlockedFromEditor();
-        }
-
         public void OnEnable() => UpdateMeshAndDirection();
+
+        private void Awake()
+        {
+            Initialize();
+        }
 
         /// <summary>
         /// Ensures that the object is properly initialized.
         /// </summary>
-        private void EnsureInit()
+        private void Initialize()
         {
             if (!this)
             {
@@ -98,6 +105,8 @@ namespace SS3D.Systems.Tile.Connections
                 _genericType = placedTileObject.GetGenericType();
                 _specificType = placedTileObject.GetSpecificType();
             }
+
+            UpdateMeshAndDirection();
         }
 
         /// <summary>
@@ -121,8 +130,6 @@ namespace SS3D.Systems.Tile.Connections
         /// <param name="newConnections"></param>
         private void SyncBlockedConnections(byte newConnections)
         {
-            EnsureInit();
-            BlockedConnections = newConnections;
             UpdateMeshAndDirection();
         }
 
@@ -237,7 +244,7 @@ namespace SS3D.Systems.Tile.Connections
         private bool UpdateSingleConnection(Direction dir, PlacedTileObject placedObject)
         {
             // For some reason called before OnAwake()
-            EnsureInit();
+            Initialize();
             UpdateBlockedFromEditor();
 
             bool isConnected = false;
@@ -295,6 +302,7 @@ namespace SS3D.Systems.Tile.Connections
         /// <summary>
         /// Updates the meshes and direction based on the used Adjacency type.
         /// </summary>
+        [ContextMenu("Update mesh and direction")]
         private void UpdateMeshAndDirection()
         {
             MeshDirectionInfo info = new();
