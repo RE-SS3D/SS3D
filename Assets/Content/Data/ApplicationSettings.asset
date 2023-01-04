@@ -20,4 +20,4 @@ MonoBehaviour:
   SkipIntro: 1
   EnableDiscord: 0
   EditorServerAddress: 127.0.0.1
-  EditorServerCkey: EditorUser
+  EditorServerCkey: editorUser
