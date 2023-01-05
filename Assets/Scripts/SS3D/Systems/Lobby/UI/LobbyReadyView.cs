@@ -39,7 +39,7 @@ namespace SS3D.Systems.Lobby.UI
             SyncRoundState(e.RoundState);
         }
 
-        private async void SyncSpawnedPlayers()
+        private void SyncSpawnedPlayers()
         {
             EntitySpawnSystem spawnSystem = SystemLocator.Get<EntitySpawnSystem>();
 
@@ -54,7 +54,7 @@ namespace SS3D.Systems.Lobby.UI
             }
         }
 
-        private async void SyncRoundState(RoundState roundState)
+        private void SyncRoundState(RoundState roundState)
         {
             EntitySpawnSystem spawnSystem = SystemLocator.Get<EntitySpawnSystem>();
 
