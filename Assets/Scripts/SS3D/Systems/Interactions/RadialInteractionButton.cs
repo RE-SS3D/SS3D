@@ -16,10 +16,15 @@ namespace SS3D.Systems.Interactions
         [SerializeField] private Image _interactionIcon;
         [SerializeField] private Button _button;
 
-        public Button.ButtonClickedEvent Pressed => _button.onClick;
-        public IInteraction Interaction { get; private set; }
+        private IInteraction _interaction;
 
-        public event Action<IInteraction> OnInteractionSelected;
+        public IInteraction Interaction
+        {
+            get { return _interaction; }
+        }
+
+        public Button.ButtonClickedEvent Pressed => _button.onClick;
+        public event Action<IInteraction, RadialInteractionButton> OnInteractionSelected;
         public event Action<GameObject, IInteraction> OnHovered;
 
         private const float MinimumThreshold = 0.5f;
@@ -42,7 +47,7 @@ namespace SS3D.Systems.Interactions
             _interactionIcon.enabled = true;
             _interactionIcon.sprite = interactionItem.Icon;
             _interactionNameText.SetText(interactionItem.InteractionName);
-            Interaction = interactionItem.Interaction;
+            _interaction = interactionItem.Interaction;
 
             Pressed.AddListener(HandleButtonPressed);
 
@@ -51,7 +56,7 @@ namespace SS3D.Systems.Interactions
 
         private void HandleButtonPressed()
         {
-            OnInteractionSelected?.Invoke(Interaction);
+            OnInteractionSelected?.Invoke(_interaction, this);
         }
 
         public void Reset()
@@ -60,7 +65,7 @@ namespace SS3D.Systems.Interactions
             _interactionIcon.enabled = false;
             _interactionIcon.sprite = null;
             _interactionNameText.SetText(string.Empty);
-            Interaction = null;
+            _interaction = null;
 
             Pressed.RemoveListener(HandleButtonPressed);
 
@@ -69,7 +74,7 @@ namespace SS3D.Systems.Interactions
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            OnHovered?.Invoke(GameObjectCache, Interaction);
+            OnHovered?.Invoke(GameObjectCache, _interaction);
         }
     }
 }

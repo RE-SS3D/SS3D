@@ -14,7 +14,7 @@ namespace SS3D.Systems.Interactions
     /// </summary>
     public sealed class RadialInteractionView : Core.Behaviours.System
     {
-        public event Action<IInteraction> OnInteractionSelected;
+        public event Action<IInteraction, RadialInteractionButton> OnInteractionSelected;
 
         [Header("UI")]
         [SerializeField] private CanvasGroup _canvasGroup;
@@ -73,13 +73,12 @@ namespace SS3D.Systems.Interactions
             _selectedObject = button;
         }
 
-        private void HandleInteractionButtonPressed(IInteraction interaction)
+        private void HandleInteractionButtonPressed(IInteraction interaction, RadialInteractionButton radialInteractionButton)
         {
-            RadialInteractionButton radialInteractionButton = _interactionButtons.Find(interactionButton => interactionButton.Interaction == interaction);
             radialInteractionButton.OnInteractionSelected -= HandleInteractionButtonPressed;
 
             Disappear();
-            OnInteractionSelected?.Invoke(interaction);
+            OnInteractionSelected?.Invoke(interaction, radialInteractionButton);
         }
 
         /// <summary>
