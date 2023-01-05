@@ -122,8 +122,9 @@ namespace SS3D.Systems.Interactions
             
             if (interactions.Count <= 0) { return; }
 
-            void handleInteractionSelected(IInteraction interaction)
+            void handleInteractionSelected(IInteraction interaction, RadialInteractionButton _)
             {
+                _radialView.OnInteractionSelected -= handleInteractionSelected;
                 string interactionName = interaction.GetName(interactionEvent);
 
                 CmdRunInteraction(ray, interactionName);
@@ -168,7 +169,7 @@ namespace SS3D.Systems.Interactions
 
                 _radialView.SetInteractions(interactions, interactionEvent, mousePosition);
 
-                void handleInteractionSelected(IInteraction interaction)
+                void handleInteractionSelected(IInteraction interaction, RadialInteractionButton _)
                 {
                     int index = entries.FindIndex(x => x.Interaction == interaction);
                     string interactionName = interaction.GetName(interactionEvent);
