@@ -5,9 +5,13 @@ using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
 {
+    /// <summary>
+    /// Asset database for all the interaction icons
+    /// </summary>
     [CreateAssetMenu(menuName = "AssetData/InteractionIcons", fileName = "InteractionIcons")]
     public class InteractionIconsAssetDatabase : GenericAssetDatabase
     {
+
         public override void PreloadAssets()
         {
             PreloadAssets<Sprite>();

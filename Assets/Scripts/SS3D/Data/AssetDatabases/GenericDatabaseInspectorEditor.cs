@@ -1,6 +1,5 @@
 ﻿#if UNITY_EDITOR
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using SS3D.CodeGeneration;
@@ -28,6 +27,18 @@ namespace SS3D.Data.AssetDatabases
             GUILayoutOption iconWidthConstraint = GUILayout.MaxWidth(200.0f);
             GUILayoutOption iconHeightConstraint = GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight);
 
+            GUIStyle labelStyle = new()
+            {
+                fontStyle = FontStyle.Bold, 
+                normal =
+                {
+                    textColor = Color.white
+                },
+                padding = new RectOffset(0, 0, 10, 10),
+            };
+
+            GUILayout.Label("Enum writer settings", labelStyle);
+
             if (GUILayout.Button($"Set enum creation path", iconWidthConstraint, iconHeightConstraint))
             {
                 if (TryOpenFolderPathInsideAssetsFolder(null, Application.dataPath, null, out string result))
@@ -45,8 +56,10 @@ namespace SS3D.Data.AssetDatabases
 
             if (GUILayout.Button($"Create enum", GUILayout.Width(200)))
             {
-                EnumCreator.CreateAtPath(_assetDatabase.EnumPath, _assetDatabase.EnumName, _assetDatabase.Assets);
+                EnumCreator.CreateAtPath(_assetDatabase.EnumPath, _assetDatabase.EnumName, _assetDatabase.Assets, _assetDatabase.EnumNamespaceName);
             }
+
+            GUILayout.Label("Asset database settings", labelStyle);
 
             base.OnInspectorGUI();
         }

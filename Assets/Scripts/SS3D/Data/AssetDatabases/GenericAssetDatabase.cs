@@ -6,17 +6,19 @@ using UnityEngine.AddressableAssets;
 namespace SS3D.Data.AssetDatabases
 {
     /// <summary>
-    /// Generic database class, used to create
+    /// Generic database class, used to create asset databases.
     /// </summary>                                             s
-    /// <typeparam name="T"></typeparam>
-    // [CreateAssetMenu(menuName = "AssetData/InteractionIcons", fileName = "InteractionIcons")]
     public class GenericAssetDatabase : ScriptableSettings
     {
-        public string EnumPath = @"Assets\Scripts\SS3D\Data\Enums";
+        public string EnumPath = @"\Scripts\SS3D\Data\Enums";
+        public string EnumNamespaceName = "SS3D.Data.Enums";
         public string EnumName;
 
         public List<AssetReference> Assets;
-
+                   
+        /// <summary>
+        /// Pre-loads all the assets in the database in memory.
+        /// </summary>
         public virtual void PreloadAssets()
         {
 
@@ -25,7 +27,7 @@ namespace SS3D.Data.AssetDatabases
         /// <summary>
         /// Pre-loads assets in memory.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of asset to load.</typeparam>
         protected void PreloadAssets<T>() where T : Object
         {
             foreach (AssetReference assetReference in Assets)
@@ -36,6 +38,8 @@ namespace SS3D.Data.AssetDatabases
 
         /// <summary>
         /// Gets an asset based on its ID (index).
+        ///
+        /// WARNING: Not sure how
         /// </summary>
         /// <param name="icon"></param>
         /// <typeparam name="T"></typeparam>
