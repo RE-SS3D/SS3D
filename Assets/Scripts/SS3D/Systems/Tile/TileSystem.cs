@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using FishNet.Object;
 using SS3D.Core.Behaviours;
 using UnityEditor;
 using UnityEngine;
@@ -87,27 +86,15 @@ namespace SS3D.Systems.Tile
             OnTileManagerLoaded?.Invoke();
         }
 
-        public override void OnStartServer()
-        {
-            base.OnStartServer();
-
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            if (_instance != null && _instance != this)
-            {
-                Debug.LogWarning("Duplicate TileManager found on OnValidate().");
-            }
-            else
-            {
-                _instance = this;
-                EditorApplication.delayCall += () => {
-                    if (this)
-                        Reinitialize();
-                };
-
-            }
+            EditorApplication.delayCall += () => {
+                if (this)
+                    Reinitialize();
+            };
         }
+#endif
 
         /// <summary>
         /// Adds a new TileMap. Should only be called from the Editor.

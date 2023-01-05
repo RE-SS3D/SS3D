@@ -119,8 +119,8 @@ namespace SS3D.Systems.Tile.Connections
                 return;
             }
 
-            EnsureInit();
-            _adjacencyMap.DeserializeFromByte(newValue);
+            Initialize();
+            _adjacencyMap.Connections = AdjacencyMap.DeserializeFromByte(newValue);
             UpdateMeshAndDirection();
         }
 
@@ -128,7 +128,7 @@ namespace SS3D.Systems.Tile.Connections
         /// Syncs blocked connections with clients. Use this function to modify the attribute.
         /// </summary>
         /// <param name="newConnections"></param>
-        private void SyncBlockedConnections(byte newConnections)
+        private void SyncBlockedConnections(byte oldConnections, byte newConnections, bool asServer)
         {
             UpdateMeshAndDirection();
         }
@@ -139,8 +139,8 @@ namespace SS3D.Systems.Tile.Connections
         public override void OnStartClient()
         {
             base.OnStartClient();
-            EnsureInit();
-            SyncBlockedConnections(EditorBlockedConnections);
+            Initialize();
+            SyncBlockedConnections(EditorBlockedConnections, EditorBlockedConnections, false);
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace SS3D.Systems.Tile.Connections
         public void SetBlockedDirection(Direction dir, bool value)
         {
             _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, value));
-            SyncBlockedConnections(_adjacencyMap.SerializeToByte());
+            SyncBlockedConnections(_adjacencyMap.SerializeToByte(), _adjacencyMap.SerializeToByte(), false);
             EditorBlockedConnections = BlockedConnections;
             _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, !value));
             UpdateMeshAndDirection();
@@ -296,7 +296,7 @@ namespace SS3D.Systems.Tile.Connections
         /// </summary>
         public void UpdateBlockedFromEditor()
         {
-            SyncBlockedConnections(EditorBlockedConnections);
+            SyncBlockedConnections(EditorBlockedConnections, EditorBlockedConnections, false);
         }
 
         /// <summary>
