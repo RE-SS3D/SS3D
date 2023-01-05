@@ -5,7 +5,9 @@ using System.Reflection;
 using Coimbra;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
+using SS3D.Logging;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace SS3D.Data
 {
@@ -24,13 +26,26 @@ namespace SS3D.Data
         public static Sprite Get(InteractionIcons icon) => FindDatabase<InteractionIconsAssetDatabase>().Get(icon);
 
         /// <summary>
+        /// Gets something by ID only, useful for adding stuff on databases at runtime, as in modded versions of the game.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <typeparam name="TAssetDatabase">The asset database you want to get.</typeparam>
+        /// <typeparam name="TAssetType">The asset type you want returned.</typeparam>
+        /// <returns>The loaded asset in the TAssetType type.</returns>
+        public static TAssetType GetById<TAssetDatabase, TAssetType>(int id) where TAssetDatabase : GenericAssetDatabase where TAssetType : Object
+        {
+            return FindDatabase<TAssetDatabase>().Get<TAssetType>(id);
+        }
+
+        /// <summary>
         /// Initializes all asset databases in the project.
         /// </summary>
         public static void InitializeAssetDatabases()
         {
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            IEnumerable<Type> types = assemblies.SelectMany(assembly => assembly.GetTypes()).ToList();
-            IEnumerable<Type> genericDatabaseInheritors = types.Where(type => type.IsSubclassOf(typeof(GenericAssetDatabase)));
+
+            List<Type> types = assemblies.SelectMany(assembly => assembly.GetTypes()).ToList();
+            List<Type> genericDatabaseInheritors = types.Where(type => type.IsSubclassOf(typeof(GenericAssetDatabase))).ToList();
 
             foreach (Type genericDatabase in genericDatabaseInheritors)
             {
@@ -39,6 +54,8 @@ namespace SS3D.Data
 
                 Databases.Add(genericDatabase, (GenericAssetDatabase)databaseAsset);
             }
+
+            Punpun.Say(typeof(AssetData), $"{genericDatabaseInheritors.Count} Asset Databases initialized", Logs.Important);
         }
 
         /// <summary>
@@ -48,7 +65,12 @@ namespace SS3D.Data
         /// <returns></returns>
         private static T FindDatabase<T>() where T : GenericAssetDatabase
         {
-            Databases.TryGetValue(typeof(T), out GenericAssetDatabase database);
+            bool databaseExists = Databases.TryGetValue(typeof(T), out GenericAssetDatabase database);
+
+            if (!databaseExists)
+            {
+                Punpun.Yell(typeof(AssetData), $"Database of type {typeof(T)} not found", Logs.Important);
+            }
 
             return (T)database;
         }

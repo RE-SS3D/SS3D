@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace SS3D.Core.Utils
 {
     /// <summary>
@@ -9,6 +11,8 @@ namespace SS3D.Core.Utils
         /// Unique client key, originally used in BYOND's user management, nostalgically used
         /// </summary>
         public static string Ckey { get; private set; }
+
+        public static GameObject PlayerObject;
 
         public static void UpdateCkey(string ckey)
         {

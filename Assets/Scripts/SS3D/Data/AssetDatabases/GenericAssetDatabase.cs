@@ -12,7 +12,9 @@ namespace SS3D.Data.AssetDatabases
     // [CreateAssetMenu(menuName = "AssetData/InteractionIcons", fileName = "InteractionIcons")]
     public class GenericAssetDatabase : ScriptableSettings
     {
+        public string EnumPath = @"Assets\Scripts\SS3D\Data\Enums";
         public string EnumName;
+
         public List<AssetReference> Assets;
 
         public virtual void PreloadAssets()
@@ -38,7 +40,7 @@ namespace SS3D.Data.AssetDatabases
         /// <param name="icon"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        protected T Get<T>(int icon) where T : Object
+        public T Get<T>(int icon) where T : Object
         {
             return Assets[icon].Asset as T;
         }

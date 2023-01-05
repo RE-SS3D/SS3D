@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SS3D.Data;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -10,6 +11,8 @@ namespace SS3D.CodeGeneration
 {
     public static class EnumCreator
     {
+        private static readonly Regex SlashRegex = new(@"[\\//]");
+
 #if UNITY_EDITOR
         /// <summary>
         /// Creates an enum in the object path, with the defined enum name and using a list of provided assets as its elements.
@@ -24,12 +27,23 @@ namespace SS3D.CodeGeneration
             CodeWriter.WriteEnum(GetAssetPath(assetPathSource), enumName, enums);
         }
 
+        public static void CreateAtPath(string path, string enumName, IEnumerable<AssetReference> assets)
+        {
+            IEnumerable<string> enums = assets.Select(reference => reference.SubObjectName);
+
+            string dataPath = Application.dataPath;
+            string fullPath = dataPath + path;
+
+            CodeWriter.WriteEnum(fullPath, enumName, enums);
+            EditorWindow.focusedWindow.ShowNotification(new GUIContent($"{enumName} enum created at {path}."));
+        }
+
         private static string GetAssetPath(ScriptableObject assetPathSource)
         {
             MonoScript ms = MonoScript.FromScriptableObject(assetPathSource);
             string path = AssetDatabase.GetAssetPath(ms);
 
-            string fullPath = Directory.GetParent(path)?.FullName;
+            string fullPath = Directory.GetParent(path)?.FullName;                   
 
             return fullPath;
         }
