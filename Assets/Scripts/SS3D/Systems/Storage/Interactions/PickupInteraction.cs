@@ -9,6 +9,8 @@ using UnityEngine;
 using SS3D.Core;
 using SS3D.Systems.PlayerControl;
 using FishNet.Object;
+using SS3D.Data.AssetDatabases;
+using SS3D.Data.Enums;
 
 namespace SS3D.Systems.Storage.Interactions
 {
@@ -31,7 +33,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Database.Icons.Get(InteractionIcons.Take);
+            return Icon != null ? Icon : AssetData.Get(InteractionIcons.Take);
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -48,7 +50,7 @@ namespace SS3D.Systems.Storage.Interactions
                 {
                     return true;
                 }
-                
+
 		        // we try to get the Item component from the GameObject we just interacted with
 		        // you can only pickup items (for now, TODO: we have to consider people too), which makes sense
                 Item item = targetBehaviour.GameObject.GetComponent<Item>();

@@ -1,4 +1,6 @@
 ﻿using SS3D.Data;
+using SS3D.Data.AssetDatabases;
+using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
@@ -20,7 +22,7 @@ namespace SS3D.Systems.Storage.Interactions
         {
             ContainerDescriptor = containerDescriptor;
         }
-        
+
         public IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
             return new ClientDelayedInteraction();
@@ -33,7 +35,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Database.Icons.Get(InteractionIcons.Open);
+            return Icon != null ? Icon : AssetData.Get(InteractionIcons.Open);
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -48,13 +50,13 @@ namespace SS3D.Systems.Storage.Interactions
             {
                 return false;
             }
-            
+
             Inventory inventory = interactionEvent.Source.GetComponentInTree<Inventory>();
             if (inventory == null)
             {
                 return false;
             }
-            
+
             PlayerControllable entity = interactionEvent.Source.GetComponentInTree<PlayerControllable>();
             if (entity == null)
             {
@@ -67,7 +69,7 @@ namespace SS3D.Systems.Storage.Interactions
         {
             Inventory inventory = interactionEvent.Source.GetComponentInTree<Inventory>();
             AttachedContainer attachedContainer = ContainerDescriptor.AttachedContainer;
-            
+
             inventory.OpenContainer(attachedContainer);
 
             return false;

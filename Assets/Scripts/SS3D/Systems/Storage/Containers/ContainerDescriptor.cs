@@ -1,6 +1,8 @@
 using FishNet;
 using FishNet.Connection;
 using SS3D.Data;
+using SS3D.Data.AssetDatabases;
+using SS3D.Data.Enums;
 using SS3D.Storage.Containers;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Storage.UI;
@@ -11,9 +13,9 @@ namespace SS3D.Systems.Storage.Containers
 {
     /// <summary>
     /// ContainerDescriptor manages every aspect of a container attached to a gameObject.
-    /// It's purpose is to centralize all relevant aspect of a container, it should be the only component one has to deal with when 
+    /// It's purpose is to centralize all relevant aspect of a container, it should be the only component one has to deal with when
     /// adding containers to a game object.
-    /// 
+    ///
     /// Warning: Many attributes should be private instead of public. They are currently public because ContainerDescriptorEditor
     /// needs to acces them directly, not through accessors or properties.
     ///
@@ -27,7 +29,7 @@ namespace SS3D.Systems.Storage.Containers
         public ContainerItemDisplay ContainerItemDisplay;
         // reference towards the container UI linked to this container.
         public ContainerUi ContainerUi;
-        
+
         // Open interaction icon, visible when opening a container.
         public Sprite OpenIcon;
         // Take interaction icon, visible when taking something from a container.
@@ -49,7 +51,7 @@ namespace SS3D.Systems.Storage.Containers
         public bool OpenWhenContainerViewed;
         /// <summary> Defines the size of the container, every item takes a defined place inside a container. </summary>
         public Vector2Int Size = new(0,0);
-        
+
         /// <summary>
         /// Set visibility of objects inside the container (not in the UI, in the actual game object).
         /// If the container is Hidden, the visibility of items is always off.
@@ -58,7 +60,7 @@ namespace SS3D.Systems.Storage.Containers
         public bool HideItems = true;
         /// <summary> If items should be attached as children. </summary>
         public bool AttachItems = true;
-        
+
         /// <summary> The initial filter of the container. Controls what can go in the container. </summary>
         public bool Initialized;
         /// <summary> max distance at which the container is visible if not hidden </summary>
@@ -76,17 +78,17 @@ namespace SS3D.Systems.Storage.Containers
         public int NumberDisplay;
 
         private float _lastObserverCheck;
-        
+
         public void Awake()
         {
             // create a new container of Size size
             Assert.IsNotNull(AttachedContainer);
 
             // If container interactions icon are not defined at start, load default icons.
-            OpenIcon = Database.Icons.Get(InteractionIcons.Open);
-            TakeIcon = Database.Icons.Get(InteractionIcons.Take);
-            StoreIcon = Database.Icons.Get(InteractionIcons.Take);
-            ViewIcon = Database.Icons.Get(InteractionIcons.Open);
+            OpenIcon = AssetData.Get(InteractionIcons.Open);
+            TakeIcon = AssetData.Get(InteractionIcons.Take);
+            StoreIcon = AssetData.Get(InteractionIcons.Take);
+            ViewIcon = AssetData.Get(InteractionIcons.Open);
         }
     }
 }

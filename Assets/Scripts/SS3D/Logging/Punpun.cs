@@ -1,4 +1,5 @@
-﻿using SS3D.Utils;
+﻿using System;
+using SS3D.Utils;
 using UnityEngine;
 
 namespace SS3D.Logging
@@ -16,7 +17,9 @@ namespace SS3D.Logging
         /// <param name="logs">type of log</param>
         public static void Say(object sender, string message, Logs logs = Logs.Generic, bool colorizeEverything = false)
         {
-            Debug.Log(ProcessDebug(sender, message, logs, colorizeEverything));
+            string debug = ProcessDebug(sender, message, logs, colorizeEverything);
+
+            Debug.Log(debug);
         }
 
         /// <summary>
@@ -27,7 +30,9 @@ namespace SS3D.Logging
         /// <param name="logs">type of log</param>
         public static void Yell(object sender, string message, Logs logs = Logs.Generic, bool colorizeEverything = false)
         {
-            Debug.LogWarning(ProcessDebug(sender, message, logs, colorizeEverything));
+            string debug = ProcessDebug(sender, message, logs, colorizeEverything);
+
+            Debug.LogWarning(debug);
         }
 
         /// <summary>
@@ -38,7 +43,9 @@ namespace SS3D.Logging
         /// <param name="logs">type of log</param>
         public static void Panic(object sender, string message, Logs logs = Logs.Generic, bool colorizeEverything = false)
         {
-            Debug.LogError(ProcessDebug(sender, message, logs, colorizeEverything));
+            string debug = ProcessDebug(sender, message, logs, colorizeEverything);
+
+            Debug.LogError(debug);
         }
 
         private static string ProcessDebug(object sender, string message, Logs logs = Logs.Generic, bool colorizeEverything = false)
@@ -54,7 +61,7 @@ namespace SS3D.Logging
                 message.Colorize(color);
             }
 
-            string log = $"{author} - {message}";
+            string log = $"{author} {message}";
 
             return log;
         }

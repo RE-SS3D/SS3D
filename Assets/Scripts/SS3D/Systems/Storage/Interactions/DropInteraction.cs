@@ -1,5 +1,7 @@
 ﻿using System;
 using SS3D.Data;
+using SS3D.Data.AssetDatabases;
+using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
@@ -26,7 +28,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : Database.Icons.Get(InteractionIcons.Discard);
+            return Icon != null ? Icon : AssetData.Get(InteractionIcons.Discard);
         }
 
         public bool CanInteract(InteractionEvent interactionEvent)
@@ -49,7 +51,7 @@ namespace SS3D.Systems.Storage.Interactions
 		        // we place the item in the hand in the point we clicked
                 hands.PlaceHeldItem(interactionEvent.Point, hands.ItemInHand.transform.rotation);
             }
-            
+
             return false;
         }
 
