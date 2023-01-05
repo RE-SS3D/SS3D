@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using SS3D.Core.Behaviours;
-using SS3D.Core.Utils;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Utils;
 using UnityEngine;
 
 namespace SS3D.Systems.Interactions
@@ -57,9 +56,9 @@ namespace SS3D.Systems.Interactions
             }
 
             UpdateIndicator();
-        }   
+        }
 
-        private void Setup()                            
+        private void Setup()
         {
             Interactions = new List<IInteraction>();
 
@@ -150,8 +149,7 @@ namespace SS3D.Systems.Interactions
             Position = screenPos;
 
             _selectedObject = _interactionButtons.First().GameObjectCache;
-            Interactions.First();
-            
+
             UpdateIndicator();
 
             _scaleSequence?.Kill();
@@ -164,7 +162,7 @@ namespace SS3D.Systems.Interactions
                 .Append(TransformCache
                 .DOScale(1, ScaleDuration)
                 .SetEase(Ease.OutCirc));
-            
+
             _fadeSequence
                 .Append(_canvasGroup
                 .DOFade(1, ScaleDuration)
@@ -191,7 +189,7 @@ namespace SS3D.Systems.Interactions
                 .Append(TransformCache
                 .DOScale(0, ScaleDuration)
                 .SetEase(Ease.OutCirc));
-            
+
             _fadeSequence.Append(_canvasGroup
                 .DOFade(0, ScaleDuration)
                 .SetEase(Ease.OutElastic));
@@ -200,10 +198,10 @@ namespace SS3D.Systems.Interactions
             _fadeSequence.Play();
 
             _canvasGroup.interactable = false;
- 
+
             ResetInteractionsMenu();
         }
-        
+
         /// <summary>
         /// Clears the interactions menu
         /// </summary>

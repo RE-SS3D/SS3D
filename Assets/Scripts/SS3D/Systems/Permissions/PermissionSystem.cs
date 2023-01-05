@@ -59,6 +59,14 @@ namespace SS3D.Systems.Permissions
                 LoadPermissions();
             }
 
+            if (string.IsNullOrEmpty(ckey))
+            {
+                Punpun.Yell(this, "Ckey null while trying to get user role");
+
+                userPermission = ServerRoleTypes.None;
+                return false;
+            }
+
             bool containsKey = _userPermissions.ContainsKey(ckey);
             userPermission = containsKey ? _userPermissions[ckey] : ServerRoleTypes.None;
 
@@ -68,7 +76,7 @@ namespace SS3D.Systems.Permissions
         [Server]
         public void ChangeUserPermission(string ckey, ServerRoleTypes role)
         {
-            // TODO: This            
+            // TODO: This
             // Add new user permission to list
             // Add new user permission to text file
         }

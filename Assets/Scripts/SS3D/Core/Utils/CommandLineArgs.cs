@@ -1,18 +1,17 @@
 namespace SS3D.Core.Utils
 {
     /// <summary>
-    /// Stores all the constants for CMD arguments for easy access and readability
-    ///
-    /// For bool args simply add the arg 
+    /// Stores all the constants for CMD arguments for easy access and readability.
+    /// For bool args simply add the arg.
     /// </summary>
     public static class CommandLineArgs
     {
         /// <summary>
-        /// The "-serveronly" arg in the executable
+        /// The "-serveronly" arg in the executable.
         /// </summary>
         public const string ServerOnly = "-serveronly";
         /// <summary>
-        /// The "-host" arg in the executable
+        /// The "-host" arg in the executable.
         /// </summary>
         public const string Host = "-host";
         /// <summary>
@@ -22,8 +21,7 @@ namespace SS3D.Core.Utils
         /// <summary>
         /// String.
         /// This is temporary, in production use, this will not exist,
-        /// and be replaced by the token, and then the server will get the
-        /// Username.
+        /// and be replaced by the token, and then the server will get the Username.
         /// </summary>
         public const string Ckey = "-ckey=";
         /// <summary>
@@ -33,12 +31,12 @@ namespace SS3D.Core.Utils
         public const string AccessToken = "-token=";
         /// <summary>
         /// Bool.
-        /// Skips the intro
+        /// Skips the intro.
         /// </summary>
         public const string SkipIntro = "-skipintro";
         /// <summary>
         /// Bool.
-        /// Disables the discord integration
+        /// Disables the discord integration.
         /// </summary>
         public const string EnableDiscordIntegration = "-enablediscordintegration";
     }
