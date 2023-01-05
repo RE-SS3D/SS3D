@@ -1,6 +1,7 @@
 using Coimbra;
 using DG.Tweening;
 using SS3D.Data;
+using SS3D.Data.AssetDatabases;
 using UDiscord;
 using UnityEditor.VersionControl;
 using UnityEngine;
@@ -44,7 +45,7 @@ namespace SS3D.Core
             {
                 FindObjectOfType<DiscordManager>().Destroy();
             }
-            AssetData.InitializeAssets();
+            AssetData.InitializeAssetDatabases();
         }
 
         public void InitializeApplication()

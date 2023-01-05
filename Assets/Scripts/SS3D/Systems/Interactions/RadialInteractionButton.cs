@@ -16,9 +16,9 @@ namespace SS3D.Systems.Interactions
         [SerializeField] private Image _interactionIcon;
         [SerializeField] private Button _button;
 
-        private IInteraction _interaction;
-
         public Button.ButtonClickedEvent Pressed => _button.onClick;
+        public IInteraction Interaction { get; private set; }
+
         public event Action<IInteraction> OnInteractionSelected;
         public event Action<GameObject, IInteraction> OnHovered;
 
@@ -42,7 +42,7 @@ namespace SS3D.Systems.Interactions
             _interactionIcon.enabled = true;
             _interactionIcon.sprite = interactionItem.Icon;
             _interactionNameText.SetText(interactionItem.InteractionName);
-            _interaction = interactionItem.Interaction;
+            Interaction = interactionItem.Interaction;
 
             Pressed.AddListener(HandleButtonPressed);
 
@@ -51,7 +51,7 @@ namespace SS3D.Systems.Interactions
 
         private void HandleButtonPressed()
         {
-            OnInteractionSelected?.Invoke(_interaction);
+            OnInteractionSelected?.Invoke(Interaction);
         }
 
         public void Reset()
@@ -60,7 +60,7 @@ namespace SS3D.Systems.Interactions
             _interactionIcon.enabled = false;
             _interactionIcon.sprite = null;
             _interactionNameText.SetText(string.Empty);
-            _interaction = null;
+            Interaction = null;
 
             Pressed.RemoveListener(HandleButtonPressed);
 
@@ -69,7 +69,7 @@ namespace SS3D.Systems.Interactions
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            OnHovered?.Invoke(GameObjectCache, _interaction);
+            OnHovered?.Invoke(GameObjectCache, Interaction);
         }
     }
 }

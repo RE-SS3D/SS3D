@@ -76,6 +76,9 @@ namespace SS3D.Systems.Interactions
 
         private void HandleInteractionButtonPressed(IInteraction interaction)
         {
+            RadialInteractionButton radialInteractionButton = _interactionButtons.Find(interactionButton => interactionButton.Interaction == interaction);
+            radialInteractionButton.OnInteractionSelected -= HandleInteractionButtonPressed;
+
             Disappear();
             OnInteractionSelected?.Invoke(interaction);
         }

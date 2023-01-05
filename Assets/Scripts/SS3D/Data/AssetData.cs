@@ -1,49 +1,56 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Coimbra;
-using UnityEditor;
+using SS3D.Data.AssetDatabases;
+using SS3D.Data.Enums;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace SS3D.Data
 {
+    /// <summary>
+    /// Asset data is used to load stuff via Addressables, with the addition of an enum generator for easy "id" of items.
+    /// </summary>
     public static class AssetData
     {
-        private static InteractionIconsDatabase _interactionIcons;
+        /// <summary>
+        /// All loaded databases.
+        /// </summary>
+        private static readonly Dictionary<Type, GenericAssetDatabase> Databases = new();
 
-        public static Sprite Get(InteractionIcons icon) => _interactionIcons.Get(icon);
+        // IMPORTANT: All database getters have to be added manually. For now.
 
-        public static void InitializeAssets()
+        public static Sprite Get(InteractionIcons icon) => FindDatabase<InteractionIconsAssetDatabase>().Get(icon);
+
+        /// <summary>
+        /// Initializes all asset databases in the project.
+        /// </summary>
+        public static void InitializeAssetDatabases()
         {
-            InitializeInteractionIcons();
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            IEnumerable<Type> types = assemblies.SelectMany(assembly => assembly.GetTypes()).ToList();
+            IEnumerable<Type> genericDatabaseInheritors = types.Where(type => type.IsSubclassOf(typeof(GenericAssetDatabase)));
+
+            foreach (Type genericDatabase in genericDatabaseInheritors)
+            {
+                ScriptableSettings.TryGet(genericDatabase, out ScriptableSettings databaseAsset);
+                ((GenericAssetDatabase)databaseAsset).PreloadAssets();
+
+                Databases.Add(genericDatabase, (GenericAssetDatabase)databaseAsset);
+            }
         }
 
-        public static void InitializeInteractionIcons()
+        /// <summary>
+        /// Helper function to find a database of type T in the database list. Used to link the enum to which database to find.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        private static T FindDatabase<T>() where T : GenericAssetDatabase
         {
-            ScriptableSettings.TryGet(out InteractionIconsDatabase icons);
+            Databases.TryGetValue(typeof(T), out GenericAssetDatabase database);
 
-            _interactionIcons = icons;
-            _interactionIcons.PreloadAssets();
+            return (T)database;
         }
-
-#if UNITY_EDITOR
-        public static void CreateEnum(ScriptableObject assetPathSource, string enumName, List<AssetReference> assets)
-        {
-            IEnumerable<string> enums = assets.Select(reference => reference.SubObjectName);
-
-            CodeWriter.WriteEnum(GetAssetPath(assetPathSource), enumName, enums);
-        }
-
-        private static string GetAssetPath(ScriptableObject assetPathSource)
-        {
-            MonoScript ms = MonoScript.FromScriptableObject(assetPathSource);
-            string path = AssetDatabase.GetAssetPath(ms);
-
-            string fullPath = Directory.GetParent(path)?.FullName;
-
-            return fullPath;
-        }
-#endif
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using SS3D.Data;
+using SS3D.Data.AssetDatabases;
+using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
