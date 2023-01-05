@@ -26,6 +26,7 @@ namespace SS3D.Systems.Storage.UI
 
         public void OnDrop(PointerEventData eventData)
         {
+            if (eventData.button != PointerEventData.InputButton.Left) return;
             GameObject drag = eventData.pointerDrag;
             if (drag == null)
             {
