@@ -253,6 +253,19 @@ namespace SS3D.Systems.GameModes.Modes
         }
 
         /// <summary>
+        /// Ensures that newly created objectives for a late join player have their listeners set.
+        /// </summary>
+        /// <param name="playerCkey">The player that has late joined</param>
+        public void AddEventListenersForLateJoinObjectives(string playerCkey)
+        {
+            List<GamemodeObjective> playerObjectives = GetPlayerObjectives(playerCkey);
+            foreach (GamemodeObjective objective in playerObjectives)
+            {
+                objective.AddEventListeners();
+            }
+        }
+
+        /// <summary>
         /// Creates and assigns an objective to a player.
         /// </summary>
         /// <param name="objective">The objective to assign a player to.</param>

@@ -213,6 +213,7 @@ namespace SS3D.Systems.Gamemodes
             if (newPlayerCkey != null)
             {
                 _gamemode.CreateLateJoinObjective(newPlayerCkey);
+                _gamemode.AddEventListenersForLateJoinObjectives(newPlayerCkey);
             }
         }
 
