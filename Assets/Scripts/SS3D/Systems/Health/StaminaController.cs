@@ -90,13 +90,29 @@ namespace SS3D.Systems.Health
             get => IsServerOnly ? _stamina.CanContinueInteraction : _current > 0f;
         }
 
+        /// <summary>
+        /// The current stamina proportion of the entity (scaled between zero and one).
+        /// </summary>
         public float CurrentStamina
         {
             get => _current;
         }
 
         /// <summary>
+        /// Depletes stamina by a set amount. To be called only from server-side scripts (e.g. Interactions)
+        /// </summary>
+        /// /// <param name="amountToDeplete">The amount of stamina to reduce</param>
+        [Server]
+        public void DepleteStaminaServer(float amountToDeplete)
+        {
+            _stamina.ConsumeStamina(amountToDeplete);
+            _current = _stamina.Current;
+        }
+
+
+        /// <summary>
         /// This method simply takes a value to reduce by, scales it to time and passes it to the server via RPC.
+        /// To be called only from client-side scripts (e.g. Movement)
         /// </summary>
         /// <param name="rawAmountToDeplete">The amount of stamina to reduce per second (not yet scaled to delta time)</param>
         private void DepleteStamina(float rawAmountToDeplete)

@@ -32,6 +32,11 @@ namespace SS3D.Systems.Storage.Items
 
         [SerializeField] private Rigidbody _rigidbody;
 
+        /// <summary>
+        /// The item's relative weight in kilograms.
+        /// </summary>
+        [SerializeField] private float _weight;
+
         [Tooltip("the item prefab, you can click on the item name and drag from Unity's file explorer")]
         public GameObject Prefab;
         [Header("Attachment settings")]
@@ -176,7 +181,9 @@ namespace SS3D.Systems.Storage.Items
 
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] { new PickupInteraction { Icon = _sprite } };
+            return new IInteraction[] { new PickupHeavyInteraction(_weight) { Icon = _sprite } };
+            //return new IInteraction[] { new PickupInteraction { Icon = _sprite } };
+
         }
 
         // this creates the base interactions for an item, in this case, the drop interaction
