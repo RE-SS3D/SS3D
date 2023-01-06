@@ -16,11 +16,6 @@ namespace SS3D.Systems.Health
     public class StaminaController : NetworkActor
     {
         /// <summary>
-        /// Event fired when the stamina is updated.
-        /// </summary>
-        public event Action<float> OnStaminaChanged;
-
-        /// <summary>
         /// The stamina bar UI
         /// </summary>
         private StaminaBarView UI;
@@ -109,7 +104,6 @@ namespace SS3D.Systems.Health
             _current = _stamina.Current;
         }
 
-
         /// <summary>
         /// This method simply takes a value to reduce by, scales it to time and passes it to the server via RPC.
         /// To be called only from client-side scripts (e.g. Movement)
@@ -138,11 +132,6 @@ namespace SS3D.Systems.Health
             if (IsServer)
             {
                 _stamina.RechargeStamina(deltaTime);
-            }
-
-            if (!IsOwner)
-            {
-                return;
             }
         }
 

@@ -15,6 +15,17 @@ namespace SS3D.Systems.Health
         private const float ALLOWABLE_OVERDRAW = 0.1f;
 
         /// <summary>
+        /// Amount of stamina (multiplied by _max) that must be spent to train stamina, leading to a permanent increase in _max.
+        /// </summary>
+        private const float TRAINING_CONSUMPTION_REQUIREMENT = 2f;
+
+        /// <summary>
+        /// How much _max is multiplied by every time it is trained.
+        /// in _max.
+        /// </summary>
+        private const float TRAINING_MULTIPLIER = 1.05f;
+
+        /// <summary>
         /// The current stamina of the entity. This can vary between a lower limit of negative ALLOWABLE_OVERDRAW times _max,
         /// and an upper limit of _max.
         /// </summary>
@@ -72,11 +83,10 @@ namespace SS3D.Systems.Health
             // This method cannot be used to restore stamina.
             if (amount < 0f) return;
 
+            TrainStamina(amount);
+
             // Reduce the stamina
             _current -= amount;
-
-            // Add the consumed stamina to our tally
-            _spent += amount;
         }
 
         /// <inheritdoc />
@@ -84,6 +94,26 @@ namespace SS3D.Systems.Health
         {
             // Ensure current stamina remains no larger than max stamina
             _current = Mathf.Min(_current + deltaTime * _max * _recoveryRate, _max);
+        }
+
+        private void TrainStamina(float staminaConsumed)
+        {
+            // Add the consumed stamina to our tally. We only record stamina that we have, not any overdraw.
+            _spent += Mathf.Max(Mathf.Min(staminaConsumed, _current), 0f);
+
+            // If we have spent sufficient stamina, increase our max capacity.
+            if (_spent > TRAINING_CONSUMPTION_REQUIREMENT * _max)
+            {
+                // Reset the spend counter
+                _spent -= TRAINING_MULTIPLIER * _max;
+
+                // Increase our max stamina capacity
+                _max *= TRAINING_MULTIPLIER;
+
+                // Scale up our current stamina. This is done to prevent visible stamina gap when training.
+                _current *= TRAINING_MULTIPLIER;
+            }
+
         }
     }
 }
