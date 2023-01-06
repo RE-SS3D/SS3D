@@ -28,7 +28,22 @@ namespace SS3D.Systems.Gamemodes.UI
 
             string status = objective.Status == ObjectiveStatus.Success ? "<sprite name=\"approve\">" : "<sprite name=\"deny\">";
             _text.SetText($"{objective.Id} - {objective.Title} {status}");
-            _text.color = objective.Status == ObjectiveStatus.Success ? Color.green : Color.red;
+
+            switch (objective.Status)
+            {
+                case ObjectiveStatus.Success:
+                    _text.color = Color.green;
+                    break;
+                case ObjectiveStatus.Failed:
+                    _text.color = Color.red;
+                    break;
+                case ObjectiveStatus.Cancelled:
+                    _text.color = Color.gray;
+                    break;
+                case ObjectiveStatus.InProgress:
+                    _text.color = Color.yellow;
+                    break;
+            }
         }
     }
 }

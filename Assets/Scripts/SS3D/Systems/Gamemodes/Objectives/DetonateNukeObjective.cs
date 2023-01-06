@@ -14,8 +14,6 @@ namespace SS3D.Systems.Gamemodes.Objectives
         public override void InitializeObjective()
         {
             base.InitializeObjective();
-
-            SetTitle("Kaboom*: Activate the Nuclear Fission Explosive");
         }
 
         /// <inheritdoc />

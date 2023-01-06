@@ -67,10 +67,9 @@ namespace SS3D.Systems.Gamemodes
             // Creates an instance of the SO, to avoid using the file. 
             _gamemode = Instantiate(_gamemode);
 
-            // Subscribe to relevant events
+            // Subscribe to Gamemode events
             _gamemode.OnInitialized += HandleGamemodeInitialized;
             _gamemode.OnFinished += HandleGamemodeFinalized;
-            _gamemode.OnObjectiveUpdated += HandleObjectiveUpdated;
 
             // Get systems we need to load player data
             EntitySpawnSystem entitySpawnSystem = SystemLocator.Get<EntitySpawnSystem>();
@@ -92,6 +91,16 @@ namespace SS3D.Systems.Gamemodes
             {
                 objective.AddEventListeners();
             }
+
+            // Subscribe to Objective events - we cannot do this before initializing the gamemode.
+            _gamemode.OnObjectiveUpdated += HandleObjectiveUpdated;
+
+            // Update all clients with the objectives
+            foreach (GamemodeObjective gamemodeObjective in _gamemode.RoundObjectives)
+            {
+                SendObjectiveToClients(gamemodeObjective);
+            }
+
         }
 
         /// <summary>
@@ -204,6 +213,7 @@ namespace SS3D.Systems.Gamemodes
             if (newPlayerCkey != null)
             {
                 _gamemode.CreateLateJoinObjective(newPlayerCkey);
+                _gamemode.AddEventListenersForLateJoinObjectives(newPlayerCkey);
             }
         }
 

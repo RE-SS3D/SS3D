@@ -15,11 +15,61 @@ namespace SS3D.Systems.Gamemodes
         public event Action<GamemodeObjective> OnGamemodeObjectiveUpdated;
 
         private int _id;
-        private string _title;
+        [SerializeField] private string _title;
+        [SerializeField] private CollaborationType _collaborationType;
+        [SerializeField] private Alignment _alignmentRequirement;
+        [SerializeField] private int _minAssignees = 1;
+        [SerializeField] private int _maxAssignees = 1;
         private ObjectiveStatus _status;
         private string _assigneeCkey;
 
         [SerializeField] public List<IEvent> ListensToEvent;
+
+        /// <summary>
+        /// No-arg constructor
+        /// </summary>
+        public GamemodeObjective()
+        {
+        }
+
+        /// <summary>
+        /// Constructor allowing creation of specific objective data.
+        /// </summary>
+        /// <param name="title">Title of the objective (visible to player)</param>
+        /// <param name="collaborationType">Whether the objective is individual, competitive or cooperative</param>
+        /// <param name="alignment">Whether the objective is valid for antagonists, non-antagonists or both</param>
+        /// <param name="minAssignees">Minimum number of players required for this objective</param>
+        /// <param name="maxAssignees">Maximum number of players required for this objective</param>
+        public GamemodeObjective(string title, CollaborationType collaborationType, Alignment alignment, int minAssignees, int maxAssignees)
+        {
+            _title = title;
+            _collaborationType = collaborationType;
+            _alignmentRequirement = alignment;
+            _minAssignees = Math.Max(minAssignees, 1);
+            _maxAssignees = Math.Max(maxAssignees, _minAssignees);
+        }
+
+        public CollaborationType CollaborationType => _collaborationType;
+
+        public Alignment AlignmentRequirement => _alignmentRequirement;
+
+        /// <summary>
+        /// The minimum number of assignees for this objective
+        /// </summary>
+        public int MinAssignees
+        {
+            get => _minAssignees;
+            set => _minAssignees = value;
+        }
+
+        /// <summary>
+        /// The maximum number of assignees for this objective
+        /// </summary>
+        public int MaxAssignees
+        {
+            get => _maxAssignees; 
+            set => _maxAssignees = value;
+        }
 
         /// <inheritdoc />
         public int Id => _id;

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Coimbra.Services.Events;
-using FishNet.Connection;
 using SS3D.Core;
 using SS3D.Systems.GameModes.Events;
 using SS3D.Systems.Items;
@@ -11,25 +10,31 @@ using UnityEngine;
 namespace SS3D.Systems.Gamemodes.Objectives
 {
     /// <summary>
-    /// An objective which the goal is to get the nuke card in hand.
+    /// An objective which the goal is to get a particular item in hand.
     /// A GamemodeObjective that listens to the ItemPickedUpEvent.
     /// </summary>
-    [CreateAssetMenu(menuName = "Gamemode/Objectives/GetNukeCard", fileName = "GetNukeCard")]
-    public class GetNukeCardObjective : GamemodeObjective
+    [CreateAssetMenu(menuName = "Gamemode/Objectives/GetItem", fileName = "GetItem")]
+    public class GetItemObjective : GamemodeObjective
     {
         /// <summary>
-        /// The item that was caught when the objective was completed.
+        /// The item id required to complete the objective.
         /// </summary>
-        private Item _caughtItem;
+        [SerializeField] private string _targetItemId;
 
-        private const string ObjectiveTitle = "Retrieve the Nuclear Authentication Disk";
+        /// <summary>
+        /// The item that was picked up.
+        /// </summary>
+        private string _caughtItemId;
+
+        /// <summary>
+        /// The player that picked up the item.
+        /// </summary>
+        private string _caughtPlayerCkey;
 
         /// <inheritdoc />
         public override void InitializeObjective()
         {
             base.InitializeObjective();
-
-            SetTitle(ObjectiveTitle); 
         }
 
         /// <inheritdoc />
@@ -41,26 +46,24 @@ namespace SS3D.Systems.Gamemodes.Objectives
         /// <inheritdoc />
         public override void FinalizeObjective()
         {
-            if (_caughtItem is not NukeCard)
+            // Confirm correct item has been picked up by the correct player
+            if (!_caughtItemId.Equals(_targetItemId) || !_caughtPlayerCkey.Equals(AssigneeCkey))
             {
                 return;
             }
-
-            List<string> traitors = SystemLocator.Get<GamemodeSystem>().Antagonists;
-
-            if (traitors.Contains(AssigneeCkey))
-            {
-                Succeed();
-            }
+            Succeed();
         }
 
         private void HandleItemPickedUpEvent(ref EventContext context, in ItemPickedUpEvent e)
         {
-            Item item = e.Item;
+            string itemId = e.Item.ItemId;
+            string playerCkey = e.Player;
 
-            if (item is NukeCard)
+            if (itemId.Equals(_targetItemId) && playerCkey.Equals(AssigneeCkey))
             {
-                _caughtItem = item;
+                _caughtItemId = itemId;
+                _caughtPlayerCkey = playerCkey;
+
                 FinalizeObjective();
             }
         }

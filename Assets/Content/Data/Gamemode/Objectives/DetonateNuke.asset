@@ -12,3 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b675f76ccc1bc24bbf37e8d7e589032, type: 3}
   m_Name: DetonateNuke
   m_EditorClassIdentifier: 
+  _title: 'Kaboom*: Activate the Nuclear Fission Explosive'
+  _collaborationType: 1
+  _alignmentRequirement: 1
+  _minAssignees: 1
+  _maxAssignees: 10

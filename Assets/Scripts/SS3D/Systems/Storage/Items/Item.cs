@@ -44,6 +44,7 @@ namespace SS3D.Systems.Storage.Items
         private Container _container;
 
         public Vector2Int Size => _size;
+        public string ItemId => _itemId;
 
         public Sprite InventorySprite
         {

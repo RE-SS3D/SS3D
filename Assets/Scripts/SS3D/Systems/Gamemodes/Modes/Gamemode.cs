@@ -14,6 +14,7 @@ namespace SS3D.Systems.GameModes.Modes
     /// Executes all gamemode related business. Manipulates the gamemode objectives.
     /// All that is run here is server-only.
     /// </summary>
+    [CreateAssetMenu(menuName = "Gamemode/Modes/Gamemode", fileName = "NewGamemode")]
     public class Gamemode : ScriptableObject, IGamemode
     {
         /// <summary>
@@ -44,6 +45,11 @@ namespace SS3D.Systems.GameModes.Modes
         /// The current attributed objectives in a round.
         /// </summary>
         private List<GamemodeObjective> _roundObjectives;
+
+        /// <summary>
+        /// The next objective identifier to be allocated
+        /// </summary>
+        private int _nextObjectiveId;
 
         private bool _isInitialized;
         
@@ -140,35 +146,98 @@ namespace SS3D.Systems.GameModes.Modes
         {
             Punpun.Say(this, "Creating initial objectives", Logs.ServerOnly);
 
+            // Determine the minimum number of assignees (so every gets an objective)
+            int numberOfPlayers = spawnedPlayersCkeys.Count;
+
+            // Populate a list of objective entries
+            CreateRoundStartObjectives(numberOfPlayers);
+
+            // Assign players to those objective entries
+            AssignRoundStartObjectives(spawnedPlayersCkeys);
+        }
+
+        /// <summary>
+        /// Very basic implementation of objective assignment. This method simply assigns 
+        /// pre-generated objectives sequentially to the list of Ckeys. Can be overridden for
+        /// custom objective assignment.
+        /// </summary>
+        /// <param name="ckeysToAssign">List of Ckeys to assign objectives to</param>
+        protected virtual void AssignRoundStartObjectives(List<string> ckeysToAssign)
+        {
+            // Validate that input is correct.
+            if (ckeysToAssign.Count != RoundObjectives.Count)
+            {
+                Punpun.Panic(this, $"Number of objective entries ({RoundObjectives.Count}) and players ({ckeysToAssign.Count}) do not match!");
+            }
+
+            // Sequentially assign objectives
+            for (int i = 0; i < ckeysToAssign.Count; i++)
+            {
+                AssignObjective(RoundObjectives[i], ckeysToAssign[i]);
+            }
+        }
+
+        private void CreateRoundStartObjectives(int amountToCreate)
+        {
             // Clones the possible objectives list, to not alter the base file.
             PossibleObjectives = PossibleObjectives.Clone();
 
-            // Attributes objectives to players while we still have players.
-            while (spawnedPlayersCkeys.Count != 0)
+            // Create all the objectives
+            while (RoundObjectives.Count < amountToCreate)
             {
-                (int, GamemodeObjective) randomObjective = GetRandomObjective();
-                
-                GamemodeObjective objective = randomObjective.Item2;
-                string playerCkey = spawnedPlayersCkeys.First();
+                // Get a possible objective
+                GamemodeObjective objective = GetRandomObjective();
 
-                spawnedPlayersCkeys.RemoveAt(0);
+                // Check validity of that objective
+                bool validObjective = true;
+                if (objective == null)
+                {
+                    // No objective was returned
+                    validObjective = false;    
+                }
+                else if(objective.MinAssignees > amountToCreate - RoundObjectives.Count)
+                {
+                    // We don't have enough players needing objectives to meet min player requirement.
+                    validObjective = false;
+                }
 
-                AssignObjective(objective, playerCkey);
+                // If it is valid, put an entry into RoundObjectives for each player who will be assigned.
+                if (validObjective)
+                {
+                    int listEntries = Math.Min(objective.MaxAssignees, amountToCreate - RoundObjectives.Count);
+                    for (int i = 0; i < listEntries; i++)
+                    {
+                        // Duplicate the objective so that we aren't simply reassigning the same one.
+                        GamemodeObjective duplicateObjective = ObjectiveFactory.Duplicate(objective);
+
+                        // Add it to the round objectives list
+                        AddObjectiveToRoundObjectives(_nextObjectiveId, duplicateObjective);
+                    }
+                    _nextObjectiveId++;
+                }
             }
+        }
+
+        private void AddObjectiveToRoundObjectives(int objectiveId, GamemodeObjective objective)
+        {
+            objective.SetId(objectiveId);
+            objective.InitializeObjective();
+            objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
+            _roundObjectives.Add(objective);
         }
 
         /// <summary>
         /// Gets random objective, IMPORTANT: makes sure the PossiblesObjectives were cloned before calling this.
         /// </summary>
         /// <returns>A random objective and its index in the PossibleObjectives list.</returns>
-        protected virtual (int, GamemodeObjective) GetRandomObjective()
+        protected virtual GamemodeObjective GetRandomObjective()
         {
             int objectivesCount = PossibleObjectives.Count;
             int randomObjectiveIndex = Random.Range(0, objectivesCount);
 
             PossibleObjectives.TryGetAt(randomObjectiveIndex, out GamemodeObjective objective);
 
-            return (randomObjectiveIndex, objective);
+            return objective;
         }
 
         /// <summary>
@@ -177,9 +246,23 @@ namespace SS3D.Systems.GameModes.Modes
         /// <param name="player">The player to assign the objective to.</param>
         public virtual void CreateLateJoinObjective(string playerCkey)
         {
-            (int, GamemodeObjective) objective = GetRandomObjective();
+            GamemodeObjective objective = GetRandomObjective();
+            AddObjectiveToRoundObjectives(_nextObjectiveId, objective);
+            AssignObjective(objective, playerCkey);
+            _nextObjectiveId++;
+        }
 
-            AssignObjective(objective.Item2, playerCkey);
+        /// <summary>
+        /// Ensures that newly created objectives for a late join player have their listeners set.
+        /// </summary>
+        /// <param name="playerCkey">The player that has late joined</param>
+        public void AddEventListenersForLateJoinObjectives(string playerCkey)
+        {
+            List<GamemodeObjective> playerObjectives = GetPlayerObjectives(playerCkey);
+            foreach (GamemodeObjective objective in playerObjectives)
+            {
+                objective.AddEventListeners();
+            }
         }
 
         /// <summary>
@@ -190,12 +273,8 @@ namespace SS3D.Systems.GameModes.Modes
         protected virtual void AssignObjective(GamemodeObjective objective, string playerCkey)
         {
             objective.SetAssignee(playerCkey);
-            objective.SetId(_roundObjectives.Count);
 
-            objective.OnGamemodeObjectiveUpdated += HandleGamemodeObjectiveUpdated;
-            objective.InitializeObjective();
 
-            _roundObjectives.Add(objective);
 
             string title = $"[{objective.Id}/{objective.Title}]";
             string playerName = $"[{playerCkey}]".Colorize(LogColors.Blue);
@@ -223,7 +302,44 @@ namespace SS3D.Systems.GameModes.Modes
         /// <param name="objective">The objective that was updated.</param>
         private void HandleGamemodeObjectiveUpdated(GamemodeObjective objective)
         {
+            FinalizeSharedObjective(objective);
             OnObjectiveUpdated?.Invoke(objective);
+        }
+
+        /// <summary>
+        /// Finalizes any objective that is shared with other players (whether co-opererative or competitive)
+        /// once one of the players has triggered completion.
+        /// </summary>
+        /// <param name="triggerObjective">The objective that was completed</param>
+        private void FinalizeSharedObjective(GamemodeObjective triggerObjective)
+        {
+            // Finalization is only valid if the trigger objective has succeeded, and it is a shared objective. Exit early if invalid.
+            if (triggerObjective.CollaborationType == CollaborationType.Individual || !triggerObjective.Succeeded) return;
+
+            // Find all other objectives that need to be resolved. Exit early if there are none.
+            List<GamemodeObjective> sharedObjectives = _roundObjectives?.Where(sharedObjective => sharedObjective.Id == triggerObjective.Id).ToList();
+            if (sharedObjectives.Count == 0) return;
+
+            // Determine the status of remaining participants
+            ObjectiveStatus statusOfRemainingParticipants;
+            if (triggerObjective.CollaborationType == CollaborationType.Cooperative)
+            {
+                statusOfRemainingParticipants = ObjectiveStatus.Success;
+            }
+            else
+            {
+                statusOfRemainingParticipants = ObjectiveStatus.Failed;
+            }
+
+            // Set the status of remaining participants
+            foreach (GamemodeObjective objective in sharedObjectives)
+            {
+                // Only set the status if In Progress - some may have been cancelled etc.
+                if (objective.InProgress)
+                {
+                    objective.SetStatus(statusOfRemainingParticipants);
+                }
+            }
         }
     }
 }
