@@ -22,6 +22,10 @@ namespace SS3D.Systems.Health.UI
         /// </summary>
         private StaminaController _controller;
 
+        /// <summary>
+        /// Set the slider to the correct value
+        /// </summary>
+        /// <param name="stamina">Proportion of stamina available (in range of 0f to 1f)</param>
         private void SetStamina(float stamina)
         {
             slider.value = stamina;
@@ -32,26 +36,16 @@ namespace SS3D.Systems.Health.UI
             base.OnStart();
         }
 
+        protected override void HandleUpdate(in float deltaTime)
+        {
+            SetStamina(_controller ? _controller.Current : 0f);
+        }
+
+
         public void AssignViewToPlayer(StaminaController staminaController)
         {
-            if (_controller != null) UnsubscribeFromEvents();
+            // Set the internal variable
             _controller = staminaController;
-            SubscribeToEvents();
-        }
-
-        private void OnDestroy()
-        {
-            UnsubscribeFromEvents();
-        }
-
-        private void SubscribeToEvents()
-        {
-            _controller.OnStaminaChanged += SetStamina;
-        }
-
-        private void UnsubscribeFromEvents()
-        {
-            _controller.OnStaminaChanged -= SetStamina;
         }
     }
 }

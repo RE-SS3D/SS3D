@@ -41,17 +41,17 @@ namespace SS3D.Systems.Health
         /// <summary>
         /// Provides a way for the client to access the current player stamina.
         /// </summary>
-        [SyncVar(OnChange = nameof(InvokeStaminaChangeEvent))] private float _current;
+        [SyncVar] private float _current;
+
+        public float Current
+        {
+            get { return _current; }
+        }
 
         /// <summary>
         /// Actual stamina data. Will only exist on the server.
         /// </summary>
         private IStamina _stamina;
-
-        private void InvokeStaminaChangeEvent(float prev, float next, bool asServer)
-        {
-            if (!asServer) OnStaminaChanged.Invoke(_current);
-        }
 
         protected override void OnStart()
         {
@@ -88,6 +88,11 @@ namespace SS3D.Systems.Health
             // require that you stop as soon as you hit zero stamina. This problem will go away once
             // movement is server authoritative because this will only be needed on the server.
             get => IsServerOnly ? _stamina.CanContinueInteraction : _current > 0f;
+        }
+
+        public float CurrentStamina
+        {
+            get => _current;
         }
 
         /// <summary>
