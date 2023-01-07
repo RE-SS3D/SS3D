@@ -30,12 +30,12 @@ namespace SS3D.Systems.Rounds
         /// The current round state.
         /// </summary>
         [Header("Round Information")]
-        [SyncVar(OnChange = "SetRoundState")] [SerializeField] private RoundState _roundState;
+        [SyncVar(OnChange = nameof(SyncRoundState))] [SerializeField] private RoundState _roundState;
 
         /// <summary>
         /// How much time has passed.
         /// </summary>
-        [SyncVar(OnChange = "SetCurrentTimerSeconds")] [SerializeField] private int _currentTimerSeconds;
+        [SyncVar(OnChange = nameof(SyncCurrentTimerSeconds))] [SerializeField] private int _currentTimerSeconds;
 
         /// <summary>
         /// How many seconds of warmup.
