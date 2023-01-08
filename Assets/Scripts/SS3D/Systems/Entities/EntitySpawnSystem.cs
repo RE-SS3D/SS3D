@@ -193,7 +193,7 @@ namespace SS3D.Systems.Entities
             }
             // Rename the current PlayerControllable game object,
             // and send to the client the updated name of the other playerControllables already spawned.
-            UpdateNameOfHumanGameObject(ckey, controllable, humanNames);
+            RpcSetPlayerControllableName(ckey, controllable, humanNames);
        
             string message = $"Spawning player {soul.Ckey} on {controllable.name}";
             Punpun.Say(this, message, Logs.ServerOnly); 
@@ -211,7 +211,7 @@ namespace SS3D.Systems.Entities
         /// <param name="humanNames">The new names of the PlayerControllable game object. The order of the name in the list
         /// must be the same as the order of the PlayerControllable objects in _spawnedPlayers SyncList </param>
         [ObserversRpc]
-        private void UpdateNameOfHumanGameObject(string ckey, PlayerControllable controllable, List<string> humanNames)
+        private void RpcSetPlayerControllableName(string ckey, PlayerControllable controllable, List<string> humanNames)
         {
             int nameIndex = 0;
             
@@ -220,7 +220,7 @@ namespace SS3D.Systems.Entities
                 controllableAlreadySpawned.gameObject.name = humanNames.ElementAt(nameIndex);
                 nameIndex++;
             }
-            controllable.gameObject.name = "HumanTemp" + ckey;
+            controllable.gameObject.name = $"Player - {ckey}";
         }
 
         private void HandleSpawnedPlayersChanged(SyncListOperation op, int index, PlayerControllable old, PlayerControllable @new, bool asServer)
