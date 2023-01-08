@@ -48,7 +48,7 @@ namespace SS3D.Systems.Storage.Interactions
                 return false;
             }
 
-            PlayerControllable entity = interactionEvent.Source.GetComponentInTree<PlayerControllable>();
+            Entity entity = interactionEvent.Source.GetComponentInTree<Entity>();
             if (entity == null)
             {
                 return false;

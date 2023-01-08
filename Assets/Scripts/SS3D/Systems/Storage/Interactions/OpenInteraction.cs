@@ -53,7 +53,7 @@ namespace SS3D.Systems.Storage.Interactions
             }
 
             // Confirm that there is an entity doing this interaction
-            PlayerControllable entity = interactionEvent.Source.GetComponent<PlayerControllable>();
+            Entity entity = interactionEvent.Source.GetComponent<Entity>();
             if (entity == null)
             {
                 return false;

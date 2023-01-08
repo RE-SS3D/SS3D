@@ -1,14 +1,15 @@
 ﻿using FishNet.Broadcast;
+using SS3D.Systems.Entities;
 
 namespace SS3D.Systems.Rounds.Messages
 {
     public struct RequestEmbarkMessage : IBroadcast
     {
-        public readonly string Ckey;
+        public readonly Soul Soul;
 
-        public RequestEmbarkMessage(string ckey)
+        public RequestEmbarkMessage(Soul soul)
         {
-            Ckey = ckey;
+            Soul = soul;
         }
     }
 }

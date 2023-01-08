@@ -69,7 +69,7 @@ namespace SS3D.Systems.Storage.Interactions
 
 
                 try {
-                    string ckey = hands.Inventory.Body.ControllingSoul.Ckey;
+                    string ckey = hands.Inventory.Body.Mind.Soul.Ckey;
 
                     // and call the event for picking up items for the Game Mode System
                     new ItemPickedUpEvent(target, ckey).Invoke(this);

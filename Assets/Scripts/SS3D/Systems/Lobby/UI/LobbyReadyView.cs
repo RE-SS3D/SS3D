@@ -102,8 +102,8 @@ namespace SS3D.Systems.Lobby.UI
         {
             PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
 
-            string ckey = playerControlSystem.GetCkey(LocalConnection);
-            RequestEmbarkMessage requestEmbarkMessage = new(ckey);
+            Soul soul = playerControlSystem.GetSoul(LocalConnection);
+            RequestEmbarkMessage requestEmbarkMessage = new(soul);
 
             ClientManager.Broadcast(requestEmbarkMessage);
         }

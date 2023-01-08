@@ -5,9 +5,9 @@ namespace SS3D.Systems.Entities.Events
 {
     public partial struct SpawnedPlayersUpdated : IEvent
     {
-        public readonly List<PlayerControllable> SpawnedPlayers;
+        public readonly List<Entity> SpawnedPlayers;
 
-        public SpawnedPlayersUpdated(List<PlayerControllable> spawnedPlayers)
+        public SpawnedPlayersUpdated(List<Entity> spawnedPlayers)
         {
             SpawnedPlayers = spawnedPlayers;
         }

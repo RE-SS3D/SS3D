@@ -13,7 +13,7 @@ namespace SS3D.Systems.Entities
     [Serializable]
     public sealed class Soul : NetworkActor
     {
-        [SyncVar(OnChange = nameof(UpdateCkey))] private string _ckey;
+        [SyncVar(OnChange = nameof(SyncCkey))] private string _ckey;
 
         /// <summary>
         /// Unique client key, originally used in BYOND's user management, nostalgically used.
@@ -24,7 +24,7 @@ namespace SS3D.Systems.Entities
         /// Used by FishNet Networking to update the variable and sync it across instances.
         /// This is also called by the server when the client enters the server to update his data.
         /// </summary>
-        public void UpdateCkey(string oldCkey, string newCkey, bool asServer)
+        public void SyncCkey(string oldCkey, string newCkey, bool asServer)
         {
             if (!asServer && IsHost)
             {
@@ -36,8 +36,15 @@ namespace SS3D.Systems.Entities
                 Punpun.Say(this, $"Updating player ckey {newCkey}");
             }
 
-            _ckey = newCkey; 
-            gameObject.name = "Soul: " + _ckey;
+            gameObject.name = "Soul - " + _ckey;
+        }
+
+        public void SyncMind(Mind oldMind, Mind newMind, bool asServer)
+        {
+            if (!asServer && IsHost)
+            {
+                return;
+            }
         }
     }
 }

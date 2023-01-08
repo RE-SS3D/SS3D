@@ -19,17 +19,15 @@ namespace SS3D.Systems.PlayerControl
     /// </summary>
     public sealed class PlayerControlSystem : NetworkSystem
     {
-        [FormerlySerializedAs("_userPrefab")]
         [Header("Settings")]
         [SerializeField] private NetworkObject _unauthorizedUserPrefab;
         [SerializeField] private NetworkObject _soulPrefab;
 
         [SyncObject] private readonly SyncList<Soul> _serverSouls = new();
-
         [SyncObject] private readonly SyncList<Soul> _onlineSouls = new();
 
-        public IList<Soul> ServerSouls => _serverSouls;
-        public IList<Soul> OnlineSouls => _onlineSouls;
+        public IEnumerable<Soul> ServerSouls => _serverSouls;
+        public IEnumerable<Soul> OnlineSouls => _onlineSouls;
 
         protected override void OnStart()
         {
@@ -87,7 +85,7 @@ namespace SS3D.Systems.PlayerControl
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="conn"></param>
         [Server]
@@ -95,7 +93,7 @@ namespace SS3D.Systems.PlayerControl
         {
             string message = $"Player joined the server - {conn.ClientId} {conn.GetAddress()}";
             Punpun.Say(this, message, Logs.ServerOnly);
-            
+
             NetworkObject unauthorizedUser = Instantiate(_unauthorizedUserPrefab, Vector3.zero, Quaternion.identity);
             ServerManager.Spawn(unauthorizedUser, conn);
         }
@@ -118,7 +116,7 @@ namespace SS3D.Systems.PlayerControl
                 Punpun.Say(this, $"No Soul match for {ckey} found, creating a new one", Logs.ServerOnly);
 
                 match = Instantiate(_soulPrefab).GetComponent<Soul>();
-                match.UpdateCkey(string.Empty, ckey, true);
+                match.SyncCkey(string.Empty, ckey, true);
 
                 _serverSouls.Add(match);
 
@@ -131,16 +129,16 @@ namespace SS3D.Systems.PlayerControl
 
             NetworkObject networkObject = match.NetworkObject;
             networkObject.GiveOwnership(conn);
-            
+
             _onlineSouls.Add(match);
         }
 
         [Server]
         private void ProcessPlayerDisconnect(NetworkConnection conn)
         {
-            string message = $"Client {conn.ClientId} {conn.GetAddress()} disconnected"; 
+            string message = $"Client {conn.ClientId} {conn.GetAddress()} disconnected";
             Punpun.Say(this, message, Logs.ServerOnly);
-            
+
             NetworkObject[] ownedObjects = conn.Objects.ToArray();
             if (ownedObjects.Length == 0)
             {
@@ -151,7 +149,7 @@ namespace SS3D.Systems.PlayerControl
             foreach (NetworkObject networkIdentity in ownedObjects)
             {
                 Punpun.Say(this, $"Client {conn.GetAddress()}'s owned object: {networkIdentity.name}", Logs.ServerOnly);
-    
+
                 Soul soul = networkIdentity.GetComponent<Soul>();
                 if (soul != null)
                 {

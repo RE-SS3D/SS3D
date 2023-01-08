@@ -21,7 +21,7 @@ namespace SS3D.Systems.Rounds
     /// </summary>
     public class ReadyPlayersSystem : NetworkSystem
     {
-        [SyncObject] private readonly SyncList<string> _readyPlayers = new();
+        [SyncObject] private readonly SyncList<Soul> _readyPlayers = new();
 
         public override void OnStartServer()
         {
@@ -72,9 +72,9 @@ namespace SS3D.Systems.Rounds
                 return;
             }
 
-            if (_readyPlayers.SingleOrDefault(match => match == soul.Ckey) != null)
+            if (_readyPlayers.SingleOrDefault(match => match == soul) != null)
             {
-                _readyPlayers.Remove(soul.Ckey);
+                _readyPlayers.Remove(soul);
             }
         }
 
@@ -94,22 +94,22 @@ namespace SS3D.Systems.Rounds
         [Server]
         private void SetPlayerReady(Soul soul, bool ready)
         {
-            bool soulIsReady = _readyPlayers.Contains(soul.Ckey);
+            bool soulIsReady = _readyPlayers.Contains(soul);
 
             switch (ready)
             {
                 case true when !soulIsReady:
                     Punpun.Say(this, $"player is {soul.Ckey} is ready", Logs.ServerOnly);
-                    _readyPlayers.Add(soul.Ckey);
+                    _readyPlayers.Add(soul);
                     break;
                 case false when soulIsReady:
                     Punpun.Say(this, $"player is {soul.Ckey} is not ready", Logs.ServerOnly);
-                    _readyPlayers.Remove(soul.Ckey);
+                    _readyPlayers.Remove(soul);
                     break;
             }
         }
 
-        private void HandleReadyPlayersChanged(SyncListOperation op, int index, string s, string newItem1, bool asServer)
+        private void HandleReadyPlayersChanged(SyncListOperation op, int index, Soul oldItem, Soul newItem, bool asServer)
         {
             SyncReadyPlayers();
         }

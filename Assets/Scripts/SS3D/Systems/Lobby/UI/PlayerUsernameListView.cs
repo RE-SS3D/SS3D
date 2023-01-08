@@ -21,10 +21,10 @@ namespace SS3D.Systems.Lobby.UI
     {
         // The UI element this is linked to
         [SerializeField] [NotNull] private Transform _root;
-        
+
         // Username list, local list that is "networked" by the SyncList on LobbyManager
         [SerializeField] [NotNull] private List<PlayerUsernameView> _playerUsernames;
-        
+
         // The username panel prefab
         [SerializeField] [NotNull] private GameObject _uiPrefab;
         [SerializeField] private Color _userReadyColor = PaletteColors.LightBlue;
@@ -74,11 +74,11 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleReadyPlayersChanged(ref EventContext context, in ReadyPlayersChanged e)
         {
-            List<string> readyPlayers = e.ReadyPlayers;
+            List<Soul> readyPlayers = e.ReadyPlayers;
 
             foreach (PlayerUsernameView username in _playerUsernames)
             {
-                username.UpdateNameColor(readyPlayers.Contains(username.Name) ? _userReadyColor : PaletteColors.White);
+                username.UpdateNameColor(readyPlayers.Find(soul => soul.Ckey == username.Name) ? _userReadyColor : PaletteColors.White);
             }
         }
 
@@ -94,7 +94,7 @@ namespace SS3D.Systems.Lobby.UI
             {
                 return;
             }
-            
+
             // adds the UI element and updates the text
             GameObject uiInstance = Instantiate(_uiPrefab, _root);
 
@@ -102,7 +102,7 @@ namespace SS3D.Systems.Lobby.UI
             playerUsernameView.UpdateNameText(ckey);
             _playerUsernames.Add(playerUsernameView);
         }
-        
+
         /// <summary>
         /// Removes the player from the list based on the Username
         /// </summary>

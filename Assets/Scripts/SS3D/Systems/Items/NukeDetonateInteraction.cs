@@ -55,7 +55,7 @@ namespace SS3D.Systems.Items
                 nuke.Detonate();
                 PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
 
-                new NukeDetonateEvent(nuke, playerControlSystem.GetCkey(source.GetComponentInTree<PlayerControllable>().Owner)).Invoke(this);
+                new NukeDetonateEvent(nuke, playerControlSystem.GetCkey(source.GetComponentInTree<Entity>().Owner)).Invoke(this);
             }
             return false;
         }

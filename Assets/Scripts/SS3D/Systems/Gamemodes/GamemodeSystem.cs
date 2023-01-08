@@ -76,7 +76,7 @@ namespace SS3D.Systems.Gamemodes
             PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
 
             // Get list of players ready to spawn (by Ckey).
-            List<PlayerControllable> playersToAssign = entitySpawnSystem.SpawnedPlayers;
+            List<Entity> playersToAssign = entitySpawnSystem.SpawnedPlayers;
             List<string> playerCkeys = new List<string>();
             for (int i = 0; i < playersToAssign.Count; i++)
             {

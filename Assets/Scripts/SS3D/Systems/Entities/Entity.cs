@@ -1,31 +1,32 @@
 ﻿using System;
-using DG.Tweening;
-using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Entities
 {
     /// <summary>
-    /// Base class for all things that can be controlled by a player
+    /// Base class for all things that can be controlled by a player.
     /// </summary>
     [Serializable]
-    public class PlayerControllable : NetworkActor
+    public class Entity : NetworkActor
     {
-        public Action<Soul> ControllingSoulChanged;
+        public Action<Mind> MindChanged;
 
-        [SerializeField] [SyncVar(OnChange = "SyncControllingSoul")] private Soul _controllingSoul;
+        [SerializeField]
+        [SyncVar(OnChange = nameof(SyncMind))]
+        private Mind _mind;
 
-        public Soul ControllingSoul
+        public Mind Mind
         {
-            get => _controllingSoul;
-            set => _controllingSoul = value;
+            get => _mind;
+            set => _mind = value;
         }
 
-        private const float ScaleInDuration = .6f;
+        public string Ckey => _mind.Soul.Ckey;
 
         protected override void OnStart()
         {
@@ -36,7 +37,7 @@ namespace SS3D.Systems.Entities
 
         private void OnSpawn()
         {
-            ControllingSoulChanged?.Invoke(ControllingSoul);
+            MindChanged?.Invoke(Mind);
         }
 
         private void UpdateCameraFollow()
@@ -50,26 +51,26 @@ namespace SS3D.Systems.Entities
             changeCameraEvent.Invoke(this);
         }
 
-        public void SyncControllingSoul(Soul oldSoul, Soul newSoul, bool asServer)
+        public void SyncMind(Mind oldMind, Mind newSoul, bool asServer)
         {
-            _controllingSoul = newSoul;
+            _mind = newSoul;
 
-            ControllingSoulChanged?.Invoke(_controllingSoul);
+            MindChanged?.Invoke(_mind);
             UpdateCameraFollow();
         }
 
         [Server]
-        public void SetControllingSoul(Soul soul)
+        public void SetMind(Mind mind)
         {
-            _controllingSoul = soul;
+            _mind = mind;
 
-            if (soul == null)
+            if (mind == null)
             {
                 RemoveOwnership();
             }
             else
             {
-                GiveOwnership(soul.Owner);   
+                GiveOwnership(mind.Owner);
             }
         }
     }

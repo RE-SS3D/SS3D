@@ -27,11 +27,11 @@ namespace SS3D.Systems.Entities.Debug
                 return;
             }
 
-            RequestMindSwap mindSwap = new(Origin, Target);
-            ClientManager.Broadcast(mindSwap);
+            RequestMindSwapMessage mindSwapMessage = new(Origin, Target);
+            ClientManager.Broadcast(mindSwapMessage);
 
-            Origin = mindSwap.Target;
-            Target = mindSwap.Origin;
+            Origin = mindSwapMessage.Target;
+            Target = mindSwapMessage.Origin;
         }
     }
 }
