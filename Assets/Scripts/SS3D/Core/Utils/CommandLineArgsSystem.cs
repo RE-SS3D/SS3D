@@ -27,10 +27,6 @@ namespace SS3D.Core.Utils
             {
                 _applicationSettings.ResetOnBuildApplication();
             }
-            else
-            {
-                _applicationSettings.SetEditorSettings();
-            }
         }
 
         /// <summary>
