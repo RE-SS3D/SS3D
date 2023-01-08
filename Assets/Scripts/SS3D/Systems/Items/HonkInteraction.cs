@@ -1,4 +1,6 @@
-﻿using SS3D.Interactions;
+﻿using SS3D.Data;
+using SS3D.Data.Enums;
+using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
@@ -8,26 +10,19 @@ namespace SS3D.Systems.Items
     /// <summary>
     /// Honks a horn. Honking requires the target to be BikeHorn
     /// </summary>
-    public class HonkInteraction : IInteraction
+    public class HonkInteraction : Interaction
     {
-        public Sprite Icon;
-    
-        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
-        {
-            return new ClientDelayedInteraction();
-        }
-    
-        public string GetName(InteractionEvent interactionEvent)
+        public override string GetName(InteractionEvent interactionEvent)
         {
             return "Honk";
         }
-    
-        public Sprite GetIcon(InteractionEvent interactionEvent)
+
+        public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon;
-        }                                               
-    
-        public bool CanInteract(InteractionEvent interactionEvent)
+            return Icon != null ? Icon : AssetData.Get(InteractionIcons.Honk);
+        }
+
+        public override bool CanInteract(InteractionEvent interactionEvent)
         {
             IInteractionTarget target = interactionEvent.Target;
             bool inRange = InteractionExtensions.RangeCheck(interactionEvent);
@@ -44,24 +39,14 @@ namespace SS3D.Systems.Items
 
             return !horn.IsHonking();
         }
-    
-        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+
+        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             if (interactionEvent.Target is BikeHorn horn)
             {
                 horn.Honk();
             }
             return false;
-        }
-    
-        public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return true;
-        }
-    
-        public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            
         }
     }
 }

@@ -1,10 +1,8 @@
 ﻿using System;
 using SS3D.Data;
-using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
-using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Storage.Containers;
 using UnityEngine;
 
@@ -12,26 +10,19 @@ namespace SS3D.Systems.Storage.Interactions
 {
     // a drop interaction is when we remove an item from the hand
     [Serializable]
-    public class DropInteraction : IInteraction
+    public class DropInteraction : Interaction
     {
-        public Sprite Icon;
-
-        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
-        {
-            return new ClientDelayedInteraction();
-        }
-
-        public string GetName(InteractionEvent interactionEvent)
+        public override string GetName(InteractionEvent interactionEvent)
         {
             return "Drop";
         }
 
-        public Sprite GetIcon(InteractionEvent interactionEvent)
+        public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon != null ? Icon : AssetData.Get(InteractionIcons.Discard);
         }
 
-        public bool CanInteract(InteractionEvent interactionEvent)
+        public override bool CanInteract(InteractionEvent interactionEvent)
         {
 	        // if the interaction source's parent is not a hand we return false
             if (interactionEvent.Source.GetRootSource() is not Hands)
@@ -43,7 +34,7 @@ namespace SS3D.Systems.Storage.Interactions
             return InteractionExtensions.RangeCheck(interactionEvent);
         }
 
-        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
 	        // we check if the source of the interaction is a hand
             if (interactionEvent.Source.GetRootSource() is Hands hands)
@@ -53,16 +44,6 @@ namespace SS3D.Systems.Storage.Interactions
             }
 
             return false;
-        }
-
-        public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return true;
-        }
-
-        public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return;
         }
     }
 }

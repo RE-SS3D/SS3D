@@ -1,9 +1,7 @@
 ﻿using SS3D.Data;
-using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
-using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
@@ -11,9 +9,8 @@ using UnityEngine;
 namespace SS3D.Systems.Storage.Interactions
 {
     // This Interaction takes the first available item inside a container
-    public sealed class TakeFirstInteraction : IInteraction
+    public sealed class TakeFirstInteraction : Interaction
     {
-        public Sprite Icon;
         private readonly ContainerDescriptor _containerDescriptor;
 
         public TakeFirstInteraction(ContainerDescriptor containerDescriptor)
@@ -21,22 +18,17 @@ namespace SS3D.Systems.Storage.Interactions
             _containerDescriptor = containerDescriptor;
         }
 
-        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
-        {
-            return new ClientDelayedInteraction();
-        }
-
-        public string GetName(InteractionEvent interactionEvent)
+        public override string GetName(InteractionEvent interactionEvent)
         {
             return "Take in " + _containerDescriptor.ContainerName;
         }
 
-        public Sprite GetIcon(InteractionEvent interactionEvent)
+        public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon != null ? Icon : AssetData.Get(InteractionIcons.Take);
         }
 
-        public bool CanInteract(InteractionEvent interactionEvent)
+        public override bool CanInteract(InteractionEvent interactionEvent)
         {
             if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
@@ -53,7 +45,7 @@ namespace SS3D.Systems.Storage.Interactions
             return false;
         }
 
-        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Hands hands = (Hands) interactionEvent.Source;
             int index = _containerDescriptor.AttachedContainer.Container.StoredItems.Count - 1;
@@ -63,16 +55,6 @@ namespace SS3D.Systems.Storage.Interactions
                 hands.Pickup(pickupItem);
             }
             return false;
-        }
-
-        public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return true;
-        }
-
-        public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return;
         }
     }
 }
