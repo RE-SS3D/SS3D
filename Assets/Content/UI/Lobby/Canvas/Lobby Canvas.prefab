@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 55875277}
   - component: {fileID: 55875276}
   - component: {fileID: 55875278}
-  - component: {fileID: 55875279}
   m_Layer: 5
   m_Name: Start Round
   m_TagString: Untagged
@@ -102,19 +101,6 @@ MonoBehaviour:
   _image: {fileID: 55875276}
   _normalText: <sprite name="approve"> start round
   _pressedText: <sprite name="deny"> stop round
---- !u!114 &55875279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 55875274}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1892bb003da8aaf41a44fb7f08e7e9a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _startRoundButton: {fileID: 55875278}
 --- !u!1 &67016287
 GameObject:
   m_ObjectHideFlags: 0
