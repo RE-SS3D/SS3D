@@ -8,8 +8,8 @@ using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
 {
-    [CustomEditor(typeof(InteractionIconsAssetDatabase))]
-    public class GenericDatabaseInspectorEditor : Editor
+    [CustomEditor(typeof(GenericAssetDatabase))]
+    public class GenericAssetDatabaseInspectorEditor : Editor
     {
         private GenericAssetDatabase _assetDatabase;
         private static GUIContent _folderIcon;
@@ -18,7 +18,7 @@ namespace SS3D.Data.AssetDatabases
 
         private void OnEnable()
         {
-            _assetDatabase = (InteractionIconsAssetDatabase)target;
+            _assetDatabase = (GenericAssetDatabase)target;
             _folderIcon = EditorGUIUtility.IconContent("d_FolderOpened Icon");
         }
 
@@ -29,7 +29,7 @@ namespace SS3D.Data.AssetDatabases
 
             GUIStyle labelStyle = new()
             {
-                fontStyle = FontStyle.Bold, 
+                fontStyle = FontStyle.Bold,
                 normal =
                 {
                     textColor = Color.white
