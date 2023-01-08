@@ -18,15 +18,23 @@ namespace SS3D.Systems.Lobby.UI
         [SerializeField] private ToggleLabelButton _readyButton;
         [SerializeField] private LabelButton _embarkButton;
 
-        protected override void OnAwake()
+        protected override void OnAwake()           
         {
             base.OnAwake();
 
             _readyButton.OnPressedDown += HandleReadyButtonPressed;
             _embarkButton.OnPressedDown += HandleEmbarkButtonPressed;
 
-            RoundStateUpdated.AddListener(HandleRoundStateUpdated);
-            SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated);
+            AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
+            AddHandle(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated));
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+
+            _readyButton.OnPressedDown -= HandleReadyButtonPressed;
+            _embarkButton.OnPressedDown -= HandleEmbarkButtonPressed;
         }
 
         private void HandleSpawnedPlayersUpdated(ref EventContext context, in SpawnedPlayersUpdated e)
