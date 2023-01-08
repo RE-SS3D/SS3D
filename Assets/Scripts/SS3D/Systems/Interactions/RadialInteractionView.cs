@@ -50,7 +50,7 @@ namespace SS3D.Systems.Interactions
         {
             base.HandleUpdate(in deltaTime);
 
-            if (Input.GetMouseButtonUp(1))
+            if (Input.GetMouseButtonUp(1) || Input.GetButton("Drop"))
             {
                 Disappear();
             }
