@@ -16,27 +16,22 @@ namespace SS3D.Systems.Lobby.UI
     /// </summary>
     public class RoundStateView : Actor
     {
-        [SerializeField][NotNull] private TMP_Text _roundCountdownText;
+        [NotNull]
+        [SerializeField]
+        private TMP_Text _roundCountdownText;
 
         private int _seconds;
         private RoundState _roundState;
-
 
         protected override void OnAwake()
         {
             base.OnAwake();
 
-            SubscribeToEvents();
-        }
-
-        protected override void OnStart()
-        {
-            base.OnStart();
-
+            AddEventListeners();
             UpdateRoundCountDownText();
         }
 
-        private void SubscribeToEvents()
+        private void AddEventListeners()
         {
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
             AddHandle(RoundTickUpdated.AddListener(HandleRoundTickUpdated));
