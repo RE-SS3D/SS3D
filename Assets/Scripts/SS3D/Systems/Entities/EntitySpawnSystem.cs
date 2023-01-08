@@ -8,6 +8,7 @@ using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Entities.Messages;
 using SS3D.Systems.PlayerControl;
@@ -185,8 +186,41 @@ namespace SS3D.Systems.Entities
 
             _spawnedPlayers.Add(controllable);
 
+            var humanNames = new List<string>();
+            foreach (PlayerControllable player in SpawnedPlayers)
+            {
+                humanNames.Add(player.gameObject.name);
+            }
+            // Rename the current PlayerControllable game object,
+            // and send to the client the updated name of the other playerControllables already spawned.
+            UpdateNameOfHumanGameObject(ckey, controllable, humanNames);
+       
             string message = $"Spawning player {soul.Ckey} on {controllable.name}";
             Punpun.Say(this, message, Logs.ServerOnly); 
+        }
+
+
+
+        /// <summary>
+        /// Rename HumanTemp game object, instantiated from the Human_Temporary prefab, with a name corresponding to their "soul" name.
+        /// This has no other purpose than to facilitate debugging by giving a quick way to differentiate between 
+        /// two PlayerControllable game objects. Please change this summary if it's used elsewhere.
+        /// </summary>
+        /// <param name="ckey">Unique user key, representing the name of the player.</param>
+        /// <param name="controllable">The last PlayerControllable instantiated.</param>
+        /// <param name="humanNames">The new names of the PlayerControllable game object. The order of the name in the list
+        /// must be the same as the order of the PlayerControllable objects in _spawnedPlayers SyncList </param>
+        [ObserversRpc]
+        private void UpdateNameOfHumanGameObject(string ckey, PlayerControllable controllable, List<string> humanNames)
+        {
+            int nameIndex = 0;
+            
+            foreach (PlayerControllable controllableAlreadySpawned in _spawnedPlayers)
+            {
+                controllableAlreadySpawned.gameObject.name = humanNames.ElementAt(nameIndex);
+                nameIndex++;
+            }
+            controllable.gameObject.name = "HumanTemp" + ckey;
         }
 
         private void HandleSpawnedPlayersChanged(SyncListOperation op, int index, PlayerControllable old, PlayerControllable @new, bool asServer)
