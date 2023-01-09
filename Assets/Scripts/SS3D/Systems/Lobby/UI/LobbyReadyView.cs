@@ -18,28 +18,36 @@ namespace SS3D.Systems.Lobby.UI
         [SerializeField] private ToggleLabelButton _readyButton;
         [SerializeField] private LabelButton _embarkButton;
 
-        protected override void OnAwake()
+        protected override void OnAwake()           
         {
             base.OnAwake();
-            
+
             _readyButton.OnPressedDown += HandleReadyButtonPressed;
             _embarkButton.OnPressedDown += HandleEmbarkButtonPressed;
 
-            RoundStateUpdated.AddListener(HandleRoundStateUpdated);
-            SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated);
+            AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
+            AddHandle(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated));
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+
+            _readyButton.OnPressedDown -= HandleReadyButtonPressed;
+            _embarkButton.OnPressedDown -= HandleEmbarkButtonPressed;
         }
 
         private void HandleSpawnedPlayersUpdated(ref EventContext context, in SpawnedPlayersUpdated e)
         {
-            SyncSpawnedPlayers();
+            ProcessSpawnedPlayers();
         }
 
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
         {
-            SyncRoundState(e.RoundState);
+            ProcessRoundState(e.RoundState);
         }
 
-        private void SyncSpawnedPlayers()
+        private void ProcessSpawnedPlayers()
         {
             EntitySpawnSystem spawnSystem = SystemLocator.Get<EntitySpawnSystem>();
 
@@ -54,7 +62,7 @@ namespace SS3D.Systems.Lobby.UI
             }
         }
 
-        private void SyncRoundState(RoundState roundState)
+        private void ProcessRoundState(RoundState roundState)
         {
             EntitySpawnSystem spawnSystem = SystemLocator.Get<EntitySpawnSystem>();
 
@@ -87,7 +95,7 @@ namespace SS3D.Systems.Lobby.UI
                 _embarkButton.Highlighted = false;
 
                 _embarkButton.SetActive(false);
-            }                                           
+            }
         }
 
         private void HandleEmbarkButtonPressed(bool pressed)

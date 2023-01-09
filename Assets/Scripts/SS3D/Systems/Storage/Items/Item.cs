@@ -7,6 +7,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Interactions;
+using SS3D.Utils;
 using UnityEditor;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -52,7 +53,7 @@ namespace SS3D.Systems.Storage.Items
             {
                 if (_sprite == null)
                 {
-                    //GenerateNewIcon();
+                    GenerateNewIcon();
                 }
 
                 return _sprite;
@@ -250,6 +251,20 @@ namespace SS3D.Systems.Storage.Items
         public void SetContainerUnchecked(Container newContainer)
         {
             _container = newContainer;
+        }
+
+        // TODO: Improve this
+        // we have this to generate icons at start, I do not know how bad it is for performance
+        // if you know anything about it, tell us
+        public void GenerateNewIcon()
+        {
+            RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
+            RuntimePreviewGenerator.OrthographicMode = true;
+            
+            Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
+                Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, false);
+            _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
+            _sprite.name = transform.name;
         }
 
 #if UNITY_EDITOR

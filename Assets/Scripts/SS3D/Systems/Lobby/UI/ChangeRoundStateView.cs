@@ -20,38 +20,54 @@ namespace SS3D.Systems.Lobby.UI
     /// </summary>
     public class ChangeRoundStateView : Actor
     {
-        [SerializeField][NotNull] private ToggleLabelButton _startRoundButton;
+        [NotNull] [SerializeField] private ToggleLabelButton _startRoundButton;
 
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
-            
+            base.OnAwake();
+
             AddEventListeners();
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+
+            _startRoundButton.OnPressedDown -= HandleEmbarkButtonPress;
         }
 
         private void AddEventListeners()
         {
             _startRoundButton.OnPressedDown += HandleEmbarkButtonPress;
 
-            RoundStateUpdated.AddListener(HandleRoundStateUpdated);
+            AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
         }
 
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
         {
-            bool roundStopped = e.RoundState == RoundState.Stopped;
-            bool roundOngoing = e.RoundState == RoundState.Ongoing;
-            bool roundWarmingUp = e.RoundState == RoundState.WarmingUp; 
+            RoundState roundState = e.RoundState;
 
-            if (!roundStopped || !roundOngoing || !roundWarmingUp)
+            bool roundStopped = roundState == RoundState.Stopped;
+            bool roundOngoing = roundState == RoundState.Ongoing;
+            bool roundWarmingUp = roundState == RoundState.WarmingUp;
+            bool roundEnding = roundState == RoundState.Ending;
+            bool roundPreparing = roundState == RoundState.Preparing;
+
+            if (roundStopped)
             {
-                _startRoundButton.Disabled = true;
-                _startRoundButton.Pressed = !roundStopped;
+                _startRoundButton.Pressed = false;
+                _startRoundButton.Disabled = false;
             }
 
-            if (roundStopped || roundOngoing || roundWarmingUp)
+            if (roundOngoing || roundWarmingUp)
             {
+                _startRoundButton.Pressed = true;
                 _startRoundButton.Disabled = false;
-                _startRoundButton.Pressed = !roundStopped;
+            }
+
+            else if (roundEnding || roundPreparing)
+            {
+                _startRoundButton.Disabled = true;
             }
         }
 

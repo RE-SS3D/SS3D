@@ -22,7 +22,7 @@ using RoundTickUpdated = SS3D.Systems.Rounds.Events.RoundTickUpdated;
 namespace SS3D.Systems.Rounds
 {
     /// <summary>
-    /// Base for the round system, done here to avoid too much code in the round system 
+    /// Base for the round system, done here to avoid too much code in the round system
     /// </summary>
     public class RoundSystemBase : NetworkSystem
     {
@@ -30,17 +30,17 @@ namespace SS3D.Systems.Rounds
         /// The current round state.
         /// </summary>
         [Header("Round Information")]
-        [SyncVar(OnChange = "SetRoundState")] [SerializeField] private RoundState _roundState;
+        [SyncVar(OnChange = nameof(SyncRoundState))] [SerializeField] private RoundState _roundState;
 
         /// <summary>
         /// How much time has passed.
         /// </summary>
-        [SyncVar(OnChange = "SetCurrentTimerSeconds")] [SerializeField] private int _currentTimerSeconds;
+        [SyncVar(OnChange = nameof(SyncCurrentTimerSeconds))] [SerializeField] private int _currentTimerSeconds;
 
         /// <summary>
         /// How many seconds of warmup.
         /// </summary>
-        [Header("Warmup")] 
+        [Header("Warmup")]
         [SyncVar] [SerializeField] protected int _warmupSeconds = 5;
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace SS3D.Systems.Rounds
 
             ServerSubscribeToEvents();
         }
-        
+
         /// <summary>
         /// Runs on the server to listen to events
         /// </summary>
@@ -106,7 +106,7 @@ namespace SS3D.Systems.Rounds
         [Server]
         private void AuthorizeChangeRoundState(NetworkConnection conn, ChangeRoundStateMessage m)
         {
-            const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;             
+            const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;
 
             PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
             PermissionSystem permissionSystem = SystemLocator.Get<PermissionSystem>();
@@ -126,7 +126,7 @@ namespace SS3D.Systems.Rounds
                 Punpun.Say(this, message, Logs.ServerOnly);
 
                 #pragma warning disable CS4014
-                ProcessChangeRoundState(m);   
+                ProcessChangeRoundState(m);
                 #pragma warning restore CS4014
             }
         }
@@ -164,7 +164,7 @@ namespace SS3D.Systems.Rounds
         /// <summary>
         /// Called by fishnet to update the timer.
         /// </summary>
-        private void SetCurrentTimerSeconds(int oldValue, int newValue, bool asServer)
+        private void SyncCurrentTimerSeconds(int oldValue, int newValue, bool asServer)
         {
             if (!asServer && IsHost)
             {
@@ -178,7 +178,7 @@ namespace SS3D.Systems.Rounds
         /// <summary>
         /// Called by fishnet to update the round state.
         /// </summary>
-        private void SetRoundState(RoundState oldValue, RoundState newValue, bool asServer)
+        private void SyncRoundState(RoundState oldValue, RoundState newValue, bool asServer)
         {
             if (!asServer && IsHost)
             {
@@ -191,4 +191,4 @@ namespace SS3D.Systems.Rounds
             roundStateUpdated.Invoke(this);
         }
     }
-}                               
+}

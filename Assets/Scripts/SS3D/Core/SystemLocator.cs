@@ -27,7 +27,7 @@ namespace SS3D.Core
 
             if (!Systems.TryGetValue(type, out object _))
             {
-                Systems.Add(type, system);   
+                Systems.Add(type, system);
             }
         }
 
@@ -44,6 +44,7 @@ namespace SS3D.Core
             }
 
             string message = $"Couldn't find system of {typeof(T).Name} in the scene";
+            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
             Punpun.Panic(typeof(SystemLocator), message, Logs.Important);
 
             return null;

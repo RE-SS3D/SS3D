@@ -32,14 +32,14 @@ namespace SS3D.Systems.Storage.UI
             }
         }
         
-        public override void OnItemDrop(ItemDisplay display)
+        public override void OnItemDisplayDrop(ItemDisplay display)
         {
             if (!_container.Container.Empty)
             {
                 return;
             }
 
-            display.DropAccepted = true;
+            display.ShouldDrop = true;
             ItemDisplay.Item = display.Item;
             Inventory.ClientTransferItem(ItemDisplay.Item, Vector2Int.zero, Container);
         }
@@ -76,12 +76,7 @@ namespace SS3D.Systems.Storage.UI
         public void OnPointerClick(PointerEventData eventData)
         {
             Inventory.ClientInteractWithSingleSlot(_container);
-
-            // When receiving a click on one of the hands of the UI, change the current active hand with the one clicked.
-            if (eventData.pointerPress.name is "HandRight(Clone)" or "HandLeft(Clone)")
-            {
-                Inventory.ActivateHand(_container);
-            }
+            Inventory.ActivateHand(_container);
         }
 		
 		public GameObject GetCurrentGameObjectInSlot()
