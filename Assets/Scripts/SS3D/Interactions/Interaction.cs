@@ -1,41 +1,50 @@
 ﻿using System;
+using SS3D.Interactions.Interfaces;
 using UnityEngine;
 
-namespace SS3D.Interactions.Interfaces
+namespace SS3D.Interactions
 {
-    /// <summary>
-    /// Represents an interaction which can be performed
-    /// </summary>
-    public interface IInteraction
+    public class Interaction : IInteraction
     {
-        /// <summary>
-        /// Event called whenever an interaction becomes invalid, either by being already called or by being out of range.
-        /// </summary>
-        public event Action OnInteractionInvalid;
+        public virtual event Action OnInteractionInvalid;
+
+        public Sprite Icon;
 
         /// <summary>
         /// Creates a client interaction (client-side)
         /// </summary>
-        IClientInteraction CreateClient(InteractionEvent interactionEvent);
+        public virtual IClientInteraction CreateClient(InteractionEvent interactionEvent)
+        {
+            return new ClientDelayedInteraction();
+        }
 
         /// <summary>
         /// Gets the name when interacted with a source
         /// </summary>
         /// <param name="interactionEvent">The source used in the interaction</param>
         /// <returns>The display name of the interaction</returns>
-        string GetName(InteractionEvent interactionEvent);
+        public virtual string GetName(InteractionEvent interactionEvent)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Gets the interaction icon
         /// </summary>
-        Sprite GetIcon(InteractionEvent interactionEvent);
+        public virtual Sprite GetIcon(InteractionEvent interactionEvent)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Checks if this interaction can be executed
         /// </summary>
         /// <param name="interactionEvent">The interaction source</param>
         /// <returns>If the interaction can be executed</returns>
-        bool CanInteract(InteractionEvent interactionEvent);
+        public virtual bool CanInteract(InteractionEvent interactionEvent)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Starts the interaction (server-side)
@@ -43,7 +52,10 @@ namespace SS3D.Interactions.Interfaces
         /// <param name="interactionEvent">The source used in the interaction</param>
         /// <param name="reference"></param>
         /// <returns>If the interaction should continue running</returns>
-        bool Start(InteractionEvent interactionEvent, InteractionReference reference);
+        public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Continues the interaction (server-side)
@@ -51,13 +63,19 @@ namespace SS3D.Interactions.Interfaces
         /// <param name="interactionEvent">The source used in the interaction</param>
         /// <param name="reference"></param>
         /// <returns>If the interaction should continue running</returns>
-        bool Update(InteractionEvent interactionEvent, InteractionReference reference);
+        public virtual bool Update(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            return true;
+        }
 
         /// <summary>
         /// Called when the interaction is cancelled (server-side)
         /// </summary>
         /// <param name="interactionEvent">The source used in the interaction</param>
         /// <param name="reference"></param>
-        void Cancel(InteractionEvent interactionEvent, InteractionReference reference);
+        public virtual void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
+        {
+            return;
+        }
     }
 }

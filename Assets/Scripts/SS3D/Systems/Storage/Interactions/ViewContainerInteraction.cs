@@ -1,19 +1,15 @@
 ﻿using SS3D.Data;
-using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
-using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Storage.Containers;
 using UnityEngine;
 
 namespace SS3D.Systems.Storage.Interactions
 {
-    public class ViewContainerInteraction : IInteraction
+    public class ViewContainerInteraction : Interaction
     {
-        public Sprite Icon;
-
         public float MaxDistance { get; set; }
 
         public readonly ContainerDescriptor ContainerDescriptor;
@@ -23,22 +19,17 @@ namespace SS3D.Systems.Storage.Interactions
             ContainerDescriptor = containerDescriptor;
         }
 
-        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
-        {
-            return new ClientDelayedInteraction();
-        }
-
-        public string GetName(InteractionEvent interactionEvent)
+        public override string GetName(InteractionEvent interactionEvent)
         {
             return "View " + ContainerDescriptor.ContainerName;
         }
 
-        public Sprite GetIcon(InteractionEvent interactionEvent)
+        public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon != null ? Icon : AssetData.Get(InteractionIcons.Open);
         }
 
-        public bool CanInteract(InteractionEvent interactionEvent)
+        public override bool CanInteract(InteractionEvent interactionEvent)
         {
             if (!InteractionExtensions.RangeCheck(interactionEvent))
             {
@@ -65,7 +56,7 @@ namespace SS3D.Systems.Storage.Interactions
             return !inventory.HasContainer(container) && entity.GetComponent<Hands>().CanInteract(container.gameObject);
         }
 
-        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Inventory inventory = interactionEvent.Source.GetComponentInTree<Inventory>();
             AttachedContainer attachedContainer = ContainerDescriptor.AttachedContainer;
@@ -73,16 +64,6 @@ namespace SS3D.Systems.Storage.Interactions
             inventory.OpenContainer(attachedContainer);
 
             return false;
-        }
-
-        public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return true;
-        }
-
-        public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return;
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using SS3D.Data;
-using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
@@ -12,10 +11,8 @@ using UnityEngine;
 namespace SS3D.Systems.Storage.Interactions
 {
     [Serializable]
-    public class OpenInteraction : IInteraction
+    public class OpenInteraction : Interaction
     {
-        public Sprite Icon;
-
         public event EventHandler<bool> OnOpenStateChanged;
         protected static readonly int OpenId = Animator.StringToHash("Open");
 
@@ -28,12 +25,7 @@ namespace SS3D.Systems.Storage.Interactions
             _containerDescriptor = containerDescriptor;
         }
 
-        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
-        {
-            return new ClientDelayedInteraction();
-        }
-
-        public string GetName(InteractionEvent interactionEvent)
+        public override string GetName(InteractionEvent interactionEvent)
         {
             Animator animator = ((IGameObjectProvider)interactionEvent.Target).GameObject.GetComponent<Animator>();
             if (_containerDescriptor == null)
@@ -47,12 +39,12 @@ namespace SS3D.Systems.Storage.Interactions
 
         }
 
-        public Sprite GetIcon(InteractionEvent interactionEvent)
+        public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon != null ? Icon : AssetData.Get(InteractionIcons.Open);
         }
 
-        public bool CanInteract(InteractionEvent interactionEvent)
+        public override bool CanInteract(InteractionEvent interactionEvent)
         {
             // Check whether the object is in range
             if (!InteractionExtensions.RangeCheck(interactionEvent))
@@ -103,7 +95,7 @@ namespace SS3D.Systems.Storage.Interactions
             return false;
         }
 
-        public bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Debug.Log("in OpenInteraction, Start");
             GameObject target = ((IGameObjectProvider) interactionEvent.Target).GameObject;
@@ -112,16 +104,6 @@ namespace SS3D.Systems.Storage.Interactions
             animator.SetBool(OpenId, !open);
             OnOpenStateChange(!open);
             return false;
-        }
-
-        public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return true;
-        }
-
-        public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            return;
         }
 
         private void OnOpenStateChange(bool e)
