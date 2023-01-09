@@ -4,6 +4,7 @@ using FishNet.Object;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Storage.Items;
+using SS3D.Systems.Storage.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -17,12 +18,13 @@ namespace SS3D.Systems.Storage.Containers
 
         [NonSerialized]
         public Inventory Inventory;
+
         public int SelectedHandIndex { get; private set; }
         public RangeLimit range = new(1.5f, 1);
-	    // the origin of an x interaction that is performed is provided by this, we use it for range checks
+        // the origin of an x interaction that is performed is provided by this, we use it for range checks
         public Transform interactionOrigin;
         // pickup icon that this hand uses when there's a pickup interaction
-	    // TODO: When AssetData is on, we should update this to not use this
+        // TODO: When AssetData is on, we should update this to not use this
         public Sprite pickupIcon;
         /// <summary>
         /// Called when the active hand gets changed
@@ -45,9 +47,13 @@ namespace SS3D.Systems.Storage.Containers
         /// </summary>
         public bool SelectedHandEmpty => SelectedHandContainer.Empty;
 
+        public HandsUi HandsUI { get; private set; }
+
         protected override void OnAwake()
         {
             base.OnAwake();
+            HandsUI = FindObjectOfType<HandsUi>(true);
+            HandsUI.Hands = this;
 
             SupportsMultipleInteractions = true;
         }

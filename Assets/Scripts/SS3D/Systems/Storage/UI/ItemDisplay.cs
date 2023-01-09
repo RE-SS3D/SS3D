@@ -12,7 +12,7 @@ namespace SS3D.Systems.Storage.UI
     public class ItemDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, IPointerClickHandler
     {
         public Image ItemImage;
-        [NonSerialized] public bool DropAccepted;
+        [NonSerialized] public bool ShouldDrop;
         [NonSerialized] public Vector3 OldPosition;
 
         protected InventoryDisplayElement InventoryDisplayElement;
@@ -74,6 +74,9 @@ namespace SS3D.Systems.Storage.UI
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            // Only allow to drag with a left click.
+            if (eventData.button != PointerEventData.InputButton.Left) return;
+
             _oldParent = transform.parent;
             if (InventoryDisplayElement == null)
             {
@@ -86,27 +89,33 @@ namespace SS3D.Systems.Storage.UI
             transform.position = tempPosition;
             
             _slotImage.raycastTarget = false;
-            DropAccepted = false;
+            ShouldDrop = false;
         }
 
         public void OnDrag(PointerEventData eventData)
         {
+            // Only allow to drag with a left click.
+            if (eventData.button != PointerEventData.InputButton.Left) return;
+
             Vector3 diff = Input.mousePosition - _startMousePosition;
             transform.position = _startPosition + diff;
         }
         
         public void OnEndDrag(PointerEventData eventData)
         {
+            // Only allow to drag with a left click.
+            if (eventData.button != PointerEventData.InputButton.Left) return;
+
             _slotImage.raycastTarget = true;
-            
-            if (DropAccepted)
+
+            transform.SetParent(_oldParent, false);
+            GetComponent<RectTransform>().localPosition = OldPosition;
+
+            if (ShouldDrop)
             {
                 OnDropAccepted();
                 return;
-            }
-            
-            transform.SetParent(_oldParent, false);
-            GetComponent<RectTransform>().localPosition = OldPosition;
+            }  
 
             GameObject o = eventData.pointerCurrentRaycast.gameObject;
             if (o == null)

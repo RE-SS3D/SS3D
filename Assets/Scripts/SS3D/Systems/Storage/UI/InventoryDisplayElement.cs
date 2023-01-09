@@ -13,7 +13,7 @@ namespace SS3D.Systems.Storage.UI
         /// Called when an item is being dropped onto this display
         /// </summary>
         /// <param name="display"></param>
-        public abstract void OnItemDrop(ItemDisplay display);
+        public abstract void OnItemDisplayDrop(ItemDisplay display);
         
         /// <summary>
         /// Called when an item is dragged and dropped outside
@@ -26,6 +26,7 @@ namespace SS3D.Systems.Storage.UI
 
         public void OnDrop(PointerEventData eventData)
         {
+            if (eventData.button != PointerEventData.InputButton.Left) return;
             GameObject drag = eventData.pointerDrag;
             if (drag == null)
             {
@@ -38,7 +39,7 @@ namespace SS3D.Systems.Storage.UI
                 return;
             }
             
-            OnItemDrop(display);
+            OnItemDisplayDrop(display);
         }
     }
 }

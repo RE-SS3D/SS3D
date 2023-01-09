@@ -32,14 +32,14 @@ namespace SS3D.Systems.Storage.UI
             }
         }
         
-        public override void OnItemDrop(ItemDisplay display)
+        public override void OnItemDisplayDrop(ItemDisplay display)
         {
             if (!_container.Container.Empty)
             {
                 return;
             }
 
-            display.DropAccepted = true;
+            display.ShouldDrop = true;
             ItemDisplay.Item = display.Item;
             Inventory.ClientTransferItem(ItemDisplay.Item, Vector2Int.zero, Container);
         }
