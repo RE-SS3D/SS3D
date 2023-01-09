@@ -47,7 +47,7 @@ namespace SS3D.Systems.Storage.Containers
         /// </summary>
         public bool SelectedHandEmpty => SelectedHandContainer.Empty;
 
-        public HandsUi HandsUI {get; private set;}
+        public HandsUi HandsUI { get; private set; }
 
         protected override void OnAwake()
         {

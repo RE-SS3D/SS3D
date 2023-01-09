@@ -75,7 +75,7 @@ namespace SS3D.Systems.Storage.UI
         public void OnBeginDrag(PointerEventData eventData)
         {
             // Only allow to drag with a left click.
-            if(eventData.button != PointerEventData.InputButton.Left) return;
+            if (eventData.button != PointerEventData.InputButton.Left) return;
 
             _oldParent = transform.parent;
             if (InventoryDisplayElement == null)

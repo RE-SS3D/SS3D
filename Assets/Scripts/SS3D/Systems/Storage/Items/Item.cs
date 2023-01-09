@@ -259,12 +259,10 @@ namespace SS3D.Systems.Storage.Items
         {
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
             RuntimePreviewGenerator.OrthographicMode = true;
-
             
-            Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform, Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, false);
-
+            Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
+                Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, false);
             _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
-            
             _sprite.name = transform.name;
         }
 
