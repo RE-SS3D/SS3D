@@ -2907,6 +2907,7 @@ GameObject:
   - component: {fileID: 5293420320943344825}
   - component: {fileID: 2219108694782903046}
   - component: {fileID: 3989715289005515527}
+  - component: {fileID: 7085167244225258644}
   m_Layer: 11
   m_Name: Human_Temporary
   m_TagString: Untagged
@@ -3190,6 +3191,21 @@ MonoBehaviour:
     Vertical: 1
   interactionOrigin: {fileID: 5927494552340417975}
   pickupIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
+--- !u!114 &7085167244225258644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 598c64b14067de94b8611b9e6fac7e2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 0}
+  _networkObjectCache: {fileID: 0}
 --- !u!1 &6530700040387722453
 GameObject:
   m_ObjectHideFlags: 0

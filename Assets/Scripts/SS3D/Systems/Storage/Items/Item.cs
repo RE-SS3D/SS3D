@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
 using FishNet.Component.Transforming;
 using FishNet.Object;
-using SS3D.Attributes;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Logging;
 using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Interactions;
 using SS3D.Utils;
 using UnityEditor;
 using UnityEngine;
+using System;
 #if UNITY_EDITOR
 
 #endif
@@ -22,7 +21,6 @@ namespace SS3D.Systems.Storage.Items
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(NetworkTransform))]
-    [RequiredLayer("Items")]
     public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget
     {
         [Header("Item settings")]
@@ -44,7 +42,10 @@ namespace SS3D.Systems.Storage.Items
         private Vector2Int _size;
         private Container _container;
 
+        public event EventHandler ItemUnfreezed;
+
         public Vector2Int Size => _size;
+
         public string ItemId => _itemId;
 
         public Sprite InventorySprite
@@ -82,11 +83,10 @@ namespace SS3D.Systems.Storage.Items
         {
             _sprite = null;
 
-            // Add a warning if an item is not on the Items layer (layer 10).
-            // Not really needed any more because of the RequiredLayer attribute.
-            if (gameObject.layer != 10)
+            // Add a warning if an item is not on the Item layer (layer 16).
+            if (gameObject.layer != 16)
             {
-                Punpun.Yell(this, $"Item {_name} is on {LayerMask.LayerToName(gameObject.layer)} layer. Should be on Items layer.");
+                Debug.LogWarning("Item " + _name + " is on layer " + gameObject.layer);
             }
         }
 
@@ -144,6 +144,13 @@ namespace SS3D.Systems.Storage.Items
             {
                 _rigidbody.isKinematic = false;
             }
+
+            OnItemUnfreezed(EventArgs.Empty);
+        }
+
+        protected virtual void OnItemUnfreezed(EventArgs e)
+        {
+            ItemUnfreezed?.Invoke(this, e);
         }
 
         /// <summary>
@@ -186,7 +193,9 @@ namespace SS3D.Systems.Storage.Items
         {
             base.CreateSourceInteractions(targets, interactions);
             DropInteraction dropInteraction = new();
+           // ThrowInteraction throwInteraction = new();
 
+           // interactions.Add(new InteractionEntry(null, throwInteraction));
             interactions.Add(new InteractionEntry(null, dropInteraction));
         }
 
@@ -260,10 +269,12 @@ namespace SS3D.Systems.Storage.Items
         {
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
             RuntimePreviewGenerator.OrthographicMode = true;
+
             
-            Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
-                Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, false);
+            Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform, Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, false);
+
             _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
+            
             _sprite.name = transform.name;
         }
 

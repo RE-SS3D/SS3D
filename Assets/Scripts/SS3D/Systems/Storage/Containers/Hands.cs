@@ -7,6 +7,7 @@ using SS3D.Systems.Storage.Items;
 using SS3D.Systems.Storage.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.XR;
 
 namespace SS3D.Systems.Storage.Containers
 {
@@ -49,6 +50,8 @@ namespace SS3D.Systems.Storage.Containers
 
         public HandsUi HandsUI { get; private set; }
 
+        Animator _humanAnimator;
+
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -56,6 +59,35 @@ namespace SS3D.Systems.Storage.Containers
             HandsUI.Hands = this;
 
             SupportsMultipleInteractions = true;
+
+            _humanAnimator = GetComponent<Animator>();
+
+            foreach (AttachedContainer container in HandContainers)
+            {
+                container.OnItemDetached += ContainerOnItemDetached;
+            }
+        }
+
+        void ContainerOnItemDetached(object sender, Item item)
+        {
+            if (_humanAnimator.GetCurrentAnimatorStateInfo(1).IsName("CHR_ThrowItem_HRM") &&
+                _humanAnimator.GetCurrentAnimatorStateInfo(1).normalizedTime < 1.0f)
+            {
+                var sameDirectionAsBody = transform.rotation * Vector3.forward;
+                item.gameObject.GetComponent<Rigidbody>().AddForce(sameDirectionAsBody * 200);
+            }
+
+        }
+
+        public void ThrowAnimationEvent()
+        {
+            var item = SelectedHandContainer.Items.First();
+            if (item != null)
+            {
+                var inventory = GetComponent<Inventory>();
+                inventory.ClientDropItem(item);
+
+            }
         }
 
         [Server]
@@ -89,7 +121,7 @@ namespace SS3D.Systems.Storage.Containers
             {
                 return;
             }
-            
+
             SelectedHandContainer.Dump();
         }
 
@@ -109,7 +141,7 @@ namespace SS3D.Systems.Storage.Containers
         public override void Update()
         {
             base.Update();
-            
+
             if (!IsOwner)
             {
                 return;
@@ -168,9 +200,22 @@ namespace SS3D.Systems.Storage.Containers
             }
             else
             {
-                Debug.Log($"Invalid hand index {selectedHand}");   
+                Debug.Log($"Invalid hand index {selectedHand}");
             }
         }
+
+        public void throwItem(){
+            _humanAnimator.SetTrigger("Throw");
+            //if(!IsHost)
+               // CmdthrowItem();
+        }
+
+        [ServerRpc]
+        private void CmdthrowItem()
+        {
+            _humanAnimator.SetTrigger("Throw");
+        }
+
 
         public IInteractionSource GetActiveTool()
         {
