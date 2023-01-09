@@ -38,12 +38,18 @@ namespace SS3D.Systems.Storage.Containers
 
         public InventoryUi InventoryUi { get; private set; }
 
-        public void Awake()
+        public override void OnStartClient()
         {
+            base.OnStartClient();
+            if(!IsOwner) return;
             InventoryUi = FindObjectOfType<InventoryUi>(true);
             InventoryUi.Inventory = this;
             InventoryUi.gameObject.SetActive(true);
-            
+        }
+
+
+        public void Awake()
+        {
             Hands.Inventory = this;
         }
 
