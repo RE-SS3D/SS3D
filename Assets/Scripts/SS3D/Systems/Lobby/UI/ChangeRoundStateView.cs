@@ -29,11 +29,18 @@ namespace SS3D.Systems.Lobby.UI
             AddEventListeners();
         }
 
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+
+            _startRoundButton.OnPressedDown -= HandleEmbarkButtonPress;
+        }
+
         private void AddEventListeners()
         {
             _startRoundButton.OnPressedDown += HandleEmbarkButtonPress;
 
-            RoundStateUpdated.AddListener(HandleRoundStateUpdated);
+            AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
         }
 
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
