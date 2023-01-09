@@ -6,6 +6,10 @@ using UnityEngine.UI;
 
 namespace SS3D.Systems.Storage.UI
 {
+    /// <summary>
+    /// This script instantiate the hand UI prefabs, and set up the SingleItemContainerSlot on each hand,
+    /// such that the slots are displaying the right containers. It also handles setting the highlight of the active hand.
+    /// </summary>
     public class HandsUi : MonoBehaviour
     {
         public GameObject LeftHandPrefab;
@@ -64,6 +68,10 @@ namespace SS3D.Systems.Storage.UI
             button.colors = buttonColors;
         }
 
+        /// <summary>
+        /// CreateHandDisplays create a hand display for each hand on the player.
+        /// It also sets up the SingleItemContainerSlot on those hands, such that they display their own container.
+        /// </summary>
         private void CreateHandDisplays()
         {
             // Destroy existing elements
@@ -74,7 +82,7 @@ namespace SS3D.Systems.Storage.UI
                 DestroyImmediate(containerTransform.GetChild(0).gameObject);
             }
 
-            // Create hand for every hand container
+            // Create hand for every hand container.
             AttachedContainer[] containers = Hands.HandContainers;
             for (int i = 0; i < containers.Length; i++)
             {

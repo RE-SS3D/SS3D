@@ -8,7 +8,9 @@ using UnityEngine.Assertions;
 namespace SS3D.Systems.Storage.UI
 {
     /// <summary>
-    /// Coordinates the players inventory ui
+    /// InventoryUi handle displaying the containers UI showing up when opening a container.
+    /// It handles displaying all the containers opened by the player, and removing the display when a container is closed.
+    /// It includes containers such as the one in the world the player interact with (toolbox, lockers) as well as the one
     /// </summary>
     public class InventoryUi : MonoBehaviour
     {
@@ -33,6 +35,9 @@ namespace SS3D.Systems.Storage.UI
             Inventory.ContainerClosed += InventoryOnContainerClosed;
         }
 
+        /// <summary>
+        /// Remove any instance of UI showing up the inside of the container passed in argument.
+        /// </summary>
         private void InventoryOnContainerClosed(AttachedContainer container)
         {
             for (int i = 0; i < _containerDisplays.Count; i++)
@@ -48,6 +53,9 @@ namespace SS3D.Systems.Storage.UI
             }
         }
 
+        /// <summary>
+        /// If the container is not already showing up, instantiate a container UI to display the container.
+        /// </summary>
         private void InventoryOnContainerOpened(AttachedContainer container)
         {
             foreach (ContainerDisplay x in _containerDisplays)

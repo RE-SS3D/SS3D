@@ -7,7 +7,8 @@ using UnityEngine.UI;
 namespace SS3D.Systems.Storage.UI
 {
     /// <summary>
-    /// Shows an item and allows actions such as dragging
+    /// ItemDisplay is in charge of displaying correctly an item sprite in the UI.
+    /// It allows actions such as dragging the sprite around the screen.
     /// </summary>
     public class ItemDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, IPointerClickHandler
     {
@@ -121,6 +122,7 @@ namespace SS3D.Systems.Storage.UI
                 return;
             }  
 
+            // If the raycast did not hit any element from the UI, drop the item out of the inventory.
             GameObject o = eventData.pointerCurrentRaycast.gameObject;
             if (o == null)
             {
