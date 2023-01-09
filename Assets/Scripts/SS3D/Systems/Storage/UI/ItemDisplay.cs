@@ -67,9 +67,13 @@ namespace SS3D.Systems.Storage.UI
         
         public void OnPointerClick(PointerEventData eventData)
         {
-            // WOW Unity, this is some amazing UI stuff
-            IPointerClickHandler pointerDownHandler = transform.parent.GetComponentInParent<IPointerClickHandler>();
-            pointerDownHandler?.OnPointerClick(eventData);
+            // Somehow, itemdisplay hides the other IPointerClickHandler in it's parent, so the event OnpointerClick is never
+            // called, for exemple in SingleItemContainerSlot. That's why we need to call the events on the parent from there.
+            var pointerDownHandlers = transform.parent.GetComponentsInParent<IPointerClickHandler>();
+            foreach (var pointerHandler in pointerDownHandlers)
+            {
+                pointerHandler?.OnPointerClick(eventData);
+            }
         }
 
         public void OnBeginDrag(PointerEventData eventData)
