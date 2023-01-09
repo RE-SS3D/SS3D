@@ -4,7 +4,7 @@ using SS3D.Systems.Storage.Items;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace SS3D.Storage.Containers
+namespace SS3D.Systems.Storage.Containers
 {
     /// <summary>
     /// This allows control over the position of displayed items inside the container.
