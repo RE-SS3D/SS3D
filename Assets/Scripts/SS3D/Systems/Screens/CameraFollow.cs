@@ -106,15 +106,6 @@ namespace SS3D.Systems.Screens
        /// </summary>
         private void ProcessCameraFollow()
         {
-            // Ignore camera controls when the mouse is over the UI
-            if (EventSystem.current != null)
-            {
-                if (EventSystem.current.IsPointerOverGameObject())
-                {
-                    return;
-                }
-            }
-
             bool horizontalRotationPressed = Input.GetButton("Camera Rotation");
             bool verticalRotationPressed = Input.GetButton("Camera Vertical Rotation");
 
@@ -167,11 +158,6 @@ namespace SS3D.Systems.Screens
         {
             // if there is no target exit out of update
             if (!_target)
-            {
-                return;
-            }
-
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             {
                 return;
             }
