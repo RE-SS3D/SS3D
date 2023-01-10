@@ -1,20 +1,10 @@
 using NUnit.Framework;
 using SS3D.Systems.Health;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
 
 namespace EditorTests.Health
 {
     public class HealthTests
     {
-        #region Class variables
-        /// <summary>
-        /// Toggles whether any test-specific Debug.Log's are displayed in the console.
-        /// </summary>
-        private bool SHOW_DEBUG = false;
-        #endregion
-
         #region Test set up
         [SetUp]
         public void SetUp()
@@ -37,14 +27,10 @@ namespace EditorTests.Health
         [TestCase(10.01f, false)]
         public void CanCommenceInteractionOnlyWhenStaminaIsGreaterThatZero(float staminaToDeplete, bool expectedResult)
         {
+            IStamina sut = StaminaHelper.Create(10f);
 
-            // ARRANGE
-            IStamina sut = StaminaHelper.Create(StaminaType.Standard, 10f);
-
-            // ACT
             sut.ConsumeStamina(staminaToDeplete);
 
-            // ASSERT
             Assert.IsTrue(sut.CanCommenceInteraction == expectedResult);
         }
 
@@ -57,14 +43,10 @@ namespace EditorTests.Health
         [TestCase(11.01f, false)]
         public void CanContinueInteractionWithNegativeStaminaUntilNegativeTenPercent(float staminaToDeplete, bool expectedResult)
         {
+            IStamina sut = StaminaHelper.Create(10f);
 
-            // ARRANGE
-            IStamina sut = StaminaHelper.Create(StaminaType.Standard, 10f);
-
-            // ACT
             sut.ConsumeStamina(staminaToDeplete);
 
-            // ASSERT
             Assert.IsTrue(sut.CanContinueInteraction == expectedResult);
         }
 
@@ -78,13 +60,10 @@ namespace EditorTests.Health
         [TestCase(100f, 0f)]
         public void ConsumeStaminaCorrectlyReducesTheStaminaValue(float staminaToDeplete, float expectedResult)
         {
-            // ARRANGE
-            IStamina sut = StaminaHelper.Create(StaminaType.Standard, 10f);
+            IStamina sut = StaminaHelper.Create(10f);
 
-            // ACT
             sut.ConsumeStamina(staminaToDeplete);
 
-            // ASSERT
             Assert.IsTrue(sut.Current == expectedResult);
         }
 
@@ -98,21 +77,13 @@ namespace EditorTests.Health
         [TestCase(100f, 1f)]
         public void RechargingStaminaCorrectlyReducesTheStaminaValue(float secondsToRecharge, float expectedResult)
         {
-            // ARRANGE
-            IStamina sut = StaminaHelper.Create(StaminaType.Standard, 10f, 1f); // Set up stamina to fully recharge after 1 second.
-            sut.ConsumeStamina(10f);                                            // Deplete all of the stamina
+            IStamina sut = StaminaHelper.Create(10f, 1f);   // Set up stamina to fully recharge after 1 second.
+            sut.ConsumeStamina(10f);                        // Deplete all of the stamina
 
-            // ACT
             sut.RechargeStamina(secondsToRecharge);
 
-            // ASSERT
             Assert.IsTrue(sut.Current == expectedResult);
         }
-
-        #endregion
-
-        #region Helper functions
-
         #endregion
     }
 }

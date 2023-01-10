@@ -113,7 +113,6 @@ namespace SS3D.Systems.Health
                 // Scale up our current stamina. This is done to prevent visible stamina gap when training.
                 _current *= TRAINING_MULTIPLIER;
             }
-
         }
     }
 }

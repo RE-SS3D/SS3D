@@ -41,11 +41,24 @@ namespace SS3D.Systems.Health.UI
             SetStamina(_controller ? _controller.Current : 0f);
         }
 
-
         public void AssignViewToPlayer(StaminaController staminaController)
         {
             // Set the internal variable
             _controller = staminaController;
+        }
+
+        /// <summary>
+        /// Unassigns the selected controller from the UI.
+        /// </summary>
+        /// <param name="staminaController">The StaminaController that will be unassigned</param>
+        public void UnassignViewFromPlayer(StaminaController staminaController)
+        {
+            // All StaminaControllers in the scene can call this method, and the order is not guaranteed.
+            // Therefore, we need to make sure the controller is actually assigned before clearing the field.
+            if (_controller == staminaController)
+            {
+                _controller = null;
+            }
         }
     }
 }

@@ -28,6 +28,5 @@ namespace SS3D.Systems.Health
         /// </summary>
         /// <param name="deltaTime"></param>
         public void RechargeStamina(float deltaTime);
-
     }
 }

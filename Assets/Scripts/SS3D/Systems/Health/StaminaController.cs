@@ -16,21 +16,18 @@ namespace SS3D.Systems.Health
     public class StaminaController : NetworkActor
     {
         /// <summary>
-        /// The stamina bar UI
+        /// The stamina bar UI. It should only be modified on the client.
         /// </summary>
         private StaminaBarView UI;
-
-        /// <summary>
-        /// The type of stamina data to create
-        /// </summary>
-        [SerializeField] private StaminaType _staminaType;
 
         /// <summary>
         /// The controller for this entity.
         /// </summary>
         [SerializeField] private HumanoidController _player;
 
-
+        /// <summary>
+        /// The PlayerControllable component for this entity.
+        /// </summary>
         [SerializeField] private PlayerControllable playerControllable;
 
         /// <summary>
@@ -55,19 +52,39 @@ namespace SS3D.Systems.Health
             // The server manages the stamina data for each entity.
             if (IsServer)
             {
-                _stamina = StaminaHelper.Create(_staminaType, 10f);
+                _stamina = StaminaHelper.Create(10f);
                 _current = _stamina.Current;
             }
 
-            // Currently movement is client-authoritative, so we need to subscribe to events on the client only.
-            if (IsClient && playerControllable.ControllingSoul.IsOwner)
+            if (IsClient)
             {
-                SubscribeToEvents();
                 UI = FindObjectOfType<StaminaBarView>();
-                UI?.AssignViewToPlayer(this);
+                playerControllable.ControllingSoulChanged += AssignViewToControllable;
             }
 
-            
+            // Currently movement is client-authoritative, so we need to subscribe to events on the client only.
+            if (IsClient)
+            {
+                SubscribeToEvents();
+
+                if (playerControllable.ControllingSoul.IsOwner)
+                {
+                    UI?.AssignViewToPlayer(this);
+                }
+            }
+        }
+
+        [Client]
+        public void AssignViewToControllable(Soul newSoul)
+        {
+            if (newSoul == null || !newSoul.IsOwner)
+            {
+                UI.UnassignViewFromPlayer(this);
+            }
+            else
+            {
+                UI?.AssignViewToPlayer(this);
+            }
         }
 
         public bool CanCommenceInteraction
@@ -111,7 +128,10 @@ namespace SS3D.Systems.Health
         /// <param name="rawAmountToDeplete">The amount of stamina to reduce per second (not yet scaled to delta time)</param>
         private void DepleteStamina(float rawAmountToDeplete)
         {
-            DepleteStaminaScaled(rawAmountToDeplete * Time.deltaTime);
+            if (IsOwner)
+            {
+                DepleteStaminaScaled(rawAmountToDeplete * Time.deltaTime);
+            }
         }
 
         /// <summary>
@@ -143,11 +163,14 @@ namespace SS3D.Systems.Health
         private void SubscribeToEvents()
         {
             _player.OnSpeedChanged += DepleteStamina;
+            playerControllable.ControllingSoulChanged += AssignViewToControllable;
         }
 
         private void UnsubscribeFromEvents()
         {
             _player.OnSpeedChanged -= DepleteStamina;
+            playerControllable.ControllingSoulChanged -= AssignViewToControllable;
+
         }
     }
 }
