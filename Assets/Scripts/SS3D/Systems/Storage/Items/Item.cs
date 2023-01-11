@@ -33,6 +33,11 @@ namespace SS3D.Systems.Storage.Items
 
         [SerializeField] private Rigidbody _rigidbody;
 
+        /// <summary>
+        /// The item's relative weight in kilograms.
+        /// </summary>
+        [SerializeField] private float _weight;
+
         [Tooltip("the item prefab, you can click on the item name and drag from Unity's file explorer")]
         public GameObject Prefab;
         [Header("Attachment settings")]
