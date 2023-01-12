@@ -52,6 +52,8 @@ namespace SS3D.Systems.Storage.Items
         public Vector2Int Size => _size;
         public string ItemId => _itemId;
 
+        public List<Trait> traits;
+
         public Sprite InventorySprite
         {
             get
@@ -158,7 +160,7 @@ namespace SS3D.Systems.Storage.Items
         public void SetVisibility(bool visible)
         {
             // TODO: Make this handle multiple renderers, with different states
-            Renderer renderer = GetComponent<Renderer>();
+            Renderer renderer = GetComponentInChildren<Renderer>();
 
             if (renderer != null)
             {
@@ -200,21 +202,21 @@ namespace SS3D.Systems.Storage.Items
             return _container != null;
         }
 
-        // public bool HasTrait(Trait trait)
-        // {
-        //     return traits.Contains(trait);
-        // }
-        //
-        // public bool HasTrait(string name)
-        // {
-        //     var hash = Animator.StringToHash(name.ToUpper());
-        //     foreach (Trait trait in traits)
-        //     {
-        //         if (trait.Hash == hash)
-        //             return true;
-        //     }
-        //     return false;
-        // }
+        public bool HasTrait(Trait trait)
+        {
+            return traits.Contains(trait);
+        }
+
+        public bool HasTrait(string name)
+        {
+            var hash = Animator.StringToHash(name.ToUpper());
+            foreach (Trait trait in traits)
+            {
+                if (trait.Hash == hash)
+                    return true;
+            }
+            return false;
+        }
 
         [Server]
         public void SetContainer(Container newContainer, bool alreadyAdded, bool alreadyRemoved)
