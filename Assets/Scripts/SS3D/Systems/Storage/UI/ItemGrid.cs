@@ -63,9 +63,12 @@ namespace SS3D.Systems.Storage.UI
             AttachedContainer.Container.OnContentsChanged -= ContainerOnContentsChanged;
         }
 
+        /// <summary>
+        /// Create item displays for items already contained in the container when viewing it. 
+        /// </summary>
         private IEnumerator DisplayInitialItems()
         {
-            // thanks Unity UI
+            // For some reason, has to be delayed to end of frame to work.
             yield return new WaitForEndOfFrame();
             Container container = AttachedContainer.Container;
             foreach (Item item in container.Items)
@@ -75,19 +78,19 @@ namespace SS3D.Systems.Storage.UI
             }
         }
 
-        private void ContainerOnContentsChanged(Container container, IEnumerable<Item> items, IEnumerable<Item> newItems, ContainerChangeType type)
+        private void ContainerOnContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             switch (type)
             {
                 case ContainerChangeType.Add:
-                    foreach (Item item in items)
+                    foreach (Item item in newItems)
                     {
                         Vector2Int position = container.PositionOf(item);
                         CreateItemDisplay(item, position);
                     }
                     break;
                 case ContainerChangeType.Remove:
-                    foreach (Item item in items)
+                    foreach (Item item in oldItems)
                     {
                         for (var i = 0; i < _gridItems.Count; i++)
                         {
@@ -104,7 +107,7 @@ namespace SS3D.Systems.Storage.UI
                     }
                     break;
                 case ContainerChangeType.Move:
-                    foreach (Item item in items)
+                    foreach (Item item in newItems)
                     {
                         foreach (ItemGridItem gridItem in _gridItems)
                         {
