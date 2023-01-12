@@ -2,8 +2,13 @@
 using UnityEditor;
 using UnityEngine;
 using SS3D.Systems.Storage.Containers;
+using FishNet.Connection;
+using FishNet.Object;
 
 
+/// <summary>
+/// Class handling the inspector display of a containerDescriptor.
+/// </summary>
 [CustomEditor(typeof(ContainerDescriptor))]
 public class ContainerDescriptorEditor : Editor
 {
@@ -12,7 +17,6 @@ public class ContainerDescriptorEditor : Editor
     private bool showIcon = false;
     private AttachedContainer attachedContainer; 
     private ContainerInteractive containerInteractive;
-    private ContainerSync containerSync;
     private ContainerItemDisplay containerItemDisplay;
 
     public void OnEnable()
@@ -23,45 +27,77 @@ public class ContainerDescriptorEditor : Editor
         TitleStyle.normal.textColor = Color.white;
 
         containerDescriptor = (ContainerDescriptor)target;
-        AddBase();
+        if (containerDescriptor.AutomaticContainerSetUp)
+        {
+            AddBase();
+            attachedContainer = containerDescriptor.AttachedContainer;
+            containerInteractive = containerDescriptor.ContainerInteractive;
+            containerItemDisplay = containerDescriptor.ContainerItemDisplay;
+        }
 
-        attachedContainer = containerDescriptor.attachedContainer;
-        containerInteractive = containerDescriptor.containerInteractive;
-        containerItemDisplay = containerDescriptor.containerItemDisplay;
+
     }
+
 
     public override void OnInspectorGUI()
     {
+
+        EditorGUILayout.LabelField(containerDescriptor.ContainerName, TitleStyle);
         serializedObject.Update();
 
-        EditorGUILayout.LabelField(containerDescriptor.containerName, TitleStyle);
+        if (!containerDescriptor.AutomaticContainerSetUp)
+        {
+            DrawDefaultInspector();
+            return;
+        }
+        else
+        {
+            AddBase();
+            attachedContainer = containerDescriptor.AttachedContainer;
+            containerInteractive = containerDescriptor.ContainerInteractive;
+            containerItemDisplay = containerDescriptor.ContainerItemDisplay;
+        }
 
-        string containerName = EditorGUILayout.TextField(new GUIContent("Container Name", "the name of the container, appearing in container related interactions"), containerDescriptor.containerName);
+            bool automaticContainerSetUp = EditorGUILayout.Toggle(new GUIContent("Automatic container setup", ""), containerDescriptor.AutomaticContainerSetUp);
+        HandleAutomaticContainerSetUp(automaticContainerSetUp);
+
+        //Filter startFilter = (Filter)EditorGUILayout.ObjectField(new GUIContent("Filter", "Filter on the container, controls what can go in the container"), containerDescriptor.startFilter, typeof(Filter), true);
+        //HandleStartFilter(startFilter);
+
+        var _attachedContainer = (AttachedContainer)EditorGUILayout.ObjectField(new GUIContent("Attached Container", "Attached container reference"),
+            containerDescriptor.AttachedContainer, typeof(AttachedContainer), true);
+        HandleAttachedContainer(_attachedContainer);
+
+        var _container = (Container)EditorGUILayout.ObjectField(new GUIContent("Container", "Container reference"),
+    containerDescriptor.Container, typeof(Container), true);
+        HandleContainer(_container);
+
+        string containerName = EditorGUILayout.TextField(new GUIContent("Container Name", "the name of the container, appearing in container related interactions"), containerDescriptor.ContainerName);
         HandleContainerName(containerName);
 
 
-        bool isInteractive = EditorGUILayout.Toggle(new GUIContent("is Interactive", "Set if the container can be interacted with or not. Adds the ContainerInteractive file, which contains default interactions for the container"), containerDescriptor.isInteractive);
+        bool isInteractive = EditorGUILayout.Toggle(new GUIContent("is Interactive", "Set if the container can be interacted with or not. Adds the ContainerInteractive file, which contains default interactions for the container"), containerDescriptor.IsInteractive);
         HandleIsInteractive(isInteractive);
 
 
-        if (containerDescriptor.isInteractive)
+        if (containerDescriptor.IsInteractive)
         {
-            bool hasUi = EditorGUILayout.Toggle(new GUIContent("has UI", "Set if the container has an UI"), containerDescriptor.hasUi);
+            bool hasUi = EditorGUILayout.Toggle(new GUIContent("has UI", "Set if the container has an UI"), containerDescriptor.HasUi);
             HandleHasUi(hasUi);
 
-            bool isOpenable = EditorGUILayout.Toggle(new GUIContent("is Openable", "Set if the container has an open/close interaction"), containerDescriptor.isOpenable);
+            bool isOpenable = EditorGUILayout.Toggle(new GUIContent("is Openable", "Set if the container has an open/close interaction"), containerDescriptor.IsOpenable);
             HandleIsOpenable(isOpenable);
 
-            bool hasCustomInteraction = EditorGUILayout.Toggle(new GUIContent("has custom interaction", "Set if the container should use the default interaction of ContainerInteractive.cs, or custom ones in another script"), containerDescriptor.hasCustomInteraction);
+            bool hasCustomInteraction = EditorGUILayout.Toggle(new GUIContent("has custom interaction", "Set if the container should use the default interaction of ContainerInteractive.cs, or custom ones in another script"), containerDescriptor.HasCustomInteraction);
             HandleCustomInteraction(hasCustomInteraction);
         }
 
-        if (containerDescriptor.isOpenable)
+        if (containerDescriptor.IsOpenable)
         {
-            bool onlyStoreWhenOpen = EditorGUILayout.Toggle(new GUIContent("Only store when open", "Set if objects can be stored in the container without using the open interaction first"), containerDescriptor.onlyStoreWhenOpen);
+            bool onlyStoreWhenOpen = EditorGUILayout.Toggle(new GUIContent("Only store when open", "Set if objects can be stored in the container without using the open interaction first"), containerDescriptor.OnlyStoreWhenOpen);
             HandleOnlyStoreWhenOpen(onlyStoreWhenOpen);       
         }
-        else if(containerDescriptor.hasUi)
+        else if(containerDescriptor.HasUi)
         {
             var animator = containerDescriptor.gameObject.GetComponent<Animator>();
             if (animator != null)
@@ -70,38 +106,38 @@ public class ContainerDescriptorEditor : Editor
                 {
                     if (controllerParameter.name != "Open") { continue; }
 
-                    bool openWhenContainerViewed = EditorGUILayout.Toggle(new GUIContent("open when container viewed", "Set if the open animation should run when the container UI is opened"), containerDescriptor.openWhenContainerViewed);
+                    bool openWhenContainerViewed = EditorGUILayout.Toggle(new GUIContent("open when container viewed", "Set if the open animation should run when the container UI is opened"), containerDescriptor.OpenWhenContainerViewed);
                     HandleOpenWhenContainerViewed(openWhenContainerViewed);
                 }
             }      
         }
 
-        if (containerDescriptor.hasUi)
+        if (containerDescriptor.HasUi)
         {
-            float maxDistance = EditorGUILayout.FloatField(new GUIContent("Max distance", "max distance between the observer and the container before the UI closes on it's own"), containerDescriptor.maxDistance);
+            float maxDistance = EditorGUILayout.FloatField(new GUIContent("Max distance", "max distance between the observer and the container before the UI closes on it's own"), containerDescriptor.MaxDistance);
             HandleMaxDistance(maxDistance);
         }
 
-        Vector2Int size = EditorGUILayout.Vector2IntField(new GUIContent("Size", "Defines the size of the container, every item takes a defined place inside a container"), containerDescriptor.size);
+        Vector2Int size = EditorGUILayout.Vector2IntField(new GUIContent("Size", "Defines the size of the container, every item takes a defined place inside a container"), containerDescriptor.Size);
         HandleSize(size);
 
-        Filter startFilter = (Filter)EditorGUILayout.ObjectField(new GUIContent("Filter", "Filter on the container, controls what can go in the container"), containerDescriptor.startFilter, typeof(Filter), true);
-        HandleStartFilter(startFilter);
+        //Filter startFilter = (Filter)EditorGUILayout.ObjectField(new GUIContent("Filter", "Filter on the container, controls what can go in the container"), containerDescriptor.startFilter, typeof(Filter), true);
+        //HandleStartFilter(startFilter);
 
-        bool hideItems = EditorGUILayout.Toggle(new GUIContent("Hide items", "Set if items should be attached as children of the container"), containerDescriptor.hideItems);
+        bool hideItems = EditorGUILayout.Toggle(new GUIContent("Hide items", "Set if items should be attached as children of the container"), containerDescriptor.HideItems);
         HandleHideItems(hideItems);
 
         if (!hideItems)
         {
-            Vector3 attachmentOffset = EditorGUILayout.Vector3Field(new GUIContent("Attachment Offset", "define the position of the items inside the container"), containerDescriptor.attachmentOffset);
+            Vector3 attachmentOffset = EditorGUILayout.Vector3Field(new GUIContent("Attachment Offset", "define the position of the items inside the container"), containerDescriptor.AttachmentOffset);
             HandleAttachmentOffset(attachmentOffset);
 
-            bool hasCustomDisplay = EditorGUILayout.Toggle(new GUIContent("Has custom display", "adds the container item display script, defines custom positions for items in the container"), containerDescriptor.hasCustomDisplay);
+            bool hasCustomDisplay = EditorGUILayout.Toggle(new GUIContent("Has custom display", "adds the container item display script, defines custom positions for items in the container"), containerDescriptor.HasCustomDisplay);
             HandleHasCustomDisplay(hasCustomDisplay);
 
             if (hasCustomDisplay)
             {
-                int numberDisplay = EditorGUILayout.IntField(new GUIContent("number of display", "the number of items to display in custom position"), containerDescriptor.numberDisplay);
+                int numberDisplay = EditorGUILayout.IntField(new GUIContent("number of display", "the number of items to display in custom position"), containerDescriptor.NumberDisplay);
                 HandleNumberDisplay(numberDisplay);
 
                 SerializedProperty sp = serializedObject.FindProperty("displays");
@@ -114,11 +150,8 @@ public class ContainerDescriptorEditor : Editor
             }
         }
 
-        bool attachItems = EditorGUILayout.Toggle(new GUIContent("Attach Items", "Set if items should be attached as children of the container game object"), containerDescriptor.attachItems);
+        bool attachItems = EditorGUILayout.Toggle(new GUIContent("Attach Items", "Set if items should be attached as children of the container game object"), containerDescriptor.AttachItems);
         HandleAttachItems(attachItems);
-
-
-
 
         ShowIcons();
         serializedObject.ApplyModifiedProperties();
@@ -133,31 +166,31 @@ public class ContainerDescriptorEditor : Editor
 
         if (showIcon)
         {
-            if (containerDescriptor.isOpenable)
+            if (containerDescriptor.IsOpenable)
             {
-                Sprite openIcon = (Sprite)EditorGUILayout.ObjectField("Open container icon", containerDescriptor.openIcon, typeof(Sprite), true);
-                SerializedProperty sp = serializedObject.FindProperty("openIcon");
+                Sprite openIcon = (Sprite)EditorGUILayout.ObjectField("Open container icon", containerDescriptor.OpenIcon, typeof(Sprite), true);
+                SerializedProperty sp = serializedObject.FindProperty("OpenIcon");
                 sp.objectReferenceValue = openIcon;
             }
 
-            if (containerDescriptor.isInteractive)
+            if (containerDescriptor.IsInteractive)
             {
-                Sprite storeIcon = (Sprite)EditorGUILayout.ObjectField("Store container icon", containerDescriptor.storeIcon, typeof(Sprite), true);
-                SerializedProperty sp = serializedObject.FindProperty("storeIcon");
+                Sprite storeIcon = (Sprite)EditorGUILayout.ObjectField("Store container icon", containerDescriptor.StoreIcon, typeof(Sprite), true);
+                SerializedProperty sp = serializedObject.FindProperty("StoreIcon");
                 sp.objectReferenceValue = storeIcon;
             }
 
-            if (containerDescriptor.hasUi)
+            if (containerDescriptor.HasUi)
             {
-                Sprite viewIcon = (Sprite)EditorGUILayout.ObjectField("View container icon", containerDescriptor.viewIcon, typeof(Sprite), true);
-                SerializedProperty sp = serializedObject.FindProperty("viewIcon");
+                Sprite viewIcon = (Sprite)EditorGUILayout.ObjectField("View container icon", containerDescriptor.ViewIcon, typeof(Sprite), true);
+                SerializedProperty sp = serializedObject.FindProperty("ViewIcon");
                 sp.objectReferenceValue = viewIcon;
             }
 
-            if (containerDescriptor.isInteractive && !containerDescriptor.hasUi)
+            if (containerDescriptor.IsInteractive && !containerDescriptor.HasUi)
             {
-                Sprite takeIcon = (Sprite)EditorGUILayout.ObjectField("Take container icon", containerDescriptor.takeIcon, typeof(Sprite), true);
-                SerializedProperty sp = serializedObject.FindProperty("takeIcon");
+                Sprite takeIcon = (Sprite)EditorGUILayout.ObjectField("Take container icon", containerDescriptor.TakeIcon, typeof(Sprite), true);
+                SerializedProperty sp = serializedObject.FindProperty("TakeIcon");
                 sp.objectReferenceValue = takeIcon;
             }
         }
@@ -168,34 +201,57 @@ public class ContainerDescriptorEditor : Editor
     /// </summary>
     public void AddBase()
     {
-        if (!containerDescriptor.initialized)
+        if (!containerDescriptor.Initialized)
         {
+            AddContainer();
             AddAttached();
+            
             HandleIsInteractive(true);
-            AddSync();
-            SerializedProperty sp = serializedObject.FindProperty("initialized");
+            //AddSync();
+            SerializedProperty sp = serializedObject.FindProperty("Initialized");
             sp.boolValue = true;
             serializedObject.ApplyModifiedProperties();
         }
     }
 
+    private void HandleAutomaticContainerSetUp(bool automaticContainerSetUp)
+    {
+        SerializedProperty sp = serializedObject.FindProperty("AutomaticContainerSetUp");
+        sp.boolValue = automaticContainerSetUp;
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    private void HandleAttachedContainer(AttachedContainer attachedContainer)
+    {
+        SerializedProperty sp = serializedObject.FindProperty("AttachedContainer");
+        sp.objectReferenceValue = attachedContainer;
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    private void HandleContainer(Container container)
+    {
+        SerializedProperty sp = serializedObject.FindProperty("Container");
+        sp.objectReferenceValue = container;
+        serializedObject.ApplyModifiedProperties();
+    }
+
     private void HandleNumberDisplay(int numberDisplay)
     {
-        SerializedProperty sp = serializedObject.FindProperty("numberDisplay");
+        SerializedProperty sp = serializedObject.FindProperty("NumberDisplay");
         sp.intValue = numberDisplay;
         serializedObject.ApplyModifiedProperties();
     }
 
     private void HandleHasCustomDisplay(bool hasCustomDisplay)
     {
-        SerializedProperty sp = serializedObject.FindProperty("hasCustomDisplay");
+        SerializedProperty sp = serializedObject.FindProperty("HasCustomDisplay");
         sp.boolValue = hasCustomDisplay;
         serializedObject.ApplyModifiedProperties();
-        if(hasCustomDisplay && containerDescriptor.containerItemDisplay == null)
+        if(hasCustomDisplay && containerDescriptor.ContainerItemDisplay == null)
         {
             AddCustomDisplay();
         }
-        if(!hasCustomDisplay && containerDescriptor.containerItemDisplay != null)
+        if(!hasCustomDisplay && containerDescriptor.ContainerItemDisplay != null)
         {
             RemoveCustomDisplay();
         }
@@ -203,59 +259,60 @@ public class ContainerDescriptorEditor : Editor
 
     private void HandleHasUi(bool hasUi)
     {
-        SerializedProperty sp = serializedObject.FindProperty("hasUi");
+        SerializedProperty sp = serializedObject.FindProperty("HasUi");
         sp.boolValue = hasUi;
         serializedObject.ApplyModifiedProperties();
     }
 
     private void HandleOpenWhenContainerViewed(bool openWhenContainerViewed)
     {
-        SerializedProperty sp = serializedObject.FindProperty("openWhenContainerViewed");
+        SerializedProperty sp = serializedObject.FindProperty("OpenWhenContainerViewed");
         sp.boolValue = openWhenContainerViewed;
         serializedObject.ApplyModifiedProperties();
     }
 
     private void HandleStartFilter(Filter startFilter)
     {
-        SerializedProperty sp = serializedObject.FindProperty("startFilter");
+        SerializedProperty sp = serializedObject.FindProperty("StartFilter");
         sp.objectReferenceValue = startFilter;
         serializedObject.ApplyModifiedProperties();
     }
     private void HandleSize(Vector2Int size)
     {
-        SerializedProperty sp = serializedObject.FindProperty("size");
+        SerializedProperty sp = serializedObject.FindProperty("Size");
         sp.vector2IntValue = size;
         serializedObject.ApplyModifiedProperties();
+        containerDescriptor.Container.Size = size;
     }
     private void HandleAttachmentOffset(Vector3 attachmentOffset)
     {
-        SerializedProperty sp = serializedObject.FindProperty("attachmentOffset");
+        SerializedProperty sp = serializedObject.FindProperty("AttachmentOffset");
         sp.vector3Value = attachmentOffset;
         serializedObject.ApplyModifiedProperties();
     }
     private void HandleAttachItems(bool attachItems)
     {
-        SerializedProperty sp = serializedObject.FindProperty("attachItems");
+        SerializedProperty sp = serializedObject.FindProperty("AttachItems");
         sp.boolValue = attachItems;
         serializedObject.ApplyModifiedProperties();
     }
 
     private void HandleMaxDistance(float maxDistance)
     {      
-        SerializedProperty sp = serializedObject.FindProperty("maxDistance");
+        SerializedProperty sp = serializedObject.FindProperty("MaxDistance");
         sp.floatValue = maxDistance;
         serializedObject.ApplyModifiedProperties();
     }
     private void HandleIsInteractive(bool isInteractive)
     {
-        SerializedProperty sp = serializedObject.FindProperty("isInteractive");
+        SerializedProperty sp = serializedObject.FindProperty("IsInteractive");
         sp.boolValue = isInteractive;
         serializedObject.ApplyModifiedProperties();
-        if (isInteractive && containerDescriptor.containerInteractive == null)
+        if (isInteractive && containerDescriptor.ContainerInteractive == null)
         {
             AddInteractive();
         }
-        else if (!isInteractive && containerDescriptor.containerInteractive != null)
+        else if (!isInteractive && containerDescriptor.ContainerInteractive != null)
         {
             RemoveInteractive();
         }
@@ -263,21 +320,21 @@ public class ContainerDescriptorEditor : Editor
 
     private void HandleCustomInteraction(bool hasCustomInteraction)
     { 
-        SerializedProperty sp = serializedObject.FindProperty("hasCustomInteraction");
+        SerializedProperty sp = serializedObject.FindProperty("HasCustomInteraction");
         sp.boolValue = hasCustomInteraction;
         serializedObject.ApplyModifiedProperties();
     }
 
     private void HandleContainerName(string containerName)
     {
-        SerializedProperty sp = serializedObject.FindProperty("containerName");
+        SerializedProperty sp = serializedObject.FindProperty("ContainerName");
         sp.stringValue = containerName;
         serializedObject.ApplyModifiedProperties();
     }
     private void HandleIsOpenable(bool isOpenable)
     {
         
-        SerializedProperty sp = serializedObject.FindProperty("isOpenable");
+        SerializedProperty sp = serializedObject.FindProperty("IsOpenable");
         sp.boolValue = isOpenable;
         serializedObject.ApplyModifiedProperties();
 
@@ -290,23 +347,23 @@ public class ContainerDescriptorEditor : Editor
 
     private void HandleOnlyStoreWhenOpen(bool onlyStoreWhenOpen)
     {
-        SerializedProperty sp = serializedObject.FindProperty("onlyStoreWhenOpen");
+        SerializedProperty sp = serializedObject.FindProperty("OnlyStoreWhenOpen");
         sp.boolValue = onlyStoreWhenOpen;
         serializedObject.ApplyModifiedProperties();
     }
     private void HandleHideItems(bool hideItems)
     {
-        SerializedProperty sp = serializedObject.FindProperty("hideItems");
+        SerializedProperty sp = serializedObject.FindProperty("HideItems");
         sp.boolValue = hideItems;
         serializedObject.ApplyModifiedProperties();
     }
     private void AddInteractive()
     {
-        SerializedProperty sp = serializedObject.FindProperty("containerInteractive");
+        SerializedProperty sp = serializedObject.FindProperty("ContainerInteractive");
         GameObject networkedParent = GetParentNetworkIdentity(containerDescriptor.gameObject);
         sp.objectReferenceValue = networkedParent != null ? networkedParent.AddComponent<ContainerInteractive>() : containerDescriptor.gameObject.AddComponent<ContainerInteractive>();
         serializedObject.ApplyModifiedProperties();
-        containerDescriptor.containerInteractive.containerDescriptor = containerDescriptor;
+        containerDescriptor.ContainerInteractive.containerDescriptor = containerDescriptor;
     }
 
     private void RemoveInteractive()
@@ -322,10 +379,10 @@ public class ContainerDescriptorEditor : Editor
 
     private void AddCustomDisplay()
     {
-        SerializedProperty sp = serializedObject.FindProperty("containerItemDisplay");
+        SerializedProperty sp = serializedObject.FindProperty("ContainerItemDisplay");
         sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<ContainerItemDisplay>();
         serializedObject.ApplyModifiedProperties();
-        containerDescriptor.containerItemDisplay.containerDescriptor = containerDescriptor;
+        containerDescriptor.ContainerItemDisplay.containerDescriptor = containerDescriptor;
     }
 
     private void RemoveCustomDisplay()
@@ -335,43 +392,24 @@ public class ContainerDescriptorEditor : Editor
 
     private void AddAttached()
     {
-        containerDescriptor.attachedContainer = containerDescriptor.gameObject.AddComponent<AttachedContainer>();
-        containerDescriptor.attachedContainer.containerDescriptor = containerDescriptor;
+        SerializedProperty sp = serializedObject.FindProperty("AttachedContainer");
+        sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<AttachedContainer>();
+        serializedObject.ApplyModifiedProperties();
+        containerDescriptor.AttachedContainer.ContainerDescriptor = containerDescriptor;
+        containerDescriptor.AttachedContainer.Container = containerDescriptor.Container;
     }
 
-    private void AddSync()
+    private void AddContainer()
     {
-        // put the containersync on the highest game object in the hierarchy with a network identity
-        if (containerDescriptor.gameObject.GetComponentInParent<ContainerSync>() == null)
-        {
-            SerializedProperty sp = serializedObject.FindProperty("containerSync");
-            GameObject gameObject = GetParentNetworkIdentity(containerDescriptor.gameObject);
-            sp.objectReferenceValue = gameObject != null ? gameObject.AddComponent<ContainerSync>() : containerDescriptor.gameObject.AddComponent<ContainerSync>();
-            serializedObject.ApplyModifiedProperties();
-        }
-        
+        SerializedProperty sp = serializedObject.FindProperty("Container");
+        sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<Container>();
+        serializedObject.ApplyModifiedProperties();
     }
 
     private GameObject GetParentNetworkIdentity(GameObject g)
     {
-        var networkIdentity = g.GetComponentInParent<NetworkIdentity>();
+        var networkIdentity = g.GetComponentInParent<NetworkObject>();
         return networkIdentity ? networkIdentity.gameObject : null;
-    }
-
-    private void RemoveSync()
-    {
-        GameObject gameObject = Selection.activeGameObject;
-        if(gameObject != null)
-        {
-            var containerDescriptorsInParent = gameObject.GetComponentsInParent<ContainerDescriptor>();
-            var containerDescriptorsInChildren = gameObject.GetComponentsInChildren<ContainerDescriptor>();
-            if (containerDescriptorsInParent != null && containerDescriptorsInChildren != null && containerDescriptorsInChildren.Length == 0 && containerDescriptorsInParent.Length == 0)
-            {
-                DestroyImmediate(gameObject.GetComponent<ContainerSync>());
-                GameObject networkedParent = GetParentNetworkIdentity(gameObject);
-                DestroyImmediate(networkedParent.GetComponent<ContainerSync>());
-            }
-        }
     }
 
     private void OnDestroy()
@@ -380,7 +418,6 @@ public class ContainerDescriptorEditor : Editor
         {
             DestroyImmediate(attachedContainer, true);
             DestroyImmediate(containerInteractive, true);
-            RemoveSync();
         }
     }
 }

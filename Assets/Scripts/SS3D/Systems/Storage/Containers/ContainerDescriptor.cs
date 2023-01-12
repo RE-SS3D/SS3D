@@ -3,7 +3,6 @@ using FishNet.Connection;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
-using SS3D.Storage.Containers;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Storage.UI;
 using UnityEngine;
@@ -23,8 +22,11 @@ namespace SS3D.Systems.Storage.Containers
     /// </summary>
     public class ContainerDescriptor : MonoBehaviour
     {
+
+        public bool AutomaticContainerSetUp = false; 
         // References toward all container related scripts.
         public AttachedContainer AttachedContainer;
+        public Container Container; 
         public ContainerInteractive ContainerInteractive;
         public ContainerItemDisplay ContainerItemDisplay;
         // reference towards the container UI linked to this container.
@@ -79,9 +81,17 @@ namespace SS3D.Systems.Storage.Containers
 
         private float _lastObserverCheck;
 
+        /// <summary>
+        /// need some bool to override automatic setup and go manual instead. nat 01/10/23
+        /// </summary>
         public void Awake()
         {
             // create a new container of Size size
+            /*AttachedContainer.Container = new Container
+            {
+                Size = Size
+            };
+            Container = AttachedContainer.Container;*/
             Assert.IsNotNull(AttachedContainer);
 
             // If container interactions icon are not defined at start, load default icons.
