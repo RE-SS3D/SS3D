@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FishNet.Component.Transforming;
 using FishNet.Object;
 using SS3D.Attributes;
@@ -267,11 +268,20 @@ namespace SS3D.Systems.Storage.Items
         {
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
             RuntimePreviewGenerator.OrthographicMode = true;
-            
-            Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
-                Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, false);
-            _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
-            _sprite.name = transform.name;
+
+            try
+            {
+                Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
+            Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, true, true);
+                texture = null;
+                _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
+                _sprite.name = transform.name;
+            }
+            catch (NullReferenceException e)
+            {
+                Debug.LogError("Null reference exception, reverting to default sprite for item " + name + ".");
+            }
+        
         }
 
 #if UNITY_EDITOR
