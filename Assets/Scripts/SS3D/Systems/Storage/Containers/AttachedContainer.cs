@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace SS3D.Systems.Storage.Containers
 {
-    [RequireComponent(typeof(Container))]
     /// <summary>
     /// A container attached to a gameobject
     /// </summary>
