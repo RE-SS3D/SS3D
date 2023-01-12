@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Coimbra;
+using FishNet;
 using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Interfaces;
 using SS3D.Systems.Storage.Items;
@@ -204,8 +205,9 @@ namespace SS3D.Systems.Storage.UI
                 return;
             }
 
+            CreateItemDisplay(item, slot, true);
+
             display.ShouldDrop = true;
-            CreateItemDisplay(display.Item, slot);
             Inventory.ClientTransferItem(item, slot, AttachedContainer);
         }
         
@@ -221,19 +223,26 @@ namespace SS3D.Systems.Storage.UI
             objectToMove.localPosition = slot.localPosition;
         }
 
-        private void CreateItemDisplay(Item item, Vector2Int position)
+        private void CreateItemDisplay(Item item, Vector2Int position, bool ItemMovedInsideGrid = false)
         {
+            // avoid creating the same item sprite multiple times. Except when it's moved around in the container.
+            // In this case two instances need to exist on the same frame so we allow it.
+           foreach(ItemGridItem itemSprite in _gridItems)
+           {
+                if (itemSprite.Item == item && !ItemMovedInsideGrid) return;
+           }
+
             GameObject o = Instantiate(ItemDisplayPrefab, transform);
-            ItemGridItem gridItem = o.GetComponent<ItemGridItem>();
+            ItemGridItem itemSpriteOnGrid = o.GetComponent<ItemGridItem>();
 
             Vector2Int itemSize = item.Size;
             Vector2 cellSize = _gridLayout.cellSize;
             o.GetComponent<RectTransform>().sizeDelta = new Vector2(itemSize.x * cellSize.x, itemSize.y * cellSize.y);
-            
-            gridItem.Item = item;
+
+            itemSpriteOnGrid.Item = item;
             MoveToSlot(o.transform, position);
             
-            _gridItems.Add(gridItem);
+            _gridItems.Add(itemSpriteOnGrid);
         }
 
 		public GameObject GetCurrentGameObjectInSlot()
