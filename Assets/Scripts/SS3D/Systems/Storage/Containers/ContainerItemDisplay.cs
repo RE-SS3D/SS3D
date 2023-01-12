@@ -113,7 +113,8 @@ namespace SS3D.Systems.Storage.Containers
             if (itemParent != null && itemParent != containerDescriptor.Displays[index])
             {
                 item.transform.SetParent(null, true);
-                itemParent.gameObject.Destroy();
+                // It's currently deleting the game object containing the item, why is this here ?
+                //itemParent.gameObject.Destroy();
             }
 
             _displayedItems[index] = null;
