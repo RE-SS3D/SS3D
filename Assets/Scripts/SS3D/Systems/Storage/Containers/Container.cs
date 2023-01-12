@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
-using SS3D.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
@@ -254,6 +253,7 @@ namespace SS3D.Systems.Storage.Containers
 
             foreach (StoredItem storedItem in StoredItems)
             {
+                if (storedItem.IsExcludedOfFreeAreaComputation) continue;
                 RectInt storedItemPlacement = new(storedItem.Position, storedItem.Item.Size);
                 if (area.Overlaps(storedItemPlacement))
                 {
@@ -272,19 +272,20 @@ namespace SS3D.Systems.Storage.Containers
         /// <returns>If the given area is free</returns>
         public bool IsAreaFreeExcluding(RectInt area, Item item)
         {
-            int i = FindItem(item);
+            int itemIndex = FindItem(item);
             StoredItem storedItem = default;
-            if (i != -1)
+            if (itemIndex != -1)
             {
-                storedItem = StoredItems[i];
-                StoredItems[i] = new StoredItem(storedItem.Item, new Vector2Int(100000, 100000));
+                storedItem = StoredItems[itemIndex];
+                StoredItems[itemIndex] = new StoredItem(storedItem.Item, storedItem.Position, true);
             }
 
             bool areaFree = IsAreaFree(area);
 
-            if (i != -1)
+            if (itemIndex != -1)
             {
-                StoredItems[i] = storedItem;
+                StoredItems[itemIndex] = new StoredItem(storedItem.Item, storedItem.Position, false);
+                StoredItems[itemIndex] = storedItem;
             }
 
             return areaFree;
