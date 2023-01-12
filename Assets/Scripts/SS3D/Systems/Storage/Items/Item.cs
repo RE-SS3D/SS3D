@@ -273,7 +273,6 @@ namespace SS3D.Systems.Storage.Items
             {
                 Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
             Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, true, true);
-                texture = null;
                 _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
                 _sprite.name = transform.name;
             }
