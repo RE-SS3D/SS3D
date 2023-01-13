@@ -79,6 +79,10 @@ namespace SS3D.Systems.Storage.UI
             }
         }
 
+        /// <summary>
+        /// When the container change, change the display of items inside it.
+        /// Either add a display, remove a display or move a display to another slot.
+        /// </summary>
         private void ContainerOnContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             switch (type)
@@ -186,6 +190,11 @@ namespace SS3D.Systems.Storage.UI
             }
         }
         
+        /// <summary>
+        /// When an item display is dropped on this grid, this compute in which slot of the grid the sprite should be displayed.
+        /// Does nothing if the area of drop is not free.
+        /// </summary>
+        /// <param name="display"></param>
         public override void OnItemDisplayDrop(ItemDisplay display)
         {
             Item item = display.Item;
@@ -200,6 +209,7 @@ namespace SS3D.Systems.Storage.UI
             // Offset slot by item dimensions
             Vector2Int slot = new( Mathf.RoundToInt(position.x - size.x / 2f), Mathf.RoundToInt(position.y - size.y / 2f));
             
+            // Check if the area of drop is free, if not, don't transfer.
             if (!AttachedContainer.Container.IsAreaFreeExcluding(new RectInt(slot, size), item))
             {
                 return;

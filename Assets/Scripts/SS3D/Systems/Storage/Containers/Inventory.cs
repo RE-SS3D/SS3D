@@ -110,10 +110,10 @@ namespace SS3D.Systems.Storage.Containers
         }
 
         /// <summary>
-        /// Interact with a container at a certain position
+        /// Interact with a container at a certain position. Transfer items from selected hand to container, or from container to selected hand.
         /// </summary>
-        /// <param name="container">The container being interacted with</param>
-        /// <param name="position">At which position the interaction happened</param>
+        /// <param name="container">The container being interacted with.</param>
+        /// <param name="position">Position of the slot where the interaction happened.</param>
         public void ClientInteractWithContainerSlot(AttachedContainer container, Vector2Int position)
         {
             if (Hands == null)
@@ -122,6 +122,7 @@ namespace SS3D.Systems.Storage.Containers
             }
 
             Item item = container.Container.ItemAt(position);
+            // If selected hand is empty and an item is present on the slot position in the container, transfer it to hand.
             if (Hands.SelectedHandEmpty)
             {
                 if (item != null)
@@ -129,6 +130,7 @@ namespace SS3D.Systems.Storage.Containers
                     ClientTransferItem(item, Vector2Int.zero, Hands.SelectedHand);
                 }
             }
+            // If selected hand has an item and there's no item on the slot in the container, transfer it to container slot.
             else
             {
                 if (item == null)
@@ -145,7 +147,7 @@ namespace SS3D.Systems.Storage.Containers
         }
 
         /// <summary>
-        /// Requests the server to transfer an item
+        /// Requests the server to transfer an item from one container to another, at the given slot position.
         /// </summary>
         /// <param name="item">The item to transfer</param>
         /// <param name="targetContainer">Into which container to move the item</param>
