@@ -34,7 +34,7 @@ namespace SS3D.Systems.Storage.UI
         {
             _gridItems.Remove(item);
         }
-        
+
         private void Start()
         {
             if (_gridLayout == null)
@@ -102,7 +102,7 @@ namespace SS3D.Systems.Storage.UI
                             }
 
                             _gridItems.RemoveAt(i);
-                            gridItem.Destroy();
+                            gridItem.gameObject.Destroy();
                             break;
                         }
                     }
