@@ -470,9 +470,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AutomaticContainerSetUp: 0
   AttachedContainer: {fileID: 7994111800386677094}
+  Container: {fileID: 8411477508438424976}
   ContainerInteractive: {fileID: 0}
-  ContainerItemDisplay: {fileID: 981636438116294743}
+  ContainerItemDisplay: {fileID: 0}
   ContainerUi: {fileID: 0}
   OpenIcon: {fileID: 21300000, guid: 48da6209938d27844878cc3d318295e2, type: 3}
   TakeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
@@ -483,9 +485,9 @@ MonoBehaviour:
   OnlyStoreWhenOpen: 0
   OpenWhenContainerViewed: 0
   Size: {x: 10, y: 10}
-  HideItems: 1
+  HideItems: 0
   AttachItems: 1
-  Initialized: 0
+  Initialized: 1
   MaxDistance: 5
   IsOpenable: 0
   IsInteractive: 0
@@ -693,7 +695,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2666434032613405079}
-  - component: {fileID: 9153533615659619174}
   - component: {fileID: 7653287983538616454}
   - component: {fileID: 396059371930522959}
   m_Layer: 0
@@ -718,20 +719,6 @@ Transform:
   m_Father: {fileID: 7227076765705622090}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9153533615659619174
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2062586837675834606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 1667608942592793804}
-  Mirrored: 0
 --- !u!114 &7653287983538616454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -814,9 +801,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AutomaticContainerSetUp: 0
   AttachedContainer: {fileID: 7653287983538616454}
+  Container: {fileID: 396059371930522959}
   ContainerInteractive: {fileID: 0}
-  ContainerItemDisplay: {fileID: 9153533615659619174}
+  ContainerItemDisplay: {fileID: 0}
   ContainerUi: {fileID: 0}
   OpenIcon: {fileID: 21300000, guid: 48da6209938d27844878cc3d318295e2, type: 3}
   TakeIcon: {fileID: 21300000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
@@ -827,9 +816,9 @@ MonoBehaviour:
   OnlyStoreWhenOpen: 0
   OpenWhenContainerViewed: 0
   Size: {x: 10, y: 10}
-  HideItems: 1
+  HideItems: 0
   AttachItems: 1
-  Initialized: 0
+  Initialized: 1
   MaxDistance: 5
   IsOpenable: 0
   IsInteractive: 0
@@ -941,7 +930,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3012616593455593399}
-  - component: {fileID: 981636438116294743}
   - component: {fileID: 7994111800386677094}
   - component: {fileID: 8411477508438424976}
   m_Layer: 0
@@ -966,20 +954,6 @@ Transform:
   m_Father: {fileID: 7421393902551255742}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &981636438116294743
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2712797265476924516}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25610b7ef51d43c7bc0bd2bc58036e61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  containerDescriptor: {fileID: 1209055579648204933}
-  Mirrored: 0
 --- !u!114 &7994111800386677094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3208,8 +3182,6 @@ MonoBehaviour:
   _componentIndexCache: 7
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  UI: {fileID: 1522465952883509860, guid: 2c5702094085193418715c5332700e54, type: 3}
-  _staminaType: 0
   _player: {fileID: 1872721284991216642}
   playerControllable: {fileID: 8336170331735268562}
 --- !u!1 &6530700040387722453
