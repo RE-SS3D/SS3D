@@ -173,10 +173,7 @@ GameObject:
   - component: {fileID: 4436435477320339985}
   - component: {fileID: 4044200983548959999}
   - component: {fileID: 6183259094829508424}
-  - component: {fileID: 4171683720724545719}
-  - component: {fileID: 6538687487262425598}
-  - component: {fileID: 1137704474350515886}
-  - component: {fileID: 2860333021216377539}
+  - component: {fileID: 7203437133269720304}
   m_Layer: 10
   m_Name: BikeHorn
   m_TagString: Untagged
@@ -220,6 +217,7 @@ MonoBehaviour:
   _name: Bike horn
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 6351433192589740835}
+  _weight: 0
   Prefab: {fileID: 6891363543938182813}
   AttachmentPoint: {fileID: 4619531351315044860}
   AttachmentPointAlt: {fileID: 0}
@@ -245,9 +243,9 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 5398674181771020985}
   - {fileID: 6573417749823381685}
-  - {fileID: 6538687487262425598}
-  - {fileID: 1137704474350515886}
-  - {fileID: 2860333021216377539}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 3401307552301717060}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
@@ -461,91 +459,21 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &4171683720724545719
-MonoBehaviour:
+--- !u!143 &7203437133269720304
+CharacterController:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6891363543938182813}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AttachedContainer: {fileID: 1137704474350515886}
-  Container: {fileID: 6538687487262425598}
-  ContainerInteractive: {fileID: 2860333021216377539}
-  ContainerItemDisplay: {fileID: 0}
-  ContainerSync: {fileID: 0}
-  ContainerUi: {fileID: 0}
-  OpenIcon: {fileID: 0}
-  TakeIcon: {fileID: 0}
-  StoreIcon: {fileID: 0}
-  ViewIcon: {fileID: 0}
-  AttachmentOffset: {x: 0, y: 0, z: 0}
-  ContainerName: honkcontainer
-  OnlyStoreWhenOpen: 0
-  OpenWhenContainerViewed: 0
-  Size: {x: 8, y: 8}
-  HideItems: 1
-  AttachItems: 1
-  Initialized: 1
-  MaxDistance: 5
-  IsOpenable: 0
-  IsInteractive: 1
-  HasUi: 1
-  HasCustomInteraction: 0
-  HasCustomDisplay: 0
-  Displays: []
-  NumberDisplay: 0
---- !u!114 &6538687487262425598
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6891363543938182813}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 2
-  _addedNetworkObject: {fileID: 4819234911439508660}
-  _networkObjectCache: {fileID: 4819234911439508660}
-  Size: {x: 10, y: 10}
---- !u!114 &1137704474350515886
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6891363543938182813}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 3
-  _addedNetworkObject: {fileID: 4819234911439508660}
-  _networkObjectCache: {fileID: 4819234911439508660}
-  ContainerDescriptor: {fileID: 4171683720724545719}
-  _container: {fileID: 6538687487262425598}
---- !u!114 &2860333021216377539
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6891363543938182813}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 4
-  _addedNetworkObject: {fileID: 4819234911439508660}
-  _networkObjectCache: {fileID: 4819234911439508660}
-  OpenIcon: {fileID: 0}
-  containerDescriptor: {fileID: 4171683720724545719}
+  serializedVersion: 2
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
