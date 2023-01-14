@@ -2,6 +2,7 @@
 using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
+using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
@@ -35,10 +36,17 @@ namespace SS3D.Systems.Storage.Interactions
             }
 
             AttachedContainer target = _containerDescriptor.AttachedContainer;
-            if (interactionEvent.Source is Hands hands && target != null)
+            IInteractionSource source = interactionEvent.Source;
+
+            if(source is IGameObjectProvider sourceGameObjectProvider)
             {
-                return !hands.SelectedHandEmpty && CanStore(interactionEvent.Source.GetComponent<Item>(), target);
+                var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
+                if (hands != null && target != null)
+                {
+                    return !hands.SelectedHandEmpty && CanStore(interactionEvent.Source.GetComponent<Item>(), target);
+                }
             }
+
             return false;
         }
 
@@ -50,9 +58,13 @@ namespace SS3D.Systems.Storage.Interactions
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            Hands hands = interactionEvent.Source.GetComponent<Hands>();
-            _containerDescriptor.AttachedContainer.Container.AddItem(hands.ItemInHand);
-
+            IInteractionSource source = interactionEvent.Source;
+            if (source is IGameObjectProvider sourceGameObjectProvider)
+            {
+                var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
+                _containerDescriptor.AttachedContainer.Container.AddItem(hands.ItemInHand);
+                return true;
+            }
             return false;
         }
     }
