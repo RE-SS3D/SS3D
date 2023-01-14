@@ -2,12 +2,13 @@
 using UnityEditor;
 using UnityEngine;
 using SS3D.Systems.Storage.Containers;
-using FishNet.Connection;
 using FishNet.Object;
 
 
 /// <summary>
 /// Class handling the inspector display of a containerDescriptor.
+/// It allows displaying only compatible parameters in editor, as well as adding and removing necessary
+/// scripts to make the container work.
 /// </summary>
 [CustomEditor(typeof(ContainerDescriptor))]
 public class ContainerDescriptorEditor : Editor
@@ -15,12 +16,15 @@ public class ContainerDescriptorEditor : Editor
     private ContainerDescriptor containerDescriptor;
     private GUIStyle TitleStyle;
     private bool showIcon = false;
+
+    // References to container related scripts to allow for automating set up and destroying.
     private AttachedContainer attachedContainer; 
     private ContainerInteractive containerInteractive;
     private ContainerItemDisplay containerItemDisplay;
 
     public void OnEnable()
     {
+        // Set the container title in editor.
         TitleStyle = new GUIStyle();
         TitleStyle.fontSize = 13;
         TitleStyle.fontStyle = FontStyle.Bold;
@@ -45,6 +49,7 @@ public class ContainerDescriptorEditor : Editor
         EditorGUILayout.LabelField(containerDescriptor.ContainerName, TitleStyle);
         serializedObject.Update();
 
+        // If automatic set up is off, just display every container related parameters.
         if (!containerDescriptor.AutomaticContainerSetUp)
         {
             DrawDefaultInspector();
@@ -58,43 +63,61 @@ public class ContainerDescriptorEditor : Editor
             containerItemDisplay = containerDescriptor.ContainerItemDisplay;
         }
 
-            bool automaticContainerSetUp = EditorGUILayout.Toggle(new GUIContent("Automatic container setup", ""), containerDescriptor.AutomaticContainerSetUp);
+        bool automaticContainerSetUp = EditorGUILayout.Toggle(
+            new GUIContent("Automatic container setup", ""),
+            containerDescriptor.AutomaticContainerSetUp);
         HandleAutomaticContainerSetUp(automaticContainerSetUp);
 
-        //Filter startFilter = (Filter)EditorGUILayout.ObjectField(new GUIContent("Filter", "Filter on the container, controls what can go in the container"), containerDescriptor.startFilter, typeof(Filter), true);
-        //HandleStartFilter(startFilter);
+        Filter startFilter = (Filter)EditorGUILayout.ObjectField(
+            new GUIContent("Filter", "Filter on the container, controls what can go in the container"),
+            containerDescriptor.StartFilter, typeof(Filter), true);
+        HandleStartFilter(startFilter);
 
-        var _attachedContainer = (AttachedContainer)EditorGUILayout.ObjectField(new GUIContent("Attached Container", "Attached container reference"),
+        var _attachedContainer = (AttachedContainer)EditorGUILayout.ObjectField(
+            new GUIContent("Attached Container", "Attached container reference"),
             containerDescriptor.AttachedContainer, typeof(AttachedContainer), true);
         HandleAttachedContainer(_attachedContainer);
 
-        var _container = (Container)EditorGUILayout.ObjectField(new GUIContent("Container", "Container reference"),
-    containerDescriptor.Container, typeof(Container), true);
+        var _container = (Container)EditorGUILayout.ObjectField(
+            new GUIContent("Container", "Container reference"),
+            containerDescriptor.Container, typeof(Container), true);
         HandleContainer(_container);
 
-        string containerName = EditorGUILayout.TextField(new GUIContent("Container Name", "the name of the container, appearing in container related interactions"), containerDescriptor.ContainerName);
+        string containerName = EditorGUILayout.TextField(
+            new GUIContent("Container Name", "the name of the container, appearing in container related interactions"),
+            containerDescriptor.ContainerName);
         HandleContainerName(containerName);
 
 
-        bool isInteractive = EditorGUILayout.Toggle(new GUIContent("is Interactive", "Set if the container can be interacted with or not. Adds the ContainerInteractive file, which contains default interactions for the container"), containerDescriptor.IsInteractive);
+        bool isInteractive = EditorGUILayout.Toggle(
+            new GUIContent("is Interactive", "Set if the container can be interacted with or not. Adds the ContainerInteractive file, which contains default interactions for the container"),
+            containerDescriptor.IsInteractive);
         HandleIsInteractive(isInteractive);
 
 
         if (containerDescriptor.IsInteractive)
         {
-            bool hasUi = EditorGUILayout.Toggle(new GUIContent("has UI", "Set if the container has an UI"), containerDescriptor.HasUi);
+            bool hasUi = EditorGUILayout.Toggle(
+                new GUIContent("has UI", "Set if the container has an UI"),
+                containerDescriptor.HasUi);
             HandleHasUi(hasUi);
 
-            bool isOpenable = EditorGUILayout.Toggle(new GUIContent("is Openable", "Set if the container has an open/close interaction"), containerDescriptor.IsOpenable);
+            bool isOpenable = EditorGUILayout.Toggle(
+                new GUIContent("is Openable", "Set if the container has an open/close interaction"),
+                containerDescriptor.IsOpenable);
             HandleIsOpenable(isOpenable);
 
-            bool hasCustomInteraction = EditorGUILayout.Toggle(new GUIContent("has custom interaction", "Set if the container should use the default interaction of ContainerInteractive.cs, or custom ones in another script"), containerDescriptor.HasCustomInteraction);
+            bool hasCustomInteraction = EditorGUILayout.Toggle(
+                new GUIContent("has custom interaction", "Set if the container should use the default interaction of ContainerInteractive.cs, or custom ones in another script"),
+                containerDescriptor.HasCustomInteraction);
             HandleCustomInteraction(hasCustomInteraction);
         }
 
         if (containerDescriptor.IsOpenable)
         {
-            bool onlyStoreWhenOpen = EditorGUILayout.Toggle(new GUIContent("Only store when open", "Set if objects can be stored in the container without using the open interaction first"), containerDescriptor.OnlyStoreWhenOpen);
+            bool onlyStoreWhenOpen = EditorGUILayout.Toggle(
+                new GUIContent("Only store when open", "Set if objects can be stored in the container without using the open interaction first"),
+                containerDescriptor.OnlyStoreWhenOpen);
             HandleOnlyStoreWhenOpen(onlyStoreWhenOpen);       
         }
         else if(containerDescriptor.HasUi)
@@ -106,7 +129,9 @@ public class ContainerDescriptorEditor : Editor
                 {
                     if (controllerParameter.name != "Open") { continue; }
 
-                    bool openWhenContainerViewed = EditorGUILayout.Toggle(new GUIContent("open when container viewed", "Set if the open animation should run when the container UI is opened"), containerDescriptor.OpenWhenContainerViewed);
+                    bool openWhenContainerViewed = EditorGUILayout.Toggle(
+                        new GUIContent("open when container viewed", "Set if the open animation should run when the container UI is opened"),
+                        containerDescriptor.OpenWhenContainerViewed);
                     HandleOpenWhenContainerViewed(openWhenContainerViewed);
                 }
             }      
@@ -114,30 +139,39 @@ public class ContainerDescriptorEditor : Editor
 
         if (containerDescriptor.HasUi)
         {
-            float maxDistance = EditorGUILayout.FloatField(new GUIContent("Max distance", "max distance between the observer and the container before the UI closes on it's own"), containerDescriptor.MaxDistance);
+            float maxDistance = EditorGUILayout.FloatField(
+                new GUIContent("Max distance", "max distance between the observer and the container before the UI closes on it's own"),
+                containerDescriptor.MaxDistance);
             HandleMaxDistance(maxDistance);
         }
 
-        Vector2Int size = EditorGUILayout.Vector2IntField(new GUIContent("Size", "Defines the size of the container, every item takes a defined place inside a container"), containerDescriptor.Size);
+        Vector2Int size = EditorGUILayout.Vector2IntField(
+            new GUIContent("Size", "Defines the size of the container, every item takes a defined place inside a container"),
+            containerDescriptor.Size);
         HandleSize(size);
 
-        //Filter startFilter = (Filter)EditorGUILayout.ObjectField(new GUIContent("Filter", "Filter on the container, controls what can go in the container"), containerDescriptor.startFilter, typeof(Filter), true);
-        //HandleStartFilter(startFilter);
-
-        bool hideItems = EditorGUILayout.Toggle(new GUIContent("Hide items", "Set if items should be attached as children of the container"), containerDescriptor.HideItems);
+        bool hideItems = EditorGUILayout.Toggle(
+            new GUIContent("Hide items", "Set if items should be attached as children of the container"),
+            containerDescriptor.HideItems);
         HandleHideItems(hideItems);
 
         if (!hideItems)
         {
-            Vector3 attachmentOffset = EditorGUILayout.Vector3Field(new GUIContent("Attachment Offset", "define the position of the items inside the container"), containerDescriptor.AttachmentOffset);
+            Vector3 attachmentOffset = EditorGUILayout.Vector3Field(
+                new GUIContent("Attachment Offset", "define the position of the items inside the container"),
+                containerDescriptor.AttachmentOffset);
             HandleAttachmentOffset(attachmentOffset);
 
-            bool hasCustomDisplay = EditorGUILayout.Toggle(new GUIContent("Has custom display", "adds the container item display script, defines custom positions for items in the container"), containerDescriptor.HasCustomDisplay);
+            bool hasCustomDisplay = EditorGUILayout.Toggle(
+                new GUIContent("Has custom display", "adds the container item display script, defines custom positions for items in the container"),
+                containerDescriptor.HasCustomDisplay);
             HandleHasCustomDisplay(hasCustomDisplay);
 
             if (hasCustomDisplay)
             {
-                int numberDisplay = EditorGUILayout.IntField(new GUIContent("number of display", "the number of items to display in custom position"), containerDescriptor.NumberDisplay);
+                int numberDisplay = EditorGUILayout.IntField(
+                    new GUIContent("number of display", "the number of items to display in custom position"),
+                    containerDescriptor.NumberDisplay);
                 HandleNumberDisplay(numberDisplay);
 
                 SerializedProperty sp = serializedObject.FindProperty("displays");
@@ -150,7 +184,9 @@ public class ContainerDescriptorEditor : Editor
             }
         }
 
-        bool attachItems = EditorGUILayout.Toggle(new GUIContent("Attach Items", "Set if items should be attached as children of the container game object"), containerDescriptor.AttachItems);
+        bool attachItems = EditorGUILayout.Toggle(
+            new GUIContent("Attach Items", "Set if items should be attached as children of the container game object"),
+            containerDescriptor.AttachItems);
         HandleAttachItems(attachItems);
 
         ShowIcons();
@@ -168,28 +204,32 @@ public class ContainerDescriptorEditor : Editor
         {
             if (containerDescriptor.IsOpenable)
             {
-                Sprite openIcon = (Sprite)EditorGUILayout.ObjectField("Open container icon", containerDescriptor.OpenIcon, typeof(Sprite), true);
+                Sprite openIcon = (Sprite)EditorGUILayout.ObjectField(
+                    "Open container icon", containerDescriptor.OpenIcon, typeof(Sprite), true);
                 SerializedProperty sp = serializedObject.FindProperty("OpenIcon");
                 sp.objectReferenceValue = openIcon;
             }
 
             if (containerDescriptor.IsInteractive)
             {
-                Sprite storeIcon = (Sprite)EditorGUILayout.ObjectField("Store container icon", containerDescriptor.StoreIcon, typeof(Sprite), true);
+                Sprite storeIcon = (Sprite)EditorGUILayout.ObjectField(
+                    "Store container icon", containerDescriptor.StoreIcon, typeof(Sprite), true);
                 SerializedProperty sp = serializedObject.FindProperty("StoreIcon");
                 sp.objectReferenceValue = storeIcon;
             }
 
             if (containerDescriptor.HasUi)
             {
-                Sprite viewIcon = (Sprite)EditorGUILayout.ObjectField("View container icon", containerDescriptor.ViewIcon, typeof(Sprite), true);
+                Sprite viewIcon = (Sprite)EditorGUILayout.ObjectField(
+                    "View container icon", containerDescriptor.ViewIcon, typeof(Sprite), true);
                 SerializedProperty sp = serializedObject.FindProperty("ViewIcon");
                 sp.objectReferenceValue = viewIcon;
             }
 
             if (containerDescriptor.IsInteractive && !containerDescriptor.HasUi)
             {
-                Sprite takeIcon = (Sprite)EditorGUILayout.ObjectField("Take container icon", containerDescriptor.TakeIcon, typeof(Sprite), true);
+                Sprite takeIcon = (Sprite)EditorGUILayout.ObjectField(
+                    "Take container icon", containerDescriptor.TakeIcon, typeof(Sprite), true);
                 SerializedProperty sp = serializedObject.FindProperty("TakeIcon");
                 sp.objectReferenceValue = takeIcon;
             }
