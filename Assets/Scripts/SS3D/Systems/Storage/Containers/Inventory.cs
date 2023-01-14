@@ -9,12 +9,12 @@ using UnityEngine;
 
 namespace SS3D.Systems.Storage.Containers
 {
-    /**
-     * This is the basic inventory system. Any inventory-capable creature should have this component.
-     * The basic inventory system has to handle:
-     *  - Aggregating all containers on the player and accessible to the player
-     *  - The moving of items from one item-slot to another
-    */
+    /// <summary>
+    /// This is the basic inventory system. Any inventory-capable creature should have this component.
+    /// The basic inventory system has to handle:
+    ///  - Aggregating all containers on the player and accessible to the player.
+    ///  - The moving of items from one item-slot to another.
+    /// </summary>
     public sealed class Inventory : NetworkBehaviour
     {
 
@@ -58,6 +58,7 @@ namespace SS3D.Systems.Storage.Containers
             float time = Time.time;
             if (time > _nextAccessCheck)
             {
+                // Remove all containers from the inventory that can't be interacted with anymore.
                 Hands hands = GetComponent<Hands>();
                 for (var i = 0; i < _openedContainers.Count; i++)
                 {
@@ -80,33 +81,6 @@ namespace SS3D.Systems.Storage.Containers
         public void ActivateHand(AttachedContainer container)
         {
             Hands.SetActiveHand(container);
-        }
-
-        /// <summary>
-        /// Interacting with a container that has one "slot"
-        /// </summary>
-        public void ClientInteractWithSingleSlot(AttachedContainer container)
-        {
-            // no touchy ;)
-            if (Hands == null)
-            {
-                return;
-            }
-
-            if (Hands.SelectedHandEmpty)
-            {
-                if (!container.Container.Empty)
-                {
-                    ClientTransferItem(container.Container.Items.First(), Vector2Int.zero, Hands.SelectedHand);
-                }
-            }
-            else
-            {
-                if (container.Container.Empty)
-                {
-                    ClientTransferItem(Hands.ItemInHand, Vector2Int.zero, container);
-                }
-            }
         }
 
         /// <summary>
@@ -207,7 +181,7 @@ namespace SS3D.Systems.Storage.Containers
         }
 
         /// <summary>
-        /// Make this inventory open an container
+        /// Make this inventory open an container.
         /// </summary>
         public void OpenContainer(AttachedContainer container)
         {
@@ -222,7 +196,7 @@ namespace SS3D.Systems.Storage.Containers
         }
 
         /// <summary>
-        /// Removes an container from this inventory
+        /// Removes a container from this inventory.
         /// </summary>
         public void RemoveContainer(AttachedContainer container)
         {
@@ -245,7 +219,7 @@ namespace SS3D.Systems.Storage.Containers
         }
 
         /// <summary>
-        /// Does this inventory have a specific container
+        /// Does this inventory have a specific container ?
         /// </summary>
         public bool HasContainer(AttachedContainer container)
         {
@@ -282,12 +256,12 @@ namespace SS3D.Systems.Storage.Containers
         }
 
         /// <summary>
-        /// On containers having OpenWhenContainerViewed set true, this set the containers state appropriately.
-        /// If the container is viewed by another entity, it's already opened, and therefore it does nothing.
-        /// If this entity is the first to view it, it trigger the open animation of the object.
-        /// If the entity is the last to view it, it closes the container.
+        /// On containers having OpenWhenContainerViewed set true in ContainerDescriptor, this set the containers state appropriately.
+        /// If the container belongs to another Inventory, it's already opened, and therefore it does nothing.
+        /// If this Inventory is the first to have it, it triggers the open animation of the object.
+        /// If this Inventory is the last to have it, it closes the container.
         /// </summary>
-        /// <param name="containerObject"> The container viewed by this entity.</param>
+        /// <param name="containerObject"> The container's game object belonging to this inventory.</param>
         /// <param name="state"> The state to set in the container, true is opened and false is closed.</param>
         [Server]
         private void SetOpenState(GameObject containerObject, bool state)
@@ -316,13 +290,14 @@ namespace SS3D.Systems.Storage.Containers
         [TargetRpc]
         private void TargetCloseContainer(NetworkConnection target, GameObject container)
         {
-            OnContainerClosed(container.GetComponent<AttachedContainer>());    
+            OnContainerClosed(container.GetComponent<AttachedContainer>());
         }
 
-        /**
-         * Graphically adds the item back into the world (for server and all clients).
-         * Must be called from server initially
-         */
+
+        /// <summary>       
+        /// Graphically adds the item back into the world(for server and all clients).
+        /// Must be called from server initially.
+        /// </summary>
         private void Spawn(GameObject item, Vector3 position, Quaternion rotation)
         {
             // World will be the parent
