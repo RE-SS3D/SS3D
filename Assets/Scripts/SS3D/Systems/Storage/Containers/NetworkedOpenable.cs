@@ -7,7 +7,9 @@ using UnityEngine;
 
 namespace SS3D.Systems.Storage.Containers
 {
-    // This handles networking for an Openable object
+    // This handle networking for an Openable object, openable meaning having an animation opening the object.
+    //It allows the open/close state of the object to be synchronized and the animation to be fired
+    //on all observers when updating the open/close state.
     [RequireComponent(typeof(Animator))]
     public class NetworkedOpenable : InteractionTargetNetworkBehaviour
     {
