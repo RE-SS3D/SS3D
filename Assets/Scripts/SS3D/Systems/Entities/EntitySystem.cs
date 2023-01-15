@@ -10,10 +10,8 @@ using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Events;
-using SS3D.Systems.Entities.Messages;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
-using SS3D.Systems.Rounds.Messages;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities
@@ -21,7 +19,7 @@ namespace SS3D.Systems.Entities
     /// <summary>
     /// Controls player spawning.
     /// </summary>
-    public class EntitySpawnSystem : NetworkSystem
+    public class EntitySystem : NetworkSystem
     {
         /// <summary>
         /// The prefab used for the player object.
@@ -53,11 +51,21 @@ namespace SS3D.Systems.Entities
         /// </summary>
         /// <param name="soul">The player's ckey</param>
         /// <returns>Is the player is controlling an entity</returns>
-        public bool IsPlayedSpawned(Soul soul)
+        public bool IsPlayerSpawned(Soul soul)
         {
-            Entity isPlayedSpawned = _spawnedPlayers.Find(entity => entity.Mind.Soul == soul);
+            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Mind.Soul == soul);
 
-            return isPlayedSpawned;
+            bool isPlayerSpawned;
+            if (spawnedPlayer == null || spawnedPlayer.Mind == Mind.Empty)
+            {
+                isPlayerSpawned = false;
+            }
+            else
+            {
+                isPlayerSpawned = true;
+            }
+
+            return isPlayerSpawned;
         }
 
         /// <summary>
@@ -65,9 +73,21 @@ namespace SS3D.Systems.Entities
         /// </summary>
         /// <param name="networkConnection">The player's connection</param>
         /// <returns>Is the player is controlling an entity</returns>
-        public bool IsPlayedSpawned(NetworkConnection networkConnection)
+        public bool IsPlayerSpawned(NetworkConnection networkConnection)
         {
-            return _spawnedPlayers.Find(controllable => controllable.Owner == networkConnection);
+            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Mind.Soul.Owner == networkConnection);
+
+            bool isPlayerSpawned;
+            if (spawnedPlayer == null || spawnedPlayer.Mind == Mind.Empty)
+            {
+                isPlayerSpawned = false;
+            }
+            else
+            {
+                isPlayerSpawned = true;
+            }
+
+            return isPlayerSpawned;
         }
 
         /// <summary>
@@ -98,47 +118,58 @@ namespace SS3D.Systems.Entities
         {
             base.OnStartServer();
 
-            AddEventListeners();
+            ServerAddEventListeners();
         }
 
-        private void AddEventListeners()
+        private void ServerAddEventListeners()
         {
-            ServerManager.RegisterBroadcast<RequestEmbarkMessage>(HandleRequestEmbark);
-            ServerManager.RegisterBroadcast<RequestMindSwapMessage>(HandleRequestMindSwap);
-
             AddHandle(SpawnReadyPlayersEvent.AddListener(HandleSpawnReadyPlayers));
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
         }
 
         /// <summary>
-        /// Executes a mind swap.
+        /// Asks the server to spawn a player.
         /// </summary>
-        /// <param name="origin"></param>
-        /// <param name="target"></param>
-        [Server]
-        private static void ExecuteMindSwap(GameObject origin, GameObject target)
+        /// <param name="soul"></param>
+        [ServerRpc]
+        public void CmdSpawnLatePlayer(Soul soul, NetworkConnection networkConnection = null)
         {
-            Entity originControllable = origin.GetComponent<Entity>();
-            Entity targetControllable = target.GetComponent<Entity>();
-
-            Mind originSoul = originControllable.Mind;
-            Mind targetSoul = targetControllable.Mind;
-
-            originControllable.SetMind(targetSoul);
-            targetControllable.SetMind(originSoul);
+            SpawnLatePlayer(soul);
         }
 
         /// <summary>
         /// Spawns a player after the round has started
         /// </summary>
-        /// <param name="ckey">The player's ckey</param>
+        /// <param name="soul">The player's ckey</param>
         [Server]
-        private void SpawnLatePlayer(Soul ckey)
+        private void SpawnLatePlayer(Soul soul)
         {
-            if (!IsPlayedSpawned(ckey) && _hasSpawnedInitialPlayers)
+            if (!IsPlayerSpawned(soul) && _hasSpawnedInitialPlayers)
             {
-                SpawnPlayer(ckey);
+                SpawnPlayer(soul);
             }
+        }
+
+        /// <summary>
+        /// Spawns a player with a Ckey
+        /// </summary>
+        /// <param name="soul">Unique user object</param>
+        [Server]
+        private void SpawnPlayer(Soul soul)
+        {
+            MindSystem mindSystem = SystemLocator.Get<MindSystem>();
+            mindSystem.TryCreateMind(soul, out Mind createdMind);
+
+            Entity entity = Instantiate(_humanPrefab[Random.Range(0, _humanPrefab.Count)], _spawnPoint.position, Quaternion.identity);
+            ServerManager.Spawn(entity.NetworkObject, soul.Owner);
+
+            createdMind.SetSoul(soul);
+            entity.SetMind(createdMind);
+
+            _spawnedPlayers.Add(entity);
+
+            string message = $"Spawning mind {createdMind.name} on {entity.name}";
+            Punpun.Say(this, message, Logs.ServerOnly);
         }
 
         /// <summary>
@@ -148,10 +179,7 @@ namespace SS3D.Systems.Entities
         [Server]
         private void SpawnReadyPlayers(List<Soul> players)
         {
-            if (_hasSpawnedInitialPlayers)
-            {
-                return;
-            }
+            if (_hasSpawnedInitialPlayers) return;
 
             if (players.Count == 0)
             {
@@ -165,8 +193,7 @@ namespace SS3D.Systems.Entities
 
             _hasSpawnedInitialPlayers = true;
 
-            InitialPlayersSpawnedEvent initialPlayersSpawnedEvent = new(SpawnedPlayers);
-            initialPlayersSpawnedEvent.Invoke(this);
+            new InitialPlayersSpawned(SpawnedPlayers).Invoke(this);
         }
 
         /// <summary>
@@ -183,33 +210,6 @@ namespace SS3D.Systems.Entities
 
             _hasSpawnedInitialPlayers = false;
             _spawnedPlayers.Clear();
-        }
-
-        /// <summary>
-        /// Spawns a player with a Ckey
-        /// </summary>
-        /// <param name="soul">Unique user object</param>
-        [Server]
-        private void SpawnPlayer(Soul soul)
-        {
-            MindSystem mindSystem = SystemLocator.Get<MindSystem>();
-            mindSystem.TryCreateMind(soul.Owner, out Mind createdMind);
-
-            Entity entity = Instantiate(_humanPrefab[Random.Range(0, _humanPrefab.Count)], _spawnPoint.position, Quaternion.identity);
-            ServerManager.Spawn(entity.NetworkObject, soul.Owner);
-
-            createdMind.SetSoul(soul);
-            entity.SetMind(createdMind);
-
-            _spawnedPlayers.Add(entity);
-
-            string message = $"Spawning player {soul.Ckey} on {entity.name}";
-            Punpun.Say(this, message, Logs.ServerOnly);
-        }
-
-        private void HandleRequestMindSwap(NetworkConnection conn, RequestMindSwapMessage m)
-        {
-            ExecuteMindSwap(m.Origin, m.Target);
         }
 
         [Server]
@@ -233,14 +233,6 @@ namespace SS3D.Systems.Entities
             SpawnReadyPlayers(playersToSpawn);
         }
 
-        [Server]
-        private void HandleRequestEmbark(NetworkConnection conn, RequestEmbarkMessage m)
-        {
-            Soul soul = m.Soul;
-
-            SpawnLatePlayer(soul);
-        }
-
         private void HandleSpawnedPlayersChanged(SyncListOperation op, int index, Entity old, Entity @new, bool asServer)
         {
             if (op == SyncListOperation.Complete)
@@ -262,8 +254,12 @@ namespace SS3D.Systems.Entities
             spawnedPlayersUpdated.Invoke(this);
         }
 
-        void SyncHasSpawnedInitialPlayers(bool oldValue, bool newValue, bool asServer)
+        private void SyncHasSpawnedInitialPlayers(bool oldValue, bool newValue, bool asServer)
         {
+            if (!asServer && IsHost)
+            {
+                return;
+            }
         }
     }
 }

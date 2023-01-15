@@ -1,5 +1,6 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 
 namespace SS3D.Systems.Entities
@@ -10,7 +11,17 @@ namespace SS3D.Systems.Entities
     /// </summary>
     public class Mind : NetworkActor
     {
-        [SyncVar(OnChange = nameof(SyncSoul))] public Soul Soul;
+        [SyncVar(OnChange = nameof(SyncSoul))]
+        public Soul Soul;
+
+        public static Mind Empty { get; private set; }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            Empty = SystemLocator.Get<MindSystem>().EmptyMind;
+        }
 
         [Server]
         public void SetSoul(Soul soul)

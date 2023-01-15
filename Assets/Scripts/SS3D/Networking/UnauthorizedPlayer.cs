@@ -2,6 +2,7 @@ using FishNet;
 using FishNet.Object;
 using SS3D.Core.Settings;
 using SS3D.Core.Utils;
+using SS3D.Logging;
 using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
 
@@ -15,7 +16,7 @@ namespace SS3D.Networking
         public override void OnStartClient()
         {
             base.OnStartClient();
-            
+
             Setup();
         }
 
@@ -29,6 +30,8 @@ namespace SS3D.Networking
             {
                 return;
             }
+
+            Punpun.Say(this, $"Attempting authentication for user {ckey}", Logs.ClientOnly);
 
             UserAuthorizationMessage userAuthorizationMessage = new(ckey);
             InstanceFinder.ClientManager.Broadcast(userAuthorizationMessage);

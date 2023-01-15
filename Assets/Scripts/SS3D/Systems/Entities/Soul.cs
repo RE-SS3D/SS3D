@@ -1,19 +1,16 @@
-using System;
-using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
-using SS3D.Logging;
 
 namespace SS3D.Systems.Entities
 {
     /// <summary>
-    /// Unique, persistent object that the player owns, it manages what character it is controlling and stores other player data.
+    /// Unique, persistent object that the player owns. Server purpose of holding relevant data of a specific player.
     /// </summary>
-    [Serializable]
     public sealed class Soul : NetworkActor
     {
-        [SyncVar(OnChange = nameof(SyncCkey))] private string _ckey;
+        [SyncVar(OnChange = nameof(SyncCkey))]
+        private string _ckey = string.Empty;
 
         /// <summary>
         /// Unique client key, originally used in BYOND's user management, nostalgically used.
@@ -21,30 +18,23 @@ namespace SS3D.Systems.Entities
         public string Ckey => _ckey;
 
         /// <summary>
+        /// This the owner of this object is the local connection.
+        /// </summary>
+        public bool IsLocalConnection => Owner == LocalConnection;
+
+        [Server]
+        public void SetCkey(string ckey)
+        {
+            _ckey = ckey;
+        }
+
+        /// <summary>
         /// Used by FishNet Networking to update the variable and sync it across instances.
         /// This is also called by the server when the client enters the server to update his data.
         /// </summary>
         public void SyncCkey(string oldCkey, string newCkey, bool asServer)
         {
-            if (!asServer && IsHost)
-            {
-                return;
-            }
-
-            if (oldCkey != newCkey)
-            {
-                Punpun.Say(this, $"Updating player ckey {newCkey}");
-            }
-
             gameObject.name = "Soul - " + _ckey;
-        }
-
-        public void SyncMind(Mind oldMind, Mind newMind, bool asServer)
-        {
-            if (!asServer && IsHost)
-            {
-                return;
-            }
         }
     }
 }

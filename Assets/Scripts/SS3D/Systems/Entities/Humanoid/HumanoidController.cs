@@ -63,7 +63,7 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
 
-            _entity.MindChanged += HandleControllingSoulChanged;
+            _entity.OnMindChanged += HandleControllingSoulChanged;
         }
 
         private void HandleControllingSoulChanged(Mind mind)

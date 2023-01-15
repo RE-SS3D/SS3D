@@ -50,7 +50,7 @@ namespace SS3D.Systems.Entities.Silicon
         {
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
 
-            _entity.MindChanged += HandleControllingSoulChanged;
+            _entity.OnMindChanged += HandleControllingSoulChanged;
         }
 
         protected override void HandleUpdate(in float deltaTime)

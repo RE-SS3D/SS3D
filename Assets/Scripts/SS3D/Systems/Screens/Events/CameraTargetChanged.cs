@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace SS3D.Systems.Screens.Events
 {
-    public partial struct ChangeCameraEvent : IEvent
+    public partial struct CameraTargetChanged : IEvent
     {
         public readonly GameObject Target;
 
-        public ChangeCameraEvent(GameObject target)
+        public CameraTargetChanged(GameObject target)
         {
             Target = target;
         }

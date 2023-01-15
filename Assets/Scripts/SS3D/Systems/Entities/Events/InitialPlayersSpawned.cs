@@ -3,11 +3,11 @@ using Coimbra.Services.Events;
 
 namespace SS3D.Systems.Entities.Events
 {
-    public partial struct InitialPlayersSpawnedEvent : IEvent
+    public partial struct InitialPlayersSpawned : IEvent
     {
         public readonly List<Entity> Players;
 
-        public InitialPlayersSpawnedEvent(List<Entity> players)
+        public InitialPlayersSpawned(List<Entity> players)
         {
             Players = players;
         }

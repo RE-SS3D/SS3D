@@ -2,7 +2,6 @@
 using DG.Tweening;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
-using SS3D.Logging;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
 
@@ -45,8 +44,8 @@ namespace SS3D.Systems.Screens
 
             SetScreenState(ScreenType.Lobby, true);
 
-            ChangeGameScreenEvent.AddListener(HandleChangeGameScreen);
-            ChangeCameraEvent.AddListener(HandleChangeCamera);
+            AddHandle(ChangeGameScreenEvent.AddListener(HandleChangeGameScreen));
+            AddHandle(CameraTargetChanged.AddListener(HandleChangeCamera));
         }
 
         [Client]
@@ -58,7 +57,7 @@ namespace SS3D.Systems.Screens
         }
 
         [Client]
-        private void HandleChangeCamera(ref EventContext context, in ChangeCameraEvent e)
+        private void HandleChangeCamera(ref EventContext context, in CameraTargetChanged e)
         {
             ChangeGameScreenEvent changeGameScreenEvent = new(ScreenType.None);
             changeGameScreenEvent.Invoke(this);

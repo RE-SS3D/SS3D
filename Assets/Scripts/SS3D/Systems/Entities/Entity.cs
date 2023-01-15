@@ -2,6 +2,7 @@
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -14,7 +15,7 @@ namespace SS3D.Systems.Entities
     [Serializable]
     public class Entity : NetworkActor
     {
-        public Action<Mind> MindChanged;
+        public event Action<Mind> OnMindChanged;
 
         [SerializeField]
         [SyncVar(OnChange = nameof(SyncMind))]
@@ -37,26 +38,29 @@ namespace SS3D.Systems.Entities
 
         private void OnSpawn()
         {
-            MindChanged?.Invoke(Mind);
+            OnMindChanged?.Invoke(Mind);
         }
 
-        private void UpdateCameraFollow()
+        private void InvokeLocalPlayerObjectChanged()
         {
-            if (!IsOwner)
+            if (!Mind.Soul.IsLocalConnection)
             {
                 return;
             }
 
-            ChangeCameraEvent changeCameraEvent = new(GameObjectCache);
-            changeCameraEvent.Invoke(this);
+            LocalPlayerObjectChanged localPlayerObjectChanged = new(GameObjectCache);
+            localPlayerObjectChanged.Invoke(this);
         }
 
         public void SyncMind(Mind oldMind, Mind newSoul, bool asServer)
         {
-            _mind = newSoul;
+            if (!asServer && IsHost)
+            {
+                return;
+            }
 
-            MindChanged?.Invoke(_mind);
-            UpdateCameraFollow();
+            OnMindChanged?.Invoke(_mind);
+            InvokeLocalPlayerObjectChanged();
         }
 
         [Server]
@@ -64,14 +68,7 @@ namespace SS3D.Systems.Entities
         {
             _mind = mind;
 
-            if (mind == null)
-            {
-                RemoveOwnership();
-            }
-            else
-            {
-                GiveOwnership(mind.Owner);
-            }
+            GiveOwnership(mind.Owner);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace SS3D.Systems.Lobby.UI
         {
             base.OnAwake();
 
-            ReadyPlayersChanged.AddListener(HandleReadyPlayersChanged);
+            AddHandle(ReadyPlayersChanged.AddListener(HandleReadyPlayersChanged));
         }
 
         public override void OnStartClient()
@@ -44,7 +44,7 @@ namespace SS3D.Systems.Lobby.UI
 
         private void SubscribeToEvents()
         {
-            OnlineSoulsChanged.AddListener(HandleOnlineSoulsChanged);
+            AddHandle(OnlineSoulsChanged.AddListener(HandleOnlineSoulsChanged));
         }
 
         private void HandleOnlineSoulsChanged(ref EventContext context, in OnlineSoulsChanged e)

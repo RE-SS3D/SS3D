@@ -55,7 +55,7 @@ namespace SS3D.Systems.Gamemodes
         {   
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
             AddHandle(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersChanged));
-            AddHandle(InitialPlayersSpawnedEvent.AddListener(HandleInitialPlayersSpawned));
+            AddHandle(InitialPlayersSpawned.AddListener(HandleInitialPlayersSpawned));
         }
 
         /// <summary>
@@ -72,11 +72,11 @@ namespace SS3D.Systems.Gamemodes
             _gamemode.OnFinished += HandleGamemodeFinalized;
 
             // Get systems we need to load player data
-            EntitySpawnSystem entitySpawnSystem = SystemLocator.Get<EntitySpawnSystem>();
+            EntitySystem entitySystem = SystemLocator.Get<EntitySystem>();
             PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
 
             // Get list of players ready to spawn (by Ckey).
-            List<Entity> playersToAssign = entitySpawnSystem.SpawnedPlayers;
+            List<Entity> playersToAssign = entitySystem.SpawnedPlayers;
             List<string> playerCkeys = new List<string>();
             for (int i = 0; i < playersToAssign.Count; i++)
             {
@@ -188,7 +188,7 @@ namespace SS3D.Systems.Gamemodes
         /// Called whenever the ready players are spawned at the start of the round.          
         /// </summary>
         [Server]
-        private void HandleInitialPlayersSpawned(ref EventContext context, in InitialPlayersSpawnedEvent e)
+        private void HandleInitialPlayersSpawned(ref EventContext context, in InitialPlayersSpawned e)
         {
             InitializeGamemode();   
         }
@@ -206,8 +206,8 @@ namespace SS3D.Systems.Gamemodes
             }
 
             // Retrieve the Ckey of the newly spawned player.
-            EntitySpawnSystem entitySpawnSystem = SystemLocator.Get<EntitySpawnSystem>();
-            string newPlayerCkey = SystemLocator.Get<PlayerControlSystem>()?.GetCkey(entitySpawnSystem.LastSpawned.Owner);
+            EntitySystem entitySystem = SystemLocator.Get<EntitySystem>();
+            string newPlayerCkey = SystemLocator.Get<PlayerControlSystem>()?.GetCkey(entitySystem.LastSpawned.Owner);
 
             // Assign late join objectives to the new player
             if (newPlayerCkey != null)

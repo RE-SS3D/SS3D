@@ -1,5 +1,4 @@
 using Coimbra.Services.Events;
-using Cysharp.Threading.Tasks;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
@@ -49,9 +48,9 @@ namespace SS3D.Systems.Lobby.UI
 
         private void ProcessSpawnedPlayers()
         {
-            EntitySpawnSystem spawnSystem = SystemLocator.Get<EntitySpawnSystem>();
+            EntitySystem system = SystemLocator.Get<EntitySystem>();
 
-            bool isPlayedSpawned = spawnSystem.IsPlayedSpawned(LocalConnection);
+            bool isPlayedSpawned = system.IsPlayerSpawned(LocalConnection);
 
             if (isPlayedSpawned)
             {
@@ -64,9 +63,9 @@ namespace SS3D.Systems.Lobby.UI
 
         private void ProcessRoundState(RoundState roundState)
         {
-            EntitySpawnSystem spawnSystem = SystemLocator.Get<EntitySpawnSystem>();
+            EntitySystem system = SystemLocator.Get<EntitySystem>();
 
-            bool isPlayedSpawned = spawnSystem.IsPlayedSpawned(LocalConnection);
+            bool isPlayedSpawned = system.IsPlayerSpawned(LocalConnection);
 
             if (isPlayedSpawned && roundState == RoundState.Ongoing)
             {
@@ -101,11 +100,10 @@ namespace SS3D.Systems.Lobby.UI
         private void HandleEmbarkButtonPressed(bool pressed)
         {
             PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
+            EntitySystem entitySystem = SystemLocator.Get<EntitySystem>();
 
             Soul soul = playerControlSystem.GetSoul(LocalConnection);
-            RequestEmbarkMessage requestEmbarkMessage = new(soul);
-
-            ClientManager.Broadcast(requestEmbarkMessage);
+            entitySystem.CmdSpawnLatePlayer(soul);
         }
 
         private void HandleReadyButtonPressed(bool pressed)
