@@ -29,7 +29,7 @@ namespace SS3D.Systems.Health
 
         protected override void HandleUpdate(in float deltaTime)
         {
-            SetStamina(_controller ? _controller.CurrentStaminaStamina : 0f);
+            SetStamina(_controller ? _controller.CurrentStamina : 0f);
         }
 
         public void AssignViewToPlayer(StaminaController staminaController)

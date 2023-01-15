@@ -43,7 +43,7 @@ namespace SS3D.Systems.Health
         /// <summary>
         /// The current stamina proportion of the entity (scaled between zero and one).
         /// </summary>
-        public float CurrentStaminaStamina => _currentStamina;
+        public float CurrentStamina => _currentStamina;
 
         public bool CanCommenceInteraction => IsServerOnly ? _stamina.CanCommenceInteraction : _currentStamina > 0f;
 
@@ -62,7 +62,7 @@ namespace SS3D.Systems.Health
             base.OnStartServer();
 
             // The server manages the stamina data for each entity.
-            _stamina = StaminaHelper.Create();
+            _stamina = StaminaFactory.Create();
             _currentStamina = _stamina.Current;
         }
 
