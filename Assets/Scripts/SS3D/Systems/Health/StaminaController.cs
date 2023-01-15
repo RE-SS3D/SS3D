@@ -31,7 +31,7 @@ namespace SS3D.Systems.Health
         /// <summary>
         /// Provides a way for the client to access the current player stamina.
         /// </summary>
-        [SyncVar] private float _current;
+        [SyncVar(OnChange = nameof(SyncCurrentStamina))] private float _currentStamina;
 
         /// <summary>
         /// Actual stamina data. Will only exist on the server.
@@ -41,9 +41,9 @@ namespace SS3D.Systems.Health
         /// <summary>
         /// The current stamina proportion of the entity (scaled between zero and one).
         /// </summary>
-        public float CurrentStamina => _current;
+        public float CurrentStaminaStamina => _currentStamina;
 
-        public bool CanCommenceInteraction => IsServerOnly ? _stamina.CanCommenceInteraction : _current > 0f;
+        public bool CanCommenceInteraction => IsServerOnly ? _stamina.CanCommenceInteraction : _currentStamina > 0f;
 
         /// <summary>
         /// TODO: Refactor how this works.
@@ -53,7 +53,7 @@ namespace SS3D.Systems.Health
         /// require that you stop as soon as you hit zero stamina. This problem will go away once
         /// movement is server authoritative because this will only be needed on the server.
         /// </summary>
-        public bool CanContinueInteraction => IsServerOnly ? _stamina.CanContinueInteraction : _current > 0f;
+        public bool CanContinueInteraction => IsServerOnly ? _stamina.CanContinueInteraction : _currentStamina > 0f;
 
         public override void OnStartServer()
         {
@@ -61,7 +61,7 @@ namespace SS3D.Systems.Health
 
             // The server manages the stamina data for each entity.
             _stamina = StaminaHelper.Create(10f);
-            _current = _stamina.Current;
+            _currentStamina = _stamina.Current;
         }
 
         public override void OnStartClient()
@@ -129,7 +129,7 @@ namespace SS3D.Systems.Health
         public void ServerDepleteStamina(float amountToDeplete)
         {
             _stamina.ConsumeStamina(amountToDeplete);
-            _current = _stamina.Current;
+            _currentStamina = _stamina.Current;
         }
 
         /// <summary>
@@ -153,7 +153,12 @@ namespace SS3D.Systems.Health
         private void CmdDepleteStaminaScaled(float amountToDeplete)
         {
             _stamina.ConsumeStamina(amountToDeplete);
-            _current = _stamina.Current;
+            _currentStamina = _stamina.Current;
+        }
+
+        private void SyncCurrentStamina(float old, float value, bool asServer)
+        {
+
         }
     }
 }
