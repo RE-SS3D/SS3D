@@ -36,7 +36,7 @@ namespace SS3D.Systems.Storage.Containers
         public event ContainerEventHandler ContainerOpened;
         public event ContainerEventHandler ContainerClosed;
 
-        public InventoryUi InventoryUi { get; private set; }
+        public InventoryView InventoryView { get; private set; }
 
         public override void OnStartClient()
         {
