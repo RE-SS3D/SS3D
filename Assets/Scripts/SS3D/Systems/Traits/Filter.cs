@@ -2,7 +2,7 @@
 using UnityEngine;
 using SS3D.Systems.Storage.Items;
 
-namespace SS3D.Systems.Storage.Containers
+namespace SS3D.Systems
 {
     [CreateAssetMenu(fileName = "Filter", menuName = "Inventory/Filter")]
     public class Filter : ScriptableObject
