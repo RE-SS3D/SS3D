@@ -41,6 +41,7 @@ namespace SS3D.Systems.PlayerControl
 
             LateSyncOnlineSouls();
             LateSyncServerSouls();
+
             AddEventListeners();
         }
 

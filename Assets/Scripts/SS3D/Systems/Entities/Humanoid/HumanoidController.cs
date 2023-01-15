@@ -30,10 +30,10 @@ namespace SS3D.Systems.Entities.Humanoid
         [SerializeField] private float _lerpMultiplier;
         [SerializeField] private float _rotationLerpMultiplier;
 
+        [SerializeField] private StaminaController _staminaController;
+
         [Header("Movement IK Targets")]
         [SerializeField] private Transform _movementTarget;
-        // [SerializeField] private Transform _mousePositionTransform;
-        // [SerializeField] private Transform _mouseDirectionTransform;
 
         [Header("Run/Walk")]
         private bool _isRunning;
@@ -104,21 +104,6 @@ namespace SS3D.Systems.Entities.Humanoid
                 MovePlayer();
                 MoveMovementTarget(Vector2.zero, 5);
             }
-
-            UpdateMousePositionTransforms();
-        }
-
-        /// <summary>
-        /// Gets the mouse position and updates the mouse IK targets while maintaining the player height
-        /// </summary>
-        private void UpdateMousePositionTransforms()
-        {
-            // Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-            // Vector3 mousePos = ray.origin - ray.direction * (ray.origin.y / ray.direction.y);
-            // mousePos = new Vector3(mousePos.x, transform.position.y, mousePos.z);
-
-            // _mouseDirectionTransform.LookAt(mousePos);
-            // _mousePositionTransform.position = mousePos;
         }
 
         /// <summary>
@@ -168,9 +153,9 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             float x = Input.GetAxisRaw("Horizontal");
             float y = Input.GetAxisRaw("Vertical");
-            
+
             float inputFilteredSpeed = _isRunning && _staminaController.CanContinueInteraction ? RunAnimatorValue : WalkAnimatorValue;
-            
+
             x = Mathf.Clamp(x, -inputFilteredSpeed, inputFilteredSpeed);
             y = Mathf.Clamp(y, -inputFilteredSpeed, inputFilteredSpeed);
 
