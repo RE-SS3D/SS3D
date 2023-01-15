@@ -17,7 +17,7 @@ namespace SS3D.Systems.Interactions
     /// <summary>
     /// Attached to the player, initiates interactions.
     /// </summary>
-    public sealed class InteractionController : NetworkedSpessBehaviour
+    public sealed class InteractionController : NetworkActor
     {
         /// <summary>
         /// Mask for physics to use when finding targets
@@ -32,8 +32,8 @@ namespace SS3D.Systems.Interactions
         {
             base.OnStart();
 
-            _radialView = GameSystems.Get<RadialInteractionView>();
-            _camera = GameSystems.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+            _radialView = SystemLocator.Get<RadialInteractionView>();
+            _camera = SystemLocator.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
         }
 
         protected override void HandleUpdate(in float deltaTime)
@@ -122,8 +122,9 @@ namespace SS3D.Systems.Interactions
             
             if (interactions.Count <= 0) { return; }
 
-            void handleInteractionSelected(IInteraction interaction)
+            void handleInteractionSelected(IInteraction interaction, RadialInteractionButton _)
             {
+                _radialView.OnInteractionSelected -= handleInteractionSelected;
                 string interactionName = interaction.GetName(interactionEvent);
 
                 CmdRunInteraction(ray, interactionName);
@@ -168,7 +169,7 @@ namespace SS3D.Systems.Interactions
 
                 _radialView.SetInteractions(interactions, interactionEvent, mousePosition);
 
-                void handleInteractionSelected(IInteraction interaction)
+                void handleInteractionSelected(IInteraction interaction, RadialInteractionButton _)
                 {
                     int index = entries.FindIndex(x => x.Interaction == interaction);
                     string interactionName = interaction.GetName(interactionEvent);

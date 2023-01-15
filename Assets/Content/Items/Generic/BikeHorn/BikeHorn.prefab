@@ -123,7 +123,7 @@ MonoBehaviour:
   IgnoredParameters: []
   _animator: {fileID: 7807247313645579261}
   _smoothFloats: 1
-  _synchronizeInterval: 0.1
+  _interpolation: 2
   _clientAuthoritative: 1
   _sendToOwner: 0
 --- !u!1 &5406170708076973247
@@ -211,7 +211,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 4819234911439508660}
   _networkObjectCache: {fileID: 4819234911439508660}
-  _itemId: 
+  _itemId: bikeHorn
   _name: Bike horn
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 6351433192589740835}
@@ -246,7 +246,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 18
+  <PrefabId>k__BackingField: 12
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 17867790352780302039

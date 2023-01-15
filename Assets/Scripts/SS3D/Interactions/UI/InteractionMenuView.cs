@@ -7,13 +7,14 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Interactions.UI
 {
     /**
      * Used for the context menu
      */
-    public class InteractionMenuView : SpessBehaviour
+    public class InteractionMenuView : Actor
     {
         public event Action<IInteraction> OnSelect;
 

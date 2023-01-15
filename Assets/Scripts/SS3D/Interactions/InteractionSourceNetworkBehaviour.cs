@@ -11,7 +11,7 @@ namespace SS3D.Interactions
     /// <summary>
     /// A base class for interaction sources which use the mirror NetworkBehaviour
     /// </summary>
-    public abstract class InteractionSourceNetworkBehaviour : NetworkedSpessBehaviour, IGameObjectProvider, IInteractionSource
+    public abstract class InteractionSourceNetworkBehaviour : NetworkActor, IGameObjectProvider, IInteractionSource
     {
         protected bool SupportsMultipleInteractions { get; set; }
         public IInteractionSource Source { get; set; }

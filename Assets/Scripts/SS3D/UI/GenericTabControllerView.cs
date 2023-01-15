@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SS3D.UI
 {
-    public class GenericTabControllerView : SpessBehaviour
+    public class GenericTabControllerView : Actor
     {
         [SerializeField] private List<GenericTabView> _tabs;
 

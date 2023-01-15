@@ -7,12 +7,13 @@ using UnityEngine.UI;
 namespace SS3D.Systems.Storage.UI
 {
     /// <summary>
-    /// Shows an item and allows actions such as dragging
+    /// ItemDisplay is in charge of displaying correctly an item sprite in the UI.
+    /// It allows actions such as dragging the sprite around the screen.
     /// </summary>
     public class ItemDisplay : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, IPointerClickHandler
     {
         public Image ItemImage;
-        [NonSerialized] public bool DropAccepted;
+        [NonSerialized] public bool ShouldDrop;
         [NonSerialized] public Vector3 OldPosition;
 
         protected InventoryDisplayElement InventoryDisplayElement;
@@ -67,13 +68,20 @@ namespace SS3D.Systems.Storage.UI
         
         public void OnPointerClick(PointerEventData eventData)
         {
-            // WOW Unity, this is some amazing UI stuff
-            IPointerClickHandler pointerDownHandler = transform.parent.GetComponentInParent<IPointerClickHandler>();
-            pointerDownHandler?.OnPointerClick(eventData);
+            // Somehow, itemdisplay hides the other IPointerClickHandler in it's parent, so the event OnpointerClick is never
+            // called, for exemple in SingleItemContainerSlot. That's why we need to call the events on the parent from there.
+            var pointerDownHandlers = transform.parent.GetComponentsInParent<IPointerClickHandler>();
+            foreach (var pointerHandler in pointerDownHandlers)
+            {
+                pointerHandler?.OnPointerClick(eventData);
+            }
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            // Only allow to drag with a left click.
+            if (eventData.button != PointerEventData.InputButton.Left) return;
+
             _oldParent = transform.parent;
             if (InventoryDisplayElement == null)
             {
@@ -86,28 +94,35 @@ namespace SS3D.Systems.Storage.UI
             transform.position = tempPosition;
             
             _slotImage.raycastTarget = false;
-            DropAccepted = false;
+            ShouldDrop = false;
         }
 
         public void OnDrag(PointerEventData eventData)
         {
+            // Only allow to drag with a left click.
+            if (eventData.button != PointerEventData.InputButton.Left) return;
+
             Vector3 diff = Input.mousePosition - _startMousePosition;
             transform.position = _startPosition + diff;
         }
         
         public void OnEndDrag(PointerEventData eventData)
         {
+            // Only allow to drag with a left click.
+            if (eventData.button != PointerEventData.InputButton.Left) return;
+
             _slotImage.raycastTarget = true;
-            
-            if (DropAccepted)
-            {
-                OnDropAccepted();
-                return;
-            }
-            
+
             transform.SetParent(_oldParent, false);
             GetComponent<RectTransform>().localPosition = OldPosition;
 
+            if (ShouldDrop)
+            {
+                OnDropAccepted();
+                return;
+            }  
+
+            // If the raycast did not hit any element from the UI, drop the item out of the inventory.
             GameObject o = eventData.pointerCurrentRaycast.gameObject;
             if (o == null)
             {

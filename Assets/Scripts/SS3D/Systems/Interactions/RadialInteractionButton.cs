@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace SS3D.Systems.Interactions
 {
-    public class RadialInteractionButton : SpessBehaviour, IPointerEnterHandler
+    public class RadialInteractionButton : Actor, IPointerEnterHandler
     {
         public bool Occupied;
 
@@ -18,8 +18,13 @@ namespace SS3D.Systems.Interactions
 
         private IInteraction _interaction;
 
+        public IInteraction Interaction
+        {
+            get { return _interaction; }
+        }
+
         public Button.ButtonClickedEvent Pressed => _button.onClick;
-        public event Action<IInteraction> OnInteractionSelected;
+        public event Action<IInteraction, RadialInteractionButton> OnInteractionSelected;
         public event Action<GameObject, IInteraction> OnHovered;
 
         private const float MinimumThreshold = 0.5f;
@@ -51,7 +56,7 @@ namespace SS3D.Systems.Interactions
 
         private void HandleButtonPressed()
         {
-            OnInteractionSelected?.Invoke(_interaction);
+            OnInteractionSelected?.Invoke(_interaction, this);
         }
 
         public void Reset()

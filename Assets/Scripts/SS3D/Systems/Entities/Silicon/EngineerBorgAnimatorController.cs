@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Entities.Silicon
 {
-    public class EngineerBorgAnimatorController : SpessBehaviour
+    public class EngineerBorgAnimatorController : Actor
     {
         [SerializeField] private ThreadController _movementController;
 

@@ -12,11 +12,12 @@ namespace SS3D.Systems.Entities
     /// <summary>
     /// Base class for all things that can be controlled by a player
     /// </summary>
-    public class PlayerControllable : NetworkedSpessBehaviour
+    [Serializable]
+    public class PlayerControllable : NetworkActor
     {
         public Action<Soul> ControllingSoulChanged;
 
-        [SyncVar(OnChange = "SyncControllingSoul")] private Soul _controllingSoul;
+        [SerializeField] [SyncVar(OnChange = "SyncControllingSoul")] private Soul _controllingSoul;
 
         public Soul ControllingSoul
         {
@@ -35,21 +36,7 @@ namespace SS3D.Systems.Entities
 
         private void OnSpawn()
         {
-            UpdateCameraFollow();
             ControllingSoulChanged?.Invoke(ControllingSoul);
-        }
-
-        [Server]
-        public void ProcessDespawn()
-        {
-            TransformCache.DOScale(0, ScaleInDuration).SetEase(Ease.OutElastic).OnComplete(() => ServerManager.Despawn(GameObjectCache));
-        }
-
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-
-            UpdateCameraFollow();
         }
 
         private void UpdateCameraFollow()

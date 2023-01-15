@@ -5,6 +5,9 @@ namespace SS3D.Logging
     public static class LogColors
     {
         private const string UndefinedLogColor = "#FFFFFF";
+        public const string Blue = "#90C4FE";
+        public const string Green = "#88B36B";
+        public const string Red = "#8D3131";
 
         private static readonly Dictionary<Logs, string> Colors = new()
         {

@@ -17,7 +17,7 @@ namespace SS3D.Systems.Lobby.UI
     /// <summary>
     /// Controls the player list in the lobby
     /// </summary>
-    public sealed class PlayerUsernameListView : NetworkedSpessBehaviour
+    public sealed class PlayerUsernameListView : NetworkActor
     {
         // The UI element this is linked to
         [SerializeField] [NotNull] private Transform _root;

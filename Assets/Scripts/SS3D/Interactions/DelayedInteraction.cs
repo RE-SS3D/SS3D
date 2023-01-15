@@ -7,9 +7,8 @@ namespace SS3D.Interactions
     /// <summary>
     /// Base class for interactions which execute after a delay
     /// </summary>
-    public abstract class DelayedInteraction : IInteraction
+    public abstract class DelayedInteraction : Interaction
     {
-        public Sprite icon;
         /// <summary>
         /// The delay in seconds before performing the interaction
         /// </summary>
@@ -22,38 +21,38 @@ namespace SS3D.Interactions
         /// The interval in seconds in which CanInteract is checked
         /// </summary>
         protected float CheckInterval { get; set; }
-        private float startTime;
-        private float lastCheck;
-        
-        public IClientInteraction CreateClient(InteractionEvent interactionEvent)
+
+        private float _startTime;
+        private float _lastCheck;
+
+        public override IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
             // Don't create client interaction if delay too small
             if (Math.Abs(Delay) < 0.1f)
             {
                 return null;
             }
-            
+
             return new ClientDelayedInteraction
             {
                 Delay = Delay, LoadingBarPrefab = LoadingBarPrefab
             };
         }
 
-        public abstract string GetName(InteractionEvent interactionEvent);
+        public abstract override string GetName(InteractionEvent interactionEvent);
+        public override Sprite GetIcon(InteractionEvent interactionEvent) { return Icon; }
+        public abstract override bool CanInteract(InteractionEvent interactionEvent);
 
-        public virtual Sprite GetIcon(InteractionEvent interactionEvent) { return icon; }
-        public abstract bool CanInteract(InteractionEvent interactionEvent);
-
-        public virtual bool Start(InteractionEvent interactionEvent, InteractionReference reference)
+        public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            startTime = Time.time;
-            lastCheck = startTime;
+            _startTime = Time.time;
+            _lastCheck = _startTime;
             return true;
         }
 
-        public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
+        public override bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            if (lastCheck + CheckInterval < Time.time)
+            if (_lastCheck + CheckInterval < Time.time)
             {
                 if (!CanInteract(interactionEvent))
                 {
@@ -62,10 +61,10 @@ namespace SS3D.Interactions
                     return true;
                 }
 
-                lastCheck = Time.time;
+                _lastCheck = Time.time;
             }
-            
-            if (startTime + Delay < Time.time)
+
+            if (_startTime + Delay < Time.time)
             {
                 if (CanInteract(interactionEvent))
                 {
@@ -83,7 +82,7 @@ namespace SS3D.Interactions
             return true;
         }
 
-        public abstract void Cancel(InteractionEvent interactionEvent, InteractionReference reference);
+        public abstract override void Cancel(InteractionEvent interactionEvent, InteractionReference reference);
 
         protected abstract void StartDelayed(InteractionEvent interactionEvent);
     }

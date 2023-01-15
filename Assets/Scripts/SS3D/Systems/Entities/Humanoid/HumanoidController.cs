@@ -1,6 +1,7 @@
 using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Health;
 using SS3D.Systems.Screens;
 using UnityEngine;
 
@@ -14,13 +15,15 @@ namespace SS3D.Systems.Entities.Humanoid
     [RequireComponent(typeof(HumanoidAnimatorController))]
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
-    public class HumanoidController : NetworkedSpessBehaviour
+    [RequireComponent(typeof(StaminaController))]
+    public class HumanoidController : NetworkActor
     {
         public event Action<float> OnSpeedChanged;
 
         [Header("Components")] 
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private PlayerControllable _playerControllable;
+        [SerializeField] private StaminaController _staminaController;
 
         [Header("Movement Settings")]
         [SerializeField] private float _movementSpeed;
@@ -44,7 +47,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private float _smoothedX;
         private float _smoothedY;
-        private SpessBehaviour _camera;
+        private Actor _camera;
 
         private const float WalkAnimatorValue = .3f;
         private const float RunAnimatorValue = 1f;
@@ -58,7 +61,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void Setup()
         {
-            _camera = GameSystems.Get<CameraSystem>().PlayerCamera;
+            _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
 
             _playerControllable.ControllingSoulChanged += HandleControllingSoulChanged;
         }
@@ -85,8 +88,8 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         private void ProcessCharacterMovement()
         {
-            ProcessPlayerInput();
             ProcessToggleRun();
+            ProcessPlayerInput();
 
             _characterController.Move(Physics.gravity);
             
@@ -166,7 +169,7 @@ namespace SS3D.Systems.Entities.Humanoid
             float x = Input.GetAxisRaw("Horizontal");
             float y = Input.GetAxisRaw("Vertical");
             
-            float inputFilteredSpeed = _isRunning ? RunAnimatorValue : WalkAnimatorValue;
+            float inputFilteredSpeed = _isRunning && _staminaController.CanContinueInteraction ? RunAnimatorValue : WalkAnimatorValue;
             
             x = Mathf.Clamp(x, -inputFilteredSpeed, inputFilteredSpeed);
             y = Mathf.Clamp(y, -inputFilteredSpeed, inputFilteredSpeed);

@@ -13,24 +13,32 @@ using Path = System.IO.Path;
 namespace SS3D.Systems.Permissions
 {
     /// <summary>
-    /// TODO: Make a simple permission system based on a .txt file to avoid non-admins from starting a round
+    /// Handles user permission on what he can do and can't.
     /// </summary>
-    public sealed class PermissionSystem : NetworkedSystem
+    public sealed class PermissionSystem : NetworkSystem
     {
         private const string EditorPermissionFilePath = "/Builds/Config/permissions.txt";
         private const string PermissionFilePath = "/Config/permissions.txt";
 
-        private static string FullPermissionFilePath => Path.GetFullPath(".") + (Application.isEditor ? EditorPermissionFilePath : PermissionFilePath);
-
+        /// <summary>
+        /// Dictionary of users and permissions.
+        /// </summary>
         [SyncObject]
         private readonly SyncDictionary<string, ServerRoleTypes> _userPermissions = new();
-        [SyncVar] public bool HasLoadedPermissions;
+
+        /// <summary>
+        /// If the server has loaded the permissions list
+        /// </summary>
+        [SyncVar]
+        public bool HasLoadedPermissions;
+
+        private static string FullPermissionFilePath => Path.GetFullPath(".") + (Application.isEditor ? EditorPermissionFilePath : PermissionFilePath);
 
         protected override void OnStart()
         {
             base.OnStart();
 
-            _userPermissions.OnChange += HandleUserPermissionsChanged;
+            _userPermissions.OnChange += SyncHandleUserPermissionsChanged;
         }
 
         public override void OnStartClient()
@@ -47,16 +55,25 @@ namespace SS3D.Systems.Permissions
             LoadPermissions();
         }
 
-        private void HandleUserPermissionsChanged(SyncDictionaryOperation op, string key, ServerRoleTypes value, bool asServer)
-        {
-            SyncUserPermissions();
-        }
-
+        /// <summary>
+        /// Tries to get an user role.
+        /// </summary>
+        /// <param name="ckey">The user to get the role of.</param>
+        /// <param name="userPermission">The access level of that user.</param>
+        /// <returns>If the user role was found or not.</returns>
         public bool TryGetUserRole(string ckey, out ServerRoleTypes userPermission)
         {
             if (_userPermissions.Count == 0 || _userPermissions == null)
             {
                 LoadPermissions();
+            }
+
+            if (string.IsNullOrEmpty(ckey))
+            {
+                Punpun.Yell(this, "Ckey null while trying to get user role");
+
+                userPermission = ServerRoleTypes.None;
+                return false;
             }
 
             bool containsKey = _userPermissions.ContainsKey(ckey);
@@ -65,24 +82,39 @@ namespace SS3D.Systems.Permissions
             return containsKey;
         }
 
+        /// <summary>
+        /// Updates an user permission.
+        /// </summary>
+        /// <param name="ckey">The desired user to update the permission.</param>
+        /// <param name="role">The new user role.</param>
         [Server]
         public void ChangeUserPermission(string ckey, ServerRoleTypes role)
         {
-            // TODO: This            
+            // TODO: This
             // Add new user permission to list
             // Add new user permission to text file
         }
 
+        /// <summary>
+        /// Loads the user permissions found in the txt file.
+        /// </summary>
         [Server]
         private void LoadPermissions()
         {
-            CreatePermissionsFileIfNotExists();
+            if (!HasLoadedPermissions)
+            {
+                CreatePermissionsFileIfNotExists();
+            }
 
             string[] lines = File.ReadAllLines(FullPermissionFilePath);
 
-            for (int index = 0; index < lines.Length; index++)
+            foreach (string line in lines)
             {
-                string line = lines[index];
+                if (string.IsNullOrEmpty(line))
+                {
+                    continue;
+                }
+
                 string[] words = line.Split(" ");
 
                 string ckey = words[0];
@@ -94,15 +126,6 @@ namespace SS3D.Systems.Permissions
             }
 
             HasLoadedPermissions = true;
-            SyncUserPermissions();
-        }
-
-        private void SyncUserPermissions()
-        {
-            Dictionary<string, ServerRoleTypes> dictionary = _userPermissions.ToDictionary(pair => pair.Key, pair => pair.Value);
-
-            UserPermissionsChangedEvent permissionsChangedEvent = new(dictionary);
-            permissionsChangedEvent.Invoke(this);
         }
 
         [Server]
@@ -115,6 +138,27 @@ namespace SS3D.Systems.Permissions
 
             Punpun.Say(this, $"Permissions file not found, creating a new one", Logs.ServerOnly);
             File.WriteAllText(FullPermissionFilePath, string.Empty);
+        }
+
+        /// <summary>
+        /// Used to update clients about which user has which permission.
+        /// </summary>
+        private void SyncUserPermissions()
+        {
+            Dictionary<string, ServerRoleTypes> dictionary = _userPermissions.ToDictionary(pair => pair.Key, pair => pair.Value);
+
+            UserPermissionsChangedEvent permissionsChangedEvent = new(dictionary);
+            permissionsChangedEvent.Invoke(this);
+        }
+
+        private void SyncHandleUserPermissionsChanged(SyncDictionaryOperation op, string key, ServerRoleTypes value, bool asServer)
+        {
+            if (!asServer && IsHost)
+            {
+                return;
+            }
+
+            SyncUserPermissions();
         }
     }
 }

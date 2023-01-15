@@ -5,13 +5,14 @@ using Coimbra.Services.Events;
 using Cysharp.Threading.Tasks;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Core.Settings;
 using SS3D.Core.Utils;
 using SS3D.Systems.Permissions.Events;
 using UnityEngine;
 
 namespace SS3D.Systems.Permissions
 {
-    public class DisableIfNotAdmin : NetworkedSpessBehaviour
+    public class DisableIfNotAdmin : NetworkActor
     {
         private string _ckey;
 
@@ -26,7 +27,7 @@ namespace SS3D.Systems.Permissions
 
         private void HandleUserPermissionsUpdated(ref EventContext context, in UserPermissionsChangedEvent e)
         {
-            _ckey = LocalPlayerAccountUtility.Ckey;
+            _ckey = LocalPlayer.Ckey;
 
             DisableObjects();
         }
@@ -38,7 +39,7 @@ namespace SS3D.Systems.Permissions
                 return;
             }
 
-            PermissionSystem permissionSystem = GameSystems.Get<PermissionSystem>();
+            PermissionSystem permissionSystem = SystemLocator.Get<PermissionSystem>();
 
             if (!permissionSystem.HasLoadedPermissions)
             {

@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using FishNet.Component.Transforming;
 using FishNet.Object;
+using SS3D.Attributes;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Logging;
 using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Interactions;
+using SS3D.Utils;
 using UnityEditor;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -19,6 +22,7 @@ namespace SS3D.Systems.Storage.Items
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(NetworkTransform))]
+    [RequiredLayer("Items")]
     public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget
     {
         [Header("Item settings")]
@@ -28,6 +32,11 @@ namespace SS3D.Systems.Storage.Items
         [SerializeField] private Sprite _sprite;
 
         [SerializeField] private Rigidbody _rigidbody;
+
+        /// <summary>
+        /// The item's relative weight in kilograms.
+        /// </summary>
+        [SerializeField] private float _weight;
 
         [Tooltip("the item prefab, you can click on the item name and drag from Unity's file explorer")]
         public GameObject Prefab;
@@ -41,6 +50,7 @@ namespace SS3D.Systems.Storage.Items
         private Container _container;
 
         public Vector2Int Size => _size;
+        public string ItemId => _itemId;
 
         public Sprite InventorySprite
         {
@@ -48,7 +58,7 @@ namespace SS3D.Systems.Storage.Items
             {
                 if (_sprite == null)
                 {
-                    //GenerateNewIcon();
+                    GenerateNewIcon();
                 }
 
                 return _sprite;
@@ -77,10 +87,11 @@ namespace SS3D.Systems.Storage.Items
         {
             _sprite = null;
 
-            // Add a warning if an item is not on the Item layer (layer 16).
-            if (gameObject.layer != 16)
+            // Add a warning if an item is not on the Items layer (layer 10).
+            // Not really needed any more because of the RequiredLayer attribute.
+            if (gameObject.layer != 10)
             {
-                Debug.LogWarning("Item " + _name + " is on layer " + gameObject.layer);
+                Punpun.Yell(this, $"Item {_name} is on {LayerMask.LayerToName(gameObject.layer)} layer. Should be on Items layer.");
             }
         }
 
@@ -245,6 +256,20 @@ namespace SS3D.Systems.Storage.Items
         public void SetContainerUnchecked(Container newContainer)
         {
             _container = newContainer;
+        }
+
+        // TODO: Improve this
+        // we have this to generate icons at start, I do not know how bad it is for performance
+        // if you know anything about it, tell us
+        public void GenerateNewIcon()
+        {
+            RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
+            RuntimePreviewGenerator.OrthographicMode = true;
+            
+            Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
+                Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, false);
+            _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
+            _sprite.name = transform.name;
         }
 
 #if UNITY_EDITOR
