@@ -68,21 +68,6 @@ public class ContainerDescriptorEditor : Editor
             containerDescriptor.AutomaticContainerSetUp);
         HandleAutomaticContainerSetUp(automaticContainerSetUp);
 
-        Filter startFilter = (Filter)EditorGUILayout.ObjectField(
-            new GUIContent("Filter", "Filter on the container, controls what can go in the container"),
-            containerDescriptor.StartFilter, typeof(Filter), true);
-        HandleStartFilter(startFilter);
-
-        var _attachedContainer = (AttachedContainer)EditorGUILayout.ObjectField(
-            new GUIContent("Attached Container", "Attached container reference"),
-            containerDescriptor.AttachedContainer, typeof(AttachedContainer), true);
-        HandleAttachedContainer(_attachedContainer);
-
-        var _container = (Container)EditorGUILayout.ObjectField(
-            new GUIContent("Container", "Container reference"),
-            containerDescriptor.Container, typeof(Container), true);
-        HandleContainer(_container);
-
         string containerName = EditorGUILayout.TextField(
             new GUIContent("Container Name", "the name of the container, appearing in container related interactions"),
             containerDescriptor.ContainerName);
@@ -188,6 +173,11 @@ public class ContainerDescriptorEditor : Editor
             new GUIContent("Attach Items", "Set if items should be attached as children of the container game object"),
             containerDescriptor.AttachItems);
         HandleAttachItems(attachItems);
+
+        Filter startFilter = (Filter)EditorGUILayout.ObjectField(
+            new GUIContent("Filter", "Filter on the container, controls what can go in the container"),
+            containerDescriptor.StartFilter, typeof(Filter), true);
+        HandleStartFilter(startFilter);
 
         ShowIcons();
         serializedObject.ApplyModifiedProperties();
