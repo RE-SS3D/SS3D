@@ -18,7 +18,7 @@
 
 ## CONTRIBUTING:
 
-[<img src="https://img.shields.io/github/issues-raw/RE-SS3D/SS3D?color=green&label=Issues%20%28Open%29&logo=github&style=plastic" alt="Open Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues)[CONTRIBUTING.md](Documents/CONTRIBUTING.md) contains information regarding technical contributions, including Unity version, setting up the project, styling code, and using github.[<img src="https://img.shields.io/github/issues-closed-raw/RE-SS3D/SS3D?color=red&label=Issues%20%28Closed%29&logo=github&style=plastic" alt="Closed Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues?q=is%3Aissue+is%3Aclosed)
+[https://ss3d.gitbook.io/programming/introduction/contributing-to-ss3d](https://github.com/RE-SS3D/SS3D/issues)[Our GitBook](Documents/CONTRIBUTING.md) contains information regarding technical contributions, including Unity version, setting up the project, styling code, and using github.[<img src="https://img.shields.io/github/issues-closed-raw/RE-SS3D/SS3D?color=red&label=Issues%20%28Closed%29&logo=github&style=plastic" alt="Closed Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues?q=is%3Aissue+is%3Aclosed)
 
 [<img src="https://img.shields.io/github/issues-pr-raw/RE-SS3D/SS3D?color=green&label=Pull%20Requests%20%28Open%29&logo=github&style=plastic" alt="Open Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls)[https://ss3d.space/contribute/](https://ss3d.space/contribute/) breaks down the contribution types (including art assets) with links to helpful guides and to-do boards.[<img src="https://img.shields.io/github/issues-pr-closed-raw/RE-SS3D/SS3D?color=red&label=Pull%20Requests%20%28Closed%29&logo=github&style=plastic" alt="Closed Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls?q=is%3Apr+is%3Aclosed)
 
@@ -34,9 +34,9 @@ All **art assets** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.m
 
 [<img src="https://img.shields.io/discord/483813139633143808?label=Members&style=social&logo=discord" alt="Discord Members" align="right">](https://discord.gg/Z3sPhyS)Discord is the primary communication for our devs and community. There you'll find helpful people, WIP content, & community polls.
 
-[<img src="Documents/Images/youtube.png" alt="YouTube" width="150" align="left">](https://www.youtube.com/channel/UCJT-bVqDOYfyxF3oxECceZg)
+[<img src="Documents/Images/youtube.png" alt="YouTube" width="150" align="left">](https://www.youtube.com/@spacestation3d)
 
-[<img src="https://img.shields.io/youtube/channel/subscribers/UCJT-bVqDOYfyxF3oxECceZg?label=Subscribers&style=social" alt="YouTube Subscribers" align="right">](https://www.youtube.com/channel/UCJT-bVqDOYfyxF3oxECceZg)Our YouTube is where we upload many of our important videos including 3D animations, trailers, and gameplay clips of teasers/tests.
+[<img src="https://img.shields.io/youtube/channel/subscribers/UCJT-bVqDOYfyxF3oxECceZg?label=Subscribers&style=social" alt="YouTube Subscribers" align="right">](https://www.youtube.com/@spacestation3d)Our YouTube is where we upload many of our important videos including 3D animations, trailers, and gameplay clips of teasers/tests.
 
 [<img src="Documents/Images/reddit.png" alt="Reddit" width="150" align="left">](https://www.reddit.com/r/RESS3D/)
 
@@ -48,9 +48,9 @@ All **art assets** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.m
 
 ## BOARDS:
 
-[<img src="Documents/Images/github.png" alt="github" width="150" align="left">](https://github.com/RE-SS3D/SS3D/projects)
+[<img src="Documents/Images/github.png" alt="github" width="150" align="left">](https://github.com/RE-SS3D/SS3D/issues)
 
-This GitHub repository hosts our [issues page](https://github.com/RE-SS3D/SS3D/issues) and [wiki page](https://github.com/RE-SS3D/SS3D/wiki). For more info on our issues you can check the [project boards](https://github.com/RE-SS3D/SS3D/projects) and [milestone pages](https://github.com/RE-SS3D/SS3D/milestones).
+This GitHub repository hosts our [issues](https://github.com/RE-SS3D/SS3D/issues) and [milestone](https://github.com/RE-SS3D/SS3D/milestones) pages.
 
 [<img src="Documents/Images/trello.png" alt="Trello" width="150" align="left">](https://trello.com/ress3d)
 
@@ -60,7 +60,7 @@ Trello hosts all our other boards, including the task boards for our various ass
 
 [<img src="Documents/Images/paypal.png" alt="PayPal" width="150" align="left">](https://www.paypal.me/SpaceStation3D)
 
-PayPal is our monetary hub where all donations go before distribution to development costs. You can donate either via the link or our email (ress3d.project@gmail.com).
+PayPal is our monetary hub where all donations go before distribution to development costs. Use the link on the left or send to our email (ress3d.project@gmail.com).
 
 [<img src="Documents/Images/patreon.png" alt="Patreon" width="150" align="left">](https://www.patreon.com/ss3d)
 
