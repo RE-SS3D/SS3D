@@ -253,7 +253,7 @@ namespace FishNet.Managing.Object
         /// <summary>
         /// Despawns Spawned NetworkObjects. Scene objects will be disabled, others will be destroyed.
         /// </summary>
-        protected virtual void DespawnSpawnedWithoutSynchronization(bool asServer)
+        internal virtual void DespawnWithoutSynchronization(bool asServer)
         {
             foreach (NetworkObject nob in Spawned.Values)
                 DespawnWithoutSynchronization(nob, asServer, nob.GetDefaultDespawnType(), false);
@@ -265,7 +265,7 @@ namespace FishNet.Managing.Object
         /// Despawns a network object.
         /// </summary>
         /// <param name="nob"></param>
-        protected virtual void DespawnWithoutSynchronization(NetworkObject nob, bool asServer, DespawnType despawnType, bool removeFromSpawned)
+        internal virtual void DespawnWithoutSynchronization(NetworkObject nob, bool asServer, DespawnType despawnType, bool removeFromSpawned)
         {
             //Null can occur when running as host and server already despawns such as wehen stopping.
             if (nob == null)
@@ -344,10 +344,7 @@ namespace FishNet.Managing.Object
         {
             NetworkObject r;
             if (!Spawned.TryGetValueIL2CPP(objectId, out r))
-            {
-                if (NetworkManager.CanLog(LoggingType.Error))
-                    Debug.LogError($"Spawned NetworkObject not found for ObjectId {objectId}.");
-            }
+                NetworkManager.LogError($"Spawned NetworkObject not found for ObjectId {objectId}.");
 
             return r;
         }
@@ -381,8 +378,7 @@ namespace FishNet.Managing.Object
                 /* Default logging for server is errors only. Use error on client and warning
                  * on servers to reduce chances of allocation attacks. */
 #if DEVELOPMENT_BUILD || UNITY_EDITOR || !UNITY_SERVER
-                if (NetworkManager.CanLog(LoggingType.Error))
-                    Debug.LogError(msg);
+                NetworkManager.LogError(msg);
 #else
                 if (NetworkManager.CanLog(LoggingType.Warning))
                     Debug.LogWarning(msg);
