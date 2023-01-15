@@ -2,60 +2,65 @@
 using UnityEngine;
 using SS3D.Systems.Storage.Items;
 
-[CreateAssetMenu(fileName = "Filter", menuName = "Inventory/Filter")]
-public class Filter : ScriptableObject
+namespace SS3D.Systems.Storage.Containers
 {
-    public bool mustHaveAll;
-    public List<Trait> acceptedTraits;
-    public List<Trait> deniedTraits;
-
-    public bool CanStore(Item item)
+    [CreateAssetMenu(fileName = "Filter", menuName = "Inventory/Filter")]
+    public class Filter : ScriptableObject
     {
-        int traitCount = 0;
-        if (acceptedTraits.Count == 0 && deniedTraits.Count == 0)
-            return true;
+        public bool mustHaveAll;
+        public List<Trait> acceptedTraits;
+        public List<Trait> deniedTraits;
 
-        foreach (Trait trait in item.traits)
+        public bool CanStore(Item item)
         {
-            if (acceptedTraits.Contains(trait))
+            int traitCount = 0;
+            if (acceptedTraits.Count == 0 && deniedTraits.Count == 0)
+                return true;
+
+            foreach (Trait trait in item.traits)
             {
-                traitCount++;
-            } else if (deniedTraits.Contains(trait))
+                if (acceptedTraits.Contains(trait))
+                {
+                    traitCount++;
+                }
+                else if (deniedTraits.Contains(trait))
+                {
+                    return false;
+                }
+            }
+
+            //If mustHaveAll then it will only return true if has all traits, otherwise having any will do
+            if (mustHaveAll)
             {
-                return false;
+                return traitCount == acceptedTraits.Count;
+            }
+            else
+            {
+                return traitCount > 0;
             }
         }
 
-        //If mustHaveAll then it will only return true if has all traits, otherwise having any will do
-        if (mustHaveAll)
+        [SerializeField]
+        //Hash for identification
+        protected int hash;
+        [HideInInspector] public int Hash => hash;
+
+        [ExecuteInEditMode]
+        private void OnValidate()
         {
-            return traitCount == acceptedTraits.Count;
-        } else
+            hash = GetHash(name);
+        }
+
+        public static int GetHash(string str)
         {
-            return traitCount > 0;
+            return Animator.StringToHash(str.ToUpper());
         }
     }
 
-    [SerializeField]
-    //Hash for identification
-    protected int hash;
-    [HideInInspector] public int Hash => hash;
-
-    [ExecuteInEditMode]
-    private void OnValidate()
+    public class Filters
     {
-        hash = GetHash(name);
+        public static readonly int LeftHand = Filter.GetHash("LeftHand");
+        public static readonly int RightHand = Filter.GetHash("RightHand");
+        public static readonly int General = Filter.GetHash("General");
     }
-
-    public static int GetHash(string str)
-    {
-        return Animator.StringToHash(str.ToUpper());
-    }
-}
-
-public class Filters
-{
-    public static readonly int LeftHand = Filter.GetHash("LeftHand");
-    public static readonly int RightHand = Filter.GetHash("RightHand");
-    public static readonly int General = Filter.GetHash("General");
 }
