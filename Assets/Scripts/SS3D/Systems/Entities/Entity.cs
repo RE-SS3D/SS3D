@@ -17,7 +17,7 @@ namespace SS3D.Systems.Entities
 
         [SerializeField]
         [SyncVar(OnChange = nameof(SyncMind))]
-        private Mind _mind;
+        private Mind _mind = Mind.Empty;
 
         public Mind Mind
         {

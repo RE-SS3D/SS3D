@@ -35,6 +35,8 @@ namespace SS3D.Systems.Entities
             {
                 return;
             }
+
+            name = $"Mind - {newSoul.Ckey}";
         }
     }
 }

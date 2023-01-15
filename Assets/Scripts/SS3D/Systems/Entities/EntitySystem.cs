@@ -11,6 +11,7 @@ using SS3D.Logging;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
+using SS3D.Utils;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities
@@ -74,10 +75,15 @@ namespace SS3D.Systems.Entities
         /// <returns>Is the player is controlling an entity</returns>
         public bool IsPlayerSpawned(NetworkConnection networkConnection)
         {
-            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Mind.Soul.Owner == networkConnection);
+            Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Mind?.Soul?.Owner == networkConnection);
 
             bool isPlayerSpawned;
-            if (spawnedPlayer == null || spawnedPlayer.Mind == Mind.Empty)
+
+            if (spawnedPlayer == null)
+            {
+                isPlayerSpawned = false;
+            }
+            else if (spawnedPlayer.Mind == Mind.Empty)
             {
                 isPlayerSpawned = false;
             }
@@ -250,6 +256,11 @@ namespace SS3D.Systems.Entities
 
         private void SyncSpawnedPlayers()
         {
+            if (SpawnedPlayers.IsNullOrEmpty())
+            {
+                return;
+            }
+
             SpawnedPlayersUpdated spawnedPlayersUpdated = new(SpawnedPlayers);
             spawnedPlayersUpdated.Invoke(this);
         }

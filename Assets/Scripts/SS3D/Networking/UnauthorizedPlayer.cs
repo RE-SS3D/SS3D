@@ -1,7 +1,6 @@
-using FishNet;
+using Coimbra;
 using FishNet.Object;
 using SS3D.Core.Settings;
-using SS3D.Core.Utils;
 using SS3D.Logging;
 using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
@@ -36,7 +35,6 @@ namespace SS3D.Networking
             UserAuthorizationMessage userAuthorizationMessage = new(ckey);
             ClientManager.Broadcast(userAuthorizationMessage);
 
-            CmdRemoveConnectionAfterLogin();
             CmdDestroyObjectAfterLogin();
         }
 
@@ -44,12 +42,6 @@ namespace SS3D.Networking
         private void CmdDestroyObjectAfterLogin()
         {
             ServerManager.Despawn(gameObject);
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        private void CmdRemoveConnectionAfterLogin()
-        {
-            NetworkObject.RemoveOwnership();
         }
     }
 }
