@@ -49,7 +49,7 @@ All **art assets** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.m
 
 [<img src="Documents/Images/github.png" alt="github" width="150" align="left">](https://github.com/RE-SS3D/SS3D/issues)
 
-This GitHub repository hosts our [issues](https://github.com/RE-SS3D/SS3D/issues) board and [milestone](https://github.com/RE-SS3D/SS3D/milestones) board, both of which help manage technical tasks.
+This GitHub repository hosts our [issues board](https://github.com/RE-SS3D/SS3D/issues) and [milestones board](https://github.com/RE-SS3D/SS3D/milestones), both of which help manage our technical tasks.
 
 [<img src="Documents/Images/trello.png" alt="Trello" width="150" align="left">](https://trello.com/ress3d)
 
