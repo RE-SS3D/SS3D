@@ -23,7 +23,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         [Header("Components")]
         [SerializeField] private CharacterController _characterController;
-        [FormerlySerializedAs("_playerControllable")] [SerializeField] private Entity _entity;
+        [SerializeField] private Entity _entity;
 
         [Header("Movement Settings")]
         [SerializeField] private float _movementSpeed;

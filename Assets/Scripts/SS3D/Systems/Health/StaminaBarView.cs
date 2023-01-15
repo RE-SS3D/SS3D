@@ -1,18 +1,17 @@
 using SS3D.Attributes;
 using SS3D.Core.Behaviours;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace SS3D.Systems.Health
 {
     [RequiredLayer("UI")]
-    public class StaminaBarView : Actor
+    public class StaminaBarView : View
     {
         /// <summary>
         /// The actual UI bar
         /// </summary>
-        [FormerlySerializedAs("slider")] [SerializeField] private Slider _slider;
+        [SerializeField] private Slider _slider;
 
         /// <summary>
         /// Reference to the stamina controller that this view is supporting
