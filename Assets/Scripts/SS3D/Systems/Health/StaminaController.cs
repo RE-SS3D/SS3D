@@ -62,7 +62,7 @@ namespace SS3D.Systems.Health
             base.OnStartServer();
 
             // The server manages the stamina data for each entity.
-            _stamina = StaminaHelper.Create(10f);
+            _stamina = StaminaHelper.Create();
             _currentStamina = _stamina.Current;
         }
 
@@ -75,11 +75,6 @@ namespace SS3D.Systems.Health
 
             // Currently movement is client-authoritative, so we need to subscribe to events on the client only.
             SubscribeToEvents();
-
-            if (_entity.Mind.IsOwner)
-            {
-                _staminaBarView?.AssignViewToPlayer(this);
-            }
         }
 
         protected override void HandleUpdate(in float deltaTime)
@@ -111,7 +106,7 @@ namespace SS3D.Systems.Health
         }
 
         [Client]
-        public void AssignViewToControllable(Mind mind)
+        private void AssignViewToControllable(Mind mind)
         {
             if (mind == null || !mind.IsOwner)
             {
@@ -119,7 +114,7 @@ namespace SS3D.Systems.Health
             }
             else
             {
-                _staminaBarView?.AssignViewToPlayer(this);
+                _staminaBarView.AssignViewToPlayer(this);
             }
         }
 

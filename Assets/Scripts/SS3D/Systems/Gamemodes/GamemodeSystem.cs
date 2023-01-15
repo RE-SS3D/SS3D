@@ -73,14 +73,14 @@ namespace SS3D.Systems.Gamemodes
 
             // Get systems we need to load player data
             EntitySystem entitySystem = SystemLocator.Get<EntitySystem>();
-            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
+            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
 
             // Get list of players ready to spawn (by Ckey).
             List<Entity> playersToAssign = entitySystem.SpawnedPlayers;
             List<string> playerCkeys = new List<string>();
             for (int i = 0; i < playersToAssign.Count; i++)
             {
-                playerCkeys.Add(playerControlSystem.GetCkey(playersToAssign[i].Owner));
+                playerCkeys.Add(playerSystem.GetCkey(playersToAssign[i].Owner));
             }
 
             // Actually initialize the gamemode
@@ -142,9 +142,9 @@ namespace SS3D.Systems.Gamemodes
         [Server]
         private void SendObjectiveToClients(GamemodeObjective objective)
         {
-            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
+            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
 
-            NetworkConnection author = playerControlSystem.GetSoul(objective.AssigneeCkey).Owner;
+            NetworkConnection author = playerSystem.GetSoul(objective.AssigneeCkey).Owner;
             GamemodeObjectiveUpdatedMessage message = new(objective);
 
             // TODO Add admins as receivers of this message
@@ -169,9 +169,9 @@ namespace SS3D.Systems.Gamemodes
                 return;
             }
 
-            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
+            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
 
-            List<GamemodeObjective> gamemodeObjectives = _gamemode.GetPlayerObjectives(playerControlSystem.GetCkey(sender));
+            List<GamemodeObjective> gamemodeObjectives = _gamemode.GetPlayerObjectives(playerSystem.GetCkey(sender));
 
             if (gamemodeObjectives == null)
             {
@@ -207,7 +207,7 @@ namespace SS3D.Systems.Gamemodes
 
             // Retrieve the Ckey of the newly spawned player.
             EntitySystem entitySystem = SystemLocator.Get<EntitySystem>();
-            string newPlayerCkey = SystemLocator.Get<PlayerControlSystem>()?.GetCkey(entitySystem.LastSpawned.Owner);
+            string newPlayerCkey = SystemLocator.Get<PlayerSystem>()?.GetCkey(entitySystem.LastSpawned.Owner);
 
             // Assign late join objectives to the new player
             if (newPlayerCkey != null)

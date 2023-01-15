@@ -81,7 +81,7 @@ namespace SS3D.Systems.Rounds
         [Server]
         private void HandleChangePlayerReady(NetworkConnection sender, ChangePlayerReadyMessage m)
         {
-            Soul soul = SystemLocator.Get<PlayerControlSystem>().GetSoul(m.Ckey);
+            Soul soul = SystemLocator.Get<PlayerSystem>().GetSoul(m.Ckey);
 
             SetPlayerReady(soul, m.Ready);
         }

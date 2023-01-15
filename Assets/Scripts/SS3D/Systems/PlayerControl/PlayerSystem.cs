@@ -18,7 +18,7 @@ namespace SS3D.Systems.PlayerControl
     /// <summary>
     /// Controls the player flux, when users want to authenticate, rejoin the game, leave the game
     /// </summary>
-    public sealed class PlayerControlSystem : NetworkSystem
+    public sealed class PlayerSystem : NetworkSystem
     {
         [Header("Settings")]
         [SerializeField]
@@ -187,7 +187,7 @@ namespace SS3D.Systems.PlayerControl
             NetworkObject[] ownedObjects = conn.Objects.ToArray();
             if (ownedObjects.Length == 0)
             {
-                Punpun.Panic(this, "No clientOwnedObjects were found", Logs.ServerOnly);
+                Punpun.Yell(this, "No clientOwnedObjects were found", Logs.ServerOnly);
                 return;
             }
 
@@ -200,11 +200,11 @@ namespace SS3D.Systems.PlayerControl
                 {
                     _onlineSouls.Remove(soul.Ckey);
                     soul.RemoveOwnership();
+                    Punpun.Say(this, $"Invoking the player server left event: {soul.Ckey}", Logs.ServerOnly);
+
                     return;
                 }
                 networkIdentity.RemoveOwnership();
-
-                Punpun.Say(this, $"Invoking the player server left event: {soul.Ckey}", Logs.ServerOnly);
             }
         }
 

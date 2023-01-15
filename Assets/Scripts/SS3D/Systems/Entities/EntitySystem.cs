@@ -131,7 +131,7 @@ namespace SS3D.Systems.Entities
         /// Asks the server to spawn a player.
         /// </summary>
         /// <param name="soul"></param>
-        [ServerRpc]
+        [ServerRpc(RequireOwnership = false)]
         public void CmdSpawnLatePlayer(Soul soul, NetworkConnection networkConnection = null)
         {
             SpawnLatePlayer(soul);

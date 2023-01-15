@@ -20,7 +20,7 @@ namespace SS3D.Networking
             Setup();
         }
 
-        [Client]
+        [Client(RequireOwnership = true)]
         private void Setup()
         {
             string ckey = LocalPlayer.Ckey;
@@ -34,7 +34,7 @@ namespace SS3D.Networking
             Punpun.Say(this, $"Attempting authentication for user {ckey}", Logs.ClientOnly);
 
             UserAuthorizationMessage userAuthorizationMessage = new(ckey);
-            InstanceFinder.ClientManager.Broadcast(userAuthorizationMessage);
+            ClientManager.Broadcast(userAuthorizationMessage);
 
             CmdRemoveConnectionAfterLogin();
             CmdDestroyObjectAfterLogin();

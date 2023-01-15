@@ -99,18 +99,18 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleEmbarkButtonPressed(bool pressed)
         {
-            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
+            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
             EntitySystem entitySystem = SystemLocator.Get<EntitySystem>();
 
-            Soul soul = playerControlSystem.GetSoul(LocalConnection);
+            Soul soul = playerSystem.GetSoul(LocalConnection);
             entitySystem.CmdSpawnLatePlayer(soul);
         }
 
         private void HandleReadyButtonPressed(bool pressed)
         {
-            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
+            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
 
-            string ckey = playerControlSystem.GetCkey(LocalConnection);
+            string ckey = playerSystem.GetCkey(LocalConnection);
             ChangePlayerReadyMessage playerReadyMessage = new(ckey, pressed);
 
             ClientManager.Broadcast(playerReadyMessage);

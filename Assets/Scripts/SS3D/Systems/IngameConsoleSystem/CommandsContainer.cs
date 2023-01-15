@@ -48,7 +48,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         public static string PlayerList()
         {
             string ret = "";
-            List<Soul> souls = SystemLocator.Get<PlayerControlSystem>().OnlineSouls.ToList();
+            List<Soul> souls = SystemLocator.Get<PlayerSystem>().OnlineSouls.ToList();
             foreach (Soul i in souls)
             {
                 ret += i.Ckey + "\t";
@@ -60,7 +60,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         public static string SoulList()
         {
             string ret = "";
-            IEnumerable<Soul> souls = SystemLocator.Get<PlayerControlSystem>().ServerSouls;
+            IEnumerable<Soul> souls = SystemLocator.Get<PlayerSystem>().ServerSouls;
             foreach (Soul i in souls)
             {
                 ret += i.Ckey + "\t";

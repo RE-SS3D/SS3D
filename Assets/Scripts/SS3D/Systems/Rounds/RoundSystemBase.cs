@@ -108,11 +108,11 @@ namespace SS3D.Systems.Rounds
         {
             const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;
 
-            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
+            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
             PermissionSystem permissionSystem = SystemLocator.Get<PermissionSystem>();
 
             // Gets the soul that matches the connection, uses the ckey as the user id
-            string userCkey = playerControlSystem.GetCkey(conn);
+            string userCkey = playerSystem.GetCkey(conn);
 
             // Checks if player can call a round start
             if (permissionSystem.TryGetUserRole(userCkey, out ServerRoleTypes role) && role != requiredRole)
