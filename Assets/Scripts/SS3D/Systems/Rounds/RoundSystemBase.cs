@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using FishNet;
 using FishNet.Connection;
-using FishNet.Managing.Server;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
@@ -41,7 +39,8 @@ namespace SS3D.Systems.Rounds
         /// How many seconds of warmup.
         /// </summary>
         [Header("Warmup")]
-        [SyncVar] [SerializeField] protected int _warmupSeconds = 5;
+        [SyncVar] [SerializeField]
+        protected int _warmupSeconds = 5;
 
         /// <summary>
         /// The cancellation token for the round system, it cancels the tick count.
@@ -102,7 +101,7 @@ namespace SS3D.Systems.Rounds
         /// Process the start round request.
         /// </summary>
         /// <param name="conn">The connection that requested the round start.</param>
-        /// <param name="changeRoundStateMessage">The message received.</param>
+        /// <param name="m"></param>
         [Server]
         private void AuthorizeChangeRoundState(NetworkConnection conn, ChangeRoundStateMessage m)
         {

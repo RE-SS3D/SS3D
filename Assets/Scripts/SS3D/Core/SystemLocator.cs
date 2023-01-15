@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using SS3D.Logging;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace SS3D.Core
 {
@@ -20,7 +19,6 @@ namespace SS3D.Core
         /// Registers a system in the dictionary so we don't have to use find object of type.
         /// </summary>
         /// <param name="system">The object to be stored.</param>
-        /// <typeparam name="T">The Type of that object.</typeparam>
         public static void Register(MonoBehaviour system)
         {
             Type type = system.GetType();

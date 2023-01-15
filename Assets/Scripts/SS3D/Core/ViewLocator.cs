@@ -20,7 +20,6 @@ namespace SS3D.Core
         /// Registers a view into a view list.
         /// </summary>
         /// <param name="view">The object to be stored.</param>
-        /// <typeparam name="T">The Type of that object.</typeparam>
         public static void Register(MonoBehaviour view)
         {
             Type type = view.GetType();

@@ -4,7 +4,6 @@ using SS3D.Core.Behaviours;
 using SS3D.Systems.Health;
 using SS3D.Systems.Screens;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Entities.Humanoid
 {
@@ -110,7 +109,8 @@ namespace SS3D.Systems.Entities.Humanoid
         /// Moves the movement targets with the given input
         /// </summary>
         /// <param name="movementInput"></param>
-         private void MoveMovementTarget(Vector2 movementInput, float multiplier = 1)
+        /// <param name="multiplier"></param>
+        private void MoveMovementTarget(Vector2 movementInput, float multiplier = 1)
          {
              //makes the movement align to the camera view
              Vector3 newTargetMovement =

@@ -8,7 +8,6 @@ using FishNet.Object.Synchronizing;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
-using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
@@ -131,6 +130,7 @@ namespace SS3D.Systems.Entities
         /// Asks the server to spawn a player.
         /// </summary>
         /// <param name="soul"></param>
+        /// <param name="networkConnection"></param>
         [ServerRpc(RequireOwnership = false)]
         public void CmdSpawnLatePlayer(Soul soul, NetworkConnection networkConnection = null)
         {
