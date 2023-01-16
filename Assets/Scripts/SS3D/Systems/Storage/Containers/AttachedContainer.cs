@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using SS3D.Core.Behaviours;
-using SS3D.Storage.Containers;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
 namespace SS3D.Systems.Storage.Containers
 {
-    [RequireComponent(typeof(Container))]
     /// <summary>
     /// A container attached to a gameobject
     /// </summary>
@@ -107,6 +105,10 @@ namespace SS3D.Systems.Storage.Containers
             OnNewObserver?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Replace the current container with a new one and set it up.
+        /// </summary>
+        /// <param name="newContainer"></param>
         private void UpdateContainer(Container newContainer)
         {
             if (_container != null)

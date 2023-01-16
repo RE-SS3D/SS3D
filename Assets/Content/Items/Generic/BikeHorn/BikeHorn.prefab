@@ -172,6 +172,7 @@ GameObject:
   - component: {fileID: 6351433192589740835}
   - component: {fileID: 4436435477320339985}
   - component: {fileID: 4044200983548959999}
+  - component: {fileID: 6183259094829508424}
   m_Layer: 10
   m_Name: BikeHorn
   m_TagString: Untagged
@@ -215,9 +216,11 @@ MonoBehaviour:
   _name: Bike horn
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 6351433192589740835}
+  _weight: 0
   Prefab: {fileID: 6891363543938182813}
   AttachmentPoint: {fileID: 4619531351315044860}
   AttachmentPointAlt: {fileID: 0}
+  traits: []
   _honkSound: {fileID: 8300000, guid: 8c8823796bbcb23438fcf68260070383, type: 3}
   _audioSource: {fileID: 4436435477320339985}
   _animator: {fileID: 7807247313645579261}
@@ -432,3 +435,23 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 5709868560514540240, guid: b7735b41af47b164f841a513161d8f07, type: 3}
+--- !u!95 &6183259094829508424
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6891363543938182813}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

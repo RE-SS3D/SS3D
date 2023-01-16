@@ -92,7 +92,7 @@ namespace SS3D.Systems.Storage.UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            Inventory.ClientInteractWithSingleSlot(_container);
+            Inventory.ClientInteractWithContainerSlot(_container, new Vector2Int(0,0));
             Inventory.ActivateHand(_container);
         }
 		

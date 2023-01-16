@@ -193,7 +193,8 @@ namespace SS3D.Utils
 			return GenerateMaterialPreviewWithShader(material, previewObject, null, null, width, height);
 		}
 
-		public static Texture2D GenerateMaterialPreviewWithShader(Material material, PrimitiveType previewPrimitive, Shader shader, string replacementTag, int width = 64, int height = 64)
+		public static Texture2D GenerateMaterialPreviewWithShader(Material material, PrimitiveType previewPrimitive,
+			Shader shader, string replacementTag, int width = 64, int height = 64)
 		{
 			GameObject previewModel = GameObject.CreatePrimitive(previewPrimitive);
 			previewModel.gameObject.hideFlags = HideFlags.HideAndDontSave;
@@ -222,7 +223,19 @@ namespace SS3D.Utils
 			return GenerateModelPreviewWithShader(model, null, null, width, height, shouldCloneModel);
 		}
 
-		public static Texture2D GenerateModelPreviewWithShader(Transform model, Shader shader, string replacementTag, int width = 64, int height = 64, bool shouldCloneModel = false)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="model"> The transform of the game object we want to make a texture of.</param>
+		/// <param name="shader"> The shader we want to apply on the model before generating the texture.</param>
+		/// <param name="replacementTag"></param>
+		/// <param name="width"> Width of the texture.</param>
+		/// <param name="height"> Height of the texture.</param>
+		/// <param name="shouldCloneModel"> If true, the clone can be freely changed without affecting the original model.</param>
+		/// <param name="activateRenderers"> Activate all renderers on the gameObject before making a texture out of it.</param>
+		/// <returns></returns>
+		public static Texture2D GenerateModelPreviewWithShader(Transform model, Shader shader, string replacementTag,
+			int width = 64, int height = 64, bool shouldCloneModel = false, bool activateRenderers = false)
 		{
 			if (model == null || model.Equals(null))
 				return null;
@@ -275,7 +288,13 @@ namespace SS3D.Utils
 				for (int i = 0; i < renderersList.Count; i++)
 				{
 					if (!renderersList[i].enabled)
-						continue;
+					{
+						if (activateRenderers)
+						{
+							renderersList[i].enabled = true;
+						}
+						else continue;
+					}	
 
 					if (!init)
 					{

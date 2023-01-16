@@ -3,7 +3,6 @@ using FishNet.Connection;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
-using SS3D.Storage.Containers;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Storage.UI;
 using UnityEngine;
@@ -17,39 +16,42 @@ namespace SS3D.Systems.Storage.Containers
     /// adding containers to a game object.
     ///
     /// Warning: Many attributes should be private instead of public. They are currently public because ContainerDescriptorEditor
-    /// needs to acces them directly, not through accessors or properties.
+    /// needs to access them directly, not through accessors or properties.
     ///
     /// ContainerDescriptorEditor should be declared as friend of ContainerDescriptor and most attributes should be private.
     /// </summary>
     public class ContainerDescriptor : MonoBehaviour
     {
+
+        public bool AutomaticContainerSetUp = false; 
         // References toward all container related scripts.
         public AttachedContainer AttachedContainer;
+        public Container Container; 
         public ContainerInteractive ContainerInteractive;
         public ContainerItemDisplay ContainerItemDisplay;
+
         // reference towards the container UI linked to this container.
+        [Tooltip("Reference towards the container UI linked to this container. Leave empty before run ! ")]
         public ContainerUi ContainerUi;
 
-        // Open interaction icon, visible when opening a container.
+        [Tooltip("Open interaction icon, visible when opening a container.")]
         public Sprite OpenIcon;
-        // Take interaction icon, visible when taking something from a container.
+        [Tooltip("Take interaction icon, visible when taking something from a container.")]
         public Sprite TakeIcon;
-        // Store interaction icon, visible when storing something in a container.
+        [Tooltip("Store interaction icon, visible when storing something in a container.")]
         public Sprite StoreIcon;
-        // View interaction icon, visible when viewing a container.
+        [Tooltip("View interaction icon, visible when viewing a container.")]
         public Sprite ViewIcon;
 
-        /// <summary>
-        /// The local position of attached items
-        /// </summary>
+        [Tooltip("The local position of attached items.")]
         public Vector3 AttachmentOffset = Vector3.zero;
-        /// <summary> Name of the container. </summary>
+        [Tooltip("Name of the container.")]
         public string ContainerName = "container";
-        /// <summary> If the container is openable, this defines if things can be stored in the container without opening it. </summary>
+        [Tooltip("If the container is openable, this defines if things can be stored in the container without opening it.")]
         public bool OnlyStoreWhenOpen;
-        /// <summary> When the container UI is opened, if set true, the animation on the object is triggered </summary>
+        [Tooltip("When the container UI is opened, if set true, the animation on the object is triggered.")]
         public bool OpenWhenContainerViewed;
-        /// <summary> Defines the size of the container, every item takes a defined place inside a container. </summary>
+        [Tooltip("Defines the size of the container, every item takes a defined place inside a container.")]
         public Vector2Int Size = new(0,0);
 
         /// <summary>
@@ -58,30 +60,36 @@ namespace SS3D.Systems.Storage.Containers
         /// </summary>
         [Tooltip("Set visibility of items in container.")]
         public bool HideItems = true;
-        /// <summary> If items should be attached as children. </summary>
+        [Tooltip("If items should be attached as children of the container's game object.")]
         public bool AttachItems = true;
 
-        /// <summary> The initial filter of the container. Controls what can go in the container. </summary>
+        // Initialized should not be displayed, it's only useful for setting up the container in editor.
+        [HideInInspector]
         public bool Initialized;
-        /// <summary> max distance at which the container is visible if not hidden </summary>
+        [Tooltip("Max distance at which the container is visible if not hidden.")]
         public float MaxDistance = 5f;
+        [Tooltip("If the container can be opened/closed, in the sense of having a close/open animation.")]
         public bool IsOpenable;
-        /// <summary> If true, adds the containerInteractive script. Defines container interactions common to most containers. </summary>
+        [Tooltip("If the container should have the container's default interactions setting script.")] 
         public bool IsInteractive;
+        [Tooltip("If stuff inside the container can be seen using an UI.")]
         public bool HasUi;
-        /// <summary> If true, interactions in containerInteractive are ignored, instead, a script should implement IInteractionTarget </summary>
+        [Tooltip("If true, interactions in containerInteractive are ignored, instead, a script on the container's game object should implement IInteractionTarget.")] 
         public bool HasCustomInteraction;
-        /// <summary> If items in the container should be displayed at particular locations in the container</summary>
+        [Tooltip("If the container renders items in custom position on the container.")]
         public bool HasCustomDisplay;
-        /// <summary> The list of transforms defining where the items are displayed.</summary>
+        [Tooltip(" The list of transforms defining where the items are displayed.")]
         public Transform[] Displays;
+        [Tooltip(" The number of custom displays.")]
         public int NumberDisplay;
+        [Tooltip("The filter on the container.")]
+        public Filter StartFilter;
 
-        private float _lastObserverCheck;
-
+        /// <summary>
+        /// need some bool to override automatic setup and go manual instead. nat 01/10/23
+        /// </summary>
         public void Awake()
         {
-            // create a new container of Size size
             Assert.IsNotNull(AttachedContainer);
 
             // If container interactions icon are not defined at start, load default icons.

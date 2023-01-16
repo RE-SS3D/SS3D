@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Coimbra;
+using FishNet;
 using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Interfaces;
 using SS3D.Systems.Storage.Items;
@@ -33,7 +34,7 @@ namespace SS3D.Systems.Storage.UI
         {
             _gridItems.Remove(item);
         }
-        
+
         private void Start()
         {
             if (_gridLayout == null)
@@ -63,9 +64,12 @@ namespace SS3D.Systems.Storage.UI
             AttachedContainer.Container.OnContentsChanged -= ContainerOnContentsChanged;
         }
 
+        /// <summary>
+        /// Create item displays for items already contained in the container when viewing it. 
+        /// </summary>
         private IEnumerator DisplayInitialItems()
         {
-            // thanks Unity UI
+            // For some reason, has to be delayed to end of frame to work.
             yield return new WaitForEndOfFrame();
             Container container = AttachedContainer.Container;
             foreach (Item item in container.Items)
@@ -75,19 +79,23 @@ namespace SS3D.Systems.Storage.UI
             }
         }
 
-        private void ContainerOnContentsChanged(Container container, IEnumerable<Item> items, IEnumerable<Item> newItems, ContainerChangeType type)
+        /// <summary>
+        /// When the container change, change the display of items inside it.
+        /// Either add a display, remove a display or move a display to another slot.
+        /// </summary>
+        private void ContainerOnContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             switch (type)
             {
                 case ContainerChangeType.Add:
-                    foreach (Item item in items)
+                    foreach (Item item in newItems)
                     {
                         Vector2Int position = container.PositionOf(item);
                         CreateItemDisplay(item, position);
                     }
                     break;
                 case ContainerChangeType.Remove:
-                    foreach (Item item in items)
+                    foreach (Item item in oldItems)
                     {
                         for (var i = 0; i < _gridItems.Count; i++)
                         {
@@ -98,13 +106,13 @@ namespace SS3D.Systems.Storage.UI
                             }
 
                             _gridItems.RemoveAt(i);
-                            gridItem.Destroy();
+                            gridItem.gameObject.Destroy();
                             break;
                         }
                     }
                     break;
                 case ContainerChangeType.Move:
-                    foreach (Item item in items)
+                    foreach (Item item in newItems)
                     {
                         foreach (ItemGridItem gridItem in _gridItems)
                         {
@@ -182,6 +190,11 @@ namespace SS3D.Systems.Storage.UI
             }
         }
         
+        /// <summary>
+        /// When an item display is dropped on this grid, this compute in which slot of the grid the sprite should be displayed.
+        /// Does nothing if the area of drop is not free.
+        /// </summary>
+        /// <param name="display"></param>
         public override void OnItemDisplayDrop(ItemDisplay display)
         {
             Item item = display.Item;
@@ -196,13 +209,15 @@ namespace SS3D.Systems.Storage.UI
             // Offset slot by item dimensions
             Vector2Int slot = new( Mathf.RoundToInt(position.x - size.x / 2f), Mathf.RoundToInt(position.y - size.y / 2f));
             
+            // Check if the area of drop is free, if not, don't transfer.
             if (!AttachedContainer.Container.IsAreaFreeExcluding(new RectInt(slot, size), item))
             {
                 return;
             }
 
+            CreateItemDisplay(item, slot, true);
+
             display.ShouldDrop = true;
-            CreateItemDisplay(display.Item, slot);
             Inventory.ClientTransferItem(item, slot, AttachedContainer);
         }
         
@@ -218,19 +233,26 @@ namespace SS3D.Systems.Storage.UI
             objectToMove.localPosition = slot.localPosition;
         }
 
-        private void CreateItemDisplay(Item item, Vector2Int position)
+        private void CreateItemDisplay(Item item, Vector2Int position, bool ItemMovedInsideGrid = false)
         {
+            // avoid creating the same item sprite multiple times. Except when it's moved around in the container.
+            // In this case two instances need to exist on the same frame so we allow it.
+           foreach(ItemGridItem itemSprite in _gridItems)
+           {
+                if (itemSprite.Item == item && !ItemMovedInsideGrid) return;
+           }
+
             GameObject o = Instantiate(ItemDisplayPrefab, transform);
-            ItemGridItem gridItem = o.GetComponent<ItemGridItem>();
+            ItemGridItem itemSpriteOnGrid = o.GetComponent<ItemGridItem>();
 
             Vector2Int itemSize = item.Size;
             Vector2 cellSize = _gridLayout.cellSize;
             o.GetComponent<RectTransform>().sizeDelta = new Vector2(itemSize.x * cellSize.x, itemSize.y * cellSize.y);
-            
-            gridItem.Item = item;
+
+            itemSpriteOnGrid.Item = item;
             MoveToSlot(o.transform, position);
             
-            _gridItems.Add(gridItem);
+            _gridItems.Add(itemSpriteOnGrid);
         }
 
 		public GameObject GetCurrentGameObjectInSlot()

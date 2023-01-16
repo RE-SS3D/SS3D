@@ -8,11 +8,13 @@ namespace SS3D.Systems.Storage.Containers
     {
         public readonly Item Item;
         public readonly Vector2Int Position;
+        public readonly bool IsExcludedOfFreeAreaComputation;
 
-        public StoredItem(Item item, Vector2Int position)
+        public StoredItem(Item item, Vector2Int position, bool isExcludedOfFreeAreaComputation = false)
         {
             Item = item;
             Position = position;
+            IsExcludedOfFreeAreaComputation = isExcludedOfFreeAreaComputation;
         }
 
         public bool Equals(StoredItem other)

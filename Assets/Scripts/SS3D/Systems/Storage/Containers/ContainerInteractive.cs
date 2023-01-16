@@ -8,10 +8,15 @@ using UnityEngine;
 
 namespace SS3D.Systems.Storage.Containers
 {
+    /// <summary>
+    /// This allow a container to send back container related possible interactions, 
+    /// including viewing the content, storing, opening and others.
+    /// It also handle some UI stuff, such as closing the UI for all clients when someone close the container.
+    /// </summary>
     public class ContainerInteractive : NetworkedOpenable
     {
 
-        [HideInInspector] public ContainerDescriptor containerDescriptor;
+        public ContainerDescriptor containerDescriptor;
         private Sprite _viewContainerIcon;
 
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
@@ -75,7 +80,7 @@ namespace SS3D.Systems.Storage.Containers
         }
 
         /// <summary>
-        /// recursively closes all container UI when the root container is closed.
+        /// Recursively closes all container UI when the root container is closed.
         /// This is potentially very slow when there's a lot of containers and items as it calls get component for every items in every container.
         /// A faster solution could be to use unity game tag and to tag every object with a container as such.
         /// Keeping track in Container of the list of objects that are containers would make it really fast.
@@ -87,11 +92,11 @@ namespace SS3D.Systems.Storage.Containers
                 containerDescriptor.ContainerUi.Close();
             }
             
-            // We check for each item if they are interactive containers
+            // We check for each item if they are interactive containers.
             foreach(Item item in containerDescriptor.AttachedContainer.Container.Items)
             {
                 ContainerInteractive[] containerInteractives = item.GameObject.GetComponents<ContainerInteractive>();
-                // if the item is an interactive container, we call this method again on it.
+                // If the item is an interactive container, we call this method again on it.
                 if (containerInteractives == null)
                 {
                     continue;

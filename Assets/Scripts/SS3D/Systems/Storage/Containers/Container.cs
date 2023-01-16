@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
-using SS3D.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
@@ -254,6 +253,7 @@ namespace SS3D.Systems.Storage.Containers
 
             foreach (StoredItem storedItem in StoredItems)
             {
+                if (storedItem.IsExcludedOfFreeAreaComputation) continue;
                 RectInt storedItemPlacement = new(storedItem.Position, storedItem.Item.Size);
                 if (area.Overlaps(storedItemPlacement))
                 {
@@ -272,19 +272,20 @@ namespace SS3D.Systems.Storage.Containers
         /// <returns>If the given area is free</returns>
         public bool IsAreaFreeExcluding(RectInt area, Item item)
         {
-            int i = FindItem(item);
+            int itemIndex = FindItem(item);
             StoredItem storedItem = default;
-            if (i != -1)
+            if (itemIndex != -1)
             {
-                storedItem = StoredItems[i];
-                StoredItems[i] = new StoredItem(storedItem.Item, new Vector2Int(100000, 100000));
+                storedItem = StoredItems[itemIndex];
+                StoredItems[itemIndex] = new StoredItem(storedItem.Item, storedItem.Position, true);
             }
 
             bool areaFree = IsAreaFree(area);
 
-            if (i != -1)
+            if (itemIndex != -1)
             {
-                StoredItems[i] = storedItem;
+                StoredItems[itemIndex] = new StoredItem(storedItem.Item, storedItem.Position, false);
+                StoredItems[itemIndex] = storedItem;
             }
 
             return areaFree;
@@ -309,39 +310,11 @@ namespace SS3D.Systems.Storage.Containers
         }
 
         /// <summary>
-        /// Removes multiple items from the container
-        /// </summary>
-        /// <param name="itemsToRemove">An array of items to remove</param>
-        public void RemoveItems(IEnumerable<Item> itemsToRemove)
-        {
-            foreach (Item itemToRemove in itemsToRemove)
-            {
-                lock (_modificationLock)
-                {
-                    for (int i = 0; i < StoredItems.Count; i++)
-                    {
-                        StoredItem storedItem = StoredItems[i];
-                        if (storedItem.Item != itemToRemove)
-                        {
-                            continue;
-                        }
-
-                        StoredItems.RemoveAt(i);
-                        itemToRemove.SetContainer(null, true, true);
-                        break;
-                    }
-                }
-            }
-            
-            LastModification = Time.time;
-        }
-
-        /// <summary>
         /// Moves an item without performing validation
         /// </summary>
         /// <param name="item">The item to move</param>
         /// <returns>If the item was moved</returns>
-        public bool MoveItemUnchecked(StoredItem item)
+        private bool MoveItemUnchecked(StoredItem item)
         {
             for (int i = 0; i < StoredItems.Count; i++)
             {
@@ -412,71 +385,6 @@ namespace SS3D.Systems.Storage.Containers
             }
             
             return new Vector2Int(-1, -1);
-        }
-
-        /// <summary>
-        /// Ensures this container has the same state as the one given, using the least amount of operations
-        /// </summary>
-        /// <param name="otherContainer">The container to match</param>
-        public void Reconcile(Container otherContainer)
-        {
-            Size = otherContainer.Size;
-            
-            if (Empty)
-            {
-                StoredItems.AddRange(otherContainer.StoredItems);
-                return;
-            }
-            
-            if (otherContainer.Empty)
-            {
-                Dump();
-                return;
-            }
-            
-            // Loop through all items to find the first index of divergence
-            // We can assume that all items after that point have been changed, as items are always inserted at the end
-            List<Item> movedItems = new();
-            int changedIndex = -1;
-            for (var i = 0; i < StoredItems.Count; i++)
-            {
-                StoredItem storedItem = StoredItems[i];
-                StoredItem otherContainerItem = otherContainer.StoredItems[i];
-                if (storedItem.Item != otherContainerItem.Item)
-                {
-                    changedIndex = i;
-                    break;
-                }
-
-                if (storedItem.Position != otherContainerItem.Position)
-                {
-                    movedItems.Add(storedItem.Item);
-                }
-            }
-
-            // Invoke move logic if any element has moved
-            if (movedItems.Count > 0)
-            {
-
-            }
-
-            // Nothing actually changed
-            if (changedIndex == -1)
-            {
-                return;
-            }
-
-            // Remove all items after first divergence
-            for (int i = changedIndex; i < StoredItems.Count;)
-            {
-                StoredItems.RemoveAt(i);
-            }
-
-            // Add all remaining items
-            for (int i = changedIndex; i < otherContainer.ItemCount; i++)
-            {
-                StoredItems.Add(otherContainer.StoredItems[i]);
-            }
         }
 
         private void RemoveItemAt(int index)

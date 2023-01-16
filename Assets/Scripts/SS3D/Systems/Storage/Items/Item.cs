@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FishNet.Component.Transforming;
 using FishNet.Object;
 using SS3D.Attributes;
@@ -51,6 +52,8 @@ namespace SS3D.Systems.Storage.Items
 
         public Vector2Int Size => _size;
         public string ItemId => _itemId;
+
+        public List<Trait> traits;
 
         public Sprite InventorySprite
         {
@@ -138,6 +141,11 @@ namespace SS3D.Systems.Storage.Items
             {
                 _rigidbody.isKinematic = true;
             }
+            var itemCollider = GetComponent<Collider>();
+            if (itemCollider != null)
+            {
+                itemCollider.enabled = false;
+            }
         }
 
         /// <summary>
@@ -149,6 +157,11 @@ namespace SS3D.Systems.Storage.Items
             {
                 _rigidbody.isKinematic = false;
             }
+            var itemCollider = GetComponent<Collider>();
+            if (itemCollider != null)
+            {
+                itemCollider.enabled = true;
+            }
         }
 
         /// <summary>
@@ -158,7 +171,7 @@ namespace SS3D.Systems.Storage.Items
         public void SetVisibility(bool visible)
         {
             // TODO: Make this handle multiple renderers, with different states
-            Renderer renderer = GetComponent<Renderer>();
+            Renderer renderer = GetComponentInChildren<Renderer>();
 
             if (renderer != null)
             {
@@ -200,21 +213,21 @@ namespace SS3D.Systems.Storage.Items
             return _container != null;
         }
 
-        // public bool HasTrait(Trait trait)
-        // {
-        //     return traits.Contains(trait);
-        // }
-        //
-        // public bool HasTrait(string name)
-        // {
-        //     var hash = Animator.StringToHash(name.ToUpper());
-        //     foreach (Trait trait in traits)
-        //     {
-        //         if (trait.Hash == hash)
-        //             return true;
-        //     }
-        //     return false;
-        // }
+        public bool HasTrait(Trait trait)
+        {
+            return traits.Contains(trait);
+        }
+
+        public bool HasTrait(string name)
+        {
+            var hash = Animator.StringToHash(name.ToUpper());
+            foreach (Trait trait in traits)
+            {
+                if (trait.Hash == hash)
+                    return true;
+            }
+            return false;
+        }
 
         [Server]
         public void SetContainer(Container newContainer, bool alreadyAdded, bool alreadyRemoved)
@@ -265,11 +278,19 @@ namespace SS3D.Systems.Storage.Items
         {
             RuntimePreviewGenerator.BackgroundColor = new Color(0, 0, 0, 0);
             RuntimePreviewGenerator.OrthographicMode = true;
-            
-            Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
-                Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, false);
-            _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
-            _sprite.name = transform.name;
+
+            try
+            {
+                Texture2D texture = RuntimePreviewGenerator.GenerateModelPreviewWithShader(this.transform,
+            Shader.Find("Legacy Shaders/Diffuse"), null, 128, 128, true, true);
+                _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
+                _sprite.name = transform.name;
+            }
+            catch (NullReferenceException e)
+            {
+                Debug.LogError("Null reference exception, reverting to default sprite for item " + name + ".");
+            }
+        
         }
 
 #if UNITY_EDITOR
