@@ -17,6 +17,8 @@ namespace SS3D.Systems.Storage.UI
         [NonSerialized]
         public Inventory Inventory;
         public HandsUi HandsUi;
+        public GameObject PocketPrefab;
+        public Transform PocketParent;
         /// <summary>
         /// The prefab for a container display
         /// </summary>
@@ -24,13 +26,16 @@ namespace SS3D.Systems.Storage.UI
 
         private readonly List<ContainerDisplay> _containerDisplays = new();
         
+        // Maybe HandsUI should only handle selected hand highlight and inventory UI
+        // should handle setting up containers to UI.
         public void Start()
         {
             Assert.IsNotNull(HandsUi);
             Assert.IsNotNull(Inventory);
 
             HandsUi.Hands = Inventory.Hands;
-            
+            SetUpPocketUI();
+
             Inventory.ContainerOpened += InventoryOnContainerOpened;
             Inventory.ContainerClosed += InventoryOnContainerClosed;
         }
@@ -83,6 +88,45 @@ namespace SS3D.Systems.Storage.UI
             {
                 UiElement = uiElement;
                 Container = container;
+            }
+        }
+
+        private void SetUpPocketUI()
+        {
+            // Destroy existing elements and replace them by prefabs set up with their containers.
+            var childrenToDestroy = new List<GameObject>();
+            for (int i = 0; i < PocketParent.transform.childCount; i++)
+            {
+                if (PocketParent.transform.GetChild(i).gameObject.name.Contains("Pocket"))
+                {
+                    childrenToDestroy.Add(PocketParent.transform.GetChild(i).gameObject);
+                }
+            }
+
+            foreach (var child in childrenToDestroy)
+            {
+                DestroyImmediate(child);
+            }
+
+            var InventoryContainers = Inventory.gameObject.GetComponentsInChildren<ContainerDescriptor>();
+            var PocketContainers = new List<ContainerDescriptor>();
+            foreach (var container in InventoryContainers)
+            {
+                if (container.ContainerName.Contains("pocket"))
+                    PocketContainers.Add(container);
+            }
+            if (PocketContainers.Count == 0)
+            {
+                throw new ApplicationException("no container containing the word pocket is present on " +
+                    "the inventory's game object or any of it's children.");
+            }
+            foreach (var container in PocketContainers)
+            {
+                var attachedContainer = container.AttachedContainer;
+                GameObject handElement = Instantiate(PocketPrefab, PocketParent, false);
+                SingleItemContainerSlot slot = handElement.GetComponent<SingleItemContainerSlot>();
+                slot.Inventory = Inventory;
+                slot.Container = attachedContainer;
             }
         }
     }
