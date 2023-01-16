@@ -112,12 +112,12 @@ namespace SS3D.Systems.Storage.UI
             var PocketContainers = new List<ContainerDescriptor>();
             foreach (var container in InventoryContainers)
             {
-                if (container.ContainerName.Contains("pocket"))
+                if (container.ContainerType is ContainerType.Pocket)
                     PocketContainers.Add(container);
             }
             if (PocketContainers.Count == 0)
             {
-                throw new ApplicationException("no container containing the word pocket is present on " +
+                throw new ApplicationException("no container of type pocket is present on " +
                     "the inventory's game object or any of it's children.");
             }
             foreach (var container in PocketContainers)
