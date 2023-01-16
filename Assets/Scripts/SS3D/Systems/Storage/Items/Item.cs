@@ -141,6 +141,11 @@ namespace SS3D.Systems.Storage.Items
             {
                 _rigidbody.isKinematic = true;
             }
+            var itemCollider = GetComponent<Collider>();
+            if (itemCollider != null)
+            {
+                itemCollider.enabled = false;
+            }
         }
 
         /// <summary>
@@ -151,6 +156,11 @@ namespace SS3D.Systems.Storage.Items
             if (_rigidbody != null)
             {
                 _rigidbody.isKinematic = false;
+            }
+            var itemCollider = GetComponent<Collider>();
+            if (itemCollider != null)
+            {
+                itemCollider.enabled = true;
             }
         }
 
