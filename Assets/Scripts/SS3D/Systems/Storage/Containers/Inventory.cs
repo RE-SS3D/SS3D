@@ -207,7 +207,7 @@ namespace SS3D.Systems.Storage.Containers
                 NetworkConnection client = Owner;
                 if (client != null)
                 {
-                    TargetCloseContainer(client, container.gameObject);
+                    TargetCloseContainer(client, container);
                 }
             }
         }
@@ -252,7 +252,7 @@ namespace SS3D.Systems.Storage.Containers
         [TargetRpc]
         private void TargetOpenContainer(NetworkConnection target, AttachedContainer container)
         {
-            OnContainerOpened(container.GetComponent<AttachedContainer>());        
+            OnContainerOpened(container);        
         }
 
         /// <summary>
@@ -288,9 +288,9 @@ namespace SS3D.Systems.Storage.Containers
 
 
         [TargetRpc]
-        private void TargetCloseContainer(NetworkConnection target, GameObject container)
+        private void TargetCloseContainer(NetworkConnection target, AttachedContainer container)
         {
-            OnContainerClosed(container.GetComponent<AttachedContainer>());
+            OnContainerClosed(container);
         }
 
 
