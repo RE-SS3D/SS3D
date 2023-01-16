@@ -106,8 +106,10 @@ public class ContainerDescriptorEditor : Editor
                 containerDescriptor.OnlyStoreWhenOpen);
             HandleOnlyStoreWhenOpen(onlyStoreWhenOpen);       
         }
-        else if(containerDescriptor.HasUi)
+
+        if(containerDescriptor.HasUi)
         {
+            // Check if there's an animation with an Open parameter before allowing the openWhenContainerViewed field.
             var animator = containerDescriptor.gameObject.GetComponent<Animator>();
             if (animator != null)
             {
@@ -116,7 +118,7 @@ public class ContainerDescriptorEditor : Editor
                     if (controllerParameter.name != "Open") { continue; }
 
                     bool openWhenContainerViewed = EditorGUILayout.Toggle(
-                        new GUIContent("open when container viewed", "Set if the open animation should run when the container UI is opened"),
+                        new GUIContent("open when container viewed", "Set if the open animation should run when the container UI is viewed"),
                         containerDescriptor.OpenWhenContainerViewed);
                     HandleOpenWhenContainerViewed(openWhenContainerViewed);
                 }
