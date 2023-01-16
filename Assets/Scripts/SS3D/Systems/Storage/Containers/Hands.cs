@@ -116,7 +116,7 @@ namespace SS3D.Systems.Storage.Containers
             }
 
             // Hand-related buttons
-            if (Input.GetButtonDown("Swap Hands") && HandContainers.Length > 0 && EventSystem.current.currentSelectedGameObject == null)
+            if (Input.GetButtonDown("Swap Hands") && HandContainers.Length > 0)
             {
                 SelectedHandIndex = (SelectedHandIndex + 1) % HandContainers.Length;
                 OnHandChanged?.Invoke(SelectedHandIndex);
