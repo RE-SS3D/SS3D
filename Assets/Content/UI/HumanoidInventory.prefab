@@ -169,6 +169,7 @@ GameObject:
   - component: {fileID: 8250136937507568775}
   - component: {fileID: 8561134315023059762}
   - component: {fileID: -1906626332709311754}
+  - component: {fileID: 3962283478476174122}
   m_Layer: 5
   m_Name: HumanoidInventory
   m_TagString: Untagged
@@ -283,6 +284,21 @@ MonoBehaviour:
   PocketPrefab: {fileID: 3500707531626207298, guid: 4730e300b844e184dbfddb8ae7171204, type: 3}
   PocketParent: {fileID: 8250136937507568774}
   ContainerUiPrefab: {fileID: 176838957447208628, guid: c706a5a7a16b7bc4788469385ac24801, type: 3}
+--- !u!114 &3962283478476174122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8250136937507568777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d16d9c9e1fac9c84da0a1db31c0c4294, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PocketPrefab: {fileID: 3500707531626207298, guid: 4730e300b844e184dbfddb8ae7171204, type: 3}
+  DummyLeftPocketViewGameObject: {fileID: 6849294283287287192}
+  DummyRightPocketViewGameObject: {fileID: 3675586706731916381}
 --- !u!1 &9077724464359231712
 GameObject:
   m_ObjectHideFlags: 0
@@ -444,6 +460,11 @@ MonoBehaviour:
 --- !u!224 &3675586706731916380 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3500707531626207299, guid: 4730e300b844e184dbfddb8ae7171204, type: 3}
+  m_PrefabInstance: {fileID: 258759416235033631}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3675586706731916381 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3500707531626207298, guid: 4730e300b844e184dbfddb8ae7171204, type: 3}
   m_PrefabInstance: {fileID: 258759416235033631}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3114491936191095076
@@ -1401,6 +1422,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4730e300b844e184dbfddb8ae7171204, type: 3}
+--- !u!1 &6849294283287287192 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3500707531626207298, guid: 4730e300b844e184dbfddb8ae7171204, type: 3}
+  m_PrefabInstance: {fileID: 8041342264761290202}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &6849294283287287193 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3500707531626207299, guid: 4730e300b844e184dbfddb8ae7171204, type: 3}
