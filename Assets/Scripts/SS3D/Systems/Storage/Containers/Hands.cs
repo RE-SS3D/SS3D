@@ -123,7 +123,7 @@ namespace SS3D.Systems.Storage.Containers
                 CmdSetActiveHand(SelectedHandIndex);
             }
 
-            if (Input.GetButtonDown("Drop") && EventSystem.current.currentSelectedGameObject == null)
+            if (Input.GetButtonDown("Drop"))
             {
                 CmdDropHeldItem();
             }
