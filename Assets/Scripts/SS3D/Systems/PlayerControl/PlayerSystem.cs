@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FishNet.Connection;
@@ -17,23 +18,30 @@ namespace SS3D.Systems.PlayerControl
     /// <summary>
     /// Controls the player flux, when users want to authenticate, rejoin the game, leave the game
     /// </summary>
-    public sealed class PlayerControlSystem : NetworkSystem
+    public sealed class PlayerSystem : NetworkSystem
     {
-        [FormerlySerializedAs("_userPrefab")]
         [Header("Settings")]
-        [SerializeField] private NetworkObject _unauthorizedUserPrefab;
-        [SerializeField] private NetworkObject _soulPrefab;
+        [SerializeField]
+        private NetworkObject _unauthorizedUserPrefab;
 
-        [SyncObject] private readonly SyncList<Soul> _serverSouls = new();
+        [SerializeField]
+        private Soul _soulPrefab;
 
-        [SyncObject] private readonly SyncList<Soul> _onlineSouls = new();
+        [SyncObject]
+        private readonly SyncDictionary<string, Soul> _serverSouls = new();
+        [SyncObject]
+        private readonly SyncDictionary<string, Soul> _onlineSouls = new();
 
-        public IList<Soul> ServerSouls => _serverSouls;
-        public IList<Soul> OnlineSouls => _onlineSouls;
+        public IEnumerable<Soul> ServerSouls => _serverSouls.Values;
+        public IEnumerable<Soul> OnlineSouls => _onlineSouls.Values;
 
         protected override void OnStart()
         {
             base.OnStart();
+
+            LateSyncOnlineSouls();
+            LateSyncServerSouls();
+
             AddEventListeners();
         }
 
@@ -49,8 +57,8 @@ namespace SS3D.Systems.PlayerControl
 
         private void AddEventListeners()
         {
-            _serverSouls.OnChange += HandleServerSoulsChanged;
-            _onlineSouls.OnChange += HandleOnlineSouls;
+            _serverSouls.OnChange += HandleSyncServerSoulsChanged;
+            _onlineSouls.OnChange += HandleSyncOnlineSouls;
         }
 
         private void HandleRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs remoteConnectionStateArgs)
@@ -66,28 +74,66 @@ namespace SS3D.Systems.PlayerControl
             ProcessPlayerJoin(conn);
         }
 
-        private void HandleOnlineSouls(SyncListOperation op, int index, Soul oldItem, Soul newItem, bool asServer)
+        private void HandleSyncOnlineSouls(SyncDictionaryOperation op, string key, Soul value, bool asServer)
         {
-            ChangeType changeType = newItem != null ? ChangeType.Addition : ChangeType.Removal;
+            ChangeType changeType;
 
-            Soul soul = changeType == ChangeType.Addition ? newItem : oldItem;
+            switch (op)
+            {
+                case SyncDictionaryOperation.Add:
+                    changeType = ChangeType.Addition;
+                    break;
+                case SyncDictionaryOperation.Remove:
+                    changeType = ChangeType.Removal;
+                    break;
+                default:
+                    changeType = ChangeType.Addition;
+                    break;
+            }
 
-            OnlineSoulsChanged serverSoulsChanged = new(_onlineSouls.ToList(), changeType, soul);
+            OnlineSoulsChanged serverSoulsChanged = new(_onlineSouls.Values.ToList(), changeType, value);
             serverSoulsChanged.Invoke(this);
         }
 
-        private void HandleServerSoulsChanged(SyncListOperation op, int index, Soul oldItem, Soul newItem, bool asServer)
+        private void LateSyncOnlineSouls()
         {
-            ChangeType changeType = newItem != null ? ChangeType.Addition : ChangeType.Removal;
+            foreach (Soul soul in _onlineSouls.Values)
+            {
+                HandleSyncOnlineSouls(SyncDictionaryOperation.Add, soul.Ckey, soul, false);
+            }
+        }
 
-            Soul soul = changeType == ChangeType.Addition ? newItem : oldItem;
+        private void HandleSyncServerSoulsChanged(SyncDictionaryOperation op, string key, Soul value, bool asServer)
+        {
+            ChangeType changeType;
 
-            ServerSoulsChanged serverSoulsChanged = new(_serverSouls.ToList(), changeType, soul);
+            switch (op)
+            {
+                case SyncDictionaryOperation.Add:
+                    changeType = ChangeType.Addition;
+                    break;
+                case SyncDictionaryOperation.Remove:
+                    changeType = ChangeType.Removal;
+                    break;
+                default:
+                    changeType = ChangeType.Addition;
+                    break;
+            }
+
+            ServerSoulsChanged serverSoulsChanged = new(_serverSouls.Values.ToList(), changeType, value);
             serverSoulsChanged.Invoke(this);
+        }
+
+        private void LateSyncServerSouls()
+        {
+            foreach (Soul soul in _serverSouls.Values)
+            {
+                HandleSyncOnlineSouls(SyncDictionaryOperation.Add, soul.Ckey, soul, false);
+            }
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="conn"></param>
         [Server]
@@ -95,7 +141,7 @@ namespace SS3D.Systems.PlayerControl
         {
             string message = $"Player joined the server - {conn.ClientId} {conn.GetAddress()}";
             Punpun.Say(this, message, Logs.ServerOnly);
-            
+
             NetworkObject unauthorizedUser = Instantiate(_unauthorizedUserPrefab, Vector3.zero, Quaternion.identity);
             ServerManager.Spawn(unauthorizedUser, conn);
         }
@@ -110,74 +156,71 @@ namespace SS3D.Systems.PlayerControl
         private void ProcessAuthorizePlayer(NetworkConnection conn, UserAuthorizationMessage userAuthorizationMessage)
         {
             string ckey = userAuthorizationMessage.Ckey;
+            bool hasSoul = _serverSouls.TryGetValue(ckey, out Soul soul);
 
-            Soul match = GetSoul(ckey);
-
-            if (match == null)
+            if (!hasSoul)
             {
                 Punpun.Say(this, $"No Soul match for {ckey} found, creating a new one", Logs.ServerOnly);
 
-                match = Instantiate(_soulPrefab).GetComponent<Soul>();
-                match.UpdateCkey(string.Empty, ckey, true);
+                soul = Instantiate(_soulPrefab);
+                ServerManager.Spawn(soul.gameObject);
 
-                _serverSouls.Add(match);
+                soul.SetCkey(ckey);
 
-                ServerManager.Spawn(match.gameObject);
+                _serverSouls.Add(ckey, soul);
             }
             else
             {
                 Punpun.Say(this, $"Soul match for {ckey} found, reassigning to client", Logs.ServerOnly);
             }
 
-            NetworkObject networkObject = match.NetworkObject;
-            networkObject.GiveOwnership(conn);
-            
-            _onlineSouls.Add(match);
+            soul.GiveOwnership(conn);
+            _onlineSouls.Add(ckey, soul);
         }
 
         [Server]
         private void ProcessPlayerDisconnect(NetworkConnection conn)
         {
-            string message = $"Client {conn.ClientId} {conn.GetAddress()} disconnected"; 
+            string message = $"Client {conn.ClientId} {conn.GetAddress()} disconnected";
             Punpun.Say(this, message, Logs.ServerOnly);
-            
+
             NetworkObject[] ownedObjects = conn.Objects.ToArray();
             if (ownedObjects.Length == 0)
             {
-                Punpun.Panic(this, "No clientOwnedObjects were found", Logs.ServerOnly);
+                Punpun.Yell(this, "No clientOwnedObjects were found", Logs.ServerOnly);
                 return;
             }
 
             foreach (NetworkObject networkIdentity in ownedObjects)
             {
                 Punpun.Say(this, $"Client {conn.GetAddress()}'s owned object: {networkIdentity.name}", Logs.ServerOnly);
-    
+
                 Soul soul = networkIdentity.GetComponent<Soul>();
                 if (soul != null)
                 {
-                    _onlineSouls.Remove(soul);
+                    _onlineSouls.Remove(soul.Ckey);
                     soul.RemoveOwnership();
+                    Punpun.Say(this, $"Invoking the player server left event: {soul.Ckey}", Logs.ServerOnly);
+
                     return;
                 }
                 networkIdentity.RemoveOwnership();
-
-                Punpun.Say(this, $"Invoking the player server left event: {soul.Ckey}", Logs.ServerOnly);
             }
         }
 
         public string GetCkey(NetworkConnection conn)
         {
-            return _serverSouls.Find(soul => soul.Owner == conn)?.Ckey;
+            return ServerSouls.ToList().Find(soul => soul.Owner == conn)?.Ckey;
         }
 
         public Soul GetSoul(string ckey)
         {
-            return _serverSouls.Find(soul => soul.Ckey == ckey);
+            return ServerSouls.ToList().Find(soul => soul.Ckey == ckey);
         }
 
         public Soul GetSoul(NetworkConnection conn)
         {
-            return _serverSouls.Find(soul => soul.Owner == conn);
+            return ServerSouls.ToList().Find(soul => soul.Owner == conn);
         }
     }
 }

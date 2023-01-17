@@ -1058,6 +1058,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1928667160}
     m_Modifications:
+    - target: {fileID: 1160312076, guid: 83e602c09f6d862428c09d7503632bfd, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1042289194392677491, guid: 83e602c09f6d862428c09d7503632bfd, type: 3}
       propertyPath: m_Name
       value: SS3D
@@ -1216,6 +1220,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2272081502543278501, guid: 83e602c09f6d862428c09d7503632bfd, type: 3}
       propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6064092890518086050, guid: 83e602c09f6d862428c09d7503632bfd, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 886e4060d55daf74e9512d9555ca9b8f, type: 3}
+    - target: {fileID: 6064092890518086050, guid: 83e602c09f6d862428c09d7503632bfd, type: 3}
+      propertyPath: m_PreserveAspect
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
@@ -1862,7 +1874,7 @@ RectTransform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 794261410}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -2081,6 +2093,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6150087420938704148, guid: 92d2bc3037e4add468512b90d3e1ed43, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: dfdc99339da4f3d45b058a426ba8d516, type: 3}
+    - target: {fileID: 6150087420938704148, guid: 92d2bc3037e4add468512b90d3e1ed43, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150087420938704148, guid: 92d2bc3037e4add468512b90d3e1ed43, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150087420938704148, guid: 92d2bc3037e4add468512b90d3e1ed43, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7619658171493412490, guid: 92d2bc3037e4add468512b90d3e1ed43, type: 3}
       propertyPath: m_Camera
       value: 
@@ -2172,6 +2200,10 @@ PrefabInstance:
     - target: {fileID: 7619658171493412503, guid: 92d2bc3037e4add468512b90d3e1ed43, type: 3}
       propertyPath: m_Name
       value: Intro Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 7619658171493412503, guid: 92d2bc3037e4add468512b90d3e1ed43, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 92d2bc3037e4add468512b90d3e1ed43, type: 3}

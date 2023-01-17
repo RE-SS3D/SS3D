@@ -15,13 +15,13 @@ namespace SS3D.Systems.Storage.Containers
         /// <summary>
         /// The creatures looking at this container
         /// </summary>
-        public readonly HashSet<PlayerControllable> ObservingPlayers = new();
+        public readonly HashSet<Entity> ObservingPlayers = new();
 
         public ContainerDescriptor ContainerDescriptor;
 
         [SerializeField] private Container _container;
 
-        public delegate void ObserverHandler(AttachedContainer container, PlayerControllable observer);
+        public delegate void ObserverHandler(AttachedContainer container, Entity observer);
         
         public event EventHandler<Item> OnItemAttached;
         public event EventHandler<Item> OnItemDetached;
@@ -66,7 +66,7 @@ namespace SS3D.Systems.Storage.Containers
         /// </summary>
         /// <param name="observer">The creature which observes</param>
         /// <returns>True if the creature was not already observing this container</returns>
-        public bool AddObserver(PlayerControllable observer)
+        public bool AddObserver(Entity observer)
         {
             bool newObserver = ObservingPlayers.Add(observer);
             if (newObserver)
@@ -80,7 +80,7 @@ namespace SS3D.Systems.Storage.Containers
         /// Removes an observer
         /// </summary>
         /// <param name="observer">The observer to remove</param>
-        public void RemoveObserver(PlayerControllable observer)
+        public void RemoveObserver(Entity observer)
         {
             ObservingPlayers.Remove(observer);
         }
@@ -100,7 +100,7 @@ namespace SS3D.Systems.Storage.Containers
             OnItemDetached?.Invoke(this, e);
         }
 
-        private void ProcessNewObserver(PlayerControllable e)
+        private void ProcessNewObserver(Entity e)
         {
             OnNewObserver?.Invoke(this, e);
         }

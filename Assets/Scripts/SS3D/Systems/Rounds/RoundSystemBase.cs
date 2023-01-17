@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using FishNet;
 using FishNet.Connection;
-using FishNet.Managing.Server;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Core;
@@ -41,7 +39,8 @@ namespace SS3D.Systems.Rounds
         /// How many seconds of warmup.
         /// </summary>
         [Header("Warmup")]
-        [SyncVar] [SerializeField] protected int _warmupSeconds = 5;
+        [SyncVar] [SerializeField]
+        protected int _warmupSeconds = 5;
 
         /// <summary>
         /// The cancellation token for the round system, it cancels the tick count.
@@ -102,17 +101,17 @@ namespace SS3D.Systems.Rounds
         /// Process the start round request.
         /// </summary>
         /// <param name="conn">The connection that requested the round start.</param>
-        /// <param name="changeRoundStateMessage">The message received.</param>
+        /// <param name="m"></param>
         [Server]
         private void AuthorizeChangeRoundState(NetworkConnection conn, ChangeRoundStateMessage m)
         {
             const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;
 
-            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
+            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
             PermissionSystem permissionSystem = SystemLocator.Get<PermissionSystem>();
 
             // Gets the soul that matches the connection, uses the ckey as the user id
-            string userCkey = playerControlSystem.GetCkey(conn);
+            string userCkey = playerSystem.GetCkey(conn);
 
             // Checks if player can call a round start
             if (permissionSystem.TryGetUserRole(userCkey, out ServerRoleTypes role) && role != requiredRole)

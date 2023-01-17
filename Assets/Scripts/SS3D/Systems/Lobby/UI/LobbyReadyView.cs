@@ -1,5 +1,4 @@
 using Coimbra.Services.Events;
-using Cysharp.Threading.Tasks;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
@@ -49,9 +48,9 @@ namespace SS3D.Systems.Lobby.UI
 
         private void ProcessSpawnedPlayers()
         {
-            EntitySpawnSystem spawnSystem = SystemLocator.Get<EntitySpawnSystem>();
+            EntitySystem system = SystemLocator.Get<EntitySystem>();
 
-            bool isPlayedSpawned = spawnSystem.IsPlayedSpawned(LocalConnection);
+            bool isPlayedSpawned = system.IsPlayerSpawned(LocalConnection);
 
             if (isPlayedSpawned)
             {
@@ -64,9 +63,9 @@ namespace SS3D.Systems.Lobby.UI
 
         private void ProcessRoundState(RoundState roundState)
         {
-            EntitySpawnSystem spawnSystem = SystemLocator.Get<EntitySpawnSystem>();
+            EntitySystem system = SystemLocator.Get<EntitySystem>();
 
-            bool isPlayedSpawned = spawnSystem.IsPlayedSpawned(LocalConnection);
+            bool isPlayedSpawned = system.IsPlayerSpawned(LocalConnection);
 
             if (isPlayedSpawned && roundState == RoundState.Ongoing)
             {
@@ -100,19 +99,18 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleEmbarkButtonPressed(bool pressed)
         {
-            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
+            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
+            EntitySystem entitySystem = SystemLocator.Get<EntitySystem>();
 
-            string ckey = playerControlSystem.GetCkey(LocalConnection);
-            RequestEmbarkMessage requestEmbarkMessage = new(ckey);
-
-            ClientManager.Broadcast(requestEmbarkMessage);
+            Soul soul = playerSystem.GetSoul(LocalConnection);
+            entitySystem.CmdSpawnLatePlayer(soul);
         }
 
         private void HandleReadyButtonPressed(bool pressed)
         {
-            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
+            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
 
-            string ckey = playerControlSystem.GetCkey(LocalConnection);
+            string ckey = playerSystem.GetCkey(LocalConnection);
             ChangePlayerReadyMessage playerReadyMessage = new(ckey, pressed);
 
             ClientManager.Broadcast(playerReadyMessage);

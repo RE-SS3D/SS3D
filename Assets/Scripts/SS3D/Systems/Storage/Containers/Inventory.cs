@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using FishNet.Connection;
 using FishNet.Object;
+using SS3D.Core;
+using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Storage.Items;
 using SS3D.Systems.Storage.UI;
@@ -15,8 +17,12 @@ namespace SS3D.Systems.Storage.Containers
     ///  - Aggregating all containers on the player and accessible to the player.
     ///  - The moving of items from one item-slot to another.
     /// </summary>
-    public sealed class Inventory : NetworkBehaviour
+    public sealed class Inventory : NetworkActor
     {
+        public delegate void ContainerEventHandler(AttachedContainer container);
+
+        public event ContainerEventHandler OnContainerOpened;
+        public event ContainerEventHandler OnContainerClosed;
 
         /// <summary>
         /// The hands used by this inventory
@@ -26,55 +32,62 @@ namespace SS3D.Systems.Storage.Containers
         /// <summary>
         /// The controllable body of the owning player
         /// </summary>
-        public PlayerControllable Body;
+        public Entity Body;
 
         private readonly List<AttachedContainer> _openedContainers = new();
+
         private float _nextAccessCheck;
 
-        public delegate void ContainerEventHandler(AttachedContainer container);
-
-        public event ContainerEventHandler ContainerOpened;
-        public event ContainerEventHandler ContainerClosed;
-
-        public InventoryUi InventoryUi { get; private set; }
+        public InventoryView InventoryView { get; private set; }
 
         public override void OnStartClient()
         {
             base.OnStartClient();
-            if(!IsOwner) return;
-            InventoryUi = FindObjectOfType<InventoryUi>(true);
-            InventoryUi.Inventory = this;
-            InventoryUi.gameObject.SetActive(true);
-            var pocketView = FindObjectOfType<PocketView>(true);
-            pocketView.Inventory= this;
-            pocketView.gameObject.SetActive(true);
+
+            if(!IsOwner)
+            {
+                return;
+            }
+
+            InventoryView = ViewLocator.Get<InventoryView>().First();
+            InventoryView.Inventory = this;
+
+            InventoryView.Setup();
+            InventoryView.Enable(true);
         }
 
-
-        public void Awake()
+        protected override void OnAwake()
         {
+            base.OnAwake();
+
             Hands.Inventory = this;
         }
 
-        public void Update()
+        protected override void HandleUpdate(in float deltaTime)
         {
+            base.HandleUpdate(in deltaTime);
+
             float time = Time.time;
-            if (time > _nextAccessCheck)
+            if (!(time > _nextAccessCheck))
             {
-                // Remove all containers from the inventory that can't be interacted with anymore.
-                Hands hands = GetComponent<Hands>();
-                for (var i = 0; i < _openedContainers.Count; i++)
+                return;
+            }
+
+            // Remove all containers from the inventory that can't be interacted with anymore.
+            Hands hands = GetComponent<Hands>();
+            for (int i = 0; i < _openedContainers.Count; i++)
+            {
+                AttachedContainer attachedContainer = _openedContainers[i];
+                if (hands.CanInteract(attachedContainer.gameObject))
                 {
-                    AttachedContainer attachedContainer = _openedContainers[i];
-                    if (!hands.CanInteract(attachedContainer.gameObject))
-                    {
-                        RemoveContainer(attachedContainer);
-                        i--;
-                    }
+                    continue;
                 }
 
-                _nextAccessCheck = time + 0.5f;
+                RemoveContainer(attachedContainer);
+                i--;
             }
+
+            _nextAccessCheck = time + 0.5f;
         }
 
         /// <summary>
@@ -179,7 +192,7 @@ namespace SS3D.Systems.Storage.Containers
             {
                 return;
             }
-            
+
             container.Container.AddItemPosition(item, position);
         }
 
@@ -188,7 +201,7 @@ namespace SS3D.Systems.Storage.Containers
         /// </summary>
         public void OpenContainer(AttachedContainer container)
         {
-            container.AddObserver(GetComponent<PlayerControllable>());
+            container.AddObserver(GetComponent<Entity>());
             _openedContainers.Add(container);
             SetOpenState(container.gameObject, true);
             NetworkConnection client = Owner;
@@ -255,7 +268,7 @@ namespace SS3D.Systems.Storage.Containers
         [TargetRpc]
         private void TargetOpenContainer(NetworkConnection target, AttachedContainer container)
         {
-            OnContainerOpened(container);        
+            InvokeContainerOpened(container);
         }
 
         /// <summary>
@@ -277,7 +290,7 @@ namespace SS3D.Systems.Storage.Containers
             }
 
             Hands hands = GetComponent<Hands>();
-            foreach (PlayerControllable observer in container.ObservingPlayers)
+            foreach (Entity observer in container.ObservingPlayers)
             {
                 // checks if the container is already viewed by another entity
                 if (hands.Inventory.HasContainer(container) && observer != hands)
@@ -293,11 +306,11 @@ namespace SS3D.Systems.Storage.Containers
         [TargetRpc]
         private void TargetCloseContainer(NetworkConnection target, AttachedContainer container)
         {
-            OnContainerClosed(container);
+            InvokeContainerClosed(container);
         }
 
 
-        /// <summary>       
+        /// <summary>
         /// Graphically adds the item back into the world(for server and all clients).
         /// Must be called from server initially.
         /// </summary>
@@ -347,14 +360,14 @@ namespace SS3D.Systems.Storage.Containers
             }
         }
 
-        private void OnContainerOpened(AttachedContainer container)
+        private void InvokeContainerOpened(AttachedContainer container)
         {
-            ContainerOpened?.Invoke(container);
+            OnContainerOpened?.Invoke(container);
         }
 
-        private void OnContainerClosed(AttachedContainer container)
+        private void InvokeContainerClosed(AttachedContainer container)
         {
-            ContainerClosed?.Invoke(container);
+            OnContainerClosed?.Invoke(container);
         }
     }
 }

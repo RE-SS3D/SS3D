@@ -47,13 +47,13 @@ namespace SS3D.Systems.Storage.Containers
         /// </summary>
         public bool SelectedHandEmpty => SelectedHandContainer.Empty;
 
-        public HandsUi HandsUI { get; private set; }
+        public HandsView HandsView { get; private set; }
 
         protected override void OnAwake()
         {
             base.OnAwake();
-            HandsUI = FindObjectOfType<HandsUi>(true);
-            HandsUI.Hands = this;
+            HandsView = FindObjectOfType<HandsView>(true);
+            HandsView.Hands = this;
 
             SupportsMultipleInteractions = true;
         }
@@ -89,7 +89,7 @@ namespace SS3D.Systems.Storage.Containers
             {
                 return;
             }
-            
+
             SelectedHandContainer.Dump();
         }
 
@@ -109,7 +109,7 @@ namespace SS3D.Systems.Storage.Containers
         public override void Update()
         {
             base.Update();
-            
+
             if (!IsOwner)
             {
                 return;
@@ -130,7 +130,7 @@ namespace SS3D.Systems.Storage.Containers
         }
 
         /// <summary>
-        /// Set the Active hand of the Player to be the AttachedContainer passed in parameter. 
+        /// Set the Active hand of the Player to be the AttachedContainer passed in parameter.
         /// Do nothing if the parameter is the already active parameter.
         /// </summary>
         /// <param name="selectedContainer">This AttachedContainer should only be a hand.</param>
@@ -168,7 +168,7 @@ namespace SS3D.Systems.Storage.Containers
             }
             else
             {
-                Debug.Log($"Invalid hand index {selectedHand}");   
+                Debug.Log($"Invalid hand index {selectedHand}");
             }
         }
 

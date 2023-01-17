@@ -1,13 +1,13 @@
+using SS3D.Core;
 using SS3D.Core.Behaviours;
-using SS3D.Systems.Entities.Messages;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities.Debug
 {
     public class MindSwapDebug : NetworkActor
     {
-        public GameObject Origin;
-        public GameObject Target;
+        public Entity Origin;
+        public Entity Target;
 
         protected override void HandleUpdate(in float deltaTime)
         {
@@ -27,11 +27,11 @@ namespace SS3D.Systems.Entities.Debug
                 return;
             }
 
-            RequestMindSwap mindSwap = new(Origin, Target);
-            ClientManager.Broadcast(mindSwap);
+            MindSystem mindSystem = SystemLocator.Get<MindSystem>();
+            mindSystem.CmdSwapMinds(Origin, Target);
 
-            Origin = mindSwap.Target;
-            Target = mindSwap.Origin;
+            Origin = Target;
+            Target = Origin;
         }
     }
 }

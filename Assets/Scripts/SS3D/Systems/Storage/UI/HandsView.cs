@@ -1,4 +1,5 @@
 ﻿using System;
+using SS3D.Core.Behaviours;
 using SS3D.Systems.Storage.Containers;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -10,12 +11,14 @@ namespace SS3D.Systems.Storage.UI
     /// This script instantiate the hand UI prefabs, and set up the SingleItemContainerSlot on each hand,
     /// such that the slots are displaying the right containers. It also handles setting the highlight of the active hand.
     /// </summary>
-    public class HandsUi : MonoBehaviour
+    public class HandsView : View
     {
-        public GameObject LeftHandPrefab;
-        public GameObject RightHandPrefab;
+        public SingleItemContainerSlot LeftHandPrefab;
+        public SingleItemContainerSlot RightHandPrefab;
+
         public Transform HandsContainer;
         public Color SelectedColor;
+
         /// <summary>
         /// The hands this ui displays
         /// </summary>
@@ -25,8 +28,10 @@ namespace SS3D.Systems.Storage.UI
         private Color _defaultColor;
         private int _currentHandIndex = -1;
 
-        public void Start()
+        protected override void OnStart()
         {
+            base.OnStart();
+
             Assert.IsNotNull(Hands);
             CreateHandDisplays();
             Hands.OnHandChanged += OnHandChanged;
@@ -44,7 +49,7 @@ namespace SS3D.Systems.Storage.UI
             {
                 SetHandHighlight(_currentHandIndex, false);
             }
-            
+
             SetHandHighlight(index, true);
             _currentHandIndex = index;
         }
@@ -87,8 +92,7 @@ namespace SS3D.Systems.Storage.UI
             for (int i = 0; i < containers.Length; i++)
             {
                 AttachedContainer attachedContainer = containers[i];
-                GameObject handElement = Instantiate(i % 2 == 0 ? LeftHandPrefab : RightHandPrefab, HandsContainer, false);
-                SingleItemContainerSlot slot = handElement.GetComponent<SingleItemContainerSlot>();
+                SingleItemContainerSlot slot = Instantiate(i % 2 == 0 ? LeftHandPrefab : RightHandPrefab, HandsContainer, false);
                 slot.Inventory = Hands.Inventory;
                 slot.Container = attachedContainer;
             }

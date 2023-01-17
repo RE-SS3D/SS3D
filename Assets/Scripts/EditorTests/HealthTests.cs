@@ -27,7 +27,7 @@ namespace EditorTests.Health
         [TestCase(10.01f, false)]
         public void CanCommenceInteractionOnlyWhenStaminaIsGreaterThatZero(float staminaToDeplete, bool expectedResult)
         {
-            IStamina sut = StaminaHelper.Create(10f);
+            IStamina sut = StaminaFactory.Create(10f);
 
             sut.ConsumeStamina(staminaToDeplete);
 
@@ -43,7 +43,7 @@ namespace EditorTests.Health
         [TestCase(11.01f, false)]
         public void CanContinueInteractionWithNegativeStaminaUntilNegativeTenPercent(float staminaToDeplete, bool expectedResult)
         {
-            IStamina sut = StaminaHelper.Create(10f);
+            IStamina sut = StaminaFactory.Create(10f);
 
             sut.ConsumeStamina(staminaToDeplete);
 
@@ -60,7 +60,7 @@ namespace EditorTests.Health
         [TestCase(100f, 0f)]
         public void ConsumeStaminaCorrectlyReducesTheStaminaValue(float staminaToDeplete, float expectedResult)
         {
-            IStamina sut = StaminaHelper.Create(10f);
+            IStamina sut = StaminaFactory.Create(10f);
 
             sut.ConsumeStamina(staminaToDeplete);
 
@@ -77,7 +77,7 @@ namespace EditorTests.Health
         [TestCase(100f, 1f)]
         public void RechargingStaminaCorrectlyReducesTheStaminaValue(float secondsToRecharge, float expectedResult)
         {
-            IStamina sut = StaminaHelper.Create(10f, 1f);   // Set up stamina to fully recharge after 1 second.
+            IStamina sut = StaminaFactory.Create(10f, 1f);   // Set up stamina to fully recharge after 1 second.
             sut.ConsumeStamina(10f);                        // Deplete all of the stamina
 
             sut.RechargeStamina(secondsToRecharge);

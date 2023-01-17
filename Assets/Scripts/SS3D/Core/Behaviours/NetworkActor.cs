@@ -19,7 +19,7 @@ namespace SS3D.Core.Behaviours
 
         private bool _initialized;
 
-        protected readonly List<EventHandle> _eventHandles = new();
+        private readonly List<EventHandle> _eventHandles = new();
 
         public Transform TransformCache
         {
@@ -161,7 +161,7 @@ namespace SS3D.Core.Behaviours
             foreach (EventHandle eventHandle in _eventHandles)
             {
                 eventService?.RemoveListener(eventHandle);
-            } 
+            }
         }
 
         #endregion

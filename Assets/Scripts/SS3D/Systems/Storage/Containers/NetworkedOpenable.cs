@@ -4,6 +4,7 @@ using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Storage.Interactions;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Storage.Containers
 {
@@ -19,18 +20,18 @@ namespace SS3D.Systems.Storage.Containers
         [SyncVar(OnChange = nameof(SyncOpenState))]
         private bool _openState;
 
-        [SerializeField] protected Sprite OpenIcon;
+        [FormerlySerializedAs("OpenIcon")] [SerializeField] protected Sprite OverrideOpenIcon;
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
             OpenInteraction openInteraction = new()
             {
-                Icon = OpenIcon
+                Icon = OverrideOpenIcon
             };
             openInteraction.OnOpenStateChanged += OpenStateChanged;
 
             return new IInteraction[] { openInteraction };
         }
-        
+
         public bool IsOpen()
         {
             return _openState;
@@ -56,7 +57,7 @@ namespace SS3D.Systems.Storage.Containers
         {
             NetworkedOpenable[] openables = gameObject.GetComponents<NetworkedOpenable>();
 
-            // If this is the top NetworkedOpenable in the inspector, tell the others to open too. 
+            // If this is the top NetworkedOpenable in the inspector, tell the others to open too.
             if (openables[0] != this)
             {
                 return;
@@ -74,12 +75,12 @@ namespace SS3D.Systems.Storage.Containers
             _openState = e;
             UpdateAnimator();
         }
-        
+
         protected virtual void SyncOpenState(bool oldVal, bool newVal, bool asServer)
         {
             UpdateAnimator();
         }
-        
+
         private void UpdateAnimator()
         {
             Animator.SetBool(OpenAnimation, _openState);

@@ -7,6 +7,7 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Storage.UI;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Storage.Containers
 {
@@ -22,11 +23,10 @@ namespace SS3D.Systems.Storage.Containers
     /// </summary>
     public class ContainerDescriptor : MonoBehaviour
     {
-
-        public bool AutomaticContainerSetUp = false; 
+        public bool AutomaticContainerSetUp = false;
         // References toward all container related scripts.
         public AttachedContainer AttachedContainer;
-        public Container Container; 
+        public Container Container;
         public ContainerInteractive ContainerInteractive;
         public ContainerItemDisplay ContainerItemDisplay;
 
@@ -70,11 +70,11 @@ namespace SS3D.Systems.Storage.Containers
         public float MaxDistance = 5f;
         [Tooltip("If the container can be opened/closed, in the sense of having a close/open animation.")]
         public bool IsOpenable;
-        [Tooltip("If the container should have the container's default interactions setting script.")] 
+        [Tooltip("If the container should have the container's default interactions setting script.")]
         public bool IsInteractive;
         [Tooltip("If stuff inside the container can be seen using an UI.")]
         public bool HasUi;
-        [Tooltip("If true, interactions in containerInteractive are ignored, instead, a script on the container's game object should implement IInteractionTarget.")] 
+        [Tooltip("If true, interactions in containerInteractive are ignored, instead, a script on the container's game object should implement IInteractionTarget.")]
         public bool HasCustomInteraction;
         [Tooltip("If the container renders items in custom position on the container.")]
         public bool HasCustomDisplay;
@@ -84,8 +84,8 @@ namespace SS3D.Systems.Storage.Containers
         public int NumberDisplay;
         [Tooltip("The filter on the container.")]
         public Filter StartFilter;
-        [Tooltip("Container type mostly allow to discriminate between diffent containers on a single prefab.")]
-        public ContainerType ContainerType;
+        [FormerlySerializedAs("ContainerType")] [Tooltip("Container type mostly allow to discriminate between diffent containers on a single prefab.")]
+        public ContainerType Type;
         /// <summary>
         /// need some bool to override automatic setup and go manual instead. nat 01/10/23
         /// </summary>

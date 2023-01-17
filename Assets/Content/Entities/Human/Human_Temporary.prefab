@@ -3033,7 +3033,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 2
+  <PrefabId>k__BackingField: 3
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 3682879707339158369
@@ -3155,11 +3155,11 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _characterController: {fileID: 3812744165389046210}
-  _playerControllable: {fileID: 8336170331735268562}
-  _staminaController: {fileID: 6791200117061487242}
+  _entity: {fileID: 8336170331735268562}
   _movementSpeed: 5
   _lerpMultiplier: 2
   _rotationLerpMultiplier: 6
+  _staminaController: {fileID: 6791200117061487242}
   _movementTarget: {fileID: 282733360052666326}
 --- !u!114 &6706577840954258383
 MonoBehaviour:
@@ -3191,7 +3191,7 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  _controllingSoul: {fileID: 0}
+  _mind: {fileID: 0}
 --- !u!114 &5293420320943344825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3267,7 +3267,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   _player: {fileID: 1872721284991216642}
-  playerControllable: {fileID: 8336170331735268562}
+  _entity: {fileID: 8336170331735268562}
 --- !u!1 &6530700040387722453
 GameObject:
   m_ObjectHideFlags: 0
