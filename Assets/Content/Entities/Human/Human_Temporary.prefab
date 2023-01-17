@@ -108,6 +108,7 @@ MonoBehaviour:
   Displays: []
   NumberDisplay: 0
   StartFilter: {fileID: 0}
+  ContainerType: 1
 --- !u!114 &5182983736081886953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,9 +121,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 8
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2930813178971533500}
   Size: {x: 2, y: 2}
 --- !u!114 &6727691960201412867
 MonoBehaviour:
@@ -136,9 +137,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 9
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2930813178971533500}
   ContainerDescriptor: {fileID: 8309405083333822009}
   _container: {fileID: 5182983736081886953}
 --- !u!1 &144817745137165922
@@ -573,6 +574,7 @@ MonoBehaviour:
   - {fileID: 3012616593455593399}
   NumberDisplay: 0
   StartFilter: {fileID: 0}
+  ContainerType: 0
 --- !u!1 &1746419313471647427
 GameObject:
   m_ObjectHideFlags: 0
@@ -807,7 +809,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 10
+  _componentIndexCache: 14
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   ContainerDescriptor: {fileID: 1667608942592793804}
@@ -824,7 +826,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 11
+  _componentIndexCache: 15
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   Size: {x: 0, y: 0}
@@ -905,6 +907,7 @@ MonoBehaviour:
   - {fileID: 2666434032613405079}
   NumberDisplay: 0
   StartFilter: {fileID: 0}
+  ContainerType: 0
 --- !u!1 &2127526918660967422
 GameObject:
   m_ObjectHideFlags: 0
@@ -1043,7 +1046,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 8
+  _componentIndexCache: 12
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   ContainerDescriptor: {fileID: 1209055579648204933}
@@ -1060,7 +1063,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 9
+  _componentIndexCache: 13
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   Size: {x: 0, y: 0}
@@ -3016,6 +3019,10 @@ MonoBehaviour:
   - {fileID: 2219108694782903046}
   - {fileID: 3989715289005515527}
   - {fileID: 6791200117061487242}
+  - {fileID: 5182983736081886953}
+  - {fileID: 6727691960201412867}
+  - {fileID: 6294009354521529725}
+  - {fileID: 2612312476241916170}
   - {fileID: 7994111800386677094}
   - {fileID: 8411477508438424976}
   - {fileID: 7653287983538616454}
@@ -3837,6 +3844,7 @@ MonoBehaviour:
   Displays: []
   NumberDisplay: 0
   StartFilter: {fileID: 0}
+  ContainerType: 1
 --- !u!114 &6294009354521529725
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3849,9 +3857,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 10
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2930813178971533500}
   Size: {x: 2, y: 2}
 --- !u!114 &2612312476241916170
 MonoBehaviour:
@@ -3865,9 +3873,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 11
   _addedNetworkObject: {fileID: 2930813178971533500}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2930813178971533500}
   ContainerDescriptor: {fileID: 6195053383849332090}
   _container: {fileID: 6294009354521529725}
 --- !u!1 &8192843437556473050
