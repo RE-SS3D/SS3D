@@ -15,14 +15,11 @@ namespace SS3D.Data.AssetDatabases
         public string EnumName;
 
         public List<AssetReference> Assets;
-                   
+
         /// <summary>
         /// Pre-loads all the assets in the database in memory.
         /// </summary>
-        public virtual void PreloadAssets()
-        {
-
-        }
+        public virtual void PreloadAssets() { }
 
         /// <summary>
         /// Pre-loads assets in memory.

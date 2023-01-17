@@ -24,6 +24,7 @@ namespace SS3D.Data
         // IMPORTANT: All database getters have to be added manually. For now.
 
         public static Sprite Get(InteractionIcons icon) => FindDatabase<InteractionIconsAssetDatabase>().Get(icon);
+        public static GameObject Get(ItemIDs itemId) => FindDatabase<ItemsAssetDatabase>().Get(itemId);
 
         /// <summary>
         /// Gets something by ID only, useful for adding stuff on databases at runtime, as in modded versions of the game.
@@ -63,7 +64,7 @@ namespace SS3D.Data
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        private static T FindDatabase<T>() where T : GenericAssetDatabase
+        public static T FindDatabase<T>() where T : GenericAssetDatabase
         {
             bool databaseExists = Databases.TryGetValue(typeof(T), out GenericAssetDatabase database);
 

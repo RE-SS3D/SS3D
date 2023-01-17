@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FishNet.Component.Transforming;
 using FishNet.Object;
 using SS3D.Attributes;
+using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
@@ -11,6 +12,7 @@ using SS3D.Systems.Storage.Interactions;
 using SS3D.Utils;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 #if UNITY_EDITOR
 
 #endif
@@ -27,7 +29,9 @@ namespace SS3D.Systems.Storage.Items
     public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget
     {
         [Header("Item settings")]
-        [SerializeField] private string _itemId;
+        [SerializeField]
+        public ItemIDs ItemID;
+
         [SerializeField] private string _name;
 
         [SerializeField] private Sprite _sprite;
@@ -51,7 +55,6 @@ namespace SS3D.Systems.Storage.Items
         private Container _container;
 
         public Vector2Int Size => _size;
-        public string ItemId => _itemId;
 
         public List<Trait> traits;
 

@@ -6,10 +6,10 @@ using SS3D.CodeGeneration;
 using UnityEditor;
 using UnityEngine;
 
-namespace SS3D.Data.AssetDatabases
+namespace SS3D.Data.AssetDatabases.InspectorEditor
 {
     [CustomEditor(typeof(GenericAssetDatabase))]
-    public class GenericAssetDatabaseInspectorEditor : Editor
+    public class GenericAssetDatabaseInspectorEditor : UnityEditor.Editor
     {
         private GenericAssetDatabase _assetDatabase;
         private static GUIContent _folderIcon;

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items
+  m_EditorClassIdentifier: 
+  m_GroupName: Items
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 4273fc1281f75d042bf7bdd3397d6acc
+  m_SerializeEntries:
+  - m_GUID: 11f824c472e04854e95065dda095e8f4
+    m_Address: Assets/Content/Items/Generic/BikeHorn/BikeHorn.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1ae18785d74e9fa4699b6f6de889c243
+    m_Address: ic/NuclerDisk/Nuclear Authentication Disk.prefabAuthentication Disk.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 264ea51d92067c14ebc6633999afac78
+    m_Address: Assets/Content/Items/Generic/ToolBoxes/ToolboxBlue.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
+  m_SchemaSet:
+    m_Schemas: []
