@@ -10,6 +10,8 @@ namespace SS3D.Systems.Storage.Containers
     /// <summary>
     /// A container attached to a gameobject
     /// </summary>
+    [RequireComponent(typeof(Container))]
+    [RequireComponent(typeof(ContainerDescriptor))]
     public class AttachedContainer : NetworkActor
     {
         /// <summary>
