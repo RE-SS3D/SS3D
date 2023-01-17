@@ -14,7 +14,7 @@
 
 *Note: RE:SS3D is currently still in a 'pre-alpha' phase as we do some redesigning, documenting, core system work, and basic system implementation. During this early phase there are not many systems, content, or even interactions. What you see in the current project is just the beginning to something much, much greater.*
 
-br>
+
 
 <h1 align="center">INFO</h1>
 
