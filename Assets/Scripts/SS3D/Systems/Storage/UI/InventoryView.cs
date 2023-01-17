@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Coimbra;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Storage.Containers;
 using UnityEngine;
@@ -16,9 +18,11 @@ namespace SS3D.Systems.Storage.UI
     /// </summary>
     public class InventoryView : View
     {
-        [NonSerialized]
         public Inventory Inventory;
-        public HandsUi HandsUi;
+
+        public HandsView HandsView;
+        public PocketView PocketView;
+
         public GameObject PocketPrefab;
         public Transform PocketParent;
         /// <summary>
@@ -26,19 +30,34 @@ namespace SS3D.Systems.Storage.UI
         /// </summary>
         public GameObject ContainerUiPrefab;
 
+        [SerializeField] private GameObject _uiPanel;
+
         private readonly List<ContainerDisplay> _containerDisplays = new();
-        
+
         // Maybe HandsUI should only handle selected hand highlight and inventory UI
         // should handle setting up containers to UI.
-        public void Start()
+        public void Setup()
         {
             Assert.IsNotNull(HandsView);
             Assert.IsNotNull(Inventory);
 
-            HandsUi.Hands = Inventory.Hands;
+            HandsView.Hands = Inventory.Hands;
 
-            Inventory.ContainerOpened += InventoryOnContainerOpened;
-            Inventory.ContainerClosed += InventoryOnContainerClosed;
+            Inventory.OnContainerOpened += InventoryOnContainerOpened;
+            Inventory.OnContainerClosed += InventoryOnContainerClosed;
+
+            PocketView pocketView = ViewLocator.Get<PocketView>().First();
+            pocketView.Inventory = Inventory;
+            pocketView.Setup();
+        }
+
+        /// <summary>
+        /// Sets the UI enabled.
+        /// </summary>
+        /// <param name="enabled"></param>
+        public void Enable(bool enabled)
+        {
+            _uiPanel.SetActive(enabled);
         }
 
         /// <summary>
@@ -78,18 +97,6 @@ namespace SS3D.Systems.Storage.UI
             containerUi.AttachedContainer = container;
             containerUi.Inventory = Inventory;
             _containerDisplays.Add(new ContainerDisplay(ui, container));
-        }
-
-        private struct ContainerDisplay
-        {
-            public GameObject UiElement;
-            public AttachedContainer Container;
-
-            public ContainerDisplay(GameObject uiElement, AttachedContainer container)
-            {
-                UiElement = uiElement;
-                Container = container;
-            }
         }
     }
 }

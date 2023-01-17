@@ -9,13 +9,12 @@ using UnityEngine;
 namespace SS3D.Systems.Storage.Containers
 {
     /// <summary>
-    /// This allow a container to send back container related possible interactions, 
+    /// This allow a container to send back container related possible interactions,
     /// including viewing the content, storing, opening and others.
     /// It also handle some UI stuff, such as closing the UI for all clients when someone close the container.
     /// </summary>
     public class ContainerInteractive : NetworkedOpenable
     {
-
         public ContainerDescriptor containerDescriptor;
         private Sprite _viewContainerIcon;
 
@@ -55,7 +54,7 @@ namespace SS3D.Systems.Storage.Containers
                 {
                     interactions.Add(storeInteraction);
                     interactions.Add(takeFirstInteraction);
-                }           
+                }
             }
 
             if (!containerDescriptor.IsOpenable)
@@ -73,9 +72,9 @@ namespace SS3D.Systems.Storage.Containers
             return interactions.ToArray();
         }
 
-        
+
         protected override void OpenStateChanged(object sender, bool e)
-        {  
+        {
             base.OpenStateChanged(sender, e);
         }
 
@@ -91,7 +90,7 @@ namespace SS3D.Systems.Storage.Containers
             {
                 containerDescriptor.ContainerUi.Close();
             }
-            
+
             // We check for each item if they are interactive containers.
             foreach(Item item in containerDescriptor.AttachedContainer.Container.Items)
             {
