@@ -1,6 +1,10 @@
-### ![SS3D](Documents/Images/RESPACESTATION3D.png) RE:SS3D is an open-source resurrection of the [original SS3D](https://www.youtube.com/watch?v=VB7ddhayLKA&list=PLTkyYJ6zDmhoiQv5PJYT6oI766G4s60Av) project, which was an impressive demo attempting to give the infamous [<img src="https://img.shields.io/badge/Space%20Station-13-red?style=flat-square" alt="Space Station 13">](https://spacestation13.com/) an extra dimension.
+[<p align="center"><img src="Documents/Images/ss3d.png" alt="SS3D" align="center"></p>](https://ss3d.space/)
 
-# DOWNLOADS:
+<h3 align="center"> SS3D is an open-source resurrection of *beep's <a href="https://www.youtube.com/watch?v=VB7ddhayLKA&list=PLTkyYJ6zDmhoiQv5PJYT6oI766G4s60Av">original SS3D</a> project, which was an impressive demo attempting to give the infamous <a href="https://spacestation13.com/"><img src="https://img.shields.io/badge/Space%20Station-13-red?style=flat-square" alt="ss13"></a> an extra dimension.</h3>
+
+<br>
+
+<h1 align="center">DOWNLOADS</h1>
 
 [<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
 
@@ -12,22 +16,31 @@
 
 *Note: RE:SS3D is currently still in a 'pre-alpha' phase as we do some redesigning, documenting, core system work, and basic system implementation. During this early phase there are not many systems, content, or even interactions. What you see in the current project is just the beginning to something much, much greater.*
 
-## INFO:
+<br>
 
-[<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)**[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
+<h1 align="center">INFO</h1>
 
-## CONTRIBUTING:
+[<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)**[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/)**
+
+<br>
+
+<h1 align="center">CONTRIBUTING</h1>
+
 [<img src="https://img.shields.io/github/issues-raw/RE-SS3D/SS3D?color=green&label=Issues%20%28Open%29&logo=github&style=plastic" alt="Open Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues)[Our GitBook](https://ss3d.gitbook.io/programming/introduction/contributing-to-ss3d) contains information regarding technical contributions, including Unity version, setting up the project, styling code, using github and more.[<img src="https://img.shields.io/github/issues-closed-raw/RE-SS3D/SS3D?color=red&label=Issues%20%28Closed%29&logo=github&style=plastic" alt="Closed Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues?q=is%3Aissue+is%3Aclosed)
 
 [<img src="https://img.shields.io/github/issues-pr-raw/RE-SS3D/SS3D?color=green&label=Pull%20Requests%20%28Open%29&logo=github&style=plastic" alt="Open Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls)[https://ss3d.space/contribute/](https://ss3d.space/contribute/) breaks down the contribution types (including art assets) with links to helpful guides and to-do boards.[<img src="https://img.shields.io/github/issues-pr-closed-raw/RE-SS3D/SS3D?color=red&label=Pull%20Requests%20%28Closed%29&logo=github&style=plastic" alt="Closed Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls?q=is%3Apr+is%3Aclosed)
 
-## LICENSING:
+<br>
+
+<h1 align="center">LICENSING</h1>
 
 This project's **code** falls under the **[MIT](Documents/LICENSE-CODE.md)** license.
 
 All **art assets** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.md)** license.
 
-## COMMUNITY:
+<br>
+
+<h1 align="center">COMMUNITY</h1>
 
 [<img src="Documents/Images/discord.png" alt="Discord" width="150" align="left">](https://discord.gg/Z3sPhyS)
 
@@ -45,7 +58,9 @@ All **art assets** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.m
 
 [<img src="https://img.shields.io/twitter/follow/SpaceStation3D?label=Followers&style=social" alt="Twitter Followers" align="right">](https://twitter.com/SpaceStation3D)Currently our twitter is mostly used for announcements & memes but we will start using it more for other posts eventually.
 
-## BOARDS:
+<br>
+
+<h1 align="center">BOARDS</h1>
 
 [<img src="Documents/Images/github.png" alt="github" width="150" align="left">](https://github.com/RE-SS3D/SS3D/issues)
 
@@ -55,11 +70,13 @@ This GitHub repository hosts our [issues board](https://github.com/RE-SS3D/SS3D/
 
 Trello hosts all our other boards, including the task boards for our various asset types (3D, 2D, audio, etc.) and our management board.
 
-## DONATE:
+<br>
+
+<h1 align="center">DONATE</h1>
 
 [<img src="Documents/Images/paypal.png" alt="PayPal" width="150" align="left">](https://www.paypal.me/SpaceStation3D)
 
-PayPal is our monetary hub where all donations go before distribution to development costs. Use the link on the left or send to our email (ress3d.project@gmail.com).
+PayPal is where all our donations go before distribution to development costs. Use the link or send to our email (ress3d.project@gmail.com).
 
 [<img src="Documents/Images/patreon.png" alt="Patreon" width="150" align="left">](https://www.patreon.com/ss3d)
 
