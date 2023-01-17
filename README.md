@@ -18,7 +18,7 @@
 
 <h1 align="center">INFO</h1>
 
-[<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)**[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
+[<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)**[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/)**
 
 <br>
 
@@ -74,7 +74,7 @@ Trello hosts all our other boards, including the task boards for our various ass
 
 [<img src="Documents/Images/paypal.png" alt="PayPal" width="150" align="left">](https://www.paypal.me/SpaceStation3D)
 
-PayPal is our monetary hub where all donations go before distribution to development costs. Use the link on the left or send to our email (ress3d.project@gmail.com).
+PayPal is where all our donations go before distribution to development costs. Use the link or send to our email (ress3d.project@gmail.com).
 
 [<img src="Documents/Images/patreon.png" alt="Patreon" width="150" align="left">](https://www.patreon.com/ss3d)
 
