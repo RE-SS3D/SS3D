@@ -182,6 +182,11 @@ public class ContainerDescriptorEditor : Editor
             containerDescriptor.StartFilter, typeof(Filter), true);
         HandleStartFilter(startFilter);
 
+        ContainerType containerType = (ContainerType) EditorGUILayout.EnumFlagsField(
+    new GUIContent("Container type", "Container type mostly allow to discriminate between diffent containers on a single prefab."),
+     containerDescriptor.ContainerType);
+        HandleContainerType(containerType);
+
         ShowIcons();
         serializedObject.ApplyModifiedProperties();
     }
@@ -301,6 +306,13 @@ public class ContainerDescriptorEditor : Editor
     {
         SerializedProperty sp = serializedObject.FindProperty("OpenWhenContainerViewed");
         sp.boolValue = openWhenContainerViewed;
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    private void HandleContainerType(ContainerType containerType)
+    {
+        SerializedProperty sp = serializedObject.FindProperty("ContainerType");
+        sp.enumValueFlag = (int) containerType;
         serializedObject.ApplyModifiedProperties();
     }
 

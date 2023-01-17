@@ -45,6 +45,9 @@ namespace SS3D.Systems.Storage.Containers
             InventoryUi = FindObjectOfType<InventoryUi>(true);
             InventoryUi.Inventory = this;
             InventoryUi.gameObject.SetActive(true);
+            var pocketView = FindObjectOfType<PocketView>(true);
+            pocketView.Inventory= this;
+            pocketView.gameObject.SetActive(true);
         }
 
 

@@ -84,7 +84,8 @@ namespace SS3D.Systems.Storage.Containers
         public int NumberDisplay;
         [Tooltip("The filter on the container.")]
         public Filter StartFilter;
-
+        [Tooltip("Container type mostly allow to discriminate between diffent containers on a single prefab.")]
+        public ContainerType ContainerType;
         /// <summary>
         /// need some bool to override automatic setup and go manual instead. nat 01/10/23
         /// </summary>

@@ -17,6 +17,8 @@ namespace SS3D.Systems.Storage.UI
         [NonSerialized]
         public Inventory Inventory;
         public HandsUi HandsUi;
+        public GameObject PocketPrefab;
+        public Transform PocketParent;
         /// <summary>
         /// The prefab for a container display
         /// </summary>
@@ -24,13 +26,15 @@ namespace SS3D.Systems.Storage.UI
 
         private readonly List<ContainerDisplay> _containerDisplays = new();
         
+        // Maybe HandsUI should only handle selected hand highlight and inventory UI
+        // should handle setting up containers to UI.
         public void Start()
         {
             Assert.IsNotNull(HandsUi);
             Assert.IsNotNull(Inventory);
 
             HandsUi.Hands = Inventory.Hands;
-            
+
             Inventory.ContainerOpened += InventoryOnContainerOpened;
             Inventory.ContainerClosed += InventoryOnContainerClosed;
         }

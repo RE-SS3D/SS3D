@@ -42,6 +42,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3384259431736119533}
+  - component: {fileID: 8309405083333822009}
+  - component: {fileID: 5182983736081886953}
+  - component: {fileID: 6727691960201412867}
   m_Layer: 0
   m_Name: thigh_l
   m_TagString: Untagged
@@ -66,6 +69,79 @@ Transform:
   m_Father: {fileID: 68055939596610882}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 25.766094, y: -166.31186, z: -178.29008}
+--- !u!114 &8309405083333822009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 79503532017782702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AutomaticContainerSetUp: 1
+  AttachedContainer: {fileID: 6727691960201412867}
+  Container: {fileID: 5182983736081886953}
+  ContainerInteractive: {fileID: 0}
+  ContainerItemDisplay: {fileID: 0}
+  ContainerUi: {fileID: 0}
+  OpenIcon: {fileID: 0}
+  TakeIcon: {fileID: 0}
+  StoreIcon: {fileID: 0}
+  ViewIcon: {fileID: 0}
+  AttachmentOffset: {x: 0, y: 0, z: 0}
+  ContainerName: left pocket
+  OnlyStoreWhenOpen: 0
+  OpenWhenContainerViewed: 0
+  Size: {x: 2, y: 2}
+  HideItems: 1
+  AttachItems: 1
+  Initialized: 1
+  MaxDistance: 5
+  IsOpenable: 0
+  IsInteractive: 0
+  HasUi: 0
+  HasCustomInteraction: 0
+  HasCustomDisplay: 0
+  Displays: []
+  NumberDisplay: 0
+  StartFilter: {fileID: 0}
+  ContainerType: 1
+--- !u!114 &5182983736081886953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 79503532017782702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 8
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  Size: {x: 2, y: 2}
+--- !u!114 &6727691960201412867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 79503532017782702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 9
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  ContainerDescriptor: {fileID: 8309405083333822009}
+  _container: {fileID: 5182983736081886953}
 --- !u!1 &144817745137165922
 GameObject:
   m_ObjectHideFlags: 0
@@ -497,6 +573,8 @@ MonoBehaviour:
   Displays:
   - {fileID: 3012616593455593399}
   NumberDisplay: 0
+  StartFilter: {fileID: 0}
+  ContainerType: 0
 --- !u!1 &1746419313471647427
 GameObject:
   m_ObjectHideFlags: 0
@@ -731,7 +809,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 10
+  _componentIndexCache: 14
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   ContainerDescriptor: {fileID: 1667608942592793804}
@@ -748,7 +826,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 11
+  _componentIndexCache: 15
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   Size: {x: 0, y: 0}
@@ -828,6 +906,8 @@ MonoBehaviour:
   Displays:
   - {fileID: 2666434032613405079}
   NumberDisplay: 0
+  StartFilter: {fileID: 0}
+  ContainerType: 0
 --- !u!1 &2127526918660967422
 GameObject:
   m_ObjectHideFlags: 0
@@ -966,7 +1046,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 8
+  _componentIndexCache: 12
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   ContainerDescriptor: {fileID: 1209055579648204933}
@@ -983,7 +1063,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 9
+  _componentIndexCache: 13
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   Size: {x: 0, y: 0}
@@ -2939,6 +3019,10 @@ MonoBehaviour:
   - {fileID: 2219108694782903046}
   - {fileID: 3989715289005515527}
   - {fileID: 6791200117061487242}
+  - {fileID: 5182983736081886953}
+  - {fileID: 6727691960201412867}
+  - {fileID: 6294009354521529725}
+  - {fileID: 2612312476241916170}
   - {fileID: 7994111800386677094}
   - {fileID: 8411477508438424976}
   - {fileID: 7653287983538616454}
@@ -3694,6 +3778,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7693611785074969691}
+  - component: {fileID: 6195053383849332090}
+  - component: {fileID: 6294009354521529725}
+  - component: {fileID: 2612312476241916170}
   m_Layer: 0
   m_Name: thigh_r
   m_TagString: Untagged
@@ -3718,6 +3805,79 @@ Transform:
   m_Father: {fileID: 68055939596610882}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 27.508835, y: 171.9694, z: 176.05571}
+--- !u!114 &6195053383849332090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8134338448155949745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AutomaticContainerSetUp: 1
+  AttachedContainer: {fileID: 2612312476241916170}
+  Container: {fileID: 6294009354521529725}
+  ContainerInteractive: {fileID: 0}
+  ContainerItemDisplay: {fileID: 0}
+  ContainerUi: {fileID: 0}
+  OpenIcon: {fileID: 0}
+  TakeIcon: {fileID: 0}
+  StoreIcon: {fileID: 0}
+  ViewIcon: {fileID: 0}
+  AttachmentOffset: {x: 0, y: 0, z: 0}
+  ContainerName: right pocket
+  OnlyStoreWhenOpen: 0
+  OpenWhenContainerViewed: 0
+  Size: {x: 2, y: 2}
+  HideItems: 1
+  AttachItems: 1
+  Initialized: 1
+  MaxDistance: 5
+  IsOpenable: 0
+  IsInteractive: 0
+  HasUi: 0
+  HasCustomInteraction: 0
+  HasCustomDisplay: 0
+  Displays: []
+  NumberDisplay: 0
+  StartFilter: {fileID: 0}
+  ContainerType: 1
+--- !u!114 &6294009354521529725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8134338448155949745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 10
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  Size: {x: 2, y: 2}
+--- !u!114 &2612312476241916170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8134338448155949745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 11
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  ContainerDescriptor: {fileID: 6195053383849332090}
+  _container: {fileID: 6294009354521529725}
 --- !u!1 &8192843437556473050
 GameObject:
   m_ObjectHideFlags: 0
