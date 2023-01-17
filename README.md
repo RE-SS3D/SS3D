@@ -2,8 +2,7 @@
 
 <br>
 
-# DOWNLOADS
-{: class="centred" }
+<h1 align="center">DOWNLOADS</h1>
 
 [<img src="Documents/Images/latestrelease.png" alt="Latest Release" width="150" align="left">](https://ss3d.space/download/)
 
