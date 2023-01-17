@@ -1,4 +1,4 @@
-### [<img src="Documents/Images/ss3dsmalls.png" alt="SS3D" width="213" align="left">](https://ss3d.space/) SS3D is an open-source resurrection of *beep's [original SS3D](https://www.youtube.com/watch?v=VB7ddhayLKA&list=PLTkyYJ6zDmhoiQv5PJYT6oI766G4s60Av) project, which was an impressive demo attempting to give the infamous [<img src="https://img.shields.io/badge/Space%20Station-13-red?style=flat-square" alt="Space Station 13">](https://spacestation13.com/) an extra dimension.
+### [<img src="Documents/Images/ss3dsmalls.png" alt="SS3D" width="250" align="left">](https://ss3d.space/) SS3D is an open-source resurrection of *beep's [original SS3D](https://www.youtube.com/watch?v=VB7ddhayLKA&list=PLTkyYJ6zDmhoiQv5PJYT6oI766G4s60Av) project, which was an impressive demo attempting to give the infamous [<img src="https://img.shields.io/badge/Space%20Station-13-red?style=flat-square" alt="Space Station 13">](https://spacestation13.com/) an extra dimension.
 
 <br>
 
