@@ -176,6 +176,7 @@ namespace FishNet.Managing.Client
                             if (nob == null)
                             {
                                 bool found = false;
+                                string errMsg;
                                 for (int z = (i + 1); z < written; z++)
                                 {
                                     CachedNetworkObject zCnob = collection[z];
@@ -184,13 +185,10 @@ namespace FishNet.Managing.Client
                                         found = true;
                                         if (cnob.Action != CachedNetworkObject.ActionType.Spawn)
                                         {
-                                            if (_networkManager.CanLog(LoggingType.Error))
-                                            {
-                                                string errMsg = (nested)
-                                                    ? $"ObjectId {targetObjectId} was found for a nested spawn, but ActionType is not spawn. ComponentIndex {cnob.ComponentIndex} will not be spawned."
-                                                    : $"ObjectId {targetObjectId} was found for a parented spawn, but ActionType is not spawn. ObjectId {cnob.ObjectId} will not be spawned.";
-                                                Debug.LogError(errMsg);
-                                            }
+                                            errMsg = (nested)
+                                                ? $"ObjectId {targetObjectId} was found for a nested spawn, but ActionType is not spawn. ComponentIndex {cnob.ComponentIndex} will not be spawned."
+                                                : $"ObjectId {targetObjectId} was found for a parented spawn, but ActionType is not spawn. ObjectId {cnob.ObjectId} will not be spawned.";
+                                            _networkManager.LogError(errMsg);
                                             break;
                                         }
                                         else
@@ -200,13 +198,14 @@ namespace FishNet.Managing.Client
                                         }
                                     }
                                 }
+
                                 //Root nob could not be found.
-                                if (!found && _networkManager.CanLog(LoggingType.Error))
+                                if (!found)
                                 {
-                                    string errMsg = (nested)
+                                    errMsg = (nested)
                                         ? $"ObjectId {targetObjectId} could not be found for a nested spawn. ComponentIndex {cnob.ComponentIndex} will not be spawned."
                                         : $"ObjectId {targetObjectId} was found for a parented spawn. ObjectId {cnob.ObjectId} will not be spawned.";
-                                    Debug.LogError(errMsg);
+                                    _networkManager.LogError(errMsg);
                                 }
                             }
                         }
@@ -234,7 +233,7 @@ namespace FishNet.Managing.Client
                         /* Do not log unless not nested. Nested nobs sometimes
                          * could be destroyed if parent was first. */
                         if (!_networkManager.IsHost && cnob.NetworkObject == null && !cnob.IsNested)
-                            _networkManager.LogError($"NetworkObject for ObjectId of {cnob.ObjectId} was found null. Unable to despawn object.");
+                            _networkManager.Log($"NetworkObject for ObjectId of {cnob.ObjectId} was found null. Unable to despawn object. This may occur if a nested NetworkObject had it's parent object unexpectedly destroyed. This incident is often safe to ignore.");
                     }
                     NetworkObject nob = cnob.NetworkObject;
                     //No need to error here, the other Gets above would have.

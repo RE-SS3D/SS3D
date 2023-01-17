@@ -38,6 +38,7 @@ namespace FishNet.Runtime
             else
             {
                 writer.WriteBoolean(false);
+                writer.WriteByte((byte)value.ScopeType);
                 ScenedReadersAndWriters.Write___FishNetu002EManagingu002EScenedu002EDatau002ESceneLoadData(writer, value.SceneLoadData);
                 ScenedReadersAndWriters.Write___Systemu002EStringu005Bu005D(writer, value.GlobalScenes);
             }
@@ -175,6 +176,7 @@ namespace FishNet.Runtime
                 return (LoadQueueData)null;
             return new LoadQueueData()
             {
+                ScopeType = (SceneScopeType)reader.ReadByte(),
                 SceneLoadData = ScenedReadersAndWriters.Read___FishNetu002EManagingu002EScenedu002EDatau002ESceneLoadData(reader),
                 GlobalScenes = ScenedReadersAndWriters.Read___Systemu002EStringu005Bu005D(reader)
             };
@@ -319,9 +321,15 @@ namespace FishNet.Runtime
           UnloadOptions value)
         {
             if (value == null)
+            {
                 writer.WriteBoolean(true);
+            }
             else
+            {
                 writer.WriteBoolean(false);
+                writer.WriteByte((byte)value.Mode);
+                writer.WriteBoolean(value.Addressables);
+            }
         }
 
         public static UnloadScenesBroadcast Read___FishNetu002EManagingu002EScenedu002EBroadcastu002EUnloadScenesBroadcast(
@@ -372,9 +380,14 @@ namespace FishNet.Runtime
         public static UnloadOptions Read___FishNetu002EManagingu002EScenedu002EDatau002EUnloadOptions(
           this Reader reader)
         {
-            return reader.ReadBoolean() ? (UnloadOptions)null : new UnloadOptions();
+            UnloadOptions options = new UnloadOptions();
+            if (!reader.ReadBoolean())
+            {
+                options.Mode = (UnloadOptions.ServerUnloadMode)reader.ReadByte();
+                options.Addressables = reader.ReadBoolean();
+            }
+            return options;
         }
-
         public static void Write___FishNetu002EManagingu002EScenedu002EBroadcastu002EClientScenesLoadedBroadcast(
           this Writer writer,
           ClientScenesLoadedBroadcast value)

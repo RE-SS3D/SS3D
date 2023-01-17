@@ -37,6 +37,18 @@ namespace FishNet.Connection
         /// </summary>
         public bool LoadedStartScenes => (_loadedStartScenesAsServer || _loadedStartScenesAsClient);
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="asServer"></param>
+        /// <returns></returns>
+        public bool LoadedStartScenes_Internal(bool asServer)
+        {
+            if (asServer)
+                return _loadedStartScenesAsServer;
+            else
+                return _loadedStartScenesAsClient;
+        }
+        /// <summary>
         /// True if loaded start scenes as server.
         /// </summary>
         private bool _loadedStartScenesAsServer;
