@@ -14,13 +14,13 @@
 
 *Note: RE:SS3D is currently still in a 'pre-alpha' phase as we do some redesigning, documenting, core system work, and basic system implementation. During this early phase there are not many systems, content, or even interactions. What you see in the current project is just the beginning to something much, much greater.*
 
-
+<br>
 
 <h1 align="center">INFO</h1>
 
 [<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)**[Devblogs](https://ss3d.space/devblog/) - [FAQ](https://ss3d.space/faq/) - [About](https://ss3d.space/about/) - [Wiki](https://github.com/RE-SS3D/SS3D/wiki)**
 
-br>
+<br>
 
 <h1 align="center">CONTRIBUTING</h1>
 
@@ -28,7 +28,7 @@ br>
 
 [<img src="https://img.shields.io/github/issues-pr-raw/RE-SS3D/SS3D?color=green&label=Pull%20Requests%20%28Open%29&logo=github&style=plastic" alt="Open Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls)[https://ss3d.space/contribute/](https://ss3d.space/contribute/) breaks down the contribution types (including art assets) with links to helpful guides and to-do boards.[<img src="https://img.shields.io/github/issues-pr-closed-raw/RE-SS3D/SS3D?color=red&label=Pull%20Requests%20%28Closed%29&logo=github&style=plastic" alt="Closed Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls?q=is%3Apr+is%3Aclosed)
 
-br>
+<br>
 
 <h1 align="center">LICENSING</h1>
 
@@ -36,7 +36,7 @@ This project's **code** falls under the **[MIT](Documents/LICENSE-CODE.md)** lic
 
 All **art assets** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.md)** license.
 
-br>
+<br>
 
 <h1 align="center">COMMUNITY</h1>
 
@@ -56,7 +56,7 @@ br>
 
 [<img src="https://img.shields.io/twitter/follow/SpaceStation3D?label=Followers&style=social" alt="Twitter Followers" align="right">](https://twitter.com/SpaceStation3D)Currently our twitter is mostly used for announcements & memes but we will start using it more for other posts eventually.
 
-br>
+<br>
 
 <h1 align="center">BOARDS</h1>
 
@@ -68,7 +68,7 @@ This GitHub repository hosts our [issues board](https://github.com/RE-SS3D/SS3D/
 
 Trello hosts all our other boards, including the task boards for our various asset types (3D, 2D, audio, etc.) and our management board.
 
-br>
+<br>
 
 <h1 align="center">DONATE</h1>
 
