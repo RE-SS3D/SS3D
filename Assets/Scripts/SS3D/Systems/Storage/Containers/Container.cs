@@ -459,6 +459,15 @@ namespace SS3D.Systems.Storage.Containers
                 return false;
             }
 
+            Filter _filter = AttachedTo.ContainerDescriptor.StartFilter;
+            if (_filter != null)
+            {
+                if (!_filter.CanStore(item))
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 

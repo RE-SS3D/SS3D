@@ -9,12 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48bc3e6256e003f49b038fe30c1d9be6, type: 3}
-  m_Name: Toolbox
+  m_Script: {fileID: 11500000, guid: 0adc192349dc57848b5394a2c6707c23, type: 3}
+  m_Name: PDA
   m_EditorClassIdentifier: 
-  bulkSize: 3
   mustHaveAll: 0
   acceptedTraits:
-  - {fileID: 11400000, guid: 7f22e87f08452654f8f20ace0b1e0fa3, type: 2}
+  - {fileID: 11400000, guid: 7310cfb121a80ba4d9e7286a458186d2, type: 2}
   deniedTraits: []
-  hash: -556379684
