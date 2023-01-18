@@ -7,6 +7,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Items;
 using SS3D.Utils;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace SS3D.Systems.Furniture
 {
@@ -25,7 +26,10 @@ namespace SS3D.Systems.Furniture
         {
             ItemSystem itemSystem = SystemLocator.Get<ItemSystem>();
 
-            itemSystem.CmdSpawnItem(ItemIDs.BikeHorn, SodaDispensePoint.position, Quaternion.identity);
+            if (itemSystem == null)
+            {
+                itemSystem.CmdSpawnItem(ItemIDs.BikeHorn, SodaDispensePoint.position, Quaternion.identity);
+            }
         }
 
         public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
