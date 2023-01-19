@@ -50,6 +50,11 @@ namespace SS3D.Systems.Storage.UI
                 return;
             }
 
+            if (!_container.Container.CanContainItem(display.Item))
+            {
+                return;
+            }
+
             display.ShouldDrop = true;
             ItemDisplay.Item = display.Item;
             Inventory.ClientTransferItem(ItemDisplay.Item, Vector2Int.zero, Container);

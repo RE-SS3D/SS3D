@@ -96,7 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8cac635f24954048aad3a6ff9110beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 6
+  _componentIndexCache: 5
   _addedNetworkObject: {fileID: 4819234911439508660}
   _networkObjectCache: {fileID: 4819234911439508660}
   IgnoredParameters: []
@@ -150,6 +150,7 @@ GameObject:
   - component: {fileID: 6351433192589740835}
   - component: {fileID: 4044200983548959999}
   - component: {fileID: 3384973958442829874}
+  - component: {fileID: 4332226463251961960}
   - component: {fileID: 3843552767257885330}
   - component: {fileID: 1780467671715552793}
   - component: {fileID: 3920789400213860089}
@@ -194,11 +195,10 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
   - {fileID: 6573417749823381685}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 4332226463251961960}
+  - {fileID: 1780467671715552793}
+  - {fileID: 3920789400213860089}
+  - {fileID: 8394691866456797413}
   - {fileID: 3401307552301717060}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
@@ -207,7 +207,7 @@ MonoBehaviour:
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
   <PrefabId>k__BackingField: 8
-  _scenePathHash: 952082934
+  _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 7834965004422935527
   _sceneNetworkObjects:
@@ -322,6 +322,31 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &4332226463251961960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6891363543938182813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: 3258417366846669140, guid: 264ea51d92067c14ebc6633999afac78, type: 3}
+  _networkObjectCache: {fileID: 4819234911439508660}
+  _itemId: pda
+  _name: PDA
+  _sprite: {fileID: 0}
+  _rigidbody: {fileID: 6351433192589740835}
+  _weight: 1
+  Prefab: {fileID: 6891363543938182813}
+  AttachmentPoint: {fileID: 4619531351315044860}
+  AttachmentPointAlt: {fileID: 0}
+  traits:
+  - {fileID: 11400000, guid: 9dfcbafc47ceece49800f575b5e75c21, type: 2}
 --- !u!114 &3843552767257885330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -374,9 +399,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 4819234911439508660}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 4819234911439508660}
   Size: {x: 1, y: 1}
 --- !u!114 &3920789400213860089
 MonoBehaviour:
@@ -390,9 +415,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bfc9c5e18140bc9dbf232d3a7c2ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 4819234911439508660}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 4819234911439508660}
   ContainerDescriptor: {fileID: 3843552767257885330}
   _container: {fileID: 1780467671715552793}
 --- !u!114 &8394691866456797413
@@ -407,8 +432,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 4
   _addedNetworkObject: {fileID: 4819234911439508660}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 4819234911439508660}
   OpenIcon: {fileID: 0}
   containerDescriptor: {fileID: 3843552767257885330}
