@@ -28,7 +28,7 @@ For new contributors, check out our issue label [Good First Issue](https://githu
 
 Pull requests allow the maintainers to review any changes and verify they are wanted and don't break anything in the existing project. Similarly to issues, you should use the template when making a new PR and provide as much detail as possible.
 
-* Pull requests should merge into the *master* branch.
+* Pull requests should merge into the *develop* branch.
 * The title and description should be clear and concise.
 * If the PR is attempting to fix an issue, reference the issue number in the PR description ("Fixes #number").
 * Include pictures/videos in your pull request whenever possible.
