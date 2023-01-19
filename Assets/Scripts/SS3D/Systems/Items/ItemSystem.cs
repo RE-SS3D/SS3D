@@ -50,7 +50,7 @@ namespace SS3D.Systems.Items
         }
 
         [Server]
-        private Item SpawnItem(ItemIDs id, Vector3 position, Quaternion rotation)
+        public Item SpawnItem(ItemIDs id, Vector3 position, Quaternion rotation)
         {
             bool hasValue = _itemPrefabs.TryGetValue(id, out Item itemPrefab);
 
