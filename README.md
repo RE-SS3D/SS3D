@@ -20,7 +20,7 @@
 
 <h1 align="center">INFO</h1>
 
-[<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)<h4><a href="https://ss3d.space/about/">About</a><a href="https://ss3d.space/faq/">FAQ</a><a href="https://ss3d.space/devblog/">Devblogs</a></h4>
+[<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)<h3><a href="https://ss3d.space/about/">About</a> - <a href="https://ss3d.space/faq/">FAQ</a> - <a href="https://ss3d.space/devblog/">Devblogs</a></h3>
 
 **[About](https://ss3d.space/about/) - [FAQ](https://ss3d.space/faq/) - [Devblogs](https://ss3d.space/devblog/)**
 
