@@ -29,7 +29,7 @@ namespace SS3D.Systems.Furniture
 
             Quaternion quaternion = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
 
-            Item dispensedItem = itemSystem.SpawnItem(ItemIDs.BikeHorn, SodaDispensePoint.position, quaternion);
+            Item dispensedItem = itemSystem.SpawnItem(ItemIDs.SodaCanCola, SodaDispensePoint.position, quaternion);
         }
 
         public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)

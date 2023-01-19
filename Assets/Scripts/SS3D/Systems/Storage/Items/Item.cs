@@ -30,6 +30,7 @@ namespace SS3D.Systems.Storage.Items
     {
         [Header("Item settings")]
         [SerializeField]
+        [HideInInspector]
         public ItemIDs ItemID;
 
         [SerializeField] private string _name;
