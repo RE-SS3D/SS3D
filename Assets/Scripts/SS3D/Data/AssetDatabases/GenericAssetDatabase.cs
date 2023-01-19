@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Coimbra;
-using UnityEngine;
 using UnityEngine.AddressableAssets;
+using Object = UnityEngine.Object;
 
 namespace SS3D.Data.AssetDatabases
 {
@@ -10,11 +11,15 @@ namespace SS3D.Data.AssetDatabases
     /// </summary>                                             s
     public class GenericAssetDatabase : ScriptableSettings
     {
+        public event Action OnDatabaseLoaded; 
+
         public string EnumPath = @"\Scripts\SS3D\Data\Enums";
         public string EnumNamespaceName = "SS3D.Data.Enums";
         public string EnumName;
 
         public List<AssetReference> Assets;
+
+        private bool _loaded;
 
         /// <summary>
         /// Pre-loads all the assets in the database in memory.
@@ -27,10 +32,18 @@ namespace SS3D.Data.AssetDatabases
         /// <typeparam name="T">The type of asset to load.</typeparam>
         protected void PreloadAssets<T>() where T : Object
         {
+            if (_loaded)
+            {
+                return;
+            }
+
             foreach (AssetReference assetReference in Assets)
             {
                 assetReference.LoadAssetAsync<T>();
             }
+
+            _loaded = true;
+            OnDatabaseLoaded?.Invoke();
         }
 
         /// <summary>
@@ -38,12 +51,17 @@ namespace SS3D.Data.AssetDatabases
         ///
         /// WARNING: Not sure how
         /// </summary>
-        /// <param name="icon"></param>
+        /// <param name="index"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T Get<T>(int icon) where T : Object
+        public T Get<T>(int index) where T : Object
         {
-            return Assets[icon].Asset as T;
+            if (!_loaded)
+            {
+                PreloadAssets();
+            }
+
+            return Assets[index].Asset as T;
         }
     }
 }

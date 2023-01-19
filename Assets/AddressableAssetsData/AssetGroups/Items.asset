@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: Items
   m_Data:
     m_SerializedData: []
-  m_GUID: 4273fc1281f75d042bf7bdd3397d6acc
+  m_GUID: 0c7a929acec0e9043a37792976e35e97
   m_SerializeEntries:
   - m_GUID: 11f824c472e04854e95065dda095e8f4
     m_Address: Assets/Content/Items/Generic/BikeHorn/BikeHorn.prefab
@@ -60,4 +60,6 @@ MonoBehaviour:
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:
-    m_Schemas: []
+    m_Schemas:
+    - {fileID: 11400000, guid: b278764f92bb238408c93fd018219ffe, type: 2}
+    - {fileID: 11400000, guid: 193ca4d3bb5f716489e2e2e9766c79a9, type: 2}

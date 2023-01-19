@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
@@ -8,7 +9,6 @@ using SS3D.Logging;
 using SS3D.Systems.Storage.Items;
 using SS3D.Utils;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace SS3D.Systems.Items
 {
@@ -19,9 +19,9 @@ namespace SS3D.Systems.Items
     {
         private readonly Dictionary<ItemIDs, Item> _itemPrefabs = new();
 
-        protected override void OnAwake()
+        protected override void OnStart()
         {
-            base.OnAwake();
+            base.OnStart();
 
             LoadItemPrefabs();
         }
@@ -29,17 +29,28 @@ namespace SS3D.Systems.Items
         private void LoadItemPrefabs()
         {
             ItemsAssetDatabase itemsAssetDatabase = AssetData.FindDatabase<ItemsAssetDatabase>();
-            List<AssetReference> assetReferences = itemsAssetDatabase.Assets;
+            itemsAssetDatabase.OnDatabaseLoaded += handleDatabaseLoaded;
 
-            for (int index = 0; index < assetReferences.Count; index++)
+            void handleDatabaseLoaded()
             {
-                ItemIDs id = (ItemIDs)index;
-                GameObject itemObject = itemsAssetDatabase.Get(id);
-                Item item = itemObject.GetComponent<Item>();
+                itemsAssetDatabase.OnDatabaseLoaded -= handleDatabaseLoaded;
 
-                item.ItemID = id;
+                List<GameObject> assetReferences = itemsAssetDatabase.Assets.Select(reference => reference.Asset as GameObject).ToList();
+                Punpun.Say(this, assetReferences.IsNullOrEmpty().ToString());
 
-                _itemPrefabs.Add(id, item);
+                for (int index = 0; index < assetReferences.Count; index++)
+                {
+                    ItemIDs id = (ItemIDs)index;
+                    Punpun.Say(this, id.ToString());
+
+                    GameObject itemObject = itemsAssetDatabase.Get(id);
+
+                    Item item = itemObject.GetComponent<Item>();
+
+                    item.ItemID = id;
+
+                    _itemPrefabs.Add(id, item);
+                }
             }
         }
 
