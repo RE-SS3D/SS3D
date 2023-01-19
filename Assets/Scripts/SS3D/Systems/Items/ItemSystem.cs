@@ -26,6 +26,9 @@ namespace SS3D.Systems.Items
             LoadItemPrefabs();
         }
 
+        /// <summary>
+        /// Loads the item prefabs into memory with the item id and setting up the item ids variable in the items.
+        /// </summary>
         private void LoadItemPrefabs()
         {
             ItemsAssetDatabase itemsAssetDatabase = AssetData.FindDatabase<ItemsAssetDatabase>();
