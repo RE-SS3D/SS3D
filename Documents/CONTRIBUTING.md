@@ -85,7 +85,7 @@ Option A.
 
 Option B.
 1. Clone this (SS3D) repository.
-2. [Download Unity 2019.4.30f1 or newer](https://unity3d.com/get-unity/download/archive) and open the folder containing the project in Unity.
+2. [Download Unity 2021.3.0f1 or newer](https://unity3d.com/get-unity/download/archive) and open the folder containing the project in Unity.
 
 ### Running The Game:
 
