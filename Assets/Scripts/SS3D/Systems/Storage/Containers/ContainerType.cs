@@ -10,6 +10,8 @@ namespace SS3D.Systems.Storage.Containers
         Pocket,
         Hand,
         Bag,
+        ID,
+        Belt
     }
 }
 

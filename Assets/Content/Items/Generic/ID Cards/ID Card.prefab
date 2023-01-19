@@ -96,7 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8cac635f24954048aad3a6ff9110beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 2
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 4819234911439508660}
   _networkObjectCache: {fileID: 4819234911439508660}
   IgnoredParameters: []
@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 6573417749823381685}
   - component: {fileID: 6351433192589740835}
   - component: {fileID: 4044200983548959999}
-  - component: {fileID: 2621026977792279772}
+  - component: {fileID: 3277125744208764656}
   m_Layer: 10
   m_Name: ID Card
   m_TagString: Untagged
@@ -190,7 +190,6 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
   - {fileID: 6573417749823381685}
-  - {fileID: 2621026977792279772}
   - {fileID: 3401307552301717060}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
@@ -288,7 +287,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: f1acb5dc34856364ab9f8b6232282cd2, type: 2}
---- !u!114 &2621026977792279772
+--- !u!114 &3277125744208764656
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -300,10 +299,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f277e0962d8890f47a2783c7705d3364, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 1
+  _componentIndexCache: 255
   _addedNetworkObject: {fileID: 4819234911439508660}
-  _networkObjectCache: {fileID: 4819234911439508660}
-  _itemId: idCard
+  _networkObjectCache: {fileID: 0}
+  _itemId: IDCard
   _name: ID Card
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 6351433192589740835}
@@ -313,7 +312,6 @@ MonoBehaviour:
   AttachmentPointAlt: {fileID: 0}
   traits:
   - {fileID: 11400000, guid: 7310cfb121a80ba4d9e7286a458186d2, type: 2}
-  _name: ID Card
-  _role: 
-  permissions:
-  - {fileID: 11400000, guid: 281098bb452109e4caf7abfbdc3e64f8, type: 2}
+  _idName: 
+  _idRole: 0
+  permissions: []
