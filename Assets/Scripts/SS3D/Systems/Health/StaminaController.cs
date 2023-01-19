@@ -12,7 +12,6 @@ namespace SS3D.Systems.Health
     /// <summary>
     /// Manages the networking and out-of-process dependencies of the stamina subsystem
     /// </summary>
-    [RequireComponent(typeof(HumanoidController))]
     public class StaminaController : NetworkActor
     {
         /// <summary>

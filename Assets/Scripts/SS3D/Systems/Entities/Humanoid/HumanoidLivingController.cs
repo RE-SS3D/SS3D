@@ -15,7 +15,6 @@ namespace SS3D.Systems.Entities.Humanoid
     [RequireComponent(typeof(HumanoidAnimatorController))]
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
-    [RequireComponent(typeof(StaminaController))]
     public class HumanoidLivingController : HumanoidController
     {
 
