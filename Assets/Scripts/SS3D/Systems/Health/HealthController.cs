@@ -9,14 +9,6 @@ public class HealthController : NetworkBehaviour
 
     public GameObject Ghost;
 
-    public void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            ClientKill();
-        }
-    }
-
     [Server]
     private void BecomeGhost(GameObject player, GameObject ghost)
     {
