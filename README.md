@@ -20,25 +20,23 @@
 
 <h1 align="center">INFO</h1>
 
-[<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">](https://github.com/RE-SS3D/SS3D/discussions)<h3><a href="https://ss3d.space/about/">About</a> - <a href="https://ss3d.space/faq/">FAQ</a> - <a href="https://ss3d.space/devblog/">Devblogs</a></h3>
-
-**[About](https://ss3d.space/about/) - [FAQ](https://ss3d.space/faq/) - [Devblogs](https://ss3d.space/devblog/)**
+[<img src="https://img.shields.io/github/discussions/RE-SS3D/SS3D?color=blueviolet&label=Discussions&style=plastic&logo=github" alt="GitHub Discussions" align="right">]**[About](https://ss3d.space/about/) - [FAQ](https://ss3d.space/faq/) - [Devblogs](https://ss3d.space/devblog/)**
 
 <br>
 
 <h1 align="center">CONTRIBUTING</h1>
 
-[<img src="https://img.shields.io/github/issues-raw/RE-SS3D/SS3D?color=green&label=Issues%20%28Open%29&logo=github&style=plastic" alt="Open Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues)[Our GitBook](https://ss3d.gitbook.io/programming/introduction/contributing-to-ss3d) contains information regarding technical contributions, including Unity version, setting up the project, styling code, using github and more.[<img src="https://img.shields.io/github/issues-closed-raw/RE-SS3D/SS3D?color=red&label=Issues%20%28Closed%29&logo=github&style=plastic" alt="Closed Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues?q=is%3Aissue+is%3Aclosed)
+[<img src="https://img.shields.io/github/issues-raw/RE-SS3D/SS3D?color=green&label=Issues%20%28Open%29&logo=github&style=plastic" alt="Open Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues)[CONTRIBUTING.md](Documents/CONTRIBUTING.md) and [our GitBook](https://ss3d.gitbook.io/programming/introduction/contributing-to-ss3d) outlines technical contributions, running the project, styling code, using GitHub, Unity, and more.[<img src="https://img.shields.io/github/issues-closed-raw/RE-SS3D/SS3D?color=red&label=Issues%20%28Closed%29&logo=github&style=plastic" alt="Closed Issues" align="right">](https://github.com/RE-SS3D/SS3D/issues?q=is%3Aissue+is%3Aclosed)
 
-[<img src="https://img.shields.io/github/issues-pr-raw/RE-SS3D/SS3D?color=green&label=Pull%20Requests%20%28Open%29&logo=github&style=plastic" alt="Open Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls)[https://ss3d.space/contribute/](https://ss3d.space/contribute/) breaks down the contribution types (including art assets) with links to helpful guides and to-do boards.[<img src="https://img.shields.io/github/issues-pr-closed-raw/RE-SS3D/SS3D?color=red&label=Pull%20Requests%20%28Closed%29&logo=github&style=plastic" alt="Closed Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls?q=is%3Apr+is%3Aclosed)
+[<img src="https://img.shields.io/github/issues-pr-raw/RE-SS3D/SS3D?color=green&label=Pull%20Requests%20%28Open%29&logo=github&style=plastic" alt="Open Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls)[https://ss3d.space/contribute/](https://ss3d.space/contribute/) outlines other contribution types (art assets) with links to helpful guides and to-do boards.[<img src="https://img.shields.io/github/issues-pr-closed-raw/RE-SS3D/SS3D?color=red&label=Pull%20Requests%20%28Closed%29&logo=github&style=plastic" alt="Closed Pull Requests" align="right">](https://github.com/RE-SS3D/SS3D/pulls?q=is%3Apr+is%3Aclosed)
 
 <br>
 
 <h1 align="center">LICENSING</h1>
 
-This project's **code** falls under the **[MIT](Documents/LICENSE-CODE.md)** license.
+All **code** falls under the **[MIT](Documents/LICENSE-CODE.md)** license.
 
-All **art assets** fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.md)** license.
+All **art assets** (music & sfx, 3d models & animations, 2d textures & graphics, and vfx) fall under the **[CC BY-NC-SA 4.0](Documents/LICENSE-ASSETS.md)** license.
 
 <br>
 
