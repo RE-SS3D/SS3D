@@ -5,6 +5,7 @@ using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Items;
 using SS3D.Systems.Storage.Items;
 using SS3D.Systems.Storage.UI;
 using UnityEngine;
@@ -33,6 +34,18 @@ namespace SS3D.Systems.Storage.Containers
         /// The controllable body of the owning player
         /// </summary>
         public Entity Body;
+
+        /// <summary>
+        /// Checks if the current ID card stored here has the desired permission
+        /// </summary>
+        public bool HasPermission(IDPermission permission)
+        {
+            IIdentification _id = IDContainer.Items.FirstOrDefault() as IIdentification;
+            return (_id != null && _id.HasPermission(permission));
+        }
+
+        [HideInInspector]
+        public Container IDContainer;
 
         private readonly List<AttachedContainer> _openedContainers = new();
 

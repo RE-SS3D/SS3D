@@ -62,6 +62,7 @@ public class InventorySlotView : MonoBehaviour
 
         // Set up the container for the ID slot display.
         SetUpSlot(_idContainer, IDSlotPrefab);
+        Inventory.IDContainer = _idContainer.Container;
 
         // Set up the container that each pocket display.
         foreach (var container in _pocketContainers)
