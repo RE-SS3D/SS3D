@@ -10,6 +10,7 @@ using UnityEngine;
 using SS3D.Systems.Storage.Interactions;
 using System.Linq;
 using System.Security;
+using FishNet.Object.Synchronizing;
 
 namespace SS3D.Systems.Items
 {
@@ -18,6 +19,7 @@ namespace SS3D.Systems.Items
     /// </summary>
     public class PDA : Item, IIdentification
     {
+        [SyncVar]
         private Container container;
 
         public new void Awake()

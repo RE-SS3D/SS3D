@@ -206,7 +206,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 8
+  <PrefabId>k__BackingField: 16
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 15126253950763615245
@@ -341,8 +341,8 @@ MonoBehaviour:
   ContainerItemDisplay: {fileID: 0}
   ContainerUi: {fileID: 0}
   OpenIcon: {fileID: 0}
-  TakeIcon: {fileID: 0}
-  StoreIcon: {fileID: 0}
+  TakeIcon: {fileID: 21300000, guid: 1f7c984e7fec69144b755a41d9026e95, type: 3}
+  StoreIcon: {fileID: 21300000, guid: 1f7c984e7fec69144b755a41d9026e95, type: 3}
   ViewIcon: {fileID: 0}
   AttachmentOffset: {x: 0, y: 0, z: 0}
   ContainerName: container

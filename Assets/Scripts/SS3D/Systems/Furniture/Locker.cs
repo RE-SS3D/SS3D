@@ -8,13 +8,16 @@ using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
 using SS3D.Systems.Gamemodes;
 using UnityEngine;
+using FishNet.Object.Synchronizing;
 
 namespace SS3D.Systems.Furniture
 {
     public class Locker : InteractionSourceNetworkBehaviour, IInteractionTarget
     {
         public IDPermission permissionToOpen;
-        public bool Locked { private set; get; } = true;
+
+        [SyncVar]
+        public bool Locked = true;
 
         public void SetLocked(bool locked)
         {

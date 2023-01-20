@@ -94,10 +94,10 @@ namespace SS3D.Systems.Storage.Containers
             Assert.IsNotNull(AttachedContainer);
 
             // If container interactions icon are not defined at start, load default icons.
-            OpenIcon = AssetData.Get(InteractionIcons.Open);
+            OpenIcon = AssetData.Get(InteractionIcons.Openbox);
             TakeIcon = AssetData.Get(InteractionIcons.Take);
             StoreIcon = AssetData.Get(InteractionIcons.Take);
-            ViewIcon = AssetData.Get(InteractionIcons.Open);
+            ViewIcon = AssetData.Get(InteractionIcons.Openbox);
         }
     }
 }

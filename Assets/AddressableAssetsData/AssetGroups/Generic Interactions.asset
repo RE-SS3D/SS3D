@@ -21,14 +21,6 @@ MonoBehaviour:
     m_Address: Assets/Art/UI/Interactions/take.png
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: d6678ac9f1a1c714fa5afdb6f1a0ff11
-    m_Address: Assets/Art/UI/Interactions/discard.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 48da6209938d27844878cc3d318295e2
-    m_Address: Assets/Art/UI/Interactions/open.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 03812e70c708b3047b20e316b16f1896
     m_Address: Assets/Art/UI/Interactions/honk.png
     m_ReadOnly: 0

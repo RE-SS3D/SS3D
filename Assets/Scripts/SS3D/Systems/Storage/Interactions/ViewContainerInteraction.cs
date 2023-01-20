@@ -26,7 +26,7 @@ namespace SS3D.Systems.Storage.Interactions
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
-            return Icon != null ? Icon : AssetData.Get(InteractionIcons.Open);
+            return Icon != null ? Icon : AssetData.Get(InteractionIcons.Openbox);
         }
 
         public override bool CanInteract(InteractionEvent interactionEvent)

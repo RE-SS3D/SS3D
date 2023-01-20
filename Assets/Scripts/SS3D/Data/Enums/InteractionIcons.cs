@@ -4,10 +4,12 @@ namespace SS3D.Data.Enums
     {
         Take = 0, 
         Discard = 1, 
-        Open = 2, 
+        Openbox = 2, 
         Power = 3, 
         Honk = 4, 
         Nuke = 5, 
+        Open = 6, 
+        Close = 7, 
     }
 }
 

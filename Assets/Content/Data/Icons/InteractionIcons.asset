@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _preload: 1
   _type: 0
+  EnumPath: \Scripts\SS3D\Data\Enums
+  EnumNamespaceName: SS3D.Data.Enums
   EnumName: InteractionIcons
   Assets:
   - m_AssetGUID: d1f34343e08a14e48a856e409c355f32
@@ -27,7 +29,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
     m_EditorAssetChanged: 0
   - m_AssetGUID: 48da6209938d27844878cc3d318295e2
-    m_SubObjectName: open
+    m_SubObjectName: openbox
     m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
     m_EditorAssetChanged: 0
@@ -43,6 +45,16 @@ MonoBehaviour:
     m_EditorAssetChanged: 0
   - m_AssetGUID: bf85b01e2333f59439185d22d03adcaa
     m_SubObjectName: Nuke
+    m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: 77002400d8672ab4eb0c26dbfa4605ae
+    m_SubObjectName: open
+    m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: dc50b099f34630541a384990bf3f2d60
+    m_SubObjectName: close
     m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
     m_EditorAssetChanged: 0
