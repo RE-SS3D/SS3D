@@ -29,6 +29,9 @@ namespace SS3D.Systems.Items
 
         public bool HasPermission(IDPermission _idPermission)
         {
+            if (_idPermission == null)
+                return true;
+
             if (container == null)
                 return false;
 
@@ -36,7 +39,7 @@ namespace SS3D.Systems.Items
             if (_id == null)
                 return false;
 
-            return _id.permissions.Contains(_idPermission);
+            return _id.Permissions.Contains(_idPermission);
         }
     }
 }

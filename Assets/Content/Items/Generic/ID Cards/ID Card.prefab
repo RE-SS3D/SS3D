@@ -96,7 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8cac635f24954048aad3a6ff9110beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 1
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 4819234911439508660}
   _networkObjectCache: {fileID: 4819234911439508660}
   IgnoredParameters: []
@@ -190,6 +190,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
   - {fileID: 6573417749823381685}
+  - {fileID: 3277125744208764656}
   - {fileID: 3401307552301717060}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
@@ -198,7 +199,7 @@ MonoBehaviour:
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
   <PrefabId>k__BackingField: 7
-  _scenePathHash: 0
+  _scenePathHash: 952082934
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 10249159647123139105
   _sceneNetworkObjects:
@@ -207,12 +208,19 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 4819234911439508660}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
 --- !u!114 &6573417749823381685
@@ -299,9 +307,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f277e0962d8890f47a2783c7705d3364, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 4819234911439508660}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 4819234911439508660}
   _itemId: IDCard
   _name: ID Card
   _sprite: {fileID: 0}
@@ -312,6 +320,5 @@ MonoBehaviour:
   AttachmentPointAlt: {fileID: 0}
   traits:
   - {fileID: 11400000, guid: 7310cfb121a80ba4d9e7286a458186d2, type: 2}
-  _idName: 
-  _idRole: 0
-  permissions: []
+  Permissions:
+  - {fileID: 11400000, guid: 281098bb452109e4caf7abfbdc3e64f8, type: 2}
