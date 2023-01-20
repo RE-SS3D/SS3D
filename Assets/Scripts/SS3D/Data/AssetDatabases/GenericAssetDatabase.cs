@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Coimbra;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Data.AssetDatabases
@@ -19,7 +20,7 @@ namespace SS3D.Data.AssetDatabases
 
         public List<AssetReference> Assets;
 
-        private bool _loaded;
+        public bool AllAssetsLoaded { get; private set; }
 
         /// <summary>
         /// Pre-loads all the assets in the database in memory.
@@ -32,18 +33,30 @@ namespace SS3D.Data.AssetDatabases
         /// <typeparam name="T">The type of asset to load.</typeparam>
         protected void PreloadAssets<T>() where T : Object
         {
-            if (_loaded)
+            if (AllAssetsLoaded)
             {
                 return;
             }
 
-            foreach (AssetReference assetReference in Assets)
+            for (int index = 0; index < Assets.Count; index++)
             {
-                assetReference.LoadAssetAsync<T>();
+                AssetReference assetReference = Assets[index];
+
+                if (index != Assets.Count - 1)
+                {
+                    assetReference.LoadAssetAsync<T>();
+                }
+                else
+                {
+                    assetReference.LoadAssetAsync<T>().Completed += handleAllAssetsComplete;
+                }
             }
 
-            _loaded = true;
-            OnDatabaseLoaded?.Invoke();
+            void handleAllAssetsComplete(AsyncOperationHandle<T> asyncOperationHandle)
+            {
+                AllAssetsLoaded = true;
+                OnDatabaseLoaded?.Invoke();
+            }
         }
 
         /// <summary>
@@ -56,11 +69,6 @@ namespace SS3D.Data.AssetDatabases
         /// <returns></returns>
         public T Get<T>(int index) where T : Object
         {
-            if (!_loaded)
-            {
-                PreloadAssets();
-            }
-
             return Assets[index].Asset as T;
         }
     }
