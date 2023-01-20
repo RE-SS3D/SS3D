@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class BiologicalLayer
+public abstract class BodyLayer
 {
     public List<DamageTypeQuantity> DamageTypeQuantities;
     public float TotalDamage => DamageTypeQuantities.Sum(x => x.quantity);
 
-    
+    /// <summary>
+    /// Minimum amount of damage to do to make any actual damage.
+    /// </summary>
+    public List<DamageTypeQuantity> resistance;
 
     /// <summary>
     /// Add damage without going above 100 for any given type.

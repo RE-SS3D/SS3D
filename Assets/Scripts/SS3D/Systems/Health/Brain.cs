@@ -35,7 +35,7 @@ public class Brain : MonoBehaviour
 
         if(TotalDamage >= 100)
         {
-            gameObject.GetComponent<Kill>().ClientKill();
+            //gameObject.GetComponent<Kill>().ClientKill();
         }
     }
 }

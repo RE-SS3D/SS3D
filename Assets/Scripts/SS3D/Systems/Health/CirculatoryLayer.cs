@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CirculatoryLayer : BiologicalLayer
+public class CirculatoryLayer : BodyLayer
 {
 
 }
