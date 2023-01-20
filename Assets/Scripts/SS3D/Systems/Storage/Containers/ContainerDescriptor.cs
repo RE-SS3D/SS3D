@@ -5,6 +5,7 @@ using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Storage.UI;
+using SS3D.Systems.Traits;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;

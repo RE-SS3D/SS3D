@@ -1,6 +1,9 @@
-public enum Role
+namespace SS3D.Systems.Roles
 {
-    Assistant,
-    Chef,
-    Security
+    public enum Role
+    {
+        Assistant,
+        Chef,
+        Security
+    }
 }

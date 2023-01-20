@@ -4,6 +4,7 @@ using UnityEngine;
 using SS3D.Systems.Storage.Containers;
 using FishNet.Object;
 using SS3D.Systems;
+using SS3D.Systems.Traits;
 
 
 /// <summary>

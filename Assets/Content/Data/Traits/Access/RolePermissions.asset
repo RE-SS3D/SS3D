@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27ef1139dddb4d4c8ad22b7962cae244, type: 3}
+  m_Name: RolePermissions
+  m_EditorClassIdentifier: 
+  _preload: 1
+  _type: 0
+  EnumPath: \Scripts\SS3D\Data\Enums
+  EnumNamespaceName: SS3D.Data.Enums
+  EnumName: AccessPermissionIDs
+  Assets:
+  - m_AssetGUID: 1af044db46c41a648a3617a21acb1941
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: 281098bb452109e4caf7abfbdc3e64f8
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: 6aec35bfa699c0a4380ea100fe6e77e4
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0

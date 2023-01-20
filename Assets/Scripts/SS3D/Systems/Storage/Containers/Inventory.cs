@@ -6,8 +6,10 @@ using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Items;
+using SS3D.Systems.Roles;
 using SS3D.Systems.Storage.Items;
 using SS3D.Systems.Storage.UI;
+using SS3D.Systems.Traits.TraitCategories;
 using UnityEngine;
 
 namespace SS3D.Systems.Storage.Containers
@@ -38,7 +40,7 @@ namespace SS3D.Systems.Storage.Containers
         /// <summary>
         /// Checks if the current ID card stored here has the desired permission
         /// </summary>
-        public bool HasPermission(IDPermission permission)
+        public bool HasPermission(AccessPermission permission)
         {
             IIdentification _id = IDContainer.Items.FirstOrDefault() as IIdentification;
             return (_id != null && _id.HasPermission(permission));

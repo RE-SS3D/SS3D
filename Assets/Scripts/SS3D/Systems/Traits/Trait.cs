@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using FishNet.Object.Synchronizing;
+using SS3D.Systems.Traits.TraitCategories;
+using UnityEngine;
 
-namespace SS3D.Systems
+namespace SS3D.Systems.Traits
 {
     [CreateAssetMenu(fileName = "Trait", menuName = "Inventory/Traits/Trait")]
-    public class Trait : ScriptableObject
+    public class Trait : ScriptableObject, ICustomSync
     {
         //Hash for identification
         protected int hash;
@@ -14,12 +16,7 @@ namespace SS3D.Systems
             set => hash = value;
         }
 
-        protected TraitCategory category;
-        [HideInInspector]
-        public TraitCategory Category
-        {
-            get => category;
-        }
+        protected TraitCategory Category;
 
         protected bool Equals(Trait other)
         {
@@ -37,6 +34,11 @@ namespace SS3D.Systems
         public override int GetHashCode()
         {
             return hash;
+        }
+
+        public object GetSerializedType()
+        {
+            return typeof(Trait);
         }
 
         [ExecuteInEditMode]

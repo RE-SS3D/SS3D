@@ -10,6 +10,7 @@ using SS3D.Data;
 using SS3D.Data.Enums;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Storage.Containers;
+using SS3D.Systems.Traits.TraitCategories;
 
 namespace SS3D.Systems.Furniture
 {
@@ -19,7 +20,7 @@ namespace SS3D.Systems.Furniture
     public class LockLockerInteraction : Interaction
     {
         [HideInInspector]
-        public IDPermission permissionToOpen;
+        public AccessPermission permissionToOpen;
         public Locker locker;
 
         public override string GetName(InteractionEvent interactionEvent)

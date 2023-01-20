@@ -1,16 +1,8 @@
-﻿using SS3D.Data.Enums;
-using SS3D.Data;
-using SS3D.Interactions;
-using SS3D.Interactions.Extensions;
-using SS3D.Interactions.Interfaces;
-using SS3D.Systems.Storage.Containers;
+﻿using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
-using System.Collections.Generic;
-using UnityEngine;
-using SS3D.Systems.Storage.Interactions;
 using System.Linq;
-using System.Security;
-using FishNet.Object.Synchronizing;
+using SS3D.Systems.Roles;
+using SS3D.Systems.Traits.TraitCategories;
 
 namespace SS3D.Systems.Items
 {
@@ -19,29 +11,28 @@ namespace SS3D.Systems.Items
     /// </summary>
     public class PDA : Item, IIdentification
     {
-        [SyncVar]
-        private Container container;
-
         public new void Awake()
         {
             base.Awake();
 
-            container = GetComponent<Container>();
+            Container = GetComponent<Container>();
         }
 
-        public bool HasPermission(IDPermission _idPermission)
+        public bool HasPermission(AccessPermission accessPermission)
         {
-            if (_idPermission == null)
+            if (accessPermission == null)
+            {
                 return true;
+            }
 
-            if (container == null)
+            if (Container == null)
+            {
                 return false;
+            }
 
-            var _id = container.Items.FirstOrDefault() as IDCard;
-            if (_id == null)
-                return false;
-
-            return _id.Permissions.Contains(_idPermission);
+            IDCard id = Container.Items.FirstOrDefault() as IDCard;
+            
+            return id != null && id.AccessPermissions.Contains(accessPermission);
         }
     }
 }

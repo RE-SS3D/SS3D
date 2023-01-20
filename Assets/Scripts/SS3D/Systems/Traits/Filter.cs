@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using SS3D.Systems.Storage.Items;
+using UnityEngine;
 
-namespace SS3D.Systems
+namespace SS3D.Systems.Traits
 {
     [CreateAssetMenu(fileName = "Filter", menuName = "Inventory/Filter")]
     public class Filter : ScriptableObject
@@ -41,13 +41,12 @@ namespace SS3D.Systems
         }
         
         //Hash for identification
-        protected int hash;
-        [HideInInspector] public int Hash => hash;
+        protected int Hash;
 
         [ExecuteInEditMode]
         private void OnValidate()
         {
-            hash = GetHash(name);
+            Hash = GetHash(name);
         }
 
         public static int GetHash(string str)

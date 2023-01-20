@@ -1,6 +1,9 @@
-using SS3D.Systems;
+using SS3D.Systems.Traits.TraitCategories;
 
-public interface IIdentification
+namespace SS3D.Systems.Roles
 {
-    public bool HasPermission(IDPermission permission);
+    public interface IIdentification
+    {
+        public bool HasPermission(AccessPermission permission);
+    }
 }

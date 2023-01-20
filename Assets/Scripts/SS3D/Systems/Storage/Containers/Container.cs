@@ -4,6 +4,7 @@ using System.Linq;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Storage.Items;
+using SS3D.Systems.Traits;
 using UnityEngine;
 
 namespace SS3D.Systems.Storage.Containers

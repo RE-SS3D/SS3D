@@ -32,17 +32,7 @@ namespace SS3D.Systems.Items.Generic
             IInteractionSource source = interactionEvent.Source;
             bool inRange = InteractionExtensions.RangeCheck(interactionEvent);
 
-            if (source is not NukeCard _)
-            {
-                return false;
-            }
-
-            if (!inRange)
-            {
-                return false;
-            }
-
-            return true;
+            return source is NukeCard && inRange;
         }
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
@@ -50,13 +40,18 @@ namespace SS3D.Systems.Items.Generic
             IInteractionSource source = interactionEvent.Source;
             IInteractionTarget target = interactionEvent.Target;
 
-            if (source is NukeCard _ && target is Nuke nuke)
+            if (source is not NukeCard || target is not Nuke nuke)
             {
                 nuke.Detonate();
                 PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
 
                 new NukeDetonateEvent(nuke, playerSystem.GetCkey(source.GetComponentInTree<Entity>().Owner)).Invoke(this);
             }
+
+            nuke.Detonate();
+            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
+
+            new NukeDetonateEvent(nuke, playerControlSystem.GetCkey(source.GetComponentInTree<PlayerControllable>().Owner)).Invoke(this);
             return false;
         }
     }

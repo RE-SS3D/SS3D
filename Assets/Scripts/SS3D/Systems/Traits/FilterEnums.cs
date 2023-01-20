@@ -1,9 +1,12 @@
-﻿public enum BulkSize
+﻿namespace SS3D.Systems.Traits
 {
-    Tiny,
-    Small,
-    Medium,
-    Big,
-    Large,
-    Huge //Huge Containers are for storing structures, like Cargo crates
+    public enum BulkSize
+    {
+        Tiny,
+        Small,
+        Medium,
+        Big,
+        Large,
+        Huge //Huge Containers are for storing structures, like Cargo crates
+    }
 }

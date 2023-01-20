@@ -9,6 +9,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Interactions;
+using SS3D.Systems.Traits;
 using SS3D.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -53,6 +54,7 @@ namespace SS3D.Systems.Storage.Items
         public Transform AttachmentPointAlt;
         [Tooltip("The size of the item inside a container")]
         private Vector2Int _size;
+
         private Container _container;
 
         public Vector2Int Size => _size;
@@ -72,15 +74,6 @@ namespace SS3D.Systems.Storage.Items
             }
         }
 
-        // public Item()
-        // {
-        //     frozenItem = new FrozenItem(this);
-        // }
-
-        /// <summary>
-        /// The stack of this item, can be null
-        /// </summary>
-        // public Stackable Stack => stack ? stack : stack = GetComponent<Stackable>();
         /// <summary>
         /// The container this item is in
         /// </summary>
