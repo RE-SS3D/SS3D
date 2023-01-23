@@ -3,39 +3,40 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using System;
 
-public class Brain : MonoBehaviour
+public class Brain : BiologicalLayer
 {
-    public List<DamageTypeQuantity> DamageTypeQuantities;
-    public float TotalDamage => DamageTypeQuantities.Sum(x => x.quantity);
+    public override float OxygenConsumptionRate { get => 5f; }
 
-    public void InflictDamage(DamageTypeQuantity damageQuantity)
+    public override BodyLayerType LayerType
     {
-        int damageTypeIndex = DamageTypeQuantities.FindIndex(x => x.damageType == damageQuantity.damageType);
-        if (damageTypeIndex == -1)
-        {
-            if (damageQuantity.quantity > 100)
-            {
-                damageQuantity.quantity = 100;
-            }
-            DamageTypeQuantities.Add(damageQuantity);
-        }
-        else
-        {
-            float newDamageQuantity = damageQuantity.quantity + DamageTypeQuantities[damageTypeIndex].quantity;
-            if (newDamageQuantity > 100)
-            {
-                DamageTypeQuantities[damageTypeIndex].quantity = 100;
-            }
-            else
-            {
-                DamageTypeQuantities[damageTypeIndex].quantity = newDamageQuantity;
-            }
-        }
+        get { return BodyLayerType.Nerve; }
+        protected set { LayerType = value; }
+    }
 
-        if(TotalDamage >= 100)
-        {
-            //gameObject.GetComponent<Kill>().ClientKill();
-        }
+    public Brain(BodyPart bodyPart) : base(bodyPart)
+    {
+
+    }
+
+    protected override void SetSuceptibilities()
+    {
+        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Slash, 2f));
+        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Puncture, 1.5f));
+        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Heat, 1.5f));
+        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Cold, 1.5f));
+        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Shock, 1.5f));
+        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Rad, 1.5f));
+        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Toxic, 1.5f));
+        DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Acid, 1.5f));
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private void ProcessPain()
+    {
+       
     }
 }
