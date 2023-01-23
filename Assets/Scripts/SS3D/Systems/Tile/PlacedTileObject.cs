@@ -99,5 +99,19 @@ namespace SS3D.Systems.Tile
             return _tileObjectSo.GetGridPositionList(_origin, _dir);
         }
 
+        public TileObjectGenericType GetGenericType()
+        {
+            return _tileObjectSo.genericType;
+        }
+
+        public TileObjectSpecificType GetSpecificType()
+        {
+            return _tileObjectSo.specificType;
+        }
+
+        public string GetNameString()
+        {
+            return _tileObjectSo.nameString;
+        }
     }
 }

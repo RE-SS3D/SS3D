@@ -15,6 +15,12 @@ namespace SS3D.Systems.Tile
         public TileLayer layer;
         public GameObject prefab;
 
+        [Tooltip("Specify the generic type. Used for finding matching adjacencies.")]
+        public TileObjectGenericType genericType;
+
+        [Tooltip("Specify the specific type. Used for setting which generics can connect (e.g. wooden tables only connect to each other).")]
+        public TileObjectSpecificType specificType;
+
         // Dimensions that the object should use
         public int width = 1;
         public int height = 1;

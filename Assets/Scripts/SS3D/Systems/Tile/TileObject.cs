@@ -34,6 +34,11 @@ namespace SS3D.Systems.Tile
             _y = y;
         }
 
+        public PlacedTileObject GetPlacedObject()
+        {
+            return _placedObject;
+        }
+
         public void SetPlacedObject(PlacedTileObject placedObject)
         {
             _placedObject = placedObject;

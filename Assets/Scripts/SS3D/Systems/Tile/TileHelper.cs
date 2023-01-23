@@ -57,7 +57,7 @@ namespace SS3D.Systems.Tile
             return (int)dir * 45;
         }
 
-        public static TileLayer[] GetTileLayers()
+        public static TileLayer[] GetTileLayerNames()
         {
             if (tileLayers == null)
             {

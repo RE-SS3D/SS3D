@@ -85,7 +85,7 @@ namespace SS3D.Systems.Tile
         {
             _tileGridList = new List<TileGrid>();
 
-            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            foreach (TileLayer layer in TileHelper.GetTileLayerNames())
             {
                 _tileGridList.Add(CreateGrid(layer));
             }
@@ -112,13 +112,7 @@ namespace SS3D.Systems.Tile
             return new Vector2Int((int)Math.Round(worldPosition.x - _originPosition.x), (int)Math.Round(worldPosition.z - _originPosition.z));
         }
 
-        /// <summary>
-        /// Sets a TileObject value for a given x and y.
-        /// </summary>
-        /// <param name="layer"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
+
         public void SetTileObject(TileLayer layer, int x, int y, TileObject value)
         {
             if (x >= 0 && y >= 0 && x < _width && y < _height)
@@ -131,13 +125,6 @@ namespace SS3D.Systems.Tile
             }
         }
 
-        /// <summary>
-        /// Gets a TileObject value for a given x and y.
-        /// </summary>
-        /// <param name="layer"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <returns></returns>
         public TileObject GetTileObject(TileLayer layer, int x, int y)
         {
             if (x >= 0 && y >= 0 && x < _width && y < _height)
@@ -151,12 +138,18 @@ namespace SS3D.Systems.Tile
             }
         }
 
+        public TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
+        {
+            Vector2Int vector = GetXY(worldPosition);
+            return GetTileObject(layer, vector.x, vector.y);
+        }
+
         /// <summary>
         /// Clears the entire chunk of any PlacedTileObject.
         /// </summary>
         public void Clear()
         {
-            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            foreach (TileLayer layer in TileHelper.GetTileLayerNames())
             {
                 for (int x = 0; x < _width; x++)
                 {
@@ -177,7 +170,7 @@ namespace SS3D.Systems.Tile
         {
             var tileObjectSaveObjectList = new List<TileObject.TileSaveObject>();
 
-            foreach (TileLayer layer in TileHelper.GetTileLayers())
+            foreach (TileLayer layer in TileHelper.GetTileLayerNames())
             {
                 for (int x = 0; x < _width; x++)
                 {

@@ -120,14 +120,33 @@ namespace SS3D.Systems.Tile
             }
         }
 
-        /// <summary>
-        /// Returns whether the specified object can be successfully build for a given position and direction.
-        /// </summary>
-        /// <param name="tileObjectSo">Object to place</param>
-        /// <param name="position">World position to place the object</param>
-        /// <param name="dir">Direction the object is facing</param>
-        /// <returns></returns>
-        public bool CanBuild(TileObjectSo tileObjectSo, Vector3 position, Direction dir, CheckRestrictions checkRestrictions)
+        public TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
+        {
+            TileChunk chunk = GetOrCreateChunk(worldPosition); // TODO: creates unnessary empty chunk when checking whether building can be done
+            return chunk.GetTileObject(layer, worldPosition);
+        }
+
+
+        public TileObject[] GetTileObjects(Vector3 worldPosition)
+        {
+            TileObject[] tileObjects = new TileObject[TileHelper.GetTileLayerNames().Length];
+
+            foreach (TileLayer layer in TileHelper.GetTileLayerNames())
+            {
+                tileObjects[(int)layer] = GetTileObject(layer, worldPosition);
+            }
+
+            return tileObjects;
+        }
+
+    /// <summary>
+    /// Returns whether the specified object can be successfully build for a given position and direction.
+    /// </summary>
+    /// <param name="tileObjectSo">Object to place</param>
+    /// <param name="position">World position to place the object</param>
+    /// <param name="dir">Direction the object is facing</param>
+    /// <returns></returns>
+    public bool CanBuild(TileObjectSo tileObjectSo, Vector3 position, Direction dir)
         {
             // Get the right chunk
             TileChunk chunk = GetChunk(position);
@@ -136,8 +155,7 @@ namespace SS3D.Systems.Tile
                 return true;
             }
 
-            Vector2Int vector = chunk.GetXY(position);
-            Vector2Int placedObjectOrigin = new Vector2Int(vector.x, vector.y);
+            Vector2Int placedObjectOrigin = chunk.GetXY(position);
             TileLayer layer = tileObjectSo.layer;
 
             List<Vector2Int> gridPositionList = tileObjectSo.GetGridPositionList(placedObjectOrigin, dir);
@@ -148,34 +166,30 @@ namespace SS3D.Systems.Tile
                 // Verify if we are allowed to build for this grid position
                 Vector3 checkWorldPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
 
-                if (checkRestrictions == CheckRestrictions.Everything)
-                    canBuild &= TileRestrictions.CanBuild(this, checkWorldPosition, subLayerIndex, tileObjectSo, dir);
-                else if (checkRestrictions == CheckRestrictions.OnlyRestrictions)
-                {
-                    canBuild &= TileRestrictions.CanBuild(this, checkWorldPosition, subLayerIndex, tileObjectSo, dir);
-                    continue;
-                }
+                canBuild &= BuildChecker.CanBuild(GetTileObjects(checkWorldPosition), tileObjectSo);
 
+                /*
                 if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
                 {
                     // We got a chunk edge case in which a multi tile object is outside of the chunk
                     Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
-                    TileChunk nextChunk = GetOrCreateChunk(offEdgeObjectPosition);
-                    if (!nextChunk.GetTileObject(layer, offEdgeObjectPosition).IsEmpty(subLayerIndex))
+                    TileChunk nextChunk = GetChunk(offEdgeObjectPosition);
+
+                    // If neighbour chunk is empty, we are good
+                    if (nextChunk == null)
+                    {
+                        continue;
+                    }
+
+                    // Retrieve neighbour chunks x,y offsets and see if it is occupied
+                    Vector2Int chunkOffset = nextChunk.GetXY(offEdgeObjectPosition);
+                    if (!nextChunk.GetTileObject(layer, chunkOffset.x, chunkOffset.y).IsEmpty())
                     {
                         canBuild = false;
                         break;
                     }
-                    DeleteIfEmpty(nextChunk);
                 }
-                else
-                {
-                    if (!chunk.GetTileObject(layer, gridPosition.x, gridPosition.y).IsEmpty())
-                    {
-                        canBuild = false;
-                        break;
-                    }
-                }
+                */
             }
 
             return canBuild;
