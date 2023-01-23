@@ -3,98 +3,117 @@ using Coimbra;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using UnityEngine;
 
-public class HumanBodypart : BodyPart
+public class HumanBodypart : BodyPart, INerveSignalTransmitter
 {
-    MuscleLayer muscleLayer;
-    BoneLayer boneLayer;
-    CirculatoryLayer circulatoryLayer;
+    protected MuscleLayer muscleLayer;
+    protected BoneLayer boneLayer;
+    protected CirculatoryLayer circulatoryLayer;
+    protected NerveLayer nerveLayer;
 
-    public event EventHandler<DamageEventArgs> DamageReceivedEvent;
+    [SerializeField]
+    protected List<INerveSignalTransmitter> ConnectedParentNerveSignalTransmitters;
 
-    public void InflictDamage(DamageTypeQuantity damageTypeQuantity)
+    [SerializeField]
+    protected List<INerveSignalTransmitter> ConnectedChildNerveSignalTransmitters;
+
+    public bool IsConnectedToCentralNervousSystem { get; set; }
+
+    public HumanBodypart()
     {
-        switch(damageTypeQuantity.damageType)
-        {
-            case DamageType.Acid:
-                DealAcidDamage(damageTypeQuantity); break;
-            case DamageType.Heat:
-                DealHeatDamage(damageTypeQuantity); break;
+        muscleLayer = new MuscleLayer(this);
+        boneLayer = new BoneLayer(this);
+        circulatoryLayer= new CirculatoryLayer(this);
+        nerveLayer= new NerveLayer(this);
 
-            // ... And tutti quanti.
+        BodyLayers.Add(muscleLayer);
+        BodyLayers.Add(boneLayer);
+        BodyLayers.Add(circulatoryLayer);
+        BodyLayers.Add(nerveLayer);
 
-
-        }
-
-        OnDamageInflicted(damageTypeQuantity);
+        nerveLayer.DamageReceivedEvent += OnNerveDamaged;
     }
 
-    private void InflictDamageOnLayer(DamageTypeQuantity damageQuantity, BiologicalLayerType layerType)
+    private void OnNerveDamaged(object sender, DamageEventArgs nerveDamageEventArgs)
     {
-        switch (layerType)
+        if(sender is not NerveLayer)
         {
-            case BiologicalLayerType.Bone:
-                boneLayer.InflictDamage(damageQuantity); break;
-            case BiologicalLayerType.Muscle:
-                muscleLayer.InflictDamage(damageQuantity); break;
-            case BiologicalLayerType.Circulatory:
-                circulatoryLayer.InflictDamage(damageQuantity); break;
+            return;
         }
-        if (boneLayer.IsDestroyed())
-        {
-            LooseBodyPart();
-        }
-    }
 
-    private void LooseBodyPart()
-    {
-        var bodyparts = GetComponentsInChildren<HumanBodypart>();
-        foreach (var bodyPart in bodyparts) 
+        var nervelayer = (NerveLayer)sender;
+        if (nervelayer == null || nervelayer.IsDestroyed())
         {
-            bodyPart.LooseBodyPart();
+            RemoveAllNerveSignalTransmitter();
         }
-        gameObject.Destroy();
-    }
-
-    public void OnDamageInflicted(DamageTypeQuantity damageQuantity)
-    {
-        var args = new DamageEventArgs(damageQuantity);
-        DamageReceivedEvent.Invoke(this, args);
     }
 
     /// <summary>
-    /// Acid damage won't hurt bone until there's no muscle.
+    /// Disconnect all child nerve signal transmitters as well as this from the CNS.
     /// </summary>
-    /// <param name="damageTypeQuantity"></param>
-    protected virtual void DealAcidDamage(DamageTypeQuantity damageTypeQuantity)
+    public void DisconnectFromCentralNervousSystem()
     {
-        float damageQuantity = damageTypeQuantity.quantity;
-        if (!muscleLayer.IsDestroyed())
+        foreach (INerveSignalTransmitter transmitter in ConnectedChildNerveSignalTransmitters)
         {
-            InflictDamageOnLayer(damageTypeQuantity, BiologicalLayerType.Muscle);
-            InflictDamageOnLayer(damageTypeQuantity, BiologicalLayerType.Circulatory);
-            InflictDamageOnLayer(damageTypeQuantity, BiologicalLayerType.Nerve);
+            transmitter.DisconnectFromCentralNervousSystem();
+        }
+        IsConnectedToCentralNervousSystem = false;
+    }
+
+    public void RemoveAllNerveSignalTransmitter()
+    {
+        DisconnectFromCentralNervousSystem();
+        foreach (INerveSignalTransmitter transmitter in ConnectedChildNerveSignalTransmitters)
+        {
+            transmitter.RemoveNerveSignalTransmitter(this);
+        }
+        foreach (INerveSignalTransmitter transmitter in ConnectedParentNerveSignalTransmitters)
+        {
+            transmitter.RemoveNerveSignalTransmitter(this);
+        }
+        ConnectedParentNerveSignalTransmitters.Clear();
+        ConnectedChildNerveSignalTransmitters.Clear();
+    }
+
+    public List<INerveSignalTransmitter> ParentConnectedSignalTransmitters()
+    {
+        return ConnectedParentNerveSignalTransmitters;
+    }
+
+    public List<INerveSignalTransmitter> ChildConnectedSignalTransmitters()
+    {
+        return ConnectedParentNerveSignalTransmitters;
+    }
+
+    public void RemoveNerveSignalTransmitter(INerveSignalTransmitter transmitter)
+    {
+        if(transmitter == null) { return; }
+        ConnectedChildNerveSignalTransmitters.Remove(transmitter);
+        ConnectedParentNerveSignalTransmitters.Remove(transmitter);
+        transmitter.RemoveNerveSignalTransmitter(this);
+    }
+
+    public void AddNerveSignalTransmitter(INerveSignalTransmitter transmitter, bool isChild)
+    {
+        if (transmitter == null) { return; }
+        if (isChild)
+        {
+            ConnectedChildNerveSignalTransmitters.Add(transmitter);
         }
         else
         {
-            InflictDamageOnLayer(damageTypeQuantity, BiologicalLayerType.Bone);
+            ConnectedParentNerveSignalTransmitters.Add(transmitter);
         }
+
+        transmitter.AddNerveSignalTransmitter(this, !isChild);
     }
 
-    protected virtual void DealHeatDamage(DamageTypeQuantity damageTypeQuantity)
+    public float ProducePain()
     {
-        InflictDamageOnLayer(damageTypeQuantity, BiologicalLayerType.Muscle);
-        InflictDamageOnLayer(damageTypeQuantity, BiologicalLayerType.Circulatory);
-        InflictDamageOnLayer(damageTypeQuantity, BiologicalLayerType.Bone);
-        InflictDamageOnLayer(damageTypeQuantity, BiologicalLayerType.Nerve);
+        if (nerveLayer == null || nerveLayer.IsDestroyed()) { return 0.0f; }
+        return nerveLayer.ProducePain();
     }
-
-    protected virtual void DealOxyDamage(DamageTypeQuantity damageTypeQuantity)
-    {
-        InflictDamageOnLayer(damageTypeQuantity, BiologicalLayerType.Muscle);
-        InflictDamageOnLayer(damageTypeQuantity, BiologicalLayerType.Circulatory);
-    }
-
 }
