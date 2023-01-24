@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -57,6 +56,34 @@ namespace SS3D.Systems.Tile
                 }
             }
             return gridPositionList;
+        }
+
+        public List<Vector2Int> GetGridOffsetList(Direction dir)
+        {
+            List<Vector2Int> gridOffsetList = new List<Vector2Int>();
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    switch (dir)
+                    {
+                        case Direction.South:
+                            gridOffsetList.Add(Vector2Int.zero + new Vector2Int(x, y));
+                            break;
+                        case Direction.North:
+                            gridOffsetList.Add(Vector2Int.zero - new Vector2Int(x, y));
+                            break;
+                        case Direction.West:
+                            gridOffsetList.Add(Vector2Int.zero - new Vector2Int(-x, y));
+                            break;
+                        case Direction.East:
+                            gridOffsetList.Add(Vector2Int.zero + new Vector2Int(-x, y));
+                            break;
+                    }
+                }
+            }
+            return gridOffsetList;
         }
     }
 }

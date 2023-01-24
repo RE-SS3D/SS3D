@@ -19,28 +19,12 @@ namespace SS3D.Systems.Tile
             public string mapName;
             public TileChunk.ChunkSaveObject[] saveObjectList;
         }
-
-        /// <summary>
-        /// Number of TileObjects that should go in a chunk. 16 x 16
-        /// </summary>
-        private const int ChunkSize = 16;
-
-        /// <summary>
-        /// The size of each tile.
-        /// </summary>
-        private const float TileSize = 1.0f;
-
         
         public int ChunkCount => _chunks.Count;
 
         private Dictionary<Vector2Int, TileChunk> _chunks;
         private string _mapName;
 
-        /// <summary>
-        /// Creates a new TileMap.
-        /// </summary>
-        /// <param name="name">Name of the map</param>
-        /// <returns></returns>
         public static TileMap Create(string name)
         {
             GameObject mapObject = new GameObject(name);
@@ -51,11 +35,7 @@ namespace SS3D.Systems.Tile
             return map;
         }
 
-        /// <summary>
-        /// Initialize the new map.
-        /// </summary>
-        /// <param name="mapName"></param>
-        public void Setup(string mapName)
+        private void Setup(string mapName)
         {
             _chunks = new Dictionary<Vector2Int, TileChunk>();
             // _tileSystem = SystemLocator.Get<TileSystem>();
@@ -70,8 +50,8 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         public Vector2Int GetKey(Vector3 worldPosition)
         {
-            int x = (int)Math.Floor(worldPosition.x / ChunkSize);
-            int y = (int)Math.Floor(worldPosition.z / ChunkSize);
+            int x = (int)Math.Floor(worldPosition.x / TileChunk.ChunkSize);
+            int y = (int)Math.Floor(worldPosition.z / TileChunk.ChunkSize);
 
             return new Vector2Int(x, y);
         }
@@ -84,7 +64,7 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         private TileChunk CreateChunk(Vector2Int chunkKey, Vector3 origin)
         {
-            TileChunk chunk = new TileChunk(chunkKey, ChunkSize, ChunkSize, TileSize, origin);
+            TileChunk chunk = TileChunk.Create(chunkKey, origin);
             return chunk;
         }
 
@@ -99,7 +79,7 @@ namespace SS3D.Systems.Tile
             if (chunk == null)
             {
                 Vector2Int key = GetKey(worldPosition);
-                Vector3 origin = new Vector3 { x = key.x * ChunkSize, z = key.y * ChunkSize };
+                Vector3 origin = new Vector3 { x = key.x * TileChunk.ChunkSize, z = key.y * TileChunk.ChunkSize };
                 _ = CreateChunk(key, origin);
                 _chunks[key] = chunk;
             }
@@ -120,14 +100,14 @@ namespace SS3D.Systems.Tile
             }
         }
 
-        public TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
+        private TileObject GetTileObject(TileLayer layer, Vector3 worldPosition)
         {
             TileChunk chunk = GetOrCreateChunk(worldPosition); // TODO: creates unnessary empty chunk when checking whether building can be done
             return chunk.GetTileObject(layer, worldPosition);
         }
 
 
-        public TileObject[] GetTileObjects(Vector3 worldPosition)
+        private TileObject[] GetTileObjects(Vector3 worldPosition)
         {
             TileObject[] tileObjects = new TileObject[TileHelper.GetTileLayerNames().Length];
 
@@ -139,60 +119,75 @@ namespace SS3D.Systems.Tile
             return tileObjects;
         }
 
-    /// <summary>
-    /// Returns whether the specified object can be successfully build for a given position and direction.
-    /// </summary>
-    /// <param name="tileObjectSo">Object to place</param>
-    /// <param name="position">World position to place the object</param>
-    /// <param name="dir">Direction the object is facing</param>
-    /// <returns></returns>
-    public bool CanBuild(TileObjectSo tileObjectSo, Vector3 position, Direction dir)
+        /// <summary>
+        /// Returns whether the specified object can be successfully build for a given position and direction.
+        /// </summary>
+        /// <param name="tileObjectSo">Object to place</param>
+        /// <param name="placePosition">World position to place the object</param>
+        /// <param name="dir">Direction the object is facing</param>
+        /// <returns></returns>
+        public bool CanBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir)
         {
             // Get the right chunk
-            TileChunk chunk = GetChunk(position);
+            TileChunk chunk = GetChunk(placePosition);
             if (chunk == null)
             {
                 return true;
             }
 
-            Vector2Int placedObjectOrigin = chunk.GetXY(position);
+            Vector2Int placedObjectOrigin = chunk.GetXY(placePosition);
             TileLayer layer = tileObjectSo.layer;
 
             List<Vector2Int> gridPositionList = tileObjectSo.GetGridPositionList(placedObjectOrigin, dir);
 
             bool canBuild = true;
-            foreach (Vector2Int gridPosition in gridPositionList)
+            foreach (Vector2Int gridOffset in gridPositionList)
             {
                 // Verify if we are allowed to build for this grid position
-                Vector3 checkWorldPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
+                Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
 
-                canBuild &= BuildChecker.CanBuild(GetTileObjects(checkWorldPosition), tileObjectSo);
+                canBuild &= BuildChecker.CanBuild(GetTileObjects(gridPosition), tileObjectSo);
+            }
 
-                /*
-                if (chunk.GetTileObject(layer, gridPosition.x, gridPosition.y) == null)
+            // TODO: Add wall mounts colliding into wall check
+
+            return canBuild;
+        }
+
+        public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir)
+        {
+            bool canBuild = CanBuild(tileObjectSo, placePosition, dir);
+
+            if (canBuild)
+            {
+                PlacedTileObject placedObject = PlacedTileObject.Create(placePosition, dir, tileObjectSo);
+                TileChunk chunk = GetOrCreateChunk(placePosition);
+                placedObject.transform.SetParent(chunk.transform);
+
+                foreach (Vector2Int gridOffset in tileObjectSo.GetGridOffsetList(dir))
                 {
-                    // We got a chunk edge case in which a multi tile object is outside of the chunk
-                    Vector3 offEdgeObjectPosition = chunk.GetWorldPosition(gridPosition.x, gridPosition.y);
-                    TileChunk nextChunk = GetChunk(offEdgeObjectPosition);
+                    Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
+                    chunk = GetOrCreateChunk(gridPosition);
 
-                    // If neighbour chunk is empty, we are good
-                    if (nextChunk == null)
-                    {
-                        continue;
-                    }
-
-                    // Retrieve neighbour chunks x,y offsets and see if it is occupied
-                    Vector2Int chunkOffset = nextChunk.GetXY(offEdgeObjectPosition);
-                    if (!nextChunk.GetTileObject(layer, chunkOffset.x, chunkOffset.y).IsEmpty())
-                    {
-                        canBuild = false;
-                        break;
-                    }
+                    chunk.GetTileObject(tileObjectSo.layer, gridPosition).SetPlacedObject(placedObject);
                 }
-                */
             }
 
             return canBuild;
+        }
+
+        public void ClearTileObject(Vector3 placePosition, TileLayer layer)
+        {
+            TileObject[] tileObjects = GetTileObjects(placePosition);
+            tileObjects[(int)layer].ClearPlacedObject();
+
+            // Remove any invalid tile combinations
+            List<TileObject> toRemoveObjects = BuildChecker.GetToBeDestroyedObjects(tileObjects);
+
+            foreach (TileObject removeObject in toRemoveObjects)
+            {
+                removeObject.ClearPlacedObject();
+            }
         }
     }
 }

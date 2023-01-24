@@ -66,7 +66,7 @@ namespace SS3D.Systems.Tile
             var placedSaveObject = _placedObject.Save();
 
             // If we have a multi tile object, save only the instance where the origin is
-            if (_placedObject.GetGridPositionList().Count > 1 && placedSaveObject.origin != new Vector2Int(_x, _y))
+            if (_placedObject.GetGridOffsetList().Count > 1 && placedSaveObject.origin != new Vector2Int(_x, _y))
             {
                 placedSaveObject = null;
             }

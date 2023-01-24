@@ -1,3 +1,4 @@
+using FishNet.Object;
 using SS3D.Core;
 using SS3D.Logging;
 using System;
@@ -7,8 +8,18 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile
 {
-    public class TileChunk
+    public class TileChunk: MonoBehaviour
     {
+        /// <summary>
+        /// Number of TileObjects that should go in a chunk. 16 x 16
+        /// </summary>
+        public const int ChunkSize = 16;
+
+        /// <summary>
+        /// The size of each tile.
+        /// </summary>
+        private const float TileSize = 1.0f;
+
         /// <summary>
         /// Grid for grouping TileObjects per layer. Can be used for walking through objects on the same layer fast.
         /// </summary>
@@ -25,9 +36,6 @@ namespace SS3D.Systems.Tile
         public class ChunkSaveObject
         {
             public Vector2Int chunkKey;
-            public int width;
-            public int height;
-            public float tileSize;
             public Vector3 originPosition;
             public TileObject.TileSaveObject[] tileObjectSaveObjectArray;
         }
@@ -35,20 +43,23 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Unique key for each chunk
         /// </summary>
-        private readonly Vector2Int _chunkKey;
-
-        private readonly int _width;
-        private readonly int _height;
-        private readonly float _tileSize;
-        private readonly Vector3 _originPosition;
+        private Vector2Int _chunkKey;
+        private Vector3 _originPosition;
         private List<TileGrid> _tileGridList;
 
-        public TileChunk(Vector2Int chunkKey, int width, int height, float tileSize, Vector3 originPosition)
+        public static TileChunk Create(Vector2Int chunkKey, Vector3 originPosition)
+        {
+            GameObject chunkObject = new GameObject($"Chunk [{originPosition.x},{originPosition.z}]" ); // TODO: Probably needs network spawning as well
+            TileChunk chunk = chunkObject.AddComponent<TileChunk>();
+
+            chunk.Setup(chunkKey, originPosition);
+
+            return chunk;
+        }
+
+        private void Setup(Vector2Int chunkKey, Vector3 originPosition)
         {
             _chunkKey = chunkKey;
-            _width = width;
-            _height = height;
-            _tileSize = tileSize;
             _originPosition = originPosition;
 
             CreateAllGrids();
@@ -63,15 +74,15 @@ namespace SS3D.Systems.Tile
         {
             TileGrid grid = new TileGrid { Layer = layer };
 
-            int gridSize = _width * _height;
+            int gridSize = ChunkSize * ChunkSize;
             grid.TileObjectsGrid = new TileObject[gridSize];
 
 
-            for (int x = 0; x < _width; x++)
+            for (int x = 0; x < ChunkSize; x++)
             {
-                for (int y = 0; y < _height; y++)
+                for (int y = 0; y < ChunkSize; y++)
                 {
-                    grid.TileObjectsGrid[y * _width + x] = new TileObject(layer, x, y);
+                    grid.TileObjectsGrid[y * ChunkSize + x] = new TileObject(layer, x, y);
                 }
             }
 
@@ -99,7 +110,7 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         public Vector3 GetWorldPosition(int x, int y)
         {
-            return new Vector3(x, 0, y) * _tileSize + _originPosition;
+            return new Vector3(x, 0, y) + _originPosition;
         }
 
         /// <summary>
@@ -115,9 +126,9 @@ namespace SS3D.Systems.Tile
 
         public void SetTileObject(TileLayer layer, int x, int y, TileObject value)
         {
-            if (x >= 0 && y >= 0 && x < _width && y < _height)
+            if (x >= 0 && y >= 0 && x < ChunkSize && y < ChunkSize)
             {
-                _tileGridList[(int)layer].TileObjectsGrid[y * _width + x] = value;
+                _tileGridList[(int)layer].TileObjectsGrid[y * ChunkSize + x] = value;
             }
             else
             {
@@ -127,9 +138,9 @@ namespace SS3D.Systems.Tile
 
         public TileObject GetTileObject(TileLayer layer, int x, int y)
         {
-            if (x >= 0 && y >= 0 && x < _width && y < _height)
+            if (x >= 0 && y >= 0 && x < ChunkSize && y < ChunkSize)
             {
-                return _tileGridList[(int)layer].TileObjectsGrid[y * _width + x];
+                return _tileGridList[(int)layer].TileObjectsGrid[y * ChunkSize + x];
             }
             else
             {
@@ -151,9 +162,9 @@ namespace SS3D.Systems.Tile
         {
             foreach (TileLayer layer in TileHelper.GetTileLayerNames())
             {
-                for (int x = 0; x < _width; x++)
+                for (int x = 0; x < ChunkSize; x++)
                 {
-                    for (int y = 0; y < _height; y++)
+                    for (int y = 0; y < ChunkSize; y++)
                     {
                         TileObject tileObject = GetTileObject(layer, x, y);
                         tileObject.ClearPlacedObject();
@@ -172,9 +183,9 @@ namespace SS3D.Systems.Tile
 
             foreach (TileLayer layer in TileHelper.GetTileLayerNames())
             {
-                for (int x = 0; x < _width; x++)
+                for (int x = 0; x < ChunkSize; x++)
                 {
-                    for (int y = 0; y < _height; y++)
+                    for (int y = 0; y < ChunkSize; y++)
                     {
                         TileObject tileObject = GetTileObject(layer, x, y);
                         if (!tileObject.IsEmpty())
@@ -188,10 +199,7 @@ namespace SS3D.Systems.Tile
             ChunkSaveObject saveObject = new ChunkSaveObject
             {
                 tileObjectSaveObjectArray = tileObjectSaveObjectList.ToArray(),
-                height = _height,
                 originPosition = _originPosition,
-                tileSize = _tileSize,
-                width = _width,
                 chunkKey = _chunkKey,
             };
 

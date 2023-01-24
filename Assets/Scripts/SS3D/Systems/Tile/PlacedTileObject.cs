@@ -13,11 +13,10 @@ namespace SS3D.Systems.Tile
         /// Creates a new PlacedTileObject from a TileObjectSO at a given position and direction. Uses NetworkServer.Spawn() if a server is running.
         /// </summary>
         /// <param name="worldPosition"></param>
-        /// <param name="origin"></param>
         /// <param name="dir"></param>
         /// <param name="tileObjectSo"></param>
         /// <returns></returns>
-        public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo)
+        public static PlacedTileObject Create(Vector3 worldPosition, Direction dir, TileObjectSo tileObjectSo)
         {
             GameObject placedGameObject = Instantiate(tileObjectSo.prefab);
             placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
@@ -28,7 +27,7 @@ namespace SS3D.Systems.Tile
                 placedObject = placedGameObject.AddComponent<PlacedTileObject>();
             }
 
-            placedObject.Setup(tileObjectSo, origin, dir);
+            placedObject.Setup(tileObjectSo, dir);
 
             if (InstanceFinder.ServerManager != null && placedObject.GetComponent<NetworkObject>() != null)
             {
@@ -60,13 +59,11 @@ namespace SS3D.Systems.Tile
             return new PlacedSaveObject
             {
                 tileObjectSOName = _tileObjectSo.nameString,
-                origin = _origin,
                 dir = _dir,
             };
         }
 
         private TileObjectSo _tileObjectSo;
-        private Vector2Int _origin;
         private Direction _dir;
 
         /// <summary>
@@ -75,10 +72,9 @@ namespace SS3D.Systems.Tile
         /// <param name="tileObjectSo"></param>
         /// <param name="origin"></param>
         /// <param name="dir"></param>
-        public void Setup(TileObjectSo tileObjectSo, Vector2Int origin, Direction dir)
+        private void Setup(TileObjectSo tileObjectSo, Direction dir)
         {
             _tileObjectSo = tileObjectSo;
-            _origin = origin;
             _dir = dir;
         }
 
@@ -94,9 +90,9 @@ namespace SS3D.Systems.Tile
         /// Returns a list of all grids positions that object occupies.
         /// </summary>
         /// <returns></returns>
-        public List<Vector2Int> GetGridPositionList()
+        public List<Vector2Int> GetGridOffsetList()
         {
-            return _tileObjectSo.GetGridPositionList(_origin, _dir);
+            return _tileObjectSo.GetGridOffsetList(_dir);
         }
 
         public TileObjectGenericType GetGenericType()
