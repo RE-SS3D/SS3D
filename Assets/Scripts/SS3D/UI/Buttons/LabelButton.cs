@@ -131,6 +131,11 @@ namespace SS3D.UI.Buttons
             ProcessPress(MouseButtonType.MouseUp);
         }
 
+        public void Press()
+        {
+            OnPointerDown(null);
+        }
+
         private void Highlight()
         {
             UpdateVisuals();

@@ -1,13 +1,14 @@
 using NUnit.Framework;
 using SS3D.Systems.Gamemodes;
 using SS3D.Systems.GameModes.Modes;
+using SS3D.Tests;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 namespace EditorTests.Gamemodes
 {
-    public class GamemodeTests
+    public class GamemodeTests : SpessEditModeTest
     {
         #region Class variables
         /// <summary>
@@ -18,13 +19,15 @@ namespace EditorTests.Gamemodes
 
         #region Test set up
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
+            base.SetUp();
         }
 
         [TearDown]
-        public void TearDown()
+        public override void TearDown()
         {
+            base.TearDown();
         }
         #endregion
 

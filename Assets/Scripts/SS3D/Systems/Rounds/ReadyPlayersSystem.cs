@@ -129,5 +129,7 @@ namespace SS3D.Systems.Rounds
             ReadyPlayersChanged readyPlayersChanged = new(_readyPlayers.ToList());
             readyPlayersChanged.Invoke(this);
         }
+
+        public int Count => _readyPlayers.Count;
     }
 }

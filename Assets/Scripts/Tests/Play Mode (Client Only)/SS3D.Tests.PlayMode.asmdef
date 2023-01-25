@@ -1,0 +1,28 @@
+{
+    "name": "SS3D.Tests.PlayMode.ClientOnly",
+    "rootNamespace": "",
+    "references": [
+        "Tests.Common",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "SS3D.Systems",
+        "SS3D.Core",
+        "FishNet.Runtime",
+        "SS3D.UI",
+        "Coimbra",
+        "Coimbra.Editor"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
