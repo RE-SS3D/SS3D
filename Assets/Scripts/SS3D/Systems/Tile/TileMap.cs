@@ -1,3 +1,4 @@
+using SS3D.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -119,6 +120,19 @@ namespace SS3D.Systems.Tile
             return tileObjects;
         }
 
+        private TileObject[] GetNeighbourTileObjects(TileLayer layer, Vector3 worldPosition)
+        {
+            TileObject[] adjacentObjects = new TileObject[8];
+
+            for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
+            {
+                Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
+                adjacentObjects[(int)direction] = GetTileObject(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2));
+            }
+
+            return adjacentObjects;
+        }
+
         /// <summary>
         /// Returns whether the specified object can be successfully build for a given position and direction.
         /// </summary>
@@ -135,10 +149,7 @@ namespace SS3D.Systems.Tile
                 return true;
             }
 
-            Vector2Int placedObjectOrigin = chunk.GetXY(placePosition);
-            TileLayer layer = tileObjectSo.layer;
-
-            List<Vector2Int> gridPositionList = tileObjectSo.GetGridPositionList(placedObjectOrigin, dir);
+            List<Vector2Int> gridPositionList = tileObjectSo.GetGridOffsetList(dir);
 
             bool canBuild = true;
             foreach (Vector2Int gridOffset in gridPositionList)
@@ -187,6 +198,56 @@ namespace SS3D.Systems.Tile
             foreach (TileObject removeObject in toRemoveObjects)
             {
                 removeObject.ClearPlacedObject();
+            }
+        }
+
+        private void Clear()
+        {
+            foreach (TileChunk chunk in _chunks.Values)
+            {
+                chunk.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Returns a new SaveObject for storing the entire map.
+        /// </summary>
+        /// <returns></returns>
+        public MapSaveObject Save()
+        {
+            List<TileChunk.ChunkSaveObject> chunkObjectSaveList = new List<TileChunk.ChunkSaveObject>();
+
+            foreach (TileChunk chunk in _chunks.Values)
+            {
+                chunkObjectSaveList.Add(chunk.Save());
+            }
+
+            return new MapSaveObject
+            {
+                mapName = _mapName,
+                saveObjectList = chunkObjectSaveList.ToArray(),
+            };
+        }
+
+        public void Load(MapSaveObject saveObject)
+        {
+            Clear();
+
+            TileSystem tileSystem = SystemLocator.Get<TileSystem>();
+
+            foreach (var savedChunk in saveObject.saveObjectList)
+            {
+                TileChunk chunk = GetOrCreateChunk(savedChunk.originPosition);
+
+                foreach (var savedTile in savedChunk.tileObjectSaveObjectArray)
+                {
+                    TileObject tile = chunk.GetTileObject(savedTile.layer, savedTile.x, savedTile.y);
+                    TileObjectSo toBePlaced = tileSystem.GetTileAsset(savedTile.placedSaveObject.tileObjectSOName);
+                    Vector3 placePosition = chunk.GetWorldPosition(savedTile.x, savedTile.y);
+
+                    PlacedTileObject placedObject = PlacedTileObject.Create(placePosition, savedTile.placedSaveObject.dir, toBePlaced);
+                    tile.SetPlacedObject(placedObject);
+                }
             }
         }
     }

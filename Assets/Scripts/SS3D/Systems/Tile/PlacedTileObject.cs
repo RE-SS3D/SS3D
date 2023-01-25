@@ -46,7 +46,6 @@ namespace SS3D.Systems.Tile
         public class PlacedSaveObject
         {
             public string tileObjectSOName;
-            public Vector2Int origin;
             public Direction dir;
         }
 
@@ -70,7 +69,6 @@ namespace SS3D.Systems.Tile
         /// Set up a new PlacedTileObject.
         /// </summary>
         /// <param name="tileObjectSo"></param>
-        /// <param name="origin"></param>
         /// <param name="dir"></param>
         private void Setup(TileObjectSo tileObjectSo, Direction dir)
         {

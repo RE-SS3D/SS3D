@@ -30,6 +30,7 @@ namespace SS3D.Systems.Tile
         /// <param name="offset">Origin offset that should be taken into account</param>
         /// <param name="dir">Direction the object is facing</param>
         /// <returns></returns>
+        /*
         public List<Vector2Int> GetGridPositionList(Vector2Int offset, Direction dir)
         {
             List<Vector2Int> gridPositionList = new List<Vector2Int>();
@@ -57,6 +58,7 @@ namespace SS3D.Systems.Tile
             }
             return gridPositionList;
         }
+        */
 
         public List<Vector2Int> GetGridOffsetList(Direction dir)
         {

@@ -65,5 +65,13 @@ namespace SS3D.Systems.Tile
             }
             return tileLayers;
         }
+
+        public static Tuple<int, int> ToCardinalVector(Direction direction)
+        {
+            return new Tuple<int, int>(
+                (direction > Direction.North && direction < Direction.South) ? 1 : (direction > Direction.South) ? -1 : 0,
+                (direction > Direction.East && direction < Direction.West) ? -1 : (direction == Direction.East || direction == Direction.West) ? 0 : 1
+            );
+        }
     }
 }
