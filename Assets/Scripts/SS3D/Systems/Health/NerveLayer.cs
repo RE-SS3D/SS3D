@@ -3,9 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class NerveLayer : BiologicalLayer
+public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
 {
+    
     public override float OxygenConsumptionRate { get => 0.2f; }
+
+    [SerializeField]
+    protected List<INerveSignalTransmitter> ConnectedParentNerveSignalTransmitters;
+
+    [SerializeField]
+    protected List<INerveSignalTransmitter> ConnectedChildNerveSignalTransmitters;
+
+    public NerveSignalTransmitterEnum TransmitterId
+    {
+        get => NerveSignalTransmitterEnum.Nerve;
+        set
+        {
+            TransmitterId = value;
+        }
+    }
+
+    public bool IsConnectedToCentralNervousSystem { get; set; }
 
     public override BodyLayerType LayerType
     {
@@ -15,7 +33,9 @@ public class NerveLayer : BiologicalLayer
 
     public NerveLayer(BodyPart bodyPart) : base(bodyPart)
     {
+        ConnectedParentNerveSignalTransmitters = new List<INerveSignalTransmitter>();
 
+        ConnectedChildNerveSignalTransmitters = new List<INerveSignalTransmitter>();
     }
 
     protected override void SetSuceptibilities()
@@ -27,6 +47,80 @@ public class NerveLayer : BiologicalLayer
         DamageSuceptibility.Add(new DamageTypeQuantity(DamageType.Toxic, 1.2f));
     }
 
+
+    /// <summary>
+    /// Disconnect all child nerve signal transmitters as well as this from the CNS.
+    /// </summary>
+    public void DisconnectFromCentralNervousSystem()
+    {
+        foreach (INerveSignalTransmitter transmitter in ConnectedChildNerveSignalTransmitters)
+        {
+            transmitter.DisconnectFromCentralNervousSystem();
+        }
+        IsConnectedToCentralNervousSystem = false;
+    }
+
+    public void RemoveAllNerveSignalTransmitter()
+    {
+        DisconnectFromCentralNervousSystem();
+        foreach (INerveSignalTransmitter transmitter in ConnectedChildNerveSignalTransmitters)
+        {
+            transmitter.RemoveNerveSignalTransmitter(this);
+        }
+        foreach (INerveSignalTransmitter transmitter in ConnectedParentNerveSignalTransmitters)
+        {
+            transmitter.RemoveNerveSignalTransmitter(this);
+        }
+        ConnectedParentNerveSignalTransmitters.Clear();
+        ConnectedChildNerveSignalTransmitters.Clear();
+    }
+
+    public List<INerveSignalTransmitter> ParentConnectedSignalTransmitters()
+    {
+        return ConnectedParentNerveSignalTransmitters;
+    }
+
+    public List<INerveSignalTransmitter> ChildConnectedSignalTransmitters()
+    {
+        return ConnectedParentNerveSignalTransmitters;
+    }
+
+    public void RemoveNerveSignalTransmitter(INerveSignalTransmitter transmitter)
+    {
+        if (transmitter == null) { return; }
+        ConnectedChildNerveSignalTransmitters.Remove(transmitter);
+        ConnectedParentNerveSignalTransmitters.Remove(transmitter);
+        transmitter.RemoveNerveSignalTransmitter(this);
+    }
+
+    public void AddNerveSignalTransmitter(INerveSignalTransmitter transmitter, bool isChild)
+    {
+        if (transmitter == null) { return; }
+        if(AlreadyAdded(transmitter)) { return; }
+
+        if (isChild)
+        {
+            ConnectedChildNerveSignalTransmitters.Add(transmitter);
+        }
+        else
+        {
+            ConnectedParentNerveSignalTransmitters.Add(transmitter);
+        }
+
+        transmitter.AddNerveSignalTransmitter(this, !isChild);
+
+        if(BodyPart.BodyPartBehaviour != null)
+        {
+            BodyPart.BodyPartBehaviour.ServerRpcAddNerveSignalTransmitter(this, transmitter, isChild);
+        }
+    }
+
+    public bool AlreadyAdded(INerveSignalTransmitter transmitter)
+    {
+        return ConnectedChildNerveSignalTransmitters.Contains(transmitter)
+            || ConnectedParentNerveSignalTransmitters.Contains(transmitter);
+    }
+
     /// <summary>
     /// Produces a given amount of pain depending on other tissues damages.
     /// It also depends on the state of the never layer.
@@ -35,5 +129,11 @@ public class NerveLayer : BiologicalLayer
     public float ProducePain()
     {
         throw new NotImplementedException();
+    }
+
+    public override void OnDamageInflicted(DamageTypeQuantity damageQuantity)
+    {
+        base.OnDamageInflicted(damageQuantity);
+       RemoveAllNerveSignalTransmitter();
     }
 }
