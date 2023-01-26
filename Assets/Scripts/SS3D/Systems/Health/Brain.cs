@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System;
+using UnityEditor;
 
 public class Brain : BiologicalLayer
 {
@@ -35,8 +36,21 @@ public class Brain : BiologicalLayer
     /// <summary>
     /// 
     /// </summary>
-    private void ProcessPain()
+    public float ProcessPain(BodyPart[] bodyParts)
     {
-       
+        float painSum = 0;
+        foreach (var bodyPart in bodyParts)
+        {
+            var transmitters = bodyPart.BodyLayers.FindAll(x => x is INerveSignalTransmitter);
+            foreach (var transmitter in transmitters)
+            {
+                var t = (INerveSignalTransmitter)transmitter;
+                if (t.IsConnectedToCentralNervousSystem)
+                {
+                    painSum += t.ProducePain();
+                }
+            }
+        }
+        return painSum;
     }
 }
