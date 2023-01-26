@@ -3,7 +3,6 @@ using FishNet.Object.Synchronizing;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.ShortcutManagement;
 using UnityEngine;
 using System.Linq;
 
@@ -112,5 +111,10 @@ public class BodyPartBehaviour : NetworkBehaviour
         INerveSignalTransmitter transmitterToAdd, bool isChild)
     {
         transmitter.AddNerveSignalTransmitter(transmitterToAdd, isChild);
+    }
+
+    public string DescribeBodyPart()
+    {
+        return BodyPart.Describe();
     }
 }

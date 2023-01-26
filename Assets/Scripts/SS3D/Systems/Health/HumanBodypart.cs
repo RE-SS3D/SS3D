@@ -1,4 +1,3 @@
-using Codice.Client.Commands;
 using Coimbra;
 using System;
 using System.Collections;

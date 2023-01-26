@@ -122,4 +122,14 @@ public abstract class BodyPart
 
         return null;
     }
+
+    public string Describe()
+    {
+        String description = "";
+        foreach(var layer in BodyLayers)
+        {
+            description += "Layer " + layer.GetType().ToString();
+        }
+        return description;
+    }
 }
