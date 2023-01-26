@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public abstract class BodyPart
@@ -11,13 +12,31 @@ public abstract class BodyPart
     /// <summary>
     /// The list of body parts this body part is directly connected to. 
     /// </summary>
-    public List<BodyPart> ConnectedBodyParts;
+    public List<BodyPart> ChildConnectedBodyParts { get; protected set; }
+
+    public List<BodyPart> ParentConnectedBodyParts { get; protected set; }
 
     /// <summary>
     /// The list of body layers constituting this body part.
     /// </summary>
     public List<BodyLayer> BodyLayers { get; protected set; }
 
+    public BodyPartBehaviour BodyPartBehaviour { get; protected set; }
+
+    /// <summary>
+    /// Constructor to allow testing without mono/network behaviour script.
+    /// </summary>
+    public BodyPart()
+    {
+        BodyLayers= new List<BodyLayer>();
+        ChildConnectedBodyParts = new List<BodyPart>();
+        ParentConnectedBodyParts = new List<BodyPart>();
+    }
+
+    public BodyPart(BodyPartBehaviour bodyPartBehaviour) : this()
+    {
+        BodyPartBehaviour = bodyPartBehaviour;
+    }
 
     public virtual void AddBodyLayer(BodyLayer layer)
     {
@@ -29,12 +48,35 @@ public abstract class BodyPart
         BodyLayers.Remove(layer);
     }
 
+
+    public virtual void AddConnectedBodyPart(BodyPart bodyPart, bool isChild)
+    {
+        if (isChild)
+        {
+            ChildConnectedBodyParts.Add(bodyPart);
+        }
+        else
+        {
+            ParentConnectedBodyParts.Add(bodyPart);
+        }
+    }
+
     public virtual void InflictDamage(DamageTypeQuantity damageTypeQuantity)
     {
         foreach (var layer in BodyLayers)
         {
             layer.InflictDamage(damageTypeQuantity);
         }
+    }
+
+
+    public bool CanTransmitNerveSignals()
+    {
+        foreach(var layer in BodyLayers)
+        {
+            if (layer is INerveSignalTransmitter) return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -66,5 +108,18 @@ public abstract class BodyPart
     public bool ContainsLayer(BodyLayerType layerType)
     {
         return BodyLayers.Any(x => x.LayerType == layerType);
+    }
+
+    public BodyLayer GetBodyLayer<T>()
+    {
+        foreach (var layer in BodyLayers)
+        {
+            if(layer is T)
+            {
+                return layer;
+            }
+        }
+
+        return null;
     }
 }

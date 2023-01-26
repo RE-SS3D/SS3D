@@ -3,15 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System;
+using FishNet.Object;
 
 public abstract class BodyLayer
 {
     public abstract BodyLayerType LayerType { get; protected set; }
 
+    /// <summary>
+    /// The body part containing this body layer.
+    /// </summary>
     public BodyPart BodyPart { get; protected set; }
 
-
+    /// <summary>
+    /// Events fired when damages are received on this layer.
+    /// </summary>
     public event EventHandler<DamageEventArgs> DamageReceivedEvent;
+
     /// <summary>
     /// Quantity of damages on this bodyLayer
     /// </summary>
@@ -35,6 +42,9 @@ public abstract class BodyLayer
 
     public BodyLayer(BodyPart bodyPart)
     {
+        DamageResistance = new List<DamageTypeQuantity>();
+        DamageSuceptibility= new List<DamageTypeQuantity>();
+        DamageTypeQuantities = new List<DamageTypeQuantity>();
         SetResistances();
         SetSuceptibilities();
         BodyPart = bodyPart;    
