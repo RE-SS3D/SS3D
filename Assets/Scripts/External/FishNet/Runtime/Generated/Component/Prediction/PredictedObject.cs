@@ -142,6 +142,18 @@ namespace FishNet.Component.Prediction
         [SerializeField]
         private Rigidbody2D _rigidbody2d;
         /// <summary>
+        /// True to smooth position on spectated objects.
+        /// </summary>
+        [Tooltip("True to smooth position on spectated objects.")]
+        [SerializeField]
+        private bool _spectatorSmoothPosition = true;
+        /// <summary>
+        /// True to smooth rotation on spectated objects.
+        /// </summary>
+        [Tooltip("True to smooth rotation on spectated objects.")]
+        [SerializeField]
+        private bool _spectatorSmoothRotation = true;
+        /// <summary>
         /// Time to smooth initial velocities when an object was previously stopped.
         /// </summary>
         [Tooltip("Time to smooth initial velocities when an object was previously stopped.")]
@@ -302,6 +314,8 @@ namespace FishNet.Component.Prediction
             //Not owner nor server, initialize spectator smoother if using rigidbodies.
             else if (_predictionType != PredictionType.Other)
                 InitializeSmoother(false);
+
+            Rigidbodies_OnOwnershipClient(prevOwner);
         }
 
         public override void OnStopClient()
@@ -470,8 +484,9 @@ namespace FishNet.Component.Prediction
             Rigidbodies_TimeManager_OnPreReconcile(nb);
         }
 
+
         /// <summary>
-        /// Called after performing a reconcile on a NetworkBehaviour.
+        /// Called after performing a reconcile on NetworkBehaviour.
         /// </summary>
         private void TimeManager_OnPostReconcile(NetworkBehaviour nb)
         {
@@ -489,7 +504,7 @@ namespace FishNet.Component.Prediction
             {
                 _ownerSmoother = new PredictedObjectOwnerSmoother();
                 float teleportThreshold = (_enableTeleport) ? _teleportThreshold : -1f;
-                _ownerSmoother.Initialize(this, _graphicalInstantiatedOffsetPosition, _graphicalInstantiatedOffsetRotation, _graphicalObject, _ownerInterpolation, teleportThreshold);
+                _ownerSmoother.Initialize(this, _graphicalInstantiatedOffsetPosition, _graphicalInstantiatedOffsetRotation, _graphicalObject, _spectatorSmoothPosition, _spectatorSmoothRotation, _ownerInterpolation, teleportThreshold);
             }
             else
             {
@@ -497,8 +512,7 @@ namespace FishNet.Component.Prediction
                 RigidbodyType rbType = (_predictionType == PredictionType.Rigidbody) ?
                     RigidbodyType.Rigidbody : RigidbodyType.Rigidbody2D;
                 float teleportThreshold = (_enableTeleport) ? _teleportThreshold : -1f;
-                _spectatorSmoother.Initialize(this, rbType, _rigidbody, _rigidbody2d, _graphicalObject, _spectatorSmoothingDuration, _spectatorInterpolation, _overflowMultiplier, teleportThreshold);
-
+                _spectatorSmoother.Initialize(this, rbType, _rigidbody, _rigidbody2d, _graphicalObject, _spectatorSmoothPosition, _spectatorSmoothRotation, _spectatorSmoothingDuration, _spectatorInterpolation, _overflowMultiplier, teleportThreshold);
             }
 
             void ResetGraphicalTransform()
@@ -548,8 +562,6 @@ namespace FishNet.Component.Prediction
                 if (_predictionType != PredictionType.Other)
                     InitializeSmoother(false);
             }
-
-            ConfigureNetworkTransform();
         }
 #endif
     }

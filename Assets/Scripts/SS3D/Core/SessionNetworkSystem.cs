@@ -36,16 +36,15 @@ namespace SS3D.Core
             switch (networkType)
             {
                 case NetworkType.ServerOnly:
-                    Debug.Log($"[{nameof(SessionNetworkSystem)}] - Hosting a new headless server");
+                    Punpun.Say(this, "Hosting a new headless server");
                     networkManager.ServerManager.StartConnection();
                     break;
                 case NetworkType.Client:
-
                     Punpun.Say(this, $"Joining server {serverAddress} as {ckey}", Logs.Important);
                     networkManager.ClientManager.StartConnection(serverAddress);
                     break;
                 case NetworkType.Host:
-                    Debug.Log($"[{nameof(SessionNetworkSystem)}] - Hosting a new server");
+                    Punpun.Say(this, "Hosting a new server");
                     networkManager.ServerManager.StartConnection();
                     networkManager.ClientManager.StartConnection();
                     break;

@@ -286,11 +286,11 @@ namespace SS3D.Systems.Storage.Items
                 _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
                 _sprite.name = transform.name;
             }
-            catch (NullReferenceException e)
+            catch (NullReferenceException)
             {
                 Debug.LogError("Null reference exception, reverting to default sprite for item " + name + ".");
             }
-        
+
         }
 
 #if UNITY_EDITOR

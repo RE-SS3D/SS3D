@@ -843,8 +843,7 @@ namespace FishNet.Serializing
             {
                 if (componentIndex >= nob.NetworkBehaviours.Length)
                 {
-                    if (NetworkManager.CanLog(LoggingType.Error))
-                        Debug.LogError($"ComponentIndex of {componentIndex} is out of bounds on {nob.gameObject.name} [id {nob.ObjectId}]. This may occur if you have modified your gameObject/prefab without saving it, or the scene.");
+                    NetworkManager.LogError($"ComponentIndex of {componentIndex} is out of bounds on {nob.gameObject.name} [id {nob.ObjectId}]. This may occur if you have modified your gameObject/prefab without saving it, or the scene.");
                     result = null;
                 }
                 else
@@ -942,8 +941,7 @@ namespace FishNet.Serializing
                     //Only server and not found.
                     else
                     {
-                        if (NetworkManager.CanLog(LoggingType.Warning))
-                            Debug.LogWarning($"Unable to find connection for read Id {value}. An empty connection will be returned.");
+                        NetworkManager.LogWarning($"Unable to find connection for read Id {value}. An empty connection will be returned.");
                         return FishNet.Managing.NetworkManager.EmptyConnection;
                     }
                 }
@@ -959,7 +957,7 @@ namespace FishNet.Serializing
                     /* Otherwise make a new instance.
                     * We do not know if this is for the server or client so
                     * initialize it either way. Connections rarely come through
-                    * without being in server/client side collection. */        
+                    * without being in server/client side collection. */
                     else
                         return new NetworkConnection(NetworkManager, value, true);
                 }
@@ -979,14 +977,12 @@ namespace FishNet.Serializing
             * than what bytes are available. */
             if (size < -1)
             {
-                if (NetworkManager.CanLog(LoggingType.Error))
-                    Debug.LogError($"Size of {size} is invalid.");
+                NetworkManager.LogError($"Size of {size} is invalid.");
                 return false;
             }
             if (size > Remaining)
             {
-                if (NetworkManager.CanLog(LoggingType.Error))
-                    Debug.LogError($"Read size of {size} is larger than remaining data of {Remaining}.");
+                NetworkManager.LogError($"Read size of {size} is larger than remaining data of {Remaining}.");
                 return false;
             }
 
@@ -1164,16 +1160,15 @@ namespace FishNet.Serializing
         {
             if (IsAutoPackType<T>(out AutoPackType packType))
             {
-                Func<Reader, AutoPackType, T> del = GenericReader<T>.ReadAutoPack;
-                if (del == null)
+                Func<Reader, AutoPackType, T> autopackDel = GenericReader<T>.ReadAutoPack;
+                if (autopackDel == null)
                 {
-                    if (NetworkManager.CanLog(LoggingType.Error))
-                        Debug.LogError($"Read method not found for {typeof(T).Name}. Use a supported type or create a custom serializer.");
+                    NetworkManager.LogError($"Read method not found for {typeof(T).Name}. Use a supported type or create a custom serializer.");
                     return default;
                 }
                 else
                 {
-                    return del.Invoke(this, packType);
+                    return autopackDel.Invoke(this, packType);
                 }
             }
             else
@@ -1181,8 +1176,7 @@ namespace FishNet.Serializing
                 Func<Reader, T> del = GenericReader<T>.Read;
                 if (del == null)
                 {
-                    if (NetworkManager.CanLog(LoggingType.Error))
-                        Debug.LogError($"Read method not found for {typeof(T).Name}. Use a supported type or create a custom serializer.");
+                    NetworkManager.LogError($"Read method not found for {typeof(T).Name}. Use a supported type or create a custom serializer.");
                     return default;
                 }
                 else

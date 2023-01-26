@@ -53,9 +53,9 @@ namespace SS3D.Systems.Items
             if (source is NukeCard _ && target is Nuke nuke)
             {
                 nuke.Detonate();
-                PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
+                PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
 
-                new NukeDetonateEvent(nuke, playerControlSystem.GetCkey(source.GetComponentInTree<PlayerControllable>().Owner)).Invoke(this);
+                new NukeDetonateEvent(nuke, playerSystem.GetCkey(source.GetComponentInTree<Entity>().Owner)).Invoke(this);
             }
             return false;
         }

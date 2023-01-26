@@ -15,7 +15,6 @@ namespace SS3D.Systems.Rounds
         /// <summary>
         /// Round loop runner
         /// </summary>
-        /// <param name="changeRoundStateMessage"></param>
         [Server]
         protected override async UniTask ProcessChangeRoundState(ChangeRoundStateMessage m)
         {
@@ -43,7 +42,7 @@ namespace SS3D.Systems.Rounds
         protected override async UniTask PrepareRound()
         {
             Punpun.Say(this, "Preparing round", Logs.ServerOnly);
-            
+
             RoundState = RoundState.Preparing;
 
             TimeSpan second = TimeSpan.FromMilliseconds(500);

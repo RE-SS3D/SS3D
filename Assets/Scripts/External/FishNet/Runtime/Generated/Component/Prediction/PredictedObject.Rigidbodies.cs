@@ -39,6 +39,14 @@ namespace FishNet.Component.Prediction
         /// True if object was changed previous tick.
         /// </summary>
         private bool _previouslyChanged;
+        /// <summary>
+        /// Animators found on the graphical object.
+        /// </summary>
+        private Animator[] _graphicalAnimators;
+        /// <summary>
+        /// True if GraphicalAniamtors have been intialized.
+        /// </summary>
+        private bool _animatorsInitialized;
         #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -56,6 +64,51 @@ namespace FishNet.Component.Prediction
         }
 
         /// <summary>
+        /// Called on client when ownership changes for this object.
+        /// </summary>
+        /// <param name="prevOwner"></param>
+        private void Rigidbodies_OnOwnershipClient(NetworkConnection prevOwner)
+        {
+            if (!IsRigidbodyPrediction)
+                return;
+            //If owner no need to fix for animators.
+            if (base.IsOwner)
+                return;
+            //Would have already fixed if animators are set.
+            if (_animatorsInitialized)
+                return;
+
+            _animatorsInitialized = true;
+            _graphicalAnimators = _graphicalObject.GetComponentsInChildren<Animator>(true);
+
+            if (_graphicalAnimators.Length > 0)
+            {
+                for (int i = 0; i < _graphicalAnimators.Length; i++)
+                    _graphicalAnimators[i].keepAnimatorControllerStateOnDisable = true;
+
+                /* True if at least one animator is on the graphical root. 
+                * Unity gets components in order so it's safe to assume
+                 * 0 would be the topmost animator. This has to be done
+                 * to prevent animation jitter when pausing the rbs. */
+                if (_graphicalAnimators[0].transform == _graphicalObject)
+                {
+                    Transform graphicalHolder = new GameObject().transform;
+                    graphicalHolder.name = "GraphicalObjectHolder";
+                    graphicalHolder.SetParent(transform);
+                    //ref _graphicalInstantiatedOffsetPosition, ref _graphicalInstantiatedOffsetRotation);
+                    graphicalHolder.localPosition = _graphicalInstantiatedOffsetPosition;
+                    graphicalHolder.localRotation = _graphicalInstantiatedOffsetRotation;
+                    graphicalHolder.localScale = _graphicalObject.localScale;
+                    _graphicalObject.SetParent(graphicalHolder);
+                    _graphicalObject.localPosition = Vector3.zero;
+                    _graphicalObject.localRotation = Quaternion.identity;
+                    _graphicalObject.localScale = Vector3.one;
+                    SetGraphicalObject(graphicalHolder);
+                }
+            }
+        }
+
+        /// <summary>
         /// Called after a tick occurs; physics would have simulated if using PhysicsMode.TimeManager.
         /// </summary>
         private void Rigidbodies_TimeManager_OnPostTick()
@@ -63,6 +116,7 @@ namespace FishNet.Component.Prediction
             if (!IsRigidbodyPrediction)
                 return;
 
+            _rigidbodyPauser.Unpause();
             bool is2D = (_predictionType == PredictionType.Rigidbody2D);
 
             if (CanPredict())
@@ -99,7 +153,7 @@ namespace FishNet.Component.Prediction
             if (lastStateTick != lastNbTick || lastStateTick == _lastResetTick)
             {
                 _spectatorSmoother?.SetLocalReconcileTick(-1);
-                _rigidbodyPauser.ChangeKinematic(true);
+                _rigidbodyPauser.Pause();
             }
             //If possible to perhaps reset.
             else
@@ -114,11 +168,11 @@ namespace FishNet.Component.Prediction
         }
 
         /// <summary>
-        /// Called after performing a reconcile on a NetworkBehaviour.
+        /// Called before performing a reconcile on NetworkBehaviour.
         /// </summary>
         private void Rigidbodies_TimeManager_OnPostReconcile(NetworkBehaviour nb)
         {
-            _rigidbodyPauser.ChangeKinematic(false);
+            _rigidbodyPauser.Unpause();
         }
 
         /// <summary>

@@ -1,5 +1,4 @@
-﻿using System;
-using Coimbra;
+﻿using Coimbra;
 using UnityEngine;
 
 namespace SS3D.Core.Settings

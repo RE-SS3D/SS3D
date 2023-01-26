@@ -21,7 +21,7 @@ namespace SS3D.Systems.Rounds
     /// </summary>
     public class ReadyPlayersSystem : NetworkSystem
     {
-        [SyncObject] private readonly SyncList<string> _readyPlayers = new();
+        [SyncObject] private readonly SyncList<Soul> _readyPlayers = new();
 
         public override void OnStartServer()
         {
@@ -29,8 +29,8 @@ namespace SS3D.Systems.Rounds
 
             ServerManager.RegisterBroadcast<ChangePlayerReadyMessage>(HandleChangePlayerReady);
 
-            OnlineSoulsChanged.AddListener(HandleUserLeftServer);
-            RoundStateUpdated.AddListener(HandleRoundStateUpdated);
+            AddHandle(OnlineSoulsChanged.AddListener(HandleUserLeftServer));
+            AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
         }
 
         public override void OnStartClient()
@@ -41,11 +41,8 @@ namespace SS3D.Systems.Rounds
             SyncReadyPlayers();
         }
 
-        [Server]
-        private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
+        private void InvokeSpawnReadyPlayers(RoundState roundState)
         {
-            RoundState roundState = e.RoundState;
-
             if (roundState != RoundState.Ongoing)
             {
                 return;
@@ -58,32 +55,22 @@ namespace SS3D.Systems.Rounds
         }
 
         [Server]
-        private void HandleUserLeftServer(ref EventContext context, in OnlineSoulsChanged e)
+        private void RemoveReadyPlayer(Soul soul, ChangeType changeType)
         {
-            if (e.ChangeType == ChangeType.Addition)
+            if (changeType == ChangeType.Addition)
             {
                 return;
             }
-
-            Soul soul = e.Changed;
 
             if (soul == null)
             {
                 return;
             }
 
-            if (_readyPlayers.SingleOrDefault(match => match == soul.Ckey) != null)
+            if (_readyPlayers.SingleOrDefault(match => match == soul) != null)
             {
-                _readyPlayers.Remove(soul.Ckey);
+                _readyPlayers.Remove(soul);
             }
-        }
-
-        [Server]
-        private void HandleChangePlayerReady(NetworkConnection sender, ChangePlayerReadyMessage m)
-        {
-            Soul soul = SystemLocator.Get<PlayerControlSystem>().GetSoul(m.Ckey);
-
-            SetPlayerReady(soul, m.Ready);
         }
 
         /// <summary>
@@ -94,26 +81,49 @@ namespace SS3D.Systems.Rounds
         [Server]
         private void SetPlayerReady(Soul soul, bool ready)
         {
-            bool soulIsReady = _readyPlayers.Contains(soul.Ckey);
+            bool soulIsReady = _readyPlayers.Contains(soul);
 
             switch (ready)
             {
                 case true when !soulIsReady:
                     Punpun.Say(this, $"player is {soul.Ckey} is ready", Logs.ServerOnly);
-                    _readyPlayers.Add(soul.Ckey);
+                    _readyPlayers.Add(soul);
                     break;
                 case false when soulIsReady:
                     Punpun.Say(this, $"player is {soul.Ckey} is not ready", Logs.ServerOnly);
-                    _readyPlayers.Remove(soul.Ckey);
+                    _readyPlayers.Remove(soul);
                     break;
             }
         }
 
-        private void HandleReadyPlayersChanged(SyncListOperation op, int index, string s, string newItem1, bool asServer)
+        [Server]
+        private void HandleChangePlayerReady(NetworkConnection sender, ChangePlayerReadyMessage m)
+        {
+            Soul soul = SystemLocator.Get<PlayerSystem>().GetSoul(m.Ckey);
+
+            SetPlayerReady(soul, m.Ready);
+        }
+
+        private void HandleReadyPlayersChanged(SyncListOperation op, int index, Soul oldItem, Soul newItem, bool asServer)
         {
             SyncReadyPlayers();
         }
 
+        [Server]
+        private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
+        {
+            InvokeSpawnReadyPlayers(e.RoundState);
+        }
+
+        [Server]
+        private void HandleUserLeftServer(ref EventContext context, in OnlineSoulsChanged e)
+        {
+            RemoveReadyPlayer(e.Changed, e.ChangeType);
+        }
+
+        /// <summary>
+        /// Called by manually when the ready players are changed.
+        /// </summary>
         private void SyncReadyPlayers()
         {
             ReadyPlayersChanged readyPlayersChanged = new(_readyPlayers.ToList());

@@ -19,7 +19,7 @@ public class ContainerDescriptorEditor : Editor
     private bool showIcon = false;
 
     // References to container related scripts to allow for automating set up and destroying.
-    private AttachedContainer attachedContainer; 
+    private AttachedContainer attachedContainer;
     private ContainerInteractive containerInteractive;
     private ContainerItemDisplay containerItemDisplay;
 
@@ -104,7 +104,7 @@ public class ContainerDescriptorEditor : Editor
             bool onlyStoreWhenOpen = EditorGUILayout.Toggle(
                 new GUIContent("Only store when open", "Set if objects can be stored in the container without using the open interaction first"),
                 containerDescriptor.OnlyStoreWhenOpen);
-            HandleOnlyStoreWhenOpen(onlyStoreWhenOpen);       
+            HandleOnlyStoreWhenOpen(onlyStoreWhenOpen);
         }
 
         if(containerDescriptor.HasUi)
@@ -122,7 +122,7 @@ public class ContainerDescriptorEditor : Editor
                         containerDescriptor.OpenWhenContainerViewed);
                     HandleOpenWhenContainerViewed(openWhenContainerViewed);
                 }
-            }      
+            }
         }
 
         if (containerDescriptor.HasUi)
@@ -182,6 +182,11 @@ public class ContainerDescriptorEditor : Editor
             containerDescriptor.StartFilter, typeof(Filter), true);
         HandleStartFilter(startFilter);
 
+        ContainerType containerType = (ContainerType) EditorGUILayout.EnumFlagsField(
+    new GUIContent("Container type", "Container type mostly allow to discriminate between diffent containers on a single prefab."),
+     containerDescriptor.Type);
+        HandleContainerType(containerType);
+
         ShowIcons();
         serializedObject.ApplyModifiedProperties();
     }
@@ -238,7 +243,7 @@ public class ContainerDescriptorEditor : Editor
         {
             AddContainer();
             AddAttached();
-            
+
             HandleIsInteractive(true);
             //AddSync();
             SerializedProperty sp = serializedObject.FindProperty("Initialized");
@@ -304,6 +309,13 @@ public class ContainerDescriptorEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
+    private void HandleContainerType(ContainerType containerType)
+    {
+        SerializedProperty sp = serializedObject.FindProperty("Type");
+        sp.enumValueFlag = (int) containerType;
+        serializedObject.ApplyModifiedProperties();
+    }
+
     private void HandleStartFilter(Filter startFilter)
     {
         SerializedProperty sp = serializedObject.FindProperty("StartFilter");
@@ -331,7 +343,7 @@ public class ContainerDescriptorEditor : Editor
     }
 
     private void HandleMaxDistance(float maxDistance)
-    {      
+    {
         SerializedProperty sp = serializedObject.FindProperty("MaxDistance");
         sp.floatValue = maxDistance;
         serializedObject.ApplyModifiedProperties();
@@ -352,7 +364,7 @@ public class ContainerDescriptorEditor : Editor
     }
 
     private void HandleCustomInteraction(bool hasCustomInteraction)
-    { 
+    {
         SerializedProperty sp = serializedObject.FindProperty("HasCustomInteraction");
         sp.boolValue = hasCustomInteraction;
         serializedObject.ApplyModifiedProperties();
@@ -366,7 +378,7 @@ public class ContainerDescriptorEditor : Editor
     }
     private void HandleIsOpenable(bool isOpenable)
     {
-        
+
         SerializedProperty sp = serializedObject.FindProperty("IsOpenable");
         sp.boolValue = isOpenable;
         serializedObject.ApplyModifiedProperties();
@@ -375,7 +387,7 @@ public class ContainerDescriptorEditor : Editor
         if (isOpenable)
         {
             HandleIsInteractive(true);
-        }    
+        }
     }
 
     private void HandleOnlyStoreWhenOpen(bool onlyStoreWhenOpen)
@@ -457,4 +469,4 @@ public class ContainerDescriptorEditor : Editor
 
 
 
-	
+

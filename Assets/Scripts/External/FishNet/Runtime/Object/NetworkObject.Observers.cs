@@ -16,7 +16,7 @@ namespace FishNet.Object
         /// </summary>
         public event Action<NetworkObject> OnObserversActive;
         /// <summary>
-        /// NetworkObserver on this object. May be null if not using observers.
+        /// NetworkObserver on this object.
         /// </summary>
         [HideInInspector]
         public NetworkObserver NetworkObserver = null;
@@ -154,8 +154,7 @@ namespace FishNet.Object
             //If not a valid connection.
             if (!connection.IsValid)
             {
-                if (NetworkManager.CanLog(LoggingType.Warning))
-                    Debug.LogWarning($"An invalid connection was used when rebuilding observers.");
+                NetworkManager.LogWarning($"An invalid connection was used when rebuilding observers.");
                 return ObserverStateChange.Unchanged;
             }
             //Valid not not active.

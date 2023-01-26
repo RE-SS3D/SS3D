@@ -1,7 +1,7 @@
-using FishNet;
+using Coimbra;
 using FishNet.Object;
 using SS3D.Core.Settings;
-using SS3D.Core.Utils;
+using SS3D.Logging;
 using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
 
@@ -15,11 +15,11 @@ namespace SS3D.Networking
         public override void OnStartClient()
         {
             base.OnStartClient();
-            
+
             Setup();
         }
 
-        [Client]
+        [Client(RequireOwnership = true)]
         private void Setup()
         {
             string ckey = LocalPlayer.Ckey;
@@ -30,10 +30,11 @@ namespace SS3D.Networking
                 return;
             }
 
-            UserAuthorizationMessage userAuthorizationMessage = new(ckey);
-            InstanceFinder.ClientManager.Broadcast(userAuthorizationMessage);
+            Punpun.Say(this, $"Attempting authentication for user {ckey}", Logs.ClientOnly);
 
-            CmdRemoveConnectionAfterLogin();
+            UserAuthorizationMessage userAuthorizationMessage = new(ckey);
+            ClientManager.Broadcast(userAuthorizationMessage);
+
             CmdDestroyObjectAfterLogin();
         }
 
@@ -41,12 +42,6 @@ namespace SS3D.Networking
         private void CmdDestroyObjectAfterLogin()
         {
             ServerManager.Despawn(gameObject);
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        private void CmdRemoveConnectionAfterLogin()
-        {
-            NetworkObject.RemoveOwnership();
         }
     }
 }
