@@ -23,7 +23,17 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
         }
     }
 
-    public bool IsConnectedToCentralNervousSystem { get; set; }
+    private bool _isconnectedToCentralNervousSystem;
+
+    public bool IsConnectedToCentralNervousSystem{
+        get { return _isconnectedToCentralNervousSystem; }
+        set
+        {
+            if(IsConnectedToCentralNervousSystem == value) return;
+            IsConnectedToCentralNervousSystem = value;
+            // add syncing stuff
+        } 
+    }
 
     public override BodyLayerType LayerType
     {
@@ -34,8 +44,9 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
     public NerveLayer(BodyPart bodyPart) : base(bodyPart)
     {
         ConnectedParentNerveSignalTransmitters = new List<INerveSignalTransmitter>();
-
         ConnectedChildNerveSignalTransmitters = new List<INerveSignalTransmitter>();
+
+        IsConnectedToCentralNervousSystem = false;
     }
 
     protected override void SetSuceptibilities()
@@ -101,6 +112,10 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
         if (isChild)
         {
             ConnectedChildNerveSignalTransmitters.Add(transmitter);
+            if (transmitter.IsConnectedToCentralNervousSystem)
+            {
+                IsConnectedToCentralNervousSystem = true;
+            }
         }
         else
         {
