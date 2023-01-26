@@ -84,6 +84,7 @@ public abstract class BodyLayer
         }
 
         OnDamageInflicted(damage);
+        // TODO : Apply some sync stuff in bodybehaviour.
     }
 
     public virtual void HealDamage(DamageTypeQuantity damage)
@@ -154,11 +155,17 @@ public abstract class BodyLayer
         DamageReceivedEvent.Invoke(this, args);
     }
 
+    /// <summary>
+    /// Set all resistances on this body layer. By default, there are none and resistance is 0.
+    /// </summary>
     protected virtual void SetResistances()
     {
         return;
     }
 
+    /// <summary>
+    /// Set all susceptibilities on this body layer. By default, susceptibility is 1.
+    /// </summary>
     protected virtual void SetSuceptibilities()
     {
         return;

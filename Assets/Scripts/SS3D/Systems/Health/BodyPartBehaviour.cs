@@ -15,9 +15,11 @@ public class BodyPartBehaviour : NetworkBehaviour
     private bool isHuman;
 
     [SerializeField]
+    [Tooltip("Add all parent body part directly connected to this one (e.g. head for the neck of humans)")]
     private List<BodyPartBehaviour> InitialConnectedParentBodyPartsBehaviour;
 
     [SerializeField]
+    [Tooltip("Add all child body part directly connected to this one (e.g. neck for the head of humans)")]
     private List<BodyPartBehaviour> InitialConnectedChildBodyPartsBehaviour;
 
     [SerializeField]
