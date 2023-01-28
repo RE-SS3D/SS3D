@@ -2,6 +2,7 @@ using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Health;
+using SS3D.Systems.InputHandling;
 using SS3D.Systems.Screens;
 using UnityEngine;
 
@@ -151,8 +152,8 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <returns></returns>
         private void ProcessPlayerInput()
         {
-            float x = Input.GetAxisRaw("Horizontal");
-            float y = Input.GetAxisRaw("Vertical");
+            float x = UserInput.GetAxisRaw("Horizontal");
+            float y = UserInput.GetAxisRaw("Vertical");
 
             float inputFilteredSpeed = _isRunning && _staminaController.CanContinueInteraction ? RunAnimatorValue : WalkAnimatorValue;
 
@@ -170,7 +171,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         private void ProcessToggleRun()
         {
-            if (Input.GetButtonDown("Toggle Run"))
+            if (UserInput.GetButtonDown("Toggle Run"))
             {
                 _isRunning = !_isRunning;
             }

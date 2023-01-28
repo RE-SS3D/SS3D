@@ -4,7 +4,7 @@ namespace SS3D.Systems.InputHandling
     {
         private static IInputService _inputService;
 
-        private static void SetInputService(IInputService inputService)
+        public static void SetInputService(IInputService inputService)
         {
             _inputService = inputService;
         }
