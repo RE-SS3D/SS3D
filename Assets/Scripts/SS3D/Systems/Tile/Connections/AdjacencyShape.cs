@@ -1,0 +1,37 @@
+﻿namespace SS3D.Systems.Tile.Connections
+{
+    public enum AdjacencyShape
+    {
+        //Simple
+        O,
+        U,
+        I,
+        L,
+        T,
+        X,
+        //Complex
+        LNone,
+        LSingle,
+        TNone,
+        TSingleLeft,
+        TSingleRight,
+        TDouble,
+        XNone,
+        XSingle,
+        XOpposite,
+        XSide,
+        XTriple,
+        XQuad,
+        //Offset
+        UNorth,
+        USouth,
+        LNorthEast,
+        LNorthWest,
+        LSouthEast,
+        LSouthWest,
+        TNorthEastWest,
+        TNorthSouthWest,
+        TNorthSouthEast,
+        TSouthWestEast,
+    }
+}

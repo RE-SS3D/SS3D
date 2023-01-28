@@ -54,7 +54,7 @@ namespace SS3D.Systems.Tile
 
         public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir)
         {
-            return _currentMap.PlaceTileObject(tileObjectSo, placePosition, dir);
+            return _currentMap.PlaceTileObject(tileObjectSo, placePosition, dir, false);
         }
 
         public void PlaceItemObject(ItemObjectSo itemObjectSo, Vector3 placePosition, Quaternion rotation)

@@ -1,5 +1,6 @@
 using FishNet;
 using FishNet.Object;
+using SS3D.Systems.Tile.Connections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -67,6 +68,7 @@ namespace SS3D.Systems.Tile
         private TileObjectSo _tileObjectSo;
         private Vector2Int _origin;
         private Direction _dir;
+        private IAdjacencyConnector _connector;
 
         /// <summary>
         /// Set up a new PlacedTileObject.
@@ -78,6 +80,7 @@ namespace SS3D.Systems.Tile
             _tileObjectSo = tileObjectSo;
             _origin = origin;
             _dir = dir;
+            _connector = GetComponent<IAdjacencyConnector>();
         }
 
         /// <summary>
@@ -115,6 +118,23 @@ namespace SS3D.Systems.Tile
         public string GetNameString()
         {
             return _tileObjectSo.nameString;
+        }
+
+        public bool HasAdjacencyConnector()
+        {
+            return _connector != null;
+        }
+
+        public void UpdateAdjacencies(PlacedTileObject[] neighbourObjects)
+        {
+            if (HasAdjacencyConnector())
+                _connector.UpdateAll(neighbourObjects);
+        }
+
+        public void UpdateSingleAdjacency(PlacedTileObject neighbourObject, Direction dir)
+        {
+            if (HasAdjacencyConnector())
+                _connector.UpdateSingle(dir, neighbourObject, false);
         }
     }
 }

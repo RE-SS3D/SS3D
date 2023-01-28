@@ -123,14 +123,14 @@ namespace SS3D.Systems.Tile
             return tileObjects;
         }
 
-        private TileObject[] GetNeighbourTileObjects(TileLayer layer, Vector3 worldPosition)
+        private PlacedTileObject[] GetNeighbourPlacedObjects(TileLayer layer, Vector3 worldPosition)
         {
-            TileObject[] adjacentObjects = new TileObject[8];
+            PlacedTileObject[] adjacentObjects = new PlacedTileObject[8];
 
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
                 Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
-                adjacentObjects[(int)direction] = GetTileObject(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2));
+                adjacentObjects[(int)direction] = GetTileObject(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2)).GetPlacedObject();
             }
 
             return adjacentObjects;
@@ -168,11 +168,11 @@ namespace SS3D.Systems.Tile
             return canBuild;
         }
 
-        public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir)
+        public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool skipBuildCheck)
         {
             bool canBuild = CanBuild(tileObjectSo, placePosition, dir);
 
-            if (canBuild)
+            if (canBuild || skipBuildCheck)
             {
                 TileChunk chunk = GetOrCreateChunk(placePosition);
                 Vector2Int origin = chunk.GetXY(placePosition);
@@ -186,6 +186,10 @@ namespace SS3D.Systems.Tile
 
                     chunk.GetTileObject(tileObjectSo.layer, gridPosition).SetPlacedObject(placedObject);
                 }
+
+                // Handle Adjacency connectors
+                var neighbourTiles = GetNeighbourPlacedObjects(tileObjectSo.layer, placePosition);
+                placedObject.UpdateAdjacencies(neighbourTiles);
             }
 
             return canBuild;
@@ -250,13 +254,11 @@ namespace SS3D.Systems.Tile
 
                 foreach (var savedTile in savedChunk.tileObjectSaveObjectArray)
                 {
-                    TileObject tile = chunk.GetTileObject(savedTile.layer, savedTile.x, savedTile.y);
                     TileObjectSo toBePlaced = tileSystem.GetTileAsset(savedTile.placedSaveObject.tileObjectSOName);
                     Vector3 placePosition = chunk.GetWorldPosition(savedTile.x, savedTile.y);
 
-                    PlacedTileObject placedObject = PlacedTileObject.Create(placePosition, savedTile.placedSaveObject.origin, savedTile.placedSaveObject.dir, toBePlaced);
-                    placedObject.transform.SetParent(chunk.transform);
-                    tile.SetPlacedObject(placedObject);
+                    // Skipping build check here to allow loading tile objects in a non-valid order
+                    PlaceTileObject(toBePlaced, placePosition, savedTile.placedSaveObject.dir, true);
                 }
             }
         }

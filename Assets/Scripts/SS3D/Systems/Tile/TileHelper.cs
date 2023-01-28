@@ -78,5 +78,41 @@ namespace SS3D.Systems.Tile
         {
             return new Vector3(Mathf.Round(worldPosition.x), 0, Mathf.Round(worldPosition.z));
         }
+
+        public static List<Direction> CardinalDirections()
+        {
+            return new List<Direction> { Direction.North, Direction.East, Direction.South, Direction.West };
+        }
+
+        public static List<Direction> DiagonalDirections()
+        {
+            return new List<Direction> { Direction.NorthEast, Direction.SouthEast, Direction.SouthWest, Direction.NorthWest };
+        }
+
+        public static Direction GetDiagonalBetweenTwoCardinals(Direction cardinal1, Direction cardinal2)
+        {
+            List<Direction> givenCardinals = new List<Direction> { cardinal1, cardinal2 };
+            return givenCardinals.Contains(Direction.South) ?
+                givenCardinals.Contains(Direction.East) ? Direction.SouthEast : Direction.SouthWest :
+                givenCardinals.Contains(Direction.West) ? Direction.NorthWest : Direction.NorthEast;
+        }
+
+        public static Direction GetCardinalBetweenTwoDiagonals(Direction diagonal1, Direction diagonal2)
+        {
+            List<Direction> givenDiagonals = new List<Direction> { diagonal1, diagonal2 };
+            return givenDiagonals.Contains(Direction.SouthEast) ?
+                givenDiagonals.Contains(Direction.NorthEast) ? Direction.East : Direction.South :
+                givenDiagonals.Contains(Direction.SouthWest) ? Direction.West : Direction.North;
+        }
+
+        public static float AngleBetween(Direction from, Direction to)
+        {
+            return ((int)to - (int)from) * 45.0f;
+        }
+
+        public static Direction GetOpposite(Direction direction)
+        {
+            return (Direction)(((int)direction + 4) % 8);
+        }
     }
 }
