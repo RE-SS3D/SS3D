@@ -66,6 +66,8 @@ namespace SS3D.Systems.Tile
         private TileChunk CreateChunk(Vector2Int chunkKey, Vector3 origin)
         {
             TileChunk chunk = TileChunk.Create(chunkKey, origin);
+            chunk.transform.SetParent(transform);
+
             return chunk;
         }
 
@@ -81,9 +83,10 @@ namespace SS3D.Systems.Tile
             {
                 Vector2Int key = GetKey(worldPosition);
                 Vector3 origin = new Vector3 { x = key.x * TileChunk.ChunkSize, z = key.y * TileChunk.ChunkSize };
-                _ = CreateChunk(key, origin);
+                chunk = CreateChunk(key, origin);
                 _chunks[key] = chunk;
             }
+
             return chunk;
         }
 
@@ -171,8 +174,9 @@ namespace SS3D.Systems.Tile
 
             if (canBuild)
             {
-                PlacedTileObject placedObject = PlacedTileObject.Create(placePosition, dir, tileObjectSo);
                 TileChunk chunk = GetOrCreateChunk(placePosition);
+                Vector2Int origin = chunk.GetXY(placePosition);
+                PlacedTileObject placedObject = PlacedTileObject.Create(placePosition, origin, dir, tileObjectSo);
                 placedObject.transform.SetParent(chunk.transform);
 
                 foreach (Vector2Int gridOffset in tileObjectSo.GetGridOffsetList(dir))
@@ -199,6 +203,11 @@ namespace SS3D.Systems.Tile
             {
                 removeObject.ClearPlacedObject();
             }
+        }
+
+        public void PlaceItemObject(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemObjectSo)
+        {
+            PlacedItemObject placedItem = PlacedItemObject.Create(worldPosition, rotation, itemObjectSo);
         }
 
         private void Clear()
@@ -245,7 +254,8 @@ namespace SS3D.Systems.Tile
                     TileObjectSo toBePlaced = tileSystem.GetTileAsset(savedTile.placedSaveObject.tileObjectSOName);
                     Vector3 placePosition = chunk.GetWorldPosition(savedTile.x, savedTile.y);
 
-                    PlacedTileObject placedObject = PlacedTileObject.Create(placePosition, savedTile.placedSaveObject.dir, toBePlaced);
+                    PlacedTileObject placedObject = PlacedTileObject.Create(placePosition, savedTile.placedSaveObject.origin, savedTile.placedSaveObject.dir, toBePlaced);
+                    placedObject.transform.SetParent(chunk.transform);
                     tile.SetPlacedObject(placedObject);
                 }
             }

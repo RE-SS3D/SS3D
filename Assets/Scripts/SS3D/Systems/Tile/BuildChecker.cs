@@ -17,7 +17,8 @@ namespace SS3D.Systems.Tile
             canBuild &= tileObjects[(int)placedLayer].IsEmpty();
 
             // Cannot build anything unless a plenum is placed
-            canBuild &= placedLayer != TileLayer.Plenum && CanBuildOnPlenum(tileObjects[(int)TileLayer.Plenum], tileObjectSo);
+            if (placedLayer != TileLayer.Plenum)
+                canBuild &= CanBuildOnPlenum(tileObjects[(int)TileLayer.Plenum], tileObjectSo);
 
 
             switch (placedLayer)

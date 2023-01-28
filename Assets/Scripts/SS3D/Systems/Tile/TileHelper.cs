@@ -73,5 +73,10 @@ namespace SS3D.Systems.Tile
                 (direction > Direction.East && direction < Direction.West) ? -1 : (direction == Direction.East || direction == Direction.West) ? 0 : 1
             );
         }
+
+        public static Vector3 GetClosestPosition(Vector3 worldPosition)
+        {
+            return new Vector3(Mathf.Round(worldPosition.x), 0, Mathf.Round(worldPosition.z));
+        }
     }
 }

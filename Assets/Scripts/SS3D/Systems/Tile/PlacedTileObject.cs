@@ -16,7 +16,7 @@ namespace SS3D.Systems.Tile
         /// <param name="dir"></param>
         /// <param name="tileObjectSo"></param>
         /// <returns></returns>
-        public static PlacedTileObject Create(Vector3 worldPosition, Direction dir, TileObjectSo tileObjectSo)
+        public static PlacedTileObject Create(Vector3 worldPosition, Vector2Int origin, Direction dir, TileObjectSo tileObjectSo)
         {
             GameObject placedGameObject = Instantiate(tileObjectSo.prefab);
             placedGameObject.transform.SetPositionAndRotation(worldPosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0));
@@ -27,7 +27,7 @@ namespace SS3D.Systems.Tile
                 placedObject = placedGameObject.AddComponent<PlacedTileObject>();
             }
 
-            placedObject.Setup(tileObjectSo, dir);
+            placedObject.Setup(tileObjectSo, origin, dir);
 
             if (InstanceFinder.ServerManager != null && placedObject.GetComponent<NetworkObject>() != null)
             {
@@ -46,6 +46,7 @@ namespace SS3D.Systems.Tile
         public class PlacedSaveObject
         {
             public string tileObjectSOName;
+            public Vector2Int origin;
             public Direction dir;
         }
 
@@ -58,11 +59,13 @@ namespace SS3D.Systems.Tile
             return new PlacedSaveObject
             {
                 tileObjectSOName = _tileObjectSo.nameString,
+                origin = _origin,
                 dir = _dir,
             };
         }
 
         private TileObjectSo _tileObjectSo;
+        private Vector2Int _origin;
         private Direction _dir;
 
         /// <summary>
@@ -70,9 +73,10 @@ namespace SS3D.Systems.Tile
         /// </summary>
         /// <param name="tileObjectSo"></param>
         /// <param name="dir"></param>
-        private void Setup(TileObjectSo tileObjectSo, Direction dir)
+        private void Setup(TileObjectSo tileObjectSo, Vector2Int origin, Direction dir)
         {
             _tileObjectSo = tileObjectSo;
+            _origin = origin;
             _dir = dir;
         }
 
@@ -91,6 +95,11 @@ namespace SS3D.Systems.Tile
         public List<Vector2Int> GetGridOffsetList()
         {
             return _tileObjectSo.GetGridOffsetList(_dir);
+        }
+
+        public Vector2Int GetOrigin()
+        {
+            return _origin;
         }
 
         public TileObjectGenericType GetGenericType()
