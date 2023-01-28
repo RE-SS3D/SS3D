@@ -27,7 +27,7 @@ public class BodyPartBehaviour : NetworkBehaviour
     [SerializeField]
     private List<BodyPartBehaviour> InitialConnectedChildNerveSignalTransmittersBehaviour;
 
-    private BodyPart BodyPart;
+    public BodyPart BodyPart;
 
     public void Awake()
     {
@@ -112,6 +112,19 @@ public class BodyPartBehaviour : NetworkBehaviour
     {
         transmitter.AddNerveSignalTransmitter(transmitterToAdd, isChild);
     }
+
+    [ServerRpc]
+    public void ServerRpcAddNerveLayer(NerveLayer nerveLayer)
+    {
+        ObserversRpcAddNerveLayer(nerveLayer);
+    }
+
+    [ObserversRpc]
+    public void ObserversRpcAddNerveLayer(NerveLayer nerveLayer)
+    {
+       BodyPart.AddBodyLayer(nerveLayer);
+    }
+
 
     public string DescribeBodyPart()
     {
