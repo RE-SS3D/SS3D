@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using SS3D.Core;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Entities.Humanoid;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
 using UnityEngine.Device;
@@ -55,6 +56,21 @@ namespace SS3D.Systems.IngameConsoleSystem
             }
             return ret;
         }
+
+        [ShortDescription("Show all entity online")]
+        [LongDescription("Show all entity online")]
+        public static string EntityList()
+        {
+            var entities = SystemLocator.Get<EntitySystem>().SpawnedPlayers;
+            string ret = "";
+            foreach (Entity i in entities)
+            {
+                ret += i.Ckey + "\t";
+            }
+            return ret;
+        }
+
+
         [ShortDescription("Show all souls")]
         [LongDescription("Show all souls")]
         public static string SoulList()
@@ -84,5 +100,67 @@ namespace SS3D.Systems.IngameConsoleSystem
                 return "This role doesn't exist";
             }
         }
+
+        [ShortDescription("inspect body part")]
+        [LongDescription("inspect body part")]
+        public static string LogBodyPart(string ckey, string bodyPartName)
+        {
+            Soul player = SystemLocator.Get<PlayerSystem>().GetSoul(ckey);
+            if (player == null)
+                return "This player doesn't exist";
+
+            var entity = SystemLocator.Get<EntitySystem>().GetSpawnedEntity(player);
+            if (entity == null)
+                return "This player doesn't exist";
+
+            var bodyParts = entity.Root.gameObject.GetComponentsInChildren<BodyPartBehaviour>();
+            var bodyPartsWithName = bodyParts.Where(x => x.gameObject.name == bodyPartName).ToList();
+
+            string description = "";
+
+            if (bodyPartsWithName.Count == 0)
+            {
+                return "No body parts with this name on player " + ckey;
+            }
+
+            foreach (var bodyPart in bodyPartsWithName)
+            {
+                description = bodyPart.DescribeBodyPart();
+            }
+
+            return description;
+        }
+
+        [ShortDescription("inspect body part")]
+        [LongDescription("inspect body part")]
+        public static string AddNerveLayer(string ckey, string bodyPartName)
+        {
+            Soul player = SystemLocator.Get<PlayerSystem>().GetSoul(ckey);
+            if (player == null)
+                return "This player doesn't exist";
+
+            var entity = SystemLocator.Get<EntitySystem>().GetSpawnedEntity(player);
+            if (entity == null)
+                return "This player doesn't exist";
+
+            var bodyParts = entity.Root.gameObject.GetComponentsInChildren<BodyPartBehaviour>();
+            var bodyPartsWithName = bodyParts.Where(x => x.gameObject.name == bodyPartName).ToList();
+
+            string description = "";
+
+            if (bodyPartsWithName.Count == 0)
+            {
+                return "No body parts with this name on player " + ckey;
+            }
+
+            foreach (var bodyPart in bodyPartsWithName)
+            {
+                bodyPart.AddBodyLayer(new NerveLayer(bodyPart.BodyPart));
+            }
+
+            return description;
+        }
+
+
     }
 }
