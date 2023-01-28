@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using FishNet.Object;
 
 /// <summary>
 /// Interface to allow for nerve signals to be transmitted not only by nerve body layers,
@@ -22,6 +22,13 @@ public interface INerveSignalTransmitter
     public List<INerveSignalTransmitter> ChildConnectedSignalTransmitters();
 
     public NerveSignalTransmitterEnum TransmitterId { get; set; }
+
+    /// <summary>
+    /// The network object related to this nerve signal transmitter
+    /// </summary>
+    public NetworkObject getNetworkedObject { get; set; }
+
+    public GameObject getGameObject { get; set; }
 
     /// <summary>
     /// Is there a continous chain of nerve signal transmitter between this and the central nervous system ?

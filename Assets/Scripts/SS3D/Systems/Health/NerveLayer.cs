@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using FishNet.Object;
 
 public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
 {
@@ -20,6 +21,30 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
         set
         {
             TransmitterId = value;
+        }
+    }
+
+    public NetworkObject getNetworkedObject
+    {
+        get
+        {
+            return BodyPart.BodyPartBehaviour.NetworkObject;
+        }
+        set
+        {
+
+        }
+    }
+
+    public GameObject getGameObject
+    {
+        get
+        {
+            return BodyPart.BodyPartBehaviour.gameObject;
+        }
+        set
+        {
+
         }
     }
 
@@ -126,7 +151,8 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
 
         if(BodyPart.BodyPartBehaviour != null)
         {
-            BodyPart.BodyPartBehaviour.ServerRpcAddNerveSignalTransmitter(this, transmitter, isChild);
+            if(BodyPart.BodyPartBehaviour.IsOwner)
+                BodyPart.BodyPartBehaviour.ServerRpcAddNerveSignalTransmitter(this, transmitter, isChild);
         }
     }
 
