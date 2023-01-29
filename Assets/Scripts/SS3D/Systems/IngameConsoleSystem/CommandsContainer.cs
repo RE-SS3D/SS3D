@@ -161,6 +161,36 @@ namespace SS3D.Systems.IngameConsoleSystem
             return description;
         }
 
+        [ShortDescription("inspect body part")]
+        [LongDescription("inspect body part")]
+        public static string AddConnectedBodyPart(string ckey, string bodyPartName)
+        {
+            Soul player = SystemLocator.Get<PlayerSystem>().GetSoul(ckey);
+            if (player == null)
+                return "This player doesn't exist";
+
+            var entity = SystemLocator.Get<EntitySystem>().GetSpawnedEntity(player);
+            if (entity == null)
+                return "This player doesn't exist";
+
+            var bodyParts = entity.Root.gameObject.GetComponentsInChildren<BodyPartBehaviour>();
+            var bodyPartsWithName = bodyParts.Where(x => x.gameObject.name == bodyPartName).ToList();
+
+            string description = "";
+
+            if (bodyPartsWithName.Count == 0)
+            {
+                return "No body parts with this name on player " + ckey;
+            }
+
+            foreach (var bodyPart in bodyPartsWithName)
+            {
+                bodyPart.AddBodyLayer(new NerveLayer(bodyPart.BodyPart));
+            }
+
+            return description;
+        }
+
 
     }
 }
