@@ -1,7 +1,7 @@
 using FishNet.Serializing;
 using System;
 
-public static class INerveSignalTransmitterCustomSerializer
+public static class INerveSignalTransmitterSerializer
 {
 
     public static void WriteINerveSignalTransmitter(this Writer writer, INerveSignalTransmitter value)
