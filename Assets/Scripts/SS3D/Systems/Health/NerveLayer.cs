@@ -15,9 +15,9 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
     [SerializeField]
     protected List<INerveSignalTransmitter> ConnectedChildNerveSignalTransmitters;
 
-    public NerveSignalTransmitterEnum TransmitterId
+    public NerveSignalTransmitterType TransmitterId
     {
-        get => NerveSignalTransmitterEnum.Nerve;
+        get => NerveSignalTransmitterType.Nerve;
         set
         {
             TransmitterId = value;
@@ -29,6 +29,19 @@ public class NerveLayer : BiologicalLayer, INerveSignalTransmitter
         get
         {
             return BodyPart.BodyPartBehaviour.NetworkObject;
+        }
+        set
+        {
+
+        }
+    }
+
+
+    public NetworkBehaviour GetNetworkBehaviour
+    {
+        get
+        {
+            return BodyPart.BodyPartBehaviour;
         }
         set
         {
