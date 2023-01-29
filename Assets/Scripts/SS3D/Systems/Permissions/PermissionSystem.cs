@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
 using SS3D.Systems.Permissions.Events;
+using SS3D.Systems.PlayerControl;
 using UnityEngine;
 using File = System.IO.File;
 using Path = System.IO.Path;
@@ -53,6 +56,25 @@ namespace SS3D.Systems.Permissions
             base.OnStartServer();
 
             LoadPermissions();
+        }
+
+        [Server]
+        public bool HasAdminPermission(NetworkConnection conn)
+        {
+            const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;
+
+            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
+
+            // Gets the soul that matches the connection, uses the ckey as the user id
+            string userCkey = playerSystem.GetCkey(conn);
+            if (TryGetUserRole(userCkey, out ServerRoleTypes role) && role != requiredRole)
+            {
+                string message = $"User {userCkey} doesn't have {requiredRole} permission";
+                Punpun.Say(this, message, Logs.ServerOnly);
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
