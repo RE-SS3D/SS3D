@@ -4,25 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+/// <summary>
+/// Custom serializer for the nerve layer class.
+/// </summary>
 public static class NerveLayerSerializer 
 {
     public static void WriteNerveLayer(this Writer writer, NerveLayer nerve)
     {
         // write INerveSignalTransmitter simple properties.
         writer.WriteBoolean(nerve.IsConnectedToCentralNervousSystem);
-        writer.WriteGameObject(nerve.getGameObject);
-
-        writer.WriteInt32(nerve.ParentConnectedSignalTransmitters().Count);
-        foreach (var transmitter in nerve.ParentConnectedSignalTransmitters())
-        {
-            writer.WriteGameObject(transmitter.getGameObject);
-        }
-
-        writer.WriteInt32(nerve.ChildConnectedSignalTransmitters().Count);
-        foreach (var transmitter in nerve.ChildConnectedSignalTransmitters())
-        {
-            writer.WriteGameObject(transmitter.getGameObject);
-        }
+        writer.WriteNetworkBehaviour(nerve.GetNetworkBehaviour);
+        ConnectionsWrite(writer, nerve);
     }
 
     public static NerveLayer ReadNerveLayer(this Reader reader)
@@ -35,6 +27,13 @@ public static class NerveLayerSerializer
         var bodyPart = bodyPartBehaviour.BodyPart;
         nerveLayer = new NerveLayer(bodyPart);
 
+        nerveLayer = ConnectionsRead(reader, nerveLayer);
+
+        return nerveLayer;
+    }
+
+    private static NerveLayer ConnectionsRead(this Reader reader, NerveLayer nerveLayer)
+    {
         var connectedParentsNumber = reader.ReadInt32();
         for (int i = 0; i < connectedParentsNumber; i++)
         {
@@ -53,4 +52,21 @@ public static class NerveLayerSerializer
 
         return nerveLayer;
     }
+
+    private static void ConnectionsWrite(this Writer writer, NerveLayer nerveLayer)
+    {
+        writer.WriteInt32(nerveLayer.ParentConnectedSignalTransmitters().Count);
+        foreach (var transmitter in nerveLayer.ParentConnectedSignalTransmitters())
+        {
+            writer.WriteGameObject(transmitter.getGameObject);
+        }
+
+        writer.WriteInt32(nerveLayer.ChildConnectedSignalTransmitters().Count);
+        foreach (var transmitter in nerveLayer.ChildConnectedSignalTransmitters())
+        {
+            writer.WriteGameObject(transmitter.getGameObject);
+        }
+    }
+
+
 }
