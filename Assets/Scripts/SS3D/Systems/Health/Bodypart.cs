@@ -12,9 +12,9 @@ public abstract class BodyPart
     /// <summary>
     /// The list of body parts this body part is directly connected to. 
     /// </summary>
-    public List<BodyPart> ChildConnectedBodyParts { get; protected set; }
+    private List<BodyPart> ChildConnectedBodyParts;
 
-    public List<BodyPart> ParentConnectedBodyParts { get; protected set; }
+    private List<BodyPart> ParentConnectedBodyParts;
 
     /// <summary>
     /// The list of body layers constituting this body part.
@@ -28,9 +28,17 @@ public abstract class BodyPart
     /// </summary>
     public BodyPart()
     {
-        BodyLayers= new List<BodyLayer>();
-        ChildConnectedBodyParts = new List<BodyPart>();
-        ParentConnectedBodyParts = new List<BodyPart>();
+
+        if(BodyPartBehaviour != null)
+        {
+            BodyLayers = new List<BodyLayer>();
+            ChildConnectedBodyParts = new List<BodyPart>();
+            ParentConnectedBodyParts = new List<BodyPart>();
+        }
+        else
+        {
+            
+        }
     }
 
     public BodyPart(BodyPartBehaviour bodyPartBehaviour) : this()
@@ -79,28 +87,6 @@ public abstract class BodyPart
         return false;
     }
 
-    /// <summary>
-    /// The body part is not destroyed, it's simply detached from the entity.
-    /// </summary>
-    public void DetachBodyPart()
-    {
-        //Spawn a detached body part from the entity, and destroy this one with all childs.
-        // Maybe better in body part controller.
-        throw new NotImplementedException();
-    }
-
-    /// <summary>
-    /// The body part took so much damages that it's simply destroyed.
-    /// Think complete crushing, burning to dust kind of stuff.
-    /// All child body parts are detached.
-    /// </summary>
-    /// <exception cref="NotImplementedException"></exception>
-    public void DestroyBodyPart()
-    {
-        // destroy this body part with all childs on the entity, detach all childs.
-        // Maybe better in body part controller.
-        throw new NotImplementedException();
-    }
 
     /// <summary>
     /// Check if this body part contains a given layer type.
@@ -125,10 +111,20 @@ public abstract class BodyPart
 
     public string Describe()
     {
-        String description = "";
+        var description = "";
         foreach(var layer in BodyLayers)
         {
-            description += "Layer " + layer.GetType().ToString();
+            description += "Layer " + layer.GetType().ToString() + "\n";
+        }
+        description += "Child connected body parts : \n";
+        foreach(var part in ChildConnectedBodyParts)
+        {
+            description += part.BodyPartBehaviour.gameObject.name + "\n";
+        }
+        description += "Parent connected body parts : \n";
+        foreach (var part in ParentConnectedBodyParts)
+        {
+            description += part.BodyPartBehaviour.gameObject.name + "\n";
         }
         return description;
     }
