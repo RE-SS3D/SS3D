@@ -1,11 +1,20 @@
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using System.Collections;
+using FishNet.Connection;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using System.Linq;
+using SS3D.Core;
+using SS3D.Logging;
+using SS3D.Systems.Permissions;
+using SS3D.Systems.PlayerControl;
 
+
+
+/// <summary>
+/// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
+/// There should always be a network object component everywhere this component is.
+/// </summary>
+[RequireComponent(typeof(NetworkObject))]
 public class BodyPartBehaviour : NetworkBehaviour
 {
 
@@ -27,6 +36,13 @@ public class BodyPartBehaviour : NetworkBehaviour
     [SerializeField]
     private List<BodyPartBehaviour> InitialConnectedChildNerveSignalTransmittersBehaviour;
 
+    [SyncObject]
+    private readonly SyncList<BodyPartBehaviour> ParentConnectedBodyPartsBehaviour;
+
+    [SyncObject]
+    private readonly SyncList<BodyPartBehaviour> ChildConnectedBodyPartsBehaviour;
+
+
     public BodyPart BodyPart;
 
     public void Awake()
@@ -37,18 +53,28 @@ public class BodyPartBehaviour : NetworkBehaviour
         }
     }
 
-    public void Start()
+    public override void OnStartServer()
     {
+        base.OnStartServer();
+
         foreach (var bodyPart in InitialConnectedParentBodyPartsBehaviour)
         {
-            BodyPart.AddConnectedBodyPart(bodyPart.BodyPart, false);
+            //ObserverRpcAddConnectedBodyPart(bodyPart.NetworkObject, false);
+            ParentConnectedBodyPartsBehaviour.Add(bodyPart);
         }
 
         foreach (var bodyPart in InitialConnectedChildBodyPartsBehaviour)
         {
-            BodyPart.AddConnectedBodyPart(bodyPart.BodyPart, true);
+            //ObserverRpcAddConnectedBodyPart(bodyPart.NetworkObject, true);
+            ChildConnectedBodyPartsBehaviour.Add(bodyPart);
         }
 
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        /*
         foreach (var connectedBodyPart in InitialConnectedParentNerveSignalTransmittersBehaviour)
         {
             var transmitterBodyLayer = BodyPart.GetBodyLayer<INerveSignalTransmitter>();
@@ -71,7 +97,8 @@ public class BodyPartBehaviour : NetworkBehaviour
                 ((INerveSignalTransmitter)transmitterBodyLayer).
                     AddNerveSignalTransmitter((INerveSignalTransmitter)connectedBodyLayer, true);
             }
-        }
+        }*/
+
     }
 
     [Server]
@@ -98,7 +125,26 @@ public class BodyPartBehaviour : NetworkBehaviour
         return BodyPart.ContainsLayer(layerType);
     }
 
+    
+    [ServerRpc]
+    public void ServerRpcAddConnectedBodyPart(NetworkConnection conn, NetworkObject bodyPart, bool isChild)
+    {
+        PermissionSystem permissionSystem = SystemLocator.Get<PermissionSystem>();
+        if (!permissionSystem.HasAdminPermission(conn))
+        {
+            return;
+        }
+        ObserverRpcAddConnectedBodyPart(bodyPart, isChild);
+    }
 
+    [ObserversRpc(RunLocally = true)]
+    public void ObserverRpcAddConnectedBodyPart(NetworkObject bodyPart, bool isChild)
+    {
+        BodyPart.AddConnectedBodyPart(bodyPart.GetComponent<BodyPartBehaviour>().BodyPart, isChild);
+    }
+
+
+    //TODO remove that shit before any merge
     [ServerRpc]
     public void ServerRpcAddNerveSignalTransmitter(INerveSignalTransmitter transmitter,
     INerveSignalTransmitter transmitterToAdd, bool isChild)
@@ -119,13 +165,37 @@ public class BodyPartBehaviour : NetworkBehaviour
         ObserversRpcAddNerveLayer(nerveLayer);
     }
 
-    [ObserversRpc]
+    [ObserversRpc(RunLocally = true)]
     public void ObserversRpcAddNerveLayer(NerveLayer nerveLayer)
     {
        BodyPart.AddBodyLayer(nerveLayer);
     }
 
+    /// <summary>
+    /// The body part is not destroyed, it's simply detached from the entity.
+    /// </summary>
+    public void DetachBodyPart()
+    {
+        //Spawn a detached body part from the entity, and destroy this one with all childs.
+        // Maybe better in body part controller.
+        //throw new NotImplementedException();
+    }
 
+    /// <summary>
+    /// The body part took so much damages that it's simply destroyed.
+    /// Think complete crushing, burning to dust kind of stuff.
+    /// All child body parts are detached.
+    /// </summary>
+    /// <exception cref="NotImplementedException"></exception>
+    public void DestroyBodyPart()
+    {
+        // destroy this body part with all childs on the entity, detach all childs.
+        // Maybe better in body part controller.
+        //throw new NotImplementedException();
+    }
+
+
+    [Server]
     public string DescribeBodyPart()
     {
         return BodyPart.Describe();
