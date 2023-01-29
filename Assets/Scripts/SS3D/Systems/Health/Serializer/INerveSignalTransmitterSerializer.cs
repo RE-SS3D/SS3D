@@ -7,7 +7,7 @@ public static class INerveSignalTransmitterSerializer
     public static void WriteINerveSignalTransmitter(this Writer writer, INerveSignalTransmitter value)
     {
         writer.WriteInt32((int)value.TransmitterId);
-        if(value.TransmitterId == NerveSignalTransmitterEnum.Nerve)
+        if(value.TransmitterId == NerveSignalTransmitterType.Nerve)
         {
             writer.WriteNerveLayer((NerveLayer)value);
         }
@@ -15,8 +15,8 @@ public static class INerveSignalTransmitterSerializer
 
     public static INerveSignalTransmitter ReadINerveSignalTransmitter(this Reader reader)
     {
-        var transmitterId = (NerveSignalTransmitterEnum)reader.ReadInt32();
-        if (transmitterId == NerveSignalTransmitterEnum.Nerve)
+        var transmitterId = (NerveSignalTransmitterType)reader.ReadInt32();
+        if (transmitterId == NerveSignalTransmitterType.Nerve)
         {
             return reader.ReadNerveLayer();
         }

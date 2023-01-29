@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum HealthState
+public enum HealthStateType
 {
     Minor,
     Moderate,

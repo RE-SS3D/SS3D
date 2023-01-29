@@ -21,7 +21,7 @@ public interface INerveSignalTransmitter
     /// </summary>
     public List<INerveSignalTransmitter> ChildConnectedSignalTransmitters();
 
-    public NerveSignalTransmitterEnum TransmitterId { get; set; }
+    public NerveSignalTransmitterType TransmitterId { get; set; }
 
     /// <summary>
     /// The network object related to this nerve signal transmitter
@@ -29,6 +29,8 @@ public interface INerveSignalTransmitter
     public NetworkObject getNetworkedObject { get; set; }
 
     public GameObject getGameObject { get; set; }
+
+    public NetworkBehaviour GetNetworkBehaviour { get; set; }
 
     /// <summary>
     /// Is there a continous chain of nerve signal transmitter between this and the central nervous system ?
