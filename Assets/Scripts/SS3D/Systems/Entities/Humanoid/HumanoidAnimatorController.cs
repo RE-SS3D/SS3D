@@ -23,12 +23,12 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void SubscribeToEvents()
         {
-            _movementController.OnSpeedChanged += UpdateMovement;
+            _movementController.SpeedChangeEvent += UpdateMovement;
         }
 
         private void UnsubscribeFromEvents()
         {
-            _movementController.OnSpeedChanged -= UpdateMovement;
+            _movementController.SpeedChangeEvent -= UpdateMovement;
         }
 
         private void UpdateMovement(float speed)

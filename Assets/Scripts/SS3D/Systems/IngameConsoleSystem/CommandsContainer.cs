@@ -192,5 +192,20 @@ namespace SS3D.Systems.IngameConsoleSystem
         }
 
 
+        [ShortDescription("Kill a player")]
+        [LongDescription("Kill player (user ckey)")]
+        public static string Kill(string ckey)
+        {
+            Soul PlayerToKill = SystemLocator.Get<PlayerSystem>().GetSoul(ckey);
+            if(PlayerToKill == null)
+                return "This player doesn't exist";
+
+            var entityToKill = SystemLocator.Get<EntitySystem>().GetSpawnedEntity(PlayerToKill);
+            if(entityToKill == null)
+                return "This player doesn't exist";
+
+            entityToKill.GetComponent<HealthController>().ClientKill();
+            return "Player killed";
+        }
     }
 }
