@@ -23,13 +23,10 @@ public abstract class BodyPart
 
     public BodyPartBehaviour BodyPartBehaviour { get; protected set; }
 
-    /// <summary>
-    /// Constructor to allow testing without mono/network behaviour script.
-    /// </summary>
-    public BodyPart()
-    {
 
-        if(BodyPartBehaviour != null)
+    public void Init()
+    {
+        if (BodyPartBehaviour == null)
         {
             BodyLayers = new List<BodyLayer>();
             ChildConnectedBodyParts = new List<BodyPart>();
@@ -37,13 +34,24 @@ public abstract class BodyPart
         }
         else
         {
-            
+            BodyLayers = new List<BodyLayer>();
+            ChildConnectedBodyParts = BodyPartBehaviour.GetChildConnectedBodyPartsList();
+            ParentConnectedBodyParts = BodyPartBehaviour.GetParentConnectedBodyPartsList();
         }
+    }
+
+    /// <summary>
+    /// Constructor to allow testing without mono/network behaviour script.
+    /// </summary>
+    public BodyPart()
+    {
+        Init();
     }
 
     public BodyPart(BodyPartBehaviour bodyPartBehaviour) : this()
     {
         BodyPartBehaviour = bodyPartBehaviour;
+        Init();
     }
 
     public virtual void AddBodyLayer(BodyLayer layer)

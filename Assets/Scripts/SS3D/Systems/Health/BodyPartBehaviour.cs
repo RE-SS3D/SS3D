@@ -7,15 +7,18 @@ using SS3D.Core;
 using SS3D.Logging;
 using SS3D.Systems.Permissions;
 using SS3D.Systems.PlayerControl;
-
-
+using Cysharp.Threading.Tasks;
+using UnityEditor;
+using SS3D.Interactions;
+using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Health;
 
 /// <summary>
 /// Class to handle all networking stuff related to a body part, there should be only one on a given game object.
 /// There should always be a network object component everywhere this component is.
 /// </summary>
 [RequireComponent(typeof(NetworkObject))]
-public class BodyPartBehaviour : NetworkBehaviour
+public class BodyPartBehaviour : InteractionTargetNetworkBehaviour
 {
 
 
@@ -37,10 +40,10 @@ public class BodyPartBehaviour : NetworkBehaviour
     private List<BodyPartBehaviour> InitialConnectedChildNerveSignalTransmittersBehaviour;
 
     [SyncObject]
-    private readonly SyncList<BodyPartBehaviour> ParentConnectedBodyPartsBehaviour;
+    private readonly SyncList<BodyPartBehaviour> ParentConnectedBodyPartsBehaviour = new SyncList<BodyPartBehaviour>();
 
     [SyncObject]
-    private readonly SyncList<BodyPartBehaviour> ChildConnectedBodyPartsBehaviour;
+    private readonly SyncList<BodyPartBehaviour> ChildConnectedBodyPartsBehaviour = new SyncList<BodyPartBehaviour>();
 
 
     public BodyPart BodyPart;
@@ -171,6 +174,27 @@ public class BodyPartBehaviour : NetworkBehaviour
        BodyPart.AddBodyLayer(nerveLayer);
     }
 
+
+    public List<BodyPart> GetChildConnectedBodyPartsList()
+    {
+        var bodyParts = new List<BodyPart>();
+        foreach(var part in ChildConnectedBodyPartsBehaviour)
+        {
+            bodyParts.Add(part.BodyPart);
+        }
+        return bodyParts;
+    }
+
+    public List<BodyPart> GetParentConnectedBodyPartsList()
+    {
+        var bodyParts = new List<BodyPart>();
+        foreach (var part in ParentConnectedBodyPartsBehaviour)
+        {
+            bodyParts.Add(part.BodyPart);
+        }
+        return bodyParts;
+    }
+
     /// <summary>
     /// The body part is not destroyed, it's simply detached from the entity.
     /// </summary>
@@ -179,6 +203,12 @@ public class BodyPartBehaviour : NetworkBehaviour
         //Spawn a detached body part from the entity, and destroy this one with all childs.
         // Maybe better in body part controller.
         //throw new NotImplementedException();
+
+        foreach(var part in ParentConnectedBodyPartsBehaviour)
+        {
+            part.DetachBodyPart();
+        }
+        Despawn();
     }
 
     /// <summary>
@@ -200,4 +230,11 @@ public class BodyPartBehaviour : NetworkBehaviour
     {
         return BodyPart.Describe();
     }
+
+    public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
+    {
+        return new IInteraction[] { new KillInteraction() };
+    }
+
+
 }
