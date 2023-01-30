@@ -46,6 +46,16 @@ namespace SS3D.Systems.Entities
         [SyncVar(OnChange = nameof(SyncHasSpawnedInitialPlayers))]
         private bool _hasSpawnedInitialPlayers;
 
+        public Entity GetSpawnedEntity(Soul soul)
+        {
+            var entity = _spawnedPlayers.Find(entity => entity.Mind.Soul == soul);
+            if (IsPlayerSpawned(soul))
+            {
+                return entity;
+            }
+            return null;
+        }
+
         /// <summary>
         /// Returns true if the player is controlling an entity.
         /// </summary>
@@ -54,18 +64,7 @@ namespace SS3D.Systems.Entities
         public bool IsPlayerSpawned(Soul soul)
         {
             Entity spawnedPlayer = _spawnedPlayers.Find(entity => entity.Mind.Soul == soul);
-
-            bool isPlayerSpawned;
-            if (spawnedPlayer == null || spawnedPlayer.Mind == Mind.Empty)
-            {
-                isPlayerSpawned = false;
-            }
-            else
-            {
-                isPlayerSpawned = true;
-            }
-
-            return isPlayerSpawned;
+            return spawnedPlayer != null && spawnedPlayer.Mind != Mind.Empty;
         }
 
         /// <summary>
