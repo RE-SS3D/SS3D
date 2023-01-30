@@ -5,6 +5,7 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Screens.Events;
+using SS3D.Systems.InputHandling;
 using UnityEngine;
 
 namespace SS3D.Systems.Screens
@@ -62,7 +63,7 @@ namespace SS3D.Systems.Screens
 
         private void ProcessInput()
         {
-            if (Input.GetKeyDown(KeyCode.Escape) && !_blockNone)
+            if (UserInput.GetButtonDown("Cancel") && !_blockNone)
             {
                 _menuOpen = !_menuOpen;
 

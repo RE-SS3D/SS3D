@@ -9,6 +9,11 @@ namespace SS3D.Systems.InputHandling
             _inputService = inputService;
         }
 
+        public static IInputService GetInputService()
+        {
+            return _inputService;
+        }
+
         public static bool GetButtonUp(string buttonName)
         {
             CreateServiceIfNeeded();
