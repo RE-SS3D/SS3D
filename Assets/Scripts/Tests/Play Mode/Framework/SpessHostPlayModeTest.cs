@@ -29,16 +29,14 @@ namespace SS3D.Tests
 
         protected Process cmdLineProcess;
 
-
-        protected bool lobbySceneLoaded = false;
-
         protected ScriptedInput input;
         protected HumanoidController controller;
 
         [OneTimeSetUp]
         public virtual void OneTimeSetUp()
         {
-            // Set to run as client
+
+            // Set to run as host
             SetApplicationSettings(NetworkType.Host);
 
             // Load the startup scene (which will subsequently load the lobby once connected)

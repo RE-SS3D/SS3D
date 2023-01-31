@@ -14,16 +14,25 @@ using Coimbra;
 using System.Diagnostics;
 using FishNet.Managing;
 using FishNet;
+using SS3D.Systems.InputHandling;
+using SS3D.Systems.Entities.Humanoid;
+using System.Text;
 
 namespace SS3D.Tests
 {
-    public class ClientLateJoinActions : SpessClientPlayModeTest
+    public class HostGameActions : SpessHostPlayModeTest
     {
+        public override void OneTimeSetUp()
+        {
+            base.OneTimeSetUp();
+
+        }
+
         [UnitySetUp]
         public override IEnumerator UnitySetUp()
         {
             yield return base.UnitySetUp();
-            yield return TestHelpers.LateJoinRound();
+            yield return TestHelpers.StartAndEnterRound();
             yield return GetController();
         }
 
@@ -38,6 +47,12 @@ namespace SS3D.Tests
         public IEnumerator PlayerRemainsAboveStationLevelAfterSpawn()
         {
             yield return PlaymodeTestRepository.PlayerRemainsAboveStationLevelAfterSpawn(controller);
+        }
+
+        [UnityTest]
+        public IEnumerator PlayerCanMoveInEachDirectionCorrectly()
+        {
+            yield return PlaymodeTestRepository.PlayerCanMoveInEachDirectionCorrectly(controller);
         }
     }
 }
