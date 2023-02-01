@@ -20,7 +20,7 @@ using System.Text;
 
 namespace SS3D.Tests
 {
-    public class HostGameActions : SpessHostPlayModeTest
+    public class ServerGameActions : SpessServerPlayModeTest
     {
         public override void OneTimeSetUp()
         {
@@ -31,26 +31,36 @@ namespace SS3D.Tests
         [UnitySetUp]
         public override IEnumerator UnitySetUp()
         {
+            // Set up the test itself
             yield return base.UnitySetUp();
-            yield return TestHelpers.StartAndEnterRound();
+            yield return new WaitForSeconds(3f);
+
+            // Make some clients
+            yield return ServerHelpers.CreateClients(1);
+
+            ServerHelpers.SetAllPlayersReady();
+            yield return null;
+            ServerHelpers.ChangeRoundState(true);
             yield return GetController();
         }
 
         [UnityTearDown]
         public override IEnumerator UnityTearDown()
         {
-            yield return TestHelpers.FinishAndExitRound();
+            ServerHelpers.ChangeRoundState(false);
             yield return base.UnityTearDown();
+
+            KillAllBuiltExecutables();
         }
 
         [UnityTest]
-        public IEnumerator PlayerRemainsAboveStationLevelAfterSpawn([ValueSource("Iterations")] int iteration)
+        public IEnumerator PlayerRemainsAboveStationLevelAfterSpawn()
         {
             yield return PlaymodeTestRepository.PlayerRemainsAboveStationLevelAfterSpawn(controller);
         }
 
         [UnityTest]
-        public IEnumerator PlayerCanMoveInEachDirectionCorrectly()
+        public IEnumerator y()
         {
             yield return PlaymodeTestRepository.PlayerCanMoveInEachDirectionCorrectly(controller);
         }

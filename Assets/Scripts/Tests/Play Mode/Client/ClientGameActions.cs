@@ -44,7 +44,7 @@ namespace SS3D.Tests
         }
 
         [UnityTest]
-        public IEnumerator PlayerRemainsAboveStationLevelAfterSpawn()
+        public IEnumerator PlayerRemainsAboveStationLevelAfterSpawn([ValueSource("Iterations")] int iteration)
         {
             yield return PlaymodeTestRepository.PlayerRemainsAboveStationLevelAfterSpawn(controller);
         }

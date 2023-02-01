@@ -18,20 +18,29 @@ using SS3D.Systems.InputHandling;
 using SS3D.Systems.Entities.Humanoid;
 using System.Runtime.InteropServices;
 using System;
+using SS3D.Systems.Entities;
+using SS3D.Systems.PlayerControl;
 
 namespace SS3D.Tests
 {
-    public abstract class SpessHostPlayModeTest : SpessPlayModeTest
+    public abstract class SpessServerPlayModeTest : SpessPlayModeTest
     {
+        protected const string HorizontalAxis = "Horizontal";
+        protected const string VerticalAxis = "Vertical";
+        protected const string CancelButton = "Cancel";
+        protected const string ReadyButtonName = "Ready";
+        protected const string ServerSettingsTabName = "Server Settings";
+        protected const string StartRoundButtonName = "Start Round";
+        protected const string StartClientCommand = "Start SS3D Server.bat";
+
         protected ScriptedInput input;
         protected HumanoidController controller;
 
         [OneTimeSetUp]
         public virtual void OneTimeSetUp()
         {
-
-            // Set to run as host
-            SetApplicationSettings(NetworkType.Host);
+            // Set to run as server
+            SetApplicationSettings(NetworkType.ServerOnly);
 
             // Load the startup scene (which will subsequently load the lobby once connected)
             LoadStartupScene();
@@ -40,19 +49,7 @@ namespace SS3D.Tests
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-
-        }
-
-        protected IEnumerator StartAndEnterRound()
-        {
-            yield return TestHelpers.StartAndEnterRound();
-            yield return GetController();
-        }
-
-        protected IEnumerator FinishAndExitRound()
-        {
-            yield return TestHelpers.FinishAndExitRound();
-
+            KillAllBuiltExecutables();
         }
 
         [UnitySetUp]
@@ -91,42 +88,6 @@ namespace SS3D.Tests
             }
         }
 
-        public bool ApproximatelyEqual(float a, float b)
-        {
-            bool result = ((a - b) * (a - b)) < 0.001f;
-            return result;
-        }
-
-        public IEnumerator Move(string axis, float value, float duration = 1f)
-        {
-            yield return Move(new[] {axis }, new [] {value }, duration);
-        }
-
-        public IEnumerator Move(string[] axis, float[] value, float duration = 1f)
-        {
-            // Initial minor delay to enforce separation of commands
-            yield return new WaitForSeconds(0.25f);
-
-            // Start holding down the appropriate keys.
-            for (int i = 0; i < axis.Length; i++)
-            {
-                input.SetAxisRaw(axis[i], value[i]);
-            }
-
-            // Wait for a little, then release the key.
-            yield return new WaitForSeconds(duration);
-
-            // Release the keys.
-            for (int i = 0; i < axis.Length; i++)
-            {
-                input.SetAxisRaw(axis[i], 0);
-            }
-
-            // Wait for a little more, to add clear separation from the next move command.
-            yield return new WaitForSeconds(0.25f);
-        }
-
-
         public void PressButton(string buttonName)
         {
             GameObject.Find(buttonName)?.GetComponent<LabelButton>().Press();
@@ -136,5 +97,7 @@ namespace SS3D.Tests
         {
             GameObject.Find(tabName)?.GetComponent<Button>().onClick.Invoke();
         }
+
+
     }
 }
