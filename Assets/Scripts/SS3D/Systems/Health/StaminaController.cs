@@ -12,7 +12,6 @@ namespace SS3D.Systems.Health
     /// <summary>
     /// Manages the networking and out-of-process dependencies of the stamina subsystem
     /// </summary>
-    [RequireComponent(typeof(HumanoidController))]
     public class StaminaController : NetworkActor
     {
         /// <summary>
@@ -94,13 +93,13 @@ namespace SS3D.Systems.Health
 
         private void SubscribeToEvents()
         {
-            _player.OnSpeedChanged += DepleteStamina;
+            _player.SpeedChangeEvent += DepleteStamina;
             _entity.OnMindChanged += AssignViewToControllable;
         }
 
         private void UnsubscribeFromEvents()
         {
-            _player.OnSpeedChanged -= DepleteStamina;
+            _player.SpeedChangeEvent -= DepleteStamina;
             _entity.OnMindChanged -= AssignViewToControllable;
 
         }
