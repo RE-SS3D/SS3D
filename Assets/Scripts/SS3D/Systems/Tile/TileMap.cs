@@ -172,8 +172,9 @@ namespace SS3D.Systems.Tile
                 canBuild &= BuildChecker.CanBuild(GetTileObjects(gridPosition), tileObjectSo);
             }
 
-            // TODO: Add wall mounts colliding into wall check
-
+            // Check for colliding wall mounts. Should be fully moved to BuildChecker but is problematic due to needing knowledge on adjacent tiles which only the map has
+            canBuild &= BuildChecker.CanBuildWallCollision(tileObjectSo, dir, GetNeighbourPlacedObjects(TileLayer.Turf, placePosition));
+            
             return canBuild;
         }
 

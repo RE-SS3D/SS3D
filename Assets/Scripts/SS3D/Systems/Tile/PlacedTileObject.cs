@@ -93,7 +93,7 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public void DestroySelf()
         {
-            base.Despawn();
+            InstanceFinder.ServerManager.Despawn(gameObject);
         }
 
         /// <summary>

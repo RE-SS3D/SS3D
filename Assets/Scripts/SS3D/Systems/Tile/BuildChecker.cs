@@ -23,8 +23,8 @@ namespace SS3D.Systems.Tile
 
             switch (placedLayer)
             {
-                case TileLayer.WallMountHigh:
-                case TileLayer.WallMountLow:
+                case TileLayer.WallMountHigh when canBuild:
+                case TileLayer.WallMountLow when canBuild:
                     {
                         canBuild &= CanBuildWallAttachment(tileObjects[(int)TileLayer.Turf], tileObjectSo);
                         break;
@@ -48,6 +48,18 @@ namespace SS3D.Systems.Tile
             return canBuild;
         }
 
+        public static bool CanBuildWallCollision(TileObjectSo tileObjectSo, Direction dir, PlacedTileObject[] adjacentObjects)
+        {
+            bool canBuild = true;
+
+            if (tileObjectSo.layer == TileLayer.WallMountHigh || tileObjectSo.layer == TileLayer.WallMountLow)
+            {
+                canBuild &= !(adjacentObjects[(int)dir] && adjacentObjects[(int)dir].GetGenericType() == TileObjectGenericType.Wall);
+            }
+
+            return canBuild;
+        }
+
         private static bool IsWall(TileObject wallObject)
         {
             return !wallObject.IsEmpty() && wallObject.GetPlacedObject().GetGenericType() == TileObjectGenericType.Wall;
@@ -58,10 +70,10 @@ namespace SS3D.Systems.Tile
             bool canBuild = true;
 
             // Cannot build when there isn't a wall
-            canBuild &= !IsWall(wallObject);
+            canBuild &= IsWall(wallObject);
 
             // No low wall mounts on windows
-            canBuild &= (wallObject.GetPlacedObject().GetNameString().Contains("window") && wallAttachment.layer == TileLayer.WallMountLow);
+            canBuild &= !(wallObject.GetPlacedObject().GetNameString().Contains("window") && wallAttachment.layer == TileLayer.WallMountLow);
 
             /*
             // Cannot build wall mount if it collides with the next wall
