@@ -1,3 +1,5 @@
+using FishNet;
+using FishNet.Object;
 using SS3D.Core;
 using System;
 using System.Collections;
@@ -9,7 +11,7 @@ namespace SS3D.Systems.Tile
     /// <summary>
     /// Class used for storing and modifying a tile map.
     /// </summary>
-    public class TileMap : MonoBehaviour
+    public class TileMap : NetworkBehaviour
     {
         /// <summary>
         /// Save object used for reconstructing a tilemap.
@@ -19,11 +21,13 @@ namespace SS3D.Systems.Tile
         {
             public string mapName;
             public TileChunk.ChunkSaveObject[] saveObjectList;
+            public PlacedItemObject.PlacedSaveObject[] savedItemList;
         }
         
         public int ChunkCount => _chunks.Count;
 
         private Dictionary<Vector2Int, TileChunk> _chunks;
+        private List<PlacedItemObject> _items;
         private string _mapName;
 
         public static TileMap Create(string name)
@@ -33,13 +37,18 @@ namespace SS3D.Systems.Tile
             TileMap map = mapObject.AddComponent<TileMap>();
             map.Setup(name);
 
+            if (InstanceFinder.ServerManager != null && mapObject.GetComponent<NetworkObject>() != null)
+            {
+                InstanceFinder.ServerManager.Spawn(mapObject);
+            }
+
             return map;
         }
 
         private void Setup(string mapName)
         {
             _chunks = new Dictionary<Vector2Int, TileChunk>();
-            // _tileSystem = SystemLocator.Get<TileSystem>();
+            _items = new List<PlacedItemObject>();
             name = mapName;
             _mapName = mapName;
         }
@@ -212,6 +221,8 @@ namespace SS3D.Systems.Tile
         public void PlaceItemObject(Vector3 worldPosition, Quaternion rotation, ItemObjectSo itemObjectSo)
         {
             PlacedItemObject placedItem = PlacedItemObject.Create(worldPosition, rotation, itemObjectSo);
+            placedItem.transform.SetParent(transform);
+            _items.Add(placedItem);
         }
 
         private void Clear()
@@ -220,6 +231,15 @@ namespace SS3D.Systems.Tile
             {
                 chunk.Clear();
             }
+
+            _chunks.Clear();
+
+            foreach (PlacedItemObject item in _items)
+            {
+                item.DestroySelf();
+            }
+
+            _items.Clear();
         }
 
         /// <summary>
@@ -229,16 +249,23 @@ namespace SS3D.Systems.Tile
         public MapSaveObject Save()
         {
             List<TileChunk.ChunkSaveObject> chunkObjectSaveList = new List<TileChunk.ChunkSaveObject>();
+            List<PlacedItemObject.PlacedSaveObject> itemSaveList = new List<PlacedItemObject.PlacedSaveObject>();
 
             foreach (TileChunk chunk in _chunks.Values)
             {
                 chunkObjectSaveList.Add(chunk.Save());
             }
 
+            foreach (PlacedItemObject item in _items)
+            {
+                itemSaveList.Add(item.Save());
+            }
+
             return new MapSaveObject
             {
                 mapName = _mapName,
                 saveObjectList = chunkObjectSaveList.ToArray(),
+                savedItemList = itemSaveList.ToArray()
             };
         }
 
@@ -260,6 +287,12 @@ namespace SS3D.Systems.Tile
                     // Skipping build check here to allow loading tile objects in a non-valid order
                     PlaceTileObject(toBePlaced, placePosition, savedTile.placedSaveObject.dir, true);
                 }
+            }
+
+            foreach (var savedItem in saveObject.savedItemList)
+            {
+                ItemObjectSo toBePlaced = tileSystem.GetItemAsset(savedItem.itemName);
+                PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
             }
         }
     }

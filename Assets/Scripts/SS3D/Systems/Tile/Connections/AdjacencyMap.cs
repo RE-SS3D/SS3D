@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using FishNet.Object.Synchronizing;
+using FishNet.Object.Synchronizing.Internal;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 
 namespace SS3D.Systems.Tile.Connections

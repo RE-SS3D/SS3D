@@ -10,6 +10,7 @@ namespace SS3D.Systems.Tile
     public class TileSystem : NetworkSystem
     {
         private List<TileObjectSo> _tileAssets;
+        private List<ItemObjectSo> _itemAssets;
         private TileMap _currentMap;
 
         protected override void OnStart()
@@ -21,7 +22,10 @@ namespace SS3D.Systems.Tile
         private void Setup()
         {
             LoadTileAssets();
+            LoadItemAssets();
+
             CreateMap("Test map");
+            // Load();
 
             Punpun.Say(this, "All tiles loaded successfully");
         }
@@ -33,6 +37,13 @@ namespace SS3D.Systems.Tile
             _tileAssets.AddRange(tempAssets);
         }
 
+        private void LoadItemAssets()
+        {
+            _itemAssets = new List<ItemObjectSo>();
+            ItemObjectSo[] tempAssets = Resources.LoadAll<ItemObjectSo>("");
+            _itemAssets.AddRange(tempAssets);
+        }
+
         public TileObjectSo GetTileAsset(string assetName)
         {
             TileObjectSo tileObjectSo = _tileAssets.FirstOrDefault(tileObject => tileObject.nameString == assetName);
@@ -40,6 +51,15 @@ namespace SS3D.Systems.Tile
                 Punpun.Yell(this, $"Requested tile asset {assetName} was not found.");
             
             return tileObjectSo;
+        }
+
+        public ItemObjectSo GetItemAsset(string assetName)
+        {
+            ItemObjectSo itemObjectSo = _itemAssets.FirstOrDefault(tileObject => tileObject.nameString == assetName);
+            if (itemObjectSo == null)
+                Punpun.Yell(this, $"Requested tile asset {assetName} was not found.");
+
+            return itemObjectSo;
         }
 
         private void CreateMap(string mapName)
@@ -59,7 +79,7 @@ namespace SS3D.Systems.Tile
 
         public void PlaceItemObject(ItemObjectSo itemObjectSo, Vector3 placePosition, Quaternion rotation)
         {
-
+            _currentMap.PlaceItemObject(placePosition, rotation, itemObjectSo);
         }
 
         public bool CanBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir)

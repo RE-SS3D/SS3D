@@ -1,4 +1,5 @@
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using SS3D.Logging;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using System.Collections;
@@ -34,7 +35,12 @@ namespace SS3D.Systems.Tile.Connections
         [FormerlySerializedAs("advancedAdjacency")] [SerializeField] private AdvancedConnector _advancedAdjacency;
         [FormerlySerializedAs("offsetAdjacency")] [SerializeField] private OffsetConnector _offsetAdjacency;
 
+        // [SyncVar(OnChange = nameof(SyncAdjacencies))]
         private AdjacencyMap _adjacencyMap;
+
+        [SyncVar(OnChange = nameof(SyncAdjacencies))]
+        private byte _syncedConnections;
+
         private MeshFilter _filter;
         private bool _initialized;
         private PlacedTileObject _placedObject;
@@ -85,7 +91,10 @@ namespace SS3D.Systems.Tile.Connections
             
             isUpdated = _adjacencyMap.SetConnection(dir, new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, isConnected));
             if (isUpdated)
+            {
+                _syncedConnections = _adjacencyMap.SerializeToByte();
                 UpdateMeshAndDirection();
+            }
 
             return isUpdated;
         }
@@ -134,6 +143,18 @@ namespace SS3D.Systems.Tile.Connections
             localRotation = Quaternion.Euler(eulerRotation.x, info.Rotation, eulerRotation.z);
 
             transform.localRotation = localRotation;
+        }
+
+        private void SyncAdjacencies(byte oldValue, byte newValue, bool asServer)
+        {
+            if (!asServer)
+            {
+                Setup();
+
+                var connections = AdjacencyMap.DeserializeFromByte(newValue);
+                _adjacencyMap.Connections = connections;
+                UpdateMeshAndDirection();
+            }
         }
     }
 }

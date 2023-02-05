@@ -77,15 +77,19 @@ namespace SS3D.Systems.Tile
         {
             bool canBuild = true;
 
-            // No plenum means we cannot build anything on top
-            canBuild &= plenumObject.IsEmpty();
+            if (!plenumObject.IsEmpty())
+            {
+                // Only allow wires and machines on catwalks
+                // canBuild &= !(plenumObject.GetPlacedObject().GetNameString().Contains("Catwalk") && (plenumAttachment.layer != TileLayer.Wire &&
+                //     plenumAttachment.layer != TileLayer.FurnitureBase));
 
-            // Only allow wires and machines on catwalks
-            canBuild &= plenumObject.GetPlacedObject().GetNameString().Contains("Catwalk") && (plenumAttachment.layer != TileLayer.Wire &&
-                plenumAttachment.layer != TileLayer.FurnitureBase);
-
-            // Can only build on a Plenum and not Catwalks or Lattices
-            canBuild &= plenumObject.GetPlacedObject().GetNameString().Contains("Plenum") || plenumObject.GetPlacedObject().name.Contains("Catwalk");
+                // Can only build on a Plenum and not Catwalks or Lattices
+                canBuild &= plenumObject.GetPlacedObject().GetNameString().Contains("plenum") || plenumObject.GetPlacedObject().name.Contains("catwalk");
+            }
+            else
+            {
+                canBuild = false;
+            }
 
             return canBuild;
         }

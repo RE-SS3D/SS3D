@@ -1,3 +1,4 @@
+using FishNet;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Logging;
@@ -8,7 +9,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile
 {
-    public class TileChunk: MonoBehaviour
+    public class TileChunk: NetworkBehaviour
     {
         /// <summary>
         /// Number of TileObjects that should go in a chunk. 16 x 16
@@ -53,6 +54,11 @@ namespace SS3D.Systems.Tile
             TileChunk chunk = chunkObject.AddComponent<TileChunk>();
 
             chunk.Setup(chunkKey, originPosition);
+
+            if (InstanceFinder.ServerManager != null && chunkObject.GetComponent<NetworkObject>() != null)
+            {
+                InstanceFinder.ServerManager.Spawn(chunkObject);
+            }
 
             return chunk;
         }

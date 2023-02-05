@@ -1,5 +1,7 @@
 using FishNet;
 using FishNet.Object;
+using SS3D.Core;
+using SS3D.Logging;
 using SS3D.Systems.Tile.Connections;
 using System;
 using System.Collections;
@@ -30,9 +32,12 @@ namespace SS3D.Systems.Tile
 
             placedObject.Setup(tileObjectSo, origin, dir);
 
-            if (InstanceFinder.ServerManager != null && placedObject.GetComponent<NetworkObject>() != null)
+            if (InstanceFinder.ServerManager != null)
             {
-                InstanceFinder.ServerManager.Spawn(placedGameObject);
+                if (placedObject.GetComponent<NetworkObject>() == null)
+                    Punpun.Yell(SystemLocator.Get<TileSystem>(), $"{placedObject.GetNameString()} does not have a Network Component and will not be spawned");
+                else
+                    InstanceFinder.ServerManager.Spawn(placedGameObject);
             }
 
             return placedObject;
