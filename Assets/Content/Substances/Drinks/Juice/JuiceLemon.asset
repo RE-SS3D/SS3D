@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: JuiceLemon
   m_EditorClassIdentifier: 
-  Id: JuiceLemon
+  Type: 12
   Color: {r: 0.9024997, g: 0.9150943, b: 0.60862404, a: 0.7058824}
   MillilitersPerMole: 22

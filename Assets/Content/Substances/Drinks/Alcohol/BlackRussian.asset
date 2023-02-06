@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6990eeb981f25548bd671e7ef3e741c, type: 3}
   m_Name: BlackRussian
   m_EditorClassIdentifier: 
-  Id: BlackRussian
+  Type: 4
   Color: {r: 0.5566038, g: 0.21791562, b: 0.21791562, a: 0.8627451}
   MillilitersPerMole: 38
