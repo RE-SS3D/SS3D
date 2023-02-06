@@ -7,7 +7,7 @@ namespace SS3D.Substances
     [CreateAssetMenu(menuName = "SS3D/Substances/Substance")]
     public class Substance : ScriptableObject
     {
-        public string Id;
+        public SubstanceType Type;
         public Color Color;
         public float MillilitersPerMole;
     }

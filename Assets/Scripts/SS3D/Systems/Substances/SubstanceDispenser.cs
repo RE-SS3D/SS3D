@@ -16,7 +16,7 @@ namespace SS3D.Content.Furniture.Generic
         /// <summary>
         /// What should be dispensed
         /// </summary>
-        public string[] substances;
+        public SubstanceType[] substances;
         /// <summary>
         /// How much should be dispensed
         /// </summary>
@@ -48,7 +48,7 @@ namespace SS3D.Content.Furniture.Generic
             {
 
                 // Retrieve substance from the Registry
-                Substance substance = registry.FromId(substances[i]);
+                Substance substance = registry.FromType(substances[i]);
 
                 // Ensure the substance was successfully retrieved.
                 if (substance == null)

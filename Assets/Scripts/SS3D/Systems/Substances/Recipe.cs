@@ -10,7 +10,7 @@ namespace SS3D.Substances
         [Serializable]
         public struct RecipeComponent
         {
-            public string Id;
+            public SubstanceType Type;
             public float RelativeAmount;
         }
 

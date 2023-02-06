@@ -1,16 +1,17 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SS3D.Substances
 {
     public class SubstanceRegistry : MonoBehaviour
     {
-        public Substance[] Substances => substances;
+        public Dictionary<SubstanceType, Substance> Substances => substances;
         public Recipe[] Recipes => recipes;
         public static SubstanceRegistry Current => instance;
         
         [SerializeField]
-        private Substance[] substances;
+        private Dictionary<SubstanceType, Substance> substances;
         [SerializeField]
         private Recipe[] recipes;
         private static SubstanceRegistry instance;
@@ -20,9 +21,9 @@ namespace SS3D.Substances
         /// </summary>
         /// <param name="id">The id name of the substance</param>
         /// <returns>A substance or null if it wasn't found</returns>
-        public Substance FromId(string id)
+        public Substance FromType(SubstanceType type)
         {
-            return Substances.FirstOrDefault(x => x.Id == id);
+            return Substances[type];
         }
 
         /// <summary>
@@ -49,7 +50,7 @@ namespace SS3D.Substances
                     ingredientsPresent = false;
                     foreach (var entry in container.Substances)
                     {
-                        if (entry.Substance.Id == recipe.Ingredients[i].Id)
+                        if (entry.Substance.Type == recipe.Ingredients[i].Type)
                         {
                             moles[i] = entry.Moles;
                             ingredientsPresent = true;
@@ -89,7 +90,7 @@ namespace SS3D.Substances
                 for (var i = 0; i < moles.Length; i++)
                 {
                     var component = recipe.Ingredients[i];
-                    var substance = ingredientSubstances[i] = FromId(component.Id);    
+                    var substance = ingredientSubstances[i] = FromType(component.Type);    
                     ingredientsToVolume += substance.MillilitersPerMole * component.RelativeAmount;
                 }
                 ingredientsToVolume /= totalIngredients;
@@ -101,7 +102,7 @@ namespace SS3D.Substances
                 for (var i = 0; i < recipe.Results.Length; i++)
                 {
                     var component = recipe.Results[i];
-                    var substance = resultSubstances[i] = FromId(component.Id);    
+                    var substance = resultSubstances[i] = FromType(component.Type);    
                     resultsToVolume += substance.MillilitersPerMole * component.RelativeAmount;
                 }
                 resultsToVolume /= totalResults;
@@ -123,7 +124,7 @@ namespace SS3D.Substances
                 // Add results
                 foreach (var component in recipe.Results)
                 {
-                    container.AddSubstance(FromId(component.Id), maxConversion * (component.RelativeAmount / totalResults));
+                    container.AddSubstance(FromType(component.Type), maxConversion * (component.RelativeAmount / totalResults));
                 }
                 
                 container.MarkDirty();
