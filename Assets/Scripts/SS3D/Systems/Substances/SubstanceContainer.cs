@@ -7,6 +7,7 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using SS3D.Systems.Storage.Containers;
 using SS3D.Interactions.Interfaces;
+using SS3D.Core;
 
 namespace SS3D.Substances
 {
@@ -333,7 +334,7 @@ namespace SS3D.Substances
         [Server]
         protected virtual void OnContentsChanged()
         {
-            SubstanceRegistry.Current.ProcessContainer(this);
+            //SystemLocator.Get<SubstancesSystem>().ProcessContainer(this);
             ContentsChanged?.Invoke(this);
         }
 
