@@ -3,6 +3,9 @@ using SS3D.Interactions;
 using SS3D.Substances;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
+using SS3D.Core;
+using SS3D.Systems.Screens;
+using static UnityEngine.GraphicsBuffer;
 
 namespace SS3D.Content.Furniture.Generic
 {
@@ -27,11 +30,11 @@ namespace SS3D.Content.Furniture.Generic
         /// </summary>
         public bool useMillilitres = false;
 
-        private SubstanceRegistry registry;
+        private SubstancesSystem registry;
 
         private void Start()
         {
-            registry = SubstanceRegistry.Current;
+            registry = SystemLocator.Get<SubstancesSystem>();
             if (registry == null)
             {
                 Debug.LogError("SubstanceRegistry not found. Substances will be disabled.");
