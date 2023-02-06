@@ -1,8 +1,7 @@
 ﻿using System;
-using SS3D.Content.Systems.Interactions;
-using SS3D.Engine.Interactions;
-using SS3D.Engine.Substances;
-using UnityEngine.Assertions;
+using SS3D.Interactions;
+using SS3D.Substances;
+using SS3D.Interactions.Interfaces;
 using UnityEngine;
 
 namespace SS3D.Content.Furniture.Generic
@@ -39,7 +38,7 @@ namespace SS3D.Content.Furniture.Generic
             }
         }
 
-        public override IInteraction[] GenerateInteractionsFromTarget(InteractionEvent interactionEvent)
+        public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
             if (registry == null) return null;
 
