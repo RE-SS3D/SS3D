@@ -42,11 +42,7 @@ namespace SS3D.Substances
         /// <summary>
         /// The remaining volume in milliliters that fit in this container
         /// </summary>
-        public float RemainingVolume => remainingVolume;
-
-        [SyncVar]
-        private float remainingVolume;
-
+        public float RemainingVolume => volume - currentVolume;
 
         [SyncVar]
         private float volume;
@@ -328,7 +324,6 @@ namespace SS3D.Substances
         private void RecalculateAndSyncVolume()
         {
             currentVolume = Substances.Sum(x => x.Moles * x.Substance.MillilitersPerMole);
-            remainingVolume = Volume - currentVolume;
         }
 
         [Server]
