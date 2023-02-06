@@ -84,12 +84,12 @@ namespace SS3D.Substances
 
         public bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            throw new System.NotImplementedException();
+            return true;
         }
 
         public void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            throw new System.NotImplementedException();
+            return;
         }
     }
 }

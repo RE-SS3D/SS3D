@@ -76,18 +76,6 @@ namespace SS3D.Substances
             }
 
             return false;
-        }
-
-        public override bool Update(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void Cancel(InteractionEvent interactionEvent, InteractionReference reference)
-        {
-            throw new System.NotImplementedException();
-        }
-
-       
+        } 
     }
 }
