@@ -1,13 +1,15 @@
 ﻿using System;
-using SS3D.Engine.Interactions;
-using SS3D.Engine.Interactions.Extensions;
-using SS3D.Engine.Substances;
+using SS3D.Interactions;
+using SS3D.Interactions.Interfaces;
+using SS3D.Interactions.Extensions;
 using UnityEngine;
 
-namespace SS3D.Content.Systems.Interactions
+namespace SS3D.Substances
 {
     public class DispenseSubstanceInteraction : IInteraction
     {
+        public event Action OnInteractionInvalid;
+
         public string Name { get; set; } = "Dispense";
         /// <summary>
         /// The substance to dispense
