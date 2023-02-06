@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8033135651520204425}
-  - component: {fileID: 5232322330931966464}
   m_Layer: 0
   m_Name: TableBoozeDispenser
   m_TagString: Untagged
@@ -33,22 +32,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5232322330931966464
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1918783493706165866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b7539a4a1fe19c4db044a7af56dcdd6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  InteractionName: dispense booze
-  substances: 03000000
-  amount: 250
-  useMillilitres: 1
 --- !u!1 &2266423437352020777
 GameObject:
   m_ObjectHideFlags: 0
@@ -143,6 +126,8 @@ GameObject:
   - component: {fileID: 608453462504062702}
   - component: {fileID: 3587616607673926389}
   - component: {fileID: 5947817776542571981}
+  - component: {fileID: 5323246766978482323}
+  - component: {fileID: 4379932917193560450}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -158,7 +143,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4379219507269237858}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.718, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -217,6 +202,35 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &5323246766978482323
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4379219507269237858}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.51017773, y: 0.80267596, z: 0.6324222}
+  m_Center: {x: 0.03177064, y: 1.1490806, z: 0.020124212}
+--- !u!114 &4379932917193560450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4379219507269237858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b7539a4a1fe19c4db044a7af56dcdd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InteractionName: 
+  substances: 03000000
+  amount: 250
+  useMillilitres: 1
 --- !u!1 &5027368584148461806
 GameObject:
   m_ObjectHideFlags: 0

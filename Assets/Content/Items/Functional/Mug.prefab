@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 5972227914550883575}
   - component: {fileID: 5964414282318636811}
   - component: {fileID: 2154069534052540121}
-  m_Layer: 0
-  m_Name: Mug
+  m_Layer: 10
+  m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 6104096848888808967}
   - component: {fileID: 3483542684610536844}
   - component: {fileID: 3278785340214204199}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Mug
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,7 +138,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
-  _networkBehaviours: []
+  _networkBehaviours:
+  - {fileID: 8471215545886824119}
+  - {fileID: 874141704920938506}
+  - {fileID: 6104096848888808967}
+  - {fileID: 3278785340214204199}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -162,9 +166,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: 7958861831329766982}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 7958861831329766982}
   _synchronizeParent: 0
   _packing:
     Position: 1
@@ -218,9 +222,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd3c3145c2fb1ef458f6b2d77c499b44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 7958861831329766982}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 7958861831329766982}
   Container: {fileID: 6104096848888808967}
   DisplayObject: {fileID: 6067700979317892856}
   EmptyPosition: {x: 0, y: 0, z: 0}
@@ -312,9 +316,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a85f26fb7523bc4fadefb445dc09f8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 7958861831329766982}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 7958861831329766982}
   currentVolume: 0
   remainingVolume: 0
   volume: 500
@@ -349,16 +353,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 7958861831329766982}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 7958861831329766982}
   _itemId: Mug
   _name: Mug
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 3483542684610536844}
   _weight: 1
-  Prefab: {fileID: 0}
-  AttachmentPoint: {fileID: 0}
+  Prefab: {fileID: 5261116577612792016}
+  AttachmentPoint: {fileID: 7760506997891073340}
   AttachmentPointAlt: {fileID: 0}
   traits: []
 --- !u!1 &6067700979317892856
@@ -372,8 +376,8 @@ GameObject:
   - component: {fileID: 6139981673721786699}
   - component: {fileID: 3379578490406542509}
   - component: {fileID: 4962043182247081748}
-  m_Layer: 0
-  m_Name: MugLiquid
+  m_Layer: 10
+  m_Name: Liquid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -453,7 +457,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7760506997891073340}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Attachement
   m_TagString: Untagged
   m_Icon: {fileID: 0}
