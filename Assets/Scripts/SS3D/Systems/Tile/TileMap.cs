@@ -226,7 +226,7 @@ namespace SS3D.Systems.Tile
             _items.Add(placedItem);
         }
 
-        private void Clear()
+        public void Clear()
         {
             foreach (TileChunk chunk in _chunks.Values)
             {

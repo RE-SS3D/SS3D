@@ -50,7 +50,7 @@ namespace SS3D.Systems.Tile
 
         public static TileChunk Create(Vector2Int chunkKey, Vector3 originPosition)
         {
-            GameObject chunkObject = new GameObject($"Chunk [{originPosition.x},{originPosition.z}]" ); // TODO: Probably needs network spawning as well
+            GameObject chunkObject = new GameObject($"Chunk [{originPosition.x},{originPosition.z}]" );
             TileChunk chunk = chunkObject.AddComponent<TileChunk>();
 
             chunk.Setup(chunkKey, originPosition);
