@@ -41,6 +41,8 @@ namespace SS3D.Systems.Entities
 
         private void InvokeLocalPlayerObjectChanged()
         {
+            if (Mind == null) return;
+
             if (!Mind.Soul.IsLocalConnection)
             {
                 return;
