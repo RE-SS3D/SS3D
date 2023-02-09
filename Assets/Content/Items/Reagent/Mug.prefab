@@ -152,7 +152,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: -1
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 16817556118555575446
+  <AssetPathHash>k__BackingField: 11620618227680488127
   _sceneNetworkObjects: []
 --- !u!114 &8471215545886824119
 MonoBehaviour:
@@ -320,7 +320,6 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 7958861831329766982}
   _networkObjectCache: {fileID: 7958861831329766982}
   currentVolume: 0
-  remainingVolume: 0
   volume: 500
   Temperature: 0
   Locked: 0
