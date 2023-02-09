@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,7 +19,7 @@ namespace SS3D.Tests
 
         // Whether the lobby scene has been loaded
         protected bool lobbySceneLoaded = false;
-
+        protected bool emptySceneLoaded = false;
 
         // When overriding, use:
         //     yield return base.UnitySetUp();
@@ -55,14 +56,58 @@ namespace SS3D.Tests
             if (scene.name.Equals("Lobby"))
             {
                 lobbySceneLoaded = true;
+                SceneManager.sceneLoaded -= ClientSceneLoaded;
+            }
+
+            if (scene.name.Equals("Empty"))
+            {
+                emptySceneLoaded = true;
+                SceneManager.sceneLoaded -= ClientSceneLoaded;
+            }
+        }
+
+        protected IEnumerator WaitForLobbyLoaded(float timeout = 20f)
+        {
+            float startTime = Time.time;
+            while (!lobbySceneLoaded)
+            {
+                yield return new WaitForSeconds(1f);
+
+                if (Time.time - startTime > timeout)
+                {
+                    throw new Exception($"Lobby not loaded within timeout of {timeout} seconds.");
+                }
+            }
+        }
+
+        protected IEnumerator WaitForEmptySceneLoaded(float timeout = 10f)
+        {
+            float startTime = Time.time;
+            while (!emptySceneLoaded)
+            {
+                yield return new WaitForSeconds(1f);
+
+                if (Time.time - startTime > timeout)
+                {
+                    throw new Exception($"Empty scene not loaded within timeout of {timeout} seconds.");
+                }
             }
         }
 
         protected void LoadStartupScene()
         {
             // Start up the game.
+            lobbySceneLoaded = false;
             SceneManager.sceneLoaded += ClientSceneLoaded;
             SceneManager.LoadScene("Startup", LoadSceneMode.Single);
+        }
+
+        protected void LoadEmptyScene()
+        {
+            // Close down the game.
+            emptySceneLoaded = false;
+            SceneManager.sceneLoaded += ClientSceneLoaded;
+            SceneManager.LoadScene("Empty", LoadSceneMode.Single);
         }
 
         protected void KillAllBuiltExecutables()

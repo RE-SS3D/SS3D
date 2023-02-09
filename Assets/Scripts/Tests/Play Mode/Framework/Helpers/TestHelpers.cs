@@ -72,13 +72,25 @@ namespace SS3D.Tests
 
         public static IEnumerator StartAndEnterRound()
         {
-            // Fire up the game
-            PressButton(ReadyButtonName); yield return new WaitForSeconds(1f);
-            SetTabActive(ServerSettingsTabName); yield return new WaitForSeconds(1f);
-            PressButton(StartRoundButtonName); yield return new WaitForSeconds(1f);
+            yield return ClickButton(ReadyButtonName);
+            yield return StartRound();
+        }
 
-            // Give a moment's pause before test start
-            yield return new WaitForSeconds(1f);
+        public static IEnumerator ClickButton(string buttonName, float delay = 1f)
+        {
+            PressButton(buttonName);
+            yield return new WaitForSeconds(delay);
+        }
+
+        /// <summary>
+        /// This method simulates the user in the lobby switching to the "Server Settings" tab, and clicking "Start Round".
+        /// </summary>
+        /// <param name="delay">Time delay between actions.</param>
+        /// <returns>IEnumerator for yielding in UnityTest.</returns>
+        public static IEnumerator StartRound(float delay = 0.5f)
+        {
+            SetTabActive(ServerSettingsTabName); yield return new WaitForSeconds(delay);
+            PressButton(StartRoundButtonName); yield return new WaitForSeconds(delay);
         }
 
         public static IEnumerator LateJoinRound()
@@ -93,6 +105,11 @@ namespace SS3D.Tests
             // Now we join.
             PressButton(EmbarkButtonName); yield return new WaitForSeconds(3f);
 
+        }
+
+        public static IEnumerator Embark()
+        {
+            PressButton(EmbarkButtonName); yield return new WaitForSeconds(3f);
         }
 
         public static IEnumerator FinishAndExitRound()

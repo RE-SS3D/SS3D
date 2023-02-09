@@ -17,6 +17,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using FishNet;
+using System.Linq;
 
 namespace SS3D.Tests
 {
@@ -85,6 +86,15 @@ namespace SS3D.Tests
             }
         }
 
+        public static void SetPlayerReadiness(string Ckey, bool readiness)
+        {
+            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
+            ReadyPlayersSystem readyPlayersSystem = SystemLocator.Get<ReadyPlayersSystem>();
+            Soul soul = playerSystem.OnlineSouls.ToList().Find(soul => soul.Ckey == Ckey);
+            ChangePlayerReadyMessage msg = new ChangePlayerReadyMessage(Ckey, readiness);
+            readyPlayersSystem.ChangePlayerReadyMessageStubBroadcast(soul.LocalConnection, msg);
+        }
+
         /// <summary>
         /// Turn the round on or off.
         /// </summary>
@@ -93,6 +103,15 @@ namespace SS3D.Tests
             RoundSystem roundSystem = SystemLocator.Get<RoundSystem>();
             ChangeRoundStateMessage msg = new ChangeRoundStateMessage(running);
             roundSystem.ChangeRoundStateMessageStubBroadcast(msg);
+        }
+
+        public static void SpawnLatePlayer(string Ckey)
+        {
+            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
+            EntitySystem entitySystem = SystemLocator.Get<EntitySystem>();
+
+            Soul soul = playerSystem.GetSoul(Ckey);
+            entitySystem.CmdSpawnLatePlayer(soul);
         }
 
 
