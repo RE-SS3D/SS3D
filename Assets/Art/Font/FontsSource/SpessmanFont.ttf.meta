@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ee9f0196637d47b4f9ba7acc13753205
+guid: 75a1f6e442f044941ac35bf3038395b9
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Gurajada
+  - Spessman
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

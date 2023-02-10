@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e63f6323c0213cc47bf08bbcfe46a239
+guid: 40eca7f3e650548429bafd9706eb7c30
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - square deal
+  - Ode to Idle Gaming
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

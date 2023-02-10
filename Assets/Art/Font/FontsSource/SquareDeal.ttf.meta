@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: bb44e79903b97e646a9e6444dbe7952c
+guid: e62aa04f217db6741b12dbd18f337b24
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Spessman
+  - square deal
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

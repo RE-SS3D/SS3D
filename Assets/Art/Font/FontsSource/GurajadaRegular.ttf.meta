@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 86ea6299c33458946a5d84f274786204
+guid: dfe3c32b036608a4392644a82618fa12
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Ode to Idle Gaming
+  - Gurajada
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0
