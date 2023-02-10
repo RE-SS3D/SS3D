@@ -17,6 +17,7 @@ using FishNet;
 using SS3D.Systems.InputHandling;
 using SS3D.Systems.Entities.Humanoid;
 using System.Text;
+using SS3D.Systems.Storage.UI;
 
 namespace SS3D.Tests
 {
@@ -44,9 +45,25 @@ namespace SS3D.Tests
         }
 
         [UnityTest]
-        public IEnumerator x()
+        public IEnumerator PlayerHasTheSameNumberOfPocketsAfterEndingRoundAndStartingNewOne()
         {
-            yield return null;
+            // Make sure the player has actually embarked
+            yield return new WaitForSeconds(5f);
+
+            // Count the number of container slots -> this will include pockets.
+            //int initialNumberOfContainerSlots = GameObject.Find();
+            
+            // Exit the round, then restart shortly after.
+            yield return TestHelpers.FinishAndExitRound();
+            yield return new WaitForSeconds(5f);
+            yield return TestHelpers.StartAndEnterRound();
+            yield return new WaitForSeconds(5f);
+
+            // Count the number of slots again -> it should be the same as the first time
+            int subsequentNumberOfContainerSlots = GameObject.FindObjectsOfType<SingleItemContainerSlot>().Length;
+
+            //Assert.IsTrue(initialNumberOfContainerSlots == subsequentNumberOfContainerSlots,
+            //    $"Initially there were {initialNumberOfContainerSlots} slots, but now there are {subsequentNumberOfContainerSlots} slots");
         }
 
         [UnityTest]
