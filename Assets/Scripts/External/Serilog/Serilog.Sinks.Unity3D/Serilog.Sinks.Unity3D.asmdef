@@ -1,0 +1,16 @@
+{
+    "name": "Serilog.Sinks.Unity3D",
+    "rootNamespace": "Serilog.Sinks.Unity3D",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Serilog.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

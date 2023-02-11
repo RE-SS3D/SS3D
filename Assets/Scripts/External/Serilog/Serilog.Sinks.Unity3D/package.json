@@ -1,0 +1,15 @@
+{
+    "name": "com.serilog.sinks.unity3d",
+    "displayName": "Serilog Sink for Unity 3D",
+    "version": "3.0.0",
+    "unity": "2021.3",
+    "license": "MIT",
+    "licensesUrl": "https://github.com/KuraiAndras/Serilog.Sinks.Unity3D/blob/master/LICENSE.md",
+    "changelogUrl": "https://github.com/KuraiAndras/Serilog.Sinks.Unity3D/blob/master/CHANGELOG.md",
+    "documentationUrl": "https://github.com/KuraiAndras/Serilog.Sinks.Unity3D/blob/master/README.md",
+    "author": {
+        "name": "Kurai András",
+        "email": "k.andras9642@gmail.com",
+        "url": "https://github.com/KuraiAndras/Serilog.Sinks.Unity3D"
+    }
+}
