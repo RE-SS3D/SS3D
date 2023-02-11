@@ -1,29 +1,21 @@
 using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
 using SS3D.Core;
 using SS3D.Core.Settings;
-using SS3D.Systems.Rounds;
 using SS3D.UI.Buttons;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
-using Coimbra;
 using System.Diagnostics;
-using FishNet.Managing;
-using FishNet;
 using SS3D.Systems.InputHandling;
 using SS3D.Systems.Entities.Humanoid;
-using System.Runtime.InteropServices;
 using System;
 using SS3D.Systems.PlayerControl;
 using System.Linq;
 
 namespace SS3D.Tests
 {
-    public class IssueXXXX_LateJoinFails_HostPerspective : SpessPlayModeTest
+    public class Issue1002_LateJoinFails_HostPerspective : SpessPlayModeTest
     {
         protected ScriptedInput input;
         protected HumanoidController controller;

@@ -21,7 +21,7 @@ using SS3D.Systems.Storage.UI;
 
 namespace SS3D.Tests
 {
-    public class Issue0990_PropagatingPocketProblem_ClientPerspective : SpessClientPlayModeTest
+    public class Issue0990_PropagatingPocketProblem_HostPerspective : SpessHostPlayModeTest
     {
         public override void OneTimeSetUp()
         {

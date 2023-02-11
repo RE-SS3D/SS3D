@@ -68,8 +68,6 @@ namespace SS3D.Tests
             while (!lobbySceneLoaded) yield return new WaitForSeconds(1f);
         }
 
-
-
         [UnityTearDown]
         public override IEnumerator UnityTearDown()
         {
