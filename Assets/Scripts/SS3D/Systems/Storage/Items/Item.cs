@@ -196,7 +196,7 @@ namespace SS3D.Systems.Storage.Items
 
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] { new PickupInteraction { Icon = _sprite } };
+            return new IInteraction[] { new PickupInteraction { Icon = null } };
         }
 
         // this creates the base interactions for an item, in this case, the drop interaction
