@@ -1,10 +1,10 @@
 ﻿using Coimbra.Services.Events;
 using DG.Tweening;
 using SS3D.Core.Behaviours;
-using SS3D.Logging;
 using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
+using SS3D.Core;
 
 namespace SS3D.Systems.Screens
 {

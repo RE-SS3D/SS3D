@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SS3D.Logging
+namespace SS3D.Core
 {
     public static class LogColors
     {
