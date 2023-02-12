@@ -75,7 +75,7 @@ public class Logger : NetworkBehaviour
     {
         _clientLogs.Add(
                 new ClientLogger(
-                    new LoggerConfiguration().WriteTo.Unity3D().WriteTo.File("Logs/Client" + conn.ClientId + ".txt").CreateLogger(),
+                    new LoggerConfiguration().WriteTo.Unity3D().WriteTo.File("Logs/Client" + conn.ClientId + "Log.txt").CreateLogger(),
                     conn
                 )
             );
