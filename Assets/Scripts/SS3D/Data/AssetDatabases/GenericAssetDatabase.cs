@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Coimbra;
+using Cysharp.Threading.Tasks;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using Object = UnityEngine.Object;
@@ -12,7 +14,7 @@ namespace SS3D.Data.AssetDatabases
     /// </summary>                                             s
     public class GenericAssetDatabase : ScriptableSettings
     {
-        public event Action OnDatabaseLoaded; 
+        public event Action OnDatabaseLoaded;
 
         public string EnumPath = @"\Scripts\SS3D\Data\Enums";
         public string EnumNamespaceName = "SS3D.Data.Enums";
@@ -20,7 +22,7 @@ namespace SS3D.Data.AssetDatabases
 
         public List<AssetReference> Assets;
 
-        public bool AllAssetsLoaded { get; private set; }
+        public bool AllAssetsLoaded;
 
         /// <summary>
         /// Pre-loads all the assets in the database in memory.
@@ -38,25 +40,25 @@ namespace SS3D.Data.AssetDatabases
                 return;
             }
 
-            for (int index = 0; index < Assets.Count; index++)
+            foreach (AssetReference assetReference in Assets)
             {
-                AssetReference assetReference = Assets[index];
-
-                if (index != Assets.Count - 1)
-                {
-                    assetReference.LoadAssetAsync<T>();
-                }
-                else
-                {
-                    assetReference.LoadAssetAsync<T>().Completed += handleAllAssetsComplete;
-                }
+                assetReference.LoadAssetAsync<T>();
             }
 
-            void handleAllAssetsComplete(AsyncOperationHandle<T> asyncOperationHandle)
-            {
-                AllAssetsLoaded = true;
-                OnDatabaseLoaded?.Invoke();
-            }
+#pragma warning disable CS4014
+            WaitUntilAllAssetsAreLoaded();
+#pragma warning restore CS4014
+        }
+
+        /// <summary>
+        /// Async Task to wait until all the assets are loaded.
+        /// </summary>
+        private async UniTaskVoid WaitUntilAllAssetsAreLoaded()
+        {
+            await UniTask.WaitUntil(() => Assets.All(reference => reference.Asset != null));
+
+            AllAssetsLoaded = true;
+            OnDatabaseLoaded?.Invoke();
         }
 
         /// <summary>

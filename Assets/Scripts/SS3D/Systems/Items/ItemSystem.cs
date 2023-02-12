@@ -42,10 +42,8 @@ namespace SS3D.Systems.Items
             for (int index = 0; index < assetReferences.Count; index++)
             {
                 ItemIDs id = (ItemIDs)index;
-                Punpun.Say(this, id.ToString());
 
                 GameObject itemObject = itemsAssetDatabase.Get(id);
-
                 Item item = itemObject.GetComponent<Item>();
 
                 item.ItemID = id;
@@ -54,12 +52,27 @@ namespace SS3D.Systems.Items
             }
         }
 
+        /// <summary>
+        /// Requests to spawn an item.
+        /// </summary>
+        /// <param name="id">The item ID to spawn.</param>
+        /// <param name="position">The desired position to spawn.</param>
+        /// <param name="rotation">The desired rotation to apply.</param>
         [ServerRpc(RequireOwnership = false)]
         public void CmdSpawnItem(ItemIDs id, Vector3 position, Quaternion rotation)
         {
             SpawnItem(id, position, rotation);
         }
 
+        /// <summary>
+        /// Spawns an Item at a position and rotation.
+        ///
+        /// TODO: Create a ItemSpawnOptions struct.
+        /// </summary>
+        /// <param name="id">The item ID to spawn.</param>
+        /// <param name="position">The desired position to spawn.</param>
+        /// <param name="rotation">The desired rotation to apply.</param>
+        /// <returns></returns>
         [Server]
         public Item SpawnItem(ItemIDs id, Vector3 position, Quaternion rotation)
         {

@@ -16,9 +16,9 @@ namespace SS3D.Systems.Entities
 
         public static Mind Empty { get; private set; }
 
-        protected override void OnAwake()
+        protected override void OnStart()
         {
-            base.OnAwake();
+            base.OnStart();
 
             Empty = SystemLocator.Get<MindSystem>().EmptyMind;
         }
