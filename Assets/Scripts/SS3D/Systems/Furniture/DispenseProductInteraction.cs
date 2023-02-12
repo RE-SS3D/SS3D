@@ -7,13 +7,18 @@ using UnityEngine;
 
 namespace SS3D.Systems.Furniture
 {
+    /// <summary>
+    /// The interaction to dispense a product on a VendingMachine.
+    /// </summary>
     public class DispenseProductInteraction : Interaction
     {
+        /// <inheritdoc />
         public override string GetName(InteractionEvent interactionEvent)
         {
-            return "Dispense Can";
+            return "Dispense";
         }
 
+        /// <inheritdoc />
         public override bool CanInteract(InteractionEvent interactionEvent)
         {
             IInteractionTarget target = interactionEvent.Target;
@@ -27,14 +32,15 @@ namespace SS3D.Systems.Furniture
             return target is VendingMachine;
         }
 
+        /// <inheritdoc />
         public override Sprite GetIcon(InteractionEvent interactionEvent)
         {
             return Icon != null ? Icon : AssetData.Get(InteractionIcons.Take);
         }
 
+        /// <inheritdoc />
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
-            IInteractionSource source = interactionEvent.Source;
             IInteractionTarget target = interactionEvent.Target;
 
             if (target is VendingMachine vendingMachine)

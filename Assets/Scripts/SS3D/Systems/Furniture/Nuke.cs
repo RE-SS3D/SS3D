@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Furniture
 {
-    public class Nuke : InteractionSourceNetworkBehaviour, IInteractionTarget
+    public class Nuke : InteractionSource, IInteractionTarget
     {
         [SerializeField] private Sprite _sprite;
 

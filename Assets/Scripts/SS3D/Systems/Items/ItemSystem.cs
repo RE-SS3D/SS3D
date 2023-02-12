@@ -18,6 +18,9 @@ namespace SS3D.Systems.Items
     /// </summary>
     public sealed class ItemSystem : NetworkSystem
     {
+        /// <summary>
+        /// A dictionary of all the preloaded prefabs using the ItemIDs as key.
+        /// </summary>
         private readonly Dictionary<ItemIDs, Item> _itemPrefabs = new();
 
         protected override void OnStart()
@@ -42,6 +45,7 @@ namespace SS3D.Systems.Items
             for (int index = 0; index < assetReferences.Count; index++)
             {
                 ItemIDs id = (ItemIDs)index;
+                Punpun.Say(this, id.ToString());
 
                 GameObject itemObject = itemsAssetDatabase.Get(id);
                 Item item = itemObject.GetComponent<Item>();

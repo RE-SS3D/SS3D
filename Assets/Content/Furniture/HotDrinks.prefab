@@ -99,7 +99,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: c0166638dfcd53e4eab11bc7b4b55e76, type: 2}
 --- !u!114 &1871071288925904272
@@ -129,25 +129,26 @@ MonoBehaviour:
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 7350930404755265306
   _sceneNetworkObjects:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 1871071288925904272}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   - {fileID: 0}
 --- !u!114 &8905492951320375787
 MonoBehaviour:
@@ -164,7 +165,8 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1871071288925904272}
   _networkObjectCache: {fileID: 1871071288925904272}
-  SodaDispensePoint: {fileID: 5160227759105755511}
+  _productToDispense: 3
+  _dispensingTransform: {fileID: 5160227759105755511}
 --- !u!1 &3671711954327816294
 GameObject:
   m_ObjectHideFlags: 0

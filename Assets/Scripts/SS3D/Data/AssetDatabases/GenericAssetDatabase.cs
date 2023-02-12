@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
 using Cysharp.Threading.Tasks;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Data.AssetDatabases
@@ -14,8 +12,6 @@ namespace SS3D.Data.AssetDatabases
     /// </summary>                                             s
     public class GenericAssetDatabase : ScriptableSettings
     {
-        public event Action OnDatabaseLoaded;
-
         public string EnumPath = @"\Scripts\SS3D\Data\Enums";
         public string EnumNamespaceName = "SS3D.Data.Enums";
         public string EnumName;
@@ -58,7 +54,6 @@ namespace SS3D.Data.AssetDatabases
             await UniTask.WaitUntil(() => Assets.All(reference => reference.Asset != null));
 
             AllAssetsLoaded = true;
-            OnDatabaseLoaded?.Invoke();
         }
 
         /// <summary>

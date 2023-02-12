@@ -26,7 +26,7 @@ namespace SS3D.Systems.Storage.Items
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(NetworkTransform))]
     [RequiredLayer("Items")]
-    public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget
+    public class Item : InteractionSource, IInteractionTarget
     {
         [Header("Item settings")]
         [SerializeField]

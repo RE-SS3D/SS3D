@@ -22,7 +22,6 @@ namespace SS3D.Data
         private static readonly Dictionary<Type, GenericAssetDatabase> Databases = new();
 
         // IMPORTANT: All database getters have to be added manually. For now.
-
         public static Sprite Get(InteractionIcons icon) => FindDatabase<InteractionIconsAssetDatabase>().Get(icon);
         public static GameObject Get(ItemIDs itemId) => FindDatabase<ItemsAssetDatabase>().Get(itemId);
 
