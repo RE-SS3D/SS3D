@@ -1,4 +1,18 @@
 {
-	"name": "SS3D.Logging",
-	"references":[ "GUID:92a1e40b8cccf8645adbdd275ac6371a" ]
+    "name": "SS3D.Logging",
+    "rootNamespace": "",
+    "references": [
+        "GUID:92a1e40b8cccf8645adbdd275ac6371a",
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:ebcad7e3972724c43aa595f17cf4d103"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
