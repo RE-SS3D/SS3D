@@ -6,7 +6,7 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using FishNet.Transporting;
 using SS3D.Core.Behaviours;
-using SS3D.Core;
+using SS3D.Logging;
 using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl.Events;
 using SS3D.Systems.PlayerControl.Messages;

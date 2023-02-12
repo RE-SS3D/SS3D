@@ -1,9 +1,9 @@
-﻿
+﻿using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using SS3D.Systems.Gamemodes;
 using SS3D.Utils;
 using TMPro;
 using UnityEngine;
-using SS3D.Core.Behaviours;
 
 namespace SS3D.Systems.Gamemodes.UI
 {

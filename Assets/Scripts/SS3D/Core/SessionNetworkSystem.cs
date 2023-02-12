@@ -4,6 +4,7 @@ using FishNet;
 using FishNet.Managing;
 using SS3D.Core.Events;
 using SS3D.Core.Settings;
+using SS3D.Logging;
 using UnityEngine;
 
 namespace SS3D.Core

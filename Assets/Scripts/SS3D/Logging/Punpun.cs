@@ -2,7 +2,7 @@
 using SS3D.Utils;
 using UnityEngine;
 
-namespace SS3D.Core
+namespace SS3D.Logging
 {
     /// <summary>
     /// Custom debugger

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
 using SS3D.Core.Settings;
+using SS3D.Logging;
 using UnityEngine;
 
 namespace SS3D.Core.Utils

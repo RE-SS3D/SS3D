@@ -1,4 +1,4 @@
-﻿namespace SS3D.Core
+﻿namespace SS3D.Logging
 {
     public enum Logs
     {
