@@ -49,12 +49,18 @@ namespace SS3D.Systems.Tile
             if (_placedObject != null)
             {
                 _placedObject.DestroySelf();
+                _placedObject = null;
             }
         }
 
         public bool IsEmpty()
         {
             return _placedObject == null;
+        }
+
+        public TileLayer GetLayer()
+        {
+            return _layer;
         }
 
         /// <summary>

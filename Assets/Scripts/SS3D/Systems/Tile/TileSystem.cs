@@ -57,6 +57,11 @@ namespace SS3D.Systems.Tile
             return _currentMap.PlaceTileObject(tileObjectSo, placePosition, dir, false);
         }
 
+        public void ClearTileObject(TileObjectSo tileObjectSo, Vector3 placePosition)
+        {
+            _currentMap.ClearTileObject(placePosition, tileObjectSo.layer);
+        }
+
         public void PlaceItemObject(ItemObjectSo itemObjectSo, Vector3 placePosition, Quaternion rotation)
         {
             _currentMap.PlaceItemObject(placePosition, rotation, itemObjectSo);

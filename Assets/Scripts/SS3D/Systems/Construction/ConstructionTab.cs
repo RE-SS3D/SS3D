@@ -15,6 +15,7 @@ namespace SS3D.Systems.Construction.UI
 
         private TileObjectSo _tileObjectSo;
         private Sprite _icon;
+        private ConstructionMenu _menu;
         
 
         public void Setup(TileObjectSo tileObjectSo)
@@ -27,6 +28,14 @@ namespace SS3D.Systems.Construction.UI
             transform.localScale = Vector3.one;
 
             GetComponentInChildren<TMP_Text>().text = tileObjectSo.nameString;
+            _menu = GetComponentInParent<ConstructionMenu>();
+            GetComponent<Button>().onClick.AddListener(OnClick);
+        }
+
+        public void OnClick()
+        {
+            _menu.SetSelectedTile(_tileObjectSo);
+
         }
     }
 }

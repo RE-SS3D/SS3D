@@ -9,6 +9,7 @@ namespace SS3D.Systems.Construction.UI
     {
         public Material validConstruction;
         public Material invalidConstruction;
+        public Material deleteConstruction;
 
         private GameObject _ghostObject;
         private Vector3 _targetPosition;
@@ -18,7 +19,8 @@ namespace SS3D.Systems.Construction.UI
         {
             Valid,
             Invalid,
-            Building
+            Building,
+            Deleting
         }
 
         public void CreateGhost(GameObject prefab)
@@ -39,6 +41,7 @@ namespace SS3D.Systems.Construction.UI
             if (_ghostObject != null)
             {
                 Destroy(_ghostObject);
+                _ghostObject = null;
             }
         }
 
@@ -49,6 +52,9 @@ namespace SS3D.Systems.Construction.UI
 
         public void MoveGhost()
         {
+            // Required if the object has a network script attached
+            _ghostObject.SetActive(true);
+
             _ghostObject.transform.position = Vector3.Lerp(_ghostObject.transform.position, _targetPosition, Time.deltaTime * 15f);
             _ghostObject.transform.rotation = Quaternion.Lerp(_ghostObject.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(_dir), 0), Time.deltaTime * 15f);
         }
@@ -67,12 +73,31 @@ namespace SS3D.Systems.Construction.UI
                     break;
                 case BuildMatMode.Building:
                     break;
+                case BuildMatMode.Deleting:
+                    ghostMat = deleteConstruction;
+                    break;
+            }
+
+            foreach (MeshRenderer mr in _ghostObject.GetComponentsInChildren<MeshRenderer>())
+            {
+                Material[] materials = mr.materials;
+                for (int i = 0; i < materials.Length; i++)
+                {
+                    materials[i] = ghostMat;
+                }
+
+                mr.materials = materials;
             }
         }
 
         public void NextRotation()
         {
             _dir = TileHelper.GetNextDir(_dir);
+        }
+
+        public Direction GetDir()
+        {
+            return _dir;
         }
     }
 }

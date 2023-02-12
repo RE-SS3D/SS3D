@@ -73,14 +73,8 @@ namespace SS3D.Systems.Tile
             canBuild &= IsWall(wallObject);
 
             // No low wall mounts on windows
-            canBuild &= !(wallObject.GetPlacedObject().GetNameString().Contains("window") && wallAttachment.layer == TileLayer.WallMountLow);
-
-            /*
-            // Cannot build wall mount if it collides with the next wall
-            PlacedTileObject[] adjacentObjects = map.GetNeighbourObjects(TileLayer.Turf, 0, position);
-            if (adjacentObjects[(int)dir] && adjacentObjects[(int)dir].GetGenericType() == TileObjectGenericType.Wall)
-                return false;
-            */
+            if (!wallObject.IsEmpty())
+                canBuild &= !(wallObject.GetPlacedObject().GetNameString().Contains("window") && wallAttachment.layer == TileLayer.WallMountLow);
 
             return canBuild;
         }
@@ -111,7 +105,7 @@ namespace SS3D.Systems.Tile
             List<TileObject> toBeDestroyedList = new List<TileObject>();
 
             // Remove everything when the plenum is missing
-            if (tileObjects[(int)TileLayer.Plenum] == null)
+            if (tileObjects[(int)TileLayer.Plenum].IsEmpty())
             {
                 for (int i = 1; i < tileObjects.Length; i++)
                 {
@@ -120,14 +114,14 @@ namespace SS3D.Systems.Tile
             }
 
             // Remove any wall fixtures when the turf is missing
-            else if (tileObjects[(int)TileLayer.Turf] == null)
+            else if (tileObjects[(int)TileLayer.Turf].IsEmpty())
             {
                 toBeDestroyedList.Add(tileObjects[(int)TileLayer.WallMountHigh]);
                 toBeDestroyedList.Add(tileObjects[(int)TileLayer.WallMountLow]);
             }
 
             // Remove furniture top is furniture base is missing
-            else if (tileObjects[(int)TileLayer.FurnitureBase] == null)
+            else if (tileObjects[(int)TileLayer.FurnitureBase].IsEmpty())
                 toBeDestroyedList.Add(tileObjects[(int)TileLayer.FurnitureTop]);
 
             return toBeDestroyedList;

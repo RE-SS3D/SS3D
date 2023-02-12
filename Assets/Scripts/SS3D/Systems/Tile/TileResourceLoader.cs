@@ -36,17 +36,25 @@ namespace SS3D.Systems.Tile
             {
                 StartCoroutine(LoadAssetWithIcon(asset));
             }
+
+            Punpun.Say(this, $"Loaded {tempAssets.Length} tile assets");
         }
 
         private IEnumerator LoadAssetWithIcon(TileObjectSo asset)
         {
-            Texture2D texture = AssetPreview.GetAssetPreview(asset.prefab);
+#if UNITY_EDITOR
+            if (asset.icon == null)
+            {
+                Texture2D texture = AssetPreview.GetAssetPreview(asset.prefab);
 
-            yield return new WaitUntil(() => AssetPreview.IsLoadingAssetPreview(asset.GetInstanceID()) == false);
+                yield return new WaitUntil(() => AssetPreview.IsLoadingAssetPreview(asset.GetInstanceID()) == false);
 
-            asset.icon = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                asset.icon = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            }
+#endif
             _tileAssets.Add(asset);
-            Debug.Log("Asset added");
+
+            yield return new WaitUntil(() => (true == true));
         }
 
         private void LoadItemAssets()

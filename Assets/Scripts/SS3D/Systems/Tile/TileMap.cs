@@ -155,12 +155,7 @@ namespace SS3D.Systems.Tile
         public bool CanBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir)
         {
             // Get the right chunk
-            TileChunk chunk = GetChunk(placePosition);
-            if (chunk == null)
-            {
-                return true;
-            }
-
+            TileChunk chunk = GetOrCreateChunk(placePosition);
             List<Vector2Int> gridPositionList = tileObjectSo.GetGridOffsetList(dir);
 
             bool canBuild = true;
@@ -210,12 +205,25 @@ namespace SS3D.Systems.Tile
             TileObject[] tileObjects = GetTileObjects(placePosition);
             tileObjects[(int)layer].ClearPlacedObject();
 
+            // Update any neighbouring adjacencies
+            ResetAdjacencies(placePosition, layer);
+
             // Remove any invalid tile combinations
             List<TileObject> toRemoveObjects = BuildChecker.GetToBeDestroyedObjects(tileObjects);
 
             foreach (TileObject removeObject in toRemoveObjects)
             {
                 removeObject.ClearPlacedObject();
+                ResetAdjacencies(placePosition, removeObject.GetLayer());
+            }
+        }
+
+        private void ResetAdjacencies(Vector3 placePosition, TileLayer layer)
+        {
+            var neighbourTiles = GetNeighbourPlacedObjects(layer, placePosition);
+            for (int i = 0; i < neighbourTiles.Length; i++)
+            {
+                neighbourTiles[i]?.UpdateSingleAdjacency(null, TileHelper.GetOpposite((Direction)i));
             }
         }
 
