@@ -13,6 +13,7 @@ namespace SS3D.Systems.Tile
         public string nameString;
         public TileLayer layer;
         public GameObject prefab;
+        public Sprite icon;
 
         [Tooltip("Specify the generic type. Used for finding matching adjacencies.")]
         public TileObjectGenericType genericType;

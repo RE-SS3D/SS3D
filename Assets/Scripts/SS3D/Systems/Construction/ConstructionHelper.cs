@@ -1,0 +1,78 @@
+using SS3D.Systems.Tile;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace SS3D.Systems.Construction.UI
+{
+    public class ConstructionHelper: MonoBehaviour
+    {
+        public Material validConstruction;
+        public Material invalidConstruction;
+
+        private GameObject _ghostObject;
+        private Vector3 _targetPosition;
+        private Direction _dir = Direction.North;
+
+        public enum BuildMatMode
+        {
+            Valid,
+            Invalid,
+            Building
+        }
+
+        public void CreateGhost(GameObject prefab)
+        {
+            if (_ghostObject == null)
+            {
+                _ghostObject = Instantiate(prefab);
+
+                var collider = _ghostObject.GetComponent<Collider>();
+                if (collider != null)
+                {
+                    collider.enabled = false;
+                }
+            }
+        }
+        public void DestroyGhost()
+        {
+            if (_ghostObject != null)
+            {
+                Destroy(_ghostObject);
+            }
+        }
+
+        public void SetTargetPosition(Vector3 target)
+        {
+            _targetPosition = target;
+        }
+
+        public void MoveGhost()
+        {
+            _ghostObject.transform.position = Vector3.Lerp(_ghostObject.transform.position, _targetPosition, Time.deltaTime * 15f);
+            _ghostObject.transform.rotation = Quaternion.Lerp(_ghostObject.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(_dir), 0), Time.deltaTime * 15f);
+        }
+
+        public void ChangeGhostColor(BuildMatMode mode)
+        {
+            Material ghostMat = null;
+
+            switch (mode)
+            {
+                case BuildMatMode.Valid:
+                    ghostMat = validConstruction;
+                    break;
+                case BuildMatMode.Invalid:
+                    ghostMat = invalidConstruction;
+                    break;
+                case BuildMatMode.Building:
+                    break;
+            }
+        }
+
+        public void NextRotation()
+        {
+            _dir = TileHelper.GetNextDir(_dir);
+        }
+    }
+}

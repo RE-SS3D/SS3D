@@ -20,7 +20,7 @@ namespace SS3D.Systems.Tile
 
         private void Setup()
         {
-            _loader = new TileResourceLoader();
+            _loader = GetComponent<TileResourceLoader>();
             CreateMap("Test map");
             // Load();
 
@@ -45,6 +45,11 @@ namespace SS3D.Systems.Tile
         public ItemObjectSo GetItemAsset(string assetName)
         {
             return _loader.GetItemAsset(assetName);
+        }
+
+        public TileResourceLoader GetLoader()
+        {
+            return _loader;
         }
 
         public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir)

@@ -57,7 +57,7 @@ namespace SS3D.Systems.Tile
             //    InstanceFinder.ServerManager.Spawn(_ghostObject);
             //}
 
-            ChangeGhostColor(true);
+            ChangeGhostColor(false);
         }
 
         private void DestroyGhost()
@@ -145,6 +145,10 @@ namespace SS3D.Systems.Tile
                     {
                         ChangeGhostColor(false);
                     }
+                }
+                else
+                {
+                    ChangeGhostColor(true);
                 }
             }
 

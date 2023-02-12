@@ -35,7 +35,6 @@ namespace SS3D.Systems.Tile.Connections
         [FormerlySerializedAs("advancedAdjacency")] [SerializeField] private AdvancedConnector _advancedAdjacency;
         [FormerlySerializedAs("offsetAdjacency")] [SerializeField] private OffsetConnector _offsetAdjacency;
 
-        // [SyncVar(OnChange = nameof(SyncAdjacencies))]
         private AdjacencyMap _adjacencyMap;
 
         [SyncVar(OnChange = nameof(SyncAdjacencies))]
