@@ -10,25 +10,38 @@ using SS3D.Core.Behaviours;
 namespace SS3D.Core
 {
     // Maybe add property for local client ?
-    public class LogManager: NetworkSystem
+    public class LogManager : NetworkSystem
     {
-
         private struct ClientLogger
         {
-            public Serilog.ILogger ClientLog;
+            public ILogger ClientLog;
             public NetworkConnection Conn;
 
-            public ClientLogger(Serilog.ILogger clientLog, NetworkConnection conn)
+            public ClientLogger(ILogger clientLog, NetworkConnection conn)
             {
                 ClientLog = clientLog;
                 Conn = conn;
             }
         }
 
-        private Serilog.ILogger _serverLog;
+        public static LogManager Logs {get; private set;}
+        private ILogger _serverLog;
         private List<ClientLogger> _clientLogs;
 
-        public Serilog.ILogger ClientLog(NetworkConnection conn)
+        // Singleton pattern
+        private void Awake()
+        {
+            if (Logs != null && Logs != this)
+            {
+                Destroy(this);
+            }
+            else
+            {
+                Logs = this;
+            }
+        }
+
+        public ILogger ClientLog(NetworkConnection conn)
         {
             return _clientLogs.FirstOrDefault(log => log.Conn == conn).ClientLog;
         }
