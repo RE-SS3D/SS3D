@@ -6,11 +6,13 @@ using FishNet.Connection;
 using System.Linq;
 using Serilog.Sinks.Unity3D;
 using SS3D.Core.Behaviours;
+using Serilog.Core;
+using Serilog.Events;
 
 namespace SS3D.Core
 {
     // Maybe add property for local client ?
-    public class LogManager : NetworkSystem
+    public class SSLog : NetworkSystem
     {
         private struct ClientLogger
         {
@@ -24,28 +26,35 @@ namespace SS3D.Core
             }
         }
 
-        public static LogManager Logs {get; private set;}
+        public static SSLog Logger {get; private set;}
+
         private ILogger _serverLog;
         private List<ClientLogger> _clientLogs;
 
-        // Singleton pattern
+        private LoggingLevelSwitch _levelSwitch;
+
+        public ILogger ServerLog => _serverLog;
+
         private void Awake()
         {
-            if (Logs != null && Logs != this)
+            // Singleton pattern
+            if (Logger != null && Logger != this)
             {
                 Destroy(this);
             }
             else
             {
-                Logs = this;
+                Logger = this;
             }
+
+            _levelSwitch= new LoggingLevelSwitch();
+            _levelSwitch.MinimumLevel = LogEventLevel.Warning;
         }
 
         public ILogger ClientLog(NetworkConnection conn)
         {
             return _clientLogs.FirstOrDefault(log => log.Conn == conn).ClientLog;
         }
-
 
         public override void OnStartClient()
         {
