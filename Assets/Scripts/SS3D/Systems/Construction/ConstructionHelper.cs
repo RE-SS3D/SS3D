@@ -1,3 +1,4 @@
+using SS3D.Core.Behaviours;
 using SS3D.Systems.Tile;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,7 +6,7 @@ using UnityEngine;
 
 namespace SS3D.Systems.Construction.UI
 {
-    public class ConstructionHelper: MonoBehaviour
+    public class ConstructionHelper: Actor
     {
         public Material validConstruction;
         public Material invalidConstruction;

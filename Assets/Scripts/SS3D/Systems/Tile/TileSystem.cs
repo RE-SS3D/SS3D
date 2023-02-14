@@ -1,5 +1,7 @@
+using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Logging;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,13 +20,28 @@ namespace SS3D.Systems.Tile
             Setup();
         }
 
+        private IEnumerator WaitForResourcesLoad()
+        {
+            while (!_loader.IsInitialized())
+            {
+                yield return null;
+            }
+
+            Load();
+        }
+
+
         private void Setup()
         {
             _loader = GetComponent<TileResourceLoader>();
-            CreateMap("Test map");
-            // Load();
 
-            Punpun.Say(this, "All tiles loaded successfully");
+            // Server only loads the map
+            if (IsServer)
+            {
+                CreateMap("Test map");
+                StartCoroutine(WaitForResourcesLoad());
+                Punpun.Say(this, "All tiles loaded successfully");
+            }
         }
 
         private void CreateMap(string mapName)
@@ -52,17 +69,31 @@ namespace SS3D.Systems.Tile
             return _loader;
         }
 
-        public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir)
+        private bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir)
         {
             return _currentMap.PlaceTileObject(tileObjectSo, placePosition, dir, false);
         }
 
-        public void ClearTileObject(TileObjectSo tileObjectSo, Vector3 placePosition)
+        [ServerRpc(RequireOwnership = false)]
+        public void RpcPlaceTileObject(string tileObjectSoName, Vector3 placePosition, Direction dir)
+        {
+            TileObjectSo tileObjectSo = GetTileAsset(tileObjectSoName);
+            PlaceTileObject(tileObjectSo, placePosition, dir);
+        }
+
+        private void ClearTileObject(TileObjectSo tileObjectSo, Vector3 placePosition)
         {
             _currentMap.ClearTileObject(placePosition, tileObjectSo.layer);
         }
 
-        public void PlaceItemObject(ItemObjectSo itemObjectSo, Vector3 placePosition, Quaternion rotation)
+        [ServerRpc(RequireOwnership = false)]
+        public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition)
+        {
+            TileObjectSo tileObjectSo = GetTileAsset(tileObjectSoName);
+            _currentMap.ClearTileObject(placePosition, tileObjectSo.layer);
+        }
+
+        private void PlaceItemObject(ItemObjectSo itemObjectSo, Vector3 placePosition, Quaternion rotation)
         {
             _currentMap.PlaceItemObject(placePosition, rotation, itemObjectSo);
         }
@@ -71,6 +102,18 @@ namespace SS3D.Systems.Tile
         {
             return _currentMap.CanBuild(tileObjectSo, placePosition, dir);
         }
+
+        /*
+        [ServerRpc(RequireOwnership = false)]
+        public void RpcCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir)
+        {
+            TileObjectSo tileObjectSo = GetTileAsset(tileObjectSoName);
+
+            bool canBuild = _currentMap.CanBuild(tileObjectSo, placePosition, dir);
+            RpcReceiveCanBuild(canBuild);
+        }
+        */
+       
 
         public void Save()
         {

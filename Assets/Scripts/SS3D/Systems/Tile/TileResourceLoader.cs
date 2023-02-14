@@ -14,6 +14,7 @@ namespace SS3D.Systems.Tile
     {
         private List<TileObjectSo> _tileAssets;
         private List<ItemObjectSo> _itemAssets;
+        private bool _initialized = false;
 
         public void Start()
         {
@@ -32,29 +33,35 @@ namespace SS3D.Systems.Tile
 
             TileObjectSo[] tempAssets = Resources.LoadAll<TileObjectSo>("");
 
-            foreach (var asset in tempAssets)
-            {
-                StartCoroutine(LoadAssetWithIcon(asset));
-            }
-
-            Punpun.Say(this, $"Loaded {tempAssets.Length} tile assets");
+            StartCoroutine(LoadAssetsWithIcon(tempAssets));
         }
 
-        private IEnumerator LoadAssetWithIcon(TileObjectSo asset)
+        private IEnumerator LoadAssetsWithIcon(TileObjectSo[] assets)
         {
+            List<Texture2D> tempIcons = new List<Texture2D>();
+
 #if UNITY_EDITOR
-            if (asset.icon == null)
+            foreach (var asset in assets)
             {
-                Texture2D texture = AssetPreview.GetAssetPreview(asset.prefab);
+                tempIcons.Add(AssetPreview.GetAssetPreview(asset.prefab));
+            }
 
-                yield return new WaitUntil(() => AssetPreview.IsLoadingAssetPreview(asset.GetInstanceID()) == false);
-
-                asset.icon = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            while (AssetPreview.IsLoadingAssetPreviews())
+            {
+                yield return null;
             }
 #endif
-            _tileAssets.Add(asset);
+            
+            for (int i = 0; i < assets.Length; i++)
+            {
+#if UNITY_EDITOR
+                assets[i].icon = Sprite.Create(tempIcons[i], new Rect(0, 0, tempIcons[i].width, tempIcons[i].height), new Vector2(0.5f, 0.5f));
+#endif
+                _tileAssets.Add(assets[i]);
+            }
 
-            yield return new WaitUntil(() => (true == true));
+            _initialized = true;
+            yield return null;
         }
 
         private void LoadItemAssets()
@@ -66,6 +73,11 @@ namespace SS3D.Systems.Tile
             {
                 _itemAssets.Add(asset);
             }
+        }
+
+        public bool IsInitialized()
+        {
+            return _initialized;
         }
 
         public TileObjectSo GetTileAsset(string assetName)

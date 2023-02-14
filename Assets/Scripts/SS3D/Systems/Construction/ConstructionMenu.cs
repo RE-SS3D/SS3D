@@ -7,10 +7,12 @@ using UnityEngine.UIElements;
 using UnityEngine.EventSystems;
 using System.Linq;
 using TMPro;
+using FishNet.Object;
+using FishNet.Connection;
 
 namespace SS3D.Systems.Construction.UI
 {
-    public class ConstructionMenu : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class ConstructionMenu : NetworkBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         public GameObject _menuRoot;
         public GameObject _contentRoot;
@@ -99,11 +101,11 @@ namespace SS3D.Systems.Construction.UI
             {
                 if (_isDeleting)
                 {
-                    _tileSystem.ClearTileObject(_selectedObject, snappedPosition);
+                    _tileSystem.RpcClearTileObject(_selectedObject.nameString, snappedPosition);
                 }
                 else
                 {
-                    _tileSystem.PlaceTileObject(_selectedObject, snappedPosition, _ghostManager.GetDir());
+                    _tileSystem.RpcPlaceTileObject(_selectedObject.nameString, snappedPosition, _ghostManager.GetDir());
                     RefreshGhost();
                 }
             }
@@ -123,9 +125,24 @@ namespace SS3D.Systems.Construction.UI
 
         private void CheckBuildValidity(Vector3 placePosition)
         {
-            bool valid = _tileSystem.CanBuild(_selectedObject, placePosition, _ghostManager.GetDir());
+            RpcSendCanBuild(_selectedObject.nameString, placePosition, _ghostManager.GetDir(), LocalConnection);
+        }
 
-            if (valid)
+
+        [ServerRpc(RequireOwnership = false)]
+        public void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, NetworkConnection con)
+        {
+            Debug.Log("Send a CanBuild packet");
+            TileObjectSo tileObjectSo = _tileSystem.GetTileAsset(tileObjectSoName);
+
+            bool canBuild = _tileSystem.CanBuild(tileObjectSo, placePosition, dir);
+            RpcReceiveCanBuild(con, canBuild);
+        }
+
+        [TargetRpc]
+        private void RpcReceiveCanBuild(NetworkConnection con, bool canBuild)
+        {
+            if (canBuild)
                 _ghostManager.ChangeGhostColor(ConstructionHelper.BuildMatMode.Valid);
             else
                 _ghostManager.ChangeGhostColor(ConstructionHelper.BuildMatMode.Invalid);
