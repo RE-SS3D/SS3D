@@ -40,12 +40,10 @@ namespace SS3D.Systems.Items
             await UniTask.WaitUntil(() => itemsAssetDatabase.AllAssetsLoaded);
 
             List<GameObject> assetReferences = itemsAssetDatabase.Assets.Select(reference => reference.Asset as GameObject).ToList();
-            Punpun.Say(this, assetReferences.IsNullOrEmpty().ToString());
 
             for (int index = 0; index < assetReferences.Count; index++)
             {
                 ItemIDs id = (ItemIDs)index;
-                Punpun.Say(this, id.ToString());
 
                 GameObject itemObject = itemsAssetDatabase.Get(id);
                 Item item = itemObject.GetComponent<Item>();
@@ -92,7 +90,7 @@ namespace SS3D.Systems.Items
             ServerManager.Spawn(itemInstance.GameObject);
 
             Punpun.Say(this, $"Item {itemInstance.name} spawned at {position}", Logs.ServerOnly);
-            return itemPrefab;
+            return itemInstance;
         }
     }
 }

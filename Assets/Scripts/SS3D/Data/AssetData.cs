@@ -49,10 +49,13 @@ namespace SS3D.Data
 
             foreach (Type genericDatabase in genericDatabaseInheritors)
             {
-                ScriptableSettings.TryGet(genericDatabase, out ScriptableSettings databaseAsset);
-                ((GenericAssetDatabase)databaseAsset).PreloadAssets();
+                ScriptableSettings.TryGet(genericDatabase, out ScriptableSettings scriptableSettings);
+                GenericAssetDatabase assetDatabase = (GenericAssetDatabase)scriptableSettings;
 
-                Databases.Add(genericDatabase, (GenericAssetDatabase)databaseAsset);
+                assetDatabase.AllAssetsLoaded = false;
+                assetDatabase.PreloadAssets();
+
+                Databases.Add(genericDatabase, (GenericAssetDatabase)scriptableSettings);
             }
 
             Punpun.Say(typeof(AssetData), $"{genericDatabaseInheritors.Count} Asset Databases initialized", Logs.Important);

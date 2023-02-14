@@ -2,6 +2,7 @@
 using System.Linq;
 using Coimbra;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Object = UnityEngine.Object;
 
@@ -18,6 +19,7 @@ namespace SS3D.Data.AssetDatabases
 
         public List<AssetReference> Assets;
 
+        [HideInInspector]
         public bool AllAssetsLoaded;
 
         /// <summary>
@@ -41,9 +43,7 @@ namespace SS3D.Data.AssetDatabases
                 assetReference.LoadAssetAsync<T>();
             }
 
-#pragma warning disable CS4014
-            WaitUntilAllAssetsAreLoaded();
-#pragma warning restore CS4014
+            UniTaskVoid _ = WaitUntilAllAssetsAreLoaded();
         }
 
         /// <summary>
