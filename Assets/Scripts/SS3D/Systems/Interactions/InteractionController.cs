@@ -28,10 +28,9 @@ namespace SS3D.Systems.Interactions
         private Camera _camera;
         private RadialInteractionView _radialView;
 
-        [Client]
-        protected override void OnStart()
+        public override void OnStartClient()
         {
-            base.OnStart();
+            base.OnStartClient();
 
             _radialView = SystemLocator.Get<RadialInteractionView>();
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
