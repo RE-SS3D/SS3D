@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object;
+using Serilog;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Interactions;
@@ -48,6 +49,7 @@ namespace SS3D.Systems.Interactions
             if (Input.GetButtonDown("Primary Click"))
             {
                 ProcessPrimaryClick();
+                Log.Information("client made primary click");
             }
 
             else if (Input.GetButtonDown("Secondary Click"))
