@@ -36,12 +36,12 @@ namespace SS3D.Systems.Interactions
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
         }
 
-        [Client]
+        [ServerOrClient]
         protected override void HandleUpdate(in float deltaTime)
         {
             base.HandleUpdate(in deltaTime);
 
-            if (!IsOwner || _camera == null || EventSystem.current.IsPointerOverGameObject())
+            if (IsServerOnly || !IsOwner || _camera == null || EventSystem.current.IsPointerOverGameObject())
             {
                 return;
             }
