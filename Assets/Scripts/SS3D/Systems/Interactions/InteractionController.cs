@@ -121,7 +121,7 @@ namespace SS3D.Systems.Interactions
         private void ViewTargetInteractions(List<InteractionEntry> viableInteractions, InteractionEvent interactionEvent, Ray ray)
         {
             List<IInteraction> interactions = viableInteractions.Select(entry => entry.Interaction).ToList();
-            
+
             if (interactions.Count <= 0) { return; }
 
             void handleInteractionSelected(IInteraction interaction, RadialInteractionButton _)
@@ -205,7 +205,7 @@ namespace SS3D.Systems.Interactions
 
             InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, interaction.Interaction);
             RpcExecuteClientInteraction(ray, interactionName, reference.Id);
-            
+
             // TODO: Keep track of interactions for cancellation
         }
 
@@ -225,12 +225,12 @@ namespace SS3D.Systems.Interactions
                 viableInteractions.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
 
             interactionEvent.Target = interaction.Target;
-            
+
             if (interaction.Interaction?.GetName(interactionEvent) != interactionName)
             {
                 return;
             }
-            
+
             interactionEvent.Source.ClientInteract(interactionEvent, interaction.Interaction, new InteractionReference(referenceId));
         }
 
@@ -250,7 +250,7 @@ namespace SS3D.Systems.Interactions
                 interactionEvent = null;
                 return new List<InteractionEntry>();
             }
-            
+
             List<IInteractionTarget> targets = new();
 
             // Raycast to find target game object
@@ -348,7 +348,7 @@ namespace SS3D.Systems.Interactions
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
             InteractionEvent interactionEvent = new(source, null);
             List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
-            
+
             // TODO: Validate access to inventory
 
             // Check for valid interaction index
@@ -358,7 +358,7 @@ namespace SS3D.Systems.Interactions
 
                 return;
             }
-            
+
             InteractionEntry chosenEntry = entries[index];
             interactionEvent.Target = chosenEntry.Target;
 
@@ -369,7 +369,7 @@ namespace SS3D.Systems.Interactions
 
                 return;
             }
-            
+
             InteractionReference reference = interactionEvent.Source.Interact(interactionEvent, chosenEntry.Interaction);
             if (chosenEntry.Interaction.CreateClient(interactionEvent) != null)
             {
@@ -396,10 +396,10 @@ namespace SS3D.Systems.Interactions
             List<IInteractionTarget> targets = GetTargetsFromGameObject(source, target);
             InteractionEvent interactionEvent = new(source, new InteractionTargetGameObject(target));
             List<InteractionEntry> entries = GetInteractionsFromTargets(source, targets, interactionEvent);
-            
+
             InteractionEntry chosenInteraction = entries.Find(entry => entry.Interaction.GetName(interactionEvent) == interactionName);
             interactionEvent.Target = chosenInteraction.Target;
-            
+
             interactionEvent.Source.ClientInteract(interactionEvent, chosenInteraction.Interaction, new InteractionReference(referenceId));
         }
     }

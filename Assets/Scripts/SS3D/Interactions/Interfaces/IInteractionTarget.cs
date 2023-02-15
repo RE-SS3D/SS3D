@@ -6,10 +6,10 @@
     public interface IInteractionTarget
     {
         /// <summary>
-        /// Generates possible interactions (not checked for CanExecute)
+        /// Creates possible interactions (not checked for CanExecute)
         /// </summary>
         /// <param name="interactionEvent">The interaction event</param>
-        /// <returns>All possible interactions</returns>
+        /// <returns>All created interactions</returns>
         IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent);
     }
 }

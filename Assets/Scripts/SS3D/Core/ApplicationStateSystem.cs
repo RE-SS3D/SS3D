@@ -20,8 +20,8 @@ namespace SS3D.Core
         {
             Punpun.Say(this, "Initializing application", Logs.Important);
 
-            InitializeApplicationSettings();
             InitializeSubsystems();
+            InitializeApplicationSettings();
             InitializeNetworkSession();
         }
 
