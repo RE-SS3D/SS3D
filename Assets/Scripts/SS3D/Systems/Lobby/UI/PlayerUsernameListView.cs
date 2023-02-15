@@ -36,9 +36,9 @@ namespace SS3D.Systems.Lobby.UI
             AddHandle(ReadyPlayersChanged.AddListener(HandleReadyPlayersChanged));
         }
 
-        public override void OnStartClient()
+        public override void OnStartNetwork()
         {
-            base.OnStartClient();
+            base.OnStartNetwork();
             SubscribeToEvents();
         }
 
