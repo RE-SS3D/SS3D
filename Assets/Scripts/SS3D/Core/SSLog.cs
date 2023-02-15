@@ -6,7 +6,7 @@ using Serilog.Sinks.Unity3D;
 using SS3D.Core.Behaviours;
 using Serilog.Core;
 using Serilog.Events;
-using Serilog.Context;
+using UnityEngine;
 
 namespace SS3D.Core
 {
@@ -32,10 +32,15 @@ namespace SS3D.Core
             //ClientLog.Information("##########  CLIENT STARTING !  ##########");
             //ClientManager.OnClientConnectionState
 
+            if (IsHost)
+            {
+                return;
+            }
+
             Log.Logger = new LoggerConfiguration()
                 .Enrich.With(new ClientIdEnricher())
                 .WriteTo.Unity3D()
-                .WriteTo.File("Logs/LogSession.txt", outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = {ClientId}] {Message}{NewLine}{Exception}")
+                .WriteTo.File(Application.dataPath + "Logs/LogSession.txt", outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = {ClientId}] {Message}{NewLine}{Exception}")
                 .CreateLogger();
             Log.Information("##########  CLIENT STARTING !  ##########");
         }
@@ -46,7 +51,7 @@ namespace SS3D.Core
             Log.Logger = new LoggerConfiguration()
                 .Enrich.With(new ClientIdEnricher())
                 .WriteTo.Unity3D()
-                .WriteTo.File("Logs/LogSession.txt", outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = {ClientId}] {Message}{NewLine}{Exception}")
+                .WriteTo.File(Application.dataPath + "Logs/LogSession.txt", outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = {ClientId}] {Message}{NewLine}{Exception}")
                 .CreateLogger();
             Log.Information("##########  SERVER STARTING !  ##########");
             ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
