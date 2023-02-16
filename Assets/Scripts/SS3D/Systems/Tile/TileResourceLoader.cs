@@ -12,8 +12,9 @@ namespace SS3D.Systems.Tile
 
     public class TileResourceLoader: MonoBehaviour
     {
-        private List<TileObjectSo> _tileAssets;
-        private List<ItemObjectSo> _itemAssets;
+        public Sprite _missingIcon;
+
+        private List<GenericObjectSo> _assets;
         private bool _initialized = false;
 
         public void Start()
@@ -23,56 +24,45 @@ namespace SS3D.Systems.Tile
 
         private void LoadAssets()
         {
-            LoadTileAssets();
-            LoadItemAssets();
-        }
+            _assets = new List<GenericObjectSo>();
 
-        private void LoadTileAssets()
-        {
-            _tileAssets = new List<TileObjectSo>();
-
-            TileObjectSo[] tempAssets = Resources.LoadAll<TileObjectSo>("");
-
+            GenericObjectSo[] tempAssets = Resources.LoadAll<GenericObjectSo>("");
             StartCoroutine(LoadAssetsWithIcon(tempAssets));
         }
 
-        private IEnumerator LoadAssetsWithIcon(TileObjectSo[] assets)
+        private IEnumerator LoadAssetsWithIcon(GenericObjectSo[] assets)
         {
             List<Texture2D> tempIcons = new List<Texture2D>();
 
 #if UNITY_EDITOR
             foreach (var asset in assets)
             {
-                tempIcons.Add(AssetPreview.GetAssetPreview(asset.prefab));
-            }
+                Texture2D texture = AssetPreview.GetAssetPreview(asset.prefab);
+                yield return new WaitUntil(() => AssetPreview.IsLoadingAssetPreview(asset.GetInstanceID()) == false);
 
-            while (AssetPreview.IsLoadingAssetPreviews())
-            {
-                yield return null;
+                if (texture == null)
+                {
+                    // Unity is dumb, so we need to reload generated textures...
+                    texture = AssetPreview.GetAssetPreview(asset.prefab);
+                }
+
+                tempIcons.Add(texture);
             }
 #endif
-            
+
             for (int i = 0; i < assets.Length; i++)
             {
 #if UNITY_EDITOR
                 assets[i].icon = Sprite.Create(tempIcons[i], new Rect(0, 0, tempIcons[i].width, tempIcons[i].height), new Vector2(0.5f, 0.5f));
 #endif
-                _tileAssets.Add(assets[i]);
+                if (assets[i].icon == null)
+                    assets[i].icon = _missingIcon;
+
+                _assets.Add(assets[i]);
             }
 
             _initialized = true;
             yield return null;
-        }
-
-        private void LoadItemAssets()
-        {
-            _itemAssets = new List<ItemObjectSo>();
-            ItemObjectSo[] tempAssets = Resources.LoadAll<ItemObjectSo>("");
-
-            foreach (var asset in tempAssets)
-            {
-                _itemAssets.Add(asset);
-            }
         }
 
         public bool IsInitialized()
@@ -80,32 +70,18 @@ namespace SS3D.Systems.Tile
             return _initialized;
         }
 
-        public TileObjectSo GetTileAsset(string assetName)
+        public GenericObjectSo GetAsset(string assetName)
         {
-            TileObjectSo tileObjectSo = _tileAssets.FirstOrDefault(tileObject => tileObject.nameString == assetName);
-            if (tileObjectSo == null)
+            GenericObjectSo genericObjectSo = _assets.FirstOrDefault(tileObject => tileObject.nameString == assetName);
+            if (genericObjectSo == null)
                 Punpun.Yell(this, $"Requested tile asset {assetName} was not found.");
 
-            return tileObjectSo;
+            return genericObjectSo;
         }
 
-        public ItemObjectSo GetItemAsset(string assetName)
+        public List<GenericObjectSo> GetAllAssets()
         {
-            ItemObjectSo itemObjectSo = _itemAssets.FirstOrDefault(tileObject => tileObject.nameString == assetName);
-            if (itemObjectSo == null)
-                Punpun.Yell(this, $"Requested tile asset {assetName} was not found.");
-
-            return itemObjectSo;
-        }
-
-        public List<TileObjectSo> GetAllTileAssets()
-        {
-            return _tileAssets;
-        }
-
-        public List<ItemObjectSo> GetAllItemAssets()
-        {
-            return _itemAssets;
+            return _assets;
         }
     }
 }

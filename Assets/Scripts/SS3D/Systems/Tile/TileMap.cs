@@ -234,6 +234,23 @@ namespace SS3D.Systems.Tile
             _items.Add(placedItem);
         }
 
+        public void ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo)
+        {
+            List<PlacedItemObject> placedItems = _items.FindAll(item => item.GetNameString() == itemObjectSo.nameString);
+            PlacedItemObject toRemove = null;
+
+            foreach (PlacedItemObject item in placedItems)
+            {
+                if (Vector3.Distance(item.transform.position, worldPosition) < 1f)
+                {
+                    toRemove = item;
+                }
+            }
+
+            toRemove?.DestroySelf();
+            _items.Remove(toRemove);
+        }
+
         public void Clear()
         {
             foreach (TileChunk chunk in _chunks.Values)
@@ -290,7 +307,7 @@ namespace SS3D.Systems.Tile
 
                 foreach (var savedTile in savedChunk.tileObjectSaveObjectArray)
                 {
-                    TileObjectSo toBePlaced = tileSystem.GetTileAsset(savedTile.placedSaveObject.tileObjectSOName);
+                    TileObjectSo toBePlaced = (TileObjectSo)tileSystem.GetAsset(savedTile.placedSaveObject.tileObjectSOName);
                     Vector3 placePosition = chunk.GetWorldPosition(savedTile.x, savedTile.y);
 
                     // Skipping build check here to allow loading tile objects in a non-valid order
@@ -300,7 +317,7 @@ namespace SS3D.Systems.Tile
 
             foreach (var savedItem in saveObject.savedItemList)
             {
-                ItemObjectSo toBePlaced = tileSystem.GetItemAsset(savedItem.itemName);
+                ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
                 PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
             }
         }

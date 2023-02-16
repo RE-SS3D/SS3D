@@ -9,32 +9,33 @@ namespace SS3D.Systems.Construction.UI
 {
     public class ConstructionTab : MonoBehaviour
     {
-        public Image _image;
-        public Button _button;
-
-
-        private TileObjectSo _tileObjectSo;
-        private Sprite _icon;
+        private Image _image;
+        private GenericObjectSo _genericObjectSo;
         private ConstructionMenu _menu;
         
 
-        public void Setup(TileObjectSo tileObjectSo)
+        private void LoadTab(Sprite icon, string nameString)
         {
-            _tileObjectSo = tileObjectSo;
-            _icon = tileObjectSo.icon;
-
             _image = GetComponent<Image>();
-            _image.sprite = tileObjectSo.icon;
+            _image.sprite = icon;
             transform.localScale = Vector3.one;
 
-            GetComponentInChildren<TMP_Text>().text = tileObjectSo.nameString;
+            GetComponentInChildren<TMP_Text>().text = nameString;
             _menu = GetComponentInParent<ConstructionMenu>();
             GetComponent<Button>().onClick.AddListener(OnClick);
         }
 
+        public void Setup(GenericObjectSo genericObjectSo)
+        {
+            _genericObjectSo = genericObjectSo;
+
+            LoadTab(genericObjectSo.icon, genericObjectSo.nameString);
+        }
+
         public void OnClick()
         {
-            _menu.SetSelectedTile(_tileObjectSo);
+            if (_genericObjectSo != null)
+                _menu.SetSelectedObject(_genericObjectSo);
 
         }
     }

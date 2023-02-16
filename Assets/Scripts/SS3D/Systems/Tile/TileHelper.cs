@@ -19,6 +19,7 @@ namespace SS3D.Systems.Tile
         WallMountLow,
         FurnitureBase,
         FurnitureTop,
+        Overlays
     }
 
     /// <summary>

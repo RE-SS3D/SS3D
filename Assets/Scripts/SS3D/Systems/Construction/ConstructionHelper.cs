@@ -30,10 +30,10 @@ namespace SS3D.Systems.Construction.UI
             {
                 _ghostObject = Instantiate(prefab);
 
-                var collider = _ghostObject.GetComponent<Collider>();
-                if (collider != null)
+                var colliders = _ghostObject.GetComponents<Collider>();
+                foreach (Collider col in colliders)
                 {
-                    collider.enabled = false;
+                    col.enabled = false;
                 }
             }
         }

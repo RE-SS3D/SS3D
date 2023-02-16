@@ -7,13 +7,9 @@ namespace SS3D.Systems.Tile
     /// Scriptable object that should be used for every tile object.
     /// </summary>
     [CreateAssetMenu(fileName = "TileObjectSo", menuName = "TileMap/TileObjectSo", order = 0)]
-    public class TileObjectSo : ScriptableObject
+    public class TileObjectSo : GenericObjectSo
     {
-        [Tooltip("A name for the object. Make sure it is unique.")]
-        public string nameString;
         public TileLayer layer;
-        public GameObject prefab;
-        public Sprite icon;
 
         [Tooltip("Specify the generic type. Used for finding matching adjacencies.")]
         public TileObjectGenericType genericType;

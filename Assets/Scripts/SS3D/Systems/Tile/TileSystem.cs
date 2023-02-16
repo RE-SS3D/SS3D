@@ -54,6 +54,12 @@ namespace SS3D.Systems.Tile
             }
         }
 
+        public GenericObjectSo GetAsset(string assetName)
+        {
+            return _loader.GetAsset(assetName);
+        }
+
+        /*
         public TileObjectSo GetTileAsset(string assetName)
         {
             return _loader.GetTileAsset(assetName);
@@ -63,22 +69,32 @@ namespace SS3D.Systems.Tile
         {
             return _loader.GetItemAsset(assetName);
         }
+        */
 
         public TileResourceLoader GetLoader()
         {
             return _loader;
         }
 
-        private bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir)
+        private bool PlaceObject(GenericObjectSo genericObjectSo, Vector3 placePosition, Direction dir)
         {
-            return _currentMap.PlaceTileObject(tileObjectSo, placePosition, dir, false);
+            if (genericObjectSo is TileObjectSo)
+            {
+                return _currentMap.PlaceTileObject((TileObjectSo)genericObjectSo, placePosition, dir, false);
+            }
+            else if (genericObjectSo is ItemObjectSo)
+            {
+                _currentMap.PlaceItemObject(placePosition, Quaternion.Euler(0, TileHelper.GetRotationAngle(dir), 0), (ItemObjectSo)genericObjectSo);
+            }
+
+            return true;
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void RpcPlaceTileObject(string tileObjectSoName, Vector3 placePosition, Direction dir)
+        public void RpcPlaceObject(string genericObjectSoName, Vector3 placePosition, Direction dir)
         {
-            TileObjectSo tileObjectSo = GetTileAsset(tileObjectSoName);
-            PlaceTileObject(tileObjectSo, placePosition, dir);
+            GenericObjectSo tileObjectSo = GetAsset(genericObjectSoName);
+            PlaceObject(tileObjectSo, placePosition, dir);
         }
 
         private void ClearTileObject(TileObjectSo tileObjectSo, Vector3 placePosition)
@@ -89,14 +105,23 @@ namespace SS3D.Systems.Tile
         [ServerRpc(RequireOwnership = false)]
         public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition)
         {
-            TileObjectSo tileObjectSo = GetTileAsset(tileObjectSoName);
-            _currentMap.ClearTileObject(placePosition, tileObjectSo.layer);
+            GenericObjectSo tileObjectSo = GetAsset(tileObjectSoName);
+            _currentMap.ClearTileObject(placePosition, ((TileObjectSo)tileObjectSo).layer);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void RpcClearItemObject(string itemObjectSoName, Vector3 placePosition)
+        {
+            ItemObjectSo itemObjectSo = (ItemObjectSo)GetAsset(itemObjectSoName);
+            _currentMap.ClearItemObject(placePosition, itemObjectSo);
+        }
+
+        /*
         private void PlaceItemObject(ItemObjectSo itemObjectSo, Vector3 placePosition, Quaternion rotation)
         {
             _currentMap.PlaceItemObject(placePosition, rotation, itemObjectSo);
         }
+        */
 
         public bool CanBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir)
         {

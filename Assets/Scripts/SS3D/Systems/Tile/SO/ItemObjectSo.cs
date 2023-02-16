@@ -5,11 +5,8 @@ using UnityEngine;
 namespace SS3D.Systems.Tile
 {
     [CreateAssetMenu(fileName = "ItemObjectSo", menuName = "TileMap/ItemObjectSo", order = 0)]
-    public class ItemObjectSo: ScriptableObject
+    public class ItemObjectSo: GenericObjectSo
     {
-        [Tooltip("A name for the object. Make sure it is unique.")]
-        public string nameString;
-
-        public GameObject prefab;
+        
     }
 }

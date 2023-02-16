@@ -9,6 +9,7 @@ using System.Linq;
 using TMPro;
 using FishNet.Object;
 using FishNet.Connection;
+using SS3D.Logging;
 
 namespace SS3D.Systems.Construction.UI
 {
@@ -26,13 +27,13 @@ namespace SS3D.Systems.Construction.UI
         private bool _mouseOverUI = false;
 
         private Vector3 _lastSnappedPosition;
-        private TileObjectSo _selectedObject;
-        
+        private GenericObjectSo _selectedObject;
+
         private TileSystem _tileSystem;
         private ConstructionHelper _ghostManager;
         private Plane _plane;
 
-        private List<TileObjectSo> _tileDatabase;
+        private List<GenericObjectSo> _objectDatabase;
 
         private void Start()
         {
@@ -47,7 +48,7 @@ namespace SS3D.Systems.Construction.UI
                 _ghostManager = GetComponent<ConstructionHelper>();
                 _plane = new Plane(Vector3.up, 0);
 
-                LoadFoundations();
+                LoadObjectGrid(new[] { TileLayer.Plenum }, false);
 
                 _initalized = true;
             }
@@ -56,7 +57,7 @@ namespace SS3D.Systems.Construction.UI
         private void Update()
         {
             // Check for enabling the construction menu
-            if (Input.GetKeyDown(KeyCode.N))
+            if (Input.GetKeyDown(KeyCode.B))
             {
                 _enabled = !_enabled;
                 ShowUI(_enabled);
@@ -67,7 +68,7 @@ namespace SS3D.Systems.Construction.UI
                 return;
 
             // Clean-up if we are not building
-            if (!_enabled || (_selectedObject == null))
+            if (!_enabled || _selectedObject == null)
             {
                 _ghostManager.DestroyGhost();
                 return;
@@ -86,11 +87,18 @@ namespace SS3D.Systems.Construction.UI
 
             // Check if mouse moved
             Vector3 snappedPosition = TileHelper.GetClosestPosition(GetMousePosition());
-            if (snappedPosition != _lastSnappedPosition)
+            if (snappedPosition != _lastSnappedPosition && !_itemPlacement)
             {
                 _ghostManager.SetTargetPosition(snappedPosition);
                 _lastSnappedPosition = snappedPosition;
                 RefreshGhost();
+            }
+
+            if (_itemPlacement)
+            {
+                Vector3 newPosition = GetMousePosition();
+                _ghostManager.SetTargetPosition(newPosition);
+                _lastSnappedPosition = newPosition;
             }
 
             // Move ghost
@@ -99,17 +107,41 @@ namespace SS3D.Systems.Construction.UI
             // Check if we can want to place or delete an object
             if (Input.GetKeyDown(KeyCode.Mouse0) && !_mouseOverUI)
             {
-                if (_isDeleting)
-                {
-                    _tileSystem.RpcClearTileObject(_selectedObject.nameString, snappedPosition);
-                }
+                PlaceObjectClick(_lastSnappedPosition);
+            }
+        }
+
+        private void PlaceObjectClick(Vector3 snappedPosition)
+        {
+            if (_isDeleting)
+            {
+                if (_itemPlacement)
+                    DeleteItemObjectClick(snappedPosition);
                 else
+                    _tileSystem.RpcClearTileObject(_selectedObject.nameString, snappedPosition);
+            }
+            else
+            {
+                _tileSystem.RpcPlaceObject(_selectedObject.nameString, snappedPosition, _ghostManager.GetDir());
+                RefreshGhost();
+            }
+        }
+
+        private void DeleteItemObjectClick(Vector3 worldPosition)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out RaycastHit hitInfo))
+            {
+                PlacedItemObject placedItem = hitInfo.collider.gameObject.GetComponent<PlacedItemObject>();
+
+                if (placedItem != null)
                 {
-                    _tileSystem.RpcPlaceTileObject(_selectedObject.nameString, snappedPosition, _ghostManager.GetDir());
-                    RefreshGhost();
+                    _tileSystem.RpcClearItemObject(placedItem.GetNameString(), worldPosition);
                 }
             }
         }
+
 
         private Vector3 GetMousePosition()
         {
@@ -132,8 +164,7 @@ namespace SS3D.Systems.Construction.UI
         [ServerRpc(RequireOwnership = false)]
         public void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, NetworkConnection con)
         {
-            Debug.Log("Send a CanBuild packet");
-            TileObjectSo tileObjectSo = _tileSystem.GetTileAsset(tileObjectSoName);
+            TileObjectSo tileObjectSo = (TileObjectSo) _tileSystem.GetAsset(tileObjectSoName);
 
             bool canBuild = _tileSystem.CanBuild(tileObjectSo, placePosition, dir);
             RpcReceiveCanBuild(con, canBuild);
@@ -153,15 +184,21 @@ namespace SS3D.Systems.Construction.UI
             _menuRoot.SetActive(show);
         }
 
-        private void LoadTileGrid(TileLayer[] allowedLayers)
+        private void LoadObjectGrid(TileLayer[] allowedLayers, bool isItems)
         {
-            ClearTileGrid();
+            ClearGrid();
 
-            _tileDatabase = _tileSystem.GetLoader().GetAllTileAssets();
+            _objectDatabase = _tileSystem.GetLoader().GetAllAssets();
 
-            foreach (var asset in _tileDatabase)
+            foreach (var asset in _objectDatabase)
             {
-                if (!allowedLayers.Contains(asset.layer))
+                if (isItems && asset is not ItemObjectSo)
+                    continue;
+
+                if (!isItems && asset is ItemObjectSo)
+                    continue;
+
+                if (!isItems && asset is TileObjectSo && !allowedLayers.Contains(((TileObjectSo)asset).layer))
                     continue;
 
                 GameObject slot = Instantiate(_slotPrefab);
@@ -173,7 +210,7 @@ namespace SS3D.Systems.Construction.UI
             }
         }
 
-        private void ClearTileGrid()
+        private void ClearGrid()
         {
             for (int i = 0; i < _contentRoot.transform.childCount; i++)
             {
@@ -187,39 +224,46 @@ namespace SS3D.Systems.Construction.UI
             {
                 _ghostManager.ChangeGhostColor(ConstructionHelper.BuildMatMode.Deleting);
             }
-            else
+            else if (_itemPlacement)
+            {
+                _ghostManager.ChangeGhostColor(ConstructionHelper.BuildMatMode.Valid);
+            }
+            else if (!_itemPlacement)
             {
                 CheckBuildValidity(_lastSnappedPosition);
             }
         }
 
-        public void SetSelectedTile(TileObjectSo tileObjectSo)
+        public void SetSelectedObject(GenericObjectSo genericObjectSo)
         {
-            _selectedObject = tileObjectSo;
+            if (genericObjectSo is TileObjectSo)
+                _itemPlacement = false;
+            else if (genericObjectSo is ItemObjectSo)
+                _itemPlacement = true;
+
+            _selectedObject = genericObjectSo;
             _ghostManager.DestroyGhost();
-            _ghostManager.CreateGhost(tileObjectSo.prefab);
+            _ghostManager.CreateGhost(genericObjectSo.prefab);
             RefreshGhost();
         }
 
         public void LoadMap()
         {
-            _tileSystem.Load();
+            if (IsServer)
+                _tileSystem.Load();
+            else
+                Punpun.Say(this, "Only the server is allowed to load the map");
         }
 
         public void SaveMap()
         {
-            _tileSystem.Save();
+            if (IsServer)
+                _tileSystem.Save();
+            else
+                Punpun.Say(this, "Only the server is allowed to save the map");
         }
 
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            _mouseOverUI = true;
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            _mouseOverUI = false;
-        }
+        
 
         public void OnDropDownChange()
         {
@@ -227,40 +271,31 @@ namespace SS3D.Systems.Construction.UI
 
             switch (index)
             {
-                case 0: // Foundations
-                    LoadFoundations();
+                case 0:
+                    LoadObjectGrid(new[] {TileLayer.Plenum}, false);
                     break;
                 case 1:
-                    LoadFurniture();
+                    LoadObjectGrid(new[] { TileLayer.Turf }, false);
+                    break;
+                case 2:
+                    LoadObjectGrid(new[] { TileLayer.FurnitureBase, TileLayer.FurnitureTop }, false);
+                    break;
+                case 3:
+                    LoadObjectGrid(new[] { TileLayer.WallMountHigh, TileLayer.WallMountLow }, false);
+                    break;
+                case 4:
+                    LoadObjectGrid(new[] { TileLayer.Wire, TileLayer.Disposal, TileLayer.Pipes }, false);
+                    break;
+                case 5:
+                    LoadObjectGrid(new[] { TileLayer.Overlays }, false);
+                    break;
+                case 6:
+                    LoadObjectGrid(null, true);
                     break;
                 default:
-                    ClearTileGrid();
+                    ClearGrid();
                     break;
             }
-        }
-
-        public void LoadFoundations()
-        {
-            TileLayer[] foundationLayers = new TileLayer[] { 
-                TileLayer.Plenum, 
-                TileLayer.Turf,
-                TileLayer.Disposal,
-                TileLayer.Pipes,
-                TileLayer.Wire
-            };
-
-            LoadTileGrid(foundationLayers);
-        }
-
-        public void LoadFurniture()
-        {
-            TileLayer[] furnitureLayers = new TileLayer[] { 
-                TileLayer.FurnitureBase, 
-                TileLayer.FurnitureTop,
-                TileLayer.WallMountHigh,
-                TileLayer.WallMountLow,
-            };
-            LoadTileGrid(furnitureLayers);
         }
 
         public void SetIsDeleting(bool isDeleting)
@@ -271,6 +306,16 @@ namespace SS3D.Systems.Construction.UI
 
                 RefreshGhost();
             }
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            _mouseOverUI = true;
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _mouseOverUI = false;
         }
     }
 }
