@@ -38,7 +38,7 @@ namespace SS3D.Core
             Log.Logger = new LoggerConfiguration()
                 .Enrich.With(new ClientIdEnricher())
                 .WriteTo.Unity3D()
-                .WriteTo.File(Application.dataPath + "/Logs/LogSession.txt", outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = {ClientId}] {Message}{NewLine}{Exception}")
+                .WriteTo.File("C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogSession.txt", outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = {ClientId}] {Message}{NewLine}{Exception}", shared: true)
                 .CreateLogger();
 
             Log.Information("##########  CLIENT STARTING !  ##########");
@@ -50,7 +50,7 @@ namespace SS3D.Core
             Log.Logger = new LoggerConfiguration()
                 .Enrich.With(new ClientIdEnricher())
                 .WriteTo.Unity3D()
-                .WriteTo.File(Application.dataPath + "Logs/LogSession.txt", outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = {ClientId}] {Message}{NewLine}{Exception}")
+                .WriteTo.File("C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogSession.txt", outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = {ClientId}] {Message}{NewLine}{Exception}", shared: true)
                 .CreateLogger();
             Log.Information("##########  SERVER STARTING !  ##########");
             ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
