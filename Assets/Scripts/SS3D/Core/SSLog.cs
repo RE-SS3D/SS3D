@@ -13,10 +13,8 @@ namespace SS3D.Core
     // Maybe add property for local client ?
     public class SSLog : NetworkSystem
     {
-        public static SSLog Logger {get; private set;}
 
-
-        private LoggingLevelSwitch _levelSwitch;
+        private static LoggingLevelSwitch _levelSwitch;
 
         private void Awake()
         {
@@ -40,8 +38,9 @@ namespace SS3D.Core
             Log.Logger = new LoggerConfiguration()
                 .Enrich.With(new ClientIdEnricher())
                 .WriteTo.Unity3D()
-                .WriteTo.File(Application.dataPath + "Logs/LogSession.txt", outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = {ClientId}] {Message}{NewLine}{Exception}")
+                .WriteTo.File(Application.dataPath + "/Logs/LogSession.txt", outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = {ClientId}] {Message}{NewLine}{Exception}")
                 .CreateLogger();
+
             Log.Information("##########  CLIENT STARTING !  ##########");
         }
 
