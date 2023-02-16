@@ -35,6 +35,8 @@ namespace SS3D.Tests
 
         protected ScriptedInput input;
         protected HumanoidController controller;
+        protected Process[] clientProcess;
+
 
         [OneTimeSetUp]
         public virtual void OneTimeSetUp()
@@ -96,6 +98,15 @@ namespace SS3D.Tests
         public void SetTabActive(string tabName)
         {
             GameObject.Find(tabName)?.GetComponent<Button>().onClick.Invoke();
+        }
+
+        public void KillClientProcesses()
+        {
+            foreach (Process process in clientProcess)
+            {
+                process.CloseMainWindow();
+                process.Close();
+            }
         }
 
 

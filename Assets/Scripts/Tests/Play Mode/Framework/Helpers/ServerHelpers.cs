@@ -27,10 +27,13 @@ namespace SS3D.Tests
     /// </summary>
     public static class ServerHelpers
     {
-        public static IEnumerator CreateClients(int amount)
+        public static Process[] CreateClients(int amount)
         {
             string filePath;
-            Process cmdLineProcess;
+            Process[] result;
+
+            // Initialize the process return array
+            result = new Process[amount];
 
             // Get relevant executable file path
             filePath = Application.dataPath;
@@ -40,29 +43,36 @@ namespace SS3D.Tests
             for (int i = 0; i < amount; i++)
             {
                 // Fire up the client.
-                cmdLineProcess = new Process();
-                cmdLineProcess.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
-                cmdLineProcess.StartInfo.Arguments = $"-ip=localhost -skipintro -ckey=player_{Random.Range(0, 1000000)}";
-                cmdLineProcess.StartInfo.FileName = "SS3D.exe";
-                cmdLineProcess.StartInfo.WorkingDirectory = filePath;
-                cmdLineProcess.Start();
-                //cmdLineProcess.WaitForExit();
-
-                yield return new WaitForSeconds(5f);
+                result[i] = new Process();
+                result[i].StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
+                result[i].StartInfo.Arguments = $"-ip=localhost -skipintro -ckey=player_{i}";
+                result[i].StartInfo.FileName = "SS3D.exe";
+                result[i].StartInfo.WorkingDirectory = filePath;
+                result[i].Start();
             }
 
+            return result;
+        }
+
+        public static IEnumerator WaitUntilClientsLoaded(int amountOfClients, float timeout = 60f)
+        {
             PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
             int currentOnlineSouls = 0;
+            float startTime = Time.time;
 
             // This loop simply waits until all players have joined.
-            while (currentOnlineSouls < amount)
+            while (currentOnlineSouls < amountOfClients)
             {
+                // Allow timeout if needed.
+                Assert.IsTrue(Time.time < startTime + timeout, $"Only {currentOnlineSouls} of {amountOfClients} clients loaded after timeout of {timeout} seconds.");
+
                 // Check whether all souls are online.
                 currentOnlineSouls = 0;
                 foreach (var soul in playerSystem.OnlineSouls)
                 {
                     currentOnlineSouls++;
                 }
+                
                 yield return new WaitForSeconds(2f);
             }
 

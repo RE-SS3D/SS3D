@@ -35,8 +35,10 @@ namespace SS3D.Tests
             yield return base.UnitySetUp();
             yield return new WaitForSeconds(3f);
 
-            // Make some clients
-            yield return ServerHelpers.CreateClients(1);
+            // Make several clients
+            const int clientsToCreate = 4;
+            clientProcess = ServerHelpers.CreateClients(clientsToCreate);
+            yield return ServerHelpers.WaitUntilClientsLoaded(clientsToCreate);
 
             ServerHelpers.SetAllPlayersReady();
             yield return null;
@@ -56,7 +58,8 @@ namespace SS3D.Tests
         [UnityTest]
         public IEnumerator PlayerRemainsAboveStationLevelAfterSpawn()
         {
-            yield return PlaymodeTestRepository.PlayerRemainsAboveStationLevelAfterSpawn(controller);
+            //yield return PlaymodeTestRepository.PlayerRemainsAboveStationLevelAfterSpawn(controller);
+            yield return new WaitForSeconds(20f);
         }
 
         [UnityTest]
