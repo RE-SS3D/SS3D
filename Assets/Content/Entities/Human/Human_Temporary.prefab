@@ -2965,7 +2965,7 @@ GameObject:
   - component: {fileID: 5857269694861021747}
   m_Layer: 11
   m_Name: Human_Temporary
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
