@@ -36,14 +36,9 @@ namespace SS3D.Tests
             yield return new WaitForSeconds(3f);
 
             // Make several clients
-            const int clientsToCreate = 4;
+            const int clientsToCreate = 10;
             clientProcess = ServerHelpers.CreateClients(clientsToCreate);
             yield return ServerHelpers.WaitUntilClientsLoaded(clientsToCreate);
-
-            ServerHelpers.SetAllPlayersReady();
-            yield return null;
-            ServerHelpers.ChangeRoundState(true);
-            yield return GetController();
         }
 
         [UnityTearDown]
@@ -52,14 +47,17 @@ namespace SS3D.Tests
             ServerHelpers.ChangeRoundState(false);
             yield return base.UnityTearDown();
 
-            KillAllBuiltExecutables();
+            KillClientProcesses();
         }
 
         [UnityTest]
-        public IEnumerator PlayerRemainsAboveStationLevelAfterSpawn()
+        public IEnumerator PlayersRemainAboveStationLevelAfterSpawn()
         {
-            //yield return PlaymodeTestRepository.PlayerRemainsAboveStationLevelAfterSpawn(controller);
-            yield return new WaitForSeconds(20f);
+            ServerHelpers.SetAllPlayersReady();
+            ServerHelpers.ChangeRoundState(true);
+
+            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+            yield return PlaymodeTestRepository.PlayersRemainAboveStationLevelAfterSpawn(players);
         }
 
         [UnityTest]

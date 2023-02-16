@@ -51,7 +51,6 @@ namespace SS3D.Tests
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            KillAllBuiltExecutables();
         }
 
         [UnitySetUp]

@@ -57,6 +57,28 @@ namespace SS3D.Tests
             Assert.IsTrue(controller.Position.y > StationHeight, $"Player fell to {controller.Position.y} after spawn. Expected to remain above {StationHeight}.");
         }
 
+        public static IEnumerator PlayersRemainAboveStationLevelAfterSpawn(GameObject[] players, bool showDebug = false)
+        {
+            // The height that we are checking
+            const float StationHeight = 100f;
+
+            // Give the players time to fall
+            yield return new WaitForSeconds(10f);
+
+            // Check how many players are above the height of the station floor.
+            int numberOfPlayersAtCorrectHeight = 0;
+            foreach (GameObject player in players)
+            {
+                if (player.transform.position.y > StationHeight)
+                {
+                    numberOfPlayersAtCorrectHeight++;
+                }
+            }
+
+            Assert.IsTrue(numberOfPlayersAtCorrectHeight == players.Length, 
+                $"Only {numberOfPlayersAtCorrectHeight} of {players.Length} players remained above station level of y = {StationHeight}.");
+        }
+
         /// <summary>
         /// This test proxy simply tests the player moving in each of the eight cardinal directions,
         /// and that the player position is appropriately changed after each move. Please ensure that
