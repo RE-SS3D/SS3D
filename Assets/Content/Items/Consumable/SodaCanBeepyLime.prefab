@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7799416907214201609
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7328085894945459903}
+  m_Layer: 10
+  m_Name: AttachmentPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7328085894945459903
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7799416907214201609}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5596787203858443778}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8423412686940963211
 GameObject:
   m_ObjectHideFlags: 0
@@ -15,9 +46,9 @@ GameObject:
   - component: {fileID: 751568336328987408}
   - component: {fileID: 1767385633625151865}
   - component: {fileID: 564570081198347949}
-  - component: {fileID: -178715015858598096}
+  - component: {fileID: 1284732585315456183}
   m_Layer: 10
-  m_Name: BeepsCola 1
+  m_Name: SodaCanBeepyLime
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,7 +65,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 7328085894945459903}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -176,19 +208,19 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
   - {fileID: 1767385633625151865}
-  - {fileID: -178715015858598096}
+  - {fileID: 1284732585315456183}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 12
+  <PrefabId>k__BackingField: 16
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 11146878204084945660
+  <AssetPathHash>k__BackingField: 17504419675301341918
   _sceneNetworkObjects: []
---- !u!114 &-178715015858598096
+--- !u!114 &1284732585315456183
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -197,10 +229,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 8423412686940963211}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72e2052e142b9974091c0f7c2fa60489, type: 3}
+  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 564570081198347949}
   _networkObjectCache: {fileID: 564570081198347949}
-  ObjectToScale: {fileID: 0}
+  ItemID: 0
+  _name: 
+  _sprite: {fileID: 0}
+  _rigidbody: {fileID: 751568336328987408}
+  _weight: 1
+  Prefab: {fileID: 8423412686940963211}
+  AttachmentPoint: {fileID: 7328085894945459903}
+  AttachmentPointAlt: {fileID: 7328085894945459903}
+  traits: []

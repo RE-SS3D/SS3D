@@ -6,11 +6,12 @@ using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Enums;
 using SS3D.Systems.Gamemodes;
+using SS3D.Systems.Items.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Furniture
 {
-    public class Nuke : InteractionSourceNetworkBehaviour, IInteractionTarget
+    public class Nuke : InteractionSource, IInteractionTarget
     {
         [SerializeField] private Sprite _sprite;
 

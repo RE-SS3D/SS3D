@@ -118,7 +118,7 @@ namespace SS3D.Systems.Rounds
         [Server]
         private void HandleUserLeftServer(ref EventContext context, in OnlineSoulsChanged e)
         {
-            RemoveReadyPlayer(e.Changed, e.ChangeType);
+            RemoveReadyPlayer(e.ChangedSoul, e.ChangeType);
         }
 
         /// <summary>

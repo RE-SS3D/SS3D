@@ -26,7 +26,7 @@ namespace SS3D.CodeGeneration
 
         public static void CreateAtPath(string path, string enumName, IEnumerable<AssetReference> assets, string namespaceName = "SS3D.Data.Enums")
         {
-            IEnumerable<string> enums = assets.Select(reference => reference.SubObjectName);
+            IEnumerable<string> enums = assets.Select(reference => reference.editorAsset.name);
 
             string dataPath = Application.dataPath;
             string fullPath = dataPath + path;
@@ -40,7 +40,7 @@ namespace SS3D.CodeGeneration
             MonoScript ms = MonoScript.FromScriptableObject(assetPathSource);
             string path = AssetDatabase.GetAssetPath(ms);
 
-            string fullPath = Directory.GetParent(path)?.FullName;                   
+            string fullPath = Directory.GetParent(path)?.FullName;
 
             return fullPath;
         }

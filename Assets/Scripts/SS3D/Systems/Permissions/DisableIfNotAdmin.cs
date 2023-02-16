@@ -46,9 +46,7 @@ namespace SS3D.Systems.Permissions
                 return;
             }
 
-            permissionSystem.TryGetUserRole(_ckey, out ServerRoleTypes role);
-
-            if (role == ServerRoleTypes.Administrator)
+            if (permissionSystem.IsAtLeast(_ckey, ServerRoleTypes.Administrator))
             {
                 return;
             }

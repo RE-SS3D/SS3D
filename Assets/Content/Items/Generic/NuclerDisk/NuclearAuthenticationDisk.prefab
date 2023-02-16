@@ -172,7 +172,7 @@ GameObject:
   - component: {fileID: 6351433192589740835}
   - component: {fileID: 4044200983548959999}
   m_Layer: 10
-  m_Name: Nuclear Authentication Disk
+  m_Name: NuclearAuthenticationDisk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -214,9 +214,11 @@ MonoBehaviour:
   _name: Nuke card
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 6351433192589740835}
+  _weight: 0
   Prefab: {fileID: 6891363543938182813}
   AttachmentPoint: {fileID: 4619531351315044860}
   AttachmentPointAlt: {fileID: 0}
+  traits: []
 --- !u!114 &4819234911439508660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -244,7 +246,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: 7
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 17976672112681705319
+  <AssetPathHash>k__BackingField: 13924045991112958711
   _sceneNetworkObjects:
   - {fileID: 0}
   - {fileID: 0}

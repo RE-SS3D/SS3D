@@ -11,11 +11,11 @@ namespace SS3D.Interactions
     /// <summary>
     /// A base class for interaction sources which use the mirror NetworkBehaviour
     /// </summary>
-    public abstract class InteractionSourceNetworkBehaviour : NetworkActor, IGameObjectProvider, IInteractionSource
+    public abstract class InteractionSource : NetworkActor, IGameObjectProvider, IInteractionSource
     {
         protected bool SupportsMultipleInteractions { get; set; }
         public IInteractionSource Source { get; set; }
-        
+
         // Server only
         private readonly List<InteractionInstance> _interactions = new();
         // Client only
@@ -146,7 +146,7 @@ namespace SS3D.Interactions
             {
                 _clientInteractions.Add(new ClientInteractionInstance(clientInteraction, interactionEvent, reference));
             }
-            
+
         }
 
         [Server]
@@ -154,7 +154,7 @@ namespace SS3D.Interactions
         {
             InteractionInstance instance = _interactions.FirstOrDefault(i => Equals(reference, i.Reference));
             if (instance == null) return;
-            
+
             RpcCancelInteraction(reference.Id);
             instance.Interaction.Cancel(instance.Event, reference);
             _interactions.Remove(instance);
