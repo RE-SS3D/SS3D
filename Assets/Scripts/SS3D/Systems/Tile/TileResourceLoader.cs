@@ -40,6 +40,9 @@ namespace SS3D.Systems.Tile
                 Texture2D texture = AssetPreview.GetAssetPreview(asset.prefab);
                 yield return new WaitUntil(() => AssetPreview.IsLoadingAssetPreview(asset.GetInstanceID()) == false);
 
+                // Apparently we need to wait extra...
+                yield return new WaitForSeconds(0.1f);
+
                 if (texture == null)
                 {
                     // Unity is dumb, so we need to reload generated textures...
