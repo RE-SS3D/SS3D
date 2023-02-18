@@ -22,8 +22,8 @@ namespace SS3D.Data
         private static readonly Dictionary<Type, GenericAssetDatabase> Databases = new();
 
         // IMPORTANT: All database getters have to be added manually. For now.
-
         public static Sprite Get(InteractionIcons icon) => FindDatabase<InteractionIconsAssetDatabase>().Get(icon);
+        public static GameObject Get(ItemIDs itemId) => FindDatabase<ItemsAssetDatabase>().Get(itemId);
 
         /// <summary>
         /// Gets something by ID only, useful for adding stuff on databases at runtime, as in modded versions of the game.
@@ -49,10 +49,13 @@ namespace SS3D.Data
 
             foreach (Type genericDatabase in genericDatabaseInheritors)
             {
-                ScriptableSettings.TryGet(genericDatabase, out ScriptableSettings databaseAsset);
-                ((GenericAssetDatabase)databaseAsset).PreloadAssets();
+                ScriptableSettings.TryGet(genericDatabase, out ScriptableSettings scriptableSettings);
+                GenericAssetDatabase assetDatabase = (GenericAssetDatabase)scriptableSettings;
 
-                Databases.Add(genericDatabase, (GenericAssetDatabase)databaseAsset);
+                assetDatabase.AllAssetsLoaded = false;
+                assetDatabase.PreloadAssets();
+
+                Databases.Add(genericDatabase, (GenericAssetDatabase)scriptableSettings);
             }
 
             Punpun.Say(typeof(AssetData), $"{genericDatabaseInheritors.Count} Asset Databases initialized", Logs.Important);
@@ -63,7 +66,7 @@ namespace SS3D.Data
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        private static T FindDatabase<T>() where T : GenericAssetDatabase
+        public static T FindDatabase<T>() where T : GenericAssetDatabase
         {
             bool databaseExists = Databases.TryGetValue(typeof(T), out GenericAssetDatabase database);
 

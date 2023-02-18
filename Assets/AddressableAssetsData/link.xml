@@ -1,4 +1,26 @@
 <linker>
+  <assembly fullname="FishNet.Generated, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="FishNet.Component.Animating.NetworkAnimator" preserve="all" />
+    <type fullname="FishNet.Component.Transforming.NetworkTransform" preserve="all" />
+    <type fullname="FishNet.Component.Transforming.NetworkTransform/SnappedAxes" preserve="nothing" serialized="true" />
+  </assembly>
+  <assembly fullname="FishNet.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="FishNet.Object.NetworkObject" preserve="all" />
+    <type fullname="FishNet.Object.TransformProperties" preserve="nothing" serialized="true" />
+    <type fullname="FishNet.Serializing.TransformPackingData" preserve="nothing" serialized="true" />
+  </assembly>
+  <assembly fullname="SS3D.Networking, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="SS3D.Networking.ScaleIn" preserve="all" />
+  </assembly>
+  <assembly fullname="SS3D.Systems, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="SS3D.Systems.Items.Generic.BikeHorn" preserve="all" />
+    <type fullname="SS3D.Systems.Items.Generic.NukeCard" preserve="all" />
+    <type fullname="SS3D.Systems.Storage.Containers.AttachedContainer" preserve="all" />
+    <type fullname="SS3D.Systems.Storage.Containers.Container" preserve="all" />
+    <type fullname="SS3D.Systems.Storage.Containers.ContainerDescriptor" preserve="all" />
+    <type fullname="SS3D.Systems.Storage.Containers.ContainerInteractive" preserve="all" />
+    <type fullname="SS3D.Systems.Storage.Items.Item" preserve="all" />
+  </assembly>
   <assembly fullname="Unity.Addressables, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" preserve="all">
     <type fullname="UnityEngine.AddressableAssets.Addressables" preserve="all" />
   </assembly>
@@ -9,8 +31,35 @@
     <type fullname="UnityEngine.ResourceManagement.ResourceProviders.LegacyResourcesProvider" preserve="all" />
     <type fullname="UnityEngine.ResourceManagement.ResourceProviders.SceneProvider" preserve="all" />
   </assembly>
+  <assembly fullname="UnityEditor.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEditor.Audio.AudioMixerSnapshotController" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.AnimationClip" preserve="all" />
+    <type fullname="UnityEngine.Animator" preserve="all" />
+    <type fullname="UnityEngine.RuntimeAnimatorController" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.Audio.AudioMixer" preserve="all" />
+    <type fullname="UnityEngine.Audio.AudioMixerGroup" preserve="all" />
+    <type fullname="UnityEngine.AudioClip" preserve="all" />
+    <type fullname="UnityEngine.AudioSource" preserve="all" />
+  </assembly>
   <assembly fullname="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.GameObject" preserve="all" />
+    <type fullname="UnityEngine.Material" preserve="all" />
+    <type fullname="UnityEngine.Mesh" preserve="all" />
+    <type fullname="UnityEngine.MeshFilter" preserve="all" />
+    <type fullname="UnityEngine.MeshRenderer" preserve="all" />
+    <type fullname="UnityEngine.Object" preserve="all" />
+    <type fullname="UnityEngine.Shader" preserve="all" />
     <type fullname="UnityEngine.Sprite" preserve="all" />
     <type fullname="UnityEngine.Texture2D" preserve="all" />
+    <type fullname="UnityEngine.Transform" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.BoxCollider" preserve="all" />
+    <type fullname="UnityEngine.MeshCollider" preserve="all" />
+    <type fullname="UnityEngine.Rigidbody" preserve="all" />
   </assembly>
 </linker>

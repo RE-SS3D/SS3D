@@ -11,7 +11,7 @@ using UnityEngine.EventSystems;
 namespace SS3D.Systems.Storage.Containers
 {
     [RequireComponent(typeof(Inventory))]
-    public class Hands : InteractionSourceNetworkBehaviour, IToolHolder, IInteractionRangeLimit, IInteractionOriginProvider
+    public class Hands : InteractionSource, IToolHolder, IInteractionRangeLimit, IInteractionOriginProvider
     {
         [SerializeField] public AttachedContainer[] HandContainers;
         [SerializeField] private float handRange;
