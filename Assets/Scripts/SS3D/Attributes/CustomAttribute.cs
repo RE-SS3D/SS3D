@@ -1,4 +1,4 @@
-﻿namespace SS3D.Utils
+﻿namespace SS3D.Attributes
 {
     public class CustomAttribute
     {
