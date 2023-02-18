@@ -21,7 +21,6 @@ namespace SS3D.Data.AssetDatabases
 #if UNITY_EDITOR
         public AddressableAssetGroup AssetGroup;
 
-
         [ReadOnly]
 #endif
         public List<Object> Assets;
