@@ -10,10 +10,11 @@ using TMPro;
 using FishNet.Object;
 using FishNet.Connection;
 using SS3D.Logging;
+using SS3D.Core.Behaviours;
 
 namespace SS3D.Systems.Construction.UI
 {
-    public class ConstructionMenu : NetworkBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class ConstructionMenu : NetworkSystem, IPointerEnterHandler, IPointerExitHandler
     {
         public GameObject _menuRoot;
         public GameObject _contentRoot;

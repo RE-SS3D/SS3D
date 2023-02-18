@@ -40,8 +40,6 @@ namespace SS3D.Systems.Tile
                 Texture2D texture = AssetPreview.GetAssetPreview(asset.prefab);
                 yield return new WaitUntil(() => AssetPreview.IsLoadingAssetPreview(asset.GetInstanceID()) == false);
 
-                // Apparently we need to wait extra...
-                yield return new WaitForSeconds(0.1f);
 
                 if (texture == null)
                 {
@@ -56,7 +54,10 @@ namespace SS3D.Systems.Tile
             for (int i = 0; i < assets.Length; i++)
             {
 #if UNITY_EDITOR
-                assets[i].icon = Sprite.Create(tempIcons[i], new Rect(0, 0, tempIcons[i].width, tempIcons[i].height), new Vector2(0.5f, 0.5f));
+
+                // If we reach this point... Give up and load a default texture instead
+                if (tempIcons[i] != null)
+                    assets[i].icon = Sprite.Create(tempIcons[i], new Rect(0, 0, tempIcons[i].width, tempIcons[i].height), new Vector2(0.5f, 0.5f));
 #endif
                 if (assets[i].icon == null)
                     assets[i].icon = _missingIcon;

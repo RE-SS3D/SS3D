@@ -59,18 +59,6 @@ namespace SS3D.Systems.Tile
             return _loader.GetAsset(assetName);
         }
 
-        /*
-        public TileObjectSo GetTileAsset(string assetName)
-        {
-            return _loader.GetTileAsset(assetName);
-        }
-
-        public ItemObjectSo GetItemAsset(string assetName)
-        {
-            return _loader.GetItemAsset(assetName);
-        }
-        */
-
         public TileResourceLoader GetLoader()
         {
             return _loader;
@@ -116,29 +104,10 @@ namespace SS3D.Systems.Tile
             _currentMap.ClearItemObject(placePosition, itemObjectSo);
         }
 
-        /*
-        private void PlaceItemObject(ItemObjectSo itemObjectSo, Vector3 placePosition, Quaternion rotation)
-        {
-            _currentMap.PlaceItemObject(placePosition, rotation, itemObjectSo);
-        }
-        */
-
         public bool CanBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir)
         {
             return _currentMap.CanBuild(tileObjectSo, placePosition, dir);
         }
-
-        /*
-        [ServerRpc(RequireOwnership = false)]
-        public void RpcCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir)
-        {
-            TileObjectSo tileObjectSo = GetTileAsset(tileObjectSoName);
-
-            bool canBuild = _currentMap.CanBuild(tileObjectSo, placePosition, dir);
-            RpcReceiveCanBuild(canBuild);
-        }
-        */
-       
 
         public void Save()
         {
