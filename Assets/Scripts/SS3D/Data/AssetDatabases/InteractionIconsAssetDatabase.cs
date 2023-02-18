@@ -14,22 +14,5 @@ namespace SS3D.Data.AssetDatabases
     /// Asset database for all the interaction icons
     /// </summary>
     [ProjectSettings("SS3D/Assets", "Interaction Icons")]
-    public class InteractionIconsAssetDatabase : AssetDatabase
-    {
-        /// <inheritdoc />
-        public override void PreloadAssets()
-        {
-            PreloadAssets<Sprite>();
-        }
-
-        /// <summary>
-        /// Gets the sprite based on the interaction asked for.
-        /// </summary>
-        /// <param name="icon">The interaction icon as a sprite</param>
-        /// <returns></returns>
-        public Sprite Get(InteractionIcons icon)
-        {
-            return Get<Sprite>((int)icon);
-        }
-    }
+    public class InteractionIconsAssetDatabase : AssetDatabase { }
 }

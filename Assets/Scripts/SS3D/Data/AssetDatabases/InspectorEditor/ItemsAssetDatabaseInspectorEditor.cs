@@ -4,6 +4,6 @@ using UnityEditor;
 namespace SS3D.Data.AssetDatabases.InspectorEditor
 {
     [CustomEditor(typeof(ItemsAssetDatabase))]
-    public class ItemsAssetDatabaseInspectorEditor : GenericAssetDatabaseInspectorEditor { }
+    public class ItemsAssetDatabaseInspectorEditor : AssetDatabaseInspectorEditor { }
 }
 #endif

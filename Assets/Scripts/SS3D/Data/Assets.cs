@@ -22,8 +22,8 @@ namespace SS3D.Data
         private static readonly Dictionary<Type, AssetDatabase> Databases = new();
 
         // IMPORTANT: All database getters have to be added manually. For now.
-        public static Sprite Get(InteractionIcons icon) => GetDatabase<InteractionIconsAssetDatabase>().Get(icon);
-        public static GameObject Get(ItemIDs itemId) => GetDatabase<ItemsAssetDatabase>().Get(itemId);
+        public static Sprite Get(InteractionIcons icon) => GetDatabase<InteractionIconsAssetDatabase>().Get<Sprite>((int)icon);
+        public static GameObject Get(ItemIDs itemId) => GetDatabase<ItemsAssetDatabase>().Get<GameObject>((int)itemId);
 
         /// <summary>
         /// Gets something by ID only, useful for adding stuff on databases at runtime, as in modded versions of the game.

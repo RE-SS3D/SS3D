@@ -10,7 +10,7 @@ using UnityEngine;
 namespace SS3D.Data.AssetDatabases.InspectorEditor
 {
     [CustomEditor(typeof(AssetDatabase))]
-    public class GenericAssetDatabaseInspectorEditor : UnityEditor.Editor
+    public class AssetDatabaseInspectorEditor : Editor
     {
         private AssetDatabase _assetDatabase;
         private static GUIContent _folderIcon;

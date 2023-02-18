@@ -35,15 +35,13 @@ namespace SS3D.Systems.Items
         /// </summary>
         private async void LoadItemPrefabs()
         {
-            ItemsAssetDatabase assets = Assets.GetDatabase<ItemsAssetDatabase>();
+            ItemsAssetDatabase items = Assets.GetDatabase<ItemsAssetDatabase>();
 
-            List<GameObject> assetReferences = assets.Assets.Select(asset => asset as GameObject).ToList();
-
-            for (int index = 0; index < assetReferences.Count; index++)
+            for (int index = 0; index < items.Assets.Count; index++)
             {
                 ItemIDs id = (ItemIDs)index;
 
-                GameObject itemObject = assets.Get(id);
+                GameObject itemObject = Assets.Get(id);
                 Item item = itemObject.GetComponent<Item>();
 
                 item.ItemID = id;

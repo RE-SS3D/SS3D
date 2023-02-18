@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Coimbra;
 using Object = UnityEngine.Object;
 using SS3D.Attributes;
@@ -11,7 +12,7 @@ namespace SS3D.Data.AssetDatabases
 {
     /// <summary>
     /// Generic database class, used to create asset databases.
-    /// </summary>                                             s
+    /// </summary>
     public class AssetDatabase : ScriptableSettings
     {
         public string EnumPath = @"\Scripts\SS3D\Data\Enums";
@@ -36,20 +37,6 @@ namespace SS3D.Data.AssetDatabases
             }
         }
 #endif
-
-        /// <summary>
-        /// Pre-loads all the assets in the database in memory.
-        /// </summary>
-        public virtual void PreloadAssets() { }
-
-        /// <summary>
-        /// Pre-loads assets in memory.
-        /// </summary>
-        /// <typeparam name="T">The type of asset to load.</typeparam>
-        protected void PreloadAssets<T>() where T : Object
-        {
-            
-        }
 
         /// <summary>
         /// Gets an asset based on its ID (index).
