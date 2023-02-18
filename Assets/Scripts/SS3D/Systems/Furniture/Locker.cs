@@ -13,7 +13,7 @@ using FishNet.Object.Synchronizing;
 
 namespace SS3D.Systems.Furniture
 {
-    public class Locker : InteractionSourceNetworkBehaviour, IInteractionTarget
+    public class Locker : InteractionSource, IInteractionTarget
     {
         public AccessPermission permissionToOpen;
         public bool Locked { private set; get; } = true;

@@ -40,18 +40,20 @@ namespace SS3D.Systems.Items.Generic
             IInteractionSource source = interactionEvent.Source;
             IInteractionTarget target = interactionEvent.Target;
 
-            if (source is not NukeCard || target is not Nuke nuke)
+            if (target == null)
+            {
+                return false;
+            }
+
+            if (source is NukeCard _ && target is Nuke nuke)
             {
                 nuke.Detonate();
+             
+                // TODO: Improve this
                 PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
-
                 new NukeDetonateEvent(nuke, playerSystem.GetCkey(source.GetComponentInTree<Entity>().Owner)).Invoke(this);
             }
 
-            nuke.Detonate();
-            PlayerControlSystem playerControlSystem = SystemLocator.Get<PlayerControlSystem>();
-
-            new NukeDetonateEvent(nuke, playerControlSystem.GetCkey(source.GetComponentInTree<PlayerControllable>().Owner)).Invoke(this);
             return false;
         }
     }

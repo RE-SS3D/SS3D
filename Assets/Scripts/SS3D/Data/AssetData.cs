@@ -24,6 +24,7 @@ namespace SS3D.Data
         // IMPORTANT: All database getters have to be added manually. For now.
         public static Sprite Get(InteractionIcons icon) => FindDatabase<InteractionIconsAssetDatabase>().Get(icon);
         public static GameObject Get(ItemIDs itemId) => FindDatabase<ItemsAssetDatabase>().Get(itemId);
+        public static ScriptableObject Get(AccessPermissionIDs accessPermissionType) => FindDatabase<IDPermissionsAssetDatabase>().Get(accessPermissionType);
 
         /// <summary>
         /// Gets something by ID only, useful for adding stuff on databases at runtime, as in modded versions of the game.

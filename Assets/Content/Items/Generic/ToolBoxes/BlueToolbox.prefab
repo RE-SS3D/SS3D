@@ -240,16 +240,11 @@ GameObject:
   - component: {fileID: 5206759755089209485}
   - component: {fileID: 3298710121668139635}
   - component: {fileID: 3258417366846669140}
-  - component: {fileID: 9136074542965640709}
   - component: {fileID: 7082293104205752709}
   - component: {fileID: 5747472693690594541}
   - component: {fileID: 1094090079819989120}
   m_Layer: 10
-<<<<<<<< HEAD:Assets/Content/Items/Generic/ToolBoxes/ToolboxBlue.prefab
-  m_Name: ToolboxBlue
-========
   m_Name: BlueToolbox
->>>>>>>> f3c8da0a (Fix AssertNull):Assets/Content/Items/Generic/ToolBoxes/BlueToolbox.prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -318,7 +313,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
-  _itemId: 
+  ItemID: 0
   _name: 
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 2081909342595332650}
@@ -418,52 +413,8 @@ MonoBehaviour:
   <PrefabId>k__BackingField: -1
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-<<<<<<<< HEAD:Assets/Content/Items/Generic/ToolBoxes/ToolboxBlue.prefab
-  <AssetPathHash>k__BackingField: 4937251580671274826
-========
   <AssetPathHash>k__BackingField: 8881270218452753758
->>>>>>>> f3c8da0a (Fix AssertNull):Assets/Content/Items/Generic/ToolBoxes/BlueToolbox.prefab
   _sceneNetworkObjects: []
---- !u!114 &9136074542965640709
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533951594911835035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AutomaticContainerSetUp: 1
-  AttachedContainer: {fileID: 5747472693690594541}
-  Container: {fileID: 7082293104205752709}
-  ContainerInteractive: {fileID: 1094090079819989120}
-  ContainerItemDisplay: {fileID: 0}
-  ContainerUi: {fileID: 0}
-  OpenIcon: {fileID: 0}
-  TakeIcon: {fileID: 0}
-  StoreIcon: {fileID: 0}
-  ViewIcon: {fileID: 0}
-  AttachmentOffset: {x: 0, y: 0, z: 0}
-  ContainerName: container
-  OnlyStoreWhenOpen: 1
-  OpenWhenContainerViewed: 0
-  Size: {x: 10, y: 10}
-  HideItems: 1
-  AttachItems: 1
-  Initialized: 1
-  MaxDistance: 5
-  IsOpenable: 1
-  IsInteractive: 1
-  HasUi: 1
-  HasCustomInteraction: 0
-  HasCustomDisplay: 0
-  Displays: []
-  NumberDisplay: 0
-  StartFilter: {fileID: 0}
-  Type: -1
 --- !u!114 &7082293104205752709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -495,7 +446,7 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
-  ContainerDescriptor: {fileID: 9136074542965640709}
+  ContainerDescriptor: {fileID: 0}
   _container: {fileID: 7082293104205752709}
 --- !u!114 &1094090079819989120
 MonoBehaviour:
@@ -512,8 +463,9 @@ MonoBehaviour:
   _componentIndexCache: 4
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
+  _openState: 0
   OverrideOpenIcon: {fileID: 0}
-  containerDescriptor: {fileID: 9136074542965640709}
+  containerDescriptor: {fileID: 0}
 --- !u!1 &8066562249021099569
 GameObject:
   m_ObjectHideFlags: 0
