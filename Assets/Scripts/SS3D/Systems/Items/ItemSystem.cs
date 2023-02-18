@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Cysharp.Threading.Tasks;
 using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Data;
@@ -8,7 +6,6 @@ using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
 using SS3D.Logging;
 using SS3D.Systems.Storage.Items;
-using SS3D.Utils;
 using UnityEngine;
 
 namespace SS3D.Systems.Items

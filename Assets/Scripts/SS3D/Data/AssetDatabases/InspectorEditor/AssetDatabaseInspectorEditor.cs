@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using SS3D.CodeGeneration;
-using SS3D.Data.Enums;
 using UnityEditor;
 using UnityEngine;
 

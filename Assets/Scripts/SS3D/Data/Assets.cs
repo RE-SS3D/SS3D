@@ -32,7 +32,9 @@ namespace SS3D.Data
         /// <typeparam name="TAssetDatabase">The asset database you want to get.</typeparam>
         /// <typeparam name="TAssetType">The asset type you want returned.</typeparam>
         /// <returns>The loaded asset in the TAssetType type.</returns>
-        public static TAssetType GetById<TAssetDatabase, TAssetType>(int id) where TAssetDatabase : AssetDatabase where TAssetType : Object
+        public static TAssetType GetById<TAssetDatabase, TAssetType>(int id) 
+            where TAssetDatabase : AssetDatabase 
+            where TAssetType : Object
         {
             return GetDatabase<TAssetDatabase>().Get<TAssetType>(id);
         }
