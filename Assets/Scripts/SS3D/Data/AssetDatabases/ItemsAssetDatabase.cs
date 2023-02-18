@@ -1,4 +1,5 @@
-﻿using SS3D.Data.Enums;
+﻿using Coimbra;
+using SS3D.Data.Enums;
 using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases
@@ -6,8 +7,8 @@ namespace SS3D.Data.AssetDatabases
     /// <summary>
     /// Asset database for all the items
     /// </summary>
-    [CreateAssetMenu(menuName = "AssetData/Items", fileName = "Items")]
-    public class ItemsAssetDatabase : GenericAssetDatabase
+    [ProjectSettings("SS3D/Assets", "Items")]
+    public class ItemsAssetDatabase : AssetDatabase
     {
         /// <inheritdoc />
         public override void PreloadAssets()

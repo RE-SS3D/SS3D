@@ -52,7 +52,7 @@ namespace SS3D.Core
         /// </summary>
         private void InitializeAssetData()
         {
-            AssetData.InitializeAssetDatabases();
+            Assets.InitializeAssetDatabases();
         }
 
         /// <summary>

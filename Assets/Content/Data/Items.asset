@@ -17,44 +17,15 @@ MonoBehaviour:
   EnumPath: \Scripts\SS3D\Data\Enums
   EnumNamespaceName: SS3D.Data.Enums
   EnumName: ItemIDs
+  AssetGroup: {fileID: 11400000, guid: 8e95016540bf27c4eb11580ec096568a, type: 2}
   Assets:
-  - m_AssetGUID: 11f824c472e04854e95065dda095e8f4
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 1ae18785d74e9fa4699b6f6de889c243
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 264ea51d92067c14ebc6633999afac78
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: cbe4989d1925276409163212a1ee01b8
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: de543fe84ff1e564e9f616e3aa62c122
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 260f9055de5f3424d807ca1d8d7a011c
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: bb701a993659a10439bd36445f90d143
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: ae126cdb679d68642b4dcc7d4db6d2ea
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 1f96c431e982dc84281c52987a0aac1c
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 67dec530733e9f44184e1cc616786768
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
+  - {fileID: 6891363543938182813, guid: 11f824c472e04854e95065dda095e8f4, type: 3}
+  - {fileID: 6891363543938182813, guid: 1ae18785d74e9fa4699b6f6de889c243, type: 3}
+  - {fileID: 5533951594911835035, guid: 264ea51d92067c14ebc6633999afac78, type: 3}
+  - {fileID: 8423412686940963211, guid: ae126cdb679d68642b4dcc7d4db6d2ea, type: 3}
+  - {fileID: 8423412686940963211, guid: 67dec530733e9f44184e1cc616786768, type: 3}
+  - {fileID: 8423412686940963211, guid: 1f96c431e982dc84281c52987a0aac1c, type: 3}
+  - {fileID: 8423412686940963211, guid: cbe4989d1925276409163212a1ee01b8, type: 3}
+  - {fileID: 8423412686940963211, guid: bb701a993659a10439bd36445f90d143, type: 3}
+  - {fileID: 8423412686940963211, guid: 260f9055de5f3424d807ca1d8d7a011c, type: 3}
+  - {fileID: 8423412686940963211, guid: de543fe84ff1e564e9f616e3aa62c122, type: 3}

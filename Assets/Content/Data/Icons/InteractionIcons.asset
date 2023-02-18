@@ -14,35 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _preload: 1
   _type: 0
+  EnumPath: \Scripts\SS3D\Data\Enums
+  EnumNamespaceName: SS3D.Data.Enums
   EnumName: InteractionIcons
   Assets:
-  - m_AssetGUID: d1f34343e08a14e48a856e409c355f32
-    m_SubObjectName: take
-    m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: d6678ac9f1a1c714fa5afdb6f1a0ff11
-    m_SubObjectName: discard
-    m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 48da6209938d27844878cc3d318295e2
-    m_SubObjectName: open
-    m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 3788240ffacf45b4998b63134326628e
-    m_SubObjectName: power
-    m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 03812e70c708b3047b20e316b16f1896
-    m_SubObjectName: honk
-    m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: bf85b01e2333f59439185d22d03adcaa
-    m_SubObjectName: Nuke
-    m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-    m_EditorAssetChanged: 0
+  - {fileID: 2800000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
+  - {fileID: 2800000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
+  - {fileID: 2800000, guid: 48da6209938d27844878cc3d318295e2, type: 3}
+  - {fileID: 2800000, guid: 03812e70c708b3047b20e316b16f1896, type: 3}
+  - {fileID: 2800000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
+  - {fileID: 2800000, guid: bf85b01e2333f59439185d22d03adcaa, type: 3}
+  AllAssetsLoaded: 0
+  AssetGroup: {fileID: 11400000, guid: 43f5c5834bd38014f9dbacb0f51bcc54, type: 2}

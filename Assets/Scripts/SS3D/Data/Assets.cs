@@ -12,18 +12,18 @@ using Object = UnityEngine.Object;
 namespace SS3D.Data
 {
     /// <summary>
-    /// Asset data is used to load stuff via Addressables, with the addition of an enum generator for easy "id" of items.
+    /// Assets is used to load assets using enums or ints, with the addition of an enum generator for easy "id" of items.
     /// </summary>
-    public static class AssetData
+    public static class Assets
     {
         /// <summary>
         /// All loaded databases.
         /// </summary>
-        private static readonly Dictionary<Type, GenericAssetDatabase> Databases = new();
+        private static readonly Dictionary<Type, AssetDatabase> Databases = new();
 
         // IMPORTANT: All database getters have to be added manually. For now.
-        public static Sprite Get(InteractionIcons icon) => FindDatabase<InteractionIconsAssetDatabase>().Get(icon);
-        public static GameObject Get(ItemIDs itemId) => FindDatabase<ItemsAssetDatabase>().Get(itemId);
+        public static Sprite Get(InteractionIcons icon) => GetDatabase<InteractionIconsAssetDatabase>().Get(icon);
+        public static GameObject Get(ItemIDs itemId) => GetDatabase<ItemsAssetDatabase>().Get(itemId);
 
         /// <summary>
         /// Gets something by ID only, useful for adding stuff on databases at runtime, as in modded versions of the game.
@@ -32,9 +32,9 @@ namespace SS3D.Data
         /// <typeparam name="TAssetDatabase">The asset database you want to get.</typeparam>
         /// <typeparam name="TAssetType">The asset type you want returned.</typeparam>
         /// <returns>The loaded asset in the TAssetType type.</returns>
-        public static TAssetType GetById<TAssetDatabase, TAssetType>(int id) where TAssetDatabase : GenericAssetDatabase where TAssetType : Object
+        public static TAssetType GetById<TAssetDatabase, TAssetType>(int id) where TAssetDatabase : AssetDatabase where TAssetType : Object
         {
-            return FindDatabase<TAssetDatabase>().Get<TAssetType>(id);
+            return GetDatabase<TAssetDatabase>().Get<TAssetType>(id);
         }
 
         /// <summary>
@@ -45,20 +45,15 @@ namespace SS3D.Data
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             List<Type> types = assemblies.SelectMany(assembly => assembly.GetTypes()).ToList();
-            List<Type> genericDatabaseInheritors = types.Where(type => type.IsSubclassOf(typeof(GenericAssetDatabase))).ToList();
+            List<Type> genericDatabaseInheritors = types.Where(type => type.IsSubclassOf(typeof(AssetDatabase))).ToList();
 
             foreach (Type genericDatabase in genericDatabaseInheritors)
             {
                 ScriptableSettings.TryGet(genericDatabase, out ScriptableSettings scriptableSettings);
-                GenericAssetDatabase assetDatabase = (GenericAssetDatabase)scriptableSettings;
-
-                assetDatabase.AllAssetsLoaded = false;
-                assetDatabase.PreloadAssets();
-
-                Databases.Add(genericDatabase, (GenericAssetDatabase)scriptableSettings);
+                Databases.Add(genericDatabase, (AssetDatabase)scriptableSettings);
             }
 
-            Punpun.Say(typeof(AssetData), $"{genericDatabaseInheritors.Count} Asset Databases initialized", Logs.Important);
+            Punpun.Say(typeof(Assets), $"{genericDatabaseInheritors.Count} Asset Databases initialized", Logs.Important);
         }
 
         /// <summary>
@@ -66,13 +61,13 @@ namespace SS3D.Data
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T FindDatabase<T>() where T : GenericAssetDatabase
+        public static T GetDatabase<T>() where T : AssetDatabase
         {
-            bool databaseExists = Databases.TryGetValue(typeof(T), out GenericAssetDatabase database);
+            bool databaseExists = Databases.TryGetValue(typeof(T), out AssetDatabase database);
 
             if (!databaseExists)
             {
-                Punpun.Yell(typeof(AssetData), $"Database of type {typeof(T)} not found", Logs.Important);
+                Punpun.Yell(typeof(Assets), $"Database of type {typeof(T)} not found", Logs.Important);
             }
 
             return (T)database;

@@ -3,28 +3,31 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using SS3D.CodeGeneration;
+using SS3D.Data.Enums;
 using UnityEditor;
 using UnityEngine;
 
 namespace SS3D.Data.AssetDatabases.InspectorEditor
 {
-    [CustomEditor(typeof(GenericAssetDatabase))]
+    [CustomEditor(typeof(AssetDatabase))]
     public class GenericAssetDatabaseInspectorEditor : UnityEditor.Editor
     {
-        private GenericAssetDatabase _assetDatabase;
+        private AssetDatabase _assetDatabase;
         private static GUIContent _folderIcon;
 
         private static readonly Regex SlashRegex = new(@"[\\//]");
 
         private void OnEnable()
         {
-            _assetDatabase = (GenericAssetDatabase)target;
+            _assetDatabase = (AssetDatabase)target;
             _folderIcon = EditorGUIUtility.IconContent("d_FolderOpened Icon");
         }
 
         public override void OnInspectorGUI()
         {
-            GUILayoutOption iconWidthConstraint = GUILayout.MaxWidth(200.0f);
+            int width = 350;
+
+            GUILayoutOption iconWidthConstraint = GUILayout.MaxWidth(width);
             GUILayoutOption iconHeightConstraint = GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight);
 
             GUIStyle labelStyle = new()
@@ -54,9 +57,16 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
             GUILayout.Space(5);
 
-            if (GUILayout.Button($"Create enum", GUILayout.Width(200)))
+            if (GUILayout.Button($"Create enum", GUILayout.Width(width)))
             {
                 EnumCreator.CreateAtPath(_assetDatabase.EnumPath, _assetDatabase.EnumName, _assetDatabase.Assets, _assetDatabase.EnumNamespaceName);
+            }
+
+            GUILayout.Space(5);
+
+            if (GUILayout.Button("Load assets from addressables group", GUILayout.Width(width)))
+            {
+                _assetDatabase.GetAssetNames();
             }
 
             GUILayout.Label("Asset database settings", labelStyle);
