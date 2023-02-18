@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ConstructionMat
+  m_Name: BuildConstruction
   m_Shader: {fileID: -6465566751694194690, guid: 43363003c16911241916f8132d4edf88, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -35,11 +35,13 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _AppearTime: 2
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: 0
     - _Edge_Size: 0.02
     - _Noise_Size: 30
     - _Progress: 1
+    - _StartTime: 13.326898
     m_Colors:
     - _Edge_Color: {r: 0, g: 6.65098, b: 23.96863, a: 0}
   m_BuildTextureStacks: []
