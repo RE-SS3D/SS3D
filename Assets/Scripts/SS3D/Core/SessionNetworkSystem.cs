@@ -47,7 +47,7 @@ namespace SS3D.Core
                     break;
                 case NetworkType.Host:
                     Punpun.Say(this, "Hosting a new server");
-                    networkManager.ServerManager.StartConnection();
+                    networkManager.ServerManager.StartConnection(port);
                     networkManager.ClientManager.StartConnection();
                     break;
                 default:
