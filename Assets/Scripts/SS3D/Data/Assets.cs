@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using Coimbra;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
@@ -19,17 +16,17 @@ namespace SS3D.Data
         /// <summary>
         /// All loaded databases.
         /// </summary>
-        private static readonly Dictionary<Type, AssetDatabase> Databases = new();
+        private static readonly Dictionary<string, AssetDatabase> Databases = new();
 
         // IMPORTANT: All database getters have to be added manually. For now.
         public static Sprite Get(InteractionIcons icon)
         {
-            return GetDatabase<InteractionIconsAssetDatabase>().Get<Sprite>((int)icon);
+            return GetDatabase(nameof(InteractionIcons)).Get<Sprite>((int)icon);
         }
 
         public static GameObject Get(ItemIDs itemId)
         {
-             return GetDatabase<ItemsAssetDatabase>().Get<GameObject>((int)itemId);
+             return GetDatabase(nameof(ItemIDs)).Get<GameObject>((int)itemId);
         }
 
         /// <summary>
@@ -39,47 +36,59 @@ namespace SS3D.Data
         /// <typeparam name="TAssetDatabase">The asset database you want to get.</typeparam>
         /// <typeparam name="TAssetType">The asset type you want returned.</typeparam>
         /// <returns>The loaded asset in the TAssetType type.</returns>
-        public static TAssetType GetById<TAssetDatabase, TAssetType>(int id) 
-            where TAssetDatabase : AssetDatabase 
+        public static TAssetType GetById<TAssetType>(string databaseName, int id)
             where TAssetType : Object
         {
-            return GetDatabase<TAssetDatabase>().Get<TAssetType>(id);
+            return GetDatabase(databaseName).Get<TAssetType>(id);
+        }
+
+        public static void InitializeAssetDatabases()
+        {
+            List<AssetDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
+
+            foreach (AssetDatabase database in assetDatabases)
+            {
+                Databases.Add(database.EnumName, database);
+            }
         }
 
         /// <summary>
         /// Initializes all asset databases in the project.
         /// </summary>
-        public static void InitializeAssetDatabases()
+        public static List<AssetDatabase> FindAssetDatabases()
         {
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            string[] assets = UnityEditor.AssetDatabase.FindAssets($"t:{typeof(AssetDatabase)}");
 
-            List<Type> types = assemblies.SelectMany(assembly => assembly.GetTypes()).ToList();
-            List<Type> genericDatabaseInheritors = types.Where(type => type.IsSubclassOf(typeof(AssetDatabase))).ToList();
+            List<AssetDatabase> databases = new();
 
-            foreach (Type genericDatabase in genericDatabaseInheritors)
+            foreach (string database in assets)
             {
-                ScriptableSettings.TryGet(genericDatabase, out ScriptableSettings scriptableSettings);
-                Databases.Add(genericDatabase, (AssetDatabase)scriptableSettings);
+                string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(database);
+                AssetDatabase assetDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<AssetDatabase>(assetPath);
+
+                databases.Add(assetDatabase);
             }
 
-            Punpun.Say(typeof(Assets), $"{genericDatabaseInheritors.Count} Asset Databases initialized", Logs.Important);
+            Punpun.Say(typeof(Assets), $"{assets.Length} Asset Databases initialized", Logs.Important);
+
+            return databases;
         }
 
         /// <summary>
-        /// Helper function to find a database of type T in the database list. Used to link the enum to which database to find.
+        /// Helper function to find a database in the database list. Used to link the enum to which database to find.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <param name="key">The enum name used to identify which database to load.</param>
         /// <returns></returns>
-        public static T GetDatabase<T>() where T : AssetDatabase
+        public static AssetDatabase GetDatabase(string key)
         {
-            bool databaseExists = Databases.TryGetValue(typeof(T), out AssetDatabase database);
+            bool databaseExists = Databases.TryGetValue(key, out AssetDatabase database);
 
             if (!databaseExists)
             {
-                Punpun.Yell(typeof(Assets), $"Database of type {typeof(T)} not found", Logs.Important);
+                Punpun.Yell(typeof(Assets), $"Database of type {key} not found", Logs.Important);
             }
 
-            return (T)database;
+            return database;
         }
     }
 }

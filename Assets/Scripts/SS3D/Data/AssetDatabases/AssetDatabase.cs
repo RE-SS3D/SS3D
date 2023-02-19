@@ -2,6 +2,7 @@
 using Coimbra;
 using Object = UnityEngine.Object;
 using SS3D.Attributes;
+using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor.AddressableAssets.Settings;
@@ -12,7 +13,7 @@ namespace SS3D.Data.AssetDatabases
     /// <summary>
     /// Generic database class, used to create asset databases.
     /// </summary>
-    public class AssetDatabase : ScriptableSettings
+    public class AssetDatabase : ScriptableObject
     {
         public string EnumPath = @"\Scripts\SS3D\Data\Enums";
         public string EnumNamespaceName = "SS3D.Data.Enums";
