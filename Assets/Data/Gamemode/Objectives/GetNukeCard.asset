@@ -17,4 +17,4 @@ MonoBehaviour:
   _alignmentRequirement: 1
   _minAssignees: 1
   _maxAssignees: 1
-  _targetItemId: nukeCard
+  _targetItemId: 1
