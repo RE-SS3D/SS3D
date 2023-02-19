@@ -336,9 +336,8 @@ namespace EditorTests.Gamemodes
         /// <returns>Copies of all gamemodes</returns>
         private static List<Gamemode> AllGamemodes()
         {
-            const string FOLDER_PATH = "Assets/Content/Data/Gamemode";
             List<Gamemode> allGamemodes = new();
-            string[] assetNames = AssetDatabase.FindAssets($"t:{typeof(Gamemode)}", new[] { FOLDER_PATH });
+            string[] assetNames = AssetDatabase.FindAssets($"t:{typeof(Gamemode)}");
             foreach(string SOName in assetNames)
             {
                 var SOpath = AssetDatabase.GUIDToAssetPath(SOName);
@@ -354,9 +353,8 @@ namespace EditorTests.Gamemodes
         /// <returns>Copies of all gamemode objectives</returns>
         private static List<GamemodeObjective> AllObjectives()
         {
-            const string FOLDER_PATH = "Assets/Content/Data/Gamemode";
             List<GamemodeObjective> allGamemodeObjectives = new();
-            string[] assetNames = AssetDatabase.FindAssets($"t:{typeof(GamemodeObjective)}", new[] { FOLDER_PATH });
+            string[] assetNames = AssetDatabase.FindAssets($"t:{typeof(GamemodeObjective)}");
             foreach (string SOName in assetNames)
             {
                 var SOpath = AssetDatabase.GUIDToAssetPath(SOName);
