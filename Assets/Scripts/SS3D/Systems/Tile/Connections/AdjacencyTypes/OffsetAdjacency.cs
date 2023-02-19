@@ -55,6 +55,11 @@ namespace SS3D.Systems.Tile.Connections.AdjacencyTypes
 
         private OffsetOrientation _orientation;
 
+        public OffsetOrientation GetOrientation()
+        {
+            return _orientation;
+        }
+
         public MeshDirectionInfo GetMeshAndDirection(AdjacencyMap adjacencyMap)
         {
             // Determine rotation and mesh specially for every single case.

@@ -41,7 +41,7 @@ namespace SS3D.Systems.Construction.UI
         {
             if (_ghostObject != null)
             {
-                Destroy(_ghostObject);
+                DestroyImmediate(_ghostObject);
                 _ghostObject = null;
             }
         }

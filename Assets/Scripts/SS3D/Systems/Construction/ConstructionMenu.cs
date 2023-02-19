@@ -215,7 +215,7 @@ namespace SS3D.Systems.Construction.UI
         {
             for (int i = 0; i < _contentRoot.transform.childCount; i++)
             {
-                Destroy(_contentRoot.transform.GetChild(i).gameObject);
+                DestroyImmediate(_contentRoot.transform.GetChild(i).gameObject);
             }
         }
 
