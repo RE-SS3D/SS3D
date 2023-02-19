@@ -64,11 +64,11 @@ namespace SS3D.Systems.Tile
             return _loader;
         }
 
-        private bool PlaceObject(GenericObjectSo genericObjectSo, Vector3 placePosition, Direction dir)
+        private bool PlaceObject(GenericObjectSo genericObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
             if (genericObjectSo is TileObjectSo)
             {
-                return _currentMap.PlaceTileObject((TileObjectSo)genericObjectSo, placePosition, dir, false);
+                return _currentMap.PlaceTileObject((TileObjectSo)genericObjectSo, placePosition, dir, false, replaceExisting);
             }
             else if (genericObjectSo is ItemObjectSo)
             {
@@ -79,10 +79,10 @@ namespace SS3D.Systems.Tile
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void RpcPlaceObject(string genericObjectSoName, Vector3 placePosition, Direction dir)
+        public void RpcPlaceObject(string genericObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
             GenericObjectSo tileObjectSo = GetAsset(genericObjectSoName);
-            PlaceObject(tileObjectSo, placePosition, dir);
+            PlaceObject(tileObjectSo, placePosition, dir, replaceExisting);
         }
 
         private void ClearTileObject(TileObjectSo tileObjectSo, Vector3 placePosition)
@@ -104,9 +104,9 @@ namespace SS3D.Systems.Tile
             _currentMap.ClearItemObject(placePosition, itemObjectSo);
         }
 
-        public bool CanBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir)
+        public bool CanBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
-            return _currentMap.CanBuild(tileObjectSo, placePosition, dir);
+            return _currentMap.CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
         }
 
         public void Save()

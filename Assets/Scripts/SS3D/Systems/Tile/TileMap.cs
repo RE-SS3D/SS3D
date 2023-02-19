@@ -151,8 +151,9 @@ namespace SS3D.Systems.Tile
         /// <param name="tileObjectSo">Object to place</param>
         /// <param name="placePosition">World position to place the object</param>
         /// <param name="dir">Direction the object is facing</param>
+        /// <param name="replaceExisting">Replace an existing object</param>
         /// <returns></returns>
-        public bool CanBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir)
+        public bool CanBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
             // Get the right chunk
             TileChunk chunk = GetOrCreateChunk(placePosition);
@@ -164,7 +165,7 @@ namespace SS3D.Systems.Tile
                 // Verify if we are allowed to build for this grid position
                 Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
 
-                canBuild &= BuildChecker.CanBuild(GetTileObjects(gridPosition), tileObjectSo);
+                canBuild &= BuildChecker.CanBuild(GetTileObjects(gridPosition), tileObjectSo, replaceExisting);
             }
 
             // Check for colliding wall mounts. Should be fully moved to BuildChecker but is problematic due to needing knowledge on adjacent tiles which only the map has
@@ -173,9 +174,9 @@ namespace SS3D.Systems.Tile
             return canBuild;
         }
 
-        public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool skipBuildCheck)
+        public bool PlaceTileObject(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool skipBuildCheck, bool replaceExisting)
         {
-            bool canBuild = CanBuild(tileObjectSo, placePosition, dir);
+            bool canBuild = CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
 
             if (canBuild || skipBuildCheck)
             {
@@ -189,6 +190,11 @@ namespace SS3D.Systems.Tile
                     Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
                     chunk = GetOrCreateChunk(gridPosition);
 
+                    // Remove an existing object if there
+                    if (replaceExisting)
+                        ClearTileObject(gridPosition, tileObjectSo.layer);
+
+                    // Place new object
                     chunk.GetTileObject(tileObjectSo.layer, gridPosition).SetPlacedObject(placedObject);
                 }
 
@@ -311,7 +317,7 @@ namespace SS3D.Systems.Tile
                     Vector3 placePosition = chunk.GetWorldPosition(savedTile.x, savedTile.y);
 
                     // Skipping build check here to allow loading tile objects in a non-valid order
-                    PlaceTileObject(toBePlaced, placePosition, savedTile.placedSaveObject.dir, true);
+                    PlaceTileObject(toBePlaced, placePosition, savedTile.placedSaveObject.dir, true, false);
                 }
             }
 

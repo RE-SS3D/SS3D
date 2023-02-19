@@ -6,15 +6,16 @@ namespace SS3D.Systems.Tile
 {
     public static class BuildChecker
     {
-        public static bool CanBuild(TileObject[] tileObjects, TileObjectSo tileObjectSo)
+        public static bool CanBuild(TileObject[] tileObjects, TileObjectSo tileObjectSo, bool replaceExisting)
         {
             bool canBuild = true;
 
             // TileSystem tileSystem = SystemLocator.Get<TileSystem>();
             TileLayer placedLayer = tileObjectSo.layer;
 
-            // Cannot build if the layer is already occupied
-            canBuild &= tileObjects[(int)placedLayer].IsEmpty();
+            // Cannot build if the layer is already occupied. Skip if we replace the existing object
+            if (!replaceExisting)
+                canBuild &= tileObjects[(int)placedLayer].IsEmpty();
 
             // Cannot build anything unless a plenum is placed
             if (placedLayer != TileLayer.Plenum)

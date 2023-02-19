@@ -105,14 +105,21 @@ namespace SS3D.Systems.Construction.UI
             // Move ghost
             _ghostManager.MoveGhost();
 
+            // Check if Left Shift was pressed to replace an existing tile
+            if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyUp(KeyCode.LeftShift))
+                RefreshGhost();
+
             // Check if we can want to place or delete an object
             if (Input.GetKeyDown(KeyCode.Mouse0) && !_mouseOverUI)
             {
-                PlaceObjectClick(_lastSnappedPosition);
+                if (Input.GetKey(KeyCode.LeftShift))
+                    PlaceObjectClick(_lastSnappedPosition, true);
+                else
+                    PlaceObjectClick(_lastSnappedPosition, false);
             }
         }
 
-        private void PlaceObjectClick(Vector3 snappedPosition)
+        private void PlaceObjectClick(Vector3 snappedPosition, bool replaceExisting)
         {
             if (_isDeleting)
             {
@@ -123,7 +130,7 @@ namespace SS3D.Systems.Construction.UI
             }
             else
             {
-                _tileSystem.RpcPlaceObject(_selectedObject.nameString, snappedPosition, _ghostManager.GetDir());
+                _tileSystem.RpcPlaceObject(_selectedObject.nameString, snappedPosition, _ghostManager.GetDir(), replaceExisting);
                 RefreshGhost();
             }
         }
@@ -156,18 +163,18 @@ namespace SS3D.Systems.Construction.UI
             return Vector3.zero;
         }
 
-        private void CheckBuildValidity(Vector3 placePosition)
+        private void CheckBuildValidity(Vector3 placePosition, bool replaceExisting)
         {
-            RpcSendCanBuild(_selectedObject.nameString, placePosition, _ghostManager.GetDir(), LocalConnection);
+            RpcSendCanBuild(_selectedObject.nameString, placePosition, _ghostManager.GetDir(), replaceExisting, LocalConnection);
         }
 
 
         [ServerRpc(RequireOwnership = false)]
-        public void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, NetworkConnection con)
+        public void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection con)
         {
             TileObjectSo tileObjectSo = (TileObjectSo) _tileSystem.GetAsset(tileObjectSoName);
 
-            bool canBuild = _tileSystem.CanBuild(tileObjectSo, placePosition, dir);
+            bool canBuild = _tileSystem.CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
             RpcReceiveCanBuild(con, canBuild);
         }
 
@@ -231,7 +238,10 @@ namespace SS3D.Systems.Construction.UI
             }
             else if (!_itemPlacement)
             {
-                CheckBuildValidity(_lastSnappedPosition);
+                if (Input.GetKey(KeyCode.LeftShift))
+                    CheckBuildValidity(_lastSnappedPosition, true);
+                else
+                    CheckBuildValidity(_lastSnappedPosition, false);
             }
         }
 
