@@ -48,7 +48,7 @@ namespace SS3D.Systems.Construction.UI
 
         public void SetTargetPosition(Vector3 target)
         {
-            _targetPosition = target;
+            _targetPosition = target + new Vector3(0, 0.2f, 0);
         }
 
         public void MoveGhost()

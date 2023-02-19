@@ -38,10 +38,10 @@ namespace SS3D.Systems.Tile
                         break;
                     }
                 // No walls on furniture
-                case TileLayer.Turf when IsWall(tileObjects[(int)TileLayer.Turf]):
+                case TileLayer.Turf when tileObjectSo.genericType == TileObjectGenericType.Wall:
                     {
-                        canBuild &= !tileObjects[(int)TileLayer.FurnitureBase].IsEmpty() ||
-                        !tileObjects[(int)TileLayer.FurnitureTop].IsEmpty();
+                        canBuild &= tileObjects[(int)TileLayer.FurnitureBase].IsEmpty() &&
+                        tileObjects[(int)TileLayer.FurnitureTop].IsEmpty();
                         break;
                     }
             }
