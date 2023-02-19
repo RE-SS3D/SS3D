@@ -3,10 +3,9 @@ using System.Linq;
 using FishNet.Object;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
-namespace SS3D.Systems.Items.Generic
+namespace SS3D.Systems.Storage.Items.Generic
 {
     /// <summary>
     /// The honking device used by the clown on honking purposes

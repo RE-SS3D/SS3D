@@ -12,14 +12,12 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
     public class AssetDatabaseInspectorEditor : Editor
     {
         private AssetDatabase _assetDatabase;
-        private static GUIContent _folderIcon;
 
         private static readonly Regex SlashRegex = new(@"[\\//]");
 
         private void OnEnable()
         {
             _assetDatabase = (AssetDatabase)target;
-            _folderIcon = EditorGUIUtility.IconContent("d_FolderOpened Icon");
         }
 
         public override void OnInspectorGUI()

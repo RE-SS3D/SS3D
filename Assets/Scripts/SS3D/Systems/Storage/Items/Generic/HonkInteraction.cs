@@ -5,7 +5,7 @@ using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using UnityEngine;
 
-namespace SS3D.Systems.Items.Generic
+namespace SS3D.Systems.Storage.Items.Generic
 {
     /// <summary>
     /// Honks a horn. Honking requires the target to be BikeHorn

@@ -1,6 +1,4 @@
-﻿using SS3D.Systems.Storage.Items;
-
-namespace SS3D.Systems.Items.Generic
+﻿namespace SS3D.Systems.Storage.Items.Generic
 {
     /// <summary>
     /// The syndies love to use this to blow up the place

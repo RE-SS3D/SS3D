@@ -10,7 +10,7 @@ using SS3D.Systems.GameModes.Events;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
 
-namespace SS3D.Systems.Items.Generic
+namespace SS3D.Systems.Storage.Items.Generic
 {
     /// <summary>
     /// Boom.

@@ -1,6 +1,6 @@
 namespace SS3D.Data.Enums
 {
-    public enum ItemIDs
+    public enum ItemIds
     {
         BikeHorn = 0, 
         NuclearAuthenticationDisk = 1, 

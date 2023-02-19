@@ -1,12 +1,11 @@
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Systems.Items;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Data;
 using SS3D.Data.Enums;
 using SS3D.Systems.Gamemodes;
-using SS3D.Systems.Items.Generic;
+using SS3D.Systems.Storage.Items.Generic;
 using UnityEngine;
 
 namespace SS3D.Systems.Furniture

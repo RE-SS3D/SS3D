@@ -1,4 +1,4 @@
-﻿using System;
+﻿#if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -28,3 +28,4 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         }
     }
 }
+#endif

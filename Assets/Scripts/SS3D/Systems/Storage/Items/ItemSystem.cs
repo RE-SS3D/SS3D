@@ -5,10 +5,9 @@ using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
 using SS3D.Logging;
-using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
-namespace SS3D.Systems.Items
+namespace SS3D.Systems.Storage.Items
 {
     /// <summary>
     /// System used to spawn items.
@@ -18,7 +17,7 @@ namespace SS3D.Systems.Items
         /// <summary>
         /// A dictionary of all the preloaded prefabs using the ItemIDs as key.
         /// </summary>
-        private readonly Dictionary<ItemIDs, Item> _itemPrefabs = new();
+        private readonly Dictionary<ItemIds, Item> _itemPrefabs = new();
 
         protected override void OnStart()
         {
@@ -30,18 +29,18 @@ namespace SS3D.Systems.Items
         /// <summary>
         /// Loads the item prefabs into memory with the item id and setting up the item ids variable in the items.
         /// </summary>
-        private async void LoadItemPrefabs()
+        private void LoadItemPrefabs()
         {
-            AssetDatabase items = Assets.GetDatabase(nameof(ItemIDs));
+            AssetDatabase items = Assets.GetDatabase(nameof(ItemIds));
 
             for (int index = 0; index < items.Assets.Count; index++)
             {
-                ItemIDs id = (ItemIDs)index;
+                ItemIds id = (ItemIds)index;
 
                 GameObject itemObject = Assets.Get(id);
                 Item item = itemObject.GetComponent<Item>();
 
-                item.ItemID = id;
+                item._itemIdID = id;
 
                 _itemPrefabs.Add(id, item);
             }
@@ -54,7 +53,7 @@ namespace SS3D.Systems.Items
         /// <param name="position">The desired position to spawn.</param>
         /// <param name="rotation">The desired rotation to apply.</param>
         [ServerRpc(RequireOwnership = false)]
-        public void CmdSpawnItem(ItemIDs id, Vector3 position, Quaternion rotation)
+        public void CmdSpawnItem(ItemIds id, Vector3 position, Quaternion rotation)
         {
             SpawnItem(id, position, rotation);
         }
@@ -69,7 +68,7 @@ namespace SS3D.Systems.Items
         /// <param name="rotation">The desired rotation to apply.</param>
         /// <returns></returns>
         [Server]
-        public Item SpawnItem(ItemIDs id, Vector3 position, Quaternion rotation)
+        public Item SpawnItem(ItemIds id, Vector3 position, Quaternion rotation)
         {
             bool hasValue = _itemPrefabs.TryGetValue(id, out Item itemPrefab);
 

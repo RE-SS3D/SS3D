@@ -28,10 +28,11 @@ namespace SS3D.Systems.Storage.Items
     [RequiredLayer("Items")]
     public class Item : InteractionSource, IInteractionTarget
     {
+        [FormerlySerializedAs("ItemID")]
         [Header("Item settings")]
         [SerializeField]
         [HideInInspector]
-        public ItemIDs ItemID;
+        public Data.Enums.ItemIds _itemIdID;
 
         [SerializeField] private string _name;
 

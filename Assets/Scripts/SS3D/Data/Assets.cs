@@ -24,9 +24,9 @@ namespace SS3D.Data
             return GetDatabase(nameof(InteractionIcons)).Get<Sprite>((int)icon);
         }
 
-        public static GameObject Get(ItemIDs itemId)
+        public static GameObject Get(ItemIds itemIdId)
         {
-             return GetDatabase(nameof(ItemIDs)).Get<GameObject>((int)itemId);
+             return GetDatabase(nameof(ItemIds)).Get<GameObject>((int)itemIdId);
         }
 
         /// <summary>
@@ -52,6 +52,7 @@ namespace SS3D.Data
             }
         }
 
+#if UNITY_EDITOR
         /// <summary>
         /// Initializes all asset databases in the project.
         /// </summary>
@@ -73,6 +74,7 @@ namespace SS3D.Data
 
             return databases;
         }
+#endif
 
         /// <summary>
         /// Helper function to find a database in the database list. Used to link the enum to which database to find.
