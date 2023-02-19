@@ -26,9 +26,6 @@ namespace SS3D.Core
         {
 
             base.OnStartClient();
-            //ClientLog = new LoggerConfiguration().WriteTo.Unity3D().WriteTo.File("Logs/Client" + id + ".txt").CreateLogger();
-            //ClientLog.Information("##########  CLIENT STARTING !  ##########");
-            //ClientManager.OnClientConnectionState
 
             if (IsHost)
             {
@@ -38,7 +35,9 @@ namespace SS3D.Core
             Log.Logger = new LoggerConfiguration()
                 .Enrich.With(new ClientIdEnricher())
                 .WriteTo.Unity3D()
-                .WriteTo.File("C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogSession.txt", outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = {ClientId}] {Message}{NewLine}{Exception}", shared: true)
+                .WriteTo.File("C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogClient" + ClientManager.Connection.ClientId + ".txt"
+                , outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = {ClientId}] {Message}{NewLine}{Exception}"
+                , shared: true)
                 .CreateLogger();
 
             Log.Information("##########  CLIENT STARTING !  ##########");
@@ -47,11 +46,25 @@ namespace SS3D.Core
         public override void OnStartServer()
         {
             base.OnStartServer();
-            Log.Logger = new LoggerConfiguration()
-                .Enrich.With(new ClientIdEnricher())
+            if (IsServerOnly)
+            {
+                Log.Logger = new LoggerConfiguration()
+                                .WriteTo.Unity3D()
+                                .WriteTo.File("C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogServer.txt"
+                                , outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = SERVER] {Message}{NewLine}{Exception}"
+                                , shared: true)
+                                .CreateLogger();
+            }
+            else
+            {
+                Log.Logger = new LoggerConfiguration()
                 .WriteTo.Unity3D()
-                .WriteTo.File("C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogSession.txt", outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = {ClientId}] {Message}{NewLine}{Exception}", shared: true)
+                .WriteTo.File("C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogHost.txt"
+                , outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = HOST] {Message}{NewLine}{Exception}"
+                , shared: true)
                 .CreateLogger();
+            }
+
             Log.Information("##########  SERVER STARTING !  ##########");
             ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
         }
