@@ -1,10 +1,16 @@
 ﻿#if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using SS3D.CodeGeneration;
 using UnityEditor;
+using UnityEditor.AddressableAssets.Settings;
+using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
 namespace SS3D.Data.AssetDatabases.InspectorEditor
 {
@@ -13,6 +19,14 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
     {
         private AssetDatabase _assetDatabase;
 
+        public VisualTreeAsset _assetDatabaseVisualTree;
+
+        private ScrollView _assetsListView;
+        private Button _loadAssetsButton;
+        private ObjectField _assetGroupObjectField;
+        private Label _assetDatabaseLabel;
+        private TextField _enumNameTextField;
+
         private static readonly Regex SlashRegex = new(@"[\\//]");
 
         private void OnEnable()
@@ -20,74 +34,62 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _assetDatabase = (AssetDatabase)target;
         }
 
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
-            int width = 350;
+            VisualElement root = new();
+            _assetDatabaseVisualTree.CloneTree(root);
 
-            GUILayoutOption iconWidthConstraint = GUILayout.MaxWidth(width);
-            GUILayoutOption iconHeightConstraint = GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight);
+            _assetDatabaseLabel = root.Q<Label>("asset-database-label");
+            _enumNameTextField = root.Q<TextField>("enum-name-text-field");
+            _assetGroupObjectField = root.Q<ObjectField>("asset-group-field");
+            _loadAssetsButton = root.Q<Button>("load-assets-from-addressables-group-button");
+            _assetsListView = root.Q<ScrollView>("assets-list");
 
-            GUIStyle labelStyle = new()
+            _assetDatabaseLabel.text = $"{_assetDatabase.name} ASSET DATABASE";
+            _enumNameTextField.value = _assetDatabase.EnumName;
+            _assetGroupObjectField.value = _assetDatabase.AssetGroup;
+
+            List<VisualElement> objectFields = new();
+
+            foreach (Object asset in _assetDatabase.Assets)
             {
-                fontStyle = FontStyle.Bold,
-                normal =
+                ObjectField objectField = new()
                 {
-                    textColor = Color.white
-                },
-                padding = new RectOffset(0, 0, 10, 10),
-            };
+                    value = asset
+                };
 
-            GUILayout.Label("Enum writer settings", labelStyle);
-
-            if (GUILayout.Button($"Set enum creation path", iconWidthConstraint, iconHeightConstraint))
-            {
-                if (TryOpenFolderPathInsideAssetsFolder(null, Application.dataPath, null, out string result))
-                {
-                    _assetDatabase.EnumPath = result;
-
-                }
-                else
-                {
-                    EditorWindow.focusedWindow.ShowNotification(new GUIContent($"{result} must be inside the Assets folder."));
-                }
+                objectFields.Add(objectField);
+                _assetsListView.Add(objectField);
             }
 
-            GUILayout.Space(5);
+            _loadAssetsButton.clicked += HandleLoadAssetsButtonPressed;
 
-            if (GUILayout.Button($"Create enum", GUILayout.Width(width)))
-            {
-                EnumCreator.CreateAtPath(_assetDatabase.EnumPath, _assetDatabase.EnumName, _assetDatabase.Assets, _assetDatabase.EnumNamespaceName);
-            }
-
-            GUILayout.Space(5);
-
-            if (GUILayout.Button("Load assets from addressables group", GUILayout.Width(width)))
-            {
-                _assetDatabase.GetAssetNames();
-            }
-
-            GUILayout.Label("Asset database settings", labelStyle);
-
-            base.OnInspectorGUI();
+            return root;
         }
 
-        private static bool TryOpenFolderPathInsideAssetsFolder(string title, string folder, string name, out string result)
+        private void HandleLoadAssetsButtonPressed()
         {
-            result = null;
+            _assetDatabase.EnumName = _enumNameTextField.value;
 
-            string selectedPath = EditorUtility.OpenFolderPanel(title, folder, name);
+            string dataPath = "/Scripts/SS3D/Data/Enums";
+            _assetDatabase.EnumPath = dataPath;
 
-            if (selectedPath.StartsWith(Application.dataPath, StringComparison.OrdinalIgnoreCase))
+            _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
+            _assetDatabase.GetAssetNames();
+            _assetsListView.Clear();
+
+            foreach (Object asset in _assetDatabase.Assets)
             {
-                Debug.Log(Application.dataPath);
-                Debug.Log(selectedPath);
+                ObjectField objectField = new()
+                {
+                    value = asset
+                };
 
-                result = SlashRegex.Replace(selectedPath.Remove(0, Application.dataPath.Length), Path.DirectorySeparatorChar.ToString());
-
-                return true;
+                _assetsListView.Add(objectField);
             }
 
-            return false;
+
+            EnumCreator.CreateAtPath(_assetDatabase.EnumPath, _assetDatabase.EnumName, _assetDatabase.Assets, _assetDatabase.EnumNamespaceName);
         }
     }
 }
