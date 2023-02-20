@@ -49,8 +49,6 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _enumNameTextField.value = _assetDatabase.EnumName;
             _assetGroupObjectField.value = _assetDatabase.AssetGroup;
 
-            List<VisualElement> objectFields = new();
-
             foreach (Object asset in _assetDatabase.Assets)
             {
                 ObjectField objectField = new()
@@ -58,7 +56,6 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
                     value = asset
                 };
 
-                objectFields.Add(objectField);
                 _assetsListView.Add(objectField);
             }
 
