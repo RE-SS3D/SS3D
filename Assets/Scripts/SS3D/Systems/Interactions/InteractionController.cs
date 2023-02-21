@@ -49,7 +49,6 @@ namespace SS3D.Systems.Interactions
             if (Input.GetButtonDown("Primary Click"))
             {
                 ProcessPrimaryClick();
-                Log.Information("client made primary click");
             }
 
             else if (Input.GetButtonDown("Secondary Click"))
@@ -65,11 +64,13 @@ namespace SS3D.Systems.Interactions
 
         private void ProcessPrimaryClick()
         {
+            Log.Information("Process primary click.");
             RunPrimaryInteraction();
         }
 
         private void ProcessSecondaryClick()
         {
+            Log.Information("Process secondary click.");
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
 
@@ -247,6 +248,7 @@ namespace SS3D.Systems.Interactions
 
             if (source == null)
             {
+                Log.Information("No interaction sources.");
                 interactionEvent = null;
                 return new List<InteractionEntry>();
             }
@@ -279,7 +281,7 @@ namespace SS3D.Systems.Interactions
             List<IInteractionTarget> targets = new();
 
             // Get all target components which are not disabled and the source can interact with
-            targets.AddRange(targetGameObject.GetComponents<IInteractionTarget>().Where(x =>(x as MonoBehaviour)?.enabled != false && source.CanInteractWithTarget(x)));
+            targets.AddRange(targetGameObject.GetComponents<IInteractionTarget>().Where(x => (x as MonoBehaviour)?.enabled != false && source.CanInteractWithTarget(x)));
             if (targets.Count < 1)
             {
                 targets.Add(new InteractionTargetGameObject(targetGameObject));
@@ -366,7 +368,7 @@ namespace SS3D.Systems.Interactions
             {
                 string message = $"Interaction at index {index} did not have the expected name of {interactionName}";
                 Punpun.Panic(target, message);
-
+                Log.Error("Interaction at index {index} did not have the expected name of {interactionName}",index, interactionName);
                 return;
             }
 

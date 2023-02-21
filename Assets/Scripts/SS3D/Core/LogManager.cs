@@ -32,42 +32,40 @@ namespace SS3D.Core
         }
         public override void OnStartClient()
         {
-            public static LoggerConfiguration File(this LoggerSinkConfiguration sinkConfiguration, string path, LogEventLevel restrictedToMinimumLevel = LogEventLevel.Verbose, string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}", IFormatProvider? formatProvider = null, long? fileSizeLimitBytes = 1073741824L, LoggingLevelSwitch? levelSwitch = null, bool buffered = false, bool shared = false, TimeSpan? flushToDiskInterval = null, RollingInterval rollingInterval = RollingInterval.Infinite, bool rollOnFileSizeLimit = false, int? retainedFileCountLimit = 31, Encoding? encoding = null, FileLifecycleHooks? hooks = null, TimeSpan? retainedFileTimeLimit = null)
-
                 base.OnStartClient();
                 if (IsHost)
                 {
                     return;
                 }
                 Log.Logger = new LoggerConfiguration()
-                .Enrich.With(new ClientIdEnricher())
-                .WriteTo.Unity3D()
-                .WriteTo.File( new CompactJsonFormatter()
-                , "C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogClient" + ClientManager.Connection.ClientId + ".txt")
-                .CreateLogger();
-                Log.Information("##########  CLIENT STARTING !  ##########");
-            }
+               .Enrich.With(new ClientIdEnricher())
+               .WriteTo.Unity3D()
+               .WriteTo.File( new CompactJsonFormatter()
+               , "C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogClient" + ClientManager.Connection.ClientId + ".json")
+               .CreateLogger();
+               Log.Information("##########  CLIENT STARTING !  ##########");
+        }
 
         public override void OnStartServer()
         {
             base.OnStartServer();
             if (IsServerOnly)
             {
-                Log.Logger = new LoggerConfiguration()
-                .WriteTo.Unity3D()
-                .WriteTo.File("C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogServer.txt"
-                , outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = SERVER] {Message}{NewLine}{Exception}"
-                , shared: true)
-                                .CreateLogger();
+                  Log.Logger = new LoggerConfiguration()
+                 .Enrich.With(new ClientIdEnricher())
+                 .WriteTo.Unity3D()
+                 .WriteTo.File(new CompactJsonFormatter()
+                 , "C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogServer.json")
+                 .CreateLogger();
             }
             else
             {
-                Log.Logger = new LoggerConfiguration()
-                .WriteTo.Unity3D()
-                .WriteTo.File("C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogHost.txt"
-                , outputTemplate: "{Timestamp:HH:mm} [{Level}] [ID = HOST] {Message}{NewLine}{Exception}"
-                , shared: true)
-                .CreateLogger();
+                   Log.Logger = new LoggerConfiguration()
+                  .Enrich.With(new ClientIdEnricher())
+                  .WriteTo.Unity3D()
+                  .WriteTo.File(new CompactJsonFormatter()
+                  , "C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogHost.json")
+                  .CreateLogger();
             }
 
             Log.Information("##########  SERVER STARTING !  ##########");
