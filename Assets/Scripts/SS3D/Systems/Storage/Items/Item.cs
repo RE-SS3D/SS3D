@@ -111,6 +111,11 @@ namespace SS3D.Systems.Storage.Items
                 animator.keepAnimatorControllerStateOnDisable = true;
             }
 
+            if (_rigidbody != null && IsClient)
+            {
+                _rigidbody.isKinematic = true;
+            }
+
             // Items can't have no size
             if (_size.x == 0)
             {
