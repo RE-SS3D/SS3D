@@ -111,6 +111,7 @@ namespace SS3D.Systems.Storage.Items
                 animator.keepAnimatorControllerStateOnDisable = true;
             }
 
+            // Clients don't need to calculate physics for rigidbodies as this is handled by the server
             if (_rigidbody != null && IsClientOnly)
             {
                 _rigidbody.isKinematic = true;
