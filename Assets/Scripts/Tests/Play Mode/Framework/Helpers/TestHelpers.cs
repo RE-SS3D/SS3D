@@ -112,6 +112,27 @@ namespace SS3D.Tests
             PressButton(EmbarkButtonName); yield return new WaitForSeconds(3f);
         }
 
+        public static IEnumerator ContinueFreePlayUntilControlAltBackspacePressed()
+        {
+            bool controlPressed;
+            bool altPressed;
+            bool backspacePressed;
+            bool endTestKeyCombo = false;
+
+            Debug.Log("Entering Free Play. Press Control + Alt + Backspace while focused on the game window in Unity to finish Free Play.");
+
+            while (!endTestKeyCombo)
+            {
+                yield return null;
+                controlPressed = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+                altPressed = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+                backspacePressed = Input.GetKey(KeyCode.Backspace);
+                endTestKeyCombo = controlPressed && altPressed && backspacePressed;
+            }
+
+            Debug.Log("Ending Free Play.");
+        }
+
         public static IEnumerator FinishAndExitRound()
         {
             // Press and release the Escape key

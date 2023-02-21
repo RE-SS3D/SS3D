@@ -51,7 +51,18 @@ namespace SS3D.Tests
                 result[i].Start();
             }
 
+            
+
             return result;
+        }
+
+        public static IEnumerator SetWindowPositions(Process[] process)
+        {
+            for (int i = 0; i < process.Length;i++)
+            {
+                LoadFileHelpers.PlaceQuadWindow(process[i]);
+                yield return new WaitForSeconds(0.5f);
+            }
         }
 
         public static IEnumerator WaitUntilClientsLoaded(int amountOfClients, float timeout = 60f)

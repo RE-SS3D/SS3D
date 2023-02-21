@@ -39,6 +39,7 @@ namespace SS3D.Tests
             const int clientsToCreate = 10;
             clientProcess = ServerHelpers.CreateClients(clientsToCreate);
             yield return ServerHelpers.WaitUntilClientsLoaded(clientsToCreate);
+            yield return ServerHelpers.SetWindowPositions(clientProcess);
 
         }
 
