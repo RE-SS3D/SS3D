@@ -182,5 +182,13 @@ namespace SS3D.Systems.Permissions
 
             SyncUserPermissions();
         }
+
+        public bool IsAtLeast(string ckey, ServerRoleTypes permissionLevelCheck)
+        {
+            TryGetUserRole(ckey, out ServerRoleTypes userPermission);
+
+            return userPermission >= permissionLevelCheck;
+
+        }
     }
 }

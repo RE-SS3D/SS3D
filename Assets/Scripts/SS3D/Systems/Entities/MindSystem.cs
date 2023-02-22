@@ -14,7 +14,7 @@ namespace SS3D.Systems.Entities
     public class MindSystem : NetworkSystem
     {
         [SerializeField]
-        private Mind _mindPrefab;
+        private GameObject _mindPrefab;
 
         [SerializeField]
         private Mind _emptyMind;
@@ -73,7 +73,7 @@ namespace SS3D.Systems.Entities
                 return false;
             }
 
-            Mind mind = Instantiate(_mindPrefab);
+            Mind mind = Instantiate(_mindPrefab).GetComponent<Mind>();
             ServerManager.Spawn(mind.GameObjectCache, soul.Owner);
 
             mind.SetSoul(soul);

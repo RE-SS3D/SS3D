@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FishNet.Component.Transforming;
 using FishNet.Object;
 using SS3D.Attributes;
+using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
@@ -11,6 +12,7 @@ using SS3D.Systems.Storage.Interactions;
 using SS3D.Utils;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 #if UNITY_EDITOR
 
 #endif
@@ -24,10 +26,13 @@ namespace SS3D.Systems.Storage.Items
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(NetworkTransform))]
     [RequiredLayer("Items")]
-    public class Item : InteractionSourceNetworkBehaviour, IInteractionTarget
+    public class Item : InteractionSource, IInteractionTarget
     {
         [Header("Item settings")]
-        [SerializeField] private string _itemId;
+        [SerializeField]
+        [HideInInspector]
+        public ItemIDs ItemID;
+
         [SerializeField] private string _name;
 
         [SerializeField] private Sprite _sprite;
@@ -51,7 +56,6 @@ namespace SS3D.Systems.Storage.Items
         private Container _container;
 
         public Vector2Int Size => _size;
-        public string ItemId => _itemId;
 
         public List<Trait> traits;
 
@@ -196,7 +200,7 @@ namespace SS3D.Systems.Storage.Items
 
         public virtual IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            return new IInteraction[] { new PickupInteraction { Icon = _sprite } };
+            return new IInteraction[] { new PickupInteraction { Icon = null } };
         }
 
         // this creates the base interactions for an item, in this case, the drop interaction

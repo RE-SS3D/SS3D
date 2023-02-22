@@ -36,9 +36,9 @@ namespace SS3D.Systems.Lobby.UI
             AddHandle(ReadyPlayersChanged.AddListener(HandleReadyPlayersChanged));
         }
 
-        public override void OnStartClient()
+        public override void OnStartNetwork()
         {
-            base.OnStartClient();
+            base.OnStartNetwork();
             SubscribeToEvents();
         }
 
@@ -49,15 +49,14 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleOnlineSoulsChanged(ref EventContext context, in OnlineSoulsChanged e)
         {
-            Soul soul = e.Changed;
+            string ckey = e.ChangedCkey;
 
-            if (soul == null)
+            if (ckey == null)
             {
                 return;
             }
 
             ChangeType changeType = e.ChangeType;
-            string ckey = soul.Ckey;
 
             switch (changeType)
             {

@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using Coimbra.Services.Events;
 using SS3D.Core;
+using SS3D.Data.Enums;
 using SS3D.Systems.GameModes.Events;
 using SS3D.Systems.Items;
 using SS3D.Systems.PlayerControl;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SS3D.Systems.Gamemodes.Objectives
 {
@@ -19,23 +21,17 @@ namespace SS3D.Systems.Gamemodes.Objectives
         /// <summary>
         /// The item id required to complete the objective.
         /// </summary>
-        [SerializeField] private string _targetItemId;
+        [SerializeField] private ItemIDs _targetItemId;
 
         /// <summary>
         /// The item that was picked up.
         /// </summary>
-        private string _caughtItemId;
+        private ItemIDs _caughtItemId;
 
         /// <summary>
         /// The player that picked up the item.
         /// </summary>
         private string _caughtPlayerCkey;
-
-        /// <inheritdoc />
-        public override void InitializeObjective()
-        {
-            base.InitializeObjective();
-        }
 
         /// <inheritdoc />
         public override void AddEventListeners()
@@ -56,10 +52,10 @@ namespace SS3D.Systems.Gamemodes.Objectives
 
         private void HandleItemPickedUpEvent(ref EventContext context, in ItemPickedUpEvent e)
         {
-            string itemId = e.Item.ItemId;
+            ItemIDs itemId = e.Item.ItemID;
             string playerCkey = e.Player;
 
-            if (itemId.Equals(_targetItemId) && playerCkey.Equals(AssigneeCkey))
+            if (itemId == _targetItemId  && playerCkey.Equals(AssigneeCkey))
             {
                 _caughtItemId = itemId;
                 _caughtPlayerCkey = playerCkey;
