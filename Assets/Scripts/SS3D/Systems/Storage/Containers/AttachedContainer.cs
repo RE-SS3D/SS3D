@@ -122,6 +122,11 @@ namespace SS3D.Systems.Storage.Containers
                 return;
             }
 
+            if (ContainerDescriptor == null)
+            {
+                return;
+            }
+
             newContainer.Size = ContainerDescriptor.Size;
             newContainer.OnContentsChanged += HandleContainerContentsChanged;
             newContainer.AttachedTo = this;
