@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using SS3D.Systems.Health;
 
-namespace EditorTests.Health
+namespace EditorTests
 {
     public class HealthTests
     {

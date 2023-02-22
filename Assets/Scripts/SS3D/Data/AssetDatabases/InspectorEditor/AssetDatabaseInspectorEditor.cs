@@ -68,11 +68,10 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         {
             _assetDatabase.EnumName = _enumNameTextField.value;
 
-            string dataPath = "/Scripts/SS3D/Data/Enums";
-            _assetDatabase.EnumPath = dataPath;
+            string dataPath = AssetDatabase.EnumPath;
 
             _assetDatabase.AssetGroup = _assetGroupObjectField.value as AddressableAssetGroup;
-            _assetDatabase.GetAssetNames();
+            _assetDatabase.LoadAssetsFromAssetGroup();
             _assetsListView.Clear();
 
             foreach (Object asset in _assetDatabase.Assets)
@@ -86,7 +85,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             }
 
 
-            EnumCreator.CreateAtPath(_assetDatabase.EnumPath, _assetDatabase.EnumName, _assetDatabase.Assets, _assetDatabase.EnumNamespaceName);
+            EnumCreator.CreateAtPath(dataPath, _assetDatabase.EnumName, _assetDatabase.Assets, _assetDatabase.EnumNamespaceName);
         }
     }
 }

@@ -19,6 +19,7 @@ namespace SS3D.Data
         private static readonly Dictionary<string, AssetDatabase> Databases = new();
 
         // IMPORTANT: All database getters have to be added manually. For now.
+
         public static Sprite Get(InteractionIcons icon)
         {
             return GetDatabase(nameof(InteractionIcons)).Get<Sprite>((int)icon);
@@ -42,7 +43,10 @@ namespace SS3D.Data
             return GetDatabase(databaseName).Get<TAssetType>(id);
         }
 
-        public static void InitializeAssetDatabases()
+        /// <summary>
+        /// Loads the all asset databases on the project, for cache reasons.
+        /// </summary>
+        public static void LoadAssetDatabases()
         {
             List<AssetDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
 
@@ -51,30 +55,6 @@ namespace SS3D.Data
                 Databases.Add(database.EnumName, database);
             }
         }
-
-#if UNITY_EDITOR
-        /// <summary>
-        /// Initializes all asset databases in the project.
-        /// </summary>
-        public static List<AssetDatabase> FindAssetDatabases()
-        {
-            string[] assets = UnityEditor.AssetDatabase.FindAssets($"t:{typeof(AssetDatabase)}");
-
-            List<AssetDatabase> databases = new();
-
-            foreach (string database in assets)
-            {
-                string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(database);
-                AssetDatabase assetDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<AssetDatabase>(assetPath);
-
-                databases.Add(assetDatabase);
-            }
-
-            Punpun.Say(typeof(Assets), $"{assets.Length} Asset Databases initialized", Logs.Important);
-
-            return databases;
-        }
-#endif
 
         /// <summary>
         /// Helper function to find a database in the database list. Used to link the enum to which database to find.

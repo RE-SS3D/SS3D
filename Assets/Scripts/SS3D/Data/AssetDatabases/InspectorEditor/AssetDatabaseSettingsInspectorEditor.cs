@@ -41,7 +41,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         {
             if (GUILayout.Button("Find all asset databases", GUILayout.Width(350)))
             {
-                List<AssetDatabase> foundDatabases = Assets.FindAssetDatabases();
+                List<AssetDatabase> foundDatabases = AssetDatabaseSettings.FindAssetDatabases();
                 _assetDatabaseSettings.IncludedAssetDatabases = foundDatabases;
             }
 
@@ -50,7 +50,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
         private void HandleLoadDatabasesButtonPressed()
         {
-            List<AssetDatabase> foundDatabases = Assets.FindAssetDatabases();
+            List<AssetDatabase> foundDatabases = AssetDatabaseSettings.FindAssetDatabases();
             _assetDatabaseSettings.IncludedAssetDatabases = foundDatabases;
 
             UpdateListVisuals();
