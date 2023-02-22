@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2923076148675799095}
   - component: {fileID: 7528723492411204056}
   m_Layer: 5
-  m_Name: Gamemode Objective Canvas
+  m_Name: GamemodeObjective Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 2800000, guid: 39036f56f13e21b48ac592bc470c2c6a, type: 3}
   m_NavMeshLayer: 0
