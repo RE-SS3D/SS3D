@@ -245,7 +245,7 @@ GameObject:
   - component: {fileID: 2079395355536659087}
   - component: {fileID: 1912989684806841521}
   m_Layer: 0
-  m_Name: Unmarked Airlock 1
+  m_Name: UnmarkedAirlockTesting
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
