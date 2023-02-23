@@ -36,10 +36,11 @@ namespace SS3D.Tests
             yield return new WaitForSeconds(3f);
 
             // Make several clients
-            const int clientsToCreate = 10;
-            clientProcess = ServerHelpers.CreateClients(clientsToCreate);
-            yield return ServerHelpers.WaitUntilClientsLoaded(clientsToCreate);
+            const int clientsToCreate = 8;
+            clientProcess = ServerHelpers.CreateClients(clientsToCreate, ProcessWindowStyle.Normal);
             yield return ServerHelpers.SetWindowPositions(clientProcess);
+            yield return ServerHelpers.SetWindowPositions(clientProcess);
+            yield return ServerHelpers.WaitUntilClientsLoaded(clientsToCreate);
 
         }
 
@@ -64,6 +65,18 @@ namespace SS3D.Tests
             // See if the players are below where they should be.
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
             yield return PlaymodeTestRepository.PlayersRemainAboveStationLevelAfterSpawn(players);
+        }
+
+        [UnityTest]
+        public IEnumerator FreePlayMultiplayer()
+        {
+            // Get everyone into the round, and wait till it is properly loaded.
+            ServerHelpers.SetAllPlayersReady();
+            yield return new WaitForSeconds(1f);
+            ServerHelpers.ChangeRoundState(true);
+            yield return new WaitForSeconds(5f);
+
+            yield return TestHelpers.ContinueFreePlayUntilControlAltBackspacePressed();
         }
     }
 }

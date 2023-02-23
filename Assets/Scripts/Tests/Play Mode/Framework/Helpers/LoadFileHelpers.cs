@@ -80,8 +80,14 @@ namespace SS3D.Tests
 
         public static void PlaceQuadWindow(Process process, int windowNumber = 0)
         {
-            //MoveWindow(process.MainWindowHandle, 0, 0, 100, 100, true);
-            SetWindowPos(process.MainWindowHandle, new IntPtr((int)SpecialWindowHandles.HWND_TOP), 10, 10, 450, 450, SetWindowPosFlags.SWP_SHOWWINDOW);
+            const int ScreenWidth = 2000;
+            const int MaxWindowsPerRow = 4;
+
+            int row = windowNumber / MaxWindowsPerRow;
+            int col = windowNumber % MaxWindowsPerRow;
+            int windowWidth = ScreenWidth / MaxWindowsPerRow;
+
+            SetWindowPos(process.MainWindowHandle, new IntPtr((int)SpecialWindowHandles.HWND_TOP), col * windowWidth, row * windowWidth, windowWidth, windowWidth, SetWindowPosFlags.SWP_SHOWWINDOW);
         }
 
 

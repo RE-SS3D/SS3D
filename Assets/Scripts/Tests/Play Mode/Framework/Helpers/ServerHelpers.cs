@@ -27,7 +27,7 @@ namespace SS3D.Tests
     /// </summary>
     public static class ServerHelpers
     {
-        public static Process[] CreateClients(int amount)
+        public static Process[] CreateClients(int amount, ProcessWindowStyle windowStyle = ProcessWindowStyle.Minimized)
         {
             string filePath;
             Process[] result;
@@ -44,11 +44,13 @@ namespace SS3D.Tests
             {
                 // Fire up the client.
                 result[i] = new Process();
-                result[i].StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
+                result[i].StartInfo.WindowStyle = windowStyle;
                 result[i].StartInfo.Arguments = $"-ip=localhost -skipintro -ckey=player_{i}";
                 result[i].StartInfo.FileName = "SS3D.exe";
                 result[i].StartInfo.WorkingDirectory = filePath;
                 result[i].Start();
+
+                //LoadFileHelpers.PlaceQuadWindow(result[i]);
             }
 
             
@@ -56,11 +58,13 @@ namespace SS3D.Tests
             return result;
         }
 
+
+
         public static IEnumerator SetWindowPositions(Process[] process)
         {
             for (int i = 0; i < process.Length;i++)
             {
-                LoadFileHelpers.PlaceQuadWindow(process[i]);
+                LoadFileHelpers.PlaceQuadWindow(process[i], i);
                 yield return new WaitForSeconds(0.5f);
             }
         }
