@@ -28,19 +28,20 @@ namespace SS3D.Systems.Interactions
         private Camera _camera;
         private RadialInteractionView _radialView;
 
-        protected override void OnStart()
+        public override void OnStartClient()
         {
-            base.OnStart();
+            base.OnStartClient();
 
             _radialView = SystemLocator.Get<RadialInteractionView>();
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
         }
 
+        [ServerOrClient]
         protected override void HandleUpdate(in float deltaTime)
         {
             base.HandleUpdate(in deltaTime);
 
-            if (!IsOwner || _camera == null || EventSystem.current.IsPointerOverGameObject())
+            if (IsServerOnly || !IsOwner || _camera == null || EventSystem.current.IsPointerOverGameObject())
             {
                 return;
             }
@@ -61,11 +62,13 @@ namespace SS3D.Systems.Interactions
             }
         }
 
+        [Client]
         private void ProcessPrimaryClick()
         {
             RunPrimaryInteraction();
         }
 
+        [Client]
         private void ProcessSecondaryClick()
         {
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
@@ -74,6 +77,7 @@ namespace SS3D.Systems.Interactions
             ViewTargetInteractions(viableInteractions, interactionEvent, ray);
         }
 
+        [Client]
         private void ProcessUse()
         {
             // Activate item in selected hand
@@ -93,6 +97,7 @@ namespace SS3D.Systems.Interactions
         /// <summary>
         /// Runs the most prioritised action
         /// </summary>
+        [Client]
         private void RunPrimaryInteraction()
         {
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
@@ -116,6 +121,7 @@ namespace SS3D.Systems.Interactions
         /// <param name="viableInteractions"></param>
         /// <param name="interactionEvent"></param>
         /// <param name="ray"></param>
+        [Client]
         private void ViewTargetInteractions(List<InteractionEntry> viableInteractions, InteractionEvent interactionEvent, Ray ray)
         {
             List<IInteraction> interactions = viableInteractions.Select(entry => entry.Interaction).ToList();
@@ -238,6 +244,7 @@ namespace SS3D.Systems.Interactions
         /// <param name="ray">The ray to use in ray casting</param>
         /// <param name="interactionEvent">The produced interaction event</param>
         /// <returns>A list of possible interactions</returns>
+        [ServerOrClient]
         private List<InteractionEntry> GetViableInteractions(Ray ray, out InteractionEvent interactionEvent)
         {
             // Get source that's currently interacting (eg. hand, tool)
@@ -272,6 +279,7 @@ namespace SS3D.Systems.Interactions
         /// <param name="source">The source of the interaction</param>
         /// <param name="targetGameObject">The game objects the interaction targets are on</param>
         /// <returns>A list of all valid interaction targets</returns>
+        [ServerOrClient]
         private List<IInteractionTarget> GetTargetsFromGameObject(IInteractionSource source, GameObject targetGameObject)
         {
             List<IInteractionTarget> targets = new();
@@ -293,6 +301,7 @@ namespace SS3D.Systems.Interactions
         /// <param name="targets">The interaction targets</param>
         /// <param name="interactionEvent">The interaction event data</param>
         /// <returns>A list of all possible interaction entries</returns>
+        [ServerOrClient]
         private List<InteractionEntry> GetInteractionsFromTargets(IInteractionSource source, List<IInteractionTarget> targets, InteractionEvent interactionEvent)
         {
             List<InteractionEntry> interactions = new();
@@ -329,6 +338,7 @@ namespace SS3D.Systems.Interactions
             return interactionsFromTargets;
         }
 
+        [ServerOrClient]
         private IInteractionSource GetActiveInteractionSource()
         {
             IToolHolder toolHolder = GetComponent<IToolHolder>();
