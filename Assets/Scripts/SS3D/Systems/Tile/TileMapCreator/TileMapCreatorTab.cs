@@ -17,6 +17,11 @@ namespace SS3D.Systems.Tile.UI
         private TileMapCreator _menu;
         
 
+        /// <summary>
+        /// Load a new UI icon and string for the item/tile.
+        /// </summary>
+        /// <param name="icon"></param>
+        /// <param name="nameString"></param>
         private void LoadTab(Sprite icon, string nameString)
         {
             _image = GetComponent<Image>();

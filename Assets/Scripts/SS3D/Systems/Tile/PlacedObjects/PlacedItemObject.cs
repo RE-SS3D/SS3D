@@ -58,20 +58,6 @@ namespace SS3D.Systems.Tile
             public Quaternion rotation;
         }
 
-        /// <summary>
-        /// Returns a new SaveObject for use in saving/loading.
-        /// </summary>
-        /// <returns></returns>
-        public PlacedSaveObject Save()
-        {
-            return new PlacedSaveObject
-            {
-                itemName = _itemSo.nameString,
-                worldPosition = _worldPosition,
-                rotation = _rotation,
-            };
-        }
-
         private ItemObjectSo _itemSo;
         private Vector3 _worldPosition;
         private Quaternion _rotation;
@@ -97,6 +83,20 @@ namespace SS3D.Systems.Tile
         public void DestroySelf()
         {
             InstanceFinder.ServerManager.Despawn(gameObject);
+        }
+
+        /// <summary>
+        /// Returns a new SaveObject for use in saving/loading.
+        /// </summary>
+        /// <returns></returns>
+        public PlacedSaveObject Save()
+        {
+            return new PlacedSaveObject
+            {
+                itemName = _itemSo.nameString,
+                worldPosition = _worldPosition,
+                rotation = _rotation,
+            };
         }
     }
 }

@@ -119,19 +119,19 @@ namespace SS3D.Systems.Tile.UI
             if (Input.GetKeyDown(KeyCode.Mouse0) && !_mouseOverUI)
             {
                 if (Input.GetKey(KeyCode.LeftShift))
-                    PlaceObjectClick(_lastSnappedPosition, true);
+                    HandleMouseClick(_lastSnappedPosition, true);
                 else
-                    PlaceObjectClick(_lastSnappedPosition, false);
+                    HandleMouseClick(_lastSnappedPosition, false);
             }
         }
 
         [ServerOrClient]
-        private void PlaceObjectClick(Vector3 snappedPosition, bool replaceExisting)
+        private void HandleMouseClick(Vector3 snappedPosition, bool replaceExisting)
         {
             if (_isDeleting)
             {
                 if (_itemPlacement)
-                    DeleteItemObjectClick(snappedPosition);
+                    FindAndDeleteItem(snappedPosition);
                 else
                     _tileSystem.RpcClearTileObject(_selectedObject.nameString, snappedPosition);
             }
@@ -143,7 +143,7 @@ namespace SS3D.Systems.Tile.UI
         }
 
         [ServerOrClient]
-        private void DeleteItemObjectClick(Vector3 worldPosition)
+        private void FindAndDeleteItem(Vector3 worldPosition)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -204,6 +204,11 @@ namespace SS3D.Systems.Tile.UI
             _menuRoot.SetActive(show);
         }
 
+        /// <summary>
+        /// Loads a list of tile objects and places them in the UI box grid.
+        /// </summary>
+        /// <param name="allowedLayers"></param>
+        /// <param name="isItems"></param>
         [ServerOrClient]
         private void LoadObjectGrid(TileLayer[] allowedLayers, bool isItems)
         {
@@ -280,7 +285,7 @@ namespace SS3D.Systems.Tile.UI
             if (IsServer)
                 _tileSystem.Load();
             else
-                Punpun.Say(this, "Only the server is allowed to load the map");
+                Punpun.Say(this, "Cannot load the map on a client");
         }
 
         [Server]
@@ -289,10 +294,13 @@ namespace SS3D.Systems.Tile.UI
             if (IsServer)
                 _tileSystem.Save();
             else
-                Punpun.Say(this, "Only the server is allowed to save the map");
+                Punpun.Say(this, "Cannot save the map on a client");
         }
 
         
+        /// <summary>
+        /// Change the currently displayed tiles/items when a new layer is selected in the drop down menu.
+        /// </summary>
         [ServerOrClient]
         public void OnDropDownChange()
         {
@@ -324,17 +332,6 @@ namespace SS3D.Systems.Tile.UI
                 default:
                     ClearGrid();
                     break;
-            }
-        }
-
-        [ServerOrClient]
-        public void SetIsDeleting(bool isDeleting)
-        {
-            if (_selectedObject != null)
-            {
-                _isDeleting = isDeleting;
-
-                RefreshGhost();
             }
         }
 

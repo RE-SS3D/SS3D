@@ -11,7 +11,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile
 {
     /// <summary>
-    /// Component that is added to every tile object that is part of the tilemap.
+    /// Component that is added to every tile object that is part of the tilemap. Tiles are more restrictive and need to have an origin, fixed grid position and direction to face.
     /// </summary>
     public class PlacedTileObject: NetworkBehaviour
     {
@@ -46,8 +46,6 @@ namespace SS3D.Systems.Tile
             return placedObject;
         }
 
-
-
         /// <summary>
         /// SaveObject that contains all information required to reconstruct the object.
         /// </summary>
@@ -63,15 +61,7 @@ namespace SS3D.Systems.Tile
         /// Returns a new SaveObject for use in saving/loading.
         /// </summary>
         /// <returns></returns>
-        public PlacedSaveObject Save()
-        {
-            return new PlacedSaveObject
-            {
-                tileObjectSOName = _tileObjectSo.nameString,
-                origin = _origin,
-                dir = _dir,
-            };
-        }
+        
 
         private TileObjectSo _tileObjectSo;
         private Vector2Int _origin;
@@ -125,6 +115,16 @@ namespace SS3D.Systems.Tile
         {
             if (HasAdjacencyConnector)
                 _connector.UpdateSingle(dir, neighbourObject, false);
+        }
+
+        public PlacedSaveObject Save()
+        {
+            return new PlacedSaveObject
+            {
+                tileObjectSOName = _tileObjectSo.nameString,
+                origin = _origin,
+                dir = _dir,
+            };
         }
     }
 }

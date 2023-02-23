@@ -9,6 +9,13 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public static class BuildChecker
     {
+        /// <summary>
+        /// Checks whether the tile object can be build at the given position.
+        /// </summary>
+        /// <param name="tileObjects"></param>
+        /// <param name="tileObjectSo"></param>
+        /// <param name="replaceExisting"></param>
+        /// <returns></returns>
         public static bool CanBuild(TileObject[] tileObjects, TileObjectSo tileObjectSo, bool replaceExisting)
         {
             bool canBuild = true;
@@ -51,6 +58,13 @@ namespace SS3D.Systems.Tile
             return canBuild;
         }
 
+        /// <summary>
+        /// Checks if a wall mount collides with a nearby wall
+        /// </summary>
+        /// <param name="tileObjectSo"></param>
+        /// <param name="dir"></param>
+        /// <param name="adjacentObjects"></param>
+        /// <returns></returns>
         public static bool CanBuildWallCollision(TileObjectSo tileObjectSo, Direction dir, PlacedTileObject[] adjacentObjects)
         {
             bool canBuild = true;
@@ -99,6 +113,12 @@ namespace SS3D.Systems.Tile
             return canBuild;
         }
 
+        /// <summary>
+        /// Returns a list of incompatible existing objects that should be removed if the provided tile object is removed.
+        /// E.g. A wall mount should be removed if the wall is removed.
+        /// </summary>
+        /// <param name="tileObjects"></param>
+        /// <returns></returns>
         public static List<TileObject> GetToBeDestroyedObjects(TileObject[] tileObjects)
         {
             List<TileObject> toBeDestroyedList = new List<TileObject>();

@@ -23,12 +23,12 @@ namespace SS3D.Systems.Tile
             public TileChunk.ChunkSaveObject[] saveObjectList;
             public PlacedItemObject.PlacedSaveObject[] savedItemList;
         }
-        
-        public int ChunkCount => _chunks.Count;
 
         private Dictionary<Vector2Int, TileChunk> _chunks;
         private List<PlacedItemObject> _items;
         private string _mapName;
+
+        public int ChunkCount => _chunks.Count;
 
         public static TileMap Create(string name)
         {
