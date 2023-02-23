@@ -39,11 +39,14 @@ namespace SS3D.Core
                 }
                 Log.Logger = new LoggerConfiguration()
                .Enrich.With(new ClientIdEnricher())
-               .WriteTo.Unity3D()
                .WriteTo.File( new CompactJsonFormatter()
                , "C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogClient" + ClientManager.Connection.ClientId + ".json")
+               .Enrich.With(new UnityColorEnricher())
+               .WriteTo.Unity3D(outputTemplate: "[{Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}")
                .CreateLogger();
                Log.Information("##########  CLIENT STARTING !  ##########");
+            Log.ForContext(typeof(LogManager)).Information("Entering MethodName");
+            Log.Information("Entering MethodName");
         }
 
         public override void OnStartServer()
@@ -56,7 +59,8 @@ namespace SS3D.Core
                  .WriteTo.Unity3D()
                  .WriteTo.File(new CompactJsonFormatter()
                  , "C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogServer.json")
-                 .CreateLogger();
+                 .CreateLogger()
+                 ;
             }
             else
             {
