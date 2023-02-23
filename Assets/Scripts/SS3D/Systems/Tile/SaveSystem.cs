@@ -98,7 +98,7 @@ namespace SS3D.Systems.Tile
 
         public static void SaveObject(object saveObject)
         {
-            SaveObject("save", saveObject, true);
+            SaveObject("Save", saveObject, true);
         }
 
         public static void SaveObject(string fileName, object saveObject, bool overwrite)
