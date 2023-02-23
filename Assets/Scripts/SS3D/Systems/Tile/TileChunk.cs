@@ -9,17 +9,15 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile
 {
+    /// <summary>
+    /// Class for holding a 16x16 grid of TileObjects.
+    /// </summary>
     public class TileChunk: NetworkBehaviour
     {
         /// <summary>
         /// Number of TileObjects that should go in a chunk. 16 x 16
         /// </summary>
         public const int ChunkSize = 16;
-
-        /// <summary>
-        /// The size of each tile.
-        /// </summary>
-        private const float TileSize = 1.0f;
 
         /// <summary>
         /// Grid for grouping TileObjects per layer. Can be used for walking through objects on the same layer fast.
@@ -102,7 +100,7 @@ namespace SS3D.Systems.Tile
         {
             _tileGridList = new List<TileGrid>();
 
-            foreach (TileLayer layer in TileHelper.GetTileLayerNames())
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
                 _tileGridList.Add(CreateGrid(layer));
             }
@@ -166,7 +164,7 @@ namespace SS3D.Systems.Tile
         /// </summary>
         public void Clear()
         {
-            foreach (TileLayer layer in TileHelper.GetTileLayerNames())
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
                 for (int x = 0; x < ChunkSize; x++)
                 {
@@ -187,14 +185,14 @@ namespace SS3D.Systems.Tile
         {
             var tileObjectSaveObjectList = new List<TileObject.TileSaveObject>();
 
-            foreach (TileLayer layer in TileHelper.GetTileLayerNames())
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
                 for (int x = 0; x < ChunkSize; x++)
                 {
                     for (int y = 0; y < ChunkSize; y++)
                     {
                         TileObject tileObject = GetTileObject(layer, x, y);
-                        if (!tileObject.IsEmpty())
+                        if (!tileObject.IsEmpty)
                         {
                             tileObjectSaveObjectList.Add(tileObject.Save());
                         }

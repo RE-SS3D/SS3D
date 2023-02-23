@@ -9,13 +9,16 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile
 {
-
+    /// <summary>
+    /// Loads assets used by the tilemap. Can be used to retrieve scriptableobjects from a name string.
+    /// </summary>
     public class TileResourceLoader: MonoBehaviour
     {
         public Sprite _missingIcon;
 
+        public bool IsInitialized { get; private set; } = false;
+
         private List<GenericObjectSo> _assets;
-        private bool _initialized = false;
 
         public void Start()
         {
@@ -65,14 +68,11 @@ namespace SS3D.Systems.Tile
                 _assets.Add(assets[i]);
             }
 
-            _initialized = true;
+            IsInitialized = true;
             yield return null;
         }
 
-        public bool IsInitialized()
-        {
-            return _initialized;
-        }
+        
 
         public GenericObjectSo GetAsset(string assetName)
         {

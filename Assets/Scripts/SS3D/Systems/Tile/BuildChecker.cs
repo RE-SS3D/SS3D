@@ -4,18 +4,20 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile
 {
+    /// <summary>
+    /// Class for checking invalid building combinations.
+    /// </summary>
     public static class BuildChecker
     {
         public static bool CanBuild(TileObject[] tileObjects, TileObjectSo tileObjectSo, bool replaceExisting)
         {
             bool canBuild = true;
 
-            // TileSystem tileSystem = SystemLocator.Get<TileSystem>();
             TileLayer placedLayer = tileObjectSo.layer;
 
             // Cannot build if the layer is already occupied. Skip if we replace the existing object
             if (!replaceExisting)
-                canBuild &= tileObjects[(int)placedLayer].IsEmpty();
+                canBuild &= tileObjects[(int)placedLayer].IsEmpty;
 
             // Cannot build anything unless a plenum is placed
             if (placedLayer != TileLayer.Plenum)
@@ -40,8 +42,8 @@ namespace SS3D.Systems.Tile
                 // No walls on furniture
                 case TileLayer.Turf when tileObjectSo.genericType == TileObjectGenericType.Wall:
                     {
-                        canBuild &= tileObjects[(int)TileLayer.FurnitureBase].IsEmpty() &&
-                        tileObjects[(int)TileLayer.FurnitureTop].IsEmpty();
+                        canBuild &= tileObjects[(int)TileLayer.FurnitureBase].IsEmpty&&
+                        tileObjects[(int)TileLayer.FurnitureTop].IsEmpty;
                         break;
                     }
             }
@@ -55,7 +57,7 @@ namespace SS3D.Systems.Tile
 
             if (tileObjectSo.layer == TileLayer.WallMountHigh || tileObjectSo.layer == TileLayer.WallMountLow)
             {
-                canBuild &= !(adjacentObjects[(int)dir] && adjacentObjects[(int)dir].GetGenericType() == TileObjectGenericType.Wall);
+                canBuild &= !(adjacentObjects[(int)dir] && adjacentObjects[(int)dir].GenericType == TileObjectGenericType.Wall);
             }
 
             return canBuild;
@@ -63,7 +65,7 @@ namespace SS3D.Systems.Tile
 
         private static bool IsWall(TileObject wallObject)
         {
-            return !wallObject.IsEmpty() && wallObject.GetPlacedObject().GetGenericType() == TileObjectGenericType.Wall;
+            return !wallObject.IsEmpty&& wallObject.PlacedObject.GenericType == TileObjectGenericType.Wall;
         }
 
         private static bool CanBuildWallAttachment(TileObject wallObject, TileObjectSo wallAttachment)
@@ -74,8 +76,8 @@ namespace SS3D.Systems.Tile
             canBuild &= IsWall(wallObject);
 
             // No low wall mounts on windows
-            if (!wallObject.IsEmpty())
-                canBuild &= !(wallObject.GetPlacedObject().GetNameString().Contains("window") && wallAttachment.layer == TileLayer.WallMountLow);
+            if (!wallObject.IsEmpty)
+                canBuild &= !(wallObject.PlacedObject.NameString.Contains("window") && wallAttachment.layer == TileLayer.WallMountLow);
 
             return canBuild;
         }
@@ -84,14 +86,10 @@ namespace SS3D.Systems.Tile
         {
             bool canBuild = true;
 
-            if (!plenumObject.IsEmpty())
+            if (!plenumObject.IsEmpty)
             {
-                // Only allow wires and machines on catwalks
-                // canBuild &= !(plenumObject.GetPlacedObject().GetNameString().Contains("Catwalk") && (plenumAttachment.layer != TileLayer.Wire &&
-                //     plenumAttachment.layer != TileLayer.FurnitureBase));
-
                 // Can only build on a Plenum and not Catwalks or Lattices
-                canBuild &= plenumObject.GetPlacedObject().GetNameString().Contains("plenum") || plenumObject.GetPlacedObject().name.Contains("catwalk");
+                canBuild &= plenumObject.PlacedObject.NameString.Contains("plenum") || plenumObject.PlacedObject.name.Contains("catwalk");
             }
             else
             {
@@ -106,7 +104,7 @@ namespace SS3D.Systems.Tile
             List<TileObject> toBeDestroyedList = new List<TileObject>();
 
             // Remove everything when the plenum is missing
-            if (tileObjects[(int)TileLayer.Plenum].IsEmpty())
+            if (tileObjects[(int)TileLayer.Plenum].IsEmpty)
             {
                 for (int i = 1; i < tileObjects.Length; i++)
                 {
@@ -115,14 +113,14 @@ namespace SS3D.Systems.Tile
             }
 
             // Remove any wall fixtures when the turf is missing
-            else if (tileObjects[(int)TileLayer.Turf].IsEmpty())
+            else if (tileObjects[(int)TileLayer.Turf].IsEmpty)
             {
                 toBeDestroyedList.Add(tileObjects[(int)TileLayer.WallMountHigh]);
                 toBeDestroyedList.Add(tileObjects[(int)TileLayer.WallMountLow]);
             }
 
             // Remove furniture top is furniture base is missing
-            else if (tileObjects[(int)TileLayer.FurnitureBase].IsEmpty())
+            else if (tileObjects[(int)TileLayer.FurnitureBase].IsEmpty)
                 toBeDestroyedList.Add(tileObjects[(int)TileLayer.FurnitureTop]);
 
             return toBeDestroyedList;

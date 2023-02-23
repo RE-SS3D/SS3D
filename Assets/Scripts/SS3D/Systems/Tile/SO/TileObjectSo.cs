@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SS3D.Systems.Tile
 {
     /// <summary>
-    /// Scriptable object that should be used for every tile object.
+    /// ScriptableObject that should be used for every tile object.
     /// </summary>
     [CreateAssetMenu(fileName = "TileObjectSo", menuName = "TileMap/TileObjectSo", order = 0)]
     public class TileObjectSo : GenericObjectSo

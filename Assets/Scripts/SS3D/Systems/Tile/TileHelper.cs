@@ -6,37 +6,8 @@ using UnityEngine;
 namespace SS3D.Systems.Tile
 {
     /// <summary>
-    /// Enum that defines every layer that should be present on each tile.
+    /// Helper class for the tilemap to deal with layers and rotations
     /// </summary>
-    public enum TileLayer
-    {
-        Plenum,
-        Turf,
-        Wire,
-        Disposal,
-        Pipes,
-        WallMountHigh,
-        WallMountLow,
-        FurnitureBase,
-        FurnitureTop,
-        Overlays
-    }
-
-    /// <summary>
-    /// Enum for each direction.
-    /// </summary>
-    public enum Direction
-    {
-        North = 0,
-        NorthEast = 1,
-        East = 2,
-        SouthEast = 3,
-        South = 4,
-        SouthWest = 5,
-        West = 6,
-        NorthWest = 7,
-    }
-
     public static class TileHelper
     {
         private static TileLayer[] tileLayers;
@@ -58,7 +29,7 @@ namespace SS3D.Systems.Tile
             return (int)dir * 45;
         }
 
-        public static TileLayer[] GetTileLayerNames()
+        public static TileLayer[] GetTileLayers()
         {
             if (tileLayers == null)
             {

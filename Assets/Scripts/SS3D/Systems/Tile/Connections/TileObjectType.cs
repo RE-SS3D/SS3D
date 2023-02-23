@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile
 {
+    /// <summary>
+    /// Generic objects are used by adjacencies to connect to each other
+    /// </summary>
     public enum TileObjectGenericType
     {
         None,
@@ -21,6 +24,9 @@ namespace SS3D.Systems.Tile
         Wire
     }
 
+    /// <summary>
+    /// Specific objects can further subdivide adjacency connections by building material used
+    /// </summary>
     public enum TileObjectSpecificType
     {
         None,

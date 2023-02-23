@@ -9,6 +9,9 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile
 {
+    /// <summary>
+    /// Component which is added to every item that is part of the tilemap.
+    /// </summary>
     public class PlacedItemObject : NetworkBehaviour
     {
         /// <summary>
@@ -35,7 +38,7 @@ namespace SS3D.Systems.Tile
             if (InstanceFinder.ServerManager != null && placedObject.GetComponent<NetworkObject>() != null)
             {
                 if (placedObject.GetComponent<NetworkObject>() == null)
-                    Punpun.Yell(SystemLocator.Get<TileSystem>(), $"{placedObject.GetNameString()} does not have a Network Component and will not be spawned");
+                    Punpun.Yell(SystemLocator.Get<TileSystem>(), $"{placedObject.NameString} does not have a Network Component and will not be spawned");
                 else
                     InstanceFinder.ServerManager.Spawn(placedGameObject);
             }
@@ -73,6 +76,8 @@ namespace SS3D.Systems.Tile
         private Vector3 _worldPosition;
         private Quaternion _rotation;
 
+        public string NameString => _itemSo.nameString;
+
         /// <summary>
         /// Set up a new item object.
         /// </summary>
@@ -92,11 +97,6 @@ namespace SS3D.Systems.Tile
         public void DestroySelf()
         {
             InstanceFinder.ServerManager.Despawn(gameObject);
-        }
-
-        public string GetNameString()
-        {
-            return _itemSo.nameString;
         }
     }
 }

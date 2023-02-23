@@ -65,8 +65,8 @@ namespace SS3D.Systems.Tile.Connections
                 }
                 else
                 {
-                    _genericType = _placedObject.GetGenericType();
-                    _specificType = _placedObject.GetSpecificType();
+                    _genericType = _placedObject.GenericType;
+                    _specificType = _placedObject.SpecificType;
                 }
                 _initialized = true;
             }
@@ -79,9 +79,9 @@ namespace SS3D.Systems.Tile.Connections
 
             if (neighbourObject)
             {
-                isConnected = (neighbourObject && neighbourObject.HasAdjacencyConnector());
-                isConnected &= neighbourObject.GetGenericType() == _genericType || _genericType == TileObjectGenericType.None;
-                isConnected &= neighbourObject.GetSpecificType() == _specificType || _specificType == TileObjectSpecificType.None;
+                isConnected = (neighbourObject && neighbourObject.HasAdjacencyConnector);
+                isConnected &= neighbourObject.GenericType == _genericType || _genericType == TileObjectGenericType.None;
+                isConnected &= neighbourObject.SpecificType == _specificType || _specificType == TileObjectSpecificType.None;
 
                 // Update our neighbour as well
                 if (isConnected && updateNeighbour)

@@ -1,5 +1,8 @@
 ﻿namespace SS3D.Systems.Tile.Connections
 {
+    /// <summary>
+    /// Used for keeping track of different possible adjacency shapes
+    /// </summary>
     public enum AdjacencyShape
     {
         //Simple

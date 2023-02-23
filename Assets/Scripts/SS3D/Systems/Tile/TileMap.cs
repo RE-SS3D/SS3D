@@ -122,9 +122,9 @@ namespace SS3D.Systems.Tile
 
         private TileObject[] GetTileObjects(Vector3 worldPosition)
         {
-            TileObject[] tileObjects = new TileObject[TileHelper.GetTileLayerNames().Length];
+            TileObject[] tileObjects = new TileObject[TileHelper.GetTileLayers().Length];
 
-            foreach (TileLayer layer in TileHelper.GetTileLayerNames())
+            foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
                 tileObjects[(int)layer] = GetTileObject(layer, worldPosition);
             }
@@ -139,7 +139,7 @@ namespace SS3D.Systems.Tile
             for (Direction direction = Direction.North; direction <= Direction.NorthWest; direction++)
             {
                 Tuple<int, int> vector = TileHelper.ToCardinalVector(direction);
-                adjacentObjects[(int)direction] = GetTileObject(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2)).GetPlacedObject();
+                adjacentObjects[(int)direction] = GetTileObject(layer, worldPosition + new Vector3(vector.Item1, 0, vector.Item2)).PlacedObject;
             }
 
             return adjacentObjects;
@@ -195,7 +195,7 @@ namespace SS3D.Systems.Tile
                         ClearTileObject(gridPosition, tileObjectSo.layer);
 
                     // Place new object
-                    chunk.GetTileObject(tileObjectSo.layer, gridPosition).SetPlacedObject(placedObject);
+                    chunk.GetTileObject(tileObjectSo.layer, gridPosition).PlacedObject = placedObject;
                 }
 
                 // Handle Adjacency connectors
@@ -220,7 +220,7 @@ namespace SS3D.Systems.Tile
             foreach (TileObject removeObject in toRemoveObjects)
             {
                 removeObject.ClearPlacedObject();
-                ResetAdjacencies(placePosition, removeObject.GetLayer());
+                ResetAdjacencies(placePosition, removeObject.Layer);
             }
         }
 
@@ -242,7 +242,7 @@ namespace SS3D.Systems.Tile
 
         public void ClearItemObject(Vector3 worldPosition, ItemObjectSo itemObjectSo)
         {
-            List<PlacedItemObject> placedItems = _items.FindAll(item => item.GetNameString() == itemObjectSo.nameString);
+            List<PlacedItemObject> placedItems = _items.FindAll(item => item.NameString == itemObjectSo.nameString);
             PlacedItemObject toRemove = null;
 
             foreach (PlacedItemObject item in placedItems)

@@ -4,9 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SS3D.Systems.Construction.UI
+namespace SS3D.Systems.Tile.UI
 {
-    public class ConstructionHelper: Actor
+    /// <summary>
+    /// Class for creating and managing ghost objects used by the TileMapCreator.
+    /// </summary>
+    public class GhostManager: Actor
     {
         public Material validConstruction;
         public Material invalidConstruction;
@@ -14,7 +17,6 @@ namespace SS3D.Systems.Construction.UI
 
         private GameObject _ghostObject;
         private Vector3 _targetPosition;
-        private Direction _dir = Direction.North;
 
         public enum BuildMatMode
         {
@@ -23,6 +25,8 @@ namespace SS3D.Systems.Construction.UI
             Building,
             Deleting
         }
+
+        public Direction Dir { get; private set; } = Direction.North;
 
         public void CreateGhost(GameObject prefab)
         {
@@ -48,18 +52,26 @@ namespace SS3D.Systems.Construction.UI
 
         public void SetTargetPosition(Vector3 target)
         {
+            // Small offset is added so that meshes don't overlap with already placed objects.
             _targetPosition = target + new Vector3(0, 0.2f, 0);
         }
 
+        /// <summary>
+        /// Moves a ghost object to the target position via a lerp over time.
+        /// </summary>
         public void MoveGhost()
         {
             // Required if the object has a network script attached
             _ghostObject.SetActive(true);
 
             _ghostObject.transform.position = Vector3.Lerp(_ghostObject.transform.position, _targetPosition, Time.deltaTime * 15f);
-            _ghostObject.transform.rotation = Quaternion.Lerp(_ghostObject.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(_dir), 0), Time.deltaTime * 15f);
+            _ghostObject.transform.rotation = Quaternion.Lerp(_ghostObject.transform.rotation, Quaternion.Euler(0, TileHelper.GetRotationAngle(Dir), 0), Time.deltaTime * 15f);
         }
 
+        /// <summary>
+        /// Chooses which material to set on the ghost based on which mode we are building.
+        /// </summary>
+        /// <param name="mode"></param>
         public void ChangeGhostColor(BuildMatMode mode)
         {
             Material ghostMat = null;
@@ -91,14 +103,9 @@ namespace SS3D.Systems.Construction.UI
             }
         }
 
-        public void NextRotation()
+        public void SetNextRotation()
         {
-            _dir = TileHelper.GetNextDir(_dir);
-        }
-
-        public Direction GetDir()
-        {
-            return _dir;
+            Dir = TileHelper.GetNextDir(Dir);
         }
     }
 }

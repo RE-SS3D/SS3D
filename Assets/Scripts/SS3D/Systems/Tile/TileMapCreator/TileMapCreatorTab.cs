@@ -5,13 +5,16 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SS3D.Systems.Construction.UI
+namespace SS3D.Systems.Tile.UI
 {
-    public class ConstructionTab : MonoBehaviour
+    /// <summary>
+    /// Tab that holds information for each item/tile in the TileMapCreator UI.
+    /// </summary>
+    public class TileMapCreatorTab : MonoBehaviour
     {
         private Image _image;
         private GenericObjectSo _genericObjectSo;
-        private ConstructionMenu _menu;
+        private TileMapCreator _menu;
         
 
         private void LoadTab(Sprite icon, string nameString)
@@ -21,7 +24,7 @@ namespace SS3D.Systems.Construction.UI
             transform.localScale = Vector3.one;
 
             GetComponentInChildren<TMP_Text>().text = nameString;
-            _menu = GetComponentInParent<ConstructionMenu>();
+            _menu = GetComponentInParent<TileMapCreator>();
             GetComponent<Button>().onClick.AddListener(OnClick);
         }
 
@@ -36,7 +39,6 @@ namespace SS3D.Systems.Construction.UI
         {
             if (_genericObjectSo != null)
                 _menu.SetSelectedObject(_genericObjectSo);
-
         }
     }
 }

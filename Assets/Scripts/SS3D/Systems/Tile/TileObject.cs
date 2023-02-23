@@ -25,7 +25,6 @@ namespace SS3D.Systems.Tile
         private TileLayer _layer;
         private int _x;
         private int _y;
-        private PlacedTileObject _placedObject;
 
         public TileObject(TileLayer layer, int x, int y)
         {
@@ -34,33 +33,19 @@ namespace SS3D.Systems.Tile
             _y = y;
         }
 
-        public PlacedTileObject GetPlacedObject()
-        {
-            return _placedObject;
-        }
+        public PlacedTileObject PlacedObject { get; set; }
 
-        public void SetPlacedObject(PlacedTileObject placedObject)
-        {
-            _placedObject = placedObject;
-        }
+        public TileLayer Layer => _layer;
+
+        public bool IsEmpty => PlacedObject == null;
 
         public void ClearPlacedObject()
         {
-            if (_placedObject != null)
+            if (PlacedObject != null)
             {
-                _placedObject.DestroySelf();
-                _placedObject = null;
+                PlacedObject.DestroySelf();
+                PlacedObject = null;
             }
-        }
-
-        public bool IsEmpty()
-        {
-            return _placedObject == null;
-        }
-
-        public TileLayer GetLayer()
-        {
-            return _layer;
         }
 
         /// <summary>
@@ -69,10 +54,10 @@ namespace SS3D.Systems.Tile
         /// <returns></returns>
         public TileSaveObject Save()
         {
-            var placedSaveObject = _placedObject.Save();
+            var placedSaveObject = PlacedObject.Save();
 
             // If we have a multi tile object, save only the instance where the origin is
-            if (_placedObject.GetGridOffsetList().Count > 1 && placedSaveObject.origin != new Vector2Int(_x, _y))
+            if (PlacedObject.GridOffsetList.Count > 1 && placedSaveObject.origin != new Vector2Int(_x, _y))
             {
                 return null;
             }

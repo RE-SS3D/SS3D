@@ -10,6 +10,9 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile
 {
+    /// <summary>
+    /// Component that is added to every tile object that is part of the tilemap.
+    /// </summary>
     public class PlacedTileObject: NetworkBehaviour
     {
         /// <summary>
@@ -35,7 +38,7 @@ namespace SS3D.Systems.Tile
             if (InstanceFinder.ServerManager != null)
             {
                 if (placedObject.GetComponent<NetworkObject>() == null)
-                    Punpun.Yell(SystemLocator.Get<TileSystem>(), $"{placedObject.GetNameString()} does not have a Network Component and will not be spawned");
+                    Punpun.Yell(SystemLocator.Get<TileSystem>(), $"{placedObject.NameString} does not have a Network Component and will not be spawned");
                 else
                     InstanceFinder.ServerManager.Spawn(placedGameObject);
             }
@@ -76,6 +79,22 @@ namespace SS3D.Systems.Tile
         private IAdjacencyConnector _connector;
 
         /// <summary>
+        /// Returns a list of all grids positions that object occupies.
+        /// </summary>
+        /// <returns></returns>
+        public List<Vector2Int> GridOffsetList => _tileObjectSo.GetGridOffsetList(_dir);
+
+        public Vector2Int Origin => _origin;
+
+        public TileObjectGenericType GenericType => _tileObjectSo.genericType;
+
+        public TileObjectSpecificType SpecificType => _tileObjectSo.specificType;
+
+        public string NameString => _tileObjectSo.nameString;
+
+        public bool HasAdjacencyConnector => _connector != null;
+
+        /// <summary>
         /// Set up a new PlacedTileObject.
         /// </summary>
         /// <param name="tileObjectSo"></param>
@@ -96,49 +115,15 @@ namespace SS3D.Systems.Tile
             InstanceFinder.ServerManager.Despawn(gameObject);
         }
 
-        /// <summary>
-        /// Returns a list of all grids positions that object occupies.
-        /// </summary>
-        /// <returns></returns>
-        public List<Vector2Int> GetGridOffsetList()
-        {
-            return _tileObjectSo.GetGridOffsetList(_dir);
-        }
-
-        public Vector2Int GetOrigin()
-        {
-            return _origin;
-        }
-
-        public TileObjectGenericType GetGenericType()
-        {
-            return _tileObjectSo.genericType;
-        }
-
-        public TileObjectSpecificType GetSpecificType()
-        {
-            return _tileObjectSo.specificType;
-        }
-
-        public string GetNameString()
-        {
-            return _tileObjectSo.nameString;
-        }
-
-        public bool HasAdjacencyConnector()
-        {
-            return _connector != null;
-        }
-
         public void UpdateAdjacencies(PlacedTileObject[] neighbourObjects)
         {
-            if (HasAdjacencyConnector())
+            if (HasAdjacencyConnector)
                 _connector.UpdateAll(neighbourObjects);
         }
 
         public void UpdateSingleAdjacency(PlacedTileObject neighbourObject, Direction dir)
         {
-            if (HasAdjacencyConnector())
+            if (HasAdjacencyConnector)
                 _connector.UpdateSingle(dir, neighbourObject, false);
         }
     }

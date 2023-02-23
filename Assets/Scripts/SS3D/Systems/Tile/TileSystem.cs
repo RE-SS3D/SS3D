@@ -9,11 +9,17 @@ using UnityEngine;
 
 namespace SS3D.Systems.Tile
 {
+ 
+    /// <summary>
+    /// Manages and keeps an inventory of all placed tiles. This is where all others scripts that use the tilemap should interact with.
+    /// </summary>
     public class TileSystem : NetworkSystem
     {
-        private TileMap _currentMap;
-        private TileResourceLoader _loader;
+        public TileResourceLoader Loader { get; private set; }
 
+        private TileMap _currentMap;
+
+        [ServerOrClient]
         protected override void OnStart()
         {
             base.OnStart();
@@ -22,7 +28,7 @@ namespace SS3D.Systems.Tile
 
         private IEnumerator WaitForResourcesLoad()
         {
-            while (!_loader.IsInitialized())
+            while (!Loader.IsInitialized)
             {
                 yield return null;
             }
@@ -30,10 +36,10 @@ namespace SS3D.Systems.Tile
             Load();
         }
 
-
+        [ServerOrClient]
         private void Setup()
         {
-            _loader = GetComponent<TileResourceLoader>();
+            Loader = GetComponent<TileResourceLoader>();
 
             // Server only loads the map
             if (IsServer)
@@ -44,6 +50,7 @@ namespace SS3D.Systems.Tile
             }
         }
 
+        [ServerOrClient]
         private void CreateMap(string mapName)
         {
             if (_currentMap == null)
@@ -54,16 +61,15 @@ namespace SS3D.Systems.Tile
             }
         }
 
+        [ServerOrClient]
         public GenericObjectSo GetAsset(string assetName)
         {
-            return _loader.GetAsset(assetName);
+            return Loader.GetAsset(assetName);
         }
 
-        public TileResourceLoader GetLoader()
-        {
-            return _loader;
-        }
+        
 
+        [Server]
         private bool PlaceObject(GenericObjectSo genericObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
             if (genericObjectSo is TileObjectSo)
@@ -78,6 +84,7 @@ namespace SS3D.Systems.Tile
             return true;
         }
 
+        [Client]
         [ServerRpc(RequireOwnership = false)]
         public void RpcPlaceObject(string genericObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
@@ -85,11 +92,13 @@ namespace SS3D.Systems.Tile
             PlaceObject(tileObjectSo, placePosition, dir, replaceExisting);
         }
 
+        [Server]
         private void ClearTileObject(TileObjectSo tileObjectSo, Vector3 placePosition)
         {
             _currentMap.ClearTileObject(placePosition, tileObjectSo.layer);
         }
 
+        [Client]
         [ServerRpc(RequireOwnership = false)]
         public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition)
         {
@@ -97,6 +106,7 @@ namespace SS3D.Systems.Tile
             _currentMap.ClearTileObject(placePosition, ((TileObjectSo)tileObjectSo).layer);
         }
 
+        [Client]
         [ServerRpc(RequireOwnership = false)]
         public void RpcClearItemObject(string itemObjectSoName, Vector3 placePosition)
         {
@@ -104,23 +114,27 @@ namespace SS3D.Systems.Tile
             _currentMap.ClearItemObject(placePosition, itemObjectSo);
         }
 
+        [Server]
         public bool CanBuild(TileObjectSo tileObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
             return _currentMap.CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
         }
 
+        [Server]
         public void Save()
         {
             var mapSave = _currentMap.Save();
             SaveSystem.SaveObject(mapSave);
         }
 
+        [Server]
         public void Load()
         {
             var mapSave = SaveSystem.LoadMostRecentObject<TileMap.MapSaveObject>();
             _currentMap.Load(mapSave);
         }
 
+        [Server]
         public void ResetSave()
         {
             _currentMap.Clear();
