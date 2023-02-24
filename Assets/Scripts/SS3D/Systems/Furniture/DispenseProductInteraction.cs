@@ -45,7 +45,7 @@ namespace SS3D.Systems.Furniture
 
             if (target is VendingMachine vendingMachine)
             {
-                vendingMachine.CmdDispenseProduct();
+                vendingMachine.DispenseProduct();
             }
             return false;
         }
