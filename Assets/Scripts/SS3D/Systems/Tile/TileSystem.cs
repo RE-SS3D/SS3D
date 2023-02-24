@@ -26,6 +26,7 @@ namespace SS3D.Systems.Tile
             Setup();
         }
 
+        [ServerOrClient]
         private IEnumerator WaitForResourcesLoad()
         {
             while (!Loader.IsInitialized)
@@ -85,7 +86,7 @@ namespace SS3D.Systems.Tile
         }
 
         [Client]
-        [ServerRpc(RequireOwnership = false)]
+        [ServerRpc(RequireOwnership = false)] // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
         public void RpcPlaceObject(string genericObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
             GenericObjectSo tileObjectSo = GetAsset(genericObjectSoName);
@@ -99,7 +100,7 @@ namespace SS3D.Systems.Tile
         }
 
         [Client]
-        [ServerRpc(RequireOwnership = false)]
+        [ServerRpc(RequireOwnership = false)] // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
         public void RpcClearTileObject(string tileObjectSoName, Vector3 placePosition)
         {
             GenericObjectSo tileObjectSo = GetAsset(tileObjectSoName);
@@ -107,7 +108,7 @@ namespace SS3D.Systems.Tile
         }
 
         [Client]
-        [ServerRpc(RequireOwnership = false)]
+        [ServerRpc(RequireOwnership = false)] // No ownership required since clients are allowed to place/remove objects. Should be removed when construction is in.
         public void RpcClearItemObject(string itemObjectSoName, Vector3 placePosition)
         {
             ItemObjectSo itemObjectSo = (ItemObjectSo)GetAsset(itemObjectSoName);

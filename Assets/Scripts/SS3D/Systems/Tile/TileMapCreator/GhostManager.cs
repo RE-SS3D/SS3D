@@ -45,7 +45,7 @@ namespace SS3D.Systems.Tile.UI
         {
             if (_ghostObject != null)
             {
-                DestroyImmediate(_ghostObject);
+                Destroy(_ghostObject);
                 _ghostObject = null;
             }
         }

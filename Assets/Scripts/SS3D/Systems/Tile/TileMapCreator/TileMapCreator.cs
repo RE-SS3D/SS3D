@@ -39,6 +39,19 @@ namespace SS3D.Systems.Tile.UI
 
         private List<GenericObjectSo> _objectDatabase;
 
+        public bool IsDeleting
+        {
+            get => _isDeleting;
+            set
+            {
+                if (_selectedObject != null)
+                {
+                    _isDeleting = value;
+                    RefreshGhost();
+                }
+            }
+        }
+
         [ServerOrClient]
         private void Start()
         {
@@ -179,7 +192,7 @@ namespace SS3D.Systems.Tile.UI
 
 
         [Client]
-        [ServerRpc(RequireOwnership = false)]
+        [ServerRpc(RequireOwnership = false)] // Ownership not required since a client can request whether it is possible to build
         public void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
         {
             TileObjectSo tileObjectSo = (TileObjectSo) _tileSystem.GetAsset(tileObjectSoName);
@@ -241,7 +254,7 @@ namespace SS3D.Systems.Tile.UI
         {
             for (int i = 0; i < _contentRoot.transform.childCount; i++)
             {
-                DestroyImmediate(_contentRoot.transform.GetChild(i).gameObject);
+                Destroy(_contentRoot.transform.GetChild(i).gameObject);
             }
         }
 

@@ -439,9 +439,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6924109542537538210}
-        m_TargetAssemblyTypeName: SS3D.Systems.Construction.UI.ConstructionMenu,
-          SS3D.Systems
-        m_MethodName: SetIsDeleting
+        m_TargetAssemblyTypeName: SS3D.Systems.Tile.UI.TileMapCreator, SS3D.Systems
+        m_MethodName: set_IsDeleting
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2040,9 +2039,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6924109542537538210}
-        m_TargetAssemblyTypeName: SS3D.Systems.Construction.UI.ConstructionMenu,
-          SS3D.Systems
-        m_MethodName: SetIsDeleting
+        m_TargetAssemblyTypeName: SS3D.Systems.Tile.UI.TileMapCreator, SS3D.Systems
+        m_MethodName: set_IsDeleting
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
