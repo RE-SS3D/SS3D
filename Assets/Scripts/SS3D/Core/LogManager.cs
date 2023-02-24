@@ -42,7 +42,7 @@ namespace SS3D.Core
                .WriteTo.File( new CompactJsonFormatter()
                , "C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogClient" + ClientManager.Connection.ClientId + ".json")
                .Enrich.With(new UnityColorEnricher())
-               .WriteTo.Unity3D(outputTemplate: "[{Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}")
+               .WriteTo.Unity3D(formatter : new ColourTextFormatter(), outputTemplate: "[{Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}")
                .CreateLogger();
                Log.Information("##########  CLIENT STARTING !  ##########");
             Log.ForContext(typeof(LogManager)).Information("Entering MethodName");
