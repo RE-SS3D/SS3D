@@ -9,7 +9,7 @@ namespace SS3D.Systems.Tile.Connections
     {
         public static AdjacencyShape GetSimpleShape(AdjacencyMap adjacencyMap)
         {
-            int connectionCount = adjacencyMap.GetCardinalConnectionCount();
+            int connectionCount = adjacencyMap.CardinalConnectionCount;
             switch (connectionCount)
             {
                 case 0:
@@ -31,8 +31,8 @@ namespace SS3D.Systems.Tile.Connections
         
         public static AdjacencyShape GetAdvancedShape(AdjacencyMap adjacencyMap)
         {
-            int cardinalConnectionCount = adjacencyMap.GetCardinalConnectionCount();
-            int diagonalConnectionCount = adjacencyMap.GetDiagonalConnectionCount();
+            int cardinalConnectionCount = adjacencyMap.CardinalConnectionCount;
+            int diagonalConnectionCount = adjacencyMap.DiagonalConnectionCount;
             if (cardinalConnectionCount == 0)
             {
                 return AdjacencyShape.O;
@@ -116,7 +116,7 @@ namespace SS3D.Systems.Tile.Connections
 
         public static AdjacencyShape GetOffsetShape(AdjacencyMap adjacencyMap)
         {
-            int cardinalConnectionCount = adjacencyMap.GetCardinalConnectionCount();
+            int cardinalConnectionCount = adjacencyMap.CardinalConnectionCount;
             if (cardinalConnectionCount == 0)
             {
                 return AdjacencyShape.O;

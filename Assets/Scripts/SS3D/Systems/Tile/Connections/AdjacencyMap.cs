@@ -15,6 +15,16 @@ namespace SS3D.Systems.Tile.Connections
         //Stores an array of which of the 8 surrounding tiles have a connection. Order assumed to match Direction enum values.
         private AdjacencyData[] _connections;
 
+        /// <summary>
+        /// Get the number of cardinal connections
+        /// </summary>
+        public int CardinalConnectionCount => GetAdjacencies(true).Count;
+
+        /// <summary>
+        /// Get the number of diagional connections
+        /// </summary>
+        public int DiagonalConnectionCount => GetAdjacencies(false).Count;
+
         public AdjacencyMap()
         {
             _connections = new [] {
@@ -40,30 +50,27 @@ namespace SS3D.Systems.Tile.Connections
             return _connections[(int)direction].Exists;
         }
 
-        public int GetCardinalConnectionCount()
-        {
-            return GetAdjacencies(true).Count;
-        }
 
-        public int GetDiagonalConnectionCount()
-        {
-            return GetAdjacencies(false).Count;
-        }
-
-        /**
-         * Gets the direction of the only cardinal/diagonal connection.
-         * Assumes there is exactly one cardinal/diagonal connection.
-         */
+        /// <summary>
+        /// Gets the direction of the only cardinal/diagonal connection.
+        /// Assumes there is exactly one cardinal/diagonal connection.
+        /// </summary>
+        /// <param name="cardinal"></param>
+        /// <returns></returns>
         public Direction GetSingleConnection(bool cardinal = true)
         {
             List<Direction> foundConnections = GetAdjacencies(cardinal);
             return foundConnections[0];
         }
-        
-        /**
-         * Get the direction of the only cardinal/diagonal non connection.
-         * Assumes there is exactly one cardinal/diagonal non connection
-         */
+
+
+
+        /// <summary>
+        /// Get the direction of the only cardinal/diagonal non connection.
+        /// Assumes there is exactly one cardinal/diagonal non connection
+        /// </summary>
+        /// <param name="cardinal"></param>
+        /// <returns></returns>
         public Direction GetSingleNonConnection(bool cardinal = true)
         {
             List<Direction> foundConnections = GetAdjacencies(cardinal);
@@ -74,10 +81,11 @@ namespace SS3D.Systems.Tile.Connections
             return missingConnections[0];
         }
 
-        /**
-         * Assuming the cardinals/diagonal have exactly two adjacent connections,
-         * gets the direction between them.
-         */
+        /// <summary>
+        /// Assuming the cardinals/diagonal have exactly two adjacent connections, gets the direction between them.
+        /// </summary>
+        /// <param name="cardinal"></param>
+        /// <returns></returns>
         public Direction GetDirectionBetweenTwoConnections(bool cardinal = true)
         {
             List<Direction> foundConnections = GetAdjacencies(cardinal);
@@ -87,9 +95,12 @@ namespace SS3D.Systems.Tile.Connections
                 : TileHelper.GetCardinalBetweenTwoDiagonals(foundConnections[0], foundConnections[1]);
         }
 
-        /**
-         * Updates the map, and returns whether there was a change
-         */
+        /// <summary>
+        /// Updates the map, and returns whether there was a change
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public bool SetConnection(Direction direction, AdjacencyData data)
         {
             bool changed = !data.Equals(_connections[(int) direction]);
