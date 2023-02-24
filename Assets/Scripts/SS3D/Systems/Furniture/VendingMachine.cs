@@ -43,7 +43,7 @@ namespace SS3D.Systems.Furniture
         /// Dispenses the vending machine product at the dispensing transform position with a random rotation.
         /// </summary>
         [Server]
-        private void DispenseProduct()
+        public void DispenseProduct()
         {
             ItemSystem itemSystem = SystemLocator.Get<ItemSystem>();
             Quaternion quaternion = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
