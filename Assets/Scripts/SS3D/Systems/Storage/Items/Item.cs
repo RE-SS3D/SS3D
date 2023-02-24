@@ -111,6 +111,12 @@ namespace SS3D.Systems.Storage.Items
                 animator.keepAnimatorControllerStateOnDisable = true;
             }
 
+            // Clients don't need to calculate physics for rigidbodies as this is handled by the server
+            if (_rigidbody != null && IsClientOnly)
+            {
+                _rigidbody.isKinematic = true;
+            }
+
             // Items can't have no size
             if (_size.x == 0)
             {
@@ -159,7 +165,8 @@ namespace SS3D.Systems.Storage.Items
         {
             if (_rigidbody != null)
             {
-                _rigidbody.isKinematic = false;
+                if (IsServer)
+                    _rigidbody.isKinematic = false;
             }
             var itemCollider = GetComponent<Collider>();
             if (itemCollider != null)
