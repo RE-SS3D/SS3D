@@ -3,9 +3,15 @@ using UnityEditor;
 using UnityEngine;
 
 namespace SS3D.Attributes
-{
+{       
+    /// <summary>
+    /// Attribute to make a property not editable on the inspector.
+    /// </summary>
     public class ReadOnlyAttribute : PropertyAttribute { }
 
+    /// <summary>
+    /// Creates a read only drawer on a serialized property.
+    /// </summary>
     [CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
     public class ReadOnlyDrawer : PropertyDrawer
     {

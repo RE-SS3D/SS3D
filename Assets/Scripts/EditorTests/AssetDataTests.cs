@@ -3,7 +3,6 @@ using System.Linq;
 using Coimbra;
 using NUnit.Framework;
 using SS3D.Data.AssetDatabases;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace EditorTests
@@ -12,15 +11,11 @@ namespace EditorTests
     {
         private AssetDatabaseSettings _assetDatabaseSettings;
 
-
         [SetUp]
         public void SetUp()
         {
             _assetDatabaseSettings = ScriptableSettings.GetOrFind<AssetDatabaseSettings>();
         }
-
-        [TearDown]
-        public void TearDown() { }
 
         /// <summary>
         /// Test to confirm all databases are not null.
@@ -86,31 +81,11 @@ namespace EditorTests
         [Test] 
         public void IncludedAssetDatabasesDoNotContainNullObjects()
         {
-            // ARRANGE
             List<AssetDatabase> loadedAssetDatabases = _assetDatabaseSettings.IncludedAssetDatabases;
 
             bool hasNullAssets = false;
             Dictionary<AssetDatabase, List<int>> assetDatabasesNullRefIndexes = new();
 
-            void debugNullAssets()
-            {
-                foreach (AssetDatabase assetDatabase in assetDatabasesNullRefIndexes.Keys)
-                {
-                    assetDatabasesNullRefIndexes.TryGetValue(assetDatabase, out List<int> assetIndexes);
-
-                    if (assetIndexes == null)
-                    {
-                        continue;
-                    }
-
-                    foreach (int assetIndex in assetIndexes)
-                    {
-                        Debug.Log($"Asset is null on {assetDatabase.name} at index {assetIndex}");
-                    }
-                }
-            }
-
-            // ACT
             foreach (AssetDatabase assetDatabase in loadedAssetDatabases)
             {
                 for (int index = 0; index < assetDatabase.Assets.Count; index++)
@@ -130,14 +105,34 @@ namespace EditorTests
                 }
             }
 
-            // DEBUG
             if (hasNullAssets)
             {
-                debugNullAssets();
+                DebugNullAssets(assetDatabasesNullRefIndexes);
             }
 
-            // ASSERT
             Assert.IsFalse(hasNullAssets);
+        }
+
+        /// <summary>
+        /// Debugs all the null assets in databases.
+        /// </summary>
+        /// <param name="assetDatabasesNullRefIndexes"></param>
+        private static void DebugNullAssets(Dictionary<AssetDatabase, List<int>> assetDatabasesNullRefIndexes)
+        {
+            foreach (AssetDatabase assetDatabase in assetDatabasesNullRefIndexes.Keys)
+            {
+                assetDatabasesNullRefIndexes.TryGetValue(assetDatabase, out List<int> assetIndexes);
+
+                if (assetIndexes == null)
+                {
+                    continue;
+                }
+
+                foreach (int assetIndex in assetIndexes)
+                {
+                    Debug.Log($"Asset is null on {assetDatabase.name} at index {assetIndex}");
+                }
+            }
         }
     }
 }

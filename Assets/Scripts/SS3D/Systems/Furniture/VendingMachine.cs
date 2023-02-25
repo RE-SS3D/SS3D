@@ -22,7 +22,7 @@ namespace SS3D.Systems.Furniture
         /// TODO: Make a new struct for different products, and to support multiple products.
         /// </summary>
         [SerializeField]
-        private ItemIds _productToDispense;
+        private ItemId _productToDispense;
 
         /// <summary>
         /// The transform representation of where the dispensed products should spawn at.

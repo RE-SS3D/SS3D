@@ -11,7 +11,8 @@ using UnityEditor.AddressableAssets.Settings;
 namespace SS3D.Data.AssetDatabases
 {
     /// <summary>
-    /// Generic database class, used to create asset databases.
+    /// An AssetDatabase is a ScriptableObject used to hold an Asset list and to create an Enum based on this list.
+    /// It is used to find assets using IDs in a very convenient manner throughout the project.
     /// </summary>
     public class AssetDatabase : ScriptableObject
     {

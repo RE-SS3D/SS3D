@@ -20,14 +20,24 @@ namespace SS3D.Data
 
         // IMPORTANT: All database getters have to be added manually. For now.
 
+        /// <summary>
+        /// Gets an interaction icon as a Sprite.
+        /// </summary>
+        /// <param name="icon"></param>
+        /// <returns></returns>
         public static Sprite Get(InteractionIcons icon)
         {
             return GetDatabase(nameof(InteractionIcons)).Get<Sprite>((int)icon);
         }
 
-        public static GameObject Get(ItemIds itemIdId)
+        /// <summary>
+        /// Gets an Item prefab based on an ItemID.
+        /// </summary>
+        /// <param name="itemIdId"></param>
+        /// <returns></returns>
+        public static GameObject Get(ItemId itemIdId)
         {
-             return GetDatabase(nameof(ItemIds)).Get<GameObject>((int)itemIdId);
+             return GetDatabase(nameof(ItemId)).Get<GameObject>((int)itemIdId);
         }
 
         /// <summary>
@@ -44,7 +54,7 @@ namespace SS3D.Data
         }
 
         /// <summary>
-        /// Loads the all asset databases on the project, for cache reasons.
+        /// Loads the databases in the project from the AssetDatabaseSettings, saves it in a Dictionary for easy & performant access.
         /// </summary>
         public static void LoadAssetDatabases()
         {
