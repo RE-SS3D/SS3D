@@ -150,8 +150,7 @@ namespace SS3D.Systems.Tile.Connections
             {
                 Setup();
 
-                var connections = AdjacencyMap.DeserializeFromByte(newValue);
-                _adjacencyMap.Connections = connections;
+                _adjacencyMap.DeserializeFromByte(newValue);
                 UpdateMeshAndDirection();
             }
         }

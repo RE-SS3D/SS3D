@@ -165,11 +165,9 @@ namespace SS3D.Systems.Tile
                 // Verify if we are allowed to build for this grid position
                 Vector3 gridPosition = new(placePosition.x + gridOffset.x, 0, placePosition.z + gridOffset.y);
 
-                canBuild &= BuildChecker.CanBuild(GetTileObjects(gridPosition), tileObjectSo, replaceExisting);
+                canBuild &= BuildChecker.CanBuild(GetTileObjects(gridPosition), tileObjectSo, dir, 
+                    GetNeighbourPlacedObjects(TileLayer.Turf, gridPosition), replaceExisting);
             }
-
-            // Check for colliding wall mounts. Should be fully moved to BuildChecker but is problematic due to needing knowledge on adjacent tiles which only the map has
-            canBuild &= BuildChecker.CanBuildWallCollision(tileObjectSo, dir, GetNeighbourPlacedObjects(TileLayer.Turf, placePosition));
             
             return canBuild;
         }
