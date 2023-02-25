@@ -39,14 +39,6 @@ namespace SS3D.Systems.Tile.Connections
             };
         }
 
-        /*
-        public AdjacencyData[] Connections
-        {
-            get => _connections;
-            set => _connections = value;
-        }
-        */
-
         public bool HasConnection(Direction direction)
         {
             return _connections[(int)direction].Exists;
