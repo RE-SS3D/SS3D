@@ -41,8 +41,7 @@ namespace SS3D.Core
                .Enrich.With(new ClientIdEnricher())
                .WriteTo.File( new CompactJsonFormatter()
                , "C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogClient" + ClientManager.Connection.ClientId + ".json")
-               .Enrich.With(new UnityColorEnricher())
-               .WriteTo.Unity3D(formatter : new ColourTextFormatter(), outputTemplate: "[{Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}")
+               .WriteTo.Unity3D(formatter : new ColourTextFormatter("[{Level:u3}] {Message:lj}{NewLine}{Exception}"))
                .CreateLogger();
                Log.Information("##########  CLIENT STARTING !  ##########");
             Log.ForContext(typeof(LogManager)).Information("Entering MethodName");
@@ -56,7 +55,7 @@ namespace SS3D.Core
             {
                   Log.Logger = new LoggerConfiguration()
                  .Enrich.With(new ClientIdEnricher())
-                 .WriteTo.Unity3D()
+                 .WriteTo.Unity3D(formatter: new ColourTextFormatter("[{Level:u3}] {Message:lj}{NewLine}{Exception}"))
                  .WriteTo.File(new CompactJsonFormatter()
                  , "C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogServer.json")
                  .CreateLogger()
@@ -66,12 +65,13 @@ namespace SS3D.Core
             {
                    Log.Logger = new LoggerConfiguration()
                   .Enrich.With(new ClientIdEnricher())
-                  .WriteTo.Unity3D()
+                  .WriteTo.Unity3D(formatter: new ColourTextFormatter("[{Level:u3}] {Message:lj}{NewLine}{Exception}"))
                   .WriteTo.File(new CompactJsonFormatter()
                   , "C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogHost.json")
                   .CreateLogger();
             }
-
+            Log.ForContext(typeof(LogManager)).Information("Entering MethodName");
+            Log.Information("Entering MethodName");
             Log.Information("##########  SERVER STARTING !  ##########");
             ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
         }
