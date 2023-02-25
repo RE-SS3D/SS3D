@@ -25,11 +25,10 @@ namespace SS3D.Systems.Tile
             // Cannot build if the layer is already occupied. Skip if we replace the existing object
             if (!replaceExisting)
                 canBuild &= tileObjects[(int)placedLayer].IsEmpty;
-
+            
             // Cannot build anything unless a plenum is placed
             if (placedLayer != TileLayer.Plenum)
                 canBuild &= CanBuildOnPlenum(tileObjects[(int)TileLayer.Plenum], tileObjectSo);
-
 
             switch (placedLayer)
             {
