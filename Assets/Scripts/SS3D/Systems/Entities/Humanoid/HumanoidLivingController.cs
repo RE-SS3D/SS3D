@@ -33,7 +33,8 @@ namespace SS3D.Systems.Entities.Humanoid
             ProcessToggleRun();
             ProcessPlayerInput();
 
-            _characterController.Move(Physics.gravity);
+            Physics.SyncTransforms();
+            _characterController.Move(Physics.gravity * Time.deltaTime);
 
             if (_input.magnitude != 0)
             {
