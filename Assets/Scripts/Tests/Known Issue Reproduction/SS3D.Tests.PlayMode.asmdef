@@ -1,5 +1,5 @@
 {
-    "name": "SS3D.Tests.PlayMode",
+    "name": "SS3D.Tests.KnownIssueReproduction",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
@@ -10,7 +10,7 @@
         "SS3D.UI",
         "Coimbra",
         "Coimbra.Editor",
-        "",
+        "SS3D.Tests.PlayMode",
         "SS3D.Tests.Common"
     ],
     "includePlatforms": [],

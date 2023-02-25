@@ -2,11 +2,11 @@
     "name": "SS3D.Tests.EditMode",
     "rootNamespace": "",
     "references": [
-        "Tests.Common",
         "SS3D.Core",
         "FishNet.Runtime",
         "SS3D.Attributes",
-        "SS3D.Systems"
+        "SS3D.Systems",
+        "SS3D.Tests.Common"
     ],
     "includePlatforms": [
         "Editor"

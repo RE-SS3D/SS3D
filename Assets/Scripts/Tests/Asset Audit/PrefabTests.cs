@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorTests
 {
-    public class LobbyTests
+    public class PrefabTests
     {
         #region Class variables
         /// <summary>
@@ -153,6 +153,25 @@ namespace EditorTests
             // ASSERT
             Assert.IsTrue(allRelevantMonoBehavioursAreOnTheRightLayer, sb.ToString());
         }
+
+        /// <summary>
+        /// Test to confirm that prefabs within the project do not have missing scripts.
+        /// Missing scripts can occur when a script is deleted, or when script meta files are recreated.
+        /// </summary>
+        [Test]
+        public void PrefabsDoNotHaveMissingScripts()
+        {
+            bool allScriptsExist = true;
+            StringBuilder sb = new();
+
+            foreach (GameObject prefab in _allPrefabs)
+            {
+                MonoBehaviour[] prefabMonoBehaviours = prefab.GetComponentsInChildren<MonoBehaviour>();
+                allScriptsExist = allScriptsExist && CheckPrefabForMissingScripts(prefabMonoBehaviours, ref sb, prefab.name);
+            }
+
+            Assert.IsTrue(allScriptsExist, sb.ToString());
+        }
         #endregion
 
         #region Helper functions
@@ -162,6 +181,21 @@ namespace EditorTests
                                  BindingFlags.Instance |
                                  BindingFlags.NonPublic;
             return flags;
+        }
+
+        private static bool CheckPrefabForMissingScripts(MonoBehaviour[] behaviours, ref StringBuilder sb, string prefabName)
+        {
+            bool allScriptsExist = true;
+            foreach (MonoBehaviour mono in behaviours)
+            {
+                if (mono == null)
+                {
+                    allScriptsExist = false;
+                    sb.Append($"-> Missing script on '{prefabName}'.\n");
+                    continue;
+                }
+            }
+            return allScriptsExist;
         }
 
         private static bool CheckMonoBehavioursForCorrectLayer(MonoBehaviour[] behaviours, ref StringBuilder sb)

@@ -1,19 +1,16 @@
 {
-    "name": "SS3D.Tests.PlayMode",
+    "name": "SS3D.Tests.AssetAudit",
     "rootNamespace": "",
     "references": [
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner",
-        "SS3D.Systems",
+        "Tests.Common",
         "SS3D.Core",
         "FishNet.Runtime",
-        "SS3D.UI",
-        "Coimbra",
-        "Coimbra.Editor",
-        "",
-        "SS3D.Tests.Common"
+        "SS3D.Attributes",
+        "SS3D.Systems"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
