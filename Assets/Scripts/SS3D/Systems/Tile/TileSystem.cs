@@ -68,8 +68,6 @@ namespace SS3D.Systems.Tile
             return Loader.GetAsset(assetName);
         }
 
-        
-
         [Server]
         private bool PlaceObject(GenericObjectSo genericObjectSo, Vector3 placePosition, Direction dir, bool replaceExisting)
         {
@@ -131,7 +129,7 @@ namespace SS3D.Systems.Tile
         [Server]
         public void Load()
         {
-            var mapSave = SaveSystem.LoadMostRecentObject<TileMap.MapSaveObject>();
+            var mapSave = SaveSystem.LoadMostRecentObject<SavedTileMap>();
             _currentMap.Load(mapSave);
         }
 

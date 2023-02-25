@@ -30,6 +30,7 @@ namespace SS3D.Systems.Tile
             PlacedTileObject placedObject = placedGameObject.GetComponent<PlacedTileObject>();
             if (placedObject == null)
             {
+                // Ideally an editor script adds this instead of doing it at runtime
                 placedObject = placedGameObject.AddComponent<PlacedTileObject>();
             }
 
@@ -44,17 +45,6 @@ namespace SS3D.Systems.Tile
             }
 
             return placedObject;
-        }
-
-        /// <summary>
-        /// SaveObject that contains all information required to reconstruct the object.
-        /// </summary>
-        [Serializable]
-        public class PlacedSaveObject
-        {
-            public string tileObjectSOName;
-            public Vector2Int origin;
-            public Direction dir;
         }
 
         /// <summary>
@@ -117,9 +107,9 @@ namespace SS3D.Systems.Tile
                 _connector.UpdateSingle(dir, neighbourObject, false);
         }
 
-        public PlacedSaveObject Save()
+        public SavedPlacedTileObject Save()
         {
-            return new PlacedSaveObject
+            return new SavedPlacedTileObject
             {
                 tileObjectSOName = _tileObjectSo.nameString,
                 origin = _origin,

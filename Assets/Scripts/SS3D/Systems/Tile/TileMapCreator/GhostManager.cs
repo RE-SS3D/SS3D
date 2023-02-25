@@ -53,7 +53,7 @@ namespace SS3D.Systems.Tile.UI
         public void SetTargetPosition(Vector3 target)
         {
             // Small offset is added so that meshes don't overlap with already placed objects.
-            _targetPosition = target + new Vector3(0, 0.2f, 0);
+            _targetPosition = target + new Vector3(0, 0.1f, 0);
         }
 
         /// <summary>

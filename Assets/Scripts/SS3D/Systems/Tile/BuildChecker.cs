@@ -16,7 +16,7 @@ namespace SS3D.Systems.Tile
         /// <param name="tileObjectSo"></param>
         /// <param name="replaceExisting"></param>
         /// <returns></returns>
-        public static bool CanBuild(TileObject[] tileObjects, TileObjectSo tileObjectSo, bool replaceExisting)
+        public static bool CanBuild(TileObject[] tileObjects, TileObjectSo tileObjectSo, Direction dir, PlacedTileObject[] adjacentObjects, bool replaceExisting)
         {
             bool canBuild = true;
 
@@ -25,18 +25,17 @@ namespace SS3D.Systems.Tile
             // Cannot build if the layer is already occupied. Skip if we replace the existing object
             if (!replaceExisting)
                 canBuild &= tileObjects[(int)placedLayer].IsEmpty;
-
+            
             // Cannot build anything unless a plenum is placed
             if (placedLayer != TileLayer.Plenum)
                 canBuild &= CanBuildOnPlenum(tileObjects[(int)TileLayer.Plenum], tileObjectSo);
-
 
             switch (placedLayer)
             {
                 case TileLayer.WallMountHigh when canBuild:
                 case TileLayer.WallMountLow when canBuild:
                     {
-                        canBuild &= CanBuildWallAttachment(tileObjects[(int)TileLayer.Turf], tileObjectSo);
+                        canBuild &= CanBuildWallAttachment(tileObjects[(int)TileLayer.Turf], tileObjectSo, dir, adjacentObjects);
                         break;
                     }
                 // No furniture inside walls
@@ -65,7 +64,7 @@ namespace SS3D.Systems.Tile
         /// <param name="dir"></param>
         /// <param name="adjacentObjects"></param>
         /// <returns></returns>
-        public static bool CanBuildWallCollision(TileObjectSo tileObjectSo, Direction dir, PlacedTileObject[] adjacentObjects)
+        private static bool CanBuildWallCollision(TileObjectSo tileObjectSo, Direction dir, PlacedTileObject[] adjacentObjects)
         {
             bool canBuild = true;
 
@@ -82,7 +81,7 @@ namespace SS3D.Systems.Tile
             return !wallObject.IsEmpty&& wallObject.PlacedObject.GenericType == TileObjectGenericType.Wall;
         }
 
-        private static bool CanBuildWallAttachment(TileObject wallObject, TileObjectSo wallAttachment)
+        private static bool CanBuildWallAttachment(TileObject wallObject, TileObjectSo wallAttachment, Direction dir, PlacedTileObject[] adjacentObjects)
         {
             bool canBuild = true;
 
@@ -92,6 +91,10 @@ namespace SS3D.Systems.Tile
             // No low wall mounts on windows
             if (!wallObject.IsEmpty)
                 canBuild &= !(wallObject.PlacedObject.NameString.Contains("window") && wallAttachment.layer == TileLayer.WallMountLow);
+
+            // Mounts cannot collide with neighbouring wall
+            canBuild &= CanBuildWallCollision(wallAttachment, dir, adjacentObjects);
+
 
             return canBuild;
         }

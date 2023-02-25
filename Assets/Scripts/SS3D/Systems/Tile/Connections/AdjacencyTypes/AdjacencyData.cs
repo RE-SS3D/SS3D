@@ -15,16 +15,5 @@
         public readonly TileObjectGenericType GenericType;
         public readonly TileObjectSpecificType SpecificType;
         public readonly bool Exists;
-
-        public override bool Equals(object other)
-        {
-            return other is AdjacencyData otherData && GenericType == otherData.GenericType && SpecificType == otherData.SpecificType &&
-                   Exists == otherData.Exists;
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
     }
 }

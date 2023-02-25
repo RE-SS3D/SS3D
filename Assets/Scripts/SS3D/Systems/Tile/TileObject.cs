@@ -10,18 +10,6 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public class TileObject
     {
-        /// <summary>
-        /// Save object used for reconstructing a TileObject.
-        /// </summary>
-        [Serializable]
-        public class TileSaveObject
-        {
-            public TileLayer layer;
-            public int x;
-            public int y;
-            public PlacedTileObject.PlacedSaveObject placedSaveObject;
-        }
-
         private TileLayer _layer;
         private int _x;
         private int _y;
@@ -52,7 +40,7 @@ namespace SS3D.Systems.Tile
         /// Saves this tileObject and includes the information from any PlacedTileObject.
         /// </summary>
         /// <returns></returns>
-        public TileSaveObject Save()
+        public SavedTileObject Save()
         {
             var placedSaveObject = PlacedObject.Save();
 
@@ -62,7 +50,7 @@ namespace SS3D.Systems.Tile
                 return null;
             }
 
-            return new TileSaveObject
+            return new SavedTileObject
             {
                 layer = _layer,
                 x = _x,

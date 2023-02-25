@@ -30,6 +30,7 @@ namespace SS3D.Systems.Tile
             PlacedItemObject placedObject = placedGameObject.GetComponent<PlacedItemObject>();
             if (placedObject == null)
             {
+                // Ideally an editor script adds this instead of doing it at runtime
                 placedObject = placedGameObject.AddComponent<PlacedItemObject>();
             }
 
@@ -44,18 +45,6 @@ namespace SS3D.Systems.Tile
             }
 
             return placedObject;
-        }
-
-
-        /// <summary>
-        /// SaveObject that contains all information required to reconstruct the object.
-        /// </summary>
-        [Serializable]
-        public class PlacedSaveObject
-        {
-            public string itemName;
-            public Vector3 worldPosition;
-            public Quaternion rotation;
         }
 
         private ItemObjectSo _itemSo;
@@ -89,9 +78,9 @@ namespace SS3D.Systems.Tile
         /// Returns a new SaveObject for use in saving/loading.
         /// </summary>
         /// <returns></returns>
-        public PlacedSaveObject Save()
+        public SavedPlacedItemObject Save()
         {
-            return new PlacedSaveObject
+            return new SavedPlacedItemObject
             {
                 itemName = _itemSo.nameString,
                 worldPosition = _worldPosition,

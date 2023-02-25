@@ -8,7 +8,7 @@ using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 namespace SS3D.Systems.Tile.Connections
 {
     /// <summary>
-    /// Used for storing adjacencies.
+    /// Used for storing which neighbouring objects the primary object is connected to. Used for connecting walls, tables, carpets etc together by changing their mesh.
     /// </summary>
     public class AdjacencyMap
     {
@@ -37,12 +37,6 @@ namespace SS3D.Systems.Tile.Connections
                 new AdjacencyData (TileObjectGenericType.None, TileObjectSpecificType.None, false),
                 new AdjacencyData (TileObjectGenericType.None, TileObjectSpecificType.None, false),
             };
-        }
-
-        public AdjacencyData[] Connections
-        {
-            get => _connections;
-            set => _connections = value;
         }
 
         public bool HasConnection(Direction direction)
@@ -122,16 +116,17 @@ namespace SS3D.Systems.Tile.Connections
             return (from index in directionIndexes where _connections[index].Exists select (Direction) index).ToList();
         }
         
-        public static AdjacencyData[] DeserializeFromByte(byte bytemap)
+        public void DeserializeFromByte(byte bytemap)
         {
             BitArray bits = new(new[] { bytemap });
             AdjacencyData[] adjacencyData = new AdjacencyData[8];
+
             for (int i = 0; i < bits.Length; i++)
             {
                 adjacencyData[i] = new AdjacencyData(TileObjectGenericType.None, TileObjectSpecificType.None, bits[i]);
             }
 
-            return adjacencyData;
+            _connections = adjacencyData;
         }
 
         public byte SerializeToByte()
