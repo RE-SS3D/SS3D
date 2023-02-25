@@ -30,6 +30,7 @@ namespace SS3D.Systems.Tile
             PlacedItemObject placedObject = placedGameObject.GetComponent<PlacedItemObject>();
             if (placedObject == null)
             {
+                // Ideally an editor script adds this instead of doing it at runtime
                 placedObject = placedGameObject.AddComponent<PlacedItemObject>();
             }
 
