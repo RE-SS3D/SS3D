@@ -2622,7 +2622,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1000564558}
   _networkObjectCache: {fileID: 1000564558}
-  _mindPrefab: {fileID: 878406320}
+  _mindPrefab: {fileID: 8103066686919155798, guid: 06a27ffa07c1c754c9590607a5a80030, type: 3}
   _emptyMind: {fileID: 1256239026443271520, guid: 06a27ffa07c1c754c9590607a5a80030, type: 3}
 --- !u!114 &1000564558
 MonoBehaviour:
