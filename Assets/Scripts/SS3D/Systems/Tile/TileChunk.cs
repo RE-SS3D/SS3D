@@ -22,21 +22,10 @@ namespace SS3D.Systems.Tile
         /// <summary>
         /// Grid for grouping TileObjects per layer. Can be used for walking through objects on the same layer fast.
         /// </summary>
-        public struct TileGrid
+        private struct TileGrid
         {
             public TileLayer Layer;
             public TileObject[] TileObjectsGrid;
-        }
-
-        /// <summary>
-        /// SaveObject used by chunks.
-        /// </summary>
-        [Serializable]
-        public class ChunkSaveObject
-        {
-            public Vector2Int chunkKey;
-            public Vector3 originPosition;
-            public TileObject.TileSaveObject[] tileObjectSaveObjectArray;
         }
 
         /// <summary>
@@ -181,9 +170,9 @@ namespace SS3D.Systems.Tile
         /// Saves all the TileObjects in the chunk.
         /// </summary>
         /// <returns></returns>
-        public ChunkSaveObject Save()
+        public SavedTileChunk Save()
         {
-            var tileObjectSaveObjectList = new List<TileObject.TileSaveObject>();
+            var tileObjectSaveObjectList = new List<SavedTileObject>();
 
             foreach (TileLayer layer in TileHelper.GetTileLayers())
             {
@@ -200,7 +189,7 @@ namespace SS3D.Systems.Tile
                 }
             }
 
-            ChunkSaveObject saveObject = new ChunkSaveObject
+            SavedTileChunk saveObject = new SavedTileChunk
             {
                 tileObjectSaveObjectArray = tileObjectSaveObjectList.ToArray(),
                 originPosition = _originPosition,

@@ -13,17 +13,6 @@ namespace SS3D.Systems.Tile
     /// </summary>
     public class TileMap : NetworkBehaviour
     {
-        /// <summary>
-        /// Save object used for reconstructing a tilemap.
-        /// </summary>
-        [Serializable]
-        public class MapSaveObject
-        {
-            public string mapName;
-            public TileChunk.ChunkSaveObject[] saveObjectList;
-            public PlacedItemObject.PlacedSaveObject[] savedItemList;
-        }
-
         private Dictionary<Vector2Int, TileChunk> _chunks;
         private List<PlacedItemObject> _items;
         private string _mapName;
@@ -276,10 +265,10 @@ namespace SS3D.Systems.Tile
         /// Returns a new SaveObject for storing the entire map.
         /// </summary>
         /// <returns></returns>
-        public MapSaveObject Save()
+        public SavedTileMap Save()
         {
-            List<TileChunk.ChunkSaveObject> chunkObjectSaveList = new List<TileChunk.ChunkSaveObject>();
-            List<PlacedItemObject.PlacedSaveObject> itemSaveList = new List<PlacedItemObject.PlacedSaveObject>();
+            List<SavedTileChunk> chunkObjectSaveList = new List<SavedTileChunk>();
+            List<SavedPlacedItemObject> itemSaveList = new List<SavedPlacedItemObject>();
 
             foreach (TileChunk chunk in _chunks.Values)
             {
@@ -291,21 +280,21 @@ namespace SS3D.Systems.Tile
                 itemSaveList.Add(item.Save());
             }
 
-            return new MapSaveObject
+            return new SavedTileMap
             {
                 mapName = _mapName,
-                saveObjectList = chunkObjectSaveList.ToArray(),
+                savedChunkList = chunkObjectSaveList.ToArray(),
                 savedItemList = itemSaveList.ToArray()
             };
         }
 
-        public void Load(MapSaveObject saveObject)
+        public void Load(SavedTileMap saveObject)
         {
             Clear();
 
             TileSystem tileSystem = SystemLocator.Get<TileSystem>();
 
-            foreach (var savedChunk in saveObject.saveObjectList)
+            foreach (var savedChunk in saveObject.savedChunkList)
             {
                 TileChunk chunk = GetOrCreateChunk(savedChunk.originPosition);
 

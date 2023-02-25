@@ -47,18 +47,6 @@ namespace SS3D.Systems.Tile
             return placedObject;
         }
 
-
-        /// <summary>
-        /// SaveObject that contains all information required to reconstruct the object.
-        /// </summary>
-        [Serializable]
-        public class PlacedSaveObject
-        {
-            public string itemName;
-            public Vector3 worldPosition;
-            public Quaternion rotation;
-        }
-
         private ItemObjectSo _itemSo;
         private Vector3 _worldPosition;
         private Quaternion _rotation;
@@ -90,9 +78,9 @@ namespace SS3D.Systems.Tile
         /// Returns a new SaveObject for use in saving/loading.
         /// </summary>
         /// <returns></returns>
-        public PlacedSaveObject Save()
+        public SavedPlacedItemObject Save()
         {
-            return new PlacedSaveObject
+            return new SavedPlacedItemObject
             {
                 itemName = _itemSo.nameString,
                 worldPosition = _worldPosition,
