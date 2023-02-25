@@ -1,0 +1,16 @@
+{
+    "name": "Serilog",
+    "rootNamespace": "",
+    "references": [
+        "GUID:75672625e2d614c48bb6f7368c606f95"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

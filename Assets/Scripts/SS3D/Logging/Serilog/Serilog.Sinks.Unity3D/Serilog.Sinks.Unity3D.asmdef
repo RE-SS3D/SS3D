@@ -1,7 +1,9 @@
 {
     "name": "Serilog.Sinks.Unity3D",
     "rootNamespace": "Serilog.Sinks.Unity3D",
-    "references": [],
+    "references": [
+        "GUID:0980e432586b1dd4c811ecb5a88e17e7"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

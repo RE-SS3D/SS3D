@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object;
-using Serilog;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Interactions;
@@ -12,6 +11,7 @@ using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Serilog;
 
 namespace SS3D.Systems.Interactions
 {

@@ -6,16 +6,7 @@ using Serilog.Sinks.Unity3D;
 using SS3D.Core.Behaviours;
 using Serilog.Core;
 using Serilog.Events;
-using Serilog.Formatting.Json;
 using Serilog.Formatting.Compact;
-using UnityEngine;
-using Serilog.Configuration;
-using Serilog.Formatting;
-using Serilog.Sinks.File;
-using System.Runtime.Serialization;
-using System.Text;
-using System;
-using UnityEditor;
 
 namespace SS3D.Core
 {
