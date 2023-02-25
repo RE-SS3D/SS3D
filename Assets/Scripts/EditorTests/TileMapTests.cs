@@ -8,8 +8,6 @@ namespace EditorTests.TileMaps
 {
     public class TileMapTests
     {
-        TileSystem _tileSystem;
-
         TileObjectSo[] _tileObjects;
         ItemObjectSo[] _itemObjects;
 
