@@ -82,9 +82,9 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
                 };
 
                 _assetsListView.Add(objectField);
-            }
+            }   
 
-
+            EditorUtility.SetDirty(_assetDatabase);
             EnumCreator.CreateAtPath(dataPath, _assetDatabase.EnumName, _assetDatabase.Assets, _assetDatabase.EnumNamespaceName);
         }
     }

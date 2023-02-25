@@ -39,7 +39,7 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
         public override void OnInspectorGUI()
         {
-            if (GUILayout.Button("Find all asset databases", GUILayout.Width(350)))
+            if (GUILayout.Button("Find and load asset databases", GUILayout.Width(350)))
             {
                 List<AssetDatabase> foundDatabases = AssetDatabaseSettings.FindAssetDatabases();
                 _assetDatabaseSettings.IncludedAssetDatabases = foundDatabases;
