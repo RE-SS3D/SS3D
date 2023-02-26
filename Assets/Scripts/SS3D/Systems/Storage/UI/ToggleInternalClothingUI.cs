@@ -22,16 +22,7 @@ namespace SS3D.Systems.Storage.UI
 			SystemLocator.Get<InputSystem>().Inputs.Hotkeys.ToggleInternalClothing.performed += HandleToggleClothing;
 		}
 
-        private void Update()
-        {
-			// Button to toggle the internal clothing UI
-			if (Input.GetButtonDown("Toggle Internal Clothing"))
-			{
-				Toggle();
-			}
-		}
-
-        private void TaskOnClick()
+		private void TaskOnClick()
 		{
 			Toggle();
 		}
