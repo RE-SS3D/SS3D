@@ -14,10 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _preload: 1
   _type: 0
+  NetworkType: 2
   Ckey: editorUser
   ServerAddress: 127.0.0.1
-  NetworkType: 2
-  SkipIntro: 1
   EnableDiscord: 0
-  EditorServerAddress: 127.0.0.1
-  EditorServerCkey: editorUser
+  SkipIntro: 1
