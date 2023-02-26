@@ -524,6 +524,15 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Spawn Cans"",
+                    ""type"": ""Button"",
+                    ""id"": ""d317c9ce-8810-4e01-b5d3-b68f8ea79a8e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -581,6 +590,17 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""action"": ""Menu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0202ca85-b208-4587-8cc0-45b43b782462"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Spawn Cans"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -617,6 +637,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_Other_PrimaryClick = m_Other.FindAction("Primary Click", throwIfNotFound: true);
         m_Other_SecondaryClick = m_Other.FindAction("Secondary Click", throwIfNotFound: true);
         m_Other_Menu = m_Other.FindAction("Menu", throwIfNotFound: true);
+        m_Other_SpawnCans = m_Other.FindAction("Spawn Cans", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -901,6 +922,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Other_PrimaryClick;
     private readonly InputAction m_Other_SecondaryClick;
     private readonly InputAction m_Other_Menu;
+    private readonly InputAction m_Other_SpawnCans;
     public struct OtherActions
     {
         private @Controls m_Wrapper;
@@ -910,6 +932,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         public InputAction @PrimaryClick => m_Wrapper.m_Other_PrimaryClick;
         public InputAction @SecondaryClick => m_Wrapper.m_Other_SecondaryClick;
         public InputAction @Menu => m_Wrapper.m_Other_Menu;
+        public InputAction @SpawnCans => m_Wrapper.m_Other_SpawnCans;
         public InputActionMap Get() { return m_Wrapper.m_Other; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -934,6 +957,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Menu.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnMenu;
                 @Menu.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnMenu;
                 @Menu.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnMenu;
+                @SpawnCans.started -= m_Wrapper.m_OtherActionsCallbackInterface.OnSpawnCans;
+                @SpawnCans.performed -= m_Wrapper.m_OtherActionsCallbackInterface.OnSpawnCans;
+                @SpawnCans.canceled -= m_Wrapper.m_OtherActionsCallbackInterface.OnSpawnCans;
             }
             m_Wrapper.m_OtherActionsCallbackInterface = instance;
             if (instance != null)
@@ -953,6 +979,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Menu.started += instance.OnMenu;
                 @Menu.performed += instance.OnMenu;
                 @Menu.canceled += instance.OnMenu;
+                @SpawnCans.started += instance.OnSpawnCans;
+                @SpawnCans.performed += instance.OnSpawnCans;
+                @SpawnCans.canceled += instance.OnSpawnCans;
             }
         }
     }
@@ -991,5 +1020,6 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnPrimaryClick(InputAction.CallbackContext context);
         void OnSecondaryClick(InputAction.CallbackContext context);
         void OnMenu(InputAction.CallbackContext context);
+        void OnSpawnCans(InputAction.CallbackContext context);
     }
 }
