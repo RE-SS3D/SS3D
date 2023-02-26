@@ -8,7 +8,6 @@ public class InputSystem : SS3D.Core.Behaviours.System
     {
         base.OnAwake();
         
-        Debug.Log(1);
         Inputs = new Controls();
         Inputs.Other.Enable();
     }
