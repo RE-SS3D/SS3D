@@ -9,18 +9,21 @@ using SS3D.Logging;
 using SS3D.Utils;
 using System.Collections.Generic;
 using Serilog.Formatting.Json;
+using System.Linq;
 
+/// <summary>
+/// Heavily inspired by MessageTemplateTextFormatter.
+/// Sadly, since many static methods are internal to Serilog, it was necessary to write an equivalent of them in here.
+/// </summary>
 public class ColourTextFormatter : ITextFormatter
 {
     private readonly MessageTemplate _outputTemplate;
     private readonly IFormatProvider _formatProvider;
-    private readonly string _outputTemplateText;
     private static readonly JsonValueFormatter JsonValueFormatter = new("$type");
     public ColourTextFormatter(string outputTemplate, IFormatProvider? formatProvider = null)
     {
         _outputTemplate = new MessageTemplateParser().Parse(outputTemplate);
         _formatProvider = formatProvider;
-        _outputTemplateText = outputTemplate;
     }
 
     public void Format(LogEvent logEvent, TextWriter output)
@@ -70,7 +73,7 @@ public class ColourTextFormatter : ITextFormatter
             }
             if (pt.PropertyName == OutputProperties.PropertiesPropertyName)
             {
-                PropertiesOutputFormat.Render(logEvent.MessageTemplate, logEvent.Properties, _outputTemplate, writer, pt.Format, _formatProvider);
+                RenderPropertyFormat(logEvent.MessageTemplate, logEvent.Properties, _outputTemplate, writer, pt.Format, _formatProvider);
                 continue;
             }
 
@@ -193,5 +196,62 @@ public class ColourTextFormatter : ITextFormatter
         {
             propertyValue.Render(output, format, formatProvider);
         }
+    }
+
+    private void RenderPropertyFormat(MessageTemplate template, IReadOnlyDictionary<string, LogEventPropertyValue> properties, MessageTemplate outputTemplate, TextWriter output, string? format, IFormatProvider? formatProvider = null)
+    {
+        if (format?.Contains("j") == true)
+        {
+            var sv = new StructureValue(properties
+                .Where(kvp => !(TemplateContainsPropertyName(template, kvp.Key) ||
+                                TemplateContainsPropertyName(outputTemplate, kvp.Key)))
+                .Select(kvp => new LogEventProperty(kvp.Key, kvp.Value)));
+            JsonValueFormatter.Format(sv, output);
+            return;
+        }
+
+        output.Write("{ ");
+
+        var delim = "";
+        foreach (var kvp in properties)
+        {
+            if (TemplateContainsPropertyName(template, kvp.Key) ||
+                TemplateContainsPropertyName(outputTemplate, kvp.Key))
+            {
+                continue;
+            }
+
+            output.Write(delim);
+            delim = ", ";
+            output.Write(kvp.Key);
+            output.Write(": ");
+            kvp.Value.Render(output, null, formatProvider);
+        }
+
+        output.Write(" }");
+    }
+
+    private static bool TemplateContainsPropertyName(MessageTemplate template, string propertyName)
+    {
+        if (template.Tokens != null)
+        {
+            foreach (var token in template.Tokens)
+            {
+                if (token is TextToken tt)
+                {
+                    continue;
+                }
+
+                var pt = (PropertyToken)token;
+                if (pt.PropertyName == propertyName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return false;
     }
 }
