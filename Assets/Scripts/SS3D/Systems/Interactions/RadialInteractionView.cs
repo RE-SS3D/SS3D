@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Utils;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Interactions
 {
@@ -44,16 +46,12 @@ namespace SS3D.Systems.Interactions
 
             Setup();
             Disappear();
+            SystemLocator.Get<InputSystem>().Inputs.Other.SecondaryClick.performed += HandleDisappear;
         }
 
         protected override void HandleUpdate(in float deltaTime)
         {
             base.HandleUpdate(in deltaTime);
-
-            if (Input.GetMouseButtonUp(1))
-            {
-                Disappear();
-            }
 
             UpdateIndicator();
         }
@@ -144,7 +142,7 @@ namespace SS3D.Systems.Interactions
         /// </summary>
         private void Show()
         {
-            Vector2 screenPos = new(Input.mousePosition.x, Input.mousePosition.y);
+            Vector2 screenPos = Mouse.current.position.ReadValue();
             Position = screenPos;
 
             _selectedObject = _interactionButtons.First().GameObjectCache;
@@ -171,6 +169,11 @@ namespace SS3D.Systems.Interactions
             _fadeSequence.Play();
 
             _canvasGroup.interactable = true;
+        }
+
+        private void HandleDisappear(InputAction.CallbackContext callbackContext)
+        {
+            Disappear();
         }
 
         /// <summary>

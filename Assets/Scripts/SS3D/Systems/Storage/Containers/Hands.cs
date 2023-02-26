@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Linq;
 using FishNet.Object;
+using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Storage.Items;
 using SS3D.Systems.Storage.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Storage.Containers
 {
@@ -56,6 +58,12 @@ namespace SS3D.Systems.Storage.Containers
             HandsView.Hands = this;
 
             SupportsMultipleInteractions = true;
+        }
+
+        protected override void OnStart()
+        {
+            Controls.HotkeysActions controls = SystemLocator.Get<InputSystem>().Inputs.Hotkeys;
+            controls.SwapHands.performed += HandleSwapHands;
         }
 
         [Server]
@@ -114,19 +122,21 @@ namespace SS3D.Systems.Storage.Containers
             {
                 return;
             }
-
-            // Hand-related buttons
-            if (Input.GetButtonDown("Swap Hands") && HandContainers.Length > 0)
-            {
-                SelectedHandIndex = (SelectedHandIndex + 1) % HandContainers.Length;
-                OnHandChanged?.Invoke(SelectedHandIndex);
-                CmdSetActiveHand(SelectedHandIndex);
-            }
-
+            
             if (Input.GetButtonDown("Drop"))
             {
                 CmdDropHeldItem();
             }
+        }
+        private void HandleSwapHands(InputAction.CallbackContext context)
+        {
+            if (!IsOwner || HandContainers.Length < 1)
+            {
+                return;
+            }
+            SelectedHandIndex = (SelectedHandIndex + 1) % HandContainers.Length;
+            OnHandChanged?.Invoke(SelectedHandIndex);
+            CmdSetActiveHand(SelectedHandIndex);
         }
 
         /// <summary>
@@ -152,7 +162,8 @@ namespace SS3D.Systems.Storage.Containers
                 Debug.LogError("selectedContainer is not in HandContainers.");
             }
         }
-
+        
+        // This method can't be a callback because of Fishnet issue
         [ServerRpc]
         private void CmdDropHeldItem()
         {

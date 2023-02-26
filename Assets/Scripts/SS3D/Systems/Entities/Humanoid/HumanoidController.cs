@@ -1,9 +1,11 @@
 using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using SS3D.Systems.Health;
 using SS3D.Systems.Screens;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Entities.Humanoid
 {
@@ -16,6 +18,7 @@ namespace SS3D.Systems.Entities.Humanoid
     [RequireComponent(typeof(Animator))]
     public abstract class HumanoidController : NetworkActor
     {
+        #region Fields
         public event Action<float> SpeedChangeEvent;
 
         [Header("Components")] 
@@ -39,13 +42,17 @@ namespace SS3D.Systems.Entities.Humanoid
         protected Vector3 _targetMovement;
 
         private Actor _camera;
-
+        protected Controls.MovementActions Inputs;
         private const float _walkAnimatorValue = .3f;
         private const float _runAnimatorValue = 1f;
+        #endregion
 
+        #region Properties
         public virtual float WalkAnimatorValue => _walkAnimatorValue;
         public virtual float RunAnimatorValue => _runAnimatorValue;
         public bool IsRunning => _isRunning;
+        #endregion
+        
 
         protected override void OnStart()
         {
@@ -57,7 +64,11 @@ namespace SS3D.Systems.Entities.Humanoid
         protected void Setup()
         {
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
-
+            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
+            Inputs = controls.Movement;
+            Inputs.Enable();
+            controls.Hotkeys.Enable();
+            Inputs.ToggleRun.performed += HandleToggleRun;
             _entity.OnMindChanged += HandleControllingSoulChanged;
         }
 
@@ -138,9 +149,8 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <returns></returns>
         protected void ProcessPlayerInput()
         {
-            float x = Input.GetAxisRaw("Horizontal");
-            float y = Input.GetAxisRaw("Vertical");
-
+            float x = Inputs.Movement.ReadValue<Vector2>().x;
+            float y = Inputs.Movement.ReadValue<Vector2>().y;
             float inputFilteredSpeed = FilterSpeed();
 
             x = Mathf.Clamp(x, -inputFilteredSpeed, inputFilteredSpeed);
@@ -160,12 +170,9 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <summary>
         /// Toggles your movement between run/walk
         /// </summary>
-        protected void ProcessToggleRun()
+        protected void HandleToggleRun(InputAction.CallbackContext context)
         {
-            if (Input.GetButtonDown("Toggle Run"))
-            {
-                _isRunning = !_isRunning;
-            }
+            _isRunning = !_isRunning;
         }
 
         protected void OnSpeedChanged(float speed)

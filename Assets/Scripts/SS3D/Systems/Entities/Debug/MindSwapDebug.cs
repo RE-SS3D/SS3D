@@ -1,6 +1,7 @@
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Entities.Debug
 {
@@ -8,19 +9,15 @@ namespace SS3D.Systems.Entities.Debug
     {
         public Entity Origin;
         public Entity Target;
-
-        protected override void HandleUpdate(in float deltaTime)
+        protected override void OnStart()
         {
-            base.HandleUpdate(in deltaTime);
+            base.OnStart();
 
-            if (Input.GetKeyDown(KeyCode.M))
-            {
-                DoMindSwap();
-            }
+            SystemLocator.Get<InputSystem>().Inputs.Other.SwapMinds.performed += HandleMindSwap;
         }
 
         [ContextMenu("Request Mind Swap")]
-        public void DoMindSwap()
+        public void HandleMindSwap(InputAction.CallbackContext callbackContext)
         {
             if (Origin == null || Target == null)
             {

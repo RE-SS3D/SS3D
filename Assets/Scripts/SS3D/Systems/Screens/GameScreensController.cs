@@ -21,6 +21,14 @@ namespace SS3D.Systems.Screens
             _menuOpen = true;
             _blockNone = true;
             _spawnedState = PlayerSpawnedState.IsNotSpawned;
+            SystemLocator.Get<InputSystem>().Inputs.Other.Menu.performed += _ =>
+            {
+                if (!_blockNone)
+                {
+                    _menuOpen = !_menuOpen;
+                    UpdateScreen();
+                }
+            };
 
             ChangeGameScreenEvent.AddListener(HandleChangeGameScreen);
             SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated);
@@ -73,23 +81,7 @@ namespace SS3D.Systems.Screens
                 _menuOpen = true;
             }
         }
-
-        protected override void HandleUpdate(in float deltaTime)
-        {
-            base.HandleUpdate(in deltaTime);
-
-            ProcessInput();
-        }
-
-        private void ProcessInput()
-        {
-            if (Input.GetKeyDown(KeyCode.Escape) && !_blockNone)
-            {
-                _menuOpen = !_menuOpen;
-
-                UpdateScreen();
-            }
-        }
+        
 
         private void UpdateScreen()
         {

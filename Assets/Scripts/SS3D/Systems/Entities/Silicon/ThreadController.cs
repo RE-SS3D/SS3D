@@ -38,6 +38,7 @@ namespace SS3D.Systems.Entities.Silicon
         private float _smoothedX;
         private float _smoothedY;
         private Actor _camera;
+        private Controls.MovementActions _controls;
 
         protected override void OnStart()
         {
@@ -49,7 +50,7 @@ namespace SS3D.Systems.Entities.Silicon
         private void Setup()
         {
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
-
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Movement;
             _entity.OnMindChanged += HandleControllingSoulChanged;
         }
 
@@ -129,8 +130,8 @@ namespace SS3D.Systems.Entities.Silicon
         /// <returns></returns>
         private void ProcessPlayerInput()
         {
-            float x = Input.GetAxisRaw("Horizontal");
-            float y = Input.GetAxisRaw("Vertical");
+            float x = _controls.Movement.ReadValue<Vector2>().x;
+            float y = _controls.Movement.ReadValue<Vector2>().y;
 
             _input = new Vector2(x, y);
             OnSpeedChanged?.Invoke(_input.magnitude != 0 ? _input.magnitude : 0);

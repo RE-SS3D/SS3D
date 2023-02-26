@@ -11,6 +11,7 @@ using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Interactions
 {
@@ -34,42 +35,20 @@ namespace SS3D.Systems.Interactions
 
             _radialView = SystemLocator.Get<RadialInteractionView>();
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
-        }
-
-        [ServerOrClient]
-        protected override void HandleUpdate(in float deltaTime)
-        {
-            base.HandleUpdate(in deltaTime);
-
-            if (IsServerOnly || !IsOwner || _camera == null || EventSystem.current.IsPointerOverGameObject())
-            {
-                return;
-            }
-
-            if (Input.GetButtonDown("Primary Click"))
-            {
-                ProcessPrimaryClick();
-            }
-
-            else if (Input.GetButtonDown("Secondary Click"))
-            {
-                ProcessSecondaryClick();
-            }
-
-            if (Input.GetButtonDown("Use"))
-            {
-                ProcessUse();
-            }
+            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
+            controls.Other.PrimaryClick.performed += HandlePrimaryClick;
+            controls.Other.SecondaryClick.performed += HandleSecondaryClick;
+            controls.Hotkeys.Use.performed += HandleUse;
         }
 
         [Client]
-        private void ProcessPrimaryClick()
+        private void HandlePrimaryClick(InputAction.CallbackContext callbackContext)
         {
             RunPrimaryInteraction();
         }
 
         [Client]
-        private void ProcessSecondaryClick()
+        private void HandleSecondaryClick(InputAction.CallbackContext callbackContext)
         {
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
@@ -78,7 +57,7 @@ namespace SS3D.Systems.Interactions
         }
 
         [Client]
-        private void ProcessUse()
+        private void HandleUse(InputAction.CallbackContext callbackContext)
         {
             // Activate item in selected hand
             Hands hands = GetComponent<Hands>();

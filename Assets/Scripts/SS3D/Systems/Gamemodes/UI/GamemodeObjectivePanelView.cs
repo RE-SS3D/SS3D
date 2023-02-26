@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using Coimbra;
 using Coimbra.Services.Events;
+using SS3D.Core;
 using SS3D.Systems.Gamemodes;
 using SS3D.Systems.GameModes.Events;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Utils;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Systems.Gamemodes.UI
@@ -44,25 +46,10 @@ namespace SS3D.Systems.Gamemodes.UI
             base.OnStart();
 
             _fade.SetFade(false);
-        }
 
-        protected override void HandleUpdate(in float deltaTime)
-        {
-            base.HandleUpdate(in deltaTime);
-
-            ProcessInput();
-        }
-
-        private void ProcessInput()
-        {
-            if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                _fade.SetFade(true);
-            }
-            if (Input.GetKeyUp(KeyCode.Tab))
-            {
-                _fade.SetFade(false);
-            }
+            Controls.OtherActions controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            controls.Fade.performed += _ => _fade.SetFade(true);
+            controls.Fade.canceled += _ => _fade.SetFade(false);
         }
 
         public void ProcessObjectiveUpdated(GamemodeObjective objective)

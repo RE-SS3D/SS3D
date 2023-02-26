@@ -30,7 +30,6 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void ProcessCharacterMovement()
         {
-            ProcessToggleRun();
             ProcessPlayerInput();
 
             _characterController.Move(Physics.gravity);
