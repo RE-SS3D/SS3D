@@ -17,6 +17,7 @@ namespace SS3D.Systems.Storage.Containers
     {
         [SerializeField] public AttachedContainer[] HandContainers;
         [SerializeField] private float handRange;
+        private Controls.HotkeysActions controls;
 
         [NonSerialized]
         public Inventory Inventory;
@@ -62,7 +63,7 @@ namespace SS3D.Systems.Storage.Containers
 
         protected override void OnStart()
         {
-            Controls.HotkeysActions controls = SystemLocator.Get<InputSystem>().Inputs.Hotkeys;
+            controls = SystemLocator.Get<InputSystem>().Inputs.Hotkeys;
             controls.SwapHands.performed += HandleSwapHands;
         }
 
@@ -123,7 +124,7 @@ namespace SS3D.Systems.Storage.Containers
                 return;
             }
             
-            if (Input.GetButtonDown("Drop"))
+            if (controls.Drop.WasPerformedThisFrame())
             {
                 CmdDropHeldItem();
             }
