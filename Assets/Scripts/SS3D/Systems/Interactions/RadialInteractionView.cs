@@ -173,6 +173,10 @@ namespace SS3D.Systems.Interactions
 
         private void HandleDisappear(InputAction.CallbackContext callbackContext)
         {
+            if (!enabled)
+            {
+                return;
+            }
             Disappear();
         }
 

@@ -19,6 +19,10 @@ namespace SS3D.Systems.Entities.Debug
         [ContextMenu("Request Mind Swap")]
         public void HandleMindSwap(InputAction.CallbackContext callbackContext)
         {
+            if (!enabled)
+            {
+                return;
+            }
             if (Origin == null || Target == null)
             {
                 return;

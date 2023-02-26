@@ -130,7 +130,7 @@ namespace SS3D.Systems.Storage.Containers
         }
         private void HandleSwapHands(InputAction.CallbackContext context)
         {
-            if (!IsOwner || HandContainers.Length < 1)
+            if (!IsOwner || !enabled || HandContainers.Length < 1)
             {
                 return;
             }

@@ -42,7 +42,8 @@ namespace SS3D.Systems.Entities.Humanoid
         protected Vector3 _targetMovement;
 
         private Actor _camera;
-        protected Controls.MovementActions Inputs;
+        protected Controls.MovementActions MovementControls;
+        protected Controls.HotkeysActions HotkeysControls;
         private const float _walkAnimatorValue = .3f;
         private const float _runAnimatorValue = 1f;
         #endregion
@@ -61,14 +62,31 @@ namespace SS3D.Systems.Entities.Humanoid
             Setup();
         }
 
+        protected void OnEnable()
+        {
+            try
+            {
+                MovementControls.Enable();
+                HotkeysControls.Enable();
+            }
+            catch (Exception) { }
+        }
+
+        protected void OnDisable()
+        {
+            MovementControls.Disable();
+            HotkeysControls.Enable();
+        }
+
         protected void Setup()
         {
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
             Controls controls = SystemLocator.Get<InputSystem>().Inputs;
-            Inputs = controls.Movement;
-            Inputs.Enable();
-            controls.Hotkeys.Enable();
-            Inputs.ToggleRun.performed += HandleToggleRun;
+            MovementControls = controls.Movement;
+            HotkeysControls = controls.Hotkeys;
+            MovementControls.Enable();
+            HotkeysControls.Enable();
+            MovementControls.ToggleRun.performed += HandleToggleRun;
             _entity.OnMindChanged += HandleControllingSoulChanged;
         }
 
@@ -149,8 +167,8 @@ namespace SS3D.Systems.Entities.Humanoid
         /// <returns></returns>
         protected void ProcessPlayerInput()
         {
-            float x = Inputs.Movement.ReadValue<Vector2>().x;
-            float y = Inputs.Movement.ReadValue<Vector2>().y;
+            float x = MovementControls.Movement.ReadValue<Vector2>().x;
+            float y = MovementControls.Movement.ReadValue<Vector2>().y;
             float inputFilteredSpeed = FilterSpeed();
 
             x = Mathf.Clamp(x, -inputFilteredSpeed, inputFilteredSpeed);
