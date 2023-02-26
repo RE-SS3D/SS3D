@@ -19,27 +19,27 @@ MonoBehaviour:
   EnumName: InteractionIcons
   Assets:
   - m_AssetGUID: d1f34343e08a14e48a856e409c355f32
-    m_SubObjectName: Take1
+    m_SubObjectName: Take
     m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
     m_EditorAssetChanged: 0
   - m_AssetGUID: d6678ac9f1a1c714fa5afdb6f1a0ff11
-    m_SubObjectName: Discord1
+    m_SubObjectName: Discord
     m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
     m_EditorAssetChanged: 0
   - m_AssetGUID: 48da6209938d27844878cc3d318295e2
-    m_SubObjectName: Open1
+    m_SubObjectName: Open
     m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
     m_EditorAssetChanged: 0
   - m_AssetGUID: 3788240ffacf45b4998b63134326628e
-    m_SubObjectName: Power1
+    m_SubObjectName: Power
     m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
     m_EditorAssetChanged: 0
   - m_AssetGUID: 03812e70c708b3047b20e316b16f1896
-    m_SubObjectName: Honk1
+    m_SubObjectName: Honk
     m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
     m_EditorAssetChanged: 0
