@@ -91,7 +91,7 @@ namespace SS3D.Systems.PlayerControl
                     break;
             }
 
-            OnlineSoulsChanged serverSoulsChanged = new(_onlineSouls.Values.ToList(), changeType, value);
+            OnlineSoulsChanged serverSoulsChanged = new(_onlineSouls.Values.ToList(), changeType, value, key);
             serverSoulsChanged.Invoke(this);
         }
 

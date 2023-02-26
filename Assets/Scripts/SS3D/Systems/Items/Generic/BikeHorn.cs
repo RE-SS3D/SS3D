@@ -6,7 +6,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
 
-namespace SS3D.Systems.Items
+namespace SS3D.Systems.Items.Generic
 {
     /// <summary>
     /// The honking device used by the clown on honking purposes
@@ -56,7 +56,7 @@ namespace SS3D.Systems.Items
             // check if it's playing. Otherwise, it's honkin' time.
             return audioSourceExists && isPlaying;
         }
-        
+
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
             List<IInteraction> interactions = base.CreateTargetInteractions(interactionEvent).ToList();

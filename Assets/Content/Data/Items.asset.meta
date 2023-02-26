@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Content/UI/InGameConsole/Console.prefab.meta
+guid: c2644d7b34e956743a0bc485e7ca5e37
+PrefabImporter:
+========
+guid: 5da82c7a4f30e614e9e82d003795dc55
+NativeFormatImporter:
+>>>>>>>> 9b197893 (Add Item spawn system):Assets/Content/Data/Items.asset.meta
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

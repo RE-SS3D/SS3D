@@ -67,6 +67,18 @@ namespace SS3D.Systems.IngameConsoleSystem
             }
             return ret;
         }
+        [ShortDescription("Show all entities that have spawned in-game")]
+        [LongDescription("Show all entities that have spawned in-game")]
+        public static string EntityList()
+        {
+            string ret = "";
+            var entities = SystemLocator.Get<EntitySystem>().SpawnedPlayers;
+            foreach (Entity entity in entities)
+            {
+                ret += entity.Ckey + "\t";
+            }
+            return ret;
+        }
         [ShortDescription("Change user permission")]
         [LongDescription("changeperms (user ckey) (required role)")]
         public static string ChangePerms(string ckey, string role)

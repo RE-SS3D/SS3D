@@ -1,19 +1,19 @@
-﻿using SS3D.Systems.Furniture;
+﻿using SS3D.Core;
+using SS3D.Data;
+using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Entities;
-using UnityEngine;
+using SS3D.Systems.Furniture;
 using SS3D.Systems.GameModes.Events;
-using SS3D.Core;
-using SS3D.Data;
-using SS3D.Data.Enums;
 using SS3D.Systems.PlayerControl;
+using UnityEngine;
 
-namespace SS3D.Systems.Items
+namespace SS3D.Systems.Items.Generic
 {
     /// <summary>
-    /// Honks a horn. Honking requires the target to be BikeHorn
+    /// Boom.
     /// </summary>
     public class NukeDetonateInteraction : Interaction
     {
