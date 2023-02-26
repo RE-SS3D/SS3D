@@ -1944,7 +1944,7 @@ GameObject:
   - component: {fileID: 7860572305637640861}
   - component: {fileID: 3206407796921847736}
   m_Layer: 5
-  m_Name: CharacterCustomizer Canvas
+  m_Name: CharacterCustomizerCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 2800000, guid: 39036f56f13e21b48ac592bc470c2c6a, type: 3}
   m_NavMeshLayer: 0
@@ -2056,5 +2056,5 @@ MonoBehaviour:
   <PrefabId>k__BackingField: -1
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 10894688713258203986
+  <AssetPathHash>k__BackingField: 12015948207224245626
   _sceneNetworkObjects: []
