@@ -15,17 +15,21 @@ using System.Linq;
 /// Heavily inspired by MessageTemplateTextFormatter.
 /// Sadly, since many static methods are internal to Serilog, it was necessary to write an equivalent of them in here.
 /// </summary>
-public class ColourTextFormatter : ITextFormatter
+public class SS3DUnityTextFormatter : ITextFormatter
 {
     private readonly MessageTemplate _outputTemplate;
     private readonly IFormatProvider _formatProvider;
     private static readonly JsonValueFormatter JsonValueFormatter = new("$type");
-    public ColourTextFormatter(string outputTemplate, IFormatProvider? formatProvider = null)
+    public SS3DUnityTextFormatter(string outputTemplate, IFormatProvider? formatProvider = null)
     {
         _outputTemplate = new MessageTemplateParser().Parse(outputTemplate);
         _formatProvider = formatProvider;
     }
-
+    /// <summary>
+    /// Format the logEvent to look nice in Unity console. 
+    /// </summary>
+    /// <param name="logEvent"></param>
+    /// <param name="output"></param>
     public void Format(LogEvent logEvent, TextWriter output)
     {
 
@@ -105,12 +109,25 @@ public class ColourTextFormatter : ITextFormatter
         }
     }
 
+    /// <summary>
+    /// Simply write the text to output when it's just text.
+    /// </summary>
+    /// <param name="textToken"></param>
+    /// <param name="output"></param>
     private void RenderTextToken(TextToken textToken, TextWriter output)
     {
         output.Write(textToken.Text);
     }
 
-    private void RenderMessageTemplate(MessageTemplate messageTemplate, IReadOnlyDictionary<string, LogEventPropertyValue> properties, TextWriter output, string? format = null, IFormatProvider? formatProvider = null)
+    /// <summary>
+    /// Render the message according to the template.
+    /// </summary>
+    /// <param name="messageTemplate">The template to use to render the message</param>
+    /// <param name="properties"> The properties in the message.</param>
+    /// <param name="output"> The output.</param>
+    /// <param name="format"></param>
+    /// <param name="formatProvider"></param>
+    private void RenderMessageTemplate(MessageTemplate messageTemplate, IReadOnlyDictionary<string, LogEventPropertyValue> properties, TextWriter output, string format = null, IFormatProvider formatProvider = null)
     {
         bool isLiteral = false, isJson = false;
 
@@ -149,31 +166,7 @@ public class ColourTextFormatter : ITextFormatter
             return;
         }
 
-        if (!pt.Alignment.HasValue)
-        {
-            RenderValue(propertyValue, isLiteral, isJson, output, pt.Format, formatProvider);
-            return;
-        }
-
-        var valueOutput = new StringWriter();
-        RenderValue(propertyValue, isLiteral, isJson, valueOutput, pt.Format, formatProvider);
-        var sb = valueOutput.GetStringBuilder();
-
-        if (sb.Length >= pt.Alignment.Value.Width)
-        {
-#if FEATURE_WRITE_STRINGBUILDER
-            output.Write(sb);
-#else
-            output.Write(sb.ToString());
-#endif
-            return;
-        }
-
-#if FEATURE_WRITE_STRINGBUILDER
-        Padding.Apply(output, sb, pt.Alignment.Value);
-#else
-        Padding.Apply(output, sb.ToString(), pt.Alignment.Value);
-#endif
+        RenderValue(propertyValue, isLiteral, isJson, output, pt.Format, formatProvider);
     }
 
     private string Colorize(string text, Logs logs = Logs.Generic)
@@ -182,13 +175,13 @@ public class ColourTextFormatter : ITextFormatter
         return text.Colorize(color);
     }
 
-    private void RenderValue(LogEventPropertyValue propertyValue, bool literal, bool json, TextWriter output, string? format, IFormatProvider? formatProvider)
+    private void RenderValue(LogEventPropertyValue propertyValue, bool isLiteral, bool isJson, TextWriter output, string format, IFormatProvider formatProvider)
     {
-        if (literal && propertyValue is ScalarValue { Value: string str })
+        if (isLiteral && propertyValue is ScalarValue { Value: string str })
         {
             output.Write(str);
         }
-        else if (json && format == null)
+        else if (isJson && format == null)
         {
             JsonValueFormatter.Format(propertyValue, output);
         }
@@ -198,7 +191,7 @@ public class ColourTextFormatter : ITextFormatter
         }
     }
 
-    private void RenderPropertyFormat(MessageTemplate template, IReadOnlyDictionary<string, LogEventPropertyValue> properties, MessageTemplate outputTemplate, TextWriter output, string? format, IFormatProvider? formatProvider = null)
+    private void RenderPropertyFormat(MessageTemplate template, IReadOnlyDictionary<string, LogEventPropertyValue> properties, MessageTemplate outputTemplate, TextWriter output, string format, IFormatProvider formatProvider = null)
     {
         if (format?.Contains("j") == true)
         {
@@ -231,6 +224,10 @@ public class ColourTextFormatter : ITextFormatter
         output.Write(" }");
     }
 
+    /// <summary>
+    /// Check if a given template contains a given property, using its name.
+    /// </summary>
+    /// <returns>true if the property name is found in the template.</returns>
     private static bool TemplateContainsPropertyName(MessageTemplate template, string propertyName)
     {
         if (template.Tokens != null)
