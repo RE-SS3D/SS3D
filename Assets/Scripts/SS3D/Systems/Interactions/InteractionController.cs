@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object;
 using SS3D.Core;
@@ -26,8 +27,28 @@ namespace SS3D.Systems.Interactions
         [Tooltip("Mask for physics to use when finding targets")]
         [SerializeField] private LayerMask _selectionMask = 0;
 
+        private Controls.OtherActions _otherControls;
+        private Controls.HotkeysActions _hotkeysControls;
+
         private Camera _camera;
         private RadialInteractionView _radialView;
+
+        private void OnEnable()
+        {
+            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
+            _otherControls = controls.Other;
+            _hotkeysControls = controls.Hotkeys;
+            _otherControls.PrimaryClick.performed += HandlePrimaryClick;
+            _otherControls.SecondaryClick.performed += HandleSecondaryClick;
+            _hotkeysControls.Use.performed += HandleUse;
+        }
+
+        private void OnDisable()
+        {
+            _otherControls.PrimaryClick.performed -= HandlePrimaryClick;
+            _otherControls.SecondaryClick.performed -= HandleSecondaryClick;
+            _hotkeysControls.Use.performed -= HandleUse;
+        }
 
         public override void OnStartClient()
         {
@@ -35,10 +56,7 @@ namespace SS3D.Systems.Interactions
 
             _radialView = SystemLocator.Get<RadialInteractionView>();
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
-            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
-            controls.Other.PrimaryClick.performed += HandlePrimaryClick;
-            controls.Other.SecondaryClick.performed += HandleSecondaryClick;
-            controls.Hotkeys.Use.performed += HandleUse;
+            
         }
 
         [Client]

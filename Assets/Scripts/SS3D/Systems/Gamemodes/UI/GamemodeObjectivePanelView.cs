@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Coimbra;
 using Coimbra.Services.Events;
 using SS3D.Core;
@@ -19,8 +20,22 @@ namespace SS3D.Systems.Gamemodes.UI
 
         [SerializeField] private GamemodeObjectiveItemView _itemViewPrefab;
         [SerializeField] private GameObject _content;
+        private Controls.OtherActions controls;
 
         private Dictionary<int, GamemodeObjectiveItemView> _gamemodeObjectiveItems;
+
+        private void OnEnable()
+        {
+            controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            controls.Fade.performed += HandleFadePerformed;
+            controls.Fade.canceled += HandleFadeCanceled;
+        }
+
+        private void OnDisable()
+        {
+            controls.Fade.performed -= HandleFadePerformed;
+            controls.Fade.canceled -= HandleFadeCanceled;
+        }
 
         protected override void OnAwake()
         {
@@ -31,6 +46,23 @@ namespace SS3D.Systems.Gamemodes.UI
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
         }
 
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            _fade.SetFade(false);
+        }
+
+        private void HandleFadePerformed(InputAction.CallbackContext context)
+        {
+            _fade.SetFade(true);
+        }
+
+        private void HandleFadeCanceled(InputAction.CallbackContext context)
+        {
+            _fade.SetFade(false);
+        }
+
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
         {
             RoundState roundState = e.RoundState;
@@ -39,17 +71,6 @@ namespace SS3D.Systems.Gamemodes.UI
             {
                 ClearObjectivesList();
             }
-        }
-
-        protected override void OnStart()
-        {
-            base.OnStart();
-
-            _fade.SetFade(false);
-
-            Controls.OtherActions controls = SystemLocator.Get<InputSystem>().Inputs.Other;
-            controls.Fade.performed += _ => _fade.SetFade(true);
-            controls.Fade.canceled += _ => _fade.SetFade(false);
         }
 
         public void ProcessObjectiveUpdated(GamemodeObjective objective)

@@ -64,30 +64,24 @@ namespace SS3D.Systems.Entities.Humanoid
 
         protected void OnEnable()
         {
-            try
-            {
-                MovementControls.Enable();
-                HotkeysControls.Enable();
-            }
-            catch (Exception) { }
+            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
+            MovementControls = controls.Movement;
+            HotkeysControls = controls.Hotkeys;
+            MovementControls.ToggleRun.performed += HandleToggleRun;
+            
         }
 
         protected void OnDisable()
         {
-            MovementControls.Disable();
-            HotkeysControls.Enable();
+            MovementControls.ToggleRun.performed -= HandleToggleRun;
         }
 
         protected void Setup()
         {
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
-            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
-            MovementControls = controls.Movement;
-            HotkeysControls = controls.Hotkeys;
+            _entity.OnMindChanged += HandleControllingSoulChanged;
             MovementControls.Enable();
             HotkeysControls.Enable();
-            MovementControls.ToggleRun.performed += HandleToggleRun;
-            _entity.OnMindChanged += HandleControllingSoulChanged;
         }
 
         private void HandleControllingSoulChanged(Mind mind)

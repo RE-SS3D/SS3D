@@ -1,3 +1,4 @@
+using System;
 using Coimbra.Services.Events;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
@@ -5,6 +6,7 @@ using SS3D.Systems.Entities.Events;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Screens
 {
@@ -13,6 +15,18 @@ namespace SS3D.Systems.Screens
         [SerializeField] private bool _blockNone;
         [SerializeField] private bool _menuOpen;
         private PlayerSpawnedState _spawnedState;
+        private Controls.OtherActions _controls;
+
+        private void OnEnable()
+        { 
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other; 
+            _controls.Menu.performed += HandleMenuPerformed; 
+        }
+
+        private void OnDisable()
+        {
+            _controls.Menu.performed -= HandleMenuPerformed;
+        }
 
         protected override void OnStart()
         {
@@ -21,18 +35,18 @@ namespace SS3D.Systems.Screens
             _menuOpen = true;
             _blockNone = true;
             _spawnedState = PlayerSpawnedState.IsNotSpawned;
-            SystemLocator.Get<InputSystem>().Inputs.Other.Menu.performed += _ =>
-            {
-                if (!_blockNone)
-                {
-                    _menuOpen = !_menuOpen;
-                    UpdateScreen();
-                }
-            };
-
             ChangeGameScreenEvent.AddListener(HandleChangeGameScreen);
             SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
+        }
+
+        private void HandleMenuPerformed(InputAction.CallbackContext context)
+        {
+            if (!_blockNone)
+            {
+                _menuOpen = !_menuOpen;
+                UpdateScreen();
+            }
         }
 
         private void HandleSpawnedPlayersUpdated(ref EventContext context, in SpawnedPlayersUpdated e)

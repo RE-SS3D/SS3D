@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Coimbra;
 using SS3D.Core;
-using SS3D.Core.Behaviours;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -23,8 +22,8 @@ namespace SS3D.Systems.IngameConsoleSystem
         [SerializeField] private float _movingSpeed = 2500f;
         [SerializeField] private TMP_InputField _inputField;
         // Used for opening/closing
-        private bool _isSliding = false;
-        private bool _isShowed = false;
+        private bool _isSliding;
+        private bool _isShowed;
         private Vector2 _targetPointMax;
         private Vector2 _targetPointMin;
         /// <summary>
@@ -34,21 +33,32 @@ namespace SS3D.Systems.IngameConsoleSystem
         private CommandsController _commandsController;
         // Used for choosing command via arrows
         [SerializeField] private List<string> _allPrevCommands = new() {""};
-        private int _chosenPrevCommand = 0;
+        private int _chosenPrevCommand;
         private Controls _controls;
         private Controls.ConsoleActions _consoleControls;
 
-        protected override void OnStart()
+        private void OnEnable()
         {
-            base.OnStart();
-            _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
-            
             _controls = SystemLocator.Get<InputSystem>().Inputs;
             _consoleControls = _controls.Console;
             _consoleControls.Close.performed += HandleClose;
             _consoleControls.Open.performed += HandleOpen;
             _consoleControls.SwitchCommand.performed += HandleSwitchCommand;
             _consoleControls.Submit.performed += HandleSubmit;
+        }
+
+        private void OnDisable()
+        {
+            _consoleControls.Close.performed -= HandleClose;
+            _consoleControls.Open.performed -= HandleOpen;
+            _consoleControls.SwitchCommand.performed -= HandleSwitchCommand;
+            _consoleControls.Submit.performed -= HandleSubmit;
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
             _consoleControls.Open.Enable();
             _commandsController = new CommandsController();
         }
@@ -62,7 +72,9 @@ namespace SS3D.Systems.IngameConsoleSystem
                 Slide();
             }
         }
-
+        /// <summary>
+        /// Move the console offscreen and disable all console controls, except of Open action
+        /// </summary>
         private void HandleClose(InputAction.CallbackContext context)
         {
             _isSliding = true;
@@ -74,7 +86,9 @@ namespace SS3D.Systems.IngameConsoleSystem
             _consoleControls.Disable();
             _consoleControls.Open.Enable();
         }
-
+        /// <summary>
+        /// Move console to screen, enable all controls, disable Open action
+        /// </summary>
         private void HandleOpen(InputAction.CallbackContext context)
         {
             _isSliding = true;
@@ -85,14 +99,18 @@ namespace SS3D.Systems.IngameConsoleSystem
             _consoleControls.Enable();
             _consoleControls.Open.Disable();
         }
-
+        /// <summary>
+        /// Put previously used commands in input field
+        /// </summary>
         private void HandleSwitchCommand(InputAction.CallbackContext context)
         {
             _chosenPrevCommand =
                 Math.Clamp(_chosenPrevCommand + (int)context.ReadValue<float>(), 0, _allPrevCommands.Count - 1);
             _inputField.text = _allPrevCommands[_chosenPrevCommand];
         }
-
+        /// <summary>
+        /// Process and remove command in input field
+        /// </summary>
         private void HandleSubmit(InputAction.CallbackContext context)
         {
             ProcessCommand(_inputField.text);

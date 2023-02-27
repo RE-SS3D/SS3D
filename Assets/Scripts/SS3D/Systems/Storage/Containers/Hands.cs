@@ -17,7 +17,7 @@ namespace SS3D.Systems.Storage.Containers
     {
         [SerializeField] public AttachedContainer[] HandContainers;
         [SerializeField] private float handRange;
-        private Controls.HotkeysActions controls;
+        private Controls.HotkeysActions _controls;
 
         [NonSerialized]
         public Inventory Inventory;
@@ -52,6 +52,19 @@ namespace SS3D.Systems.Storage.Containers
 
         public HandsView HandsView { get; private set; }
 
+        private void OnEnable()
+        {
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Hotkeys;
+            _controls.SwapHands.performed += HandleSwapHands;
+            _controls.Drop.performed += HandleDropHeldItem;
+        }
+
+        private void OnDisable()
+        {
+            _controls.SwapHands.performed -= HandleSwapHands;
+            _controls.Drop.performed -= HandleDropHeldItem;
+        }
+
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -59,12 +72,6 @@ namespace SS3D.Systems.Storage.Containers
             HandsView.Hands = this;
 
             SupportsMultipleInteractions = true;
-        }
-
-        protected override void OnStart()
-        {
-            controls = SystemLocator.Get<InputSystem>().Inputs.Hotkeys;
-            controls.SwapHands.performed += HandleSwapHands;
         }
 
         [Server]
@@ -114,21 +121,7 @@ namespace SS3D.Systems.Storage.Containers
             item.Container = null;
             ItemUtility.Place(item, position, rotation, transform);
         }
-
-        public override void Update()
-        {
-            base.Update();
-
-            if (!IsOwner)
-            {
-                return;
-            }
-            
-            if (controls.Drop.WasPerformedThisFrame())
-            {
-                CmdDropHeldItem();
-            }
-        }
+        
         private void HandleSwapHands(InputAction.CallbackContext context)
         {
             if (!IsOwner || !enabled || HandContainers.Length < 1)
@@ -163,8 +156,11 @@ namespace SS3D.Systems.Storage.Containers
                 Debug.LogError("selectedContainer is not in HandContainers.");
             }
         }
-        
-        // This method can't be a callback because of Fishnet issue
+
+        private void HandleDropHeldItem(InputAction.CallbackContext context)
+        {
+            CmdDropHeldItem();
+        }
         [ServerRpc]
         private void CmdDropHeldItem()
         {

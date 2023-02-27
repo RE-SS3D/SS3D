@@ -81,14 +81,20 @@ namespace SS3D.Systems.Screens
         private const float SnapAngle = 45.1f;
 
         #endregion
-        
-        protected override void OnStart()
+
+        private void OnEnable()
         {
-            base.OnStart();
             _controls = SystemLocator.Get<InputSystem>().Inputs.Camera;
             _controls.Zoom.performed += HandleZoom;
             _controls.SnapRight.performed += HandleSnapRight;
             _controls.SnapLeft.performed += HandleSnapLeft;
+        }
+
+        private void OnDisable()
+        {
+            _controls.Zoom.performed -= HandleZoom;
+            _controls.SnapRight.performed -= HandleSnapRight;
+            _controls.SnapLeft.performed -= HandleSnapLeft;
         }
 
         protected override void HandleUpdate(in float deltaTime)

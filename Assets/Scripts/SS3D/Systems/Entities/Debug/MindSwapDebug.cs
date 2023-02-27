@@ -1,3 +1,4 @@
+using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using UnityEngine;
@@ -9,20 +10,22 @@ namespace SS3D.Systems.Entities.Debug
     {
         public Entity Origin;
         public Entity Target;
-        protected override void OnStart()
-        {
-            base.OnStart();
+        private Controls.OtherActions _controls;
 
-            SystemLocator.Get<InputSystem>().Inputs.Other.SwapMinds.performed += HandleMindSwap;
+        private void OnEnable()
+        {
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls.SwapMinds.performed += HandleMindSwap;
+        }
+
+        private void OnDisable()
+        {
+            _controls.SwapMinds.performed -= HandleMindSwap;
         }
 
         [ContextMenu("Request Mind Swap")]
         public void HandleMindSwap(InputAction.CallbackContext callbackContext)
         {
-            if (!enabled)
-            {
-                return;
-            }
             if (Origin == null || Target == null)
             {
                 return;

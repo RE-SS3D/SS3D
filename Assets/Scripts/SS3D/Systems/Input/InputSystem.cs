@@ -1,6 +1,3 @@
-using SS3D.Core;
-using UnityEngine;
-
 public class InputSystem : SS3D.Core.Behaviours.System
 {
     public Controls Inputs { get; private set; }

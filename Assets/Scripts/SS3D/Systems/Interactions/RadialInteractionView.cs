@@ -39,6 +39,18 @@ namespace SS3D.Systems.Interactions
 
         private List<IInteraction> Interactions { get; set; }
         private InteractionEvent Event { get; set; }
+        private Controls.OtherActions _controls;
+
+        private void OnEnable()
+        {
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls.SecondaryClick.performed += HandleDisappear;
+        }
+
+        private void OnDisable()
+        {
+            _controls.SecondaryClick.performed -= HandleDisappear;
+        }
 
         protected override void OnStart()
         {
@@ -46,7 +58,6 @@ namespace SS3D.Systems.Interactions
 
             Setup();
             Disappear();
-            SystemLocator.Get<InputSystem>().Inputs.Other.SecondaryClick.performed += HandleDisappear;
         }
 
         protected override void HandleUpdate(in float deltaTime)

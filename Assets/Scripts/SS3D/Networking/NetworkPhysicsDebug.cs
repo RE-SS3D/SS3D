@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
@@ -18,15 +19,21 @@ namespace SS3D.Networking
         public float ForceMultiplier = 1f;
 
         public List<Rigidbody> SpawnedCans;
+        private Controls.OtherActions _controls;
 
-        protected override void OnStart()
+        private void OnEnable()
         {
-            base.OnStart();
-            SystemLocator.Get<InputSystem>().Inputs.Other.SpawnCans.performed += SpawnSodaCans;
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls.SpawnCans.performed += HandleSpawnSodaCans;
+        }
+
+        private void OnDisable()
+        {
+            _controls.SpawnCans.performed -= HandleSpawnSodaCans;
         }
 
         [ContextMenu("Spawn Soda Cans")]
-        public void SpawnSodaCans(InputAction.CallbackContext callbackContext)
+        public void HandleSpawnSodaCans(InputAction.CallbackContext callbackContext)
         {
             SpawnSodaCansTask();
         }
