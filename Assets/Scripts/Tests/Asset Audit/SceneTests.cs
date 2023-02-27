@@ -12,57 +12,7 @@ namespace EditorTests
 {
     public class SceneTests
     {
-        #region Class variables
-        /// <summary>
-        /// The name and path of the Scene that this script is testing.
-        /// </summary>
-        private const string SCENE_PATH = "Assets/Scenes/Lobby.unity";
-
-        /// <summary>
-        /// All of the prefabs in the project.
-        /// </summary>
-        private GameObject[] _allPrefabs;
-
-        /// <summary>
-        /// All of the MonoBehaviours in the current scene.
-        /// </summary>
-        private MonoBehaviour[] _allMonoBehaviours;
-
-        #endregion
-
-        #region Test set up
-        [OneTimeSetUp]
-        public void SetUp()
-        {
-            EditorSceneManager.OpenScene(SCENE_PATH);
-            LoadAllPrefabs();
-            LoadAllMonoBehaviours();
-        }
-
-        private void LoadAllPrefabs()
-        {
-            // Find all the prefabs in the project hierarchy (i.e. NOT in a scene)
-            string[] guids = AssetDatabase.FindAssets("t:prefab");
-
-            // Create our array of prefabs
-            _allPrefabs = new GameObject[guids.Length];
-
-            // Populate the array
-            for (int i = 0; i <guids.Length; i++)
-            {
-                _allPrefabs[i] = AssetDatabase.LoadAssetAtPath <GameObject>(AssetDatabase.GUIDToAssetPath(guids[i]));
-            }
-        }
-
-        private void LoadAllMonoBehaviours()
-        {
-            // Find all the MonoBehaviours in the currently open scene
-            _allMonoBehaviours = Object.FindObjectsOfType<MonoBehaviour>();
-        }
-        #endregion
-
         #region Tests
-
         /// <summary>
         /// Test to confirm that MonoBehaviours have serialized fields (marked by NotNullAttribute) initialized.
         /// The purpose of this test is to prevent NullReferenceExceptions caused by failing to initialize MonoBehaviour fields.
@@ -71,8 +21,9 @@ namespace EditorTests
         public void SpecifiedFieldsWithinSceneAreNotNull(SceneAsset scene)
         {
 
-            // ARRANGE
-            EditorSceneManager.OpenScene(scene.name);
+            // Load all MonoBehaviours in the desired scene
+            EditorSceneManager.OpenScene(FullScenePathAndName(scene.name));
+            MonoBehaviour[] _allMonoBehaviours = Object.FindObjectsOfType<MonoBehaviour>();
 
             bool allRelevantFieldsHaveBeenSet = true;
             BindingFlags flags = GetBindingFlags();
@@ -119,17 +70,31 @@ namespace EditorTests
         /// Test to confirm that GameObjects within the tested scene are on the correct layers.
         /// The purpose of this test is to ensure layer-based collisions, raycasts, rendering etc function correctly.
         /// </summary>
-        [Test]
-        public void SceneObjectsAreOnTheirMandatedLayers()
+        [Test, TestCaseSource(nameof(AllScenes))]
+        public void SceneObjectsAreOnTheirMandatedLayers(SceneAsset scene)
         {
-            // ARRANGE
             StringBuilder sb = new();
-
-            // ACT
-            bool allRelevantMonoBehavioursAreOnTheRightLayer = AssetAuditUtilities.CheckMonoBehavioursForCorrectLayer(_allMonoBehaviours, ref sb);
-
-            // ASSERT
+            EditorSceneManager.OpenScene(FullScenePathAndName(scene.name));
+            MonoBehaviour[] sceneMonoBehaviours = Object.FindObjectsOfType<MonoBehaviour>();
+            bool allRelevantMonoBehavioursAreOnTheRightLayer = AssetAuditUtilities.CheckMonoBehavioursForCorrectLayer(sceneMonoBehaviours, ref sb);
             Assert.IsTrue(allRelevantMonoBehavioursAreOnTheRightLayer, sb.ToString());
+        }
+
+        /// <summary>
+        /// Test to confirm that gameobjects within scenes do not have missing scripts.
+        /// Missing scripts can occur when a script is deleted, or when script meta files are recreated.
+        /// </summary>
+        [Test, TestCaseSource(nameof(AllScenes))]
+        public void SceneObjectsDoNotHaveMissingScripts(SceneAsset scene)
+        {
+            StringBuilder sb = new();
+            bool allScriptsExist = true;
+            GameObject[] sceneGameObjects = Object.FindObjectsOfType<GameObject>();
+            foreach (GameObject sceneObject in sceneGameObjects)
+            {
+                allScriptsExist = allScriptsExist && AssetAuditUtilities.CheckGameObjectForMissingScripts(sceneObject, ref sb);
+            }
+            Assert.IsTrue(allScriptsExist, sb.ToString());
         }
         #endregion
 
@@ -145,6 +110,11 @@ namespace EditorTests
         private static SceneAsset[] AllScenes()
         {
             return AssetAuditUtilities.AllScenes();
+        }
+
+        private static string FullScenePathAndName(string sceneName)
+        {
+            return $"{AssetAuditUtilities.SceneRootPath}/{sceneName}.unity";
         }
         #endregion
     }

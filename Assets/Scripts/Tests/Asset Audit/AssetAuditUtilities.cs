@@ -8,8 +8,8 @@ using UnityEngine;
 
 public static class AssetAuditUtilities
 {
-    private const string PrefabRootPath = "Assets/Content";
-    private const string SceneRootPath = "Assets/Scenes";
+    public const string PrefabRootPath = "Assets/Content";
+    public const string SceneRootPath = "Assets/Scenes";
 
 
     public static GameObject[] AllPrefabs()
