@@ -1,3 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:Button text="Set enum creation path" display-tooltip-when-elided="true" name="Button" style="margin-left: 0; margin-right: 0; margin-top: 5px; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; height: 35px; background-color: rgb(46, 46, 46); border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; font-size: 10px; -unity-font-definition: url(&apos;project://database/Assets/Art/Font/Fonts%20Source/Ode%20to%20Idle%20Gaming%20SDF.asset?fileID=11400000&amp;guid=85349eec352cce944bfbd828955be891&amp;type=2#Ode to Idle Gaming SDF&apos;);" />
-</ui:UXML>
