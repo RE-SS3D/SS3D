@@ -42,12 +42,7 @@ public class SS3DUnityTextFormatter : ITextFormatter
             }
 
             var pt = (PropertyToken)token;
-            if (pt.PropertyName == OutputProperties.LevelPropertyName)
-            {
-                var moniker = LevelOutputFormat.GetLevelMoniker(logEvent.Level, pt.Format);
-                Padding.Apply(output, moniker, pt.Alignment);
-                continue;
-            }
+
             if (pt.PropertyName == OutputProperties.NewLinePropertyName)
             {
                 Padding.Apply(output, Environment.NewLine, pt.Alignment);
@@ -59,25 +54,20 @@ public class SS3DUnityTextFormatter : ITextFormatter
                 Padding.Apply(output, exception, pt.Alignment);
                 continue;
             }
-
-            // In this block, `writer` may be used to buffer output so that
-            // padding can be applied.
-            var writer = pt.Alignment.HasValue ? new StringWriter() : output;
-
             if (pt.PropertyName == OutputProperties.MessagePropertyName)
             {
-                RenderMessageTemplate(logEvent.MessageTemplate, logEvent.Properties, writer, pt.Format, _formatProvider);
+                RenderMessageTemplate(logEvent.MessageTemplate, logEvent.Properties, output, pt.Format, _formatProvider);
                 continue;
             }
             if (pt.PropertyName == OutputProperties.TimestampPropertyName)
             {
                 var scalarValue = new ScalarValue(logEvent.Timestamp);
-                scalarValue.Render(writer, pt.Format, _formatProvider);
+                scalarValue.Render(output, pt.Format, _formatProvider);
                 continue;
             }
             if (pt.PropertyName == OutputProperties.PropertiesPropertyName)
             {
-                RenderPropertyFormat(logEvent.MessageTemplate, logEvent.Properties, _outputTemplate, writer, pt.Format, _formatProvider);
+                RenderPropertyFormat(logEvent.MessageTemplate, logEvent.Properties, _outputTemplate, output, pt.Format, _formatProvider);
                 continue;
             }
 
@@ -85,26 +75,23 @@ public class SS3DUnityTextFormatter : ITextFormatter
             if (!logEvent.Properties.TryGetValue(pt.PropertyName, out var propertyValue))
                 continue;
 
-            // If the value is a scalar string, support some additional formats: 'u' for uppercase
-            // and 'w' for lowercase.
             var sv = propertyValue as ScalarValue;
             if (sv?.Value is string literalString)
             {
-                var cased = Casing.Format(literalString, pt.Format);
                 if(pt.PropertyName == "SourceContext")
                 {
                     logEvent.Properties.TryGetValue("InfoLog", out var InfoLogPropertyValue);
                     var ScalarInfoLogPropertyValue = InfoLogPropertyValue as ScalarValue;
                     if (ScalarInfoLogPropertyValue?.Value is Logs InfoLogs)
-                        cased = $"[{Colorize(cased, InfoLogs)}]";
+                        literalString = $"[{Colorize(literalString, InfoLogs)}]";
                     else
-                        cased = $"[{Colorize(cased)}]";
+                        literalString = $"[{Colorize(literalString)}]";
                 }
-                writer.Write(cased);
+                output.Write(literalString);
             }
             else
             {
-                propertyValue.Render(writer, pt.Format, _formatProvider);
+                propertyValue.Render(output, pt.Format, _formatProvider);
             }
         }
     }
