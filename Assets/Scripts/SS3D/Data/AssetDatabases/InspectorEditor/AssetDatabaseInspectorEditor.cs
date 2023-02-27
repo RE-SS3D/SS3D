@@ -49,14 +49,17 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
             _enumNameTextField.value = _assetDatabase.EnumName;
             _assetGroupObjectField.value = _assetDatabase.AssetGroup;
 
-            foreach (Object asset in _assetDatabase.Assets)
+            if (_assetDatabase.Assets != null)
             {
-                ObjectField objectField = new()
+                foreach (Object asset in _assetDatabase.Assets)
                 {
-                    value = asset
-                };
+                    ObjectField objectField = new()
+                    {
+                        value = asset
+                    };
 
-                _assetsListView.Add(objectField);
+                    _assetsListView.Add(objectField);
+                }
             }
 
             _loadAssetsButton.clicked += HandleLoadAssetsButtonPressed;
