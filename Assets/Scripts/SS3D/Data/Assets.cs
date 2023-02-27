@@ -18,7 +18,7 @@ namespace SS3D.Data
         /// </summary>
         private static readonly Dictionary<string, AssetDatabase> Databases = new();
 
-        // IMPORTANT: All database getters have to be added manually. For now.
+        // TODO: Find a way to automate the getters, this is a nightmare way of doing it.
 
         /// <summary>
         /// Gets an interaction icon as a Sprite.
