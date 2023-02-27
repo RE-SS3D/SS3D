@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: -7727686409064562107}
   - component: {fileID: -1074477776341974781}
   - component: {fileID: -4998431523760016775}
-  - component: {fileID: 5148248426539759254}
   - component: {fileID: 2483949066431998482}
   m_Layer: 0
   m_Name: PipesLayer1
@@ -50,8 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
-  _networkBehaviours:
-  - {fileID: 5148248426539759254}
+  _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -113,63 +111,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5148248426539759254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2802364579275783218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94120b376bbd78b4ab7a4b115b3f3b22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 0
-  _addedNetworkObject: {fileID: 2483949066431998482}
-  _networkObjectCache: {fileID: -7727686409064562107}
-  selectedAdjacencyType: 2
-  CrossConnectAllowed: 0
-  simpleAdjacency:
-    o: {fileID: 0}
-    u: {fileID: 0}
-    i: {fileID: 0}
-    l: {fileID: 0}
-    t: {fileID: 0}
-    x: {fileID: 0}
-  advancedAdjacency:
-    o: {fileID: 0}
-    u: {fileID: 0}
-    i: {fileID: 0}
-    lNone: {fileID: 0}
-    lSingle: {fileID: 0}
-    tNone: {fileID: 0}
-    tSingleRight: {fileID: 0}
-    tSingleLeft: {fileID: 0}
-    tDouble: {fileID: 0}
-    xNone: {fileID: 0}
-    xSingle: {fileID: 0}
-    xSide: {fileID: 0}
-    xOpposite: {fileID: 0}
-    xTriple: {fileID: 0}
-    xQuad: {fileID: 0}
-    viewObstacles: []
-    opaque: 0
-  offsetAdjacency:
-    o: {fileID: 6771834481066591091, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    uNorth: {fileID: -4913184590784469283, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    uSouth: {fileID: -8982356636661201101, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    i: {fileID: 6771834481066591091, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    lNE: {fileID: 1452706557494696559, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    lNW: {fileID: 2974487339661499261, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    lSE: {fileID: -8284340391569421606, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    lSW: {fileID: -710663454644857736, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    tNEW: {fileID: -4415080472327585715, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    tNSW: {fileID: -8084914691331622005, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    tNSE: {fileID: -7828955826838884863, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    tSWE: {fileID: -1565585996255746122, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-    x: {fileID: 5978052073093224489, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
-  EditorBlockedConnections: 0
 --- !u!114 &2483949066431998482
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,8 +125,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
-  _networkBehaviours:
-  - {fileID: 5148248426539759254}
+  _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
