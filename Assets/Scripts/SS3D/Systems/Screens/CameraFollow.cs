@@ -105,10 +105,6 @@ namespace SS3D.Systems.Screens
         }
         private void HandleZoom(InputAction.CallbackContext context)
        {
-           if (!enabled)
-           {
-               return;
-           }
            _cameraDistance = Mathf.Clamp(_cameraDistance - context.ReadValue<float>(), MinDistance, MaxDistance);
        }
         // There are two button-type actions for snap, because MultiTap actions don't return values when performed
@@ -122,11 +118,7 @@ namespace SS3D.Systems.Screens
        }
         private void Snap(float direction)
         {
-            if (!enabled)
-            {
-                return;
-            }
-           _horizontalAngle = Mathf.Round((_horizontalAngle + SnapAngle * direction) / 90.0f) * 90.0f;
+            _horizontalAngle = Mathf.Round((_horizontalAngle + SnapAngle * direction) / 90.0f) * 90.0f;
        }
 
         /// <summary>
