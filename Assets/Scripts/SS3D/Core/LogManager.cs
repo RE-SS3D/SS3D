@@ -31,13 +31,15 @@ namespace SS3D.Core
                 }
                 Log.Logger = new LoggerConfiguration()
                .Enrich.With(new ClientIdEnricher())
+               .MinimumLevel.Verbose()
                .WriteTo.File( new CompactJsonFormatter()
                , "C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogClient" + ClientManager.Connection.ClientId + ".json")
-               .WriteTo.Unity3D(formatter: new ColourTextFormatter(outputTemplate: "{SourceContext}{Message:lj}{NewLine}{Exception}"))
+               .WriteTo.Unity3D(formatter: new SS3DUnityTextFormatter(outputTemplate: "{SourceContext} {Message:lj}{NewLine}{Exception}"))
                .CreateLogger();
                Log.Information("##########  CLIENT STARTING !  ##########");
             Log.ForContext<LogManager>().Information("Entering MethodName");
             Log.Information("Entering MethodName");
+            
         }
 
         public override void OnStartServer()
@@ -47,7 +49,8 @@ namespace SS3D.Core
             {
                   Log.Logger = new LoggerConfiguration()
                  .Enrich.With(new ClientIdEnricher())
-                 .WriteTo.Unity3D(formatter: new ColourTextFormatter(outputTemplate: "{SourceContext}{Message:lj}{NewLine}{Exception}"))
+                 .MinimumLevel.Verbose()
+                 .WriteTo.Unity3D(formatter: new SS3DUnityTextFormatter(outputTemplate: "{SourceContext} {Message:lj}{NewLine}{Exception}"))
                  .WriteTo.File(new CompactJsonFormatter()
                  , "C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogServer.json")
                  .CreateLogger()
@@ -58,16 +61,16 @@ namespace SS3D.Core
             
                    Log.Logger = new LoggerConfiguration()
                   .Enrich.With(new ClientIdEnricher())
-                  .WriteTo.Unity3D(formatter : new ColourTextFormatter(outputTemplate: "{SourceContext}{Message:lj}{NewLine}{Exception}"))
+                  .MinimumLevel.Verbose()
+                  .WriteTo.Unity3D(formatter : new SS3DUnityTextFormatter(outputTemplate: "{SourceContext} {Message:lj}{NewLine}{Exception}"))
                   .WriteTo.File(new CompactJsonFormatter()
                   , "C:/Users/Nat/Documents/GitHub/StilnatSS3DMain/Logs/LogHost.json")
                   .CreateLogger();
             }
-            //Log.ForContext(typeof(LogManager)).Information("Test with context source");
-            //Log.Information("Test with no context");
-            //Log.Warning("Test warning level");
-            //Log.Error("Test error level");
-            Log.ForContext(typeof(LogManager)).Warning("Test with log info about number {number}", 47, Logs.ServerOnly);
+
+            Punpun.Verbose(this, "punpun wrapper test with log", Logs.ServerOnly);
+            Punpun.Verbose(this, "punpun wrapper test with log, number 1 : {n}, number 2 : {m}, bool 3 : {j}", Logs.ServerOnly, 4, 25,true);
+            Punpun.Verbose(Log.Logger, "punpun wrapper test with logger, number 1 : {n}, number 2 : {m}, bool 3 : {j}", Logs.Important, 4, 25, true);
             //Log.Information("##########  SERVER STARTING !  ##########");
             ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
         }
