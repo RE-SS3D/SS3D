@@ -4,7 +4,7 @@ using SS3D.Data;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Systems.Storage.Items;
+using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 
 namespace SS3D.Systems.Furniture
