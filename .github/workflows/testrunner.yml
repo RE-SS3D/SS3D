@@ -17,6 +17,7 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          testMode: EditMode
       - name: Notify discord if tests fail
         uses: rjstone/discord-webhook-notify@v1
         if: failure()
