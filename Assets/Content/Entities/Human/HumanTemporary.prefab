@@ -2964,7 +2964,7 @@ GameObject:
   - component: {fileID: 571479044043330787}
   - component: {fileID: 5857269694861021747}
   m_Layer: 11
-  m_Name: Human_Temporary
+  m_Name: HumanTemporary
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3038,7 +3038,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: 3
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 3682879707339158369
+  <AssetPathHash>k__BackingField: 14445694781765771949
   _sceneNetworkObjects: []
 --- !u!114 &7255324433810104430
 MonoBehaviour:

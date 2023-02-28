@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Human Skin
+  m_Name: HumanHair
   m_Shader: {fileID: 4800000, guid: 7cd5de0b884b14f88ab763ef465e1799, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
@@ -15,12 +15,13 @@ Material:
   - _SEGMENTED_ON
   - _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
   - _SPECULARHIGHLIGHTS_OFF
-  m_LightmapFlags: 0
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
-  disabledShaderPasses: []
+  disabledShaderPasses:
+  - ALWAYS
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -99,7 +100,7 @@ Material:
     - _Lumin: 1
     - _MaxLight: 1
     - _Metallic: 0
-    - _MinLight: 0.711
+    - _MinLight: 0.499
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Offset: 0.737
@@ -127,7 +128,7 @@ Material:
     m_Colors:
     - _BaseColor: {r: 0.7924528, g: 0.67831177, b: 0.42986828, a: 1}
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
-    - _Color: {r: 1, g: 0.7411765, b: 0.6, a: 1}
+    - _Color: {r: 0.5, g: 0.2834079, b: 0.19103774, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _ShnColor: {r: 1, g: 1, b: 0, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
