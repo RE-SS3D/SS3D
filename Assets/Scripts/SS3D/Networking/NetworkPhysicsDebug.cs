@@ -23,13 +23,23 @@ namespace SS3D.Networking
 
         private void OnEnable()
         {
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
-            _controls.SpawnCans.performed += HandleSpawnSodaCans;
+            try
+            {
+                _controls.SpawnCans.performed += HandleSpawnSodaCans;
+            }
+            catch (NullReferenceException) {}
         }
 
         private void OnDisable()
         {
             _controls.SpawnCans.performed -= HandleSpawnSodaCans;
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls.SpawnCans.performed += HandleSpawnSodaCans;
         }
 
         [ContextMenu("Spawn Soda Cans")]

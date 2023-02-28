@@ -1,11 +1,10 @@
 using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
-using SS3D.Logging;
-using SS3D.Systems.Health;
 using SS3D.Systems.Screens;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Systems.Entities.Humanoid
 {
@@ -53,27 +52,32 @@ namespace SS3D.Systems.Entities.Humanoid
         public virtual float RunAnimatorValue => _runAnimatorValue;
         public bool IsRunning => _isRunning;
         #endregion
-        
 
-        protected override void OnStart()
-        {
-            base.OnStart();
-
-            Setup();
-        }
 
         protected void OnEnable()
         {
-            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
-            MovementControls = controls.Movement;
-            HotkeysControls = controls.Hotkeys;
-            MovementControls.ToggleRun.performed += HandleToggleRun;
+            try
+            {
+                MovementControls.ToggleRun.performed += HandleToggleRun;
+            }
+            catch (NullReferenceException) {}
             
         }
 
         protected void OnDisable()
         {
             MovementControls.ToggleRun.performed -= HandleToggleRun;
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            
+            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
+            MovementControls = controls.Movement;
+            HotkeysControls = controls.Hotkeys;
+            MovementControls.ToggleRun.performed += HandleToggleRun;
+            Setup();
         }
 
         protected void Setup()

@@ -14,13 +14,24 @@ namespace SS3D.Systems.Entities.Debug
 
         private void OnEnable()
         {
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
-            _controls.SwapMinds.performed += HandleMindSwap;
+            try
+            {
+                _controls.SwapMinds.performed += HandleMindSwap;
+            }
+            catch (NullReferenceException) {}
         }
 
         private void OnDisable()
         {
             _controls.SwapMinds.performed -= HandleMindSwap;
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls.SwapMinds.performed += HandleMindSwap;
         }
 
         [ContextMenu("Request Mind Swap")]

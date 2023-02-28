@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Coimbra;
 using Coimbra.Services.Events;
 using SS3D.Core;
-using SS3D.Systems.Gamemodes;
-using SS3D.Systems.GameModes.Events;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Utils;
@@ -20,21 +18,24 @@ namespace SS3D.Systems.Gamemodes.UI
 
         [SerializeField] private GamemodeObjectiveItemView _itemViewPrefab;
         [SerializeField] private GameObject _content;
-        private Controls.OtherActions controls;
+        private Controls.OtherActions _controls;
 
         private Dictionary<int, GamemodeObjectiveItemView> _gamemodeObjectiveItems;
 
         private void OnEnable()
         {
-            controls = SystemLocator.Get<InputSystem>().Inputs.Other;
-            controls.Fade.performed += HandleFadePerformed;
-            controls.Fade.canceled += HandleFadeCanceled;
+            try
+            {
+                _controls.Fade.performed += HandleFadePerformed;
+                _controls.Fade.canceled += HandleFadeCanceled;
+            }
+            catch (NullReferenceException) {}
         }
 
         private void OnDisable()
         {
-            controls.Fade.performed -= HandleFadePerformed;
-            controls.Fade.canceled -= HandleFadeCanceled;
+            _controls.Fade.performed -= HandleFadePerformed;
+            _controls.Fade.canceled -= HandleFadeCanceled;
         }
 
         protected override void OnAwake()
@@ -51,6 +52,9 @@ namespace SS3D.Systems.Gamemodes.UI
             base.OnStart();
 
             _fade.SetFade(false);
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls.Fade.performed += HandleFadePerformed;
+            _controls.Fade.canceled += HandleFadeCanceled;
         }
 
         private void HandleFadePerformed(InputAction.CallbackContext context)

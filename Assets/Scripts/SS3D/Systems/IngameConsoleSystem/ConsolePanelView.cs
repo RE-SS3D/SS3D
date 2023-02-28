@@ -39,12 +39,11 @@ namespace SS3D.Systems.IngameConsoleSystem
 
         private void OnEnable()
         {
-            _controls = SystemLocator.Get<InputSystem>().Inputs;
-            _consoleControls = _controls.Console;
-            _consoleControls.Close.performed += HandleClose;
-            _consoleControls.Open.performed += HandleOpen;
-            _consoleControls.SwitchCommand.performed += HandleSwitchCommand;
-            _consoleControls.Submit.performed += HandleSubmit;
+            try
+            {
+                SubscribeToControls();
+            }
+            catch (NullReferenceException) {}
         }
 
         private void OnDisable()
@@ -59,8 +58,10 @@ namespace SS3D.Systems.IngameConsoleSystem
         {
             base.OnStart();
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
-            _consoleControls.Open.Enable();
             _commandsController = new CommandsController();
+            _controls = SystemLocator.Get<InputSystem>().Inputs;
+            SubscribeToControls();
+            _consoleControls.Open.Enable();
         }
 
         protected override void HandleUpdate(in float deltaTime)
@@ -72,6 +73,16 @@ namespace SS3D.Systems.IngameConsoleSystem
                 Slide();
             }
         }
+
+        private void SubscribeToControls()
+        {
+            _consoleControls = _controls.Console;
+            _consoleControls.Close.performed += HandleClose;
+            _consoleControls.Open.performed += HandleOpen;
+            _consoleControls.SwitchCommand.performed += HandleSwitchCommand;
+            _consoleControls.Submit.performed += HandleSubmit;
+        }
+
         /// <summary>
         /// Move the console offscreen and disable all console controls, except of Open action
         /// </summary>

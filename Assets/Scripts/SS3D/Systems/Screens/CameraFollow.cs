@@ -84,10 +84,11 @@ namespace SS3D.Systems.Screens
 
         private void OnEnable()
         {
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Camera;
-            _controls.Zoom.performed += HandleZoom;
-            _controls.SnapRight.performed += HandleSnapRight;
-            _controls.SnapLeft.performed += HandleSnapLeft;
+            try
+            {
+                SubscribeToControls();
+            }
+            catch (NullReferenceException) {}
         }
 
         private void OnDisable()
@@ -95,6 +96,20 @@ namespace SS3D.Systems.Screens
             _controls.Zoom.performed -= HandleZoom;
             _controls.SnapRight.performed -= HandleSnapRight;
             _controls.SnapLeft.performed -= HandleSnapLeft;
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Camera;
+            SubscribeToControls();
+        }
+
+        private void SubscribeToControls()
+        {
+            _controls.Zoom.performed += HandleZoom;
+            _controls.SnapRight.performed += HandleSnapRight;
+            _controls.SnapLeft.performed += HandleSnapLeft;
         }
 
         protected override void HandleUpdate(in float deltaTime)

@@ -43,8 +43,11 @@ namespace SS3D.Systems.Interactions
 
         private void OnEnable()
         {
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
-            _controls.SecondaryClick.performed += HandleDisappear;
+            try
+            {
+                _controls.SecondaryClick.performed += HandleDisappear;
+            }
+            catch (NullReferenceException) {}
         }
 
         private void OnDisable()
@@ -70,7 +73,8 @@ namespace SS3D.Systems.Interactions
         private void Setup()
         {
             Interactions = new List<IInteraction>();
-
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls.SecondaryClick.performed += HandleDisappear;
             foreach (RadialInteractionButton interactionButton in _interactionButtons)
             {
                 interactionButton.OnHovered += HandleInteractionButtonHovered;
