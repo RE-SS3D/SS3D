@@ -1,16 +1,7 @@
 using NUnit.Framework;
-using SS3D.Core;
-using SS3D.Systems.Entities;
-using SS3D.Systems.Entities.Humanoid;
-using SS3D.Systems.InputHandling;
-using SS3D.Systems.Rounds;
-using SS3D.Systems.Storage.UI;
-using SS3D.UI.Buttons;
+using SS3D.Systems.Inventory.UI;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace SS3D.Tests
 {
