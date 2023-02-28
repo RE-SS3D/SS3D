@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using SS3D.Systems.Storage.Items;
+using SS3D.Systems.Inventory.Items;
 
 namespace SS3D.Systems
 {

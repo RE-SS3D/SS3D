@@ -1,11 +1,5 @@
-using System.Collections.Generic;
 using Coimbra.Services.Events;
-using SS3D.Core;
-using SS3D.Data.Enums;
 using SS3D.Systems.GameModes.Events;
-using SS3D.Systems.Items;
-using SS3D.Systems.PlayerControl;
-using SS3D.Systems.Storage.Items;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -21,12 +15,12 @@ namespace SS3D.Systems.Gamemodes.Objectives
         /// <summary>
         /// The item id required to complete the objective.
         /// </summary>
-        [SerializeField] private ItemIDs _targetItemId;
+        [FormerlySerializedAs("_targetItemIdId")] [FormerlySerializedAs("_targetItemId")] [SerializeField] private Data.Enums.ItemId _targetItemIdId;
 
         /// <summary>
         /// The item that was picked up.
         /// </summary>
-        private ItemIDs _caughtItemId;
+        private Data.Enums.ItemId _caughtItemIdId;
 
         /// <summary>
         /// The player that picked up the item.
@@ -43,7 +37,7 @@ namespace SS3D.Systems.Gamemodes.Objectives
         public override void FinalizeObjective()
         {
             // Confirm correct item has been picked up by the correct player
-            if (!_caughtItemId.Equals(_targetItemId) || !_caughtPlayerCkey.Equals(AssigneeCkey))
+            if (!_caughtItemIdId.Equals(_targetItemIdId) || !_caughtPlayerCkey.Equals(AssigneeCkey))
             {
                 return;
             }
@@ -52,12 +46,12 @@ namespace SS3D.Systems.Gamemodes.Objectives
 
         private void HandleItemPickedUpEvent(ref EventContext context, in ItemPickedUpEvent e)
         {
-            ItemIDs itemId = e.Item.ItemID;
+            Data.Enums.ItemId itemIdId = e.Item._itemId;
             string playerCkey = e.Player;
 
-            if (itemId == _targetItemId  && playerCkey.Equals(AssigneeCkey))
+            if (itemIdId == _targetItemIdId  && playerCkey.Equals(AssigneeCkey))
             {
-                _caughtItemId = itemId;
+                _caughtItemIdId = itemIdId;
                 _caughtPlayerCkey = playerCkey;
 
                 FinalizeObjective();
