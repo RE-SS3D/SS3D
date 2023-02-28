@@ -5,8 +5,8 @@ namespace SS3D.Data.Enums
         Take = 0, 
         Discard = 1, 
         Open = 2, 
-        Power = 3, 
-        Honk = 4, 
+        Honk = 3, 
+        Power = 4, 
         Nuke = 5, 
     }
 }
