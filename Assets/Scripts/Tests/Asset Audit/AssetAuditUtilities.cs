@@ -1,4 +1,5 @@
 using SS3D.Attributes;
+using SS3D.Systems.Tile;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,43 +11,56 @@ public static class AssetAuditUtilities
 {
     public const string PrefabRootPath = "Assets/Content";
     public const string SceneRootPath = "Assets/Scenes";
+    public const string GenericRootPath = "Assets";
+    private const string PrefabSearchTerm = "t:prefab";
+    private const string SceneSearchTerm = "t:scene";
+    private const string TileObjectSoSearchTerm = "t:TileObjectSo";
+    private const string ItemObjectSoSearchTerm = "t:ItemObjectSo";
 
 
     public static GameObject[] AllPrefabs()
     {
-        // Find all the prefabs in the project hierarchy (i.e. NOT in a scene)
-        string[] guids = AssetDatabase.FindAssets("t:prefab", new[] { PrefabRootPath });
-
-        // Create our array of prefabs
-        GameObject[] prefabs = new GameObject[guids.Length];
-
-        // Populate the array
-        for (int i = 0; i < guids.Length; i++)
-        {
-            prefabs[i] = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(guids[i]));
-        }
-
-        return prefabs;
+        return GetAssets<GameObject>(PrefabSearchTerm, PrefabRootPath);
     }
 
     public static SceneAsset[] AllScenes()
     {
-        // Find all the prefabs in the project hierarchy (i.e. NOT in a scene)
-        string[] guids = AssetDatabase.FindAssets("t:scene", new[] { SceneRootPath });
+        return GetAssets<SceneAsset>(SceneSearchTerm, SceneRootPath);
+    }
 
-        // Create our array of prefabs
-        SceneAsset[] scenes = new SceneAsset[guids.Length];
+    public static TileObjectSo[] AllTileObjectSo()
+    {
+        return GetAssets<TileObjectSo>(TileObjectSoSearchTerm);
+    }
+
+    public static ItemObjectSo[] AllItemObjectSo()
+    {
+        return GetAssets<ItemObjectSo>(ItemObjectSoSearchTerm);
+    }
+
+    /// <summary>
+    /// Generic getter method to load assets from the project hierarchy. Used to simplify calls from test scripts.
+    /// </summary>
+    /// <typeparam name="T">Generic type that you want returned.</typeparam>
+    /// <param name="searchCriteria">Search criteria for the AssetDatabase.FindAssets() method.</param>
+    /// <param name="searchPath">Root path to search in. Will default to assets.</param>
+    /// <returns>An array of type T containing all instances within the desired search path.</returns>
+    private static T[] GetAssets<T>(string searchCriteria, string searchPath = GenericRootPath) where T : UnityEngine.Object
+    {
+        // Find all the assets in the project hierarchy (i.e. NOT in a scene)
+        string[] guids = AssetDatabase.FindAssets(searchCriteria, new[] { searchPath });
+
+        // Create our array of assets
+        T[] returnValues = new T[guids.Length];
 
         // Populate the array
         for (int i = 0; i < guids.Length; i++)
         {
-            scenes[i] = AssetDatabase.LoadAssetAtPath<SceneAsset>(AssetDatabase.GUIDToAssetPath(guids[i]));
+            returnValues[i] = AssetDatabase.LoadAssetAtPath<T>(AssetDatabase.GUIDToAssetPath(guids[i]));
         }
 
-        return scenes;
+        return returnValues;
     }
-
-
 
     public static bool CheckMonoBehavioursForCorrectLayer(MonoBehaviour[] behaviours, ref StringBuilder sb)
     {
