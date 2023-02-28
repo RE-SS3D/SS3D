@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 5713005920233418166}
   - component: {fileID: 2523290996575343201}
   - component: {fileID: 1767991713297487601}
-  - component: {fileID: -7729870638209327267}
+  - component: {fileID: -7180308641962958576}
   m_Layer: 0
-  m_Name: TileWood
+  m_Name: TileGrass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6767447678079105841}
-  m_Mesh: {fileID: 6946868759442727253, guid: 4d4a7dd632bf0014dbd625055104fca3, type: 3}
+  m_Mesh: {fileID: -7835664460937394586, guid: 94d5895af06455e4b9f170e8897bac98, type: 3}
 --- !u!23 &2523290996575343201
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -63,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 93ea42dd74cabc0448b3dd1da9c711f6, type: 2}
+  - {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -98,7 +98,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: -0.5, z: 0}
---- !u!114 &-7729870638209327267
+--- !u!114 &-7180308641962958576
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,5 +122,5 @@ MonoBehaviour:
   <PrefabId>k__BackingField: -1
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 9701287281205509744
+  <AssetPathHash>k__BackingField: 3705813820292760129
   _sceneNetworkObjects: []
