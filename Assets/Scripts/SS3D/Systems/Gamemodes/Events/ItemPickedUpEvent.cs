@@ -1,5 +1,5 @@
 using Coimbra.Services.Events;
-using SS3D.Systems.Storage.Items;
+using SS3D.Systems.Inventory.Items;
 
 namespace SS3D.Systems.GameModes.Events
 {

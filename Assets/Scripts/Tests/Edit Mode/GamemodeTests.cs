@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using SS3D.Systems.Gamemodes;
 using SS3D.Systems.GameModes.Modes;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace EditorTests.Gamemodes
+namespace EditorTests
 {
     public class GamemodeTests : SpessEditModeTest
     {
