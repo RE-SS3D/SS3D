@@ -152,7 +152,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: -1
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 13524007432843067764
+  <AssetPathHash>k__BackingField: 2358269696185446665
   _sceneNetworkObjects: []
 --- !u!114 &8471215545886824119
 MonoBehaviour:
@@ -355,7 +355,7 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 7958861831329766982}
   _networkObjectCache: {fileID: 7958861831329766982}
-  _itemId: Mug
+  _itemId: 0
   _name: Mug
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 3483542684610536844}

@@ -314,7 +314,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
-  _itemId: 
+  _itemId: 0
   _name: 
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 2081909342595332650}
@@ -414,7 +414,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: 16
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 4937251580671274826
+  <AssetPathHash>k__BackingField: 15209457512418858327
   _sceneNetworkObjects: []
 --- !u!114 &9136074542965640709
 MonoBehaviour:
