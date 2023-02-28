@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 6745463052541861222}
   - component: {fileID: 5713005920233418166}
   - component: {fileID: 2523290996575343201}
-  - component: {fileID: 4334502282384565545}
-  - component: {fileID: -3925594391440011444}
+  - component: {fileID: 3989804833102372943}
+  - component: {fileID: -5137155404558150896}
   m_Layer: 0
-  m_Name: TileBar
+  m_Name: TileKitchen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 375c5e41f1606394c95b2207427ad70a, type: 2}
+  - {fileID: 2100000, guid: 2609353b828ca274eb1fa377e45dd005, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -85,7 +85,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4334502282384565545
+--- !u!65 &3989804833102372943
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -98,7 +98,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: -0.5, z: 0}
---- !u!114 &-3925594391440011444
+--- !u!114 &-5137155404558150896
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,5 +122,5 @@ MonoBehaviour:
   <PrefabId>k__BackingField: -1
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 11792199508823384526
+  <AssetPathHash>k__BackingField: 17701626256498206684
   _sceneNetworkObjects: []
