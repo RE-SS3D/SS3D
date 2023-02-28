@@ -88,6 +88,7 @@ namespace EditorTests
         public void SceneObjectsDoNotHaveMissingScripts(SceneAsset scene)
         {
             StringBuilder sb = new();
+            EditorSceneManager.OpenScene(FullScenePathAndName(scene.name));
             bool allScriptsExist = true;
             GameObject[] sceneGameObjects = Object.FindObjectsOfType<GameObject>();
             foreach (GameObject sceneObject in sceneGameObjects)
