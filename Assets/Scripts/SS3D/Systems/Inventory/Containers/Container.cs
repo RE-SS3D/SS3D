@@ -495,6 +495,16 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         /// <summary>
+        /// Checks if this item can be stored and fits inside the container
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool CanContainItem(Item item)
+        {
+            return (CanStoreItem(item) && CanHoldItem(item));
+        }
+
+        /// <summary>
         /// Finds the index of an item
         /// </summary>
         /// <param name="item">The item to look for</param>

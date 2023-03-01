@@ -9,9 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
-  m_Name: SecurityIDCard
+  m_Script: {fileID: 11500000, guid: 0adc192349dc57848b5394a2c6707c23, type: 3}
+  m_Name: IDSlot
   m_EditorClassIdentifier: 
-  nameString: security_idcard
-  prefab: {fileID: 5261116577612792016, guid: df76de45fd335f54584027f84c61535a, type: 3}
-  icon: {fileID: 0}
+  mustHaveAll: 0
+  acceptedTraits:
+  - {fileID: 11400000, guid: 855eb54ff561f8242bac7f3fd97821c2, type: 2}
+  - {fileID: 11400000, guid: e5b749c01fdf96d429a02713921efca7, type: 2}
+  deniedTraits: []

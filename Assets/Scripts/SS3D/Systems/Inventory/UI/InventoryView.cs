@@ -21,7 +21,7 @@ namespace SS3D.Systems.Inventory.UI
         public Containers.Inventory Inventory;
 
         public HandsView HandsView;
-        public PocketView PocketView;
+        public InventorySlotView PocketView;
 
         public GameObject PocketPrefab;
         public Transform PocketParent;
@@ -46,7 +46,7 @@ namespace SS3D.Systems.Inventory.UI
             Inventory.OnContainerOpened += InventoryOnContainerOpened;
             Inventory.OnContainerClosed += InventoryOnContainerClosed;
 
-            PocketView pocketView = ViewLocator.Get<PocketView>().First();
+            InventorySlotView pocketView = ViewLocator.Get<InventorySlotView>().First();
             pocketView.Inventory = Inventory;
             pocketView.Setup();
         }

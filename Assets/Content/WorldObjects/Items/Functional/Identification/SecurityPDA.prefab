@@ -152,7 +152,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 56
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 16546728980263612634
@@ -252,7 +252,8 @@ MonoBehaviour:
   Prefab: {fileID: 5261116577612792016}
   AttachmentPoint: {fileID: 7760506997891073340}
   AttachmentPointAlt: {fileID: 0}
-  traits: []
+  traits:
+  - {fileID: 11400000, guid: 855eb54ff561f8242bac7f3fd97821c2, type: 2}
 --- !u!114 &-3412952555245330052
 MonoBehaviour:
   m_ObjectHideFlags: 0

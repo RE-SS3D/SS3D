@@ -326,7 +326,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba383503fe724a81937f02158f6a7ba8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Inventory: {fileID: 0}
   HandsView: {fileID: 5715483787937385449}
+  PocketView: {fileID: 0}
   PocketPrefab: {fileID: 3500707531626207298, guid: 4730e300b844e184dbfddb8ae7171204, type: 3}
   PocketParent: {fileID: 8250136937507568774}
   ContainerUiPrefab: {fileID: 176838957447208628, guid: c706a5a7a16b7bc4788469385ac24801, type: 3}
@@ -344,8 +346,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PocketPrefab: {fileID: 3500707531626207298, guid: 4730e300b844e184dbfddb8ae7171204, type: 3}
-  DummyLeftPocketViewGameObject: {fileID: 6849294283287287192}
-  DummyRightPocketViewGameObject: {fileID: 3675586706731916381}
+  IDSlotPrefab: {fileID: 3500707531626207298, guid: ee7ba9a182ecf5a4aa86258b6cd6244f, type: 3}
+  TransformParent: {fileID: 0}
+  IDSlotGameObject: {fileID: 0}
+  LeftPocketGameObject: {fileID: 6849294283287287192}
+  RightPocketGameObject: {fileID: 3675586706731916381}
 --- !u!1 &9077724464359231712
 GameObject:
   m_ObjectHideFlags: 0
