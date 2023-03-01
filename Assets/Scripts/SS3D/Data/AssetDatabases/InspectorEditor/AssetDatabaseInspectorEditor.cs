@@ -3,6 +3,7 @@ using SS3D.CodeGeneration;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
@@ -32,6 +33,11 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
         /// <returns></returns>
         public override VisualElement CreateInspectorGUI()
         {
+            if (Application.isPlaying)
+            {
+                return null;
+            }
+
             VisualElement root = new VisualElement();
             _assetDatabaseVisualTree.CloneTree(root);
 

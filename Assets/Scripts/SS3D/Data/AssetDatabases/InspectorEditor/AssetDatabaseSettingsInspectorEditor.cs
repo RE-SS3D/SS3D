@@ -78,6 +78,8 @@ namespace SS3D.Data.AssetDatabases.InspectorEditor
 
         private void FindAndLoadAllAssetsDatabasesAddressablesGroups()
         {
+            _assetDatabaseSettings = (AssetDatabaseSettings)target;
+
             LoadDatabases();
 
             List<AssetDatabase> includedAssetDatabases = _assetDatabaseSettings.IncludedAssetDatabases;
