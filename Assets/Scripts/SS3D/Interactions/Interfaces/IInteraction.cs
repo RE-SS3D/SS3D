@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SS3D.Interactions.Interfaces
 {
     /// <summary>
-    /// Interface of an interaction that can be performed
+    /// Represents an interaction that can be performed
     /// </summary>
     public interface IInteraction
     {

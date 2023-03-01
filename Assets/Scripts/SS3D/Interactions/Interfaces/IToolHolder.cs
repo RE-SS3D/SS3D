@@ -1,7 +1,7 @@
 ﻿namespace SS3D.Interactions.Interfaces
 {
     /// <summary>
-    /// Interface for a class that can hold an item
+    /// Represents a class that can hold items
     /// </summary>
     public interface IToolHolder
     {

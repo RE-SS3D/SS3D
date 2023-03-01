@@ -1,7 +1,7 @@
 ﻿namespace SS3D.Interactions.Interfaces
 {
     /// <summary>
-    /// Interface for a target that can be interacted with
+    /// Represents a target that can be interacted with
     /// </summary>
     public interface IInteractionTarget
     {
