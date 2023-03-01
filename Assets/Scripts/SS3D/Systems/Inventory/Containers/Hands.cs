@@ -171,7 +171,7 @@ namespace SS3D.Systems.Inventory.Containers
                 Debug.Log($"Invalid hand index {selectedHand}");
             }
         }
-
+        
         public IInteractionSource GetActiveTool()
         {
             Item itemInHand = ItemInHand;

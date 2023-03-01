@@ -2,6 +2,9 @@
 
 namespace SS3D.Interactions.Interfaces
 {
+    /// <summary>
+    /// Interface for a source of an interaction
+    /// </summary>
     public interface IInteractionSource
     {
         IInteractionSource Source { get; set; }

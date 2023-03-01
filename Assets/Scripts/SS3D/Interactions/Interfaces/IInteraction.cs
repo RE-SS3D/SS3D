@@ -4,15 +4,10 @@ using UnityEngine;
 namespace SS3D.Interactions.Interfaces
 {
     /// <summary>
-    /// Represents an interaction which can be performed
+    /// Interface of an interaction that can be performed
     /// </summary>
     public interface IInteraction
     {
-        /// <summary>
-        /// Event called whenever an interaction becomes invalid, either by being already called or by being out of range.
-        /// </summary>
-        public event Action OnInteractionInvalid;
-
         /// <summary>
         /// Creates a client interaction (client-side)
         /// </summary>
