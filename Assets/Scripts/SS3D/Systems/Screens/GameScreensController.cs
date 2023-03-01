@@ -19,11 +19,8 @@ namespace SS3D.Systems.Screens
 
         private void OnEnable()
         {
-            try
-            {
-                _controls.Menu.performed += HandleMenuPerformed;
-            } 
-            catch (NullReferenceException) {}
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other; 
+            _controls.Menu.performed += HandleMenuPerformed; 
         }
 
         private void OnDisable()
@@ -41,8 +38,6 @@ namespace SS3D.Systems.Screens
             ChangeGameScreenEvent.AddListener(HandleChangeGameScreen);
             SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other; 
-            _controls.Menu.performed += HandleMenuPerformed; 
         }
 
         private void HandleMenuPerformed(InputAction.CallbackContext context)

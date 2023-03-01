@@ -56,12 +56,10 @@ namespace SS3D.Systems.Entities.Humanoid
 
         protected void OnEnable()
         {
-            try
-            {
-                MovementControls.ToggleRun.performed += HandleToggleRun;
-            }
-            catch (NullReferenceException) {}
-            
+            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
+            MovementControls = controls.Movement;
+            HotkeysControls = controls.Hotkeys;
+            MovementControls.ToggleRun.performed += HandleToggleRun;
         }
 
         protected void OnDisable()
@@ -73,10 +71,6 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             base.OnStart();
             
-            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
-            MovementControls = controls.Movement;
-            HotkeysControls = controls.Hotkeys;
-            MovementControls.ToggleRun.performed += HandleToggleRun;
             Setup();
         }
 

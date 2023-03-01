@@ -24,12 +24,9 @@ namespace SS3D.Systems.Gamemodes.UI
 
         private void OnEnable()
         {
-            try
-            {
-                _controls.Fade.performed += HandleFadePerformed;
-                _controls.Fade.canceled += HandleFadeCanceled;
-            }
-            catch (NullReferenceException) {}
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls.Fade.performed += HandleFadePerformed;
+            _controls.Fade.canceled += HandleFadeCanceled;
         }
 
         private void OnDisable()
@@ -52,9 +49,6 @@ namespace SS3D.Systems.Gamemodes.UI
             base.OnStart();
 
             _fade.SetFade(false);
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
-            _controls.Fade.performed += HandleFadePerformed;
-            _controls.Fade.canceled += HandleFadeCanceled;
         }
 
         private void HandleFadePerformed(InputAction.CallbackContext context)

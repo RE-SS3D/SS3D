@@ -35,15 +35,17 @@ namespace SS3D.Systems.IngameConsoleSystem
         [SerializeField] private List<string> _allPrevCommands = new() {""};
         private int _chosenPrevCommand;
         private Controls _controls;
+
         private Controls.ConsoleActions _consoleControls;
 
         private void OnEnable()
         {
-            try
-            {
-                SubscribeToControls();
-            }
-            catch (NullReferenceException) {}
+            _controls = SystemLocator.Get<InputSystem>().Inputs;
+            _consoleControls = _controls.Console;
+            _consoleControls.Close.performed += HandleClose;
+            _consoleControls.Open.performed += HandleOpen;
+            _consoleControls.SwitchCommand.performed += HandleSwitchCommand;
+            _consoleControls.Submit.performed += HandleSubmit;
         }
 
         private void OnDisable()
@@ -59,8 +61,6 @@ namespace SS3D.Systems.IngameConsoleSystem
             base.OnStart();
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
             _commandsController = new CommandsController();
-            _controls = SystemLocator.Get<InputSystem>().Inputs;
-            SubscribeToControls();
             _consoleControls.Open.Enable();
         }
 
@@ -72,15 +72,6 @@ namespace SS3D.Systems.IngameConsoleSystem
             {
                 Slide();
             }
-        }
-
-        private void SubscribeToControls()
-        {
-            _consoleControls = _controls.Console;
-            _consoleControls.Close.performed += HandleClose;
-            _consoleControls.Open.performed += HandleOpen;
-            _consoleControls.SwitchCommand.performed += HandleSwitchCommand;
-            _consoleControls.Submit.performed += HandleSubmit;
         }
 
         /// <summary>
