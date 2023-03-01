@@ -49,7 +49,7 @@ namespace EditorTests
         [Test]
         public void AllProjectAssetDatabasesAreOnIncludedDatabases()
         {
-            List<AssetDatabase> projectAssetDatabases = AssetDatabaseSettings.FindAssetDatabases();
+            List<AssetDatabase> projectAssetDatabases = AssetDatabase.FindAllAssetDatabases();
             List<AssetDatabase> loadedAssetDatabases = _assetDatabaseSettings.IncludedAssetDatabases;
 
             bool hasMissingDatabases = false;
@@ -57,18 +57,20 @@ namespace EditorTests
 
             foreach (AssetDatabase projectAssetDatabase in projectAssetDatabases)
             {
-                if (!loadedAssetDatabases.Contains(projectAssetDatabase))
+                if (loadedAssetDatabases.Contains(projectAssetDatabase))
                 {
-                    hasMissingDatabases = true;
-                    missingDatabases.Add(projectAssetDatabase);
+                    continue;
                 }
+
+                hasMissingDatabases = true;
+                missingDatabases.Add(projectAssetDatabase);
             }
 
             if (hasMissingDatabases)
             {
                 foreach (AssetDatabase missingDatabase in missingDatabases)
-                {
-                    Debug.Log($"Database not included to loaded databases {missingDatabase.name}");
+                { 
+                    Debug.Log($"Added asset database {missingDatabase.name} to included asset databases");
                 }
             }
 
