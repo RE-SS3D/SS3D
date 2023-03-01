@@ -282,7 +282,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -295,7 +295,7 @@ BoxCollider:
   m_GameObject: {fileID: 5533951594911835035}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.43553853, y: 0.28627586, z: 0.24994183}
   m_Center: {x: -0.000000029802322, y: 0.13102502, z: 0.23865601}
@@ -411,7 +411,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 16
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 4937251580671274826
@@ -504,6 +504,7 @@ MonoBehaviour:
   _componentIndexCache: 4
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
+  _openState: 0
   OverrideOpenIcon: {fileID: 0}
   containerDescriptor: {fileID: 9136074542965640709}
 --- !u!1 &8066562249021099569

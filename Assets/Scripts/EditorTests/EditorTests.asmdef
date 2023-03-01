@@ -7,7 +7,9 @@
         "SS3D.Core",
         "FishNet.Runtime",
         "SS3D.Attributes",
-        "SS3D.Systems"
+        "SS3D.Systems",
+        "SS3D.Data",
+        "Coimbra"
     ],
     "includePlatforms": [
         "Editor"

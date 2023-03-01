@@ -49,15 +49,14 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleOnlineSoulsChanged(ref EventContext context, in OnlineSoulsChanged e)
         {
-            Soul soul = e.Changed;
+            string ckey = e.ChangedCkey;
 
-            if (soul == null)
+            if (ckey == null)
             {
                 return;
             }
 
             ChangeType changeType = e.ChangeType;
-            string ckey = soul.Ckey;
 
             switch (changeType)
             {
