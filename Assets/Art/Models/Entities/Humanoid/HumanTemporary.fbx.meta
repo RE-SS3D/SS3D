@@ -1,19 +1,50 @@
 fileFormatVersion: 2
-guid: f2e09c49a35ed014b911729c7e30ec61
+guid: 35b70c3a9fc18a74f904f748a17f0967
 ModelImporter:
   serializedVersion: 21202
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      74: 4781951162920444690
+    second: Armature|ArmatureAction
+  - first:
+      74: -1422011007694221501
+    second: Armature|ArmatureAction.001
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Liquid
-    second: {fileID: 2100000, guid: 787ae9b505972c34e98b5dac87e1ca9d, type: 2}
+      name: Eye
+    second: {fileID: 2100000, guid: 5003e6577566f0748b94899aefcc5569, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Hair
+    second: {fileID: 2100000, guid: fe65d328594f8d14ebbb4504ee05fa08, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Hair 2
+    second: {fileID: 2100000, guid: fe65d328594f8d14ebbb4504ee05fa08, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Hair.002
+    second: {fileID: 2100000, guid: fe65d328594f8d14ebbb4504ee05fa08, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Meat
+    second: {fileID: 2100000, guid: 1f8078dee7dfc354ebc752f6c3c8e0db, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Palette05
-    second: {fileID: 2100000, guid: 0e50ba0c4fd336c40992f0c7e3023268, type: 2}
+    second: {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Skin
+    second: {fileID: 2100000, guid: cf191327ca9118c4483ccb0d22b33910, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
