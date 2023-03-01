@@ -20,6 +20,7 @@ public class SS3DUnityTextFormatter : ITextFormatter
     private readonly MessageTemplate _outputTemplate;
     private readonly IFormatProvider _formatProvider;
     private static readonly JsonValueFormatter JsonValueFormatter = new("$type");
+    private static readonly char[] PaddingChars = Enumerable.Repeat(' ', 80).ToArray();
     public SS3DUnityTextFormatter(string outputTemplate, IFormatProvider? formatProvider = null)
     {
         _outputTemplate = new MessageTemplateParser().Parse(outputTemplate);
@@ -45,13 +46,13 @@ public class SS3DUnityTextFormatter : ITextFormatter
 
             if (pt.PropertyName == OutputProperties.NewLinePropertyName)
             {
-                Padding.Apply(output, Environment.NewLine, pt.Alignment);
+                ApplyPadding(output, Environment.NewLine, pt.Alignment);
                 continue;
             }
             if (pt.PropertyName == OutputProperties.ExceptionPropertyName)
             {
                 var exception = logEvent.Exception == null ? "" : logEvent.Exception + Environment.NewLine;
-                Padding.Apply(output, exception, pt.Alignment);
+                ApplyPadding(output, exception, pt.Alignment);
                 continue;
             }
             if (pt.PropertyName == OutputProperties.MessagePropertyName)
@@ -237,5 +238,31 @@ public class SS3DUnityTextFormatter : ITextFormatter
         }
 
         return false;
+    }
+
+    private static void ApplyPadding(TextWriter output, string value, Alignment? alignment)
+    {
+        if (alignment == null || value.Length >= alignment.Value.Width)
+        {
+            output.Write(value);
+            return;
+        }
+
+        var pad = alignment.Value.Width - value.Length;
+
+        if (alignment.Value.Direction == AlignmentDirection.Left)
+            output.Write(value);
+
+        if (pad <= PaddingChars.Length)
+        {
+            output.Write(PaddingChars, 0, pad);
+        }
+        else
+        {
+            output.Write(new string(' ', pad));
+        }
+
+        if (alignment.Value.Direction == AlignmentDirection.Right)
+            output.Write(value);
     }
 }
