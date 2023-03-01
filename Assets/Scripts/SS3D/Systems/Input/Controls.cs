@@ -433,7 +433,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""2fe311c2-7db5-4c48-b5e2-06e7b9e183c7"",
-                    ""path"": ""<Keyboard>/z"",
+                    ""path"": ""<Keyboard>/x"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

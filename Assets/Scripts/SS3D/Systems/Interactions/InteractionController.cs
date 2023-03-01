@@ -11,7 +11,6 @@ using SS3D.Systems.Screens;
 using SS3D.Systems.Storage.Containers;
 using SS3D.Systems.Storage.Items;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Interactions
@@ -35,12 +34,11 @@ namespace SS3D.Systems.Interactions
 
         private void OnEnable()
         {
-            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
-            _otherControls = controls.Other;
-            _hotkeysControls = controls.Hotkeys;
-            _otherControls.PrimaryClick.performed += HandlePrimaryClick;
-            _otherControls.SecondaryClick.performed += HandleSecondaryClick;
-            _hotkeysControls.Use.performed += HandleUse;
+            try
+            {
+                SubscribeToControls();
+            }
+            catch (NullReferenceException) {}
         }
 
         private void OnDisable()
@@ -56,9 +54,18 @@ namespace SS3D.Systems.Interactions
 
             _radialView = SystemLocator.Get<RadialInteractionView>();
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
-            
+            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
+            _otherControls = controls.Other;
+            _hotkeysControls = controls.Hotkeys;
+            SubscribeToControls();
         }
 
+        private void SubscribeToControls()
+        {
+            _otherControls.PrimaryClick.performed += HandlePrimaryClick;
+            _otherControls.SecondaryClick.performed += HandleSecondaryClick;
+            _hotkeysControls.Use.performed += HandleUse;
+        }
         [Client]
         private void HandlePrimaryClick(InputAction.CallbackContext callbackContext)
         {
