@@ -49,8 +49,9 @@ namespace SS3D.Systems.Inventory.UI
                     "the inventory's game object or any of it's children.");
             }
 
-            // Set up the container for the id slot display.
-            SetUpSlot(idSlotContainer, IDSlotPrefab);
+            // Set up the container for the id slot display and make it the first slot.
+            var idSlot = SetUpSlot(idSlotContainer, IDSlotPrefab);
+            idSlot.transform.SetSiblingIndex(0);
 
             // Set up the container that each pocket display.
             foreach (ContainerDescriptor container in pocketContainers)
@@ -59,7 +60,7 @@ namespace SS3D.Systems.Inventory.UI
             }
         }
 
-        private void SetUpSlot(ContainerDescriptor container, GameObject prefab)
+        private SingleItemContainerSlot SetUpSlot(ContainerDescriptor container, GameObject prefab)
         {
             AttachedContainer attachedContainer = container.AttachedContainer;
             GameObject handElement = Instantiate(prefab, TransformParent, false);
@@ -67,6 +68,8 @@ namespace SS3D.Systems.Inventory.UI
             SingleItemContainerSlot slot = handElement.GetComponent<SingleItemContainerSlot>();
             slot.Inventory = Inventory;
             slot.Container = attachedContainer;
+
+            return slot;
         }
     }
 }
