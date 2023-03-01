@@ -9,6 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b120a07bf55051644adda51d564ace97, type: 3}
-  m_Name: Medication
+  m_Script: {fileID: 11500000, guid: 0adc192349dc57848b5394a2c6707c23, type: 3}
+  m_Name: PDA
   m_EditorClassIdentifier: 
+  mustHaveAll: 0
+  acceptedTraits: []
+  deniedTraits: []
+  hash: 0
