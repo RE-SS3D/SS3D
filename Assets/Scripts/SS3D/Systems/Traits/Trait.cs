@@ -2,7 +2,7 @@
 
 namespace SS3D.Systems
 {
-    [CreateAssetMenu(fileName = "Trait", menuName = "Inventory/Trait")]
+    [CreateAssetMenu(fileName = "Trait", menuName = "Inventory/Traits/Trait")]
     public class Trait : ScriptableObject
     {
         //Hash for identification
@@ -12,6 +12,12 @@ namespace SS3D.Systems
         {
             get => hash;
             set => hash = value;
+        }
+
+        protected TraitCategories category;
+        public TraitCategories Category
+        {
+            get => category;
         }
 
         protected bool Equals(Trait other)
