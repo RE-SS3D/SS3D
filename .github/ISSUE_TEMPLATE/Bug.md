@@ -2,7 +2,7 @@
 name: Bug
 about: Reporting a creepy crawly.
 title: "Bug Name"
-labels: 'Type: Bug'
+labels: 'Bug'
 
 ---
 <!-- The notes within these arrows are for you but can be deleted. -->
