@@ -39,14 +39,17 @@ namespace SS3D.Core
             {
                 case NetworkType.ServerOnly:
                     Punpun.Say(this, "Hosting a new headless server");
+                    Punpun.Information(this, "Hosting a new headless server");
                     networkManager.ServerManager.StartConnection(port);
                     break;
                 case NetworkType.Client:
                     Punpun.Say(this, $"Joining server {serverAddress} as {ckey}", Logs.Important);
+                    Punpun.Information(this, "Joining server {serverAddress} as {ckey}", Logs.Important, serverAddress, ckey);
                     networkManager.ClientManager.StartConnection(serverAddress, port);
                     break;
                 case NetworkType.Host:
                     Punpun.Say(this, "Hosting a new server");
+                    Punpun.Information(this, "Hosting a new server");
                     networkManager.ServerManager.StartConnection(port);
                     networkManager.ClientManager.StartConnection();
                     break;

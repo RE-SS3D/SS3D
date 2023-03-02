@@ -48,6 +48,7 @@ namespace SS3D.Systems.Tile
                 CreateMap("Test map");
                 StartCoroutine(WaitForResourcesLoad());
                 Punpun.Say(this, "All tiles loaded successfully");
+                Punpun.Information(this, "All tiles loaded successfully");
             }
         }
 
@@ -139,6 +140,7 @@ namespace SS3D.Systems.Tile
             _currentMap.Clear();
             Save();
             Punpun.Yell(this, "Tilemap resetted. Existing savefile has been wiped");
+            Punpun.Warning(this, "Tilemap resetted. Existing savefile has been wiped");
         }
     }
 }

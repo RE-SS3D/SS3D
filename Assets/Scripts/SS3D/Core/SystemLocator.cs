@@ -44,6 +44,7 @@ namespace SS3D.Core
             string message = $"Couldn't find system of {typeof(T).Name} in the scene";
             // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
             Punpun.Panic(typeof(SystemLocator), message, Logs.Important);
+            Punpun.Error(typeof(SystemLocator), message, Logs.Important);
 
             return null;
         }
