@@ -10,25 +10,27 @@ using UnityEngine;
 namespace SS3D.Logging
 {
     /// <summary>
-    /// Wrapper class for Serilog Logger.
-    /// Makes logging easier in most cases.
+    /// Wrapper class for Serilog Logger. Makes mandatory adding a sender object.
+    /// Makes mandatory adding additionnal log context with the Logs enum.
+    /// Takes care of adding infoLog and sender properties to Serilog Logger.
     /// </summary>
     public static class Punpun
     {
         /// <summary>
-        /// Write a log event with the <see cref="LogEventLevel.Verbose"/> level.
+        /// Write a log event with the <see cref="LogEventLevel.Verbose"/> level and associated exception.
         /// </summary>
         /// <param name="messageTemplate">Message template describing the event.</param>
         /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
         /// <example>
-        /// Log.Verbose("Staring into space, wondering if we're alone.");
+        /// Punpun.Verbose(this, "Starting up at {StartedAt} for client {ClientId}.", Logs.ServerOnly, DateTime.Now, connection.ClientId);
+        /// Punpun.Verbose(this, "Player set up.");
         /// </example>
         public static void Verbose(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
             var properties = new object[]{infoLog}.Concat(propertyValues).ToArray();
             Log.ForContext(sender.GetType()).Verbose("{InfoLog}" + messageTemplate, properties);
         }
-     
+
         /// <summary>
         /// Write a log event with the <see cref="LogEventLevel.Verbose"/> level and associated exception.
         /// </summary>
@@ -36,7 +38,8 @@ namespace SS3D.Logging
         /// <param name="messageTemplate">Message template describing the event.</param>
         /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
         /// <example>
-        /// Log.Verbose(ex, "Staring into space, wondering where this comet came from.");
+        /// Punpun.Verbose(this, "Starting up at {StartedAt} for client {ClientId}.", Logs.ServerOnly, DateTime.Now, connection.ClientId);
+        /// Punpun.Verbose(this, "Player set up.");
         /// </example>
         public static void Verbose(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
@@ -50,7 +53,8 @@ namespace SS3D.Logging
         /// <param name="messageTemplate">Message template describing the event.</param>
         /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
         /// <example>
-        /// Log.Debug("Starting up at {StartedAt}.", DateTime.Now);
+        /// Punpun.Debug(this, "Starting up at {StartedAt} for client {ClientId}.", Logs.ServerOnly, DateTime.Now, connection.ClientId);
+        /// Punpun.Debug(this, "Player set up.");
         /// </example>
         public static void Debug(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
@@ -74,12 +78,13 @@ namespace SS3D.Logging
         }
 
         /// <summary>
-        /// Write a log event with the <see cref="LogEventLevel.Information"/> level.
+        /// Write a log event with the <see cref="LogEventLevel.Information"/> level and associated exception.
         /// </summary>
         /// <param name="messageTemplate">Message template describing the event.</param>
         /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
         /// <example>
-        /// Log.Information("Processed {RecordCount} records in {TimeMS}.", records.Length, sw.ElapsedMilliseconds);
+        /// Punpun.Verbose(this, "Starting up at {StartedAt} for client {ClientId}.", Logs.ServerOnly, DateTime.Now, connection.ClientId);
+        /// Punpun.Verbose(this, "Player set up.");
         /// </example>
         public static void Information(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
@@ -94,7 +99,7 @@ namespace SS3D.Logging
         /// <param name="messageTemplate">Message template describing the event.</param>
         /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
         /// <example>
-        /// Log.Information(ex, "Processed {RecordCount} records in {TimeMS}.", records.Length, sw.ElapsedMilliseconds);
+        /// Log.Information(this, new NullException(),  "Failed to load command line arguments in {TimeMs}.", Logs.Generic, sw.ElapsedMilliseconds);
         /// </example>
         public static void Information(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
@@ -103,12 +108,13 @@ namespace SS3D.Logging
         }
 
         /// <summary>
-        /// Write a log event with the <see cref="LogEventLevel.Warning"/> level.
+        /// Write a log event with the <see cref="LogEventLevel.Warning"/> level and associated exception.
         /// </summary>
         /// <param name="messageTemplate">Message template describing the event.</param>
         /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
         /// <example>
-        /// Log.Warning("Skipped {SkipCount} records.", skippedRecords.Length);
+        /// Punpun.Verbose(this, "Starting up at {StartedAt} for client {ClientId}.", Logs.ServerOnly, DateTime.Now, connection.ClientId);
+        /// Punpun.Verbose(this, "Player set up.");
         /// </example>
         public static void Warning(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
@@ -123,7 +129,7 @@ namespace SS3D.Logging
         /// <param name="messageTemplate">Message template describing the event.</param>
         /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
         /// <example>
-        /// Log.Warning(ex, "Skipped {SkipCount} records.", skippedRecords.Length);
+        /// Log.Warning(this, new NullException(),  "Failed to load command line arguments in {TimeMs}.", Logs.Generic, sw.ElapsedMilliseconds);
         /// </example>
         public static void Warning(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
@@ -132,12 +138,13 @@ namespace SS3D.Logging
         }
 
         /// <summary>
-        /// Write a log event with the <see cref="LogEventLevel.Error"/> level.
+        /// Write a log event with the <see cref="LogEventLevel.Error"/> level and associated exception.
         /// </summary>
         /// <param name="messageTemplate">Message template describing the event.</param>
         /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
         /// <example>
-        /// Log.Error("Failed {ErrorCount} records.", brokenRecords.Length);
+        /// Punpun.Verbose(this, "Starting up failed at {StartedAt} for client {ClientId}.", Logs.ServerOnly, DateTime.Now, connection.ClientId);
+        /// Punpun.Verbose(this, "Player set up.");
         /// </example>
         public static void Error(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
@@ -150,8 +157,9 @@ namespace SS3D.Logging
         /// </summary>
         /// <param name="exception">Exception related to the event.</param>
         /// <param name="messageTemplate">Message template describing the event.</param>
+        /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
         /// <example>
-        /// Log.Error(ex, "Failed {ErrorCount} records.", brokenRecords.Length);
+        /// Log.Error(this, new NullException(),  "Failed to load command line arguments in {TimeMs}.", Logs.Generic, sw.ElapsedMilliseconds);
         /// </example>
         public static void Error(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
@@ -160,12 +168,13 @@ namespace SS3D.Logging
         }
 
         /// <summary>
-        /// Write a log event with the <see cref="LogEventLevel.Fatal"/> level.
+        /// Write a log event with the <see cref="LogEventLevel.Fatal"/> level and associated exception.
         /// </summary>
         /// <param name="messageTemplate">Message template describing the event.</param>
         /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
         /// <example>
-        /// Log.Fatal("Process terminating.");
+        /// Punpun.Verbose(this, "Starting up failed at {StartedAt} for client {ClientId}.", Logs.ServerOnly, DateTime.Now, connection.ClientId);
+        /// Punpun.Verbose(this, "Player set up.");
         /// </example>
         public static void Fatal(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
@@ -180,7 +189,7 @@ namespace SS3D.Logging
         /// <param name="messageTemplate">Message template describing the event.</param>
         /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
         /// <example>
-        /// Log.Fatal(ex, "Process terminating.");
+        /// Log.Fatal(this, new NullException(),  "Failed to load command line arguments in {TimeMs}.", Logs.Generic, sw.ElapsedMilliseconds);
         /// </example>
         public static void Fatal(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
