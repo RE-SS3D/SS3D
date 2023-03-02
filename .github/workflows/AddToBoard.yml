@@ -1,4 +1,4 @@
-name: Add to roadmap
+name: Automate Roadmap
 description: Add issues and pull requests to SS3D roadmap board.
 on:
   issues:
