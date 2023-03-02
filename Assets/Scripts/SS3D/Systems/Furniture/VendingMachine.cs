@@ -4,7 +4,7 @@ using SS3D.Data;
 using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
-using SS3D.Systems.Items;
+using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 
 namespace SS3D.Systems.Furniture
@@ -22,7 +22,7 @@ namespace SS3D.Systems.Furniture
         /// TODO: Make a new struct for different products, and to support multiple products.
         /// </summary>
         [SerializeField]
-        private ItemIDs _productToDispense;
+        private ItemId _productToDispense;
 
         /// <summary>
         /// The transform representation of where the dispensed products should spawn at.
@@ -58,7 +58,7 @@ namespace SS3D.Systems.Furniture
             {
                 new DispenseProductInteraction
                 {
-                    Icon = AssetData.Get(InteractionIcons.Take)
+                    Icon = Assets.Get(InteractionIcons.Take)
                 }
             };
         }

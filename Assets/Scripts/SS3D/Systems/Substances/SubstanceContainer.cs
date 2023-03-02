@@ -5,7 +5,7 @@ using SS3D.Interactions;
 using UnityEngine;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using SS3D.Systems.Storage.Containers;
+using SS3D.Systems.Inventory.Containers;
 using SS3D.Interactions.Interfaces;
 using SS3D.Core;
 

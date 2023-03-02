@@ -8,8 +8,8 @@ using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Screens;
-using SS3D.Systems.Storage.Containers;
-using SS3D.Systems.Storage.Items;
+using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

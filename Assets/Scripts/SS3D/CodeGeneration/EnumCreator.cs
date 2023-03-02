@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using Object = UnityEngine.Object;
 
 namespace SS3D.CodeGeneration
 {
@@ -24,9 +25,9 @@ namespace SS3D.CodeGeneration
             CodeWriter.WriteEnum(GetAssetPath(assetPathSource), enumName, enums);
         }
 
-        public static void CreateAtPath(string path, string enumName, IEnumerable<AssetReference> assets, string namespaceName = "SS3D.Data.Enums")
+        public static void CreateAtPath(string path, string enumName, IEnumerable<Object> assets, string namespaceName = "SS3D.Data.Enums")
         {
-            IEnumerable<string> enums = assets.Select(reference => reference.editorAsset.name);
+            IEnumerable<string> enums = assets.Select(reference => reference.name);
 
             string dataPath = Application.dataPath;
             string fullPath = dataPath + path;
