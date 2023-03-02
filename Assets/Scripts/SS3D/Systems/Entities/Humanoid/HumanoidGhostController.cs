@@ -18,7 +18,6 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void ProcessCharacterMovement()
         {
-            ProcessToggleRun();
             ProcessPlayerInput();
 
             if (_input.magnitude != 0)

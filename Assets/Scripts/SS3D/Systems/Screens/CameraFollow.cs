@@ -1,7 +1,8 @@
 ﻿using SS3D.Core.Behaviours;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using System;
+using SS3D.Core;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Screens
 {
@@ -11,6 +12,7 @@ namespace SS3D.Systems.Screens
     /// </summary>
     public class CameraFollow : Actor
     {
+        #region Fields
         /// <summary>
         /// The object to follow
         /// </summary>
@@ -33,14 +35,13 @@ namespace SS3D.Systems.Screens
         /// </summary>
         private float _transitionSpeed;
         /// <summary>
-        /// Becomes true at the begging of transition
+        /// Becomes true at the begging of transition and false at the end
         /// </summary>
-        private bool _inTransition = false;
+        private bool _inTransition;
         /// <summary>
         /// If distance between camera and end point less then this value, transition ends
         /// </summary>
         private float _endTransitionDistance;
-
         /// <summary>
         /// While in transition stores target's position at previous update 
         /// </summary>
@@ -49,15 +50,15 @@ namespace SS3D.Systems.Screens
         private float _prevHorizontalAxisPress;
         private float _prevHorizontalRotation;
         private float _currentHorizontalAngle;
+        private float _currentVerticalAngle;
         private float _currentDistance;
         /// <summary>
         /// Offset of target transform position to camera focus point.
         /// </summary>
         private Vector3 _playerOffset;
-
+        private Controls.CameraActions _controls;
         // Sensitivities and Accelerations
-        // How quickly distance changes
-        private const float DistanceAcceleration = 15.0f; 
+        private const float DistanceAcceleration = 10.0f;
         private const float AngleAcceleration = 8f;
         private const float TransitionAcceleration = 0.4f;
         /// <summary>
@@ -67,94 +68,71 @@ namespace SS3D.Systems.Screens
         /// <summary>
         /// The exponential effect of distance
         /// </summary>
-        private const float DistanceScaling = 1.18f; 
-
+        private const float DistanceScaling = 1.18f;
         private const float HorizontalRotationSensitivity = 150f;
         private const float VerticalRotationSensitivity = 80f;
-
         // Limits
         private const float MinTransitionSpeed = 3f;
         private const float MaxTransitionSpeed = 6f;
-
         private const float MinVerticalAngle = 10f;
         private const float MaxVerticalAngle = 80f;
-
         private const float MinDistance = 3f;
         private const float MaxDistance = 15f;
-        /// <summary>
-        /// If time between rotationButtonDown and rotationButtonUp is less then this value camera jumps to the angle multiples of 90. 
-        /// If bigger then this value, camera smoothly rotates
-        /// </summary>
-        private const float CardinalSnapTime = 0.3f;
         private const float SnapAngle = 45.1f;
+
+        #endregion
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Camera;
+            _controls.Zoom.performed += HandleZoom;
+            _controls.SnapRight.performed += HandleSnapRight;
+            _controls.SnapLeft.performed += HandleSnapLeft;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            _controls.Zoom.performed -= HandleZoom;
+            _controls.SnapRight.performed -= HandleSnapRight;
+            _controls.SnapLeft.performed -= HandleSnapLeft;
+        }
 
         protected override void HandleUpdate(in float deltaTime)
         {
-            base.HandleUpdate(in deltaTime);
-            ProcessCameraFollow();
+            base.HandleUpdate(deltaTime);
+
+            ProcessCameraPosition();
         }
-
-        protected override void HandleLateUpdate(float deltaTime)
+        
+        private void HandleZoom(InputAction.CallbackContext context) 
         {
-            base.HandleLateUpdate(deltaTime);
-
-            ProcessCameraPositionPostPhysics();
+           _cameraDistance = Mathf.Clamp(_cameraDistance - context.ReadValue<float>(), MinDistance, MaxDistance); 
         }
-
-       /// <summary>
-       /// Gather inputs used to determine new camera values
-       /// </summary>
-        private void ProcessCameraFollow()
+        
+        // There are two button-type actions for snap, because MultiTap actions don't return values when performed
+        private void HandleSnapLeft(InputAction.CallbackContext context) 
         {
-            bool horizontalRotationPressed = Input.GetButton("Camera Rotation");
-            bool verticalRotationPressed = Input.GetButton("Camera Vertical Rotation");
-
-            float horizontalRotation = Input.GetAxis("Camera Rotation");
-            float verticalRotation = Input.GetAxis("Camera Vertical Rotation");
-
-            bool rotationButtonDown = Input.GetButtonDown("Camera Rotation");
-            bool rotationButtonUp = Input.GetButtonUp("Camera Rotation");
-            float zoom = Input.GetAxis("Camera Zoom");
-
-            // Check for double tap
-            if (rotationButtonDown)
-            {
-                _prevHorizontalAxisPress = Time.time;
-                _prevHorizontalRotation = horizontalRotation;
-            }
-
-            // If a double tap actually works
-            // Round to closest 90 degree angle, going up or down based on whether axis is positive or negative
-            if (rotationButtonUp && Time.time - _prevHorizontalAxisPress < CardinalSnapTime)
-            {
-                _horizontalAngle = Mathf.Round((_horizontalAngle + (_prevHorizontalRotation > 0 ? -SnapAngle : SnapAngle)) / 90.0f) * 90.0f;
-                _prevHorizontalAxisPress = 0.0f;
-                return;
-            }
-
-            // input handling
-            float horizontalAngleDelta = 0.0f;
-            float verticalAngleDelta = 0.0f;
-
-            if (horizontalRotationPressed && (Time.time - _prevHorizontalAxisPress) > CardinalSnapTime)
-            { 
-                horizontalAngleDelta = -horizontalRotation * HorizontalRotationSensitivity * Time.deltaTime;
-            }
-            if (verticalRotationPressed)
-            {
-                verticalAngleDelta = verticalRotation * VerticalRotationSensitivity * Time.deltaTime;
-            }
-
-            // Determine new values, clamping as necessary
-            _cameraDistance = Mathf.Clamp(_cameraDistance - zoom, MinDistance, MaxDistance);
-            _horizontalAngle = (_horizontalAngle + horizontalAngleDelta) % 360f;
-            _verticalAngle = Mathf.Clamp(_verticalAngle + verticalAngleDelta, MinVerticalAngle, MaxVerticalAngle);
+           Snap(-1); 
+        }
+        
+        private void HandleSnapRight(InputAction.CallbackContext context) 
+        {
+           Snap(1); 
+        }
+        
+        private void Snap(float direction)
+        {
+            _horizontalAngle = Mathf.Round((_horizontalAngle + SnapAngle * direction) / 90.0f) * 90.0f; 
         }
 
         /// <summary>
-       /// Determine camera position after any physics/player movement
-       /// </summary>
-        private void ProcessCameraPositionPostPhysics()
+        /// Determine camera position after any physics/player movement
+        /// </summary>
+        private void ProcessCameraPosition()
         {
             // if there is no target exit out of update
             if (!_target)
@@ -176,11 +154,20 @@ namespace SS3D.Systems.Screens
         /// </summary>
         private void MoveAroundTarget()
         {
+            _horizontalAngle = (_horizontalAngle + _controls.HorizontalRotation.ReadValue<float>() 
+                * HorizontalRotationSensitivity * Time.deltaTime) % 360;
+            _verticalAngle = Mathf.Clamp(_verticalAngle + _controls.VerticalRotation.ReadValue<float>() 
+                * VerticalRotationSensitivity * Time.deltaTime, MinVerticalAngle, MaxVerticalAngle);
             // Smooth the distance and angle before using it
-            _currentHorizontalAngle = Mathf.LerpAngle(_currentHorizontalAngle, _horizontalAngle, Time.deltaTime * AngleAcceleration);
-            _currentDistance = Mathf.MoveTowards(_currentDistance, _cameraDistance, Time.deltaTime * DistanceAcceleration);
+            _currentHorizontalAngle = Mathf.LerpAngle(_currentHorizontalAngle, _horizontalAngle, 
+                Time.deltaTime * AngleAcceleration);
+            _currentVerticalAngle = Mathf.LerpAngle(_currentVerticalAngle, _verticalAngle, 
+                Time.deltaTime * AngleAcceleration);
+            _currentDistance = Mathf.MoveTowards(_currentDistance, _cameraDistance, 
+                Time.deltaTime * DistanceAcceleration);
             // The position is determined by the orientation and the distance, where distance has an exponential effect.
-            Vector3 relativePosition = Quaternion.Euler(0, _currentHorizontalAngle, _verticalAngle) * new Vector3(Mathf.Pow(DistanceScaling, _currentDistance), 0, 0);
+            Vector3 relativePosition = Quaternion.Euler(0, _currentHorizontalAngle, _verticalAngle) 
+                                       * new Vector3(Mathf.Pow(DistanceScaling, _currentDistance), 0, 0);
             // Determine the part of the target we want to follow
             Vector3 targetPosition = _target.transform.position + _playerOffset;
 
@@ -195,19 +182,20 @@ namespace SS3D.Systems.Screens
         {
             // The position is determined by the orientation and the distance, where distance has an exponential effect.
             Vector3 relativePosition = Quaternion.Euler(0, _currentHorizontalAngle, _verticalAngle) * new Vector3(Mathf.Pow(DistanceScaling, _currentDistance), 0, 0);
+            Vector3 targetPosition = _target.transform.position;
             // End point of transition
-            Vector3 newPosition = _target.transform.position + _playerOffset + relativePosition;
-            // If camera is close enough to the target, transition ends
+            Vector3 newPosition = targetPosition + _playerOffset + relativePosition;
             if (Vector3.Distance(Position, newPosition) <= _endTransitionDistance)
             {
                 _inTransition = false;
+                _controls.Enable();
                 return;
             }
             //The lower the offset, the more transition slows down at the end
             Vector3 newPositionOffset = Vector3.Normalize(newPosition - Position) * NewPositionOffsetMult;
             Position = Vector3.Lerp(Position, newPosition + newPositionOffset, _transitionSpeed * Time.deltaTime);
-            Position += _target.transform.position - _prevTargetPosition;
-            _prevTargetPosition = _target.transform.position;
+            Position += targetPosition - _prevTargetPosition;
+            _prevTargetPosition = targetPosition;
         }
         /// <summary>
         /// Set variables for moving to the new target
@@ -218,12 +206,14 @@ namespace SS3D.Systems.Screens
             if (_target == null)
                 return;
             _inTransition = true;
-            float distance = Vector3.Distance(transform.position, newTarget.transform.position);
+            Vector3 targetPosition = newTarget.transform.position;
+            float distance = Vector3.Distance(transform.position, targetPosition);
             // Larger distance - larger speed
             _transitionSpeed = Math.Clamp(distance * TransitionAcceleration, MinTransitionSpeed, MaxTransitionSpeed);
             // Smoothes movement at the end
             _endTransitionDistance = 0.05f / _transitionSpeed;
-            _prevTargetPosition = newTarget.transform.position;
+            _prevTargetPosition = targetPosition;
+            _controls.Disable();
         }
 
         /// <summary>
@@ -232,6 +222,7 @@ namespace SS3D.Systems.Screens
         /// <param name="newTarget">The target for the camera to follow</param>
         public void SetTarget(GameObject newTarget)
         {
+            _controls.Enable();
             // Set the player height based on the character controller, if one is found
             CharacterController character = newTarget.GetComponent<CharacterController>();
             if (character)
