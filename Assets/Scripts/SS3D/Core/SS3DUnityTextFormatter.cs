@@ -49,7 +49,7 @@ public class SS3DUnityTextFormatter : ITextFormatter
             }
             if (pt.PropertyName == OutputProperties.ExceptionPropertyName)
             {
-                var exception = logEvent.Exception == null ? "" : logEvent.Exception + Environment.NewLine;
+                output.Write(logEvent.Exception == null ? "" : logEvent.Exception + Environment.NewLine);
                 continue;
             }
             if (pt.PropertyName == OutputProperties.MessagePropertyName)
