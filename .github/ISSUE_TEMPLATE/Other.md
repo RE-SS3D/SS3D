@@ -3,7 +3,6 @@ name: Other
 about: Something other than a feature or bug.
 title: "Other Name"
 labels: ''
-assignees: ''
 
 ---
 <!-- The notes within these arrows are for you but can be deleted. -->
