@@ -85,6 +85,6 @@ SkinnedMeshRenderer:
   - 0
   m_RootBone: {fileID: 0}
   m_AABB:
-    m_Center: {x: 0.01097931, y: -0.0010271445, z: -0.0025663176}
+    m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0.0819165, y: 0.14713585, z: 0.0043083383}
   m_DirtyAABB: 0
