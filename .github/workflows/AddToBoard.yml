@@ -1,18 +1,18 @@
-name: Add issues and pull requests to SS3D project board.
-
+name: Add to roadmap
+description: Add issues and pull requests to SS3D roadmap board.
 on:
   issues:
     types:
       - opened
   pull_request:
-      - opened
-
+    branches:
+      - main
 jobs:
-  add-to-project:
-    name: Add to board
+  automate-project-columns:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/add-to-project@RELEASE_VERSION
+      - uses: alex-page/github-project-automation-plus@RELEASE_VERSION
         with:
-          project-url: https://github.com/orgs/RE-SS3D/projects/7
-          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+          project-url: SS3D Roadmap
+          column: Backlog
+          github-token: ${{ secrets.GITHUB_TOKEN }}
