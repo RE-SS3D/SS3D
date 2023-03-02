@@ -66,14 +66,12 @@ namespace SS3D.Systems.Interactions
         [Client]
         private void ProcessPrimaryClick()
         {
-            Log.Information("Process primary click.");
             RunPrimaryInteraction();
         }
 
         [Client]
         private void ProcessSecondaryClick()
         {
-            Log.Information("Process secondary click.");
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
 
@@ -255,7 +253,7 @@ namespace SS3D.Systems.Interactions
 
             if (source == null)
             {
-                Log.Information("No interaction sources.");
+                Punpun.Information(this, "No interaction sources.");
                 interactionEvent = null;
                 return new List<InteractionEntry>();
             }
@@ -366,7 +364,7 @@ namespace SS3D.Systems.Interactions
             // Check for valid interaction index
             if (index < 0 || entries.Count <= index)
             {
-                Punpun.Panic(target, $"Inventory interaction with invalid index {index}");
+                Punpun.Error(target, "Inventory interaction with invalid index {InventoryInteractionIndex}", Logs.Generic,  index);
 
                 return;
             }
@@ -376,9 +374,8 @@ namespace SS3D.Systems.Interactions
 
             if (chosenEntry.Interaction.GetName(interactionEvent) != interactionName)
             {
-                string message = $"Interaction at index {index} did not have the expected name of {interactionName}";
-                Punpun.Panic(target, message);
-                Log.Error("Interaction at index {index} did not have the expected name of {interactionName}",index, interactionName);
+                Punpun.Error(target, "Interaction at index {InventoryInteractionIndex} did not have the expected name of {InteractionName}",
+                    Logs.Generic, index, interactionName);
                 return;
             }
 

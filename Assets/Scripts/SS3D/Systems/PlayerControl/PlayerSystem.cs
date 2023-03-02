@@ -139,8 +139,7 @@ namespace SS3D.Systems.PlayerControl
         [Server]
         private void ProcessPlayerJoin(NetworkConnection conn)
         {
-            string message = $"Player joined the server - {conn.ClientId} {conn.GetAddress()}";
-            Punpun.Say(this, message, Logs.ServerOnly);
+            Punpun.Information(this, "Player joined the server - {ClientId} {ConnectionAddress}", Logs.ServerOnly, conn.ClientId, conn.GetAddress());
 
             NetworkObject unauthorizedUser = Instantiate(_unauthorizedUserPrefab, Vector3.zero, Quaternion.identity);
             ServerManager.Spawn(unauthorizedUser, conn);
@@ -182,7 +181,6 @@ namespace SS3D.Systems.PlayerControl
         private void ProcessPlayerDisconnect(NetworkConnection conn)
         {
             string message = $"Client {conn.ClientId} {conn.GetAddress()} disconnected";
-            Punpun.Say(this, message, Logs.ServerOnly);
             Punpun.Information(this, message, Logs.ServerOnly);
 
             NetworkObject[] ownedObjects = conn.Objects.ToArray();

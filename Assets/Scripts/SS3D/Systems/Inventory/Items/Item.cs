@@ -100,8 +100,8 @@ namespace SS3D.Systems.Inventory.Items
             // Add a warning if an item is not on the Items layer (layer 10).
             // Not really needed any more because of the RequiredLayer attribute.
             if (gameObject.layer != 10)
-            {
-                Punpun.Yell(this, $"Item {_name} is on {LayerMask.LayerToName(gameObject.layer)} layer. Should be on Items layer.");
+            {;
+                Punpun.Warning(this, "Item {ItemName} is on {LayerName)} layer. Should be on Items layer.", Logs.Generic, _name, LayerMask.LayerToName(gameObject.layer));
             }
         }
 
@@ -302,7 +302,7 @@ namespace SS3D.Systems.Inventory.Items
             }
             catch (NullReferenceException)
             {
-                Debug.LogError("Null reference exception, reverting to default sprite for item " + name + ".");
+                Punpun.Error(this, "Null reference exception, reverting to default sprite for item {ItemName}.", Logs.Generic, name) ;
             }
 
         }

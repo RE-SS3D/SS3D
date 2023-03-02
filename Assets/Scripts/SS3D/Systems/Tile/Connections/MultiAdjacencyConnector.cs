@@ -132,7 +132,7 @@ namespace SS3D.Systems.Tile.Connections
 
             if (_filter == null)
             {
-                Punpun.Yell(this, $"Missing mesh {info}");
+                Punpun.Warning(this, "Missing mesh {info}", Logs.Generic, info);
             }
 
             _filter.mesh = info.Mesh;

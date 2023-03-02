@@ -40,7 +40,7 @@ namespace SS3D.Systems.Screens
             _fovSequence.Append(_camera.DOFieldOfView(75, 0.1f));
             _fovSequence.Append(_camera.DOFieldOfView(65, .7F));
 
-            Punpun.Say(this, $"setting new camera target {target.name}");
+            Punpun.Information(this, "setting new camera target {GameObjectName}", Logs.Generic, target.name);
             _cameraFollow.SetTarget(target);
 
             new CameraTargetChanged(GameObjectCache).Invoke(this);

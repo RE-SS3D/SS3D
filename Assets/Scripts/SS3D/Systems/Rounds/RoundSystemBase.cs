@@ -116,13 +116,11 @@ namespace SS3D.Systems.Rounds
             // Checks if player can call a round start
             if (!permissionSystem.IsAtLeast(userCkey, requiredRole))
             {
-                string message = $"User {userCkey} doesn't have {requiredRole} permission";
-                Punpun.Say(this, message, Logs.ServerOnly);
+                Punpun.Information(this, "User {Ckey} doesn't have {requiredRole} permission)", Logs.ServerOnly, userCkey, requiredRole);
             }
             else
             {
-                string message = $"User {userCkey} has started the round";
-                Punpun.Say(this, message, Logs.ServerOnly);
+                Punpun.Information(this, "User {Ckey} has started the round", Logs.ServerOnly, userCkey);
 
                 #pragma warning disable CS4014
                 ProcessChangeRoundState(m);
@@ -184,7 +182,7 @@ namespace SS3D.Systems.Rounds
                 return;
             }
 
-            Punpun.Say(this, _roundState.ToString(), Logs.ServerOnly);
+            Punpun.Information(this, _roundState.ToString(), Logs.ServerOnly);
 
             RoundStateUpdated roundStateUpdated = new(newValue);
             roundStateUpdated.Invoke(this);
