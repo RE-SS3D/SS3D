@@ -21,7 +21,7 @@ public class SS3DUnityTextFormatter : ITextFormatter
     private readonly MessageTemplate _outputTemplate;
     private readonly IFormatProvider _formatProvider;
     private static readonly JsonValueFormatter JsonValueFormatter = new("$type");
-    public SS3DUnityTextFormatter(string outputTemplate, IFormatProvider? formatProvider = null)
+    public SS3DUnityTextFormatter(string outputTemplate, IFormatProvider formatProvider = null)
     {
         _outputTemplate = new MessageTemplateParser().Parse(outputTemplate);
         _formatProvider = formatProvider;
@@ -145,7 +145,7 @@ public class SS3DUnityTextFormatter : ITextFormatter
         }
     }
 
-    private void RenderPropertyToken(PropertyToken pt, IReadOnlyDictionary<string, LogEventPropertyValue> properties, TextWriter output, IFormatProvider? formatProvider, bool isLiteral, bool isJson)
+    private void RenderPropertyToken(PropertyToken pt, IReadOnlyDictionary<string, LogEventPropertyValue> properties, TextWriter output, IFormatProvider formatProvider, bool isLiteral, bool isJson)
     {
         if (!properties.TryGetValue(pt.PropertyName, out var propertyValue))
         {
