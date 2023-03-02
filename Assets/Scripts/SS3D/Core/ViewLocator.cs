@@ -63,7 +63,6 @@ namespace SS3D.Core
 
             string message = $"No views of type {typeof(T).Name} found.";
             // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-            Punpun.Panic(typeof(SystemLocator), message, Logs.Important);
             Punpun.Error(typeof(SystemLocator), message, Logs.Important);
 
             return null;

@@ -30,7 +30,6 @@ namespace SS3D.Networking
                 return;
             }
 
-            Punpun.Say(this, $"Attempting authentication for user {ckey}", Logs.ClientOnly);
             Punpun.Information(this, "Attempting authentication for user {ckey}", Logs.ClientOnly, ckey);
 
             UserAuthorizationMessage userAuthorizationMessage = new(ckey);

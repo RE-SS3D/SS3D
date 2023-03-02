@@ -161,7 +161,6 @@ namespace SS3D.Systems.PlayerControl
             if (!hasSoul)
             {
                 Punpun.Information(this, "No Soul match for {ckey} found, creating a new one", Logs.ServerOnly, ckey);
-                Punpun.Say(this, $"No Soul match for {ckey} found, creating a new one", Logs.ServerOnly);
 
                 soul = Instantiate(_soulPrefab);
                 ServerManager.Spawn(soul.gameObject);
@@ -172,7 +171,6 @@ namespace SS3D.Systems.PlayerControl
             }
             else
             {
-                Punpun.Say(this, $"Soul match for {ckey} found, reassigning to client", Logs.ServerOnly);
                 Punpun.Information(this, "Soul match for {ckey} found, reassigning to client", Logs.ServerOnly, ckey);
             }
 
@@ -190,14 +188,12 @@ namespace SS3D.Systems.PlayerControl
             NetworkObject[] ownedObjects = conn.Objects.ToArray();
             if (ownedObjects.Length == 0)
             {
-                Punpun.Yell(this, "No clientOwnedObjects were found", Logs.ServerOnly);
                 Punpun.Warning(this, "No clientOwnedObjects were found", Logs.ServerOnly);
                 return;
             }
 
             foreach (NetworkObject networkIdentity in ownedObjects)
             {
-                Punpun.Say(this, $"Client {conn.GetAddress()}'s owned object: {networkIdentity.name}", Logs.ServerOnly);
                 Punpun.Information(this, "Client {conn.GetAddress()}'s owned object: {networkIdentity.name}", Logs.ServerOnly, conn.GetAddress(), networkIdentity.name);
 
                 Soul soul = networkIdentity.GetComponent<Soul>();
@@ -205,7 +201,6 @@ namespace SS3D.Systems.PlayerControl
                 {
                     _onlineSouls.Remove(soul.Ckey);
                     soul.RemoveOwnership();
-                    Punpun.Say(this, $"Invoking the player server left event: {soul.Ckey}", Logs.ServerOnly);
                     Punpun.Information(this, "Invoking the player server left event: {soul.Ckey}", Logs.ServerOnly, soul.Ckey);
 
                     return;
