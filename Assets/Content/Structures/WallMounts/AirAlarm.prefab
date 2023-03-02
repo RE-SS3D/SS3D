@@ -63,7 +63,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
-  - {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
+  - {fileID: 2100000, guid: b35e5d5edbcc63442bf15e5482e4cfe4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -106,7 +106,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 20
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 5062301872738480473
