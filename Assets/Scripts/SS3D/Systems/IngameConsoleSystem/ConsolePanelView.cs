@@ -38,30 +38,28 @@ namespace SS3D.Systems.IngameConsoleSystem
 
         private Controls.ConsoleActions _consoleControls;
 
-        private void OnEnable()
+        protected override void OnStart()
         {
+            base.OnStart();
+            _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
+            _commandsController = new CommandsController();
             _controls = SystemLocator.Get<InputSystem>().Inputs;
             _consoleControls = _controls.Console;
             _consoleControls.Close.performed += HandleClose;
             _consoleControls.Open.performed += HandleOpen;
             _consoleControls.SwitchCommand.performed += HandleSwitchCommand;
             _consoleControls.Submit.performed += HandleSubmit;
+            _consoleControls.Open.Enable();
         }
 
-        private void OnDisable()
+        protected override void OnDestroyed()
         {
+            base.OnDestroyed();
+            
             _consoleControls.Close.performed -= HandleClose;
             _consoleControls.Open.performed -= HandleOpen;
             _consoleControls.SwitchCommand.performed -= HandleSwitchCommand;
             _consoleControls.Submit.performed -= HandleSubmit;
-        }
-
-        protected override void OnStart()
-        {
-            base.OnStart();
-            _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
-            _commandsController = new CommandsController();
-            _consoleControls.Open.Enable();
         }
 
         protected override void HandleUpdate(in float deltaTime)

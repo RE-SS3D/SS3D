@@ -21,20 +21,7 @@ namespace SS3D.Systems.Gamemodes.UI
         private Controls.OtherActions _controls;
 
         private Dictionary<int, GamemodeObjectiveItemView> _gamemodeObjectiveItems;
-
-        private void OnEnable()
-        {
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
-            _controls.Fade.performed += HandleFadePerformed;
-            _controls.Fade.canceled += HandleFadeCanceled;
-        }
-
-        private void OnDisable()
-        {
-            _controls.Fade.performed -= HandleFadePerformed;
-            _controls.Fade.canceled -= HandleFadeCanceled;
-        }
-
+        
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -49,6 +36,17 @@ namespace SS3D.Systems.Gamemodes.UI
             base.OnStart();
 
             _fade.SetFade(false);
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls.Fade.performed += HandleFadePerformed;
+            _controls.Fade.canceled += HandleFadeCanceled;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            _controls.Fade.performed -= HandleFadePerformed;
+            _controls.Fade.canceled -= HandleFadeCanceled;
         }
 
         private void HandleFadePerformed(InputAction.CallbackContext context)

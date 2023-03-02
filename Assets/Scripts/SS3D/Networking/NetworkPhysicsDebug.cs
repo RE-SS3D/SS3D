@@ -20,26 +20,20 @@ namespace SS3D.Networking
 
         public List<Rigidbody> SpawnedCans;
         private Controls.OtherActions _controls;
-
-        private void OnEnable()
-        {
-            try
-            {
-                _controls.SpawnCans.performed += HandleSpawnSodaCans;
-            }
-            catch (NullReferenceException) {}
-        }
-
-        private void OnDisable()
-        {
-            _controls.SpawnCans.performed -= HandleSpawnSodaCans;
-        }
+        
 
         protected override void OnStart()
         {
             base.OnStart();
             _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
             _controls.SpawnCans.performed += HandleSpawnSodaCans;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            _controls.SpawnCans.performed -= HandleSpawnSodaCans;
         }
 
         [ContextMenu("Spawn Soda Cans")]

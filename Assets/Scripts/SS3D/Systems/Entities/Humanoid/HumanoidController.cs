@@ -53,20 +53,6 @@ namespace SS3D.Systems.Entities.Humanoid
         public bool IsRunning => _isRunning;
         #endregion
 
-
-        protected void OnEnable()
-        {
-            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
-            MovementControls = controls.Movement;
-            HotkeysControls = controls.Hotkeys;
-            MovementControls.ToggleRun.performed += HandleToggleRun;
-        }
-
-        protected void OnDisable()
-        {
-            MovementControls.ToggleRun.performed -= HandleToggleRun;
-        }
-
         protected override void OnStart()
         {
             base.OnStart();
@@ -78,8 +64,19 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingSoulChanged;
+            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
+            MovementControls = controls.Movement;
+            HotkeysControls = controls.Hotkeys;
+            MovementControls.ToggleRun.performed += HandleToggleRun;
             MovementControls.Enable();
             HotkeysControls.Enable();
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            MovementControls.ToggleRun.performed -= HandleToggleRun;
         }
 
         private void HandleControllingSoulChanged(Mind mind)

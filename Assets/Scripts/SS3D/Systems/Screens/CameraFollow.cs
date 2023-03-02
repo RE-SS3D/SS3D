@@ -82,16 +82,20 @@ namespace SS3D.Systems.Screens
 
         #endregion
 
-        private void OnEnable()
+        protected override void OnStart()
         {
+            base.OnStart();
+            
             _controls = SystemLocator.Get<InputSystem>().Inputs.Camera;
             _controls.Zoom.performed += HandleZoom;
             _controls.SnapRight.performed += HandleSnapRight;
             _controls.SnapLeft.performed += HandleSnapLeft;
         }
 
-        private void OnDisable()
+        protected override void OnDestroyed()
         {
+            base.OnDestroyed();
+            
             _controls.Zoom.performed -= HandleZoom;
             _controls.SnapRight.performed -= HandleSnapRight;
             _controls.SnapLeft.performed -= HandleSnapLeft;
@@ -103,27 +107,31 @@ namespace SS3D.Systems.Screens
 
             ProcessCameraPosition();
         }
-        private void HandleZoom(InputAction.CallbackContext context)
-       {
-           _cameraDistance = Mathf.Clamp(_cameraDistance - context.ReadValue<float>(), MinDistance, MaxDistance);
-       }
+        
+        private void HandleZoom(InputAction.CallbackContext context) 
+        {
+           _cameraDistance = Mathf.Clamp(_cameraDistance - context.ReadValue<float>(), MinDistance, MaxDistance); 
+        }
+        
         // There are two button-type actions for snap, because MultiTap actions don't return values when performed
-        private void HandleSnapLeft(InputAction.CallbackContext context)
-       {
-           Snap(-1);
-       }
-        private void HandleSnapRight(InputAction.CallbackContext context)
-       {
-           Snap(1);
-       }
+        private void HandleSnapLeft(InputAction.CallbackContext context) 
+        {
+           Snap(-1); 
+        }
+        
+        private void HandleSnapRight(InputAction.CallbackContext context) 
+        {
+           Snap(1); 
+        }
+        
         private void Snap(float direction)
         {
-            _horizontalAngle = Mathf.Round((_horizontalAngle + SnapAngle * direction) / 90.0f) * 90.0f;
-       }
+            _horizontalAngle = Mathf.Round((_horizontalAngle + SnapAngle * direction) / 90.0f) * 90.0f; 
+        }
 
         /// <summary>
-       /// Determine camera position after any physics/player movement
-       /// </summary>
+        /// Determine camera position after any physics/player movement
+        /// </summary>
         private void ProcessCameraPosition()
         {
             // if there is no target exit out of update

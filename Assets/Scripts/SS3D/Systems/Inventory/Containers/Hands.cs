@@ -52,19 +52,6 @@ namespace SS3D.Systems.Inventory.Containers
 
         public HandsView HandsView { get; private set; }
 
-        private void OnEnable()
-        {
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Hotkeys;
-            _controls.SwapHands.performed += HandleSwapHands;
-            _controls.Drop.performed += HandleDropHeldItem;
-        }
-
-        private void OnDisable()
-        {
-            _controls.SwapHands.performed -= HandleSwapHands;
-            _controls.Drop.performed -= HandleDropHeldItem;
-        }
-
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -72,6 +59,23 @@ namespace SS3D.Systems.Inventory.Containers
             HandsView.Hands = this;
 
             SupportsMultipleInteractions = true;
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Hotkeys;
+            _controls.SwapHands.performed += HandleSwapHands;
+            _controls.Drop.performed += HandleDropHeldItem;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            _controls.SwapHands.performed -= HandleSwapHands;
+            _controls.Drop.performed -= HandleDropHeldItem;
         }
 
         [Server]

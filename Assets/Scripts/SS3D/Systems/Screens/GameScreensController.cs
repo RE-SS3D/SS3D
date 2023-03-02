@@ -1,4 +1,3 @@
-using System;
 using Coimbra.Services.Events;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
@@ -17,17 +16,6 @@ namespace SS3D.Systems.Screens
         private PlayerSpawnedState _spawnedState;
         private Controls.OtherActions _controls;
 
-        private void OnEnable()
-        {
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other; 
-            _controls.Menu.performed += HandleMenuPerformed; 
-        }
-
-        private void OnDisable()
-        {
-            _controls.Menu.performed -= HandleMenuPerformed;
-        }
-
         protected override void OnStart()
         {
             base.OnStart();
@@ -38,9 +26,18 @@ namespace SS3D.Systems.Screens
             ChangeGameScreenEvent.AddListener(HandleChangeGameScreen);
             SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other; 
+            _controls.ToggleMenu.performed += HandleToggleMenu; 
         }
 
-        private void HandleMenuPerformed(InputAction.CallbackContext context)
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            _controls.ToggleMenu.performed -= HandleToggleMenu;
+        }
+
+        private void HandleToggleMenu(InputAction.CallbackContext context)
         {
             if (!_blockNone)
             {

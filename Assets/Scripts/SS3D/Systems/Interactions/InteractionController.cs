@@ -31,9 +31,13 @@ namespace SS3D.Systems.Interactions
 
         private Camera _camera;
         private RadialInteractionView _radialView;
-
-        private void OnEnable()
+        
+        public override void OnStartClient()
         {
+            base.OnStartClient();
+
+            _radialView = SystemLocator.Get<RadialInteractionView>();
+            _camera = SystemLocator.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
             Controls controls = SystemLocator.Get<InputSystem>().Inputs;
             _otherControls = controls.Other;
             _hotkeysControls = controls.Hotkeys;
@@ -42,21 +46,15 @@ namespace SS3D.Systems.Interactions
             _hotkeysControls.Use.performed += HandleUse;
         }
 
-        private void OnDisable()
+        public override void OnStopClient()
         {
+            base.OnStopClient();
+            
             _otherControls.PrimaryClick.performed -= HandlePrimaryClick;
             _otherControls.SecondaryClick.performed -= HandleSecondaryClick;
             _hotkeysControls.Use.performed -= HandleUse;
         }
 
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-
-            _radialView = SystemLocator.Get<RadialInteractionView>();
-            _camera = SystemLocator.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
-        }
-        
         [Client]
         private void HandlePrimaryClick(InputAction.CallbackContext callbackContext)
         {

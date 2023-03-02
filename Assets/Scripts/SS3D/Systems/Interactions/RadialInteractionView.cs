@@ -41,17 +41,6 @@ namespace SS3D.Systems.Interactions
         private InteractionEvent Event { get; set; }
         private Controls.OtherActions _controls;
 
-        private void OnEnable()
-        {
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
-            _controls.SecondaryClick.performed += HandleDisappear;
-        }
-
-        private void OnDisable()
-        {
-            _controls.SecondaryClick.performed -= HandleDisappear;
-        }
-
         protected override void OnStart()
         {
             base.OnStart();
@@ -74,6 +63,15 @@ namespace SS3D.Systems.Interactions
             {
                 interactionButton.OnHovered += HandleInteractionButtonHovered;
             }
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls.SecondaryClick.performed += HandleDisappear;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            _controls.SecondaryClick.performed -= HandleDisappear;
         }
 
         private void HandleInteractionButtonHovered(GameObject button, IInteraction interaction)
