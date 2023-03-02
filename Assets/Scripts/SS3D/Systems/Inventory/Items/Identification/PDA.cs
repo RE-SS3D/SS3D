@@ -26,11 +26,6 @@ namespace SS3D.Systems.Inventory.Items.Generic
         public override void Update()
         {
             base.Update();
-
-            if (Input.GetKeyDown(KeyCode.P))
-            {
-                Debug.Log("HasPermission: " + HasPermission(testPermission));
-            }
         }
 
         public bool HasPermission(IDPermission permission)

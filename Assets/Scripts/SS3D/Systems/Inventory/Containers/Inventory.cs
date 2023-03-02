@@ -7,6 +7,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.UI;
+using SS3D.Systems.Roles;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Containers
@@ -17,7 +18,7 @@ namespace SS3D.Systems.Inventory.Containers
     ///  - Aggregating all containers on the player and accessible to the player.
     ///  - The moving of items from one item-slot to another.
     /// </summary>
-    public sealed class Inventory : NetworkActor
+    public sealed class Inventory : NetworkActor, IIdentification
     {
         public delegate void ContainerEventHandler(AttachedContainer container);
 
@@ -28,6 +29,11 @@ namespace SS3D.Systems.Inventory.Containers
         /// The hands used by this inventory
         /// </summary>
         public Hands Hands;
+
+        /// <summary>
+        /// The container that has the IDCard with permissions
+        /// </summary>
+        public Container IDContainer;
 
         /// <summary>
         /// The controllable body of the owning player
@@ -88,6 +94,17 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             _nextAccessCheck = time + 0.5f;
+        }
+
+        public bool HasPermission(IDPermission permission)
+        {
+            IIdentification id = IDContainer.Items.FirstOrDefault() as IIdentification;
+            if (id == null)
+            {
+                return false;
+            }
+
+            return id.HasPermission(permission);
         }
 
         /// <summary>
