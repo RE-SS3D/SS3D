@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: WallSteel
   m_EditorClassIdentifier: 
   nameString: wall_steel
-  layer: 1
   prefab: {fileID: 3591147544166670882, guid: 45d13347efae0f54882e0e56dd770bb1, type: 3}
   icon: {fileID: 0}
+  layer: 1
   genericType: 3
-  specificType: 0
+  specificType: 3
   width: 1
   height: 1

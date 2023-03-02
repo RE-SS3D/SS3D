@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: TileOverlayBlue
+  m_Name: CornerBlue
   m_EditorClassIdentifier: 
   nameString: overlay_blue
   prefab: {fileID: 6767447678079105841, guid: 821d0946be816bb42a0eed24631d57ee, type: 3}
