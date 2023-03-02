@@ -77,7 +77,7 @@ namespace SS3D.Data
 
             if (!databaseExists)
             {
-                Punpun.Yell(typeof(Assets), $"Database of type {key} not found", Logs.Important);
+                Punpun.Warning(typeof(Assets), "Database of type {DatabaseType} not found", Logs.Important, key);
             }
 
             return database;

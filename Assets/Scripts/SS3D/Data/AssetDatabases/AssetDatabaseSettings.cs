@@ -33,8 +33,7 @@ namespace SS3D.Data.AssetDatabases
 
                 databases.Add(assetDatabase);
             }
-
-            Punpun.Say(typeof(Assets), $"{assets.Length} Asset Databases initialized", Logs.Important);
+            Punpun.Information(typeof(Assets), "{AssetsLength} Asset Databases initialized", Logs.Important, assets.Length);
 
             return databases;
         }
