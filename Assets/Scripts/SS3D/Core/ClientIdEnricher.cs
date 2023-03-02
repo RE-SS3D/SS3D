@@ -8,14 +8,15 @@ using UnityEngine;
 
 namespace SS3D.Core
 {
+    /// <summary>
+    /// Enrich log messages by adding a ID property.
+    /// The ID property takes value clientId when the log is called by a client only,
+    /// Host when it's the host, Server when it's server only.
+    /// </summary>
     class ClientIdEnricher : ILogEventEnricher
     {
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            if (logEvent.Properties.ContainsKey("sender"))
-            {
-
-            }
             if (InstanceFinder.IsServerOnly)
             {
                 logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(

@@ -12,6 +12,7 @@ using Serilog.Formatting.Json;
 using System.Linq;
 
 /// <summary>
+/// Text formatter for Log message going to Unity console. Adds colors, properly renders Serializable class and structures.
 /// Heavily inspired by MessageTemplateTextFormatter.
 /// Sadly, since many static methods are internal to Serilog, it was necessary to write an equivalent of some of them in here.
 /// </summary>
