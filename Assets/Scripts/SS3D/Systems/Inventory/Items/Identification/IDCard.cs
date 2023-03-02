@@ -35,6 +35,11 @@ namespace SS3D.Systems.Inventory.Items.Generic
 
         public bool HasPermission(IDPermission permission)
         {
+            if (permission == null)
+            {
+                return true;
+            }
+
             return permissions.Contains(permission);
         }
 
