@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: SecurityIDCard
   m_EditorClassIdentifier: 
   nameString: security_idcard
-  prefab: {fileID: 5261116577612792016, guid: df76de45fd335f54584027f84c61535a, type: 3}
+  prefab: {fileID: 5261116577612792016, guid: ff95abc9c2b779340a1b50f1a128a934, type: 3}
   icon: {fileID: 0}

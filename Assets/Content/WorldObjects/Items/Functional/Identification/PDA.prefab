@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 8471215545886824119}
   - component: {fileID: 5783006074201076845}
   - component: {fileID: 3483542684610536844}
-  - component: {fileID: 3278785340214204199}
+  - component: {fileID: -3713832641788638507}
   - component: {fileID: -3412952555245330052}
   - component: {fileID: 827376844595278399}
   - component: {fileID: 472531886799476616}
@@ -142,7 +142,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
   - {fileID: 8471215545886824119}
-  - {fileID: 3278785340214204199}
+  - {fileID: 0}
   - {fileID: 827376844595278399}
   - {fileID: 472531886799476616}
   - {fileID: 8691169782362177299}
@@ -229,7 +229,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &3278785340214204199
+--- !u!114 &-3713832641788638507
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -238,22 +238,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 5261116577612792016}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Script: {fileID: 11500000, guid: 20c25d307ced7f546b6eb8dce15275c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 1
+  _componentIndexCache: 255
   _addedNetworkObject: {fileID: 7958861831329766982}
-  _networkObjectCache: {fileID: 7958861831329766982}
+  _networkObjectCache: {fileID: 0}
   _itemId: 0
   _name: PDA
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 3483542684610536844}
-  _weight: 1
+  _weight: 0
   Prefab: {fileID: 5261116577612792016}
-  AttachmentPoint: {fileID: 7760506997891073340}
+  AttachmentPoint: {fileID: 7149383022180600066}
   AttachmentPointAlt: {fileID: 0}
   traits:
   - {fileID: 11400000, guid: 855eb54ff561f8242bac7f3fd97821c2, type: 2}
+  testPermission: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
 --- !u!114 &-3412952555245330052
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 8471215545886824119}
   - component: {fileID: 5783006074201076845}
   - component: {fileID: 3483542684610536844}
-  - component: {fileID: 3278785340214204199}
+  - component: {fileID: 798806817747551534}
   m_Layer: 10
   m_Name: IDCard
   m_TagString: Untagged
@@ -137,14 +137,14 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
   - {fileID: 8471215545886824119}
-  - {fileID: 3278785340214204199}
+  - {fileID: 798806817747551534}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: -1
+  <PrefabId>k__BackingField: 48
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 14295341828733633476
@@ -221,7 +221,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &3278785340214204199
+--- !u!114 &798806817747551534
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -230,22 +230,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 5261116577612792016}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
+  m_Script: {fileID: 11500000, guid: b1c7666ae4726584ebddc25bdeed790f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 7958861831329766982}
   _networkObjectCache: {fileID: 7958861831329766982}
   _itemId: 0
-  _name: PDA
+  _name: IDCard
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 3483542684610536844}
-  _weight: 1
+  _weight: 0
   Prefab: {fileID: 5261116577612792016}
-  AttachmentPoint: {fileID: 7760506997891073340}
+  AttachmentPoint: {fileID: 7149383022180600066}
   AttachmentPointAlt: {fileID: 0}
   traits:
   - {fileID: 11400000, guid: e5b749c01fdf96d429a02713921efca7, type: 2}
+  startingPermissions:
+  - {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}
 --- !u!1 &8188033368034612119
 GameObject:
   m_ObjectHideFlags: 0

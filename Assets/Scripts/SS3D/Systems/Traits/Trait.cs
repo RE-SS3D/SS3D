@@ -14,6 +14,13 @@ namespace SS3D.Systems
             set => hash = value;
         }
 
+        [HideInInspector]
+        public string Name
+        {
+            get => name;
+            set => name = value;
+        }
+
         protected TraitCategories category;
         public TraitCategories Category
         {
