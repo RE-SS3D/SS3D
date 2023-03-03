@@ -2,8 +2,7 @@
 name: Feature
 about: A feature to be implemented.
 title: "Feature Name"
-labels: 'Type: Feature (Addition)'
-assignees: ''
+labels: 'Feature'
 
 ---
 <!-- The notes within these arrows are for you but can be deleted. -->

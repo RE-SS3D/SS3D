@@ -1,0 +1,27 @@
+name: Automate Roadmap
+description: Add issues and pull requests to SS3D roadmap board.
+on:
+  issues:
+    types:
+      - opened
+  pull_request:
+    branches:
+      - main
+jobs:
+  automate-project-columns:
+    runs-on: ubuntu-latest
+    steps:
+    - name: if_issue
+      if: github.event.issue
+      uses: alex-page/github-project-automation-plus@RELEASE_VERSION
+      with:
+        project: SS3D Roadmap
+        column: Backlog
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: if_pr
+      if: github.event.pull_request
+      uses: alex-page/github-project-automation-plus@RELEASE_VERSION
+      with:
+        project: SS3D Roadmap
+        column: In Progress
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
