@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SS3D.Interactions
 {
     /// <summary>
-    /// A base class for interaction targets which use the mirror NetworkBehaviour
+    /// A base class for interaction targets which use the fishnet NetworkBehaviour
     /// </summary>
     public abstract class InteractionTargetNetworkBehaviour : NetworkActor, IInteractionTarget, IGameObjectProvider
     {
