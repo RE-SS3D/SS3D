@@ -175,6 +175,8 @@ namespace SS3D.Systems.Entities
 
             string message = $"Spawning mind {createdMind.name} on {entity.name}";
             Punpun.Say(this, message, Logs.ServerOnly);
+
+            new IndividualPlayerEmbarked(entity).Invoke(this);
         }
 
         /// <summary>

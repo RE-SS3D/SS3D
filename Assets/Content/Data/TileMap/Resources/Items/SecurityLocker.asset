@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: SecurityLocker
   m_EditorClassIdentifier: 
-  nameString: locker
-  prefab: {fileID: 5533951594911835035, guid: fa1909e0d40b4cf408ff599df7a2043f, type: 3}
+  nameString: security_locker
+  prefab: {fileID: 5533951594911835035, guid: dd3ce5340ed4aba4babae7020f737084, type: 3}
   icon: {fileID: 0}
