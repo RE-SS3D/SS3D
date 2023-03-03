@@ -17,28 +17,28 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 1126fc962db90eb4599465450b6b7b5c
   m_SerializeEntries:
-  - m_GUID: d1f34343e08a14e48a856e409c355f32
-    m_Address: Assets/Art/UI/Interactions/take.png
+  - m_GUID: 54406d09550cf4944a17101a88c462fe
+    m_Address: Assets/Art/UI/Interactions/Discard.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: d6678ac9f1a1c714fa5afdb6f1a0ff11
-    m_Address: Assets/Art/UI/Interactions/discard.png
+  - m_GUID: 4a9d3f4d34322474dbac34b1f6a651b9
+    m_Address: Assets/Art/UI/Interactions/Honk.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 48da6209938d27844878cc3d318295e2
-    m_Address: Assets/Art/UI/Interactions/open.png
+  - m_GUID: 4ff63b0be4d987b48a06db36c3fa65f1
+    m_Address: Assets/Art/UI/Interactions/Nuke.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 03812e70c708b3047b20e316b16f1896
-    m_Address: Assets/Art/UI/Interactions/honk.png
+  - m_GUID: 1bb0d8661e844c840a0d561b409d2514
+    m_Address: Assets/Art/UI/Interactions/Open.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 3788240ffacf45b4998b63134326628e
-    m_Address: Assets/Art/UI/Interactions/power.png
+  - m_GUID: 962c2df087e7a554fb038e3bdca2aa6e
+    m_Address: Assets/Art/UI/Interactions/Power.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: bf85b01e2333f59439185d22d03adcaa
-    m_Address: Assets/Art/UI/Interactions/Nuke.png
+  - m_GUID: a214138dfb4bac146aa09a2ee9bf14b2
+    m_Address: Assets/Art/UI/Interactions/Take.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
