@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: FireAlarm
+  m_Name: LightTubeFixture
   m_EditorClassIdentifier: 
-  nameString: firealarm
-  prefab: {fileID: 4866668043303595546, guid: 50dd6be959d44844ab1abf8a3f2adb01, type: 3}
-  icon: {fileID: 0}
-  layer: 6
+  nameString: light_tube_fixture
+  prefab: {fileID: 4866668043303595546, guid: 66f6206faf2f7fb4a993d935c83fc239, type: 3}
+  icon: {fileID: 21300000, guid: 9e89894392ee65f45bd559d4619cbade, type: 3}
+  layer: 5
   genericType: 0
   specificType: 0
   width: 1

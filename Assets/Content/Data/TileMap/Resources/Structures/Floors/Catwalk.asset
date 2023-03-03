@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Catwalk
   m_EditorClassIdentifier: 
   nameString: catwalk
-  layer: 0
   prefab: {fileID: 8178185248287418974, guid: a28267798293970468ab30803632a3f7, type: 3}
   icon: {fileID: 0}
+  layer: 0
   genericType: 0
   specificType: 0
   width: 1

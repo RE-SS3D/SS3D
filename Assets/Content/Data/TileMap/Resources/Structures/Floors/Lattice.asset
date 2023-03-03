@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Lattice
   m_EditorClassIdentifier: 
   nameString: lattice
-  layer: 0
   prefab: {fileID: 7825286949101219487, guid: 854451834f026fb4f860bf0e977a104c, type: 3}
   icon: {fileID: 0}
+  layer: 0
   genericType: 0
   specificType: 0
   width: 1

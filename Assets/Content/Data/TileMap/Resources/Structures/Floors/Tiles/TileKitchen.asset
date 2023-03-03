@@ -16,7 +16,7 @@ MonoBehaviour:
   prefab: {fileID: 6767447678079105841, guid: 5ecf13819099b014eb5f731155540586, type: 3}
   icon: {fileID: 0}
   layer: 1
-  genericType: 0
+  genericType: 9
   specificType: 0
   width: 1
   height: 1

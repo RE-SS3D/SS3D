@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: TileBar
   m_EditorClassIdentifier: 
   nameString: tile_bar
-  layer: 1
   prefab: {fileID: 6767447678079105841, guid: 75680e6a1df5ff547bdb5b8f116f766b, type: 3}
   icon: {fileID: 0}
-  genericType: 0
+  layer: 1
+  genericType: 9
   specificType: 0
   width: 1
   height: 1
