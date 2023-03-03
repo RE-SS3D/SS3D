@@ -17,28 +17,28 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 1126fc962db90eb4599465450b6b7b5c
   m_SerializeEntries:
-  - m_GUID: 54406d09550cf4944a17101a88c462fe
-    m_Address: Assets/Art/UI/Interactions/Discard.asset
+  - m_GUID: b22067d36fa963b4bbaf8d6085b0ebc9
+    m_Address: Assets/Content/UI/Interactions/Power.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 4a9d3f4d34322474dbac34b1f6a651b9
-    m_Address: Assets/Art/UI/Interactions/Honk.asset
+  - m_GUID: 2db953f2ae8f41d4e9842d9144a9e396
+    m_Address: Assets/Content/UI/Interactions/Take.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 4ff63b0be4d987b48a06db36c3fa65f1
-    m_Address: Assets/Art/UI/Interactions/Nuke.asset
+  - m_GUID: 1f97d7fac1be1b448824c85e156d9746
+    m_Address: Assets/Content/UI/Interactions/Open.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 1bb0d8661e844c840a0d561b409d2514
-    m_Address: Assets/Art/UI/Interactions/Open.asset
+  - m_GUID: e4d142ab75244e24c89d0c2aec36dbed
+    m_Address: Assets/Content/UI/Interactions/Discard.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 962c2df087e7a554fb038e3bdca2aa6e
-    m_Address: Assets/Art/UI/Interactions/Power.asset
+  - m_GUID: 88c0c549992b597489791caf4a12f18c
+    m_Address: Assets/Content/UI/Interactions/Honk.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: a214138dfb4bac146aa09a2ee9bf14b2
-    m_Address: Assets/Art/UI/Interactions/Take.asset
+  - m_GUID: 3030468639c4d15459be5f65d30a42df
+    m_Address: Assets/Content/UI/Interactions/Nuke.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
