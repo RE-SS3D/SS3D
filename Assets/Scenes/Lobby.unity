@@ -200,6 +200,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!4 &36466131
 Transform:
@@ -275,6 +276,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!4 &36811088
 Transform:
@@ -916,6 +918,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!114 &327065888 stripped
 MonoBehaviour:
@@ -1298,7 +1301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 5
+  <ComponentIndex>k__BackingField: 6
   _networkBehaviours:
   - {fileID: 474682042}
   <ParentNetworkObject>k__BackingField: {fileID: 1506918116}
@@ -1327,6 +1330,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &516802433
 GameObject:
@@ -1403,6 +1407,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!4 &516802436
 Transform:
@@ -1581,6 +1586,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &618991010
 GameObject:
@@ -1698,7 +1704,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 6
+  <ComponentIndex>k__BackingField: 7
   _networkBehaviours:
   - {fileID: 661652617}
   <ParentNetworkObject>k__BackingField: {fileID: 1506918116}
@@ -1727,6 +1733,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!114 &676448448 stripped
 MonoBehaviour:
@@ -1830,6 +1837,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!114 &778960611 stripped
 MonoBehaviour:
@@ -2223,6 +2231,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &914529550
 GameObject:
@@ -2307,6 +2316,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &960495455
 GameObject:
@@ -2572,6 +2582,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &1000564555
 GameObject:
@@ -2637,7 +2648,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 7
+  <ComponentIndex>k__BackingField: 8
   _networkBehaviours:
   - {fileID: 1000564557}
   <ParentNetworkObject>k__BackingField: {fileID: 1506918116}
@@ -2667,6 +2678,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &1032375935
 GameObject:
@@ -3397,6 +3409,7 @@ MonoBehaviour:
   - {fileID: 616353825}
   - {fileID: 246961643}
   - {fileID: 1927660778}
+  - {fileID: 1604094696}
   - {fileID: 474682044}
   - {fileID: 661652618}
   - {fileID: 1000564558}
@@ -3424,6 +3437,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &1544788594
 GameObject:
@@ -3655,9 +3669,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79aa64d340f6acc408b29f41b254ce34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1604094696}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 1604094696}
+  rolesAvailable: {fileID: 11400000, guid: 1ac202e4643a5ee41b99ccfe7dcc0092, type: 2}
 --- !u!114 &1604094696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3671,9 +3686,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 4
+  <ComponentIndex>k__BackingField: 5
   _networkBehaviours:
-  - {fileID: 0}
+  - {fileID: 1604094695}
   <ParentNetworkObject>k__BackingField: {fileID: 1506918116}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
@@ -3685,7 +3700,6 @@ MonoBehaviour:
   <SceneId>k__BackingField: 4089165068030416596
   <AssetPathHash>k__BackingField: 0
   _sceneNetworkObjects:
-  - {fileID: 1604094696}
   - {fileID: 36466130}
   - {fileID: 36811087}
   - {fileID: 246961643}
@@ -3701,6 +3715,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &1669161428
 GameObject:
@@ -4274,6 +4289,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!114 &1927660779
 MonoBehaviour:

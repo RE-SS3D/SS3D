@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2197c1d93e4c39a4d958f015762fc338, type: 3}
+  m_Name: Assistant
+  m_EditorClassIdentifier: 
+  roleName: Assistant
+  idCardPrefab: {fileID: 5261116577612792016, guid: d8b0c8d1ddcdeb24d9763054c103c9fe, type: 3}
+  pdaPrefab: {fileID: 5261116577612792016, guid: 79260483ae5d3e04fa272e092b49abac, type: 3}
+  permissions:
+  - {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}
+  loadout: {fileID: 0}
