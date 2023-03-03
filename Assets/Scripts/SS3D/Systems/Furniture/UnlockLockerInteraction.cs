@@ -3,6 +3,7 @@ using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Logging;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;

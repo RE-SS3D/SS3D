@@ -5,6 +5,7 @@ using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Roles;
 using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
+using FishNet.Object.Synchronizing;
 
 namespace SS3D.Systems.Inventory.Items.Generic
 {
@@ -16,11 +17,17 @@ namespace SS3D.Systems.Inventory.Items.Generic
         public IDPermission testPermission;
         private Container container;
 
+        [HideInInspector] public Item StartingIDCard;
+
         protected override void OnStart()
         {
             base.OnStart();
 
             container = GetComponent<Container>();
+            if (StartingIDCard)
+            {
+                container.AddItem(StartingIDCard);
+            }
         }
 
         public override void Update()

@@ -8,6 +8,7 @@ using UnityEngine;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using Coimbra;
+using SS3D.Logging;
 
 namespace SS3D.Systems.Inventory.Items.Generic
 {
@@ -16,23 +17,24 @@ namespace SS3D.Systems.Inventory.Items.Generic
     /// </summary>
     public class IDCard : Item, IIdentification
     {
-        [SerializeField]
-        private List<IDPermission> startingPermissions = new List<IDPermission>();
+        private string ownerName;
+        private string roleName;
+
+        public string OwnerName
+        {
+            get => ownerName;
+            set => ownerName = value;
+        }
+
+        public string RoleName
+        {
+            get => roleName;
+            set => roleName = value;
+        }
 
         [SyncObject]
         private readonly SyncList<IDPermission> permissions = new SyncList<IDPermission>();
-
-        protected override void OnStart()
-        {
-            base.OnStart();
-
-            for (int i = 0; i < startingPermissions.Count; i++)
-            {
-                permissions.Add(startingPermissions[i]);
-                permissions.Dirty(i);
-            }
-        }
-
+        
         public bool HasPermission(IDPermission permission)
         {
             if (permission == null)
@@ -41,6 +43,18 @@ namespace SS3D.Systems.Inventory.Items.Generic
             }
 
             return permissions.Contains(permission);
+        }
+
+        public void AddPermission(IDPermission permission)
+        {
+            permissions.Add(permission);
+            permissions.Dirty(permission);
+        }
+
+        public void RemovePermission(IDPermission permission)
+        {
+            permissions.Remove(permission);
+            permissions.Dirty(permission);
         }
 
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)

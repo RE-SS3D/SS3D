@@ -60,6 +60,7 @@ namespace SS3D.Systems.Inventory.Interactions
                     } else
                     {
                         Debug.Log("No permission to lock Locker!");
+                        return false;
                     }
                 }
 

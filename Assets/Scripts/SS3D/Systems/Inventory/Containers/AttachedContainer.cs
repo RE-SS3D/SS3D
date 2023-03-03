@@ -37,9 +37,9 @@ namespace SS3D.Systems.Inventory.Containers
             set => UpdateContainer(value);
         }
 
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
+            base.OnAwake();
 
             UpdateContainer(_container);
         }

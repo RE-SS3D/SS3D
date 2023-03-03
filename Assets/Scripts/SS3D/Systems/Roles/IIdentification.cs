@@ -6,6 +6,11 @@ namespace SS3D.Systems.Roles
     /// </summary>
     public interface IIdentification
     {
+        /// <summary>
+        /// Check if the ID Card has the requested permission
+        /// </summary>
+        /// <param name="permission"></param>
+        /// <returns></returns>
         public bool HasPermission(IDPermission permission);
     }
 }

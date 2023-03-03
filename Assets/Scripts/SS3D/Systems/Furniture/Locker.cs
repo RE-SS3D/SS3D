@@ -10,7 +10,7 @@ namespace SS3D.Systems.Furniture
     public class Locker : NetworkActor, IInteractionTarget
     {
         [SyncVar] public bool Locked;
-        [SerializeField] private IDPermission permissionToUnlock;
+        [SerializeField, SyncVar] private IDPermission permissionToUnlock;
 
         public IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {

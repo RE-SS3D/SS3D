@@ -13,6 +13,7 @@ using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Core;
 using SS3D.Data.Enums;
+using SS3D.Systems.Inventory.Items.Generic;
 
 namespace SS3D.Systems.Roles
 {
@@ -131,8 +132,8 @@ namespace SS3D.Systems.Roles
 
             if (rolePlayer != null)
             {
-                var roleData = rolePlayer.Value;
-                var roleCounter = roleCounters.First(rc => rc.role == roleData.Value);
+                var roleData = rolePlayer.Value.Value;
+                var roleCounter = roleCounters.First(rc => rc.role == roleData);
 
                 roleCounter.RemovePlayer(soul);
             }
@@ -149,14 +150,39 @@ namespace SS3D.Systems.Roles
 
             if (rolePlayer != null)
             {
-                var roleData = rolePlayer.Value;
+                var roleData = rolePlayer.Value.Value;
 
-                Punpun.Say(this, entity.Ckey + " embarked with role " + roleData.Value.Name);
-                if (roleData.Value.Loadout != null)
+                Punpun.Say(this, entity.Ckey + " embarked with role " + roleData.Name);
+                if (roleData.Loadout != null)
                 {
-                    SpawnLoadoutItems(entity, roleData.Value.Loadout);
+                    SpawnIdentificationItems(entity, roleData);
+                    SpawnLoadoutItems(entity, roleData.Loadout);
                 }
             }
+        }
+
+        private void SpawnIdentificationItems(Entity entity, RoleData role)
+        {
+            ItemSystem itemSystem = SystemLocator.Get<ItemSystem>();
+            var inventory = entity.GetComponent<Inventory.Containers.Inventory>();
+
+            Item pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, inventory.IDContainer);
+            Item idCardItem = itemSystem.SpawnItem(role.IDCardPrefab, Vector3.zero, Quaternion.identity);
+
+            PDA pda = (PDA)pdaItem;
+            IDCard idCard = (IDCard)idCardItem;
+
+
+            // Set up ID Card data
+            idCard.OwnerName = entity.Ckey;
+            idCard.RoleName = role.Name;
+            foreach (IDPermission permission in role.Permissions)
+            {
+                idCard.AddPermission(permission);
+                Punpun.Say(this, "Added " + permission.Name + " permission to IDCard of " + entity.Ckey);
+            }
+
+            pda.StartingIDCard = idCardItem;
         }
 
         /// <summary>

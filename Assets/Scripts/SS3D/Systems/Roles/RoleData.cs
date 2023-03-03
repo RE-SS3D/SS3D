@@ -1,3 +1,4 @@
+using SS3D.Data.Enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,14 +14,14 @@ namespace SS3D.Systems.Roles
     public class RoleData : ScriptableObject
     {
         [SerializeField] private string roleName;
-        [SerializeField] private GameObject idCardPrefab;
-        [SerializeField] private GameObject pdaPrefab;
+        [SerializeField] private ItemId pdaPrefab;
+        [SerializeField] private ItemId idCardPrefab;
         [SerializeField] private List<IDPermission> permissions = new List<IDPermission>();
         [SerializeField] private RoleLoadout loadout;
 
         public string Name { get => roleName; }
-        public GameObject IDCardPrefab { get => idCardPrefab; }
-        public GameObject PDAPrefab { get => pdaPrefab; }
+        public ItemId IDCardPrefab { get => idCardPrefab; }
+        public ItemId PDAPrefab { get => pdaPrefab; }
         public List<IDPermission> Permissions { get => permissions; }
         public RoleLoadout Loadout { get => loadout; }
     }

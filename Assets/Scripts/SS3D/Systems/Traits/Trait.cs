@@ -7,10 +7,18 @@ namespace SS3D.Systems
     {
         //Hash for identification
         protected int hash;
-        [HideInInspector]
+        
         public int Hash
         {
-            get => hash;
+            get
+            {
+                if (hash == 0)
+                {
+                    GenerateHash();
+                }
+
+                return hash;
+            }
             set => hash = value;
         }
 
@@ -29,7 +37,8 @@ namespace SS3D.Systems
 
         protected bool Equals(Trait other)
         {
-            return hash == other.hash;
+            // Use Hash instead of hash to prevent uninitialized hashes in clients
+            return Hash == other.hash;
         }
 
         public override bool Equals(object obj)
@@ -47,6 +56,11 @@ namespace SS3D.Systems
 
         [ExecuteInEditMode]
         private void OnValidate()
+        {
+            GenerateHash();
+        }
+
+        private void GenerateHash()
         {
             hash = Animator.StringToHash(name.ToUpper());
         }

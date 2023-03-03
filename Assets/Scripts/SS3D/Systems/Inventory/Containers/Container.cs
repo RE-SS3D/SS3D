@@ -55,9 +55,9 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
 
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
+            base.OnAwake();
 
             StoredItems.OnChange += HandleStoredItemsChanged;
         }
