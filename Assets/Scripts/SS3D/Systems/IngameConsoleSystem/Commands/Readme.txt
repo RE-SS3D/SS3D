@@ -1,0 +1,1 @@
+﻿All commands, that inherit Command will be added to CommandsController
