@@ -4,7 +4,7 @@ using SS3D.Interactions.Interfaces;
 namespace SS3D.Interactions
 {
     /// <summary>
-    /// The instance of an interaction
+    /// The instance of an interaction in progress
     /// </summary>
     public class InteractionInstance
     {
