@@ -34,7 +34,7 @@ namespace SS3D.Core.Settings
         /// The server port used when start connecting to a server.
         /// Defined via command line args when in a built executable or the EditorServerAddress when in the Editor.
         /// </summary>
-        public string ServerPort = "2222";
+        public ushort ServerPort = 2222;
 
         /// <summary>
         /// Defined via command line args when in a built executable or the value in the Project Settings window.
@@ -60,6 +60,7 @@ namespace SS3D.Core.Settings
             NetworkType = NetworkType.Client;
             ServerAddress = string.Empty;
             Ckey = string.Empty;
+            ServerPort = ushort.MinValue;
         }
     }
 }
