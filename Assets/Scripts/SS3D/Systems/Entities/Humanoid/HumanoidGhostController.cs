@@ -1,8 +1,3 @@
-using System;
-using SS3D.Core;
-using SS3D.Core.Behaviours;
-using SS3D.Systems.Health;
-using SS3D.Systems.Screens;
 using UnityEngine;
 
 namespace SS3D.Systems.Entities.Humanoid
@@ -20,9 +15,9 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             ProcessPlayerInput();
 
-            if (_input.magnitude != 0)
+            if (Input.magnitude != 0)
             {
-                MoveMovementTarget(_input);
+                MoveMovementTarget(Input);
                 RotatePlayerToMovement();
                 MovePlayer();
             }
@@ -38,7 +33,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected override void MovePlayer()
         {
-            transform.position += _targetMovement * ((_movementSpeed) * Time.deltaTime);
+            transform.position += TargetMovement * ((_movementSpeed) * Time.deltaTime);
         }
     }
 

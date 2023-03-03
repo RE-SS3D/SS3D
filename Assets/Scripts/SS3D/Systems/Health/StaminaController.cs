@@ -100,13 +100,13 @@ namespace SS3D.Systems.Health
 
         private void SubscribeToEvents()
         {
-            _player.SpeedChangeEvent += DepleteStamina;
+            _player.OnSpeedChangeEvent += DepleteStamina;
             _entity.OnMindChanged += AssignViewToControllable;
         }
 
         private void UnsubscribeFromEvents()
         {
-            _player.SpeedChangeEvent -= DepleteStamina;
+            _player.OnSpeedChangeEvent -= DepleteStamina;
             _entity.OnMindChanged -= AssignViewToControllable;
 
         }

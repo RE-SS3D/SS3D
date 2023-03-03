@@ -19,8 +19,7 @@ namespace SS3D.Systems.Entities.Humanoid
     [RequireComponent(typeof(Animator))]
     public abstract class HumanoidController : NetworkActor
     {
-        #region Fields
-        public event Action<float> SpeedChangeEvent;
+        public event Action<float> OnSpeedChangeEvent;
 
         [Header("Components")] 
         [SerializeField] protected Entity _entity;
@@ -37,10 +36,11 @@ namespace SS3D.Systems.Entities.Humanoid
         private bool _isRunning;
 
         [Header("Debug Info")]
-        protected Vector3 _absoluteMovement;
-        protected Vector2 _input;
-        protected Vector2 _smoothedInput;
-        protected Vector3 _targetMovement;
+        private Vector3 _absoluteMovement;
+        private Vector2 _smoothedInput;
+
+        protected Vector2 Input;
+        protected Vector3 TargetMovement;
 
         private Actor _camera;
         protected Controls.MovementActions MovementControls;
@@ -122,9 +122,9 @@ namespace SS3D.Systems.Entities.Humanoid
                  movementInput.x * Vector3.Cross(Vector3.up, _camera.Forward).normalized;
 
              // smoothly changes the target movement
-             _targetMovement = Vector3.Lerp(_targetMovement, newTargetMovement, Time.deltaTime * (_lerpMultiplier * multiplier));
+             TargetMovement = Vector3.Lerp(TargetMovement, newTargetMovement, Time.deltaTime * (_lerpMultiplier * multiplier));
 
-             Vector3 resultingMovement = _targetMovement + Position;
+             Vector3 resultingMovement = TargetMovement + Position;
             _absoluteMovement = resultingMovement;
 
              _movementTarget.position = _absoluteMovement;
@@ -135,7 +135,7 @@ namespace SS3D.Systems.Entities.Humanoid
         /// </summary>
         protected void RotatePlayerToMovement()
         {
-            Quaternion lookRotation = Quaternion.LookRotation(_targetMovement);
+            Quaternion lookRotation = Quaternion.LookRotation(TargetMovement);
 
             transform.rotation = Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * _rotationLerpMultiplier);
         }
@@ -158,10 +158,10 @@ namespace SS3D.Systems.Entities.Humanoid
             x = Mathf.Clamp(x, -inputFilteredSpeed, inputFilteredSpeed);
             y = Mathf.Clamp(y, -inputFilteredSpeed, inputFilteredSpeed);
 
-            _input = new Vector2(x, y);
-            _smoothedInput = Vector2.Lerp(_smoothedInput, _input, Time.deltaTime * (_lerpMultiplier / 10));
+            Input = new Vector2(x, y);
+            _smoothedInput = Vector2.Lerp(_smoothedInput, Input, Time.deltaTime * (_lerpMultiplier / 10));
 
-            OnSpeedChanged(_input.magnitude != 0 ? inputFilteredSpeed : 0);
+            OnSpeedChanged(Input.magnitude != 0 ? inputFilteredSpeed : 0);
         }
 
         protected virtual float FilterSpeed()
@@ -179,7 +179,7 @@ namespace SS3D.Systems.Entities.Humanoid
 
         private void OnSpeedChanged(float speed)
         {
-            SpeedChangeEvent?.Invoke(speed);
+            OnSpeedChangeEvent?.Invoke(speed);
         }
     }
 

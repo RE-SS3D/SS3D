@@ -50,7 +50,7 @@ namespace SS3D.Networking
             SpawnSodaCansTask();
         }
 
-        public async void SpawnSodaCansTask()
+        private async void SpawnSodaCansTask()
         {
             for (int i = 0; i < SpawnQuantity; i++)
             {

@@ -11,10 +11,9 @@ namespace SS3D.Core.Intro
     /// </summary>
     public sealed class IntroUIHelper : MonoBehaviour
     {
-        [FormerlySerializedAs("_introUiFade")]
         [Header("UI")]
         [SerializeField] private CanvasGroup _introUiCanvasGroup;
-        [FormerlySerializedAs("_connectionUiFade")] [SerializeField] private CanvasGroup _connectionUiCanvasGroup;
+        [SerializeField] private CanvasGroup _connectionUiCanvasGroup;
 
         [Header("Settings")]
         [SerializeField] private float _fadeInDuration;

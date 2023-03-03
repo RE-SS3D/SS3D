@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using SS3D.Logging;
 using UnityEngine;
-using System = SS3D.Core.Behaviours.System;
 
 namespace SS3D.Core
 {
