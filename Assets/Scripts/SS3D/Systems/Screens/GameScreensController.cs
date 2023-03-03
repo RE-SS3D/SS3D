@@ -1,4 +1,5 @@
 using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Events;
@@ -17,7 +18,18 @@ namespace SS3D.Systems.Screens
         private PlayerSpawnedState _spawnedState;
         private Controls.OtherActions _controls;
 
-        protected override void OnAwake()
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+
+
+            AddHandle(ChangeGameScreenEvent.AddListener(HandleChangeGameScreen));
+            AddHandle(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated));
+            AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+        }
+
+        protected override void OnStart()
         {
             base.OnAwake();
 

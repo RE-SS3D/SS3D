@@ -1,3 +1,5 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
@@ -12,14 +14,14 @@ namespace SS3D.Systems.Entities.Debug
         public Entity Target;
         private Controls.OtherActions _controls;
 
-        protected override void OnStart()
+        protected override void OnEnabled()
         {
-            base.OnStart();
-            
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            base.OnEnabled();
+
+			_controls = SystemLocator.Get<InputSystem>().Inputs.Other;
             _controls.SwapMinds.performed += HandleMindSwap;
         }
-
+        
         protected override void OnDestroyed()
         {
             base.OnDestroyed();

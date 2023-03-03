@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Coimbra;
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
 using TMPro;
 using UnityEngine;
@@ -12,25 +14,30 @@ namespace SS3D.Systems.IngameConsoleSystem
     public class ConsolePanelView : Actor
     {
         [SerializeField] private RectTransform _consolePanel;
+        
         /// <summary>
         /// Object, that contains command responses
         /// </summary>
         [SerializeField] private GameObject _contentContainer;
+        
         /// <summary>
         /// Opening/closing speed
         /// </summary>
         [SerializeField] private float _movingSpeed = 2500f;
         [SerializeField] private TMP_InputField _inputField;
+        
         // Used for opening/closing
         private bool _isSliding;
         private bool _isShowed;
         private Vector2 _targetPointMax;
         private Vector2 _targetPointMin;
+        
         /// <summary>
         /// Text field with command responses in _contentContainer
         /// </summary>
         private TextMeshProUGUI _textField;
         private CommandsController _commandsController;
+
         // Used for choosing command via arrows
         [SerializeField] private List<string> _allPrevCommands = new() {""};
         private int _chosenPrevCommand;
@@ -42,9 +49,10 @@ namespace SS3D.Systems.IngameConsoleSystem
 
         private Controls.ConsoleActions _consoleControls;
 
-        protected override void OnStart()
+        protected override void OnEnabled()
         {
-            base.OnStart();
+            base.OnEnabled();
+
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
             _commandsController = new CommandsController();
             _controls = SystemLocator.Get<InputSystem>().Inputs;
@@ -66,7 +74,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             _consoleControls.Submit.performed -= HandleSubmit;
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
             base.HandleUpdate(in deltaTime);
             

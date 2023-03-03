@@ -1,3 +1,5 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
@@ -40,11 +42,19 @@ namespace SS3D.Systems.Entities.Silicon
         private Actor _camera;
         private Controls.MovementActions _controls;
 
-        protected override void OnStart()
+        protected override void OnEnabled()
         {
-            base.OnStart();
+            base.OnEnabled();
 
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
             Setup();
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+
+            _entity.OnMindChanged -= HandleControllingSoulChanged;
         }
 
         private void Setup()
@@ -54,10 +64,8 @@ namespace SS3D.Systems.Entities.Silicon
             _entity.OnMindChanged += HandleControllingSoulChanged;
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-
             if (!IsOwner)
             {
                 return;

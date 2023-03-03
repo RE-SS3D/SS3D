@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using SS3D.Core;
@@ -36,6 +37,13 @@ namespace SS3D.Networking
             _controls.SpawnCans.performed -= HandleSpawnSodaCans;
         }
 
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+        }
+
         [ContextMenu("Spawn Soda Cans")]
         public void HandleSpawnSodaCans(InputAction.CallbackContext callbackContext)
         {
@@ -59,15 +67,18 @@ namespace SS3D.Networking
             }
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                SpawnSodaCans();
+            }
 
             if (!EnableForceField)
             {
                 return;
             }
-            
+
             foreach (Rigidbody spawnedCan in SpawnedCans)
             {
                 Vector3 force = SpawnPosition.position - spawnedCan.position;

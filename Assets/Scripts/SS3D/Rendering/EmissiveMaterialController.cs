@@ -1,3 +1,5 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core.Behaviours;
 using UnityEngine;
 
@@ -15,11 +17,12 @@ namespace SS3D.Rendering
         private Material _materialInstance;
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
-        protected override void OnAwake()
+        protected override void OnEnabled()
         {
-            base.OnAwake();
+            base.OnEnabled();
 
-            Setup(); 
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+            Setup();
         }
 
         private void Setup()
@@ -33,10 +36,8 @@ namespace SS3D.Rendering
             UpdateVisuals();
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-
             UpdateVisuals();
         }
 

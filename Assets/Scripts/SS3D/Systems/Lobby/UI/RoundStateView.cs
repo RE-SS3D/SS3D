@@ -1,9 +1,7 @@
 using Coimbra.Services.Events;
 using SS3D.Attributes;
-using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Rounds;
-using SS3D.Systems.Rounds.Messages;
 using TMPro;
 using UnityEngine;
 using RoundStateUpdated = SS3D.Systems.Rounds.Events.RoundStateUpdated;
@@ -27,14 +25,10 @@ namespace SS3D.Systems.Lobby.UI
         {
             base.OnAwake();
 
-            AddEventListeners();
-            UpdateRoundCountDownText();
-        }
-
-        private void AddEventListeners()
-        {
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
             AddHandle(RoundTickUpdated.AddListener(HandleRoundTickUpdated));
+
+            UpdateRoundCountDownText();
         }
 
         private void HandleRoundTickUpdated(ref EventContext context, in RoundTickUpdated roundTickUpdated)

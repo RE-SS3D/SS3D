@@ -1,4 +1,6 @@
 ﻿using Coimbra;
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core.Behaviours;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,17 +17,16 @@ namespace SS3D.Interactions
         public float Duration { get; set; }
         public Slider TargetSlider;
 
-        protected override void OnStart()
+        protected override void OnEnabled()
         {
-            base.OnStart();
+            base.OnEnabled();
 
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
             Setup();
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-
             UpdateLoadingProgressTask();
         }
 

@@ -5,10 +5,18 @@
     /// </summary>
     public class System : Actor
     {
-        protected override void OnAwake()
+        internal override void OnEnable()
         {
-            base.OnAwake();
+            base.OnEnable();
+
             SystemLocator.Register(this);
+        }
+
+        internal override void OnDisable()
+        {
+            base.OnDisable();
+
+            SystemLocator.Unregister(this);
         }
     }
 }

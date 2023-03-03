@@ -1,190 +1,162 @@
-﻿using System.Collections.Generic;
-using Coimbra.Services;
+﻿using Coimbra.Services;
 using Coimbra.Services.Events;
-using Coimbra.Services.PlayerLoopEvents;
-using FishNet.Object;
 using UnityEngine;
 
 // ReSharper disable InconsistentNaming
 namespace SS3D.Core.Behaviours
 {
     /// <summary>
-    /// Used to optimize all NetworkObjects, avoid MonoBehaviours
+    /// Used to optimize all GameObjects, avoid MonoBehaviours
     /// </summary>
     [Tooltip("Used to optimize all GameObjects, avoid MonoBehaviours")]
-    public class NetworkActor : NetworkBehaviour
+    [DisallowMultipleComponent]
+    public class NetworkActor : NetworkActorBase, IActor
     {
-        private GameObject _gameObjectCache;
-        private Transform _transformCache;
+        public int Id => GameObject.GetInstanceID();
 
-        private bool _initialized;
+        public Transform Transform => GetTransform();
+        public GameObject GameObject => GetGameObject();
+        public RectTransform RectTransform => (RectTransform)Transform;
 
-        private readonly List<EventHandle> _eventHandles = new();
+        public bool ActiveSelf => GameObject.activeSelf;
+        public bool ActiveInHierarchy => GameObject.activeInHierarchy;
 
-        public Transform TransformCache
-        {
-            get
-            {
-                if (!_initialized)
-                {
-                    _transformCache = transform;
-                }
+        public Transform Parent => Transform.parent;
 
-                return _transformCache;
-            }
-            private set => _transformCache = value;
-        }
+        public Vector3 Forward => Transform.forward;
+        public Vector3 Backward => -Transform.forward;
+        public Vector3 Right => Transform.right;
+        public Vector3 Left => -Transform.right;
+        public Vector3 Up => Transform.up;
+        public Vector3 Down => -Transform.up;
 
-        public GameObject GameObjectCache
-        {
-            get
-            {
-                if (!_initialized)
-                {
-                    _gameObjectCache = gameObject;
+        public Transform Root => Transform.root;
+        public Vector3 Scale => Transform.lossyScale;
 
-                }
-
-                return _gameObjectCache;
-            }
-            private set => _gameObjectCache = value;
-        }
-
-        #region ACCESSORS
-        public RectTransform RectTransform => (RectTransform)TransformCache;
-
+        public Matrix4x4 LocalToWorldMatrix => Transform.localToWorldMatrix;
+        
         public Vector3 Position
         {
-            get => TransformCache.position;
-            set => TransformCache.position = value;
+            get => Transform.position;
+            set => Transform.position = value;
         }
 
+        public Vector3 LocalPosition
+        {
+            get => Transform.localPosition;
+            set => Transform.localPosition = value;
+        }
         public Vector3 RotationEuler
         {
-            get => TransformCache.eulerAngles;
-            set => TransformCache.eulerAngles = value;
+            get => Transform.eulerAngles;
+            set => Transform.eulerAngles = value;
         }
 
         public Quaternion Rotation
         {
-            get => TransformCache.rotation;
-            set => TransformCache.rotation = value;
-        }
-
-        public bool ActiveSelf => GameObjectCache.activeSelf;
-        public bool ActiveInHierarchy => GameObjectCache.activeInHierarchy;
-
-        public Transform Parent => TransformCache.parent;
-
-        public Vector3 Forward => TransformCache.forward;
-        public Vector3 Backward => -TransformCache.forward;
-        public Vector3 Right => TransformCache.right;
-        public Vector3 Left => -TransformCache.right;
-        public Vector3 Up => TransformCache.up;
-        public Vector3 Down => -TransformCache.up;
-
-        public Transform Root => TransformCache.root;
-
-        public void SetActive(bool state) => GameObjectCache.SetActive(state);
-        public void SetParent(Transform parent) => TransformCache.SetParent(parent);
-        public void LookAt(Transform target) => TransformCache.LookAt(target);
-        public void LookAt(Vector3 target) => TransformCache.LookAt(target);
-
-        public void AddHandle(EventHandle handle) => _eventHandles.Add(handle);
-
-        public Vector3 LocalPosition
-        {
-            get => TransformCache.localPosition;
-            set => TransformCache.localPosition = value;
+            get => Transform.rotation;
+            set => Transform.rotation = value;
         }
 
         public Quaternion LocalRotation
         {
-            get => TransformCache.localRotation;
-            set => TransformCache.localRotation = value;
+            get => Transform.localRotation;
+            set => Transform.localRotation = value;
         }
 
         public Vector3 LocalEuler
         {
-            get => TransformCache.localEulerAngles;
-            set => TransformCache.localEulerAngles = value;
+            get => Transform.localEulerAngles;
+            set => Transform.localEulerAngles = value;
         }
 
         public Vector3 LocalScale
         {
-            get => TransformCache.localScale;
-            set => TransformCache.localScale = value;
+            get => Transform.localScale;
+            set => Transform.localScale = value;
         }
 
-        public Vector3 Scale => TransformCache.lossyScale;
+        public Matrix4x4 WorldToLocalMatrix => Transform.worldToLocalMatrix;
 
-        public Matrix4x4 LocalToWorldMatrix => TransformCache.localToWorldMatrix;
-        public Matrix4x4 WorldToLocalMatrix => TransformCache.worldToLocalMatrix;
-        #endregion
+        public void SetActive(bool state) => GameObject.SetActive(state);
+        public void SetParent(Transform parent) => Transform.SetParent(parent);
+        public void LookAt(Transform target) => Transform.LookAt(target);
+        public void LookAt(Vector3 target) => Transform.LookAt(target);
 
-        #region SETUP
-        private void Awake()
+        public void AddHandle(EventHandle handle) => EventHandles.Add(handle);
+
+        internal virtual void OnEnable()
         {
             Initialize();
+
+            OnEnabled();
+        }
+
+        internal virtual void OnDisable()
+        {
+            RemoveEventListeners();
+
+            OnDisabled();
+        }
+
+        private void Awake()
+        {
             OnAwake();
         }
 
         private void Start()
         {
-            AddEventListeners();
             OnStart();
         }
 
         private void OnDestroy()
         {
+            RemoveEventListeners();
+
             OnDestroyed();
         }
 
+        protected virtual void OnAwake() { }
+        protected virtual void OnStart() { }
+        protected virtual void OnDestroyed() { }
+        protected virtual void OnEnabled() { }
+        protected virtual void OnDisabled() { }
+        
         private void Initialize()
         {
             TransformCache = transform;
             GameObjectCache = gameObject;
 
-            _initialized = true;
-        }
-
-        private void AddEventListeners()
-        {
-            _eventHandles.Add(LastPreUpdateEvent.AddListener(OnPreUpdate));
-            _eventHandles.Add(UpdateEvent.AddListener(OnUpdate));
-            _eventHandles.Add(LateUpdateEvent.AddListener(OnLateUpdate));
+            Initialized = true;
         }
 
         private void RemoveEventListeners()
         {
             IEventService eventService = ServiceLocator.Get<IEventService>();
-            foreach (EventHandle eventHandle in _eventHandles)
+            foreach (EventHandle eventHandle in EventHandles)
             {
                 eventService?.RemoveListener(eventHandle);
-            }
+            } 
         }
 
-        #endregion
-
-        #region EVENT_CALLS
-        private void OnPreUpdate(ref EventContext context, in LastPreUpdateEvent e) { HandlePreUpdate(e.DeltaTime); }
-        private void OnUpdate(ref EventContext context, in UpdateEvent e) { HandleUpdate(e.DeltaTime); }
-        private void OnLateUpdate(ref EventContext context, in LateUpdateEvent e) { HandleLateUpdate(e.DeltaTime); }
-
-        #endregion
-
-        #region EVENT_CALLBACKS
-        protected virtual void OnAwake() { }
-        protected virtual void OnStart() { }
-
-        protected virtual void OnDestroyed()
+        private Transform GetTransform()
         {
-            RemoveEventListeners();
+            if (!Initialized)
+            {
+                Initialize();
+            }
+
+            return TransformCache;
         }
 
-        protected virtual void HandlePreUpdate(in float deltaTime) { }
-        protected virtual void HandleLateUpdate(float deltaTime) { }
-        protected virtual void HandleUpdate(in float deltaTime) { }
-        #endregion
+        private GameObject GetGameObject()
+        {
+            if (!Initialized)
+            {
+                Initialize();
+            }
+
+            return GameObjectCache;
+        }
     }
 }

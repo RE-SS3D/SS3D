@@ -5,17 +5,17 @@
     /// </summary>
     public class View : Actor
     {
-        protected override void OnAwake()
+        internal override void OnEnable()
         {
-            base.OnAwake();
+            base.OnEnable();
 
             ViewLocator.Register(this);
         }
 
-        protected override void OnDestroyed()
+        internal override void OnDisable()
         {
-            base.OnDestroyed();
-
+            base.OnDisable();
+            
             ViewLocator.Unregister(this);
         }
     }

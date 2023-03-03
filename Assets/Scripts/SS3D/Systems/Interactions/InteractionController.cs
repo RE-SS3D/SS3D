@@ -1,4 +1,6 @@
 ﻿using System;
+﻿using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object;
@@ -12,6 +14,7 @@ using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using EventSystem = UnityEngine.EventSystems.EventSystem;
 
 namespace SS3D.Systems.Interactions
 {
@@ -31,7 +34,14 @@ namespace SS3D.Systems.Interactions
 
         private Camera _camera;
         private RadialInteractionView _radialView;
-        
+
+        protected override void OnEnabled()
+        {
+            base.OnEnabled();
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+        }
+
         public override void OnStartClient()
         {
             base.OnStartClient();

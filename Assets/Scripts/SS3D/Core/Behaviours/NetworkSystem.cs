@@ -5,13 +5,18 @@
     /// </summary>
     public class NetworkSystem : NetworkActor
     {
-        /// <summary>
-        /// Registers the system on awake.
-        /// </summary>
-        protected override void OnAwake()
+        internal override void OnEnable()
         {
-            base.OnAwake();
+            base.OnEnable();
+
             SystemLocator.Register(this);
+        }
+
+        internal override void OnDisable()
+        {
+            base.OnDisable();
+
+            SystemLocator.Unregister(this);
         }
     }
 }

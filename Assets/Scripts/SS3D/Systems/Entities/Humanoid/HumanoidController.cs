@@ -1,3 +1,5 @@
+using Coimbra.Services.Events;
+using Coimbra.Services.PlayerLoopEvents;
 using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
@@ -53,14 +55,23 @@ namespace SS3D.Systems.Entities.Humanoid
         public bool IsRunning => _isRunning;
         #endregion
 
-        protected override void OnStart()
+        protected override void OnEnabled()
         {
-            base.OnStart();
-            
+            base.OnEnabled();
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+
             Setup();
         }
 
-        protected void Setup()
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+
+            _entity.OnMindChanged -= HandleControllingSoulChanged;
+        }
+
+        private void Setup()
         {
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera;
             _entity.OnMindChanged += HandleControllingSoulChanged;
@@ -84,10 +95,8 @@ namespace SS3D.Systems.Entities.Humanoid
             OnSpeedChanged(0);
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-
             if (!IsOwner)
             {
                 return;
@@ -100,19 +109,6 @@ namespace SS3D.Systems.Entities.Humanoid
         /// Executes the movement code and updates the IK targets
         /// </summary>
         protected abstract void ProcessCharacterMovement();
-    
-        /// <summary>
-        /// Gets the mouse position and updates the mouse IK targets while maintaining the player height
-        /// </summary>
-        private void UpdateMousePositionTransforms()
-        {
-            // Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-            // Vector3 mousePos = ray.origin - ray.direction * (ray.origin.y / ray.direction.y);
-            // mousePos = new Vector3(mousePos.x, transform.position.y, mousePos.z);
-            
-            // _mouseDirectionTransform.LookAt(mousePos);
-            // _mousePositionTransform.position = mousePos;
-        }
 
         /// <summary>
         /// Moves the movement targets with the given input
@@ -141,8 +137,7 @@ namespace SS3D.Systems.Entities.Humanoid
         {
             Quaternion lookRotation = Quaternion.LookRotation(_targetMovement);
 
-            transform.rotation =
-                Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * _rotationLerpMultiplier);
+            transform.rotation = Quaternion.Slerp(Rotation, lookRotation, Time.deltaTime * _rotationLerpMultiplier);
         }
 
         /// <summary>
@@ -182,7 +177,7 @@ namespace SS3D.Systems.Entities.Humanoid
             _isRunning = !_isRunning;
         }
 
-        protected void OnSpeedChanged(float speed)
+        private void OnSpeedChanged(float speed)
         {
             SpeedChangeEvent?.Invoke(speed);
         }
