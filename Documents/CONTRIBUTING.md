@@ -1,4 +1,6 @@
-# How To Contribute To RE:SS3D
+# How To Contribute To SS3D
+
+***Visist [our GitBook](https://ss3d.gitbook.io/home) for more detailed guides and documents on contributing to SS3D!***
 
 This document outlines the guidelines for contributing to the SS3D project. If you have any questions, feel free to ask on our [discussions page](https://github.com/RE-SS3D/SS3D/discussions) or [discord server](https://discord.gg/Z3sPhyS).
 
@@ -92,3 +94,5 @@ Option B.
 First you will need to either build the project using Unity or download one of our offical builds from our [GitHub Releases page](https://github.com/RE-SS3D/SS3D/releases), alternatively you can visit https://ss3d.space/download/ which will automatically download our latest release from GitHub.
 
 Running the game itself is a little bit more complicated than it needs to be at this time but will be simplified as our development progresses. The details of running the game have been moved [here](https://ss3d.gitbook.io/programming/guides/running). If you are only interested in play testing the game by yourself, just follow the 'Joining a Server' page.
+
+***Visist [our GitBook](https://ss3d.gitbook.io/home) for more detailed guides and documents on contributing to SS3D!***

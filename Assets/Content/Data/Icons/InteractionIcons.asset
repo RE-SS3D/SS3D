@@ -16,9 +16,9 @@ MonoBehaviour:
   EnumName: InteractionIcons
   AssetGroup: {fileID: 11400000, guid: 43f5c5834bd38014f9dbacb0f51bcc54, type: 2}
   Assets:
-  - {fileID: 2800000, guid: d1f34343e08a14e48a856e409c355f32, type: 3}
-  - {fileID: 2800000, guid: d6678ac9f1a1c714fa5afdb6f1a0ff11, type: 3}
-  - {fileID: 2800000, guid: 48da6209938d27844878cc3d318295e2, type: 3}
-  - {fileID: 2800000, guid: 03812e70c708b3047b20e316b16f1896, type: 3}
-  - {fileID: 2800000, guid: 3788240ffacf45b4998b63134326628e, type: 3}
-  - {fileID: 2800000, guid: bf85b01e2333f59439185d22d03adcaa, type: 3}
+  - {fileID: 21300000, guid: 54406d09550cf4944a17101a88c462fe, type: 2}
+  - {fileID: 21300000, guid: 4a9d3f4d34322474dbac34b1f6a651b9, type: 2}
+  - {fileID: 21300000, guid: 4ff63b0be4d987b48a06db36c3fa65f1, type: 2}
+  - {fileID: 21300000, guid: 1bb0d8661e844c840a0d561b409d2514, type: 2}
+  - {fileID: 21300000, guid: 962c2df087e7a554fb038e3bdca2aa6e, type: 2}
+  - {fileID: 21300000, guid: a214138dfb4bac146aa09a2ee9bf14b2, type: 2}
