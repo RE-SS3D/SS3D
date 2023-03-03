@@ -2,12 +2,12 @@ namespace SS3D.Data.Enums
 {
     public enum InteractionIcons
     {
-        Take = 0, 
-        Discard = 1, 
-        Open = 2, 
-        Honk = 3, 
+        Discard = 0, 
+        Honk = 1, 
+        Nuke = 2, 
+        Open = 3, 
         Power = 4, 
-        Nuke = 5, 
+        Take = 5, 
     }
 }
 
