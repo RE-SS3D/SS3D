@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SS3D.Core.Behaviours
 {
     /// <summary>
-    /// Used to optimize all GameObjects, avoid MonoBehaviours
+    /// Used to optimize all GameObjects, avoiding MonoBehaviours
     /// </summary>
     [Tooltip("Used to optimize all GameObjects, avoid MonoBehaviours")]
     public class Actor : ActorBase, IActor
@@ -76,17 +76,40 @@ namespace SS3D.Core.Behaviours
         }
 
         public void SetActive(bool state) => GameObject.SetActive(state);
-
         public void SetParent(Transform parent) => Transform.SetParent(parent);
+
         public void LookAt(Transform target) => Transform.LookAt(target);
         public void LookAt(Vector3 target) => Transform.LookAt(target);
 
         public void AddHandle(EventHandle handle) => EventHandles.Add(handle);
 
+        /// <summary>
+        /// Called once the script is loaded and registered on ActorLocator.
+        /// </summary>
+        protected virtual void OnAwake() { }
+
+        /// <summary>
+        /// Called once the start function is called.
+        /// </summary>
+        protected virtual void OnStart() { }
+
+        /// <summary>
+        /// Called once the Actor is destroyed, after removing the Actor from the ActorLocator and all event listeners.
+        /// </summary>
+        protected virtual void OnDestroyed() { }
+
+        /// <summary>
+        /// Called when the Actor's GameObject is enabled. 
+        /// </summary>
+        protected virtual void OnEnabled() { }
+
+        /// <summary>
+        /// Called when the Actor's GameObject is disabled.
+        /// </summary>
+        protected virtual void OnDisabled() { }
+
         internal virtual void OnEnable()
         {
-            Initialize();
-
             OnEnabled();
         }
 
@@ -97,7 +120,7 @@ namespace SS3D.Core.Behaviours
 
         private void Awake()
         {
-            ActorLocator.Register(this);
+            Initialize();
 
             OnAwake();
         }
@@ -115,12 +138,6 @@ namespace SS3D.Core.Behaviours
             OnDestroyed();
         }
 
-        protected virtual void OnAwake() { }
-        protected virtual void OnStart() { }
-        protected virtual void OnDestroyed() { }
-        protected virtual void OnEnabled() { }
-        protected virtual void OnDisabled() { }
-        
         private void Initialize()
         {
             TransformCache = transform;

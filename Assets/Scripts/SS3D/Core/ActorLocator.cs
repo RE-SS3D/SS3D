@@ -7,7 +7,7 @@ namespace SS3D.Core
         /// <summary>
         /// A dictionary containing all the objects that registered themselves.
         /// </summary>
-        private static readonly Dictionary<int, IActor> Systems = new();
+        private static readonly Dictionary<int, IActor> Actors = new();
 
         /// <summary>
         /// Registers a system in the dictionary so we don't have to use find object of type.
@@ -17,9 +17,9 @@ namespace SS3D.Core
         {
             int id = actor.GameObject.GetInstanceID();
 
-            if (!Systems.TryGetValue(id, out IActor _))
+            if (!Actors.TryGetValue(id, out IActor _))
             {
-                Systems.Add(id, actor);
+                Actors.Add(id, actor);
             }
         }
 
@@ -28,9 +28,9 @@ namespace SS3D.Core
         /// </summary>
         public static void Unregister(IActor actor)
         {
-            if (Systems.TryGetValue(actor.Id, out IActor _))
+            if (Actors.TryGetValue(actor.Id, out IActor _))
             {
-                Systems.Remove(actor.Id);
+                Actors.Remove(actor.Id);
             }
         }
 
@@ -41,7 +41,7 @@ namespace SS3D.Core
         /// <returns></returns>
         public static IActor Get(int id)
         {
-            if (Systems.TryGetValue(id, out IActor match))
+            if (Actors.TryGetValue(id, out IActor match))
             {
                 return match;
             }
