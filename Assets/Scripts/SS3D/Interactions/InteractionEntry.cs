@@ -2,6 +2,9 @@
 
 namespace SS3D.Interactions
 {
+    /// <summary>
+    /// An entry of an interaction and it's target interactable
+    /// </summary>
     public struct InteractionEntry
     {
         public readonly IInteractionTarget Target;

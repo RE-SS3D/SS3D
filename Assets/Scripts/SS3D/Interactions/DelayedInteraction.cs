@@ -25,6 +25,10 @@ namespace SS3D.Interactions
         private float _startTime;
         private float _lastCheck;
 
+        /// <summary>
+        /// Creates a client-side interaction object for this interaction
+        /// </summary>
+        /// <param name="interactionEvent">The interaction event</param>
         public override IClientInteraction CreateClient(InteractionEvent interactionEvent)
         {
             // Don't create client interaction if delay too small
@@ -43,6 +47,11 @@ namespace SS3D.Interactions
         public override Sprite GetIcon(InteractionEvent interactionEvent) { return Icon; }
         public abstract override bool CanInteract(InteractionEvent interactionEvent);
 
+        /// <summary>
+        /// Sets up the delay
+        /// </summary>
+        /// <param name="interactionEvent">The interaction event</param>
+        /// <param name="reference">The reference to this interaction</param>
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             _startTime = Time.time;
@@ -50,13 +59,18 @@ namespace SS3D.Interactions
             return true;
         }
 
+        /// <summary>
+        /// Starts the interaction after the delay has passed
+        /// </summary>
+        /// <param name="interactionEvent">The interaction event</param>
+        /// <param name="reference">The reference to this interaction</param>
         public override bool Update(InteractionEvent interactionEvent, InteractionReference reference)
         {
             if (_lastCheck + CheckInterval < Time.time)
             {
                 if (!CanInteract(interactionEvent))
                 {
-                    // Cancel own interaction
+                    // Cancel the interaction
                     interactionEvent.Source.CancelInteraction(reference);
                     return true;
                 }
@@ -82,8 +96,13 @@ namespace SS3D.Interactions
             return true;
         }
 
+        /// <inheritdoc />
         public abstract override void Cancel(InteractionEvent interactionEvent, InteractionReference reference);
 
+        /// <summary>
+        /// Starts the interaction after the delay has passed
+        /// </summary>
+        /// <param name="interactionEvent">The interaction event</param>
         protected abstract void StartDelayed(InteractionEvent interactionEvent);
     }
 }
