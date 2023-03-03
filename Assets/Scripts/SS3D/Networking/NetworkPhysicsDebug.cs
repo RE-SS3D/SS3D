@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using SS3D.Core;
 using SS3D.Core.Behaviours;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
 namespace SS3D.Networking
@@ -17,9 +19,25 @@ namespace SS3D.Networking
         public float ForceMultiplier = 1f;
 
         public List<Rigidbody> SpawnedCans;
+        private Controls.OtherActions _controls;
+        
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls.SpawnCans.performed += HandleSpawnSodaCans;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            _controls.SpawnCans.performed -= HandleSpawnSodaCans;
+        }
 
         [ContextMenu("Spawn Soda Cans")]
-        public void SpawnSodaCans()
+        public void HandleSpawnSodaCans(InputAction.CallbackContext callbackContext)
         {
             SpawnSodaCansTask();
         }
@@ -45,18 +63,11 @@ namespace SS3D.Networking
         {
             base.HandleUpdate(in deltaTime);
 
-            if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                SpawnSodaCans();
-            }
-
             if (!EnableForceField)
             {
                 return;
             }
-
             
-
             foreach (Rigidbody spawnedCan in SpawnedCans)
             {
                 Vector3 force = SpawnPosition.position - spawnedCan.position;

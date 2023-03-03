@@ -8,6 +8,7 @@ using SS3D.Systems.Inventory.Interfaces;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace SS3D.Systems.Inventory.UI
@@ -257,7 +258,7 @@ namespace SS3D.Systems.Inventory.UI
 
 		public GameObject GetCurrentGameObjectInSlot()
 		{
-			Vector2Int slotPosition = GetSlotPosition(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+			Vector2Int slotPosition = GetSlotPosition(Mouse.current.position.ReadValue());
 			Container container = AttachedContainer.Container;
 			return container.ItemAt(slotPosition) == null ? null : container.ItemAt(slotPosition).gameObject;
 		}
