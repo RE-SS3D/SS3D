@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace SS3D.Systems.Roles
 {
+    /// <summary>
+    /// All the relevant data for a role, including it's name, default ID Card and PDA, 
+    /// Permissions and Starting Items
+    /// </summary>
     [Serializable, CreateAssetMenu(fileName = "Role Data", menuName = "Roles/RoleData")]
     public class RoleData : ScriptableObject
     {

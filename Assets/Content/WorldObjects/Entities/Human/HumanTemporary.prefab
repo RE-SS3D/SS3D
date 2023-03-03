@@ -3285,7 +3285,8 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2930813178971533500}
   Hands: {fileID: 3989715289005515527}
   IDContainer: {fileID: 8929356152059405485}
-  testPermission: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
+  LeftPocketContainer: {fileID: 5182983736081886953}
+  RightPocketContainer: {fileID: 6294009354521529725}
   Body: {fileID: 8336170331735268562}
 --- !u!114 &3989715289005515527
 MonoBehaviour:

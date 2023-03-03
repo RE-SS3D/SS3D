@@ -14,6 +14,9 @@ namespace SS3D.Systems.Entities
         [SyncVar(OnChange = nameof(SyncSoul))]
         public Soul Soul;
 
+        [SyncVar]
+        public Entity Entity;
+
         public static Mind Empty { get; private set; }
 
         protected override void OnStart()

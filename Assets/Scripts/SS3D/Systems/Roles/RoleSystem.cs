@@ -1,7 +1,5 @@
 using FishNet.Object;
 using SS3D.Core.Behaviours;
-using SS3D.Systems.Rounds.Events;
-using SS3D.Systems.Rounds.Messages;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
 using SS3D.Systems.Entities.Events;
@@ -11,7 +9,10 @@ using SS3D.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using SS3D.Systems.Entities;
-using System;
+using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Items;
+using SS3D.Core;
+using SS3D.Data.Enums;
 
 namespace SS3D.Systems.Roles
 {
@@ -21,6 +22,7 @@ namespace SS3D.Systems.Roles
         private List<RoleCounter> roleCounters = new List<RoleCounter>();
         private Dictionary<Soul, RoleData> rolePlayers = new Dictionary<Soul, RoleData>();
 
+        #region Setup
         protected override void OnStart()
         {
             base.OnStart();
@@ -30,12 +32,16 @@ namespace SS3D.Systems.Roles
         [Server]
         private void Setup()
         {
-            AddHandle(IndividualPlayerEmbarked.AddListener(HandleIndividualPlayerEmbarked));
             AddHandle(OnlineSoulsChanged.AddListener(HandleOnlineSoulsChanged));
+            AddHandle(PlayerContainersReady.AddListener(HandlePlayerContainersReady));
 
             GetAvailableRoles();
         }
 
+        /// <summary>
+        /// Get all roles in the current AvailableRoles class and sets up
+        /// the Role Counters for them
+        /// </summary>
         [Server]
         private void GetAvailableRoles()
         {
@@ -53,7 +59,9 @@ namespace SS3D.Systems.Roles
                 roleCounters.Add(roleCounter);
             }
         }
+        #endregion
 
+        #region Event Handlers
         [Server]
         private void HandleOnlineSoulsChanged(ref EventContext context, in OnlineSoulsChanged e)
         {
@@ -85,11 +93,16 @@ namespace SS3D.Systems.Roles
         }
 
         [Server]
-        private void HandleIndividualPlayerEmbarked(ref EventContext context, in IndividualPlayerEmbarked e)
+        private void HandlePlayerContainersReady(ref EventContext context, in PlayerContainersReady e)
         {
-            GiveRoleLoadoutToPlayer(e.Player.Mind.Soul);
+            GiveRoleLoadoutToPlayer(e.Player);
         }
+        #endregion
 
+        /// <summary>
+        /// Assign a role to the player after joining the server
+        /// </summary>
+        /// <param name="soul"></param>
         private void AssignPlayerRole(Soul soul)
         {
             RoleCounter assistantRole = roleCounters.FirstOrDefault(rc => rc.role.Name == "Assistant");
@@ -107,6 +120,10 @@ namespace SS3D.Systems.Roles
             }
         }
 
+        /// <summary>
+        /// Remove players from the Role Counters if he quit before embarking
+        /// </summary>
+        /// <param name="soul"></param>
         private void RemovePlayerFromCounters(Soul soul)
         {
             KeyValuePair<Soul, RoleData>? rolePlayer =
@@ -121,12 +138,58 @@ namespace SS3D.Systems.Roles
             }
         }
 
-        private void GiveRoleLoadoutToPlayer(Soul soul)
+        /// <summary>
+        /// Checks the role of the player and spawns his items
+        /// </summary>
+        /// <param name="entity">The player that will receive the items</param>
+        private void GiveRoleLoadoutToPlayer(Entity entity)
         {
-            foreach (var rolePlayer in rolePlayers)
+            KeyValuePair<Soul, RoleData>? rolePlayer =
+                rolePlayers.FirstOrDefault(rp => rp.Key == entity.Mind.Soul);
+
+            if (rolePlayer != null)
             {
-                Punpun.Say(this, rolePlayer.Key.Ckey + " role is " + rolePlayer.Value.Name);
+                var roleData = rolePlayer.Value;
+
+                Punpun.Say(this, entity.Ckey + " embarked with role " + roleData.Value.Name);
+                if (roleData.Value.Loadout != null)
+                {
+                    SpawnLoadoutItems(entity, roleData.Value.Loadout);
+                }
             }
+        }
+
+        /// <summary>
+        /// Spawn all the role items for the player
+        /// </summary>
+        /// <param name="entity">The player that will receive the items</param>
+        /// <param name="loadout">The loadout of items he will receive</param>
+        private void SpawnLoadoutItems(Entity entity, RoleLoadout loadout)
+        {
+            var hands = entity.GetComponent<Hands>();
+            var inventory = entity.GetComponent<Inventory.Containers.Inventory>();
+
+            SpawnItemInSlot(loadout.leftHandItem, loadout.leftHand, hands.HandContainers[0].Container);
+            SpawnItemInSlot(loadout.rightHandItem, loadout.rightHand, hands.HandContainers[1].Container);
+            SpawnItemInSlot(loadout.leftPocketItem, loadout.leftPocket, inventory.LeftPocketContainer);
+            SpawnItemInSlot(loadout.rightPocketItem, loadout.rightPocket, inventory.RightPocketContainer);
+        }
+
+        /// <summary>
+        /// Spawns an item inside a container slot after checking for boolean
+        /// </summary>
+        /// <param name="itemId">The id of the item to be spawned</param>
+        /// <param name="shouldSpawn">Condition indicating if the item should be spawned</param>
+        /// <param name="container">Container the item will be spawned in</param>
+        private void SpawnItemInSlot(ItemId itemId, bool shouldSpawn, Container container)
+        {
+            if (!shouldSpawn)
+            {
+                return;
+            }
+
+            ItemSystem itemSystem = SystemLocator.Get<ItemSystem>();
+            itemSystem.SpawnItemInContainer(itemId, container);
         }
     }
 }

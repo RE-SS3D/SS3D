@@ -3,11 +3,11 @@ using Coimbra.Services.Events;
 
 namespace SS3D.Systems.Entities.Events
 {
-    public partial struct IndividualPlayerEmbarked : IEvent
+    public partial struct PlayerEmbarked : IEvent
     {
         public readonly Entity Player;
 
-        public IndividualPlayerEmbarked(Entity player)
+        public PlayerEmbarked(Entity player)
         {
             Player = player;
         }

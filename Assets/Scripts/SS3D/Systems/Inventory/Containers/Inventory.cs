@@ -4,7 +4,9 @@ using FishNet.Connection;
 using FishNet.Object;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Logging;
 using SS3D.Systems.Entities;
+using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.UI;
 using SS3D.Systems.Roles;
@@ -36,6 +38,16 @@ namespace SS3D.Systems.Inventory.Containers
         public Container IDContainer;
 
         /// <summary>
+        /// The container of the left pocket
+        /// </summary>
+        public Container LeftPocketContainer;
+
+        /// <summary>
+        /// The container of the right pocket
+        /// </summary>
+        public Container RightPocketContainer;
+
+        /// <summary>
         /// The controllable body of the owning player
         /// </summary>
         public Entity Body;
@@ -60,6 +72,14 @@ namespace SS3D.Systems.Inventory.Containers
 
             InventoryView.Setup();
             InventoryView.Enable(true);
+
+            CmdPlayerContainersReady(Body);
+        }
+
+        [ServerRpc]
+        private void CmdPlayerContainersReady(Entity entity)
+        {
+            new PlayerContainersReady(entity).Invoke(this);
         }
 
         protected override void OnAwake()

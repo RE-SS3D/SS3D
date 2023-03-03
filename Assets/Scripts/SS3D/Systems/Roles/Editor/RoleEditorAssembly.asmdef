@@ -1,0 +1,22 @@
+{
+    "name": "RoleEditorAssembly",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ca7dfa56d1d490249a5fe56aee92a13c",
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:eb242eaf9f292954eb8c6fbd63c46deb",
+        "GUID:1476e4af5b8d89d4c9963efe314428b9",
+        "GUID:6e00473804df0f0468c07310fbce5737"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

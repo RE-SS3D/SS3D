@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9fbd6da0c74d76746b141068081e0dc3, type: 3}
-  m_Name: SecurityLoadout
+  m_Name: AssistantLoadout
   m_EditorClassIdentifier: 
   leftHand: 1
-  rightHand: 1
+  rightHand: 0
   leftPocket: 0
   rightPocket: 0
   leftHandItem: 0
-  rightHandItem: 1
+  rightHandItem: 0
   leftPocketItem: 0
   rightPocketItem: 0
