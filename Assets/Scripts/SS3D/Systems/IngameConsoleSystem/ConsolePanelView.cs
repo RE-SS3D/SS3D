@@ -35,6 +35,10 @@ namespace SS3D.Systems.IngameConsoleSystem
         [SerializeField] private List<string> _allPrevCommands = new() {""};
         private int _chosenPrevCommand;
         private Controls _controls;
+        /// <summary>
+        /// Contains actions enabled states before opening the console
+        /// </summary>
+        private Dictionary<string, bool> _actionsStates;
 
         private Controls.ConsoleActions _consoleControls;
 
@@ -81,7 +85,14 @@ namespace SS3D.Systems.IngameConsoleSystem
             _targetPointMin = Vector2.zero;
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             _inputField.DeactivateInputField();
-            _controls.Enable();
+
+            foreach (KeyValuePair<string, bool> _actionState in _actionsStates)
+            {
+                if (_actionState.Value)
+                {
+                    _controls.FindAction(_actionState.Key).Enable();
+                }
+            }
             _consoleControls.Disable();
             _consoleControls.Open.Enable();
         }
@@ -94,6 +105,12 @@ namespace SS3D.Systems.IngameConsoleSystem
             _targetPointMin = new Vector2(0, -_consolePanel.rect.height);
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             _inputField.ActivateInputField();
+            // Save info for enabling when console is closing
+            _actionsStates = new();
+            foreach (InputAction action in _controls)
+            {
+                _actionsStates.Add(action.name, action.enabled);
+            }
             _controls.Disable();
             _consoleControls.Enable();
             _consoleControls.Open.Disable();
