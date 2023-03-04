@@ -49,6 +49,13 @@ namespace SS3D.Systems.IngameConsoleSystem
 
         private Controls.ConsoleActions _consoleControls;
 
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+        }
+
         protected override void OnEnabled()
         {
             base.OnEnabled();
@@ -76,8 +83,6 @@ namespace SS3D.Systems.IngameConsoleSystem
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-            
             if (_isSliding)
             {
                 Slide();

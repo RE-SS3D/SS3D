@@ -45,15 +45,11 @@ namespace SS3D.Systems.Entities.Humanoid
         private Actor _camera;
         protected Controls.MovementActions MovementControls;
         protected Controls.HotkeysActions HotkeysControls;
-        private const float _walkAnimatorValue = .3f;
-        private const float _runAnimatorValue = 1f;
-        #endregion
 
-        #region Properties
-        public virtual float WalkAnimatorValue => _walkAnimatorValue;
-        public virtual float RunAnimatorValue => _runAnimatorValue;
+        public const float WalkAnimatorValue = .3f;
+        public const float RunAnimatorValue = 1f;
+
         public bool IsRunning => _isRunning;
-        #endregion
 
         protected override void OnEnabled()
         {

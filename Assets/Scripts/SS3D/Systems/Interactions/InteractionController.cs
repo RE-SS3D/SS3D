@@ -35,13 +35,6 @@ namespace SS3D.Systems.Interactions
         private Camera _camera;
         private RadialInteractionView _radialView;
 
-        protected override void OnEnabled()
-        {
-            base.OnEnabled();
-
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
-        }
-
         public override void OnStartClient()
         {
             base.OnStartClient();

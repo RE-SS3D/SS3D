@@ -69,11 +69,6 @@ namespace SS3D.Networking
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                SpawnSodaCans();
-            }
-
             if (!EnableForceField)
             {
                 return;

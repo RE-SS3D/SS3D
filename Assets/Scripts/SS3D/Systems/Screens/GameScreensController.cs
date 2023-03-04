@@ -26,7 +26,6 @@ namespace SS3D.Systems.Screens
             AddHandle(ChangeGameScreenEvent.AddListener(HandleChangeGameScreen));
             AddHandle(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated));
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
-            AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
         protected override void OnStart()

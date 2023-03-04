@@ -40,13 +40,6 @@ namespace SS3D.Systems.Gamemodes.UI
             base.OnStart();
 
             _fade.SetFade(false);
-        }
-
-        protected override void OnStart()
-        {
-            base.OnStart();
-
-            _fade.SetFade(false);
             _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
             _controls.Fade.performed += HandleFadePerformed;
             _controls.Fade.canceled += HandleFadeCanceled;

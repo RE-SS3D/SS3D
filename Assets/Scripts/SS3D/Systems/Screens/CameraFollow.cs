@@ -84,6 +84,13 @@ namespace SS3D.Systems.Screens
 
         #endregion
 
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+        }
+
         protected override void OnStart()
         {
             base.OnStart();
@@ -103,10 +110,8 @@ namespace SS3D.Systems.Screens
             _controls.SnapLeft.performed -= HandleSnapLeft;
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(deltaTime);
-
             ProcessCameraPosition();
         }
         

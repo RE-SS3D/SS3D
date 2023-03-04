@@ -60,8 +60,6 @@ namespace SS3D.Systems.Interactions
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)
         {
-            base.HandleUpdate(in deltaTime);
-
             UpdateIndicator();
         }
 
