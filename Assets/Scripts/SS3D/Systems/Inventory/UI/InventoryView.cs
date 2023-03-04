@@ -72,7 +72,7 @@ namespace SS3D.Systems.Inventory.UI
                     continue;
                 }
 
-                _containerDisplays[i].UiElement.Destroy();
+                _containerDisplays[i].UiElement.Dispose(true);
                 _containerDisplays.RemoveAt(i);
                 return;
             }

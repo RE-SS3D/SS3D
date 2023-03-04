@@ -69,7 +69,7 @@ namespace SS3D.Core
             }
             else
             {
-                FindObjectOfType<DiscordManager>().Destroy();
+                Destroy(FindObjectOfType<DiscordManager>());
             }
         }
 
