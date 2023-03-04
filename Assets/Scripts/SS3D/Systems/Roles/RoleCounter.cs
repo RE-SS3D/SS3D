@@ -8,10 +8,10 @@ namespace SS3D.Systems.Roles
     /// </summary>
     public class RoleCounter
     {
-        public RoleData role;
-        public int currentRoles;
-        public int availableRoles;
-        public List<Soul> players = new List<Soul>();
+        public RoleData Role;
+        public int CurrentRoles;
+        public int AvailableRoles;
+        public List<Soul> Players = new List<Soul>();
 
         /// <summary>
         /// Add player to role if there are available slots
@@ -19,10 +19,10 @@ namespace SS3D.Systems.Roles
         /// <param name="player"></param>
         public void AddPlayer(Soul player)
         {
-            if (currentRoles < availableRoles || availableRoles == 0)
+            if (CurrentRoles < AvailableRoles || AvailableRoles == 0)
             {
-                players.Add(player);
-                currentRoles++;
+                Players.Add(player);
+                CurrentRoles++;
             }
         }
 
@@ -32,8 +32,8 @@ namespace SS3D.Systems.Roles
         /// <param name="player"></param>
         public void RemovePlayer(Soul player)
         {
-            players.Remove(player);
-            currentRoles--;
+            Players.Remove(player);
+            CurrentRoles--;
         }
     }
 }

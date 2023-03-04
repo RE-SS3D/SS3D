@@ -54,8 +54,8 @@ namespace SS3D.Systems.Roles
             foreach (RolesData role in rolesAvailable.roles)
             {
                 RoleCounter roleCounter = new RoleCounter();
-                roleCounter.role = role.data;
-                roleCounter.availableRoles = role.availableRoles;
+                roleCounter.Role = role.Data;
+                roleCounter.AvailableRoles = role.AvailableRoles;
 
                 roleCounters.Add(roleCounter);
             }
@@ -106,18 +106,18 @@ namespace SS3D.Systems.Roles
         /// <param name="soul"></param>
         private void AssignPlayerRole(Soul soul)
         {
-            RoleCounter assistantRole = roleCounters.FirstOrDefault(rc => rc.role.Name == "Assistant");
-            RoleCounter securityRole = roleCounters.FirstOrDefault(rc => rc.role.Name == "Security");
+            RoleCounter assistantRole = roleCounters.FirstOrDefault(rc => rc.Role.Name == "Assistant");
+            RoleCounter securityRole = roleCounters.FirstOrDefault(rc => rc.Role.Name == "Security");
 
-            if (securityRole == null || securityRole.currentRoles == securityRole.availableRoles)
+            if (securityRole == null || securityRole.CurrentRoles == securityRole.AvailableRoles)
             {
                 assistantRole.AddPlayer(soul);
-                rolePlayers.Add(soul, assistantRole.role);
+                rolePlayers.Add(soul, assistantRole.Role);
             }
             else
             {
                 securityRole.AddPlayer(soul);
-                rolePlayers.Add(soul, securityRole.role);
+                rolePlayers.Add(soul, securityRole.Role);
             }
         }
 
@@ -133,7 +133,7 @@ namespace SS3D.Systems.Roles
             if (rolePlayer != null)
             {
                 var roleData = rolePlayer.Value.Value;
-                var roleCounter = roleCounters.First(rc => rc.role == roleData);
+                var roleCounter = roleCounters.First(rc => rc.Role == roleData);
 
                 roleCounter.RemovePlayer(soul);
             }

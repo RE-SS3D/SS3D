@@ -8,7 +8,7 @@ namespace SS3D.Systems
     {
         public IDPermission()
         {
-            category = TraitCategories.IDPermission;
+            _category = TraitCategories.IDPermission;
         }
     }
 }

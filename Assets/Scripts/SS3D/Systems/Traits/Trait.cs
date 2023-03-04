@@ -29,10 +29,11 @@ namespace SS3D.Systems
             set => name = value;
         }
 
-        protected TraitCategories category;
+        protected TraitCategories _category;
+
         public TraitCategories Category
         {
-            get => category;
+            get => _category;
         }
 
         protected bool Equals(Trait other)

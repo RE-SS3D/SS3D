@@ -3,6 +3,7 @@ using SS3D.Data.Enums;
 using SS3D.Interactions;
 using SS3D.Interactions.Extensions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Logging;
 using SS3D.Systems.Furniture;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
@@ -49,17 +50,17 @@ namespace SS3D.Systems.Inventory.Interactions
             IInteractionSource source = interactionEvent.Source;
             if (source is IGameObjectProvider sourceGameObjectProvider)
             {
-                var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
+                Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
                 
                 if (hands != null)
                 {
                     if (hands.Inventory.HasPermission(permissionToUnlock))
                     {
-                        Debug.Log("Locker has been locked!");
+                        Punpun.Say(this, "Locker has been locked!");
                         locker.Locked = true;
                     } else
                     {
-                        Debug.Log("No permission to lock Locker!");
+                        Punpun.Say (this, "No permission to lock Locker!");
                         return false;
                     }
                 }

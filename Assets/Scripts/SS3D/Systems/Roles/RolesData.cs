@@ -8,7 +8,7 @@ namespace SS3D.Systems.Roles
     [Serializable]
     public class RolesData
     {
-        public RoleData data;
-        public int availableRoles;
+        public RoleData Data;
+        public int AvailableRoles;
     }
 }

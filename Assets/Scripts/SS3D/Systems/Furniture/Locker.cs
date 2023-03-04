@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace SS3D.Systems.Furniture
 {
+    /// <summary>
+    /// A temporary locker class for easily testing permission checking
+    /// </summary>
     public class Locker : NetworkActor, IInteractionTarget
     {
         [SyncVar] public bool Locked;

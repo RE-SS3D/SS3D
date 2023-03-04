@@ -49,17 +49,17 @@ namespace SS3D.Systems.Inventory.Interactions
             IInteractionSource source = interactionEvent.Source;
             if (source is IGameObjectProvider sourceGameObjectProvider)
             {
-                var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
+                Hands hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
                 
                 if (hands != null)
                 {
                     if (hands.Inventory.HasPermission(permissionToUnlock))
                     {
-                        Debug.Log("Locker has been unlocked!");
+                        Punpun.Say(this, "Locker has been unlocked!");
                         locker.Locked = false;
                     } else
                     {
-                        Debug.Log("No permission to unlock Locker!");
+                        Punpun.Say(this, "No permission to unlock Locker!");
                     }
                 }
 
