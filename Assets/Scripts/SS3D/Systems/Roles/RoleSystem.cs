@@ -96,6 +96,7 @@ namespace SS3D.Systems.Roles
         [Server]
         private void HandlePlayerContainersReady(ref EventContext context, in PlayerContainersReady e)
         {
+            Punpun.Say(this, e.Player.Ckey + "'s containers are ready!");
             GiveRoleLoadoutToPlayer(e.Player);
         }
         #endregion
@@ -153,9 +154,10 @@ namespace SS3D.Systems.Roles
                 RoleData roleData = rolePlayer.Value.Value;
 
                 Punpun.Say(this, entity.Ckey + " embarked with role " + roleData.Name);
+                SpawnIdentificationItems(entity, roleData);
+
                 if (roleData.Loadout != null)
                 {
-                    SpawnIdentificationItems(entity, roleData);
                     SpawnLoadoutItems(entity, roleData.Loadout);
                 }
             }
