@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object;
 using SS3D.Core;
@@ -12,6 +13,7 @@ using SS3D.Systems.Inventory.Items;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Serilog;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Interactions
 {
@@ -26,51 +28,43 @@ namespace SS3D.Systems.Interactions
         [Tooltip("Mask for physics to use when finding targets")]
         [SerializeField] private LayerMask _selectionMask = 0;
 
+        private Controls.OtherActions _otherControls;
+        private Controls.HotkeysActions _hotkeysControls;
+
         private Camera _camera;
         private RadialInteractionView _radialView;
-
+        
         public override void OnStartClient()
         {
             base.OnStartClient();
 
             _radialView = SystemLocator.Get<RadialInteractionView>();
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
+            _otherControls = controls.Other;
+            _hotkeysControls = controls.Hotkeys;
+            _otherControls.PrimaryClick.performed += HandlePrimaryClick;
+            _otherControls.SecondaryClick.performed += HandleSecondaryClick;
+            _hotkeysControls.Use.performed += HandleUse;
         }
 
-        [ServerOrClient]
-        protected override void HandleUpdate(in float deltaTime)
+        public override void OnStopClient()
         {
-            base.HandleUpdate(in deltaTime);
-
-            if (IsServerOnly || !IsOwner || _camera == null || EventSystem.current.IsPointerOverGameObject())
-            {
-                return;
-            }
-
-            if (Input.GetButtonDown("Primary Click"))
-            {
-                ProcessPrimaryClick();
-            }
-
-            else if (Input.GetButtonDown("Secondary Click"))
-            {
-                ProcessSecondaryClick();
-            }
-
-            if (Input.GetButtonDown("Use"))
-            {
-                ProcessUse();
-            }
+            base.OnStopClient();
+            
+            _otherControls.PrimaryClick.performed -= HandlePrimaryClick;
+            _otherControls.SecondaryClick.performed -= HandleSecondaryClick;
+            _hotkeysControls.Use.performed -= HandleUse;
         }
 
         [Client]
-        private void ProcessPrimaryClick()
+        private void HandlePrimaryClick(InputAction.CallbackContext callbackContext)
         {
             RunPrimaryInteraction();
         }
 
         [Client]
-        private void ProcessSecondaryClick()
+        private void HandleSecondaryClick(InputAction.CallbackContext callbackContext)
         {
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
@@ -79,7 +73,7 @@ namespace SS3D.Systems.Interactions
         }
 
         [Client]
-        private void ProcessUse()
+        private void HandleUse(InputAction.CallbackContext callbackContext)
         {
             // Activate item in selected hand
             Hands hands = GetComponent<Hands>();

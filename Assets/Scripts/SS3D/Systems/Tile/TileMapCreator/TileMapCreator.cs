@@ -190,12 +190,22 @@ namespace SS3D.Systems.Tile.UI
             RpcSendCanBuild(_selectedObject.nameString, placePosition, _ghostManager.Dir, replaceExisting, LocalConnection);
         }
 
-
         [Client]
-        [ServerRpc(RequireOwnership = false)] // Ownership not required since a client can request whether it is possible to build
+        [ServerRpc(RequireOwnership = false)]
+        // Ownership not required since a client can request whether it is possible to build
         public void RpcSendCanBuild(string tileObjectSoName, Vector3 placePosition, Direction dir, bool replaceExisting, NetworkConnection conn)
         {
+            if (_tileSystem == null)
+            {
+                _tileSystem = SystemLocator.Get<TileSystem>();
+            }
+
             TileObjectSo tileObjectSo = (TileObjectSo) _tileSystem.GetAsset(tileObjectSoName);
+
+            if (tileObjectSo == null)
+            {
+                return;
+            }
 
             bool canBuild = _tileSystem.CanBuild(tileObjectSo, placePosition, dir, replaceExisting);
             RpcReceiveCanBuild(conn, canBuild);

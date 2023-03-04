@@ -15,7 +15,7 @@ MonoBehaviour:
   nameString: firealarm
   prefab: {fileID: 4866668043303595546, guid: 50dd6be959d44844ab1abf8a3f2adb01, type: 3}
   icon: {fileID: 0}
-  layer: 5
+  layer: 6
   genericType: 0
   specificType: 0
   width: 1

@@ -11,9 +11,9 @@ using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Interactions.UI
 {
-    /**
-     * Used for the context menu
-     */
+    /// <summary>
+    /// The radial interaction menu
+    /// </summary>
     public class InteractionMenuView : Actor
     {
         public event Action<IInteraction> OnSelect;

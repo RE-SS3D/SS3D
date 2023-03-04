@@ -16,9 +16,33 @@ namespace SS3D.Data
         /// <summary>
         /// All loaded databases.
         /// </summary>
-        private static readonly Dictionary<string, AssetDatabase> Databases = new();
+        private static readonly Dictionary<int, AssetDatabase> Databases = new();
 
         // TODO: Find a way to automate the getters, this is a nightmare way of doing it.
+
+        /// <summary>
+        /// Generic getter, supports all databases and all asset database enums.
+        /// </summary>
+        /// <param name="databaseId"></param>
+        /// <param name="assetId"></param>
+        /// <typeparam name="TAsset"></typeparam>
+        /// <returns></returns>
+        public static TAsset Get<TAsset>(int databaseId, int assetId) where TAsset : Object
+        {
+            return GetDatabase(databaseId).Get<TAsset>(assetId);
+        }
+
+        /// <summary>
+        /// Generic getter, supports all databases and all asset database enums.
+        /// </summary>
+        /// <param name="databaseId"></param>
+        /// <param name="assetId"></param>
+        /// <typeparam name="TAsset"></typeparam>
+        /// <returns></returns>
+        public static TAsset Get<TAsset>(Enums.AssetDatabases databaseId, int assetId) where TAsset : Object
+        {
+            return GetDatabase(databaseId).Get<TAsset>(assetId);
+        }
 
         /// <summary>
         /// Gets an interaction icon as a Sprite.
@@ -27,7 +51,7 @@ namespace SS3D.Data
         /// <returns></returns>
         public static Sprite Get(InteractionIcons icon)
         {
-            return GetDatabase(nameof(InteractionIcons)).Get<Sprite>((int)icon);
+            return GetDatabase(Enums.AssetDatabases.InteractionIcons).Get<Sprite>((int)icon);
         }
 
         /// <summary>
@@ -37,20 +61,19 @@ namespace SS3D.Data
         /// <returns></returns>
         public static GameObject Get(ItemId itemIdId)
         {
-             return GetDatabase(nameof(ItemId)).Get<GameObject>((int)itemIdId);
+             return GetDatabase(Enums.AssetDatabases.Items).Get<GameObject>((int)itemIdId);
         }
-
+        
         /// <summary>
-        /// Gets something by ID only, useful for adding stuff on databases at runtime, as in modded versions of the game.
+        /// Adds an asset to a database, useful for adding stuff on databases at runtime, as in modded versions of the game.
         /// </summary>
-        /// <param name="id"></param>
-        /// <typeparam name="TAssetDatabase">The asset database you want to get.</typeparam>
-        /// <typeparam name="TAssetType">The asset type you want returned.</typeparam>
+        /// <param name="asset"></param>
+        /// <typeparam name="databaseName">The asset database you want to get.</typeparam>
+        /// <typeparam name="TAsset">The asset type you want returned.</typeparam>
         /// <returns>The loaded asset in the TAssetType type.</returns>
-        public static TAssetType GetById<TAssetType>(string databaseName, int id)
-            where TAssetType : Object
+        public static void AddAsset<TAsset>(int databaseId, Object asset) where TAsset : Object
         {
-            return GetDatabase(databaseName).Get<TAssetType>(id);
+            GetDatabase(databaseId).Add<TAsset>(asset);
         }
 
         /// <summary>
@@ -60,10 +83,13 @@ namespace SS3D.Data
         {
             List<AssetDatabase> assetDatabases = ScriptableSettings.GetOrFind<AssetDatabaseSettings>().IncludedAssetDatabases;
 
-            foreach (AssetDatabase database in assetDatabases)
+            for (int index = 0; index < assetDatabases.Count; index++)
             {
-                Databases.Add(database.EnumName, database);
+                AssetDatabase database = assetDatabases[index];
+                Databases.Add(index, database);
             }
+
+            Punpun.Say(typeof(Assets), $"{assetDatabases.Count} Asset Databases initialized", Logs.Important);
         }
 
         /// <summary>
@@ -71,13 +97,30 @@ namespace SS3D.Data
         /// </summary>
         /// <param name="key">The enum name used to identify which database to load.</param>
         /// <returns></returns>
-        public static AssetDatabase GetDatabase(string key)
+        public static AssetDatabase GetDatabase(int key)
         {
             bool databaseExists = Databases.TryGetValue(key, out AssetDatabase database);
 
             if (!databaseExists)
             {
                 Punpun.Warning(typeof(Assets), "Database of type {DatabaseType} not found", Logs.Important, key);
+            }
+
+            return database;
+        }
+
+        /// <summary>
+        /// Helper function to find a database in the database list. Used to link the enum to which database to find.
+        /// </summary>
+        /// <param name="key">The enum name used to identify which database to load.</param>
+        /// <returns></returns>
+        public static AssetDatabase GetDatabase(Enums.AssetDatabases key)
+        {
+            bool databaseExists = Databases.TryGetValue((int)key, out AssetDatabase database);
+
+            if (!databaseExists)
+            {
+                Punpun.Yell(typeof(Assets), $"Database of type {key} not found", Logs.Important);
             }
 
             return database;
