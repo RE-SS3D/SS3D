@@ -40,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2570544868114083117}
-  m_Mesh: {fileID: -732255324455319584, guid: a066555bf99280841b7924269129d0c2, type: 3}
+  m_Mesh: {fileID: 2414751425368093432, guid: a066555bf99280841b7924269129d0c2, type: 3}
 --- !u!23 &7791039897351842816
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -123,7 +123,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4547560682629165049}
-  m_Mesh: {fileID: 3442740047994540459, guid: a066555bf99280841b7924269129d0c2, type: 3}
+  m_Mesh: {fileID: -8212642602513761415, guid: a066555bf99280841b7924269129d0c2, type: 3}
 --- !u!23 &3559843836793401105
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -181,7 +181,7 @@ GameObject:
   - component: {fileID: 3258417366846669140}
   - component: {fileID: 7727612398117917681}
   m_Layer: 10
-  m_Name: SecurityLocker
+  m_Name: Locker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -236,7 +236,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
   Locked: 0
-  permissionToUnlock: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
+  permissionToUnlock: {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}
 --- !u!114 &3298710121668139635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -305,7 +305,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: 28
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 16262216124491078626
+  <AssetPathHash>k__BackingField: 17733299963803287689
   _sceneNetworkObjects: []
 --- !u!65 &7727612398117917681
 BoxCollider:

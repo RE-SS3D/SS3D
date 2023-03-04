@@ -40,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 501911582606887778}
-  m_Mesh: {fileID: 6741466224827486284, guid: fca31db1818708c40a396f6faa3ee993, type: 3}
+  m_Mesh: {fileID: -7941279307563401543, guid: fca31db1818708c40a396f6faa3ee993, type: 3}
 --- !u!23 &2154069534052540121
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 8953388663960336043}
   - component: {fileID: 8691169782362177299}
   m_Layer: 10
-  m_Name: SecurityPDA
+  m_Name: PDA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -152,10 +152,10 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 55
+  <PrefabId>k__BackingField: 58
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 16546728980263612634
+  <AssetPathHash>k__BackingField: 6837217039410231428
   _sceneNetworkObjects: []
 --- !u!114 &8471215545886824119
 MonoBehaviour:
@@ -212,7 +212,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 6741466224827486284, guid: fca31db1818708c40a396f6faa3ee993, type: 3}
+  m_Mesh: {fileID: -7941279307563401543, guid: fca31db1818708c40a396f6faa3ee993, type: 3}
 --- !u!54 &3483542684610536844
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -244,7 +244,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 7958861831329766982}
   _networkObjectCache: {fileID: 7958861831329766982}
-  _itemId: 0
+  _itemId: 12
   _name: PDA
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 3483542684610536844}
@@ -255,6 +255,7 @@ MonoBehaviour:
   traits:
   - {fileID: 11400000, guid: 855eb54ff561f8242bac7f3fd97821c2, type: 2}
   testPermission: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
+  StartingIDCard: {fileID: 0}
 --- !u!114 &-3412952555245330052
 MonoBehaviour:
   m_ObjectHideFlags: 0
