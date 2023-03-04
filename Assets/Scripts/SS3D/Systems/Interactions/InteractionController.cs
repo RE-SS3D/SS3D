@@ -112,8 +112,9 @@ namespace SS3D.Systems.Interactions
             InteractionEntry interaction = viableInteractions[0];
             string interactionName = interaction.Interaction.GetName(interactionEvent);
             interactionEvent.Target = interaction.Target;
-
+            Punpun.Debug(this, "Running primary interaction {interaction} on {interactionEntry}", Logs.ClientOnly, interactionName, interaction.Target);
             CmdRunInteraction(ray, interactionName);
+            
         }
 
         /// <summary>
