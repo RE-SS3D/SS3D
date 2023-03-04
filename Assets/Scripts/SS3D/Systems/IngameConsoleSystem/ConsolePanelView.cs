@@ -62,7 +62,7 @@ namespace SS3D.Systems.IngameConsoleSystem
 
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
             _commandsController = new CommandsController();
-            _controls = SystemLocator.Get<InputSystem>().Inputs;
+            _controls = Subsystems.Get<InputSubsystem>().Inputs;
             _consoleControls = _controls.Console;
             _consoleControls.Close.performed += HandleClose;
             _consoleControls.Open.performed += HandleOpen;

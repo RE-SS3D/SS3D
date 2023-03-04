@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Contains player's controls in Inputs
 /// </summary>
-public class InputSystem : SS3D.Core.Behaviours.System
+public class InputSubsystem : SS3D.Core.Behaviours.Subsystem
 {
     public Controls Inputs { get; private set; }
     

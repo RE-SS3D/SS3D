@@ -39,14 +39,14 @@ namespace SS3D.Systems.Permissions
                 return;
             }
 
-            PermissionSystem permissionSystem = SystemLocator.Get<PermissionSystem>();
+            PermissionSubsystem permissionSubsystem = Subsystems.Get<PermissionSubsystem>();
 
-            if (!permissionSystem.HasLoadedPermissions)
+            if (!permissionSubsystem.HasLoadedPermissions)
             {
                 return;
             }
 
-            if (permissionSystem.IsAtLeast(_ckey, ServerRoleTypes.Administrator))
+            if (permissionSubsystem.IsAtLeast(_ckey, ServerRoleTypes.Administrator))
             {
                 return;
             }

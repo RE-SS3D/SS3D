@@ -39,9 +39,8 @@ namespace SS3D.Systems.Screens
             ChangeGameScreenEvent.AddListener(HandleChangeGameScreen);
             SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated);
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
-
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
-            _controls.ToggleMenu.performed += HandleToggleMenu;
+            _controls = Subsystems.Get<InputSubsystem>().Inputs.Other; 
+            _controls.ToggleMenu.performed += HandleToggleMenu; 
         }
 
         protected override void OnDestroyed()

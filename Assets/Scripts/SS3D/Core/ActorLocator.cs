@@ -49,7 +49,7 @@ namespace SS3D.Core
             string message = $"Couldn't find actor of id {id} in the scene";
             
             // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-            Punpun.Panic(typeof(SystemLocator), message, Logs.Important);
+            Punpun.Panic(typeof(Subsystems), message, Logs.Important);
 
             return null;
         }

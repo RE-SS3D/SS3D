@@ -13,7 +13,7 @@ namespace SS3D.Systems.Tile
     /// <summary>
     /// Manages and keeps an inventory of all placed tiles. This is where all others scripts that use the tilemap should interact with.
     /// </summary>
-    public class TileSystem : NetworkSystem
+    public class TileSubsystem : NetworkSubsystem
     {
         public TileResourceLoader Loader { get; private set; }
 

@@ -11,7 +11,7 @@ namespace SS3D.Core
     /// <summary>
     /// Initializes all the core information needed, subsystems and assets pre-loading.
     /// </summary>
-    public sealed class ApplicationStateSystem : Behaviours.System
+    public sealed class ApplicationStateSubsystem : Behaviours.Subsystem
     {
         /// <summary>
         /// Initializes all required systems for the application.
@@ -30,10 +30,10 @@ namespace SS3D.Core
         /// </summary>
         private void InitializeApplicationSettings()
         {
-            CommandLineArgsSystem startArgsSystem = SystemLocator.Get<CommandLineArgsSystem>();
+            CommandLineArgsSubsystem startArgsSubsystem = Subsystems.Get<CommandLineArgsSubsystem>();
 
-            startArgsSystem.LoadApplicationSettings();
-            startArgsSystem.ProcessCommandLineArgs();
+            startArgsSubsystem.LoadApplicationSettings();
+            startArgsSubsystem.ProcessCommandLineArgs();
         }
 
         /// <summary>
@@ -80,8 +80,8 @@ namespace SS3D.Core
         {
             Punpun.Information(this, "Initializing network session", Logs.Important);
 
-            SessionNetworkSystem sessionNetworkSystem = SystemLocator.Get<SessionNetworkSystem>();
-            sessionNetworkSystem.InitializeNetworkSession();
+            SessionNetworkSubsystem sessionNetworkSubsystem = Subsystems.Get<SessionNetworkSubsystem>();
+            sessionNetworkSubsystem.InitializeNetworkSession();
         }
     }
 }

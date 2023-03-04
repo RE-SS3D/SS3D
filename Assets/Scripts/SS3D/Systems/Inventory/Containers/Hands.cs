@@ -65,7 +65,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
             base.OnStart();
             
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Hotkeys;
+            _controls = Subsystems.Get<InputSubsystem>().Inputs.Hotkeys;
             _controls.SwapHands.performed += HandleSwapHands;
             _controls.Drop.performed += HandleDropHeldItem;
         }

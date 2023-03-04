@@ -95,7 +95,7 @@ namespace SS3D.Systems.Screens
         {
             base.OnStart();
             
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Camera;
+            _controls = Subsystems.Get<InputSubsystem>().Inputs.Camera;
             _controls.Zoom.performed += HandleZoom;
             _controls.SnapRight.performed += HandleSnapRight;
             _controls.SnapLeft.performed += HandleSnapLeft;

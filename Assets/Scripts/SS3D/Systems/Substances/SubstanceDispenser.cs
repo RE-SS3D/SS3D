@@ -30,11 +30,11 @@ namespace SS3D.Content.Furniture.Generic
         /// </summary>
         public bool useMillilitres = false;
 
-        private SubstancesSystem registry;
+        private SubstancesSubsystem registry;
 
         private void Start()
         {
-            registry = SystemLocator.Get<SubstancesSystem>();
+            registry = Subsystems.Get<SubstancesSubsystem>();
             if (registry == null)
             {
                 Debug.LogError("SubstanceRegistry not found. Substances will be disabled.");

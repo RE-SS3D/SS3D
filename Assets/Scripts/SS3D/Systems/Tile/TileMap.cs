@@ -292,7 +292,7 @@ namespace SS3D.Systems.Tile
         {
             Clear();
 
-            TileSystem tileSystem = SystemLocator.Get<TileSystem>();
+            TileSubsystem tileSubsystem = Subsystems.Get<TileSubsystem>();
 
             foreach (var savedChunk in saveObject.savedChunkList)
             {
@@ -300,7 +300,7 @@ namespace SS3D.Systems.Tile
 
                 foreach (var savedTile in savedChunk.tileObjectSaveObjectArray)
                 {
-                    TileObjectSo toBePlaced = (TileObjectSo)tileSystem.GetAsset(savedTile.placedSaveObject.tileObjectSOName);
+                    TileObjectSo toBePlaced = (TileObjectSo)tileSubsystem.GetAsset(savedTile.placedSaveObject.tileObjectSOName);
                     Vector3 placePosition = chunk.GetWorldPosition(savedTile.x, savedTile.y);
 
                     // Skipping build check here to allow loading tile objects in a non-valid order
@@ -310,7 +310,7 @@ namespace SS3D.Systems.Tile
 
             foreach (var savedItem in saveObject.savedItemList)
             {
-                ItemObjectSo toBePlaced = (ItemObjectSo)tileSystem.GetAsset(savedItem.itemName);
+                ItemObjectSo toBePlaced = (ItemObjectSo)tileSubsystem.GetAsset(savedItem.itemName);
                 PlaceItemObject(savedItem.worldPosition, savedItem.rotation, toBePlaced);
             }
         }

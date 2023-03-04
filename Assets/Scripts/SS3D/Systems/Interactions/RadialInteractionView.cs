@@ -16,7 +16,7 @@ namespace SS3D.Systems.Interactions
     /// <summary>
     /// Controls the UI for a radial interaction menu
     /// </summary>
-    public sealed class RadialInteractionView : Core.Behaviours.System
+    public sealed class RadialInteractionView : Core.Behaviours.Subsystem
     {
         public event Action<IInteraction, RadialInteractionButton> OnInteractionSelected;
 
@@ -70,7 +70,7 @@ namespace SS3D.Systems.Interactions
             {
                 interactionButton.OnHovered += HandleInteractionButtonHovered;
             }
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls = Subsystems.Get<InputSubsystem>().Inputs.Other;
             _controls.SecondaryClick.performed += HandleDisappear;
         }
 

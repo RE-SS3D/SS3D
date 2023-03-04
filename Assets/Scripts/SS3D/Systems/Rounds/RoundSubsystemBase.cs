@@ -22,7 +22,7 @@ namespace SS3D.Systems.Rounds
     /// <summary>
     /// Base for the round system, done here to avoid too much code in the round system
     /// </summary>
-    public class RoundSystemBase : NetworkSystem
+    public class RoundSubsystemBase : NetworkSubsystem
     {
         /// <summary>
         /// The current round state.
@@ -107,14 +107,14 @@ namespace SS3D.Systems.Rounds
         {
             const ServerRoleTypes requiredRole = ServerRoleTypes.Administrator;
 
-            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
-            PermissionSystem permissionSystem = SystemLocator.Get<PermissionSystem>();
+            PlayerSubsystem playerSubsystem = Subsystems.Get<PlayerSubsystem>();
+            PermissionSubsystem permissionSubsystem = Subsystems.Get<PermissionSubsystem>();
 
             // Gets the soul that matches the connection, uses the ckey as the user id
-            string userCkey = playerSystem.GetCkey(conn);
+            string userCkey = playerSubsystem.GetCkey(conn);
 
             // Checks if player can call a round start
-            if (!permissionSystem.IsAtLeast(userCkey, requiredRole))
+            if (!permissionSubsystem.IsAtLeast(userCkey, requiredRole))
             {
                 Punpun.Information(this, "User {ckey} doesn't have {requiredRole} permission", Logs.ServerOnly, userCkey, requiredRole);
             }

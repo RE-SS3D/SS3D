@@ -45,10 +45,10 @@ namespace SS3D.Systems.Furniture
         [Server]
         public void DispenseProduct()
         {
-            ItemSystem itemSystem = SystemLocator.Get<ItemSystem>();
+            ItemSubsystem itemSubsystem = Subsystems.Get<ItemSubsystem>();
             Quaternion quaternion = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
 
-            itemSystem.SpawnItem(_productToDispense, _dispensingTransform.position, quaternion);
+            itemSubsystem.SpawnItem(_productToDispense, _dispensingTransform.position, quaternion);
         }
 
         /// <inheritdoc />

@@ -13,7 +13,7 @@ namespace SS3D.Systems.Inventory.Items
     /// <summary>
     /// System used to spawn items.
     /// </summary>
-    public sealed class ItemSystem : NetworkSystem
+    public sealed class ItemSubsystem : NetworkSubsystem
     {
         /// <summary>
         /// A dictionary of all the preloaded prefabs using the ItemIDs as key.

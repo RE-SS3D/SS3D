@@ -8,12 +8,12 @@ namespace SS3D.Core
     /// <summary>
     /// Class used to get game systems, using generics and then making cache of said systems.
     /// </summary>
-    public static class SystemLocator
+    public static class Subsystems
     {
         /// <summary>
         /// A dictionary containing all the objects that registered themselves.
         /// </summary>
-        private static readonly Dictionary<Type, object> Systems = new();
+        private static readonly Dictionary<Type, object> RegisteredSubsystems = new();
 
         /// <summary>
         /// Registers a system in the dictionary so we don't have to use find object of type.
@@ -23,9 +23,9 @@ namespace SS3D.Core
         {
             Type type = system.GetType();
 
-            if (!Systems.TryGetValue(type, out object _))
+            if (!RegisteredSubsystems.TryGetValue(type, out object _))
             {
-                Systems.Add(type, system);
+                RegisteredSubsystems.Add(type, system);
             }
         }
 
@@ -36,13 +36,15 @@ namespace SS3D.Core
         /// <returns></returns>
         public static T Get<T>() where T : MonoBehaviour
         {
-            if (Systems.TryGetValue(typeof(T), out object match))
+            if (RegisteredSubsystems.TryGetValue(typeof(T), out object match))
             {
                 return (T)match;
             }
 
+            string message = $"Couldn't find subsystem of {typeof(T).Name} in the scene";
+
             // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-            Punpun.Error(typeof(SystemLocator), "Couldn't find system of {typeName} in the scene", Logs.Important, typeof(T).Name);
+            Punpun.Panic(typeof(Subsystems), message, Logs.Important);
 
             return null;
         }
@@ -53,7 +55,7 @@ namespace SS3D.Core
         /// <param name="system"></param>
         public static void Unregister(object system)
         {
-            Systems.Remove(system.GetType());
+            RegisteredSubsystems.Remove(system.GetType());
         }
     }
 }

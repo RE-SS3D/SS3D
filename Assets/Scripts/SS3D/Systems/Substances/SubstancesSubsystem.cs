@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SS3D.Substances
 {
-    public sealed class SubstancesSystem : NetworkSystem
+    public sealed class SubstancesSubsystem : NetworkSubsystem
     {
         public Dictionary<SubstanceType, Substance> Substances => substances;
         public Recipe[] Recipes => recipes;

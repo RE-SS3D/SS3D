@@ -48,9 +48,9 @@ namespace SS3D.Systems.Lobby.UI
 
         private void ProcessSpawnedPlayers()
         {
-            EntitySystem system = SystemLocator.Get<EntitySystem>();
+            EntitySubsystem subsystem = Subsystems.Get<EntitySubsystem>();
 
-            bool isPlayedSpawned = system.IsPlayerSpawned(LocalConnection);
+            bool isPlayedSpawned = subsystem.IsPlayerSpawned(LocalConnection);
 
             if (isPlayedSpawned)
             {
@@ -63,9 +63,9 @@ namespace SS3D.Systems.Lobby.UI
 
         private void ProcessRoundState(RoundState roundState)
         {
-            EntitySystem system = SystemLocator.Get<EntitySystem>();
+            EntitySubsystem subsystem = Subsystems.Get<EntitySubsystem>();
 
-            bool isPlayedSpawned = system.IsPlayerSpawned(LocalConnection);
+            bool isPlayedSpawned = subsystem.IsPlayerSpawned(LocalConnection);
 
             if (isPlayedSpawned && roundState == RoundState.Ongoing)
             {
@@ -99,18 +99,18 @@ namespace SS3D.Systems.Lobby.UI
 
         private void HandleEmbarkButtonPressed(bool pressed)
         {
-            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
-            EntitySystem entitySystem = SystemLocator.Get<EntitySystem>();
+            PlayerSubsystem playerSubsystem = Subsystems.Get<PlayerSubsystem>();
+            EntitySubsystem entitySubsystem = Subsystems.Get<EntitySubsystem>();
 
-            Soul soul = playerSystem.GetSoul(LocalConnection);
-            entitySystem.CmdSpawnLatePlayer(soul);
+            Soul soul = playerSubsystem.GetSoul(LocalConnection);
+            entitySubsystem.CmdSpawnLatePlayer(soul);
         }
 
         private void HandleReadyButtonPressed(bool pressed)
         {
-            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
+            PlayerSubsystem playerSubsystem = Subsystems.Get<PlayerSubsystem>();
 
-            string ckey = playerSystem.GetCkey(LocalConnection);
+            string ckey = playerSubsystem.GetCkey(LocalConnection);
             ChangePlayerReadyMessage playerReadyMessage = new(ckey, pressed);
 
             ClientManager.Broadcast(playerReadyMessage);

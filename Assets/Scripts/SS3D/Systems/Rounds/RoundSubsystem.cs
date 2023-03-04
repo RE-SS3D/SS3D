@@ -10,7 +10,7 @@ namespace SS3D.Systems.Rounds
     /// <summary>
     /// Round system base implementation for basic round functionality
     /// </summary>
-    public sealed class RoundSystem : RoundSystemBase
+    public sealed class RoundSubsystem : RoundSubsystemBase
     {
         /// <summary>
         /// Round loop runner

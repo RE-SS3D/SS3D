@@ -40,7 +40,7 @@ namespace SS3D.Systems.Gamemodes.UI
             base.OnStart();
 
             _fade.SetFade(false);
-            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls = Subsystems.Get<InputSubsystem>().Inputs.Other;
             _controls.Fade.performed += HandleFadePerformed;
             _controls.Fade.canceled += HandleFadeCanceled;
         }

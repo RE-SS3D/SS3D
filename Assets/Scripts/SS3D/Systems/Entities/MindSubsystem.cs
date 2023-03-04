@@ -11,7 +11,7 @@ namespace SS3D.Systems.Entities
     /// <summary>
     /// Manages all minds in the game.
     /// </summary>
-    public class MindSystem : NetworkSystem
+    public class MindSubsystem : NetworkSubsystem
     {
         [SerializeField]
         private GameObject _mindPrefab;
@@ -32,8 +32,8 @@ namespace SS3D.Systems.Entities
         /// <returns></returns>
         public bool TryGetMind(Soul player, out Mind mind)
         {
-            PlayerSystem playerSystem = SystemLocator.Get<PlayerSystem>();
-            Soul soul = playerSystem.GetSoul(player.Owner);
+            PlayerSubsystem playerSubsystem = Subsystems.Get<PlayerSubsystem>();
+            Soul soul = playerSubsystem.GetSoul(player.Owner);
 
             mind = _spawnedMinds.Find(mind => mind.Soul == soul);
 
