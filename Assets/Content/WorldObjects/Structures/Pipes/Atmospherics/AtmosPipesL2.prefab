@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -1074477776341974781}
   - component: {fileID: -4998431523760016775}
   m_Layer: 0
-  m_Name: PipesLayer3
+  m_Name: AtmosPipesL2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58,7 +58,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: -1
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 333993666481612014
+  <AssetPathHash>k__BackingField: 4320652076112192416
   _sceneNetworkObjects: []
 --- !u!33 &-1074477776341974781
 MeshFilter:
@@ -67,7 +67,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2802364579275783218}
-  m_Mesh: {fileID: -1444037753683383277, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
+  m_Mesh: {fileID: 7036212505407254772, guid: 013a2e526b13e1849b628bdc478f9c03, type: 3}
 --- !u!23 &-4998431523760016775
 MeshRenderer:
   m_ObjectHideFlags: 0
