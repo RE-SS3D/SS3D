@@ -19,9 +19,9 @@ namespace SS3D.Systems.Roles
 {
     public class RoleSystem : NetworkSystem
     {
-        [SerializeField] private RolesAvailable rolesAvailable;
-        private List<RoleCounter> roleCounters = new List<RoleCounter>();
-        private Dictionary<Soul, RoleData> rolePlayers = new Dictionary<Soul, RoleData>();
+        [SerializeField] private RolesAvailable _rolesAvailable;
+        private List<RoleCounter> _roleCounters = new List<RoleCounter>();
+        private Dictionary<Soul, RoleData> _rolePlayers = new Dictionary<Soul, RoleData>();
 
         #region Setup
         protected override void OnStart()
@@ -46,18 +46,18 @@ namespace SS3D.Systems.Roles
         [Server]
         private void GetAvailableRoles()
         {
-            if (rolesAvailable == null)
+            if (_rolesAvailable == null)
             {
                 Punpun.Panic(this, "Initial Available Roles not set!");
             }
 
-            foreach (RolesData role in rolesAvailable.roles)
+            foreach (RolesData role in _rolesAvailable.Roles)
             {
                 RoleCounter roleCounter = new RoleCounter();
                 roleCounter.Role = role.Data;
                 roleCounter.AvailableRoles = role.AvailableRoles;
 
-                roleCounters.Add(roleCounter);
+                _roleCounters.Add(roleCounter);
             }
         }
         #endregion
@@ -106,18 +106,18 @@ namespace SS3D.Systems.Roles
         /// <param name="soul"></param>
         private void AssignPlayerRole(Soul soul)
         {
-            RoleCounter assistantRole = roleCounters.FirstOrDefault(rc => rc.Role.Name == "Assistant");
-            RoleCounter securityRole = roleCounters.FirstOrDefault(rc => rc.Role.Name == "Security");
+            RoleCounter assistantRole = _roleCounters.FirstOrDefault(rc => rc.Role.Name == "Assistant");
+            RoleCounter securityRole = _roleCounters.FirstOrDefault(rc => rc.Role.Name == "Security");
 
             if (securityRole == null || securityRole.CurrentRoles == securityRole.AvailableRoles)
             {
                 assistantRole.AddPlayer(soul);
-                rolePlayers.Add(soul, assistantRole.Role);
+                _rolePlayers.Add(soul, assistantRole.Role);
             }
             else
             {
                 securityRole.AddPlayer(soul);
-                rolePlayers.Add(soul, securityRole.Role);
+                _rolePlayers.Add(soul, securityRole.Role);
             }
         }
 
@@ -128,12 +128,12 @@ namespace SS3D.Systems.Roles
         private void RemovePlayerFromCounters(Soul soul)
         {
             KeyValuePair<Soul, RoleData>? rolePlayer =
-                rolePlayers.FirstOrDefault(rp => rp.Key == soul);
+                _rolePlayers.FirstOrDefault(rp => rp.Key == soul);
 
             if (rolePlayer != null)
             {
-                var roleData = rolePlayer.Value.Value;
-                var roleCounter = roleCounters.First(rc => rc.Role == roleData);
+                RoleData roleData = rolePlayer.Value.Value;
+                RoleCounter roleCounter = _roleCounters.First(rc => rc.Role == roleData);
 
                 roleCounter.RemovePlayer(soul);
             }
@@ -146,11 +146,11 @@ namespace SS3D.Systems.Roles
         private void GiveRoleLoadoutToPlayer(Entity entity)
         {
             KeyValuePair<Soul, RoleData>? rolePlayer =
-                rolePlayers.FirstOrDefault(rp => rp.Key == entity.Mind.Soul);
+                _rolePlayers.FirstOrDefault(rp => rp.Key == entity.Mind.Soul);
 
             if (rolePlayer != null)
             {
-                var roleData = rolePlayer.Value.Value;
+                RoleData roleData = rolePlayer.Value.Value;
 
                 Punpun.Say(this, entity.Ckey + " embarked with role " + roleData.Name);
                 if (roleData.Loadout != null)
@@ -164,7 +164,7 @@ namespace SS3D.Systems.Roles
         private void SpawnIdentificationItems(Entity entity, RoleData role)
         {
             ItemSystem itemSystem = SystemLocator.Get<ItemSystem>();
-            var inventory = entity.GetComponent<Inventory.Containers.Inventory>();
+            Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
 
             Item pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, inventory.IDContainer);
             Item idCardItem = itemSystem.SpawnItem(role.IDCardPrefab, Vector3.zero, Quaternion.identity);
@@ -192,13 +192,13 @@ namespace SS3D.Systems.Roles
         /// <param name="loadout">The loadout of items he will receive</param>
         private void SpawnLoadoutItems(Entity entity, RoleLoadout loadout)
         {
-            var hands = entity.GetComponent<Hands>();
-            var inventory = entity.GetComponent<Inventory.Containers.Inventory>();
+            Hands hands = entity.GetComponent<Hands>();
+            Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
 
-            SpawnItemInSlot(loadout.leftHandItem, loadout.leftHand, hands.HandContainers[0].Container);
-            SpawnItemInSlot(loadout.rightHandItem, loadout.rightHand, hands.HandContainers[1].Container);
-            SpawnItemInSlot(loadout.leftPocketItem, loadout.leftPocket, inventory.LeftPocketContainer);
-            SpawnItemInSlot(loadout.rightPocketItem, loadout.rightPocket, inventory.RightPocketContainer);
+            SpawnItemInSlot(loadout.LeftHandItem, loadout.LeftHand, hands.HandContainers[0].Container);
+            SpawnItemInSlot(loadout.RightHandItem, loadout.RightHand, hands.HandContainers[1].Container);
+            SpawnItemInSlot(loadout.LeftPocketItem, loadout.LeftPocket, inventory.LeftPocketContainer);
+            SpawnItemInSlot(loadout.RightPocketItem, loadout.RightPocket, inventory.RightPocketContainer);
         }
 
         /// <summary>

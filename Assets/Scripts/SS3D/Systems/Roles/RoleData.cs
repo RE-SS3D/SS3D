@@ -13,16 +13,16 @@ namespace SS3D.Systems.Roles
     [Serializable, CreateAssetMenu(fileName = "Role Data", menuName = "Roles/RoleData")]
     public class RoleData : ScriptableObject
     {
-        [SerializeField] private string roleName;
-        [SerializeField] private ItemId pdaPrefab;
-        [SerializeField] private ItemId idCardPrefab;
-        [SerializeField] private List<IDPermission> permissions = new List<IDPermission>();
-        [SerializeField] private RoleLoadout loadout;
+        [SerializeField] private string _roleName;
+        [SerializeField] private ItemId _pdaPrefab;
+        [SerializeField] private ItemId _idCardPrefab;
+        [SerializeField] private List<IDPermission> _permissions = new List<IDPermission>();
+        [SerializeField] private RoleLoadout _loadout;
 
-        public string Name { get => roleName; }
-        public ItemId IDCardPrefab { get => idCardPrefab; }
-        public ItemId PDAPrefab { get => pdaPrefab; }
-        public List<IDPermission> Permissions { get => permissions; }
-        public RoleLoadout Loadout { get => loadout; }
+        public string Name => _roleName;
+        public ItemId IDCardPrefab => _idCardPrefab;
+        public ItemId PDAPrefab => _pdaPrefab;
+        public List<IDPermission> Permissions => _permissions;
+        public RoleLoadout Loadout => _loadout;
     }
 }

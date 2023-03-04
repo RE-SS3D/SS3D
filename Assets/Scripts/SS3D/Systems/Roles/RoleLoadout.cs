@@ -12,14 +12,14 @@ namespace SS3D.Systems.Roles
     [CreateAssetMenu(fileName = "Loadout", menuName = "Roles/Loadout")]
     public class RoleLoadout : ScriptableObject
     {
-        public bool leftHand;
-        public bool rightHand;
-        public bool leftPocket;
-        public bool rightPocket;
+        public bool LeftHand;
+        public bool RightHand;
+        public bool LeftPocket;
+        public bool RightPocket;
 
-        public ItemId leftHandItem;
-        public ItemId rightHandItem;
-        public ItemId leftPocketItem;
-        public ItemId rightPocketItem;
+        public ItemId LeftHandItem;
+        public ItemId RightHandItem;
+        public ItemId LeftPocketItem;
+        public ItemId RightPocketItem;
     }
 }

@@ -18,33 +18,33 @@ public class RoleLoadoutEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        roleLoadout.leftHand = EditorGUILayout.Toggle("Left Hand", roleLoadout.leftHand);
-        roleLoadout.rightHand = EditorGUILayout.Toggle("Right Hand", roleLoadout.rightHand);
-        roleLoadout.leftPocket = EditorGUILayout.Toggle("Left Pocket", roleLoadout.leftPocket);
-        roleLoadout.rightPocket = EditorGUILayout.Toggle("Right Pocket", roleLoadout.rightPocket);
+        roleLoadout.LeftHand = EditorGUILayout.Toggle("Left Hand", roleLoadout.LeftHand);
+        roleLoadout.RightHand = EditorGUILayout.Toggle("Right Hand", roleLoadout.RightHand);
+        roleLoadout.LeftPocket = EditorGUILayout.Toggle("Left Pocket", roleLoadout.LeftPocket);
+        roleLoadout.RightPocket = EditorGUILayout.Toggle("Right Pocket", roleLoadout.RightPocket);
 
-        if (roleLoadout.leftHand)
+        if (roleLoadout.LeftHand)
         {
-            roleLoadout.leftHandItem = (ItemId)EditorGUILayout.
-                EnumPopup("Left Hand Item:", roleLoadout.leftHandItem);
+            roleLoadout.LeftHandItem = (ItemId)EditorGUILayout.
+                EnumPopup("Left Hand Item:", roleLoadout.LeftHandItem);
         }
 
-        if (roleLoadout.rightHand)
+        if (roleLoadout.RightHand)
         {
-            roleLoadout.rightHandItem = (ItemId)EditorGUILayout.
-                EnumPopup("Right Hand Item:", roleLoadout.rightHandItem);
+            roleLoadout.RightHandItem = (ItemId)EditorGUILayout.
+                EnumPopup("Right Hand Item:", roleLoadout.RightHandItem);
         }
 
-        if (roleLoadout.leftPocket)
+        if (roleLoadout.LeftPocket)
         {
-            roleLoadout.leftPocketItem = (ItemId)EditorGUILayout.
-                EnumPopup("Left Pocket Item:", roleLoadout.leftPocketItem);
+            roleLoadout.LeftPocketItem = (ItemId)EditorGUILayout.
+                EnumPopup("Left Pocket Item:", roleLoadout.LeftPocketItem);
         }
 
-        if (roleLoadout.rightPocket)
+        if (roleLoadout.RightPocket)
         {
-            roleLoadout.rightPocketItem = (ItemId)EditorGUILayout.
-                EnumPopup("Right Pocket Item:", roleLoadout.rightPocketItem);
+            roleLoadout.RightPocketItem = (ItemId)EditorGUILayout.
+                EnumPopup("Right Pocket Item:", roleLoadout.RightPocketItem);
         }
     }
 }
