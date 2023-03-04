@@ -6,7 +6,7 @@ on:
       - opened
   pull_request:
     branches:
-      - main
+      - develop
 jobs:
   automate-project-columns:
     runs-on: ubuntu-latest
