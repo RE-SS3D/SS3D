@@ -80,7 +80,6 @@ namespace SS3D.Systems.IngameConsoleSystem
             _isSliding = true;
             _targetPointMin = Vector2.zero;
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
-            _inputField.ReleaseSelection();
             _inputField.DeactivateInputField();
             _controls.Enable();
             _consoleControls.Disable();
@@ -94,7 +93,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             _isSliding = true;
             _targetPointMin = new Vector2(0, -_consolePanel.rect.height);
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
-            _inputField.Select();
+            _inputField.ActivateInputField();
             _controls.Disable();
             _consoleControls.Enable();
             _consoleControls.Open.Disable();
@@ -115,7 +114,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         {
             ProcessCommand(_inputField.text);
             _inputField.text = "";
-            _inputField.Select();
+            _inputField.ActivateInputField();
         }
         
         private void Slide()
