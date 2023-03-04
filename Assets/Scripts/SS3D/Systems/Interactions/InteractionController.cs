@@ -11,8 +11,6 @@ using SS3D.Systems.Screens;
 using SS3D.Systems.Inventory.Containers;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using Serilog;
 using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Interactions

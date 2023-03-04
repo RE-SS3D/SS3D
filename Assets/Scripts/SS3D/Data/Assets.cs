@@ -89,7 +89,7 @@ namespace SS3D.Data
                 Databases.Add(index, database);
             }
 
-            Punpun.Say(typeof(Assets), $"{assetDatabases.Count} Asset Databases initialized", Logs.Important);
+            Punpun.Information(typeof(Assets), $"{assetDatabases.Count} Asset Databases initialized", Logs.Important);
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace SS3D.Data
 
             if (!databaseExists)
             {
-                Punpun.Yell(typeof(Assets), $"Database of type {key} not found", Logs.Important);
+                Punpun.Warning(typeof(Assets), "Database of type {DatabaseType} not found", Logs.Important, key);
             }
 
             return database;
