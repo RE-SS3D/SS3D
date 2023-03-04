@@ -6,21 +6,21 @@ on:
       - opened
   pull_request:
     branches:
-      - main
+      - develop
 jobs:
   automate-project-columns:
     runs-on: ubuntu-latest
     steps:
     - name: if_issue
       if: github.event.issue
-      uses: alex-page/github-project-automation-plus@RELEASE_VERSION
+      uses: alex-page/github-project-automation-plus@v0.8.3
       with:
         project: SS3D Roadmap
         column: Backlog
         repo-token: ${{ secrets.GITHUB_TOKEN }}
     - name: if_pr
       if: github.event.pull_request
-      uses: alex-page/github-project-automation-plus@RELEASE_VERSION
+      uses: alex-page/github-project-automation-plus@v0.8.3
       with:
         project: SS3D Roadmap
         column: In Progress
