@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Input;
 using SS3D.Systems.IngameConsoleSystem.Commands;
-using UnityEngine;
 
 namespace SS3D.Systems.IngameConsoleSystem
 {
@@ -14,6 +12,10 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// Contains all command infos and their names in lowercase
         /// </summary>
         private readonly Dictionary<string, Command> _allCommands = new();
+        /// <summary>
+        /// Length of space between columns in help command
+        /// </summary>
+        private const int TabLength = 20;
         public CommandsController()
         {
             IEnumerable<Type> commands = Assembly.GetAssembly(typeof(Command)).GetTypes().Where(iType =>
@@ -21,6 +23,8 @@ namespace SS3D.Systems.IngameConsoleSystem
             foreach (Type command in commands)
             {
                 string name = command.Name.ToLower();
+                // Remove Command suffix
+                name = name.Substring(0, name.Length - 7);
                 Command instance = (Command)Activator.CreateInstance(command);
                 _allCommands.Add(name, instance);
             }
@@ -58,7 +62,8 @@ namespace SS3D.Systems.IngameConsoleSystem
             string ret = "";
             foreach (KeyValuePair<string, Command> i in _allCommands)
             {
-                ret += i.Key + "\t" + i.Value.ShortDescription + "\n";
+                string tabulation = new(' ', TabLength - i.Key.Length);
+                ret += i.Key + tabulation + i.Value.ShortDescription + "\n";
             }
 
             return ret;

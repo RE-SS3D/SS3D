@@ -5,7 +5,7 @@ using SS3D.Systems.PlayerControl;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
-    public class Kill : Command
+    public class KillCommand : Command
     {
         public override string LongDescription => "kill (user ckey)";
         public override string ShortDescription => "Kill player";

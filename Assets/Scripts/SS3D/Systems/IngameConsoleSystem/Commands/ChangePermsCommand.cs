@@ -5,10 +5,10 @@ using SS3D.Systems.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
-    public class ChangePerms : Command
+    public class ChangePermsCommand : Command
     {
-        public override string LongDescription => "Change user permission";
-        public override string ShortDescription => "changeperms (user ckey) (required role)";
+        public override string LongDescription => "changeperms (user ckey) (required role)";
+        public override string ShortDescription => "Change user permission";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
         public override string Perform(string[] args)
         {

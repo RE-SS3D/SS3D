@@ -1,9 +1,8 @@
-﻿using FishNet.Object;
-using SS3D.Systems.Permissions;
-using UnityEditor;
+﻿using SS3D.Systems.Permissions;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
+    // All commands, that inherit Command will be added to CommandsController and have to contain Command suffix
     public abstract class Command
     {
         protected struct CheckArgsResponse

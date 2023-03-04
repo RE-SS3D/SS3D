@@ -1,13 +1,15 @@
-﻿using System;
-using System.Linq;
+﻿using System.Collections.Generic;
+using SS3D.Core;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Permissions;
+using SS3D.Systems.PlayerControl;
 
 namespace SS3D.Systems.IngameConsoleSystem.Commands
 {
-    public class Echo : Command
+    public class SoulListCommand : Command
     {
-        public override string LongDescription => "echo (number) (your string)";
-        public override string ShortDescription => "Repeat your string";
+        public override string LongDescription => "Show all souls";
+        public override string ShortDescription => "Show all souls";
         public override ServerRoleTypes AccessLevel => ServerRoleTypes.User;
         public override string Perform(string[] args)
         {
@@ -15,26 +17,23 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
             if (checkArgsResponse.IsValid == false)
                 return checkArgsResponse.InvalidArgs;
             
-            UInt16 number = UInt16.Parse(args[0]);
-            return String.Concat(Enumerable.Repeat(string.Join(" ", args.Skip(1)), number));
+            string ret = "";
+            IEnumerable<Soul> souls = SystemLocator.Get<PlayerSystem>().ServerSouls;
+            foreach (Soul i in souls)
+            {
+                ret += i.Ckey + "\t";
+            }
+            return ret;
         }
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
             CheckArgsResponse response = new CheckArgsResponse();
-            if (args.Length != 2)
+            if (args.Length != 0)
             {
                 response.IsValid = false;
                 response.InvalidArgs = "Invalid number of arguments";
                 return response;
             }
-            UInt16.TryParse(args[0], out UInt16 number);
-            if (number == 0)
-            {
-                response.IsValid = false;
-                response.InvalidArgs = "Invalid number";
-                return response;
-            }
-
             response.IsValid = true;
             return response;
         }
