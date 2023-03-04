@@ -3672,7 +3672,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1604094696}
   _networkObjectCache: {fileID: 1604094696}
-  rolesAvailable: {fileID: 11400000, guid: 1ac202e4643a5ee41b99ccfe7dcc0092, type: 2}
+  _rolesAvailable: {fileID: 11400000, guid: 1ac202e4643a5ee41b99ccfe7dcc0092, type: 2}
 --- !u!114 &1604094696
 MonoBehaviour:
   m_ObjectHideFlags: 0

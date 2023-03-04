@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2197c1d93e4c39a4d958f015762fc338, type: 3}
   m_Name: Assistant
   m_EditorClassIdentifier: 
-  roleName: Assistant
-  pdaPrefab: 12
-  idCardPrefab: 13
-  permissions:
+  _roleName: Assistant
+  _pdaPrefab: 12
+  _idCardPrefab: 13
+  _permissions:
   - {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}
-  loadout: {fileID: 11400000, guid: 7b594d795fdbb5c41aaed6582368a2de, type: 2}
+  _loadout: {fileID: 0}
