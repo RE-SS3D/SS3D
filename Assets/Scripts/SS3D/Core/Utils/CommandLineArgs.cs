@@ -15,9 +15,13 @@ namespace SS3D.Core.Utils
         /// </summary>
         public const string Host = "-host";
         /// <summary>
-        /// String.
+        /// The ip to connect to. String.
         /// </summary>
         public const string Ip = "-ip=";
+        /// <summary>
+        /// The server port to connect to or host. String.
+        /// </summary>
+        public const string Port = "-port=";
         /// <summary>
         /// String.
         /// This is temporary, in production use, this will not exist,

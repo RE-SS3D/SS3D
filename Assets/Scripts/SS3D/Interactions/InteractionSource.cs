@@ -45,6 +45,7 @@ namespace SS3D.Interactions
                 {
                     instance.FirstTick = false;
 
+                    // Runs the first tick of the interaction
                     if (instance.Interaction != null && instance.Interaction.Start(instance.Event, instance.Reference))
                     {
                         continue;
@@ -52,6 +53,7 @@ namespace SS3D.Interactions
                 }
                 else
                 {
+                    // Continue running the interaction until it's done
                     if (instance.Interaction != null && instance.Interaction.Update(instance.Event, instance.Reference))
                     {
                         continue;

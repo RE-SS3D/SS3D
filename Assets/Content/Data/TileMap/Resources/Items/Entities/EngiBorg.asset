@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827764dff5251cd4ebdef8908d68f3dd, type: 3}
   m_Name: EngiBorg
   m_EditorClassIdentifier: 
-  nameString: borg_engi
+  nameString: borg_engineering
   prefab: {fileID: 6199841308937614464, guid: 06c946c7c639138488b814e4448b82e4, type: 3}
+  icon: {fileID: 21300000, guid: 9e89894392ee65f45bd559d4619cbade, type: 3}

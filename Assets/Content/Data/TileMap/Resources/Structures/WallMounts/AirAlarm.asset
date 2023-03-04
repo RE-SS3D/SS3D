@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
   m_Name: AirAlarm
   m_EditorClassIdentifier: 
-  nameString: air_alarm
-  layer: 5
+  nameString: airalarm
   prefab: {fileID: 6961426338783081091, guid: 11a2276338ebc64429dfc565b491e437, type: 3}
+  icon: {fileID: 0}
+  layer: 6
   genericType: 0
   specificType: 0
   width: 1

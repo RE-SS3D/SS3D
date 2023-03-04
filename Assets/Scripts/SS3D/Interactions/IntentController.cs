@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace SS3D.Interactions
 {
     /// <summary>
-    /// Basically a copy of HumanoidBOdyPartTargetSelector.cs
+    /// Basically a copy of HumanoidBodyPartTargetSelector.cs
     /// This manages intent and it's done to easily support other intents
     /// </summary>
     public class IntentController : Actor
@@ -35,6 +35,9 @@ namespace SS3D.Interactions
             SelectIntent();
         }
 
+        /// <summary>
+        /// Switches between Help and Harm intent
+        /// </summary>
         public void SelectIntent()
         {
             bool harm = _selectedIntent == IntentType.Harm;

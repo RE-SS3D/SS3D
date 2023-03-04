@@ -21,16 +21,12 @@ namespace SS3D.Systems.Entities.Humanoid
         [Header("Components")]
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private StaminaController _staminaController;
-
-        // [SerializeField] private Transform _mousePositionTransform;
-        // [SerializeField] private Transform _mouseDirectionTransform;
-
+        
         /// <summary>
         /// Executes the movement code and updates the IK targets
         /// </summary>
         protected override void ProcessCharacterMovement()
         {
-            ProcessToggleRun();
             ProcessPlayerInput();
 
             _characterController.Move(Physics.gravity);

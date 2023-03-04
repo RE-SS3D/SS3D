@@ -32,7 +32,7 @@ namespace SS3D.Systems.Inventory.Items
         /// </summary>
         private void LoadItemPrefabs()
         {
-            AssetDatabase items = Assets.GetDatabase(nameof(ItemId));
+            AssetDatabase items = Assets.GetDatabase((int)AssetDatabases.Items);
 
             for (int index = 0; index < items.Assets.Count; index++)
             {

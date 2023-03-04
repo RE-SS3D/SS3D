@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Utils;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Interactions
 {
@@ -37,6 +39,7 @@ namespace SS3D.Systems.Interactions
 
         private List<IInteraction> Interactions { get; set; }
         private InteractionEvent Event { get; set; }
+        private Controls.OtherActions _controls;
 
         protected override void OnStart()
         {
@@ -50,22 +53,25 @@ namespace SS3D.Systems.Interactions
         {
             base.HandleUpdate(in deltaTime);
 
-            if (Input.GetMouseButtonUp(1))
-            {
-                Disappear();
-            }
-
             UpdateIndicator();
         }
 
         private void Setup()
         {
             Interactions = new List<IInteraction>();
-
             foreach (RadialInteractionButton interactionButton in _interactionButtons)
             {
                 interactionButton.OnHovered += HandleInteractionButtonHovered;
             }
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls.SecondaryClick.performed += HandleDisappear;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            _controls.SecondaryClick.performed -= HandleDisappear;
         }
 
         private void HandleInteractionButtonHovered(GameObject button, IInteraction interaction)
@@ -144,7 +150,7 @@ namespace SS3D.Systems.Interactions
         /// </summary>
         private void Show()
         {
-            Vector2 screenPos = new(Input.mousePosition.x, Input.mousePosition.y);
+            Vector2 screenPos = Mouse.current.position.ReadValue();
             Position = screenPos;
 
             _selectedObject = _interactionButtons.First().GameObjectCache;
@@ -171,6 +177,11 @@ namespace SS3D.Systems.Interactions
             _fadeSequence.Play();
 
             _canvasGroup.interactable = true;
+        }
+
+        private void HandleDisappear(InputAction.CallbackContext callbackContext)
+        {
+            Disappear();
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using SS3D.Core;
+using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace SS3D.Systems.Inventory.UI
@@ -17,23 +19,19 @@ namespace SS3D.Systems.Inventory.UI
 			_internalClothingCanvas = GameObject.Find("InternalClothing").GetComponent<CanvasGroup>();
 			_expandButton = GetComponent<Button>();
 			_expandButton.onClick.AddListener(TaskOnClick);
+			SystemLocator.Get<InputSystem>().Inputs.Hotkeys.ToggleInternalClothing.performed += HandleToggleClothing;
 		}
 
-        private void Update()
-        {
-			// Button to toggle the internal clothing UI
-			if (Input.GetButtonDown("Toggle Internal Clothing"))
-			{
-				Toggle();
-			}
-		}
-
-        private void TaskOnClick()
+		private void TaskOnClick()
 		{
 			Toggle();
 		}
 
-		/// <summary>
+        private void HandleToggleClothing(InputAction.CallbackContext context)
+        {
+	        Toggle();
+        }
+        /// <summary>
 		/// Toggle the Internal Clothing UI using transparency and turning on or off the ability to block ray casts.
 		/// </summary>
 		private void Toggle()

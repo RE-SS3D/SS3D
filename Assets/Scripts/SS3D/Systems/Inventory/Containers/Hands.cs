@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Linq;
 using FishNet.Object;
+using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -15,6 +17,7 @@ namespace SS3D.Systems.Inventory.Containers
     {
         [SerializeField] public AttachedContainer[] HandContainers;
         [SerializeField] private float handRange;
+        private Controls.HotkeysActions _controls;
 
         [NonSerialized]
         public Inventory Inventory;
@@ -56,6 +59,23 @@ namespace SS3D.Systems.Inventory.Containers
             HandsView.Hands = this;
 
             SupportsMultipleInteractions = true;
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Hotkeys;
+            _controls.SwapHands.performed += HandleSwapHands;
+            _controls.Drop.performed += HandleDropHeldItem;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            _controls.SwapHands.performed -= HandleSwapHands;
+            _controls.Drop.performed -= HandleDropHeldItem;
         }
 
         [Server]
@@ -105,28 +125,16 @@ namespace SS3D.Systems.Inventory.Containers
             item.Container = null;
             ItemUtility.Place(item, position, rotation, transform);
         }
-
-        public override void Update()
+        
+        private void HandleSwapHands(InputAction.CallbackContext context)
         {
-            base.Update();
-
-            if (!IsOwner)
+            if (!IsOwner || !enabled || HandContainers.Length < 1)
             {
                 return;
             }
-
-            // Hand-related buttons
-            if (Input.GetButtonDown("Swap Hands") && HandContainers.Length > 0)
-            {
-                SelectedHandIndex = (SelectedHandIndex + 1) % HandContainers.Length;
-                OnHandChanged?.Invoke(SelectedHandIndex);
-                CmdSetActiveHand(SelectedHandIndex);
-            }
-
-            if (Input.GetButtonDown("Drop"))
-            {
-                CmdDropHeldItem();
-            }
+            SelectedHandIndex = (SelectedHandIndex + 1) % HandContainers.Length;
+            OnHandChanged?.Invoke(SelectedHandIndex);
+            CmdSetActiveHand(SelectedHandIndex);
         }
 
         /// <summary>
@@ -153,6 +161,10 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
+        private void HandleDropHeldItem(InputAction.CallbackContext context)
+        {
+            CmdDropHeldItem();
+        }
         [ServerRpc]
         private void CmdDropHeldItem()
         {
@@ -171,7 +183,7 @@ namespace SS3D.Systems.Inventory.Containers
                 Debug.Log($"Invalid hand index {selectedHand}");
             }
         }
-
+        
         public IInteractionSource GetActiveTool()
         {
             Item itemInHand = ItemInHand;
