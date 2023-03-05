@@ -5,6 +5,10 @@ using SS3D.Core;
 
 namespace SS3D.Core.Logging
 {
+    /// <summary>
+    /// Simple class used to trigger a call once client and/or server is fully functionnal and started.
+    /// Useful for static classes.
+    /// </summary>
     public class ServerStartedListener : NetworkBehaviour
     {
         public event EventHandler OnServerOrClientStarted;

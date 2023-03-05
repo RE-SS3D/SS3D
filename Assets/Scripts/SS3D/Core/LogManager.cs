@@ -17,6 +17,9 @@ namespace SS3D.Core
 {
     /// <summary>
     /// Set up Serilog's Logger for clients, host and server. 
+    /// This heavily rely on LogSetting scriptable object to configure the logger.
+    /// Check in Assets/Settings the LogSetting scriptable object, there you can configure the logging level per namespace,
+    /// as well as the default global logging level.
     /// </summary>
     public static class LogManager
     {
@@ -37,12 +40,10 @@ namespace SS3D.Core
             settings = Assets.Get<LogSetting>(Data.Enums.AssetDatabases.Settings, (int)Data.Enums.SettingIds.LogSetting);
         }
 
-        public static void Initialize()
+        private static void Initialize()
         {
             if (_isInitialized) return;
             _isInitialized = true;
-
-
 
             // Add enricher and configure the global logging level.
             var configuration = new LoggerConfiguration()
@@ -91,6 +92,9 @@ namespace SS3D.Core
             Initialize();
         }
 
+        /// <summary>
+        /// Simply configure the global log level using the one chosen in LogSetting.
+        /// </summary>
         private static LoggerConfiguration ConfigureMinimumLevel(LoggerConfiguration loggerConfiguration)
         {
             switch (settings.defaultLogLevel)
