@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 2e56555ad4dc18b4a9667b5e0d83c93a
 ModelImporter:
-  serializedVersion: 21202
+  serializedVersion: 21300
   internalIDToNameTable:
   - first:
       74: 1827226128182048838
@@ -11,12 +11,12 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: BarFloor_M
-    second: {fileID: 2100000, guid: ca41da5e70e89dc459b9d340bc1ab7a5, type: 2}
+    second: {fileID: 2100000, guid: 375c5e41f1606394c95b2207427ad70a, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Default_Material
-    second: {fileID: 2100000, guid: ca41da5e70e89dc459b9d340bc1ab7a5, type: 2}
+    second: {fileID: 2100000, guid: 6430227ac2f6b734f89160acf9727ee9, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -56,12 +56,12 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: WoodFloor_M
-    second: {fileID: 2100000, guid: 237e23cf675650147b022f69f0606d9f, type: 2}
+    second: {fileID: 2100000, guid: 93ea42dd74cabc0448b3dd1da9c711f6, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: lambert1
-    second: {fileID: 2100000, guid: ca41da5e70e89dc459b9d340bc1ab7a5, type: 2}
+    second: {fileID: 2100000, guid: 6430227ac2f6b734f89160acf9727ee9, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -172,6 +172,7 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

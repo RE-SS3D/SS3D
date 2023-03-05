@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 9576f26126ba6e64f80db0ab6524724b
 ModelImporter:
-  serializedVersion: 21202
+  serializedVersion: 21300
   internalIDToNameTable: []
   externalObjects:
   - first:
@@ -23,7 +23,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Plating
-    second: {fileID: 2100000, guid: 8f4cae7d553845a4f9699f01d32bea7e, type: 2}
+    second: {fileID: 2100000, guid: 11a544979af09ca4192afae76113cb55, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -119,6 +119,7 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 
