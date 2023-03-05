@@ -24,14 +24,14 @@ namespace SS3D.Systems.Screens
         private const float FadeDuration = .05f;
         private const float ScaleDuration = .175f;
 
-        protected override void OnAwake()
+        protected override void OnStart()
         {
-            base.OnAwake();
+            base.OnStart();
 
             Setup();
         }
 
-        [Client]
+        [ServerOrClient]
         private void Setup()
         {
             LastScreen = ScreenType.None;
@@ -48,7 +48,7 @@ namespace SS3D.Systems.Screens
             AddHandle(CameraTargetChanged.AddListener(HandleChangeCamera));
         }
 
-        [Client]
+        [ServerOrClient]
         private void HandleChangeGameScreen(ref EventContext context, in ChangeGameScreenEvent e)
         {
             ScreenType screenType = e.Screen;
@@ -56,14 +56,14 @@ namespace SS3D.Systems.Screens
             SetScreenState(screenType);
         }
 
-        [Client]
+        [ServerOrClient]
         private void HandleChangeCamera(ref EventContext context, in CameraTargetChanged e)
         {
             ChangeGameScreenEvent changeGameScreenEvent = new(ScreenType.None);
             changeGameScreenEvent.Invoke(this);
         }
 
-        [Client]
+        [ServerOrClient]
         private void SetScreenState(ScreenType nextScreen, bool forceInstant = false)
         {
             _sequence?.Kill();
