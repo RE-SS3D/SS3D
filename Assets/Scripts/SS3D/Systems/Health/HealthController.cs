@@ -29,8 +29,8 @@ public class HealthController : NetworkBehaviour
     [ObserversRpc]
     private void destroyObjects(Entity originEntity, Entity ghostEntity)
     {
-        originEntity.gameObject.GetComponent<StaminaController>().Destroy();
-        originEntity.gameObject.GetComponent<HumanoidController>().Destroy();
+        originEntity.gameObject.GetComponent<StaminaController>().Dispose(true);
+        originEntity.gameObject.GetComponent<HumanoidController>().Dispose(true);
         originEntity.gameObject.transform.Rotate(new Vector3(90, 0, 0));
         ghostEntity.transform.position = originEntity.transform.position;
         ghostEntity.transform.rotation = originEntity.transform.rotation;

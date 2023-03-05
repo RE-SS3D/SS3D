@@ -8,7 +8,7 @@ namespace SS3D.Systems.Inventory.UI
         {
             base.OnDropAccepted();
             (InventoryDisplayElement as ItemGrid)?.RemoveGridItem(this);
-            gameObject.Destroy();
+            gameObject.Dispose(true);
         }
     }
 }

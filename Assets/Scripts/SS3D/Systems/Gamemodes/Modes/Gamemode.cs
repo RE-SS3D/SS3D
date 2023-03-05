@@ -134,7 +134,7 @@ namespace SS3D.Systems.GameModes.Modes
         {
             foreach (GamemodeObjective gamemodeObjective in _roundObjectives)
             {
-                gamemodeObjective.Destroy();
+                gamemodeObjective.Dispose(true);
             }
             _roundObjectives.Clear();
         }
