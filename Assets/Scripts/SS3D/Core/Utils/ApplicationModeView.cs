@@ -33,7 +33,7 @@ namespace SS3D.Core.Utils
             string os = $"{SystemInfo.operatingSystem}".Colorize(LogColors.GetLogColor(Logs.External));
             string graphicsDevice = $"{SystemInfo.graphicsDeviceName}".Colorize(LogColors.GetLogColor(Logs.External));
             string processingDevice = $"{SystemInfo.processorType}".Colorize(LogColors.GetLogColor(Logs.External));
-            string memory = $"{SystemInfo.systemMemorySize}GB".Colorize(LogColors.GetLogColor(Logs.External));
+            string memory = $"{SystemInfo.systemMemorySize}MB".Colorize(LogColors.GetLogColor(Logs.External));
 
             const string pcEmoji = "<sprite name=\"pc\">";
             const string toolboxEmoji = "<sprite name=\"toolbox\"}>";
