@@ -1,14 +1,14 @@
 fileFormatVersion: 2
 guid: 4d4a7dd632bf0014dbd625055104fca3
 ModelImporter:
-  serializedVersion: 21202
+  serializedVersion: 21300
   internalIDToNameTable: []
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Tile
-    second: {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
+    second: {fileID: 2100000, guid: 11a544979af09ca4192afae76113cb55, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -104,6 +104,7 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 
