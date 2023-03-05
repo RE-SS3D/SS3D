@@ -24,9 +24,9 @@ namespace SS3D.Systems.Screens
         private const float FadeDuration = .05f;
         private const float ScaleDuration = .175f;
 
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
+            base.OnAwake();
 
             Setup();
         }
