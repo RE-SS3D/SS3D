@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SS3D.Core
+namespace SS3D.Logging
 {
     /// <summary>
     /// Enrich log messages by adding a ID property.

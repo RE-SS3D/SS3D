@@ -12,8 +12,10 @@ using FishNet.Managing.Client;
 using System.Runtime.CompilerServices;
 using FishNet;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
-namespace SS3D.Core
+namespace SS3D.Logging
 {
     /// <summary>
     /// Set up Serilog's Logger for clients, host and server. 
@@ -25,6 +27,7 @@ namespace SS3D.Core
         private static readonly string defaultUnityLogTemplate;
         private static readonly string LogFolderPath;
         private static bool _isInitialized;
+        private static readonly List<string> SS3DNameSpaces;
 
         static LogManager()
         {
@@ -32,6 +35,7 @@ namespace SS3D.Core
             LogFolderPath = Application.dataPath + "/Logs/";
             _levelSwitch = new LoggingLevelSwitch();
             _levelSwitch.MinimumLevel = LogEventLevel.Warning;
+            SS3DNameSpaces = GetAllNameOfSS3DNameSpace();   
         }
 
         public static void Initialize()
@@ -39,13 +43,24 @@ namespace SS3D.Core
             if (_isInitialized) return;
             _isInitialized = true;
 
-
-            var configuration = new LoggerConfiguration();
-            configuration = new LoggerConfiguration()
+            // Add enricher and configure the global logging level.
+            var configuration = new LoggerConfiguration()
                                 .Enrich.With(new ClientIdEnricher())
-                                .MinimumLevel.Verbose()
-                                .WriteTo.Unity3D(formatter: new SS3DUnityTextFormatter(outputTemplate: defaultUnityLogTemplate));
+                                .MinimumLevel.Information();
 
+            // Apply some override on the minimum logging level for some namespaces.
+            // Does not apply override if the logging level corresponds to the global minimum level.
+            foreach(var name in SS3DNameSpaces)
+            {
+                
+                configuration = configuration.MinimumLevel.Override(name, LogEventLevel.Error);
+            }
+
+            // Configure writing to Unity's console, using our custom text formatter.
+            configuration = configuration.WriteTo.Unity3D(formatter: new SS3DUnityTextFormatter(outputTemplate: defaultUnityLogTemplate));
+
+            // Configure writing to log files using a CompactJsonFormatter. The path of the log file depends if connection is host, server only, or client.
+            // Write in a different file depending on client's connection id.
             if (InstanceFinder.IsHost)
             {
                 configuration = configuration.WriteTo.File(new CompactJsonFormatter()
@@ -62,12 +77,44 @@ namespace SS3D.Core
                 , LogFolderPath + "LogServer.json");
             }
 
+            // Create the logger from the configuration.
             Log.Logger = configuration.CreateLogger();
         }
 
+        /// <summary>
+        /// Suscribe to event ServerOrClientStarted, to initialize Log Manager when stuff networking wise are correctly set up.
+        /// </summary>
         public static void OnServerStarted(object sender, EventArgs e)
         {
             Initialize();
+        }
+
+        /// <summary>
+        /// Get the name of each namespaces containing SS3D.
+        /// </summary>
+        /// <returns> A list of those names.</returns>
+        private static List<string> GetAllNameOfSS3DNameSpace()
+        {
+            var Assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var SS3DNameSpaces = new List<string>();
+            foreach (var assembly in Assemblies)
+            {
+                var namespaces = assembly.GetTypes()
+                                .Select(t => t.Namespace)
+                                .Distinct();
+
+
+                foreach (var type in namespaces)
+                {
+                    if (type == null || !type.Contains("SS3D"))
+                    {
+                        continue;
+                    }
+                    SS3DNameSpaces.Add(type);
+                }
+            }
+
+            return SS3DNameSpaces;
         }
     }
 
