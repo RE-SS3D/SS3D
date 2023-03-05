@@ -55,9 +55,9 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
 
-        protected override void OnStart()
+        protected override void OnAwake()
         {
-            base.OnStart();
+            base.OnAwake();
 
             StoredItems.OnChange += HandleStoredItemsChanged;
         }
@@ -459,6 +459,12 @@ namespace SS3D.Systems.Inventory.Containers
                 return false;
             }
 
+            Filter filter = AttachedTo.ContainerDescriptor.StartFilter;
+            if (filter != null)
+            {
+                return filter.CanStore(item);
+            }
+
             return true;
         }
 
@@ -486,6 +492,16 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Checks if this item can be stored and fits inside the container
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool CanContainItem(Item item)
+        {
+            return (CanStoreItem(item) && CanHoldItem(item));
         }
 
         /// <summary>

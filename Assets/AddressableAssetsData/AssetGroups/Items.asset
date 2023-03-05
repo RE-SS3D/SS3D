@@ -57,6 +57,22 @@ MonoBehaviour:
     m_Address: Assets/Content/Items/Consumable/SodaCanBeepyLime.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 2a63163a4db141744a802f3ff67087db
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/SecurityPDA.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ff95abc9c2b779340a1b50f1a128a934
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/SecurityIDCard.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 79260483ae5d3e04fa272e092b49abac
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/PDA.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d8b0c8d1ddcdeb24d9763054c103c9fe
+    m_Address: Assets/Content/WorldObjects/Items/Functional/Identification/IDCard.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddc57d0f5f9fb874e8a26db0c5b215e0, type: 2}
   m_SchemaSet:

@@ -200,6 +200,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!4 &36466131
 Transform:
@@ -275,6 +276,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!4 &36811088
 Transform:
@@ -916,6 +918,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!114 &327065888 stripped
 MonoBehaviour:
@@ -1063,7 +1066,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1506918115}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &439774648
 MonoBehaviour:
@@ -1283,7 +1286,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1506918115}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &474682044
 MonoBehaviour:
@@ -1298,7 +1301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 5
+  <ComponentIndex>k__BackingField: 6
   _networkBehaviours:
   - {fileID: 474682042}
   <ParentNetworkObject>k__BackingField: {fileID: 1506918116}
@@ -1327,6 +1330,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &516802433
 GameObject:
@@ -1403,6 +1407,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!4 &516802436
 Transform:
@@ -1465,7 +1470,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1506918115}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &604587501
 MonoBehaviour:
@@ -1581,6 +1586,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &618991010
 GameObject:
@@ -1664,7 +1670,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1506918115}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &661652617
 MonoBehaviour:
@@ -1698,7 +1704,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 6
+  <ComponentIndex>k__BackingField: 7
   _networkBehaviours:
   - {fileID: 661652617}
   <ParentNetworkObject>k__BackingField: {fileID: 1506918116}
@@ -1727,6 +1733,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!114 &676448448 stripped
 MonoBehaviour:
@@ -1830,6 +1837,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!114 &778960611 stripped
 MonoBehaviour:
@@ -2227,6 +2235,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &914529550
 GameObject:
@@ -2311,6 +2320,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &960495455
 GameObject:
@@ -2576,6 +2586,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &1000564555
 GameObject:
@@ -2609,7 +2620,7 @@ Transform:
   m_Children:
   - {fileID: 878406319}
   m_Father: {fileID: 1506918115}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1000564557
 MonoBehaviour:
@@ -2641,7 +2652,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 7
+  <ComponentIndex>k__BackingField: 8
   _networkBehaviours:
   - {fileID: 1000564557}
   <ParentNetworkObject>k__BackingField: {fileID: 1506918116}
@@ -2671,6 +2682,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &1032375935
 GameObject:
@@ -3077,7 +3089,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1506918115}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1196595940
 MonoBehaviour:
@@ -3366,6 +3378,7 @@ Transform:
   - {fileID: 616353823}
   - {fileID: 246961639}
   - {fileID: 1927660777}
+  - {fileID: 1604094694}
   - {fileID: 474682043}
   - {fileID: 1196595939}
   - {fileID: 661652616}
@@ -3400,6 +3413,7 @@ MonoBehaviour:
   - {fileID: 616353825}
   - {fileID: 246961643}
   - {fileID: 1927660778}
+  - {fileID: 1604094696}
   - {fileID: 474682044}
   - {fileID: 661652618}
   - {fileID: 1000564558}
@@ -3427,6 +3441,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!1 &1544788594
 GameObject:
@@ -3613,6 +3628,99 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
+--- !u!1 &1604094693
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1604094694}
+  - component: {fileID: 1604094696}
+  - component: {fileID: 1604094695}
+  m_Layer: 0
+  m_Name: RoleSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 2800000, guid: d5ad4eb6e2beef74da33f196e75916ee, type: 3}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1604094694
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1604094693}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1506918115}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1604094695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1604094693}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79aa64d340f6acc408b29f41b254ce34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 1604094696}
+  _networkObjectCache: {fileID: 1604094696}
+  _rolesAvailable: {fileID: 11400000, guid: 1ac202e4643a5ee41b99ccfe7dcc0092, type: 2}
+--- !u!114 &1604094696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1604094693}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <IsNested>k__BackingField: 1
+  <ComponentIndex>k__BackingField: 5
+  _networkBehaviours:
+  - {fileID: 1604094695}
+  <ParentNetworkObject>k__BackingField: {fileID: 1506918116}
+  <ChildNetworkObjects>k__BackingField: []
+  _isNetworked: 1
+  _isGlobal: 0
+  _defaultDespawnType: 0
+  NetworkObserver: {fileID: 0}
+  <PrefabId>k__BackingField: -1
+  _scenePathHash: 952082934
+  <SceneId>k__BackingField: 4089165068030416596
+  <AssetPathHash>k__BackingField: 0
+  _sceneNetworkObjects:
+  - {fileID: 36466130}
+  - {fileID: 36811087}
+  - {fileID: 246961643}
+  - {fileID: 474682044}
+  - {fileID: 516802435}
+  - {fileID: 616353825}
+  - {fileID: 661652618}
+  - {fileID: 771589493}
+  - {fileID: 878406322}
+  - {fileID: 913757968}
+  - {fileID: 914529552}
+  - {fileID: 990295462}
+  - {fileID: 1000564558}
+  - {fileID: 1205760419}
+  - {fileID: 1506918116}
+  - {fileID: 1604094696}
+  - {fileID: 1927660778}
 --- !u!1 &1669161428
 GameObject:
   m_ObjectHideFlags: 0
@@ -4185,6 +4293,7 @@ MonoBehaviour:
   - {fileID: 1000564558}
   - {fileID: 1205760419}
   - {fileID: 1506918116}
+  - {fileID: 1604094696}
   - {fileID: 1927660778}
 --- !u!114 &1927660779
 MonoBehaviour:
@@ -4233,7 +4342,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1506918115}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1980231550
 MonoBehaviour:

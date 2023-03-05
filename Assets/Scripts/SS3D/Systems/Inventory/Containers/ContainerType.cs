@@ -10,6 +10,7 @@ namespace SS3D.Systems.Inventory.Containers
         Pocket,
         Hand,
         Bag,
+        Identification
     }
 }
 

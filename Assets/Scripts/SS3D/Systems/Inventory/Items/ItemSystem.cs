@@ -5,6 +5,7 @@ using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
 using SS3D.Logging;
+using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Items
@@ -66,7 +67,6 @@ namespace SS3D.Systems.Inventory.Items
         /// <param name="id">The item ID to spawn.</param>
         /// <param name="position">The desired position to spawn.</param>
         /// <param name="rotation">The desired rotation to apply.</param>
-        /// <returns></returns>
         [Server]
         public Item SpawnItem(ItemId id, Vector3 position, Quaternion rotation)
         {
@@ -82,6 +82,39 @@ namespace SS3D.Systems.Inventory.Items
             ServerManager.Spawn(itemInstance.GameObject);
 
             Punpun.Say(this, $"Item {itemInstance.name} spawned at {position}", Logs.ServerOnly);
+            return itemInstance;
+        }
+
+        /// <summary>
+        /// Spawns an Item inside a container.
+        ///
+        /// TODO: Create a ItemSpawnOptions struct.
+        /// </summary>
+        /// <param name="id">The item ID to spawn.</param>
+        /// <param name="container">The container to spawn into.</param>
+        [Server]
+        public Item SpawnItemInContainer(ItemId id, Container container)
+        {
+            bool hasValue = _itemPrefabs.TryGetValue(id, out Item itemPrefab);
+
+            if (!hasValue)
+            {
+                Punpun.Panic(this, $"No item with ID {id.ToString()} was found", Logs.ServerOnly);
+                return null;
+            }
+
+            if (!container)
+            {
+                Punpun.Panic(this, "Container does not found!", Logs.ServerOnly);
+                return null;
+            }
+
+            Item itemInstance = Instantiate(itemPrefab, Vector3.zero, Quaternion.identity);
+            ServerManager.Spawn(itemInstance.GameObject);
+            container.AddItem(itemInstance);
+
+            Punpun.Say(this, $"Item {itemInstance.name} spawned in container " +
+                $"{container.AttachedTo.ContainerDescriptor.ContainerName}", Logs.ServerOnly);
             return itemInstance;
         }
     }
