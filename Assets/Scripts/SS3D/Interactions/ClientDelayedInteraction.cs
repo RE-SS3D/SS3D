@@ -56,7 +56,7 @@ namespace SS3D.Interactions
         /// <inheritdoc />
         public void ClientCancel(InteractionEvent interactionEvent)
         {
-            _loadingBarInstance.Destroy();
+            _loadingBarInstance.Dispose(true);
         }
     }
 }

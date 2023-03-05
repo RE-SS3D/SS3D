@@ -1,3 +1,4 @@
+using Coimbra;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,7 @@ using FishNet.Object;
 using FishNet.Connection;
 using SS3D.Logging;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Tile.TileMapCreator;
 
 namespace SS3D.Systems.Tile.UI
 {
@@ -264,7 +266,7 @@ namespace SS3D.Systems.Tile.UI
         {
             for (int i = 0; i < _contentRoot.transform.childCount; i++)
             {
-                Destroy(_contentRoot.transform.GetChild(i).gameObject);
+                _contentRoot.transform.GetChild(i).gameObject.Dispose(true);
             }
         }
 

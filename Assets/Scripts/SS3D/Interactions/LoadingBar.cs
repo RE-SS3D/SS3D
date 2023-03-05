@@ -44,7 +44,7 @@ namespace SS3D.Interactions
         {
             if (StartTime + Duration < Time.time)
             {
-                GameObjectCache.Destroy();
+                GameObjectCache.Dispose(true);
                 return;
             }
 

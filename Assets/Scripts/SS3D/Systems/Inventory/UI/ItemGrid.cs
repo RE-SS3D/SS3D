@@ -107,7 +107,7 @@ namespace SS3D.Systems.Inventory.UI
                             }
 
                             _gridItems.RemoveAt(i);
-                            gridItem.gameObject.Destroy();
+                            gridItem.gameObject.Dispose(true);
                             break;
                         }
                     }

@@ -97,7 +97,7 @@ namespace SS3D.Systems.Gamemodes.UI
         {
             foreach (KeyValuePair<int,GamemodeObjectiveItemView> view in _gamemodeObjectiveItems)
             {
-                view.Value.GameObjectCache.Destroy();
+                view.Value.GameObjectCache.Dispose(true);
             }
 
             _gamemodeObjectiveItems.Clear();

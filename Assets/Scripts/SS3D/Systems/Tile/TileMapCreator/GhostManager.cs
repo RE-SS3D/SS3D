@@ -1,10 +1,8 @@
-using SS3D.Core.Behaviours;
-using SS3D.Systems.Tile;
-using System.Collections;
-using System.Collections.Generic;
+using Coimbra;
 using UnityEngine;
+using Actor = SS3D.Core.Behaviours.Actor;
 
-namespace SS3D.Systems.Tile.UI
+namespace SS3D.Systems.Tile.TileMapCreator
 {
     /// <summary>
     /// Class for creating and managing ghost objects used by the TileMapCreator.
@@ -45,7 +43,7 @@ namespace SS3D.Systems.Tile.UI
         {
             if (_ghostObject != null)
             {
-                Destroy(_ghostObject);
+                _ghostObject.Dispose(true);
                 _ghostObject = null;
             }
         }

@@ -32,7 +32,7 @@ namespace SS3D.Systems.Inventory.UI
         public void Close()
         {
             Inventory.CmdContainerClose(_attachedContainer);
-            gameObject.Destroy();
+            gameObject.Dispose(true);
         }
 
         private void UpdateContainer(Container container)
