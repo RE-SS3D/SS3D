@@ -9,7 +9,7 @@ using System.Linq;
 using TMPro;
 using FishNet.Object;
 using FishNet.Connection;
-using SS3D.Logging;
+using SS3D.Core.Logging;
 using SS3D.Core.Behaviours;
 
 namespace SS3D.Systems.Tile.UI

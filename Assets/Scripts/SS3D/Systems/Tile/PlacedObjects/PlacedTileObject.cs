@@ -1,7 +1,7 @@
 using FishNet;
 using FishNet.Object;
 using SS3D.Core;
-using SS3D.Logging;
+using SS3D.Core.Logging;
 using SS3D.Systems.Tile.Connections;
 using System;
 using System.Collections;

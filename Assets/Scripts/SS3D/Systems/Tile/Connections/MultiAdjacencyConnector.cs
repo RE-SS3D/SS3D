@@ -1,6 +1,6 @@
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using SS3D.Logging;
+using SS3D.Core.Logging;
 using SS3D.Systems.Tile.Connections.AdjacencyTypes;
 using System.Collections;
 using System.Collections.Generic;

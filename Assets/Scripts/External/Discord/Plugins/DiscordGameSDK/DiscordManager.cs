@@ -1,10 +1,10 @@
 #region Discord References
 
 using System;
-using SS3D.Logging;
+using SS3D.Core.Logging;
 using UnityEngine;
 using UnityEngine.Events;
-using LogType = SS3D.Logging.LogType;
+using LogType = SS3D.Core.Logging.LogType;
 
 #endregion
 

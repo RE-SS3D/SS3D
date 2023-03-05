@@ -4,7 +4,7 @@ using SS3D.Core.Behaviours;
 using SS3D.Data;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
-using SS3D.Logging;
+using SS3D.Core.Logging;
 using UnityEngine;
 
 namespace SS3D.Systems.Inventory.Items

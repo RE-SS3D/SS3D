@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SS3D.Logging;
+using SS3D.Core.Logging;
 using UnityEngine;
 
 namespace SS3D.Core

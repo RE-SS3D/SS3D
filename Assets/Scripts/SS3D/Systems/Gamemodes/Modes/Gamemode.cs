@@ -1,5 +1,5 @@
 using System;
-using SS3D.Logging;
+using SS3D.Core.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using Coimbra;
