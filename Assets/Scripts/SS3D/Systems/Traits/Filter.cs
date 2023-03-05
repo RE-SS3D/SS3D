@@ -4,6 +4,9 @@ using SS3D.Systems.Inventory.Items;
 
 namespace SS3D.Systems
 {
+    /// <summary>
+    /// An inventory filter that only allows items with certain traits
+    /// </summary>
     [CreateAssetMenu(fileName = "Filter", menuName = "Inventory/Filter")]
     public class Filter : ScriptableObject
     {

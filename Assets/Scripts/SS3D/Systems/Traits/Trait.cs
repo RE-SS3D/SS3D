@@ -2,12 +2,14 @@
 
 namespace SS3D.Systems
 {
+    /// <summary>
+    /// Used for checking certain characteristics in Items
+    /// </summary>
     [CreateAssetMenu(fileName = "Trait", menuName = "Inventory/Traits/Trait")]
     public class Trait : ScriptableObject
     {
-        //Hash for identification
+        // Hash used for identification
         protected int hash;
-        
         public int Hash
         {
             get
@@ -29,8 +31,8 @@ namespace SS3D.Systems
             set => name = value;
         }
 
+        // Categories, used for checking specific types of Traits
         protected TraitCategories _category;
-
         public TraitCategories Category
         {
             get => _category;

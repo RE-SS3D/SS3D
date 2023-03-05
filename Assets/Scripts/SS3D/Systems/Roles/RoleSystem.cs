@@ -34,7 +34,6 @@ namespace SS3D.Systems.Roles
         private void Setup()
         {
             AddHandle(OnlineSoulsChanged.AddListener(HandleOnlineSoulsChanged));
-            AddHandle(PlayerContainersReady.AddListener(HandlePlayerContainersReady));
 
             GetAvailableRoles();
         }
@@ -92,13 +91,6 @@ namespace SS3D.Systems.Roles
         {
             RemovePlayerFromCounters(soul);
         }
-
-        [Server]
-        private void HandlePlayerContainersReady(ref EventContext context, in PlayerContainersReady e)
-        {
-            Punpun.Say(this, e.Player.Ckey + "'s containers are ready!");
-            GiveRoleLoadoutToPlayer(e.Player);
-        }
         #endregion
 
         /// <summary>
@@ -144,7 +136,8 @@ namespace SS3D.Systems.Roles
         /// Checks the role of the player and spawns his items
         /// </summary>
         /// <param name="entity">The player that will receive the items</param>
-        private void GiveRoleLoadoutToPlayer(Entity entity)
+        [ServerRpc(RequireOwnership = false)]
+        public void GiveRoleLoadoutToPlayer(Entity entity)
         {
             KeyValuePair<Soul, RoleData>? rolePlayer =
                 _rolePlayers.FirstOrDefault(rp => rp.Key == entity.Mind.Soul);
@@ -163,6 +156,11 @@ namespace SS3D.Systems.Roles
             }
         }
 
+        /// <summary>
+        /// Spawn the player's PDA and IDCard with the proper permissions
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="role"></param>
         private void SpawnIdentificationItems(Entity entity, RoleData role)
         {
             ItemSystem itemSystem = SystemLocator.Get<ItemSystem>();

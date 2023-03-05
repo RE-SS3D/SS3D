@@ -72,14 +72,8 @@ namespace SS3D.Systems.Inventory.Containers
 
             InventoryView.Setup();
             InventoryView.Enable(true);
-
-            CmdPlayerContainersReady(Body);
-        }
-
-        [ServerRpc]
-        private void CmdPlayerContainersReady(Entity entity)
-        {
-            new PlayerContainersReady(entity).Invoke(this);
+            
+            SystemLocator.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
         }
 
         protected override void OnAwake()
