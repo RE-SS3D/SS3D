@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd53ec33b0054f3eaecd0ab11ff821e4, type: 3}
-  m_Name: Grey Jumpsuit
+  m_Name: JumpsuitGrey
   m_EditorClassIdentifier: 
   _preload: 1
   _type: 0
