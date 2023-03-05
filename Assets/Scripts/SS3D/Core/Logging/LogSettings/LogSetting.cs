@@ -5,7 +5,7 @@ using System.Linq;
 using Serilog;
 using Serilog.Events;
 
-namespace SS3D.Data.LogSettings
+namespace SS3D.Logging.LogSettings
 {
 
     [CreateAssetMenu(menuName = "ScriptableObjects/LogSettings", order = 1)]

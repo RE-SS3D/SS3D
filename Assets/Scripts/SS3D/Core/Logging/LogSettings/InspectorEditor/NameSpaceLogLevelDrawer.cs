@@ -1,6 +1,5 @@
-using SS3D.Data.LogSettings;
-using System.Collections;
-using System.Collections.Generic;
+
+using SS3D.Logging.LogSettings;
 using UnityEditor;
 using UnityEngine;
 

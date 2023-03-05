@@ -1,16 +1,12 @@
 #if UNITY_EDITOR
 
 using Serilog.Events;
-using SS3D.CodeGeneration;
-using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Object = UnityEngine.Object;
 
-namespace SS3D.Data.LogSettings.InspectorEditor
+namespace SS3D.Logging.LogSettings.InspectorEditor
 {
     [CustomEditor(typeof(LogSetting))]
     public class LogSettingsInspectorEditor : Editor

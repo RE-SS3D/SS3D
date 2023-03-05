@@ -1,21 +1,19 @@
-using FishNet.Object;
 using Serilog;
-using FishNet.Transporting;
-using FishNet.Connection;
 using Serilog.Sinks.Unity3D;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
-using SS3D.Logging;
 using UnityEngine;
-using FishNet.Managing.Client;
-using System.Runtime.CompilerServices;
 using FishNet;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using SS3D.Logging.LogSettings;
+using SS3D.Core.Logging;
+using SS3D.Data;
 
-namespace SS3D.Logging
+
+namespace SS3D.Core
 {
     /// <summary>
     /// Set up Serilog's Logger for clients, host and server. 
@@ -27,7 +25,8 @@ namespace SS3D.Logging
         private static readonly string defaultUnityLogTemplate;
         private static readonly string LogFolderPath;
         private static bool _isInitialized;
-        private static readonly List<string> SS3DNameSpaces;
+
+        private static LogSetting settings;
 
         static LogManager()
         {
@@ -35,7 +34,7 @@ namespace SS3D.Logging
             LogFolderPath = Application.dataPath + "/Logs/";
             _levelSwitch = new LoggingLevelSwitch();
             _levelSwitch.MinimumLevel = LogEventLevel.Warning;
-            SS3DNameSpaces = GetAllNameOfSS3DNameSpace();   
+            settings = Assets.Get<LogSetting>(Data.Enums.AssetDatabases.Settings, (int)Data.Enums.SettingIds.LogSetting);
         }
 
         public static void Initialize()
@@ -43,17 +42,20 @@ namespace SS3D.Logging
             if (_isInitialized) return;
             _isInitialized = true;
 
+
+
             // Add enricher and configure the global logging level.
             var configuration = new LoggerConfiguration()
-                                .Enrich.With(new ClientIdEnricher())
-                                .MinimumLevel.Information();
+                                .Enrich.With(new ClientIdEnricher());
+            configuration = ConfigureMinimumLevel(configuration);
 
             // Apply some override on the minimum logging level for some namespaces.
             // Does not apply override if the logging level corresponds to the global minimum level.
-            foreach(var name in SS3DNameSpaces)
+            foreach (var levelForNameSpace in settings.SS3DNameSpaces)
             {
-                
-                configuration = configuration.MinimumLevel.Override(name, LogEventLevel.Error);
+                if (levelForNameSpace.Level == settings.defaultLogLevel) continue;
+
+                configuration = configuration.MinimumLevel.Override(levelForNameSpace.Name, levelForNameSpace.Level);
             }
 
             // Configure writing to Unity's console, using our custom text formatter.
@@ -89,32 +91,18 @@ namespace SS3D.Logging
             Initialize();
         }
 
-        /// <summary>
-        /// Get the name of each namespaces containing SS3D.
-        /// </summary>
-        /// <returns> A list of those names.</returns>
-        private static List<string> GetAllNameOfSS3DNameSpace()
+        private static LoggerConfiguration ConfigureMinimumLevel(LoggerConfiguration loggerConfiguration)
         {
-            var Assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var SS3DNameSpaces = new List<string>();
-            foreach (var assembly in Assemblies)
+            switch (settings.defaultLogLevel)
             {
-                var namespaces = assembly.GetTypes()
-                                .Select(t => t.Namespace)
-                                .Distinct();
-
-
-                foreach (var type in namespaces)
-                {
-                    if (type == null || !type.Contains("SS3D"))
-                    {
-                        continue;
-                    }
-                    SS3DNameSpaces.Add(type);
-                }
+                case LogEventLevel.Verbose: return loggerConfiguration.MinimumLevel.Verbose();
+                case LogEventLevel.Debug: return loggerConfiguration.MinimumLevel.Debug();
+                case LogEventLevel.Information: return loggerConfiguration.MinimumLevel.Information();
+                case LogEventLevel.Warning: return loggerConfiguration.MinimumLevel.Warning();
+                case LogEventLevel.Error: return loggerConfiguration.MinimumLevel.Error();
+                case LogEventLevel.Fatal: return loggerConfiguration.MinimumLevel.Fatal();
+                default: return loggerConfiguration.MinimumLevel.Information();
             }
-
-            return SS3DNameSpaces;
         }
     }
 

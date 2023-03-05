@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using FishNet.Object;
 using System;
-using SS3D.Logging;
+using SS3D.Core;
 
 
-namespace SS3D.Core
+namespace SS3D.Core.Logging
 {
     public class ServerStartedListener : NetworkBehaviour
     {
@@ -14,7 +11,7 @@ namespace SS3D.Core
 
         public void Awake()
         {
-            OnServerOrClientStarted +=  LogManager.OnServerStarted;
+            OnServerOrClientStarted += LogManager.OnServerStarted;
         }
         public override void OnStartServer()
         {

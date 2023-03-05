@@ -7,7 +7,7 @@ using Serilog.Events;
 using SS3D.Utils;
 using UnityEngine;
 
-namespace SS3D.Logging
+namespace SS3D.Core.Logging
 {
     /// <summary>
     /// Wrapper class for Serilog Logger. Makes mandatory adding a sender object.
