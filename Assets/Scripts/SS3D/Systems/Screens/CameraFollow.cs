@@ -116,12 +116,12 @@ namespace SS3D.Systems.Screens
         // There are two button-type actions for snap, because MultiTap actions don't return values when performed
         private void HandleSnapLeft(InputAction.CallbackContext context) 
         {
-           Snap(-1); 
+           Snap(1); 
         }
         
         private void HandleSnapRight(InputAction.CallbackContext context) 
         {
-           Snap(1); 
+           Snap(-1); 
         }
         
         private void Snap(float direction)
