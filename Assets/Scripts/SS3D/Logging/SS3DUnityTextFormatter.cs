@@ -64,11 +64,6 @@ namespace SS3D.Logging
                     scalarValue.Render(output, pt.Format, _formatProvider);
                     continue;
                 }
-                if (pt.PropertyName == OutputProperties.PropertiesPropertyName)
-                {
-                    RenderPropertyFormat(logEvent.MessageTemplate, logEvent.Properties, _outputTemplate, output, pt.Format, _formatProvider);
-                    continue;
-                }
                 if(pt.PropertyName == "SourceContext")
                 {
                     RenderSourceContext(logEvent, output);
@@ -133,10 +128,10 @@ namespace SS3D.Logging
                 }
 
                 var pt = (PropertyToken)token;
-                if(pt.PropertyName == "InfoLog")
-                {
-                    continue;
-                }
+
+                //InfoLog property is only used to color SourceContext, see RenderSourceContext method.
+                if (pt.PropertyName == "InfoLog") continue;
+
                 RenderPropertyToken(pt, properties, output, formatProvider, isLiteral, isJson);
             }
         }
@@ -157,6 +152,9 @@ namespace SS3D.Logging
             return text.Colorize(color);
         }
 
+        /// <summary>
+        /// Render a property value, which include scalar values (int, string, ..), or structures.
+        /// </summary>
         private void RenderValue(LogEventPropertyValue propertyValue, bool isLiteral, bool isJson, TextWriter output, string format, IFormatProvider formatProvider)
         {
             if (isLiteral && propertyValue is ScalarValue { Value: string str })
@@ -190,67 +188,6 @@ namespace SS3D.Logging
                     sourceContext = $"[{Colorize(sourceContext)}]";
                 output.Write(sourceContext);
             }
-        }
-
-        private void RenderPropertyFormat(MessageTemplate template, IReadOnlyDictionary<string, LogEventPropertyValue> properties, MessageTemplate outputTemplate, TextWriter output, string format, IFormatProvider formatProvider = null)
-        {
-            if (format?.Contains("j") == true)
-            {
-                var sv = new StructureValue(properties
-                    .Where(kvp => !(TemplateContainsPropertyName(template, kvp.Key) ||
-                                    TemplateContainsPropertyName(outputTemplate, kvp.Key)))
-                    .Select(kvp => new LogEventProperty(kvp.Key, kvp.Value)));
-                JsonValueFormatter.Format(sv, output);
-                return;
-            }
-
-            output.Write("{ ");
-
-            var delim = "";
-            foreach (var kvp in properties)
-            {
-                if (TemplateContainsPropertyName(template, kvp.Key) ||
-                    TemplateContainsPropertyName(outputTemplate, kvp.Key))
-                {
-                    continue;
-                }
-
-                output.Write(delim);
-                delim = ", ";
-                output.Write(kvp.Key);
-                output.Write(": ");
-                kvp.Value.Render(output, null, formatProvider);
-            }
-
-            output.Write(" }");
-        }
-
-        /// <summary>
-        /// Check if a given template contains a given property, using its name.
-        /// </summary>
-        /// <returns>true if the property name is found in the template.</returns>
-        private static bool TemplateContainsPropertyName(MessageTemplate template, string propertyName)
-        {
-            if (template.Tokens != null)
-            {
-                foreach (var token in template.Tokens)
-                {
-                    if (token is TextToken tt)
-                    {
-                        continue;
-                    }
-
-                    var pt = (PropertyToken)token;
-                    if (pt.PropertyName == propertyName)
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            return false;
         }
     }
 }
