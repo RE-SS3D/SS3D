@@ -50,6 +50,7 @@ namespace SS3D.Data.AssetDatabases
         /// </summary>
         public void LoadAssetsFromAssetGroup()
         {
+            if (Assets == null) return;
             Assets.Clear();
 
             foreach (AddressableAssetEntry entry in AssetGroup.entries)

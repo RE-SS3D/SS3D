@@ -21,12 +21,8 @@ MonoBehaviour:
     m_Address: Assets/Settings/ApplicationSettings.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 2b55e2e913cc78044a828c6fb589fb9e
-    m_Address: Assets/Settings/AssetDatabaseSettings.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 2024dd0c65f45424f98ac0c8a6979181
-    m_Address: Assets/Settings/LogSetting.asset
+    m_Address: Assets/Settings/LogSettings.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

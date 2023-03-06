@@ -37,7 +37,7 @@ namespace SS3D.Core
             LogFolderPath = Application.dataPath + "/Logs/";
             _levelSwitch = new LoggingLevelSwitch();
             _levelSwitch.MinimumLevel = LogEventLevel.Warning;
-            settings = Assets.Get<LogSetting>(Data.Enums.AssetDatabases.Settings, (int)Data.Enums.SettingIds.LogSetting);
+            settings = Assets.Get<LogSetting>(Data.Enums.AssetDatabases.Settings, (int)Data.Enums.SettingsId.LogSettings);
         }
 
         private static void Initialize()
@@ -97,16 +97,16 @@ namespace SS3D.Core
         /// </summary>
         private static LoggerConfiguration ConfigureMinimumLevel(LoggerConfiguration loggerConfiguration)
         {
-            switch (settings.defaultLogLevel)
-            {
-                case LogEventLevel.Verbose: return loggerConfiguration.MinimumLevel.Verbose();
-                case LogEventLevel.Debug: return loggerConfiguration.MinimumLevel.Debug();
-                case LogEventLevel.Information: return loggerConfiguration.MinimumLevel.Information();
-                case LogEventLevel.Warning: return loggerConfiguration.MinimumLevel.Warning();
-                case LogEventLevel.Error: return loggerConfiguration.MinimumLevel.Error();
-                case LogEventLevel.Fatal: return loggerConfiguration.MinimumLevel.Fatal();
-                default: return loggerConfiguration.MinimumLevel.Information();
-            }
+             switch (settings.defaultLogLevel)
+             {
+                 case LogEventLevel.Verbose: return loggerConfiguration.MinimumLevel.Verbose();
+                 case LogEventLevel.Debug: return loggerConfiguration.MinimumLevel.Debug();
+                 case LogEventLevel.Information: return loggerConfiguration.MinimumLevel.Information();
+                 case LogEventLevel.Warning: return loggerConfiguration.MinimumLevel.Warning();
+                 case LogEventLevel.Error: return loggerConfiguration.MinimumLevel.Error();
+                 case LogEventLevel.Fatal: return loggerConfiguration.MinimumLevel.Fatal();
+                 default: return loggerConfiguration.MinimumLevel.Information();
+             }
         }
     }
 
