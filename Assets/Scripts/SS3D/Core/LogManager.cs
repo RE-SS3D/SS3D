@@ -23,8 +23,6 @@ namespace SS3D.Core
     /// </summary>
     public static class LogManager
     {
-
-        private static LoggingLevelSwitch _levelSwitch;
         private static readonly string defaultUnityLogTemplate;
         private static readonly string LogFolderPath;
         private static bool _isInitialized;
@@ -35,8 +33,6 @@ namespace SS3D.Core
         {
             defaultUnityLogTemplate = "{SourceContext} {Message:lj}{NewLine}{Exception}";
             LogFolderPath = Application.dataPath + "/Logs/";
-            _levelSwitch = new LoggingLevelSwitch();
-            _levelSwitch.MinimumLevel = LogEventLevel.Warning;
             settings = Assets.Get<LogSetting>(Data.Enums.AssetDatabases.Settings, (int)Data.Enums.SettingsId.LogSettings);
         }
 
