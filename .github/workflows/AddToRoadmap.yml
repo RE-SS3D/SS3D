@@ -9,6 +9,7 @@ on:
 jobs:
   automate-project-columns:
     runs-on: ubuntu-latest
+    permissions: read-all|write-all
     steps:
       - name: if_issue
         if: github.event.issue
