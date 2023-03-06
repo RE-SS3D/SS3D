@@ -1,7 +1,8 @@
 
-using SS3D.Logging.LogSettings;
+
 using UnityEditor;
 using UnityEngine;
+using SS3D.Logging.LogSettings;
 
 [CustomPropertyDrawer(typeof(LogSetting.NameSpaceLogLevel))]
 public class NameSpaceLogLevelDrawer : PropertyDrawer

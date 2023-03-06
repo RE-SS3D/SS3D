@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using Serilog.Formatting.Json;
 using System.Linq;
 
-namespace SS3D.Core.Logging
+namespace SS3D.Logging
 {
 /// <summary>
 /// Text formatter for Log message going to Unity console. Adds colors, properly renders Serializable class and structures.

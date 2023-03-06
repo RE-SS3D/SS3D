@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using SS3D.Logging.LogSettings;
 
 namespace SS3D.Logging.LogSettings.InspectorEditor
 {

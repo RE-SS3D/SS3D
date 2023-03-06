@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using Serilog;
 using Serilog.Events;
 
 namespace SS3D.Logging.LogSettings

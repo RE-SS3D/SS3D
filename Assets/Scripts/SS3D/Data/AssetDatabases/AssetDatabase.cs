@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Object = UnityEngine.Object;
 using SS3D.Attributes;
-using SS3D.Logging;
 using UnityEngine;
 
 #if UNITY_EDITOR

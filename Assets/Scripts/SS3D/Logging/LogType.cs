@@ -1,13 +1,11 @@
-﻿namespace SS3D.Core.Logging
+﻿namespace SS3D.Logging
 {
-    public enum Logs
+    public enum LogType
     {
          None = 0,
          Generic = 1,
          Important = 2,
          ServerOnly = 3,
          External = 4,
-         ClientOnly = 5,
-         Physics = 6,
     }
 }
