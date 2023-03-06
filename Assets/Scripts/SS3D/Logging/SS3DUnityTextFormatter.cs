@@ -69,20 +69,6 @@ namespace SS3D.Logging
                     RenderSourceContext(logEvent, output);
                     continue;
                 }
-
-                // If a property is missing, don't render anything.
-                if (!logEvent.Properties.TryGetValue(pt.PropertyName, out var propertyValue))
-                    continue;
-
-                var sv = propertyValue as ScalarValue;
-                if (sv?.Value is string literalString)
-                {
-                    output.Write(literalString);
-                }
-                else
-                {
-                    propertyValue.Render(output, pt.Format, _formatProvider);
-                }
             }
         }
 
@@ -97,7 +83,7 @@ namespace SS3D.Logging
         }
 
         /// <summary>
-        /// Render the message according to the template.
+        /// Render the message according to the template, including all values in it (structures, scalars, ...).
         /// </summary>
         /// <param name="messageTemplate">The template to use to render the message</param>
         /// <param name="properties"> The properties in the message.</param>
