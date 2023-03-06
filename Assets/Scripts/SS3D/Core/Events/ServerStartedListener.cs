@@ -1,9 +1,9 @@
 using FishNet.Object;
 using System;
 using SS3D.Core;
+using SS3D.Logging;
 
-
-namespace SS3D.Core.Logging
+namespace SS3D.Core
 {
     /// <summary>
     /// Simple class used to trigger a call once client and/or server is fully functionnal and started.
