@@ -355,7 +355,7 @@ namespace SS3D.Systems.Interactions
             // Check for valid interaction index
             if (index < 0 || entries.Count <= index)
             {
-                Punpun.Panic(target, $"Inventory interaction with invalid index {index}");
+                Punpun.Error(target, "Inventory interaction with invalid index {index}", Logs.Generic, index);
 
                 return;
             }
@@ -365,8 +365,8 @@ namespace SS3D.Systems.Interactions
 
             if (chosenEntry.Interaction.GetName(interactionEvent) != interactionName)
             {
-                string message = $"Interaction at index {index} did not have the expected name of {interactionName}";
-                Punpun.Panic(target, message);
+                Punpun.Error(target, "Interaction at index {index} did not have the expected name of {interactionName}",
+                    Logs.Generic, index, interactionName);
 
                 return;
             }
