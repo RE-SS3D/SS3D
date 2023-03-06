@@ -9,7 +9,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using SS3D.Logging.LogSettings;
-using SS3D.Core.Logging;
+using SS3D.Logging;
 using SS3D.Data;
 
 
