@@ -32,7 +32,7 @@ namespace SS3D.Core
 
         static LogManager()
         {
-            defaultUnityLogTemplate = "{SourceContext} {Message:lj}{NewLine}{Exception}";
+            defaultUnityLogTemplate = "{SourceContext} {Message}{NewLine}{Exception}";
             LogFolderPath = Application.dataPath + "/Logs/";
             Debug.Log("get settings");
 
