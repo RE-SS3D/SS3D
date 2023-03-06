@@ -69,6 +69,11 @@ namespace SS3D.Logging
                     RenderPropertyFormat(logEvent.MessageTemplate, logEvent.Properties, _outputTemplate, output, pt.Format, _formatProvider);
                     continue;
                 }
+                if(pt.PropertyName == "SourceContext")
+                {
+                    RenderSourceContext(logEvent, output);
+                    continue;
+                }
 
                 // If a property is missing, don't render anything.
                 if (!logEvent.Properties.TryGetValue(pt.PropertyName, out var propertyValue))
@@ -77,15 +82,6 @@ namespace SS3D.Logging
                 var sv = propertyValue as ScalarValue;
                 if (sv?.Value is string literalString)
                 {
-                    if(pt.PropertyName == "SourceContext")
-                    {
-                        logEvent.Properties.TryGetValue("InfoLog", out var InfoLogPropertyValue);
-                        var ScalarInfoLogPropertyValue = InfoLogPropertyValue as ScalarValue;
-                        if (ScalarInfoLogPropertyValue?.Value is Logs InfoLogs)
-                            literalString = $"[{Colorize(literalString, InfoLogs)}]";
-                        else
-                            literalString = $"[{Colorize(literalString)}]";
-                    }
                     output.Write(literalString);
                 }
                 else
@@ -174,6 +170,25 @@ namespace SS3D.Logging
             else
             {
                 propertyValue.Render(output, format, formatProvider);
+            }
+        }
+
+        /// <summary>
+        /// Add brackets around the source context, and colors it depending on the value of InfoLog.
+        /// </summary>
+        private void RenderSourceContext(LogEvent logEvent, TextWriter output)
+        {
+            logEvent.Properties.TryGetValue("InfoLog", out var InfoLogPropertyValue);
+            var ScalarInfoLogPropertyValue = InfoLogPropertyValue as ScalarValue;
+            logEvent.Properties.TryGetValue("SourceContext", out var SourceContextPropertyValue);
+            var ScalarSourceContextPropertyValue = SourceContextPropertyValue as ScalarValue;
+            if (ScalarSourceContextPropertyValue?.Value is string sourceContext)
+            {
+                if (ScalarInfoLogPropertyValue?.Value is Logs InfoLogs)
+                    sourceContext = $"[{Colorize(sourceContext, InfoLogs)}]";
+                else
+                    sourceContext = $"[{Colorize(sourceContext)}]";
+                output.Write(sourceContext);
             }
         }
 
