@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using SS3D.Logging.LogSettings;
 using SS3D.Logging;
 using SS3D.Data;
+using FishNet.Configuring;
 
 
 namespace SS3D.Core
@@ -36,7 +37,7 @@ namespace SS3D.Core
             settings = Assets.Get<LogSetting>(Data.Enums.AssetDatabases.Settings, (int)Data.Enums.SettingsId.LogSettings);
         }
 
-        private static void Initialize()
+        public static void Initialize()
         {
             if (_isInitialized) return;
             _isInitialized = true;
@@ -58,6 +59,25 @@ namespace SS3D.Core
             // Configure writing to Unity's console, using our custom text formatter.
             configuration = configuration.WriteTo.Unity3D(formatter: new SS3DUnityTextFormatter(outputTemplate: defaultUnityLogTemplate));
 
+            if (Application.isPlaying)
+            {
+                configuration = ConfigureForPlayMode(configuration);
+            }
+
+            // Create the logger from the configuration.
+            Log.Logger = configuration.CreateLogger();
+        }
+
+        /// <summary>
+        /// Suscribe to event ServerOrClientStarted, to initialize Log Manager when stuff networking wise are correctly set up.
+        /// </summary>
+        public static void OnServerStarted(object sender, EventArgs e)
+        {
+            Initialize();
+        }
+
+        private static LoggerConfiguration ConfigureForPlayMode(LoggerConfiguration configuration)
+        {
             // Configure writing to log files using a CompactJsonFormatter. The path of the log file depends if connection is host, server only, or client.
             // Write in a different file depending on client's connection id.
             if (InstanceFinder.IsHost)
@@ -75,17 +95,7 @@ namespace SS3D.Core
                 configuration = configuration.WriteTo.File(new CompactJsonFormatter()
                 , LogFolderPath + "LogServer.json");
             }
-
-            // Create the logger from the configuration.
-            Log.Logger = configuration.CreateLogger();
-        }
-
-        /// <summary>
-        /// Suscribe to event ServerOrClientStarted, to initialize Log Manager when stuff networking wise are correctly set up.
-        /// </summary>
-        public static void OnServerStarted(object sender, EventArgs e)
-        {
-            Initialize();
+            return configuration;
         }
 
         /// <summary>
