@@ -34,7 +34,6 @@ namespace SS3D.Core
         {
             defaultUnityLogTemplate = "{SourceContext} {Message}{NewLine}{Exception}";
             LogFolderPath = Application.dataPath + "/Logs/";
-            Debug.Log("get settings");
 
             if (Application.isPlaying)
             {
@@ -48,7 +47,6 @@ namespace SS3D.Core
             if (_isInitialized) return;
             _isInitialized = true;
 
-            // Add enricher and configure the global logging level.
             var configuration = new LoggerConfiguration();
 
             if (Application.isPlaying)
@@ -78,7 +76,7 @@ namespace SS3D.Core
             configuration.Enrich.With(new ClientIdEnricher());
             configuration = ConfigureMinimumLevel(configuration);
 
-            // Apply some override on the minimum logging level for some namespaces.
+            // Apply some override on the minimum logging level for some namespaces using the log settings.
             // Does not apply override if the logging level corresponds to the global minimum level.
             foreach (var levelForNameSpace in settings.SS3DNameSpaces)
             {
@@ -87,7 +85,8 @@ namespace SS3D.Core
                 configuration = configuration.MinimumLevel.Override(levelForNameSpace.Name, levelForNameSpace.Level);
             }
 
-            // Configure writing to log files using a CompactJsonFormatter. The path of the log file depends if connection is host, server only, or client.
+            // Configure writing to log files using a CompactJsonFormatter.
+            // The path of the log file depends if connection is host, server only, or client.
             // Write in a different file depending on client's connection id.
             if (InstanceFinder.IsHost)
             {

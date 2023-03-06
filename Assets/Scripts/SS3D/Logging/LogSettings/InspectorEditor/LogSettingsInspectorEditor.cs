@@ -9,32 +9,20 @@ using SS3D.Logging.LogSettings;
 
 namespace SS3D.Logging.LogSettings.InspectorEditor
 {
+    /// <summary>
+    /// Custom inspector for the log settings, allow to show the list of namespaces in a convenient manner,
+    /// as well as resetting easily all namespaces logging level. 
+    /// </summary>
     [CustomEditor(typeof(LogSetting))]
     public class LogSettingsInspectorEditor : Editor
     {
-        private LogSetting _logSetting;
-
-        private ScrollView _assetsListView;
-        private Button _loadAssetsButton;
-        private ObjectField _assetGroupObjectField;
-        private Label _assetDatabaseLabel;
-        private TextField _enumNameTextField;
-
-        private void OnEnable()
-        {
-            _logSetting = (LogSetting)target;  
-        }
-
-        /// <summary>
-        /// This sets ups the UI for the custom inspector using the UI Toolkit
-        /// </summary>
-        /// <returns></returns>
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
             var spDefaultLevel = serializedObject.FindProperty("defaultLogLevel");
 
+            // default log level, the log level at which all namespace will be by default.
             LogEventLevel defaultLevel = (LogEventLevel)EditorGUILayout.EnumPopup(
                 new GUIContent("Default log level")
                 , (LogEventLevel)spDefaultLevel.enumValueIndex );
@@ -43,6 +31,7 @@ namespace SS3D.Logging.LogSettings.InspectorEditor
 
             var sp = serializedObject.FindProperty("SS3DNameSpaces");
 
+            // Button to reset all namespaces to the default log level.
             if (GUILayout.Button("Reset to default log level"))
             {
                 for (int i = 0; i < sp.arraySize; i++)
@@ -51,7 +40,7 @@ namespace SS3D.Logging.LogSettings.InspectorEditor
                 }
                 
             }
-
+            // show all namespaces along the log level in the inspector.
             for (int i = 0; i < sp.arraySize; i++)
             {
                 EditorGUILayout.PropertyField(sp.GetArrayElementAtIndex(i));

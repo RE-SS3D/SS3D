@@ -7,9 +7,14 @@ using Serilog.Events;
 namespace SS3D.Logging.LogSettings
 {
 
+    /// <summary>
+    /// Allow user to create a scriptable object representing settings for the log, in particular,
+    /// allows to set in inspector the logging level for each namespace.
+    /// </summary>
     [CreateAssetMenu(menuName = "ScriptableObjects/LogSettings", order = 1)]
     public class LogSetting : ScriptableObject
     {
+        // structure to associate to each namespace a log level.
         [Serializable]
         public struct NameSpaceLogLevel
         {
@@ -58,8 +63,6 @@ namespace SS3D.Logging.LogSettings
                     i++;
                 }
             }
-
-            
 
             return SS3DNameSpaces.OrderBy(o => o.Name).ToList();
         }

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Cryptography;
 using Serilog;
-using Serilog.Core;
 using Serilog.Events;
-using UnityEngine;
 
 namespace SS3D.Logging
 {

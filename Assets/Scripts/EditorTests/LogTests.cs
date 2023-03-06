@@ -9,6 +9,7 @@ using SS3D.Logging;
 
 namespace EditorTests.Log
 {
+    // Check serilog documentation for a list of basic scalars type : https://github.com/serilog/serilog/wiki/Structured-Data
     public class LogTests
     {
 
@@ -54,6 +55,10 @@ namespace EditorTests.Log
 
         }
 
+        /// <summary>
+        /// Test to check that a dictionnary (with basic scalar types listed in Serilog's doc for the key) display correctly
+        /// in the Unity console.
+        /// </summary>
         [Test]
         public void SimpleDictionnaryDisplayAsExpectedInUnity()
         {
@@ -66,6 +71,12 @@ namespace EditorTests.Log
             _lastUnityConsoleMessage = "";
         }
 
+
+        /// <summary>
+        /// Test to check that a simple structure displays correctly in the Unity console.
+        /// Serilog uses the public properties to represent a structure or a class.
+        /// The @ symbol is here to indicate that the object must be destructured, i.e. represented by its properties.
+        /// </summary>
         [Test]
         public void SimpleStructureDisplayAsExpectedInUnity()
         {
@@ -78,6 +89,9 @@ namespace EditorTests.Log
             _lastUnityConsoleMessage = "";
         }
 
+        /// <summary>
+        /// Test to check that a simple list of floats displays correctly in the Unity console.
+        /// </summary>
         [Test]
         public void ListOfFloatDisplayAsExpectedInUnity()
         {
@@ -90,6 +104,9 @@ namespace EditorTests.Log
             _lastUnityConsoleMessage = "";
         }
 
+        /// <summary>
+        /// Test to check that simple colored messages display correctly in the Unity console.
+        /// </summary>
         [Test]
         public void MessagWithNoAddedPropertyDisplayAsExpectedInUnity()
         {
