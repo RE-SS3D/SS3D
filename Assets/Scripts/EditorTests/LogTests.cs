@@ -13,9 +13,13 @@ namespace EditorTests.Log
     {
 
         private struct SimpleStructure {
-            private string _name;
-            private int _count;
-            private bool _isCool;
+            public string _name;
+            public int _count;
+            public bool _isCool;
+
+            public string Name => _name;
+            public int Count => _count;
+            public bool IsCool => _isCool;
 
             public SimpleStructure(string name, int count, bool isCool)
             {
@@ -28,7 +32,7 @@ namespace EditorTests.Log
 
         private string _lastUnityConsoleMessage = "";
         private List<float> _floatListToDisplay;
-        private List<SimpleStructure> _simpleStructureListToDisplay;
+        private SimpleStructure _simpleStructureToDisplay;
         private Dictionary<string, int> _simpleDictionaryToDisplay;
 
         [SetUp]
@@ -39,10 +43,7 @@ namespace EditorTests.Log
 
             _floatListToDisplay = new List<float>() {0.4f, 0.222f, 0.000047f, 78789f};
 
-            _simpleStructureListToDisplay = new List<SimpleStructure>() {
-                new SimpleStructure("simple", 3, true),
-                new SimpleStructure("really simple", 1, false),
-            };
+            _simpleStructureToDisplay = new SimpleStructure("simple", 3, true);
 
             _simpleDictionaryToDisplay = new Dictionary<string, int>()
             {
@@ -66,14 +67,14 @@ namespace EditorTests.Log
         }
 
         [Test]
-        public void ListOfSimpleStructureDisplayAsExpectedInUnity()
+        public void SimpleStructureDisplayAsExpectedInUnity()
         {
             _lastUnityConsoleMessage = "";
 
             string color = LogColors.GetLogColor(Logs.Generic);
-            Punpun.Information(this, "{simpleStructureList}", Logs.Generic, _simpleStructureListToDisplay);
+            Punpun.Information(this, "{@simpleStructure}", Logs.Generic, _simpleStructureToDisplay);
             while (_lastUnityConsoleMessage == "") continue;
-            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>EditorTests.Log.LogTests</color>] [0.4,0.222,4.7E-05,78789]");
+            Assert.IsTrue(_lastUnityConsoleMessage == $"[<color={color}>EditorTests.Log.LogTests</color>] {{\"Name\":\"simple\",\"Count\":3,\"IsCool\":true,\"$type\":\"SimpleStructure\"}}");
             _lastUnityConsoleMessage = "";
         }
 
