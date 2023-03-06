@@ -7,8 +7,6 @@ using Serilog.Formatting;
 using SS3D.Utils;
 using System.Collections.Generic;
 using Serilog.Formatting.Json;
-using System.Linq;
-using static PlasticGui.PlasticTableColumn;
 
 namespace SS3D.Logging
 {

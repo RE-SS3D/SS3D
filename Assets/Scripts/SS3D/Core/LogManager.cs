@@ -33,7 +33,7 @@ namespace SS3D.Core
         static LogManager()
         {
             defaultUnityLogTemplate = "{SourceContext} {Message}{NewLine}{Exception}";
-            LogFolderPath = Application.dataPath + "/Logs/";
+            LogFolderPath = Application.dataPath + "/../Logs/";
 
             if (Application.isPlaying)
             {
