@@ -1,11 +1,6 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/Scripts/SS3D/CodeGeneration/SS3D.CodeGeneration.asmdef.meta
 guid: 443046479504c5640b8f5902a102c09f
-AssemblyDefinitionImporter:
-========
-guid: 7bad4d05fa044614c9a82b0a36151e72
 NativeFormatImporter:
->>>>>>>> develop:Assets/Content/Data/ApplicationSettings.asset.meta
   externalObjects: {}
   mainObjectFileID: 11400000
   userData: 
