@@ -308,7 +308,6 @@ public class AttachedContainerEditor : Editor
         SerializedProperty sp = serializedObject.FindProperty("Size");
         sp.vector2IntValue = size;
         serializedObject.ApplyModifiedProperties();
-        attachedContainer.Container.Size = size;
     }
     private void HandleAttachmentOffset(Vector3 attachmentOffset)
     {
