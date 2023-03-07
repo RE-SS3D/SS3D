@@ -14,20 +14,17 @@ using UnityEngine.Serialization;
 using SS3D.Systems.Inventory.Items;
 using JetBrains.Annotations;
 using FishNet.Object.Synchronizing;
-using static SS3D.Substances.SubstanceContainer;
-using static SS3D.Systems.Inventory.Containers.Container;
 
 namespace SS3D.Systems.Inventory.Containers
 {
     /// <summary>
-    /// AttachedContainer manages every aspect of a container attached to a gameObject.
-    /// It's purpose is to centralize all relevant aspect of a container, it should be the only component one has to deal with when
-    /// adding containers to a game object.
+    /// AttachedContainer manages the networking  aspect of a container attached to a gameObject, and allows the user to set up a container,
+    /// including it's size, interaction with it, what it can store and other options.
     ///
     /// Warning: Many attributes should be private instead of public. They are currently public because AttachedContainerEditor
     /// needs to access them directly, not through accessors or properties.
     ///
-    /// AttachedContainerEditor should be declared as friend of AttachedContainer and most attributes should be private.
+    /// AttachedContainerEditor should be declared as friend of AttachedContainer and most attributes should be private (but this is not a feature of C#).
     /// </summary>
     public class AttachedContainer : NetworkActor
     {
@@ -99,7 +96,7 @@ namespace SS3D.Systems.Inventory.Containers
         [Tooltip("The filter on the container.")]
         public Filter StartFilter;
         [FormerlySerializedAs("ContainerType")]
-        [Tooltip("Container type mostly allow to discriminate between diffent containers on a single prefab.")]
+        [Tooltip("Container type mostly allow to discriminate between different containers on a single prefab.")]
         public ContainerType Type;
 
         /// <summary>

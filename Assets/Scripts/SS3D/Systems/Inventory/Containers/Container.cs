@@ -9,7 +9,9 @@ using UnityEngine;
 namespace SS3D.Systems.Inventory.Containers
 {
     /// <summary>
-    /// Stores items in a 2 dimensional container
+    /// Stores items in a 2 dimensional container. 
+    /// This class is handling the logic part of storing items. 
+    /// It checks if items can be added, removed, replace, and does it when possible. 
     /// </summary>
     public sealed class Container
     {
@@ -60,6 +62,9 @@ namespace SS3D.Systems.Inventory.Containers
             Size = size;
         }
 
+        /// <summary>
+        /// Set up the container with an attached container. 
+        /// </summary>
         public Container(AttachedContainer attachedContainer)
         {
             AttachedTo= attachedContainer;
@@ -184,6 +189,13 @@ namespace SS3D.Systems.Inventory.Containers
             LastModification = Time.time;
         }
 
+        /// <summary>
+        /// Correctly add a storeItem to the container. All adding should use this method, never do it directly.
+        /// If an AttachedContainer is set up, add to AttachedContainer's syncList, 
+        /// this will update _storedItems automatically as _storedItems is set up as a reference to the list internal to AttachedContainer's syncList.
+        /// If no AttachedContainer is set up, add to the StoredItems list directly.
+        /// </summary>
+        /// <param name="newItem"> the item to store.</param>
         private void AddToStoredItems(StoredItem newItem)
         {
             if(AttachedTo != null)
@@ -196,6 +208,15 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
+
+        /// <summary>
+        /// Correctly set a storeItem in the container at the given index. All replacing should use this method, never do it directly.
+        /// If an AttachedContainer is set up, set to AttachedContainer's syncList, 
+        /// this will update _storedItems automatically as _storedItems is set up as a reference to the list internal to AttachedContainer's syncList.
+        /// If no AttachedContainer is set up, set the StoredItems list directly.
+        /// </summary>
+        /// <param name="item">the item to store.</param>
+        /// <param name="index">the index in the list at which it should be stored.</param>
         private void ReplaceStoredItems(StoredItem item, int index)
         { 
             if (AttachedTo != null)
@@ -208,6 +229,13 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
+        /// <summary>
+        /// Correctly remove a storeItem in the container at the given index. All removing should use this method, never do it directly.
+        /// If an AttachedContainer is set up, set to AttachedContainer's syncList, 
+        /// this will update _storedItems automatically as _storedItems is set up as a reference to the list internal to AttachedContainer's syncList.
+        /// If no AttachedContainer is set up, remove the item from the StoredItems list directly.
+        /// </summary>
+        /// <param name="index">the index in the list at which the storedItem should be removed.</param>
         private void RemoveStoredItem(int index)
         {
             
