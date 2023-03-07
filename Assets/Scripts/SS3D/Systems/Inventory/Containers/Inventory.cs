@@ -77,7 +77,7 @@ namespace SS3D.Systems.Inventory.Containers
             InventoryView.Setup();
             InventoryView.Enable(true);
             
-            Subsystems.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
+            Subsystems.Get<RoleSubsystem>().GiveRoleLoadoutToPlayer(Body);
         }
 
         private void HandleUpdate(ref EventContext context, in UpdateEvent updateEvent)

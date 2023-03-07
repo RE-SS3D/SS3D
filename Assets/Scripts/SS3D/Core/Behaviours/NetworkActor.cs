@@ -6,10 +6,12 @@ using UnityEngine;
 namespace SS3D.Core.Behaviours
 {
     /// <summary>
-    /// Used to optimize all GameObjects, avoid MonoBehaviours
+    /// Actors are the representation of a GameObject with extra steps. The basic idea is to optimize Transform and GameObject manipulation,
+    /// as Unity's getters are a bit slow since they do not cache the Transform and the GameObject. They also used for QOL on code usages,
+    /// as the Unity doesn't provide some of them from the get-go.
+    ///
+    /// They will also be used for optimization with the Update calls, as Unity's method is slow and the UpdateEvent event solves that issue and guarantees performance.
     /// </summary>
-    [Tooltip("Used to optimize all GameObjects, avoid MonoBehaviours")]
-    [DisallowMultipleComponent]
     public class NetworkActor : NetworkActorBase, IActor
     {
         public int Id => GameObject.GetInstanceID();
@@ -36,36 +38,43 @@ namespace SS3D.Core.Behaviours
         public Matrix4x4 LocalToWorldMatrix => Transform.localToWorldMatrix;
         public Matrix4x4 WorldToLocalMatrix => Transform.worldToLocalMatrix;
 
-        public Vector3 Position {
+        public Vector3 Position
+        {
             get => Transform.position;
             set => Transform.position = value;
         }
 
-        public Vector3 LocalPosition {
+        public Vector3 LocalPosition
+        {
             get => Transform.localPosition;
             set => Transform.localPosition = value;
         }
-        public Vector3 RotationEuler {
+        public Vector3 RotationEuler
+        {
             get => Transform.eulerAngles;
             set => Transform.eulerAngles = value;
         }
 
-        public Quaternion Rotation {
+        public Quaternion Rotation
+        {
             get => Transform.rotation;
             set => Transform.rotation = value;
         }
 
-        public Quaternion LocalRotation {
+        public Quaternion LocalRotation
+        {
             get => Transform.localRotation;
             set => Transform.localRotation = value;
         }
 
-        public Vector3 LocalEuler {
+        public Vector3 LocalEuler
+        {
             get => Transform.localEulerAngles;
             set => Transform.localEulerAngles = value;
         }
 
-        public Vector3 LocalScale {
+        public Vector3 LocalScale
+        {
             get => Transform.localScale;
             set => Transform.localScale = value;
         }
@@ -146,6 +155,7 @@ namespace SS3D.Core.Behaviours
         private void RemoveEventListeners()
         {
             IEventService eventService = ServiceLocator.Get<IEventService>();
+
             foreach (EventHandle eventHandle in EventHandles)
             {
                 eventService?.RemoveListener(eventHandle);

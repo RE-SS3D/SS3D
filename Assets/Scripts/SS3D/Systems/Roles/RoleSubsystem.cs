@@ -2,7 +2,6 @@ using FishNet.Object;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.PlayerControl;
 using UnityEngine;
-using SS3D.Systems.Entities.Events;
 using Coimbra.Services.Events;
 using SS3D.Systems.PlayerControl.Events;
 using SS3D.Logging;
@@ -17,11 +16,12 @@ using SS3D.Systems.Inventory.Items.Generic;
 
 namespace SS3D.Systems.Roles
 {
-    public class RoleSystem : NetworkSubsystem
+    public sealed class RoleSubsystem : NetworkSubsystem
     {
         [SerializeField] private RolesAvailable _rolesAvailable;
-        private List<RoleCounter> _roleCounters = new();
-        private Dictionary<Soul, RoleData> _rolePlayers = new();
+
+        private readonly List<RoleCounter> _roleCounters = new();
+        private readonly Dictionary<Soul, RoleData> _rolePlayers = new();
 
         #region Setup
         protected override void OnStart()
@@ -52,9 +52,11 @@ namespace SS3D.Systems.Roles
 
             foreach (RolesData role in _rolesAvailable.Roles)
             {
-                RoleCounter roleCounter = new RoleCounter();
-                roleCounter.Role = role.Data;
-                roleCounter.AvailableRoles = role.AvailableRoles;
+                RoleCounter roleCounter = new()
+                {
+                    Role = role.Data,
+                    AvailableRoles = role.AvailableRoles,
+                };
 
                 _roleCounters.Add(roleCounter);
             }
@@ -123,13 +125,10 @@ namespace SS3D.Systems.Roles
             KeyValuePair<Soul, RoleData>? rolePlayer =
                 _rolePlayers.FirstOrDefault(rp => rp.Key == soul);
 
-            if (rolePlayer != null)
-            {
-                RoleData roleData = rolePlayer.Value.Value;
-                RoleCounter roleCounter = _roleCounters.First(rc => rc.Role == roleData);
+            RoleData roleData = rolePlayer.Value.Value;
+            RoleCounter roleCounter = _roleCounters.First(rc => rc.Role == roleData);
 
-                roleCounter.RemovePlayer(soul);
-            }
+            roleCounter.RemovePlayer(soul);
         }
 
         /// <summary>
@@ -142,7 +141,12 @@ namespace SS3D.Systems.Roles
             KeyValuePair<Soul, RoleData>? rolePlayer =
                 _rolePlayers.FirstOrDefault(rp => rp.Key == entity.Mind.Soul);
 
-            if (rolePlayer != null)
+            RoleData roleData = rolePlayer.Value.Value;
+
+            Punpun.Say(this, entity.Ckey + " embarked with role " + roleData.Name);
+            SpawnIdentificationItems(entity, roleData);
+
+            if (roleData.Loadout != null)
             {
                 RoleData roleData = rolePlayer.Value.Value;
 
