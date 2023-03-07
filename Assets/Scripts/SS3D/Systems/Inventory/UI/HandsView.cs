@@ -88,10 +88,10 @@ namespace SS3D.Systems.Inventory.UI
             }
 
             // Create hand for every hand container.
-            AttachedContainer[] containers = Hands.HandContainers;
+            ContainerDescriptor[] containers = Hands.HandContainers;
             for (int i = 0; i < containers.Length; i++)
             {
-                AttachedContainer attachedContainer = containers[i];
+                ContainerDescriptor attachedContainer = containers[i];
                 SingleItemContainerSlot slot = Instantiate(i % 2 == 0 ? LeftHandPrefab : RightHandPrefab, HandsContainer, false);
                 slot.Inventory = Hands.Inventory;
                 slot.Container = attachedContainer;

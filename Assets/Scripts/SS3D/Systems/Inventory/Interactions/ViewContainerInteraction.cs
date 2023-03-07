@@ -36,8 +36,7 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
-            AttachedContainer container = ContainerDescriptor.AttachedContainer;
-            if (container == null)
+            if (ContainerDescriptor == null)
             {
                 return false;
             }
@@ -53,15 +52,14 @@ namespace SS3D.Systems.Inventory.Interactions
             {
                 return false;
             }
-            return !inventory.HasContainer(container) && entity.GetComponent<Hands>().CanInteract(container.gameObject);
+            return !inventory.HasContainer(ContainerDescriptor) && entity.GetComponent<Hands>().CanInteract(ContainerDescriptor.gameObject);
         }
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Containers.Inventory inventory = interactionEvent.Source.GetComponentInTree<Containers.Inventory>();
-            AttachedContainer attachedContainer = ContainerDescriptor.AttachedContainer;
 
-            inventory.OpenContainer(attachedContainer);
+            inventory.OpenContainer(ContainerDescriptor);
 
             return false;
         }

@@ -19,7 +19,6 @@ public class ContainerDescriptorEditor : Editor
     private bool showIcon = false;
 
     // References to container related scripts to allow for automating set up and destroying.
-    private AttachedContainer attachedContainer;
     private ContainerInteractive containerInteractive;
     private ContainerItemDisplay containerItemDisplay;
 
@@ -35,7 +34,6 @@ public class ContainerDescriptorEditor : Editor
         if (containerDescriptor.AutomaticContainerSetUp)
         {
             AddBase();
-            attachedContainer = containerDescriptor.AttachedContainer;
             containerInteractive = containerDescriptor.ContainerInteractive;
             containerItemDisplay = containerDescriptor.ContainerItemDisplay;
         }
@@ -59,7 +57,6 @@ public class ContainerDescriptorEditor : Editor
         else
         {
             AddBase();
-            attachedContainer = containerDescriptor.AttachedContainer;
             containerInteractive = containerDescriptor.ContainerInteractive;
             containerItemDisplay = containerDescriptor.ContainerItemDisplay;
         }
@@ -242,7 +239,6 @@ public class ContainerDescriptorEditor : Editor
         if (!containerDescriptor.Initialized)
         {
             AddContainer();
-            AddAttached();
 
             HandleIsInteractive(true);
             //AddSync();
@@ -256,13 +252,6 @@ public class ContainerDescriptorEditor : Editor
     {
         SerializedProperty sp = serializedObject.FindProperty("AutomaticContainerSetUp");
         sp.boolValue = automaticContainerSetUp;
-        serializedObject.ApplyModifiedProperties();
-    }
-
-    private void HandleAttachedContainer(AttachedContainer attachedContainer)
-    {
-        SerializedProperty sp = serializedObject.FindProperty("AttachedContainer");
-        sp.objectReferenceValue = attachedContainer;
         serializedObject.ApplyModifiedProperties();
     }
 
@@ -435,14 +424,6 @@ public class ContainerDescriptorEditor : Editor
         DestroyImmediate(containerItemDisplay, true);
     }
 
-    private void AddAttached()
-    {
-        SerializedProperty sp = serializedObject.FindProperty("AttachedContainer");
-        sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<AttachedContainer>();
-        serializedObject.ApplyModifiedProperties();
-        containerDescriptor.AttachedContainer.ContainerDescriptor = containerDescriptor;
-        containerDescriptor.AttachedContainer.Container = containerDescriptor.Container;
-    }
 
     private void AddContainer()
     {
@@ -461,7 +442,6 @@ public class ContainerDescriptorEditor : Editor
     {
         if(containerDescriptor == null)
         {
-            DestroyImmediate(attachedContainer, true);
             DestroyImmediate(containerInteractive, true);
         }
     }

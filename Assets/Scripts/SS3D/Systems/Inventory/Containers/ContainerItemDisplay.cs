@@ -28,14 +28,14 @@ namespace SS3D.Systems.Inventory.Containers
             Assert.IsNotNull(containerDescriptor);
             
             _displayedItems = new Item[containerDescriptor.Displays.Length];
-            containerDescriptor.AttachedContainer.OnItemAttached += ContainerOnItemAttached;
-            containerDescriptor.AttachedContainer.OnItemDetached += ContainerOnItemDetached;
+            containerDescriptor.OnItemAttached += ContainerOnItemAttached;
+            containerDescriptor.OnItemDetached += ContainerOnItemDetached;
         }
 
         public void OnDestroy()
         {
-            containerDescriptor.AttachedContainer.OnItemAttached -= ContainerOnItemAttached;
-            containerDescriptor.AttachedContainer.OnItemDetached -= ContainerOnItemDetached;
+            containerDescriptor.OnItemAttached -= ContainerOnItemAttached;
+            containerDescriptor.OnItemDetached -= ContainerOnItemDetached;
         }
 
         private void ContainerOnItemAttached(object sender, Item item)

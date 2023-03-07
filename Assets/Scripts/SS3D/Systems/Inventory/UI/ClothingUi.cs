@@ -1,4 +1,5 @@
-﻿using SS3D.Systems.Entities;
+﻿using Coimbra;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Containers;
 using UnityEngine;
 
@@ -15,7 +16,7 @@ namespace SS3D.Systems.Inventory.UI
             SingleItemContainerSlot[] slots = GetComponentsInChildren<SingleItemContainerSlot>();
             foreach (SingleItemContainerSlot slot in slots)
             {
-                if (!clothingContainers.Containers.TryGetValue(slot.name, out AttachedContainer container))
+                if (!clothingContainers.Containers.TryGetValue(slot.name, out ContainerDescriptor container))
                 {
                     continue;
                 }

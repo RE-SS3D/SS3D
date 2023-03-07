@@ -114,7 +114,7 @@ namespace SS3D.Systems.Inventory.Items
             container.AddItem(itemInstance);
 
             Punpun.Say(this, $"Item {itemInstance.name} spawned in container " +
-                $"{container.AttachedTo.ContainerDescriptor.ContainerName}", Logs.ServerOnly);
+                $"{container.AttachedTo.ContainerName}", Logs.ServerOnly);
             return itemInstance;
         }
     }

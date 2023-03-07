@@ -62,13 +62,11 @@ namespace SS3D.Systems.Inventory.UI
 
         private SingleItemContainerSlot SetUpSlot(ContainerDescriptor container, GameObject prefab)
         {
-            AttachedContainer attachedContainer = container.AttachedContainer;
             GameObject handElement = Instantiate(prefab, TransformParent, false);
 
             SingleItemContainerSlot slot = handElement.GetComponent<SingleItemContainerSlot>();
             slot.Inventory = Inventory;
-            slot.Container = attachedContainer;
-
+            slot.Container = container;
             return slot;
         }
     }

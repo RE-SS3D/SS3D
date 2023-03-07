@@ -26,7 +26,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// An optional reference to an attached container
         /// </summary>
-        public AttachedContainer AttachedTo { get; set; }
+        public ContainerDescriptor AttachedTo { get; set; }
         /// <summary>
         /// The items stored in this container, including information on how they are stored
         /// </summary>
@@ -459,7 +459,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return false;
             }
 
-            Filter filter = AttachedTo.ContainerDescriptor.StartFilter;
+            Filter filter = AttachedTo.StartFilter;
             if (filter != null)
             {
                 return filter.CanStore(item);

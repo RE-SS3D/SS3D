@@ -11,7 +11,7 @@ namespace SS3D.Systems.Inventory.UI
         public ItemGrid Grid;
         public Text ContainerName;
 
-        private AttachedContainer _attachedContainer;
+        private ContainerDescriptor _attachedContainer;
 
         public Containers.Inventory Inventory
         {
@@ -19,7 +19,7 @@ namespace SS3D.Systems.Inventory.UI
             get => Grid.Inventory;
         }
 
-        public AttachedContainer AttachedContainer
+        public ContainerDescriptor AttachedContainer
         {
             set
             {
@@ -42,7 +42,7 @@ namespace SS3D.Systems.Inventory.UI
                 return;
             }
 
-            container.AttachedTo.ContainerDescriptor.ContainerUi = this;
+            container.AttachedTo.ContainerUi = this;
 
             RectTransform rectTransform = Grid.GetComponent<RectTransform>();
             Vector2 gridDimensions = Grid.GetGridDimensions();

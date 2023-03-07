@@ -26,7 +26,7 @@ namespace SS3D.Systems.Inventory.UI
         /// <summary>
         /// The container this grid displays
         /// </summary>
-        public AttachedContainer AttachedContainer;
+        public ContainerDescriptor AttachedContainer;
 
         private GridLayoutGroup _gridLayout;
         private readonly List<ItemGridItem> _gridItems = new();

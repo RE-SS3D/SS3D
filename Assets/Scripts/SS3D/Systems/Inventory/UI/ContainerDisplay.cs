@@ -6,9 +6,9 @@ namespace SS3D.Systems.Inventory.UI
     public struct ContainerDisplay
     {
         public GameObject UiElement;
-        public AttachedContainer Container;
+        public ContainerDescriptor Container;
 
-        public ContainerDisplay(GameObject uiElement, AttachedContainer container)
+        public ContainerDisplay(GameObject uiElement, ContainerDescriptor container)
         {
             UiElement = uiElement;
             Container = container;

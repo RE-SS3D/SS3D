@@ -15,7 +15,7 @@ namespace SS3D.Systems.Inventory.Containers
     [RequireComponent(typeof(Inventory))]
     public class Hands : InteractionSource, IToolHolder, IInteractionRangeLimit, IInteractionOriginProvider
     {
-        [SerializeField] public AttachedContainer[] HandContainers;
+        [SerializeField] public ContainerDescriptor[] HandContainers;
         [SerializeField] private float handRange;
         private Controls.HotkeysActions _controls;
 
@@ -40,7 +40,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The currently active hand
         /// </summary>
-        public AttachedContainer SelectedHand => SelectedHandIndex < HandContainers.Length ? HandContainers[SelectedHandIndex] : null;
+        public ContainerDescriptor SelectedHand => SelectedHandIndex < HandContainers.Length ? HandContainers[SelectedHandIndex] : null;
         /// <summary>
         /// The container of the currently active hand
         /// </summary>
@@ -142,7 +142,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// Do nothing if the parameter is the already active parameter.
         /// </summary>
         /// <param name="selectedContainer">This AttachedContainer should only be a hand.</param>
-        public void SetActiveHand(AttachedContainer selectedContainer)
+        public void SetActiveHand(ContainerDescriptor selectedContainer)
         {
             if (selectedContainer == SelectedHand)
             {
