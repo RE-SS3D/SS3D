@@ -38,7 +38,7 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// <summary>
         /// Contains actions enabled states before opening the console
         /// </summary>
-        private Dictionary<string, bool> _actionsStates;
+        private Dictionary<InputAction, bool> _actionsStates;
 
         private Controls.ConsoleActions _consoleControls;
 
@@ -86,11 +86,11 @@ namespace SS3D.Systems.IngameConsoleSystem
             _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
             _inputField.DeactivateInputField();
 
-            foreach (KeyValuePair<string, bool> _actionState in _actionsStates)
+            foreach (KeyValuePair<InputAction, bool> _actionState in _actionsStates)
             {
                 if (_actionState.Value)
                 {
-                    _controls.FindAction(_actionState.Key).Enable();
+                    _actionState.Key.Enable();
                 }
             }
             _consoleControls.Disable();
@@ -109,7 +109,7 @@ namespace SS3D.Systems.IngameConsoleSystem
             _actionsStates = new();
             foreach (InputAction action in _controls)
             {
-                _actionsStates.Add(action.name, action.enabled);
+                _actionsStates.Add(action, action.enabled);
             }
             _controls.Disable();
             _consoleControls.Enable();
