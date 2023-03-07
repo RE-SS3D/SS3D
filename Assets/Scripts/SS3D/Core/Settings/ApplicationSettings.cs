@@ -7,7 +7,7 @@ namespace SS3D.Core.Settings
     /// Used to define settings for the overall SS3D application in the Project Settings.
     /// </summary>
     [ProjectSettings("SS3D", "Application Settings")]
-    public class ApplicationSettings : ScriptableSettings
+    public sealed class ApplicationSettings : ScriptableSettings
     {
         /// <summary>
         /// Defines what type of connection to start when starting the application.

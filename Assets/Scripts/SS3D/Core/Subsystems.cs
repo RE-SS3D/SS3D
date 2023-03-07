@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using SS3D.Logging;
 using UnityEngine;
@@ -19,7 +20,7 @@ namespace SS3D.Core
         /// Registers a system in the dictionary so we don't have to use find object of type.
         /// </summary>
         /// <param name="system">The object to be stored.</param>
-        public static void Register(MonoBehaviour system)
+        public static void Register([NotNull] MonoBehaviour system)
         {
             Type type = system.GetType();
 
@@ -52,8 +53,8 @@ namespace SS3D.Core
         /// <summary>
         /// Unregister the system from the dictionary. 
         /// </summary>
-        /// <param name="system"></param>
-        public static void Unregister(object system)
+        /// <param name="system">The system to unregister.</param>
+        public static void Unregister([NotNull] object system)
         {
             RegisteredSubsystems.Remove(system.GetType());
         }

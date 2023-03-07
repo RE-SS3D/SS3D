@@ -1,19 +1,21 @@
-﻿using SS3D.Logging;
+﻿using JetBrains.Annotations;
+using SS3D.Logging;
 using System.Collections.Generic;
+
 namespace SS3D.Core
 {
     public static class ActorLocator
     {
         /// <summary>
-        /// A dictionary containing all the objects that registered themselves.
+        /// A dictionary containing all the Actors, being able to be searched by ID.
         /// </summary>
         private static readonly Dictionary<int, IActor> Actors = new();
 
         /// <summary>
-        /// Registers a system in the dictionary so we don't have to use find object of type.
+        /// Registers an IActor in a dictionary with the GameObject's ID. 
         /// </summary>
         /// <param name="actor">The object to be stored.</param>
-        public static void Register(IActor actor)
+        public static void Register([NotNull] IActor actor)
         {
             int id = actor.GameObject.GetInstanceID();
 
@@ -26,7 +28,7 @@ namespace SS3D.Core
         /// <summary>
         /// Unregisters an actor.
         /// </summary>
-        public static void Unregister(IActor actor)
+        public static void Unregister([NotNull] IActor actor)
         {
             if (Actors.TryGetValue(actor.Id, out IActor _))
             {
@@ -35,9 +37,8 @@ namespace SS3D.Core
         }
 
         /// <summary>
-        /// Gets any system at runtime, make sure there's no duplicates of said system before using.
+        /// Gets any IActor at runtime, using the GameObject's ID.
         /// </summary>
-        /// <typeparam name="T">The Type of object you want to get.</typeparam>
         /// <returns></returns>
         public static IActor Get(int id)
         {

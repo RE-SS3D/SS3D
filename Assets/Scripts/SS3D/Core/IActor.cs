@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace SS3D.Core
 {
+    /// <summary>
+    /// Interface to provide documentation for Actors.
+    /// </summary>
     public interface IActor
     {
         /// <summary>
@@ -128,7 +131,7 @@ namespace SS3D.Core
         /// <summary>
         /// Sets this Actor's GameObject active state.
         /// </summary>
-        /// <param name="state"The intended state to set to.></param>
+        /// <param name="state">The intended state to set to.</param>
         public void SetActive(bool state) {}
 
         /// <summary>
@@ -140,13 +143,13 @@ namespace SS3D.Core
         /// <summary>
         /// Rotates the transform so the forward vector points at target's current position using a Transform target.
         /// </summary>
-        /// <param name="target"></param>
+        /// <param name="target">Target to look at.</param>
         public void LookAt(Transform target) {}
 
         /// <summary>                         
         /// Rotates the transform so the forward vector points at target's current position using a Vector3 target.
         /// </summary>
-        /// <param name="target"></param>
+        /// <param name="target">Target to look at.</param>
         public void LookAt(Vector3 target) {}
 
         /// <summary>

@@ -11,7 +11,7 @@ namespace SS3D.Core.Utils
     /// <summary>
     /// Loads the command line args and processes them for the application settings.
     /// </summary>
-    public class CommandLineArgsSubsystem : Behaviours.Subsystem
+    public sealed class CommandLineArgsSubsystem : Behaviours.Subsystem
     {
         private List<string> _commandLineArgs;
         private ApplicationSettings _applicationSettings;

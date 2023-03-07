@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace SS3D.Core.Utils
 {
-    public class ApplicationModeView : Actor
+    public sealed class ApplicationModeView : Actor
     {
         [SerializeField] private TMP_Text _text;
 

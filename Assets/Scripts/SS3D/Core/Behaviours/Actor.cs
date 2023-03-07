@@ -151,10 +151,11 @@ namespace SS3D.Core.Behaviours
         private void RemoveEventListeners()
         {
             IEventService eventService = ServiceLocator.Get<IEventService>();
+
             foreach (EventHandle eventHandle in EventHandles)
             {
                 eventService?.RemoveListener(eventHandle);
-            } 
+            }
         }
 
         private Transform GetTransform()
