@@ -11,16 +11,16 @@ namespace SS3D.Systems.Inventory.Interactions
 {
     public sealed class StoreInteraction : Interaction
     {
-        private readonly ContainerDescriptor _containerDescriptor;
+        private readonly AttachedContainer _attachedContainer;
 
-        public StoreInteraction(ContainerDescriptor containerDescriptor)
+        public StoreInteraction(AttachedContainer attachedContainer)
         {
-            _containerDescriptor = containerDescriptor;
+            _attachedContainer = attachedContainer;
         }
 
         public override string GetName(InteractionEvent interactionEvent)
         {
-            return "Store in " + _containerDescriptor.ContainerName;
+            return "Store in " + _attachedContainer.ContainerName;
         }
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
@@ -40,16 +40,16 @@ namespace SS3D.Systems.Inventory.Interactions
             if(source is IGameObjectProvider sourceGameObjectProvider)
             {
                 var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
-                if (hands != null && _containerDescriptor != null)
+                if (hands != null && _attachedContainer != null)
                 {
-                    return !hands.SelectedHandEmpty && CanStore(interactionEvent.Source.GetComponent<Item>(), _containerDescriptor);
+                    return !hands.SelectedHandEmpty && CanStore(interactionEvent.Source.GetComponent<Item>(), _attachedContainer);
                 }
             }
 
             return false;
         }
 
-        private bool CanStore(Item item, ContainerDescriptor target)
+        private bool CanStore(Item item, AttachedContainer target)
         {
             Container container = target.Container;
             return container.CanStoreItem(item) && container.CanHoldItem(item);
@@ -61,7 +61,7 @@ namespace SS3D.Systems.Inventory.Interactions
             if (source is IGameObjectProvider sourceGameObjectProvider)
             {
                 var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
-                _containerDescriptor.Container.AddItem(hands.ItemInHand);
+                _attachedContainer.Container.AddItem(hands.ItemInHand);
                 return true;
             }
             return false;

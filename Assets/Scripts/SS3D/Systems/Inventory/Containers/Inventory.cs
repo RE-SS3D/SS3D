@@ -23,7 +23,7 @@ namespace SS3D.Systems.Inventory.Containers
     /// </summary>
     public sealed class Inventory : NetworkActor, IIdentification
     {
-        public delegate void ContainerEventHandler(ContainerDescriptor container);
+        public delegate void ContainerEventHandler(AttachedContainer container);
 
         public event ContainerEventHandler OnContainerOpened;
         public event ContainerEventHandler OnContainerClosed;
@@ -36,24 +36,24 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The container that has the IDCard with permissions
         /// </summary>
-        public ContainerDescriptor IDContainer;
+        public AttachedContainer IDContainer;
 
         /// <summary>
         /// The container of the left pocket
         /// </summary>
-        public ContainerDescriptor LeftPocketContainer;
+        public AttachedContainer LeftPocketContainer;
 
         /// <summary>
         /// The container of the right pocket
         /// </summary>
-        public ContainerDescriptor RightPocketContainer;
+        public AttachedContainer RightPocketContainer;
 
         /// <summary>
         /// The controllable body of the owning player
         /// </summary>
         public Entity Body;
 
-        private readonly List<ContainerDescriptor> _openedContainers = new();
+        private readonly List<AttachedContainer> _openedContainers = new();
 
         private float _nextAccessCheck;
 
@@ -99,7 +99,7 @@ namespace SS3D.Systems.Inventory.Containers
             Hands hands = GetComponent<Hands>();
             for (int i = 0; i < _openedContainers.Count; i++)
             {
-                ContainerDescriptor attachedContainer = _openedContainers[i];
+                AttachedContainer attachedContainer = _openedContainers[i];
                 if (hands.CanInteract(attachedContainer.gameObject))
                 {
                     continue;
@@ -127,7 +127,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// Use it to switch between active hands.
         /// </summary>
         /// <param name="container">This AttachedContainer should be the hand to activate.</param>
-        public void ActivateHand(ContainerDescriptor container)
+        public void ActivateHand(AttachedContainer container)
         {
             Hands.SetActiveHand(container);
         }
@@ -137,7 +137,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="container">The container being interacted with.</param>
         /// <param name="position">Position of the slot where the interaction happened.</param>
-        public void ClientInteractWithContainerSlot(ContainerDescriptor container, Vector2Int position)
+        public void ClientInteractWithContainerSlot(AttachedContainer container, Vector2Int position)
         {
             if (Hands == null)
             {
@@ -163,7 +163,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        public bool CanModifyContainer(ContainerDescriptor container)
+        public bool CanModifyContainer(AttachedContainer container)
         {
             // TODO: This root transform check might allow you to take out your own organs down the road O_O
             return _openedContainers.Contains(container) || container.transform.root == transform;
@@ -174,7 +174,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         /// <param name="item">The item to transfer</param>
         /// <param name="targetContainer">Into which container to move the item</param>
-        public void ClientTransferItem(Item item, Vector2Int position, ContainerDescriptor targetContainer)
+        public void ClientTransferItem(Item item, Vector2Int position, AttachedContainer targetContainer)
         {
             CmdTransferItem(item.gameObject, position, targetContainer);
         }
@@ -189,7 +189,7 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         [ServerRpc]
-        private void CmdTransferItem(GameObject itemObject, Vector2Int position, ContainerDescriptor container)
+        private void CmdTransferItem(GameObject itemObject, Vector2Int position, AttachedContainer container)
         {
             Item item = itemObject.GetComponent<Item>();
             if (item == null)
@@ -203,7 +203,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            ContainerDescriptor attachedTo = itemContainer.AttachedTo;
+            AttachedContainer attachedTo = itemContainer.AttachedTo;
             if (attachedTo == null)
             {
                 return;
@@ -232,7 +232,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// Make this inventory open an container.
         /// </summary>
-        public void OpenContainer(ContainerDescriptor container)
+        public void OpenContainer(AttachedContainer container)
         {
             container.AddObserver(GetComponent<Entity>());
             _openedContainers.Add(container);
@@ -247,7 +247,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// Removes a container from this inventory.
         /// </summary>
-        public void RemoveContainer(ContainerDescriptor container)
+        public void RemoveContainer(AttachedContainer container)
         {
             if (_openedContainers.Remove(container))
             {
@@ -262,7 +262,7 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         [ServerRpc]
-        public void CmdContainerClose(ContainerDescriptor container)
+        public void CmdContainerClose(AttachedContainer container)
         {
             RemoveContainer(container);
         }
@@ -270,7 +270,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// Does this inventory have a specific container ?
         /// </summary>
-        public bool HasContainer(ContainerDescriptor container)
+        public bool HasContainer(AttachedContainer container)
         {
             return _openedContainers.Contains(container);
         }
@@ -284,7 +284,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            ContainerDescriptor attachedTo = item.Container?.AttachedTo;
+            AttachedContainer attachedTo = item.Container?.AttachedTo;
             if (attachedTo == null)
             {
                 return;
@@ -299,13 +299,13 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         [TargetRpc]
-        private void TargetOpenContainer(NetworkConnection target, ContainerDescriptor container)
+        private void TargetOpenContainer(NetworkConnection target, AttachedContainer container)
         {
             InvokeContainerOpened(container);
         }
 
         /// <summary>
-        /// On containers having OpenWhenContainerViewed set true in ContainerDescriptor, this set the containers state appropriately.
+        /// On containers having OpenWhenContainerViewed set true in AttachedContainer, this set the containers state appropriately.
         /// If the container belongs to another Inventory, it's already opened, and therefore it does nothing.
         /// If this Inventory is the first to have it, it triggers the open animation of the object.
         /// If this Inventory is the last to have it, it closes the container.
@@ -315,7 +315,7 @@ namespace SS3D.Systems.Inventory.Containers
         [Server]
         private void SetOpenState(GameObject containerObject, bool state)
         {
-            var container = containerObject.GetComponent<ContainerDescriptor>();
+            var container = containerObject.GetComponent<AttachedContainer>();
 
             if (!container.OpenWhenContainerViewed)
             {
@@ -337,7 +337,7 @@ namespace SS3D.Systems.Inventory.Containers
 
 
         [TargetRpc]
-        private void TargetCloseContainer(NetworkConnection target, ContainerDescriptor container)
+        private void TargetCloseContainer(NetworkConnection target, AttachedContainer container)
         {
             InvokeContainerClosed(container);
         }
@@ -393,12 +393,12 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        private void InvokeContainerOpened(ContainerDescriptor container)
+        private void InvokeContainerOpened(AttachedContainer container)
         {
             OnContainerOpened?.Invoke(container);
         }
 
-        private void InvokeContainerClosed(ContainerDescriptor container)
+        private void InvokeContainerClosed(AttachedContainer container)
         {
             OnContainerClosed?.Invoke(container);
         }

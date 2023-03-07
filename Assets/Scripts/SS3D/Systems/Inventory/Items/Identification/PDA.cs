@@ -15,7 +15,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
     public class PDA : Item, IIdentification
     {
         public IDPermission testPermission;
-        private ContainerDescriptor container;
+        private AttachedContainer container;
 
         [HideInInspector] public Item StartingIDCard;
 
@@ -23,7 +23,7 @@ namespace SS3D.Systems.Inventory.Items.Generic
         {
             base.OnStart();
 
-            container = GetComponent<ContainerDescriptor>();
+            container = GetComponent<AttachedContainer>();
             if (StartingIDCard)
             {
                 container.Container.AddItem(StartingIDCard);

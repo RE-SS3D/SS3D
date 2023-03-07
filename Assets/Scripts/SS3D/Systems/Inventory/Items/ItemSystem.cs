@@ -93,7 +93,7 @@ namespace SS3D.Systems.Inventory.Items
         /// <param name="id">The item ID to spawn.</param>
         /// <param name="container">The container to spawn into.</param>
         [Server]
-        public Item SpawnItemInContainer(ItemId id, ContainerDescriptor container)
+        public Item SpawnItemInContainer(ItemId id, AttachedContainer container)
         {
             bool hasValue = _itemPrefabs.TryGetValue(id, out Item itemPrefab);
 

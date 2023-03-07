@@ -15,7 +15,7 @@ namespace SS3D.Systems.Inventory.Containers
     /// </summary>
     public class ContainerItemDisplay : MonoBehaviour
     {
-        public ContainerDescriptor containerDescriptor;
+        public AttachedContainer attachedContainer;
         public bool Mirrored;
 
         /// <summary>
@@ -25,24 +25,24 @@ namespace SS3D.Systems.Inventory.Containers
 
         public void Start()
         {
-            Assert.IsNotNull(containerDescriptor);
+            Assert.IsNotNull(attachedContainer);
             
-            _displayedItems = new Item[containerDescriptor.Displays.Length];
-            containerDescriptor.OnItemAttached += ContainerOnItemAttached;
-            containerDescriptor.OnItemDetached += ContainerOnItemDetached;
+            _displayedItems = new Item[attachedContainer.Displays.Length];
+            attachedContainer.OnItemAttached += ContainerOnItemAttached;
+            attachedContainer.OnItemDetached += ContainerOnItemDetached;
         }
 
         public void OnDestroy()
         {
-            containerDescriptor.OnItemAttached -= ContainerOnItemAttached;
-            containerDescriptor.OnItemDetached -= ContainerOnItemDetached;
+            attachedContainer.OnItemAttached -= ContainerOnItemAttached;
+            attachedContainer.OnItemDetached -= ContainerOnItemDetached;
         }
 
         private void ContainerOnItemAttached(object sender, Item item)
         {
             // Defines the transform of the item to be the first available position.
             int index = -1;
-            for (int i = 0; i < containerDescriptor.Displays.Length; i++)
+            for (int i = 0; i < attachedContainer.Displays.Length; i++)
             {
                 if (_displayedItems[i] == null)
                 {
@@ -71,7 +71,7 @@ namespace SS3D.Systems.Inventory.Containers
                 // HACK: Required because rotation pivot can be different
                 GameObject temporaryPoint = new GameObject("TempPivotPoint");
                 
-                temporaryPoint.transform.SetParent(containerDescriptor.Displays[index].transform, false);
+                temporaryPoint.transform.SetParent(attachedContainer.Displays[index].transform, false);
                 temporaryPoint.transform.localPosition = Vector3.zero;
                 temporaryPoint.transform.rotation = attachmentPoint.root.rotation *  attachmentPoint.localRotation;
                 
@@ -84,7 +84,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
             else
             {
-                itemTransform.SetParent(containerDescriptor.Displays[index].transform, false);
+                itemTransform.SetParent(attachedContainer.Displays[index].transform, false);
                 itemTransform.localPosition = new Vector3();
                 itemTransform.localRotation = new Quaternion();
             }
@@ -95,7 +95,7 @@ namespace SS3D.Systems.Inventory.Containers
         private void ContainerOnItemDetached(object sender, Item item)
         {
             int index = -1;
-            for (int i = 0; i < containerDescriptor.Displays.Length; i++)
+            for (int i = 0; i < attachedContainer.Displays.Length; i++)
             {
                 if (_displayedItems[i] == item)
                 {
@@ -110,7 +110,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             Transform itemParent = item.transform.parent;
-            if (itemParent != null && itemParent != containerDescriptor.Displays[index])
+            if (itemParent != null && itemParent != attachedContainer.Displays[index])
             {
                 item.transform.SetParent(null, true);
                 // It's currently deleting the game object containing the item, why is this here ?

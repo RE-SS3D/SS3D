@@ -20,7 +20,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// An optional reference to an attached container
         /// </summary>
-        public ContainerDescriptor AttachedTo { get; set; }
+        public AttachedContainer AttachedTo { get; set; }
         /// <summary>
         /// The items stored in this container, including information on how they are stored
         /// </summary>
@@ -60,11 +60,11 @@ namespace SS3D.Systems.Inventory.Containers
             Size = size;
         }
 
-        public Container(ContainerDescriptor containerDescriptor)
+        public Container(AttachedContainer attachedContainer)
         {
-            AttachedTo= containerDescriptor;
-            Size = containerDescriptor.Size;
-            _storedItems = (List<StoredItem>) (containerDescriptor.StoredItems.Collection);
+            AttachedTo= attachedContainer;
+            Size = attachedContainer.Size;
+            _storedItems = (List<StoredItem>) (attachedContainer.StoredItems.Collection);
         }
 
         ~Container()

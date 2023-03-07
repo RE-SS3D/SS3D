@@ -207,7 +207,7 @@ namespace SS3D.Systems.Roles
         /// <param name="itemId">The id of the item to be spawned</param>
         /// <param name="shouldSpawn">Condition indicating if the item should be spawned</param>
         /// <param name="container">Container the item will be spawned in</param>
-        private void SpawnItemInSlot(ItemId itemId, bool shouldSpawn, ContainerDescriptor container)
+        private void SpawnItemInSlot(ItemId itemId, bool shouldSpawn, AttachedContainer container)
         {
             if (!shouldSpawn)
             {

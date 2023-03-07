@@ -20,21 +20,21 @@ using static SS3D.Systems.Inventory.Containers.Container;
 namespace SS3D.Systems.Inventory.Containers
 {
     /// <summary>
-    /// ContainerDescriptor manages every aspect of a container attached to a gameObject.
+    /// AttachedContainer manages every aspect of a container attached to a gameObject.
     /// It's purpose is to centralize all relevant aspect of a container, it should be the only component one has to deal with when
     /// adding containers to a game object.
     ///
-    /// Warning: Many attributes should be private instead of public. They are currently public because ContainerDescriptorEditor
+    /// Warning: Many attributes should be private instead of public. They are currently public because AttachedContainerEditor
     /// needs to access them directly, not through accessors or properties.
     ///
-    /// ContainerDescriptorEditor should be declared as friend of ContainerDescriptor and most attributes should be private.
+    /// AttachedContainerEditor should be declared as friend of AttachedContainer and most attributes should be private.
     /// </summary>
-    public class ContainerDescriptor : NetworkActor
+    public class AttachedContainer : NetworkActor
     {
         public bool AutomaticContainerSetUp = false;
         // References toward all container related scripts.
 
-        public delegate void ContainerContentsHandler(ContainerDescriptor container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
+        public delegate void ContainerContentsHandler(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
         /// <summary>
         /// Called when the contents of the container change
         /// </summary>
@@ -109,7 +109,7 @@ namespace SS3D.Systems.Inventory.Containers
 
         [SerializeField] [NotNull] private Container _container;
 
-        public delegate void ObserverHandler(ContainerDescriptor container, Entity observer);
+        public delegate void ObserverHandler(AttachedContainer container, Entity observer);
 
         public event EventHandler<Item> OnItemAttached;
         public event EventHandler<Item> OnItemDetached;
@@ -189,7 +189,7 @@ namespace SS3D.Systems.Inventory.Containers
 
         public override string ToString()
         {
-            return $"{name}({nameof(ContainerDescriptor)})[size: {_container.Size}, items: {_container.ItemCount}]";
+            return $"{name}({nameof(AttachedContainer)})[size: {_container.Size}, items: {_container.ItemCount}]";
         }
 
         private void ProcessItemAttached(Item e)
@@ -307,7 +307,7 @@ namespace SS3D.Systems.Inventory.Containers
             }
         }
 
-        private void HandleContainerContentsChanged(ContainerDescriptor container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        private void HandleContainerContentsChanged(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             switch (type)
             {

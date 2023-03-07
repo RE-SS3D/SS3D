@@ -26,7 +26,7 @@ namespace SS3D.Systems.Inventory.UI
         /// <summary>
         /// The container this grid displays
         /// </summary>
-        public ContainerDescriptor AttachedContainer;
+        public AttachedContainer AttachedContainer;
 
         private GridLayoutGroup _gridLayout;
         private readonly List<ItemGridItem> _gridItems = new();
@@ -84,7 +84,7 @@ namespace SS3D.Systems.Inventory.UI
         /// When the container change, change the display of items inside it.
         /// Either add a display, remove a display or move a display to another slot.
         /// </summary>
-        private void ContainerOnContentsChanged(ContainerDescriptor container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        private void ContainerOnContentsChanged(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             switch (type)
             {

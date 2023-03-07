@@ -63,7 +63,7 @@ namespace SS3D.Systems.Inventory.UI
         /// <summary>
         /// Remove any instance of UI showing up the inside of the container passed in argument.
         /// </summary>
-        private void InventoryOnContainerClosed(ContainerDescriptor container)
+        private void InventoryOnContainerClosed(AttachedContainer container)
         {
             for (int i = 0; i < _containerDisplays.Count; i++)
             {
@@ -81,7 +81,7 @@ namespace SS3D.Systems.Inventory.UI
         /// <summary>
         /// If the container is not already showing up, instantiate a container UI to display the container.
         /// </summary>
-        private void InventoryOnContainerOpened(ContainerDescriptor container)
+        private void InventoryOnContainerOpened(AttachedContainer container)
         {
             foreach (ContainerDisplay x in _containerDisplays)
             {

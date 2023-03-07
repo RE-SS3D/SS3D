@@ -21,9 +21,9 @@ namespace SS3D.Systems.Inventory.UI
         /// <summary>
         /// The container displayed by this slot.
         /// </summary>
-        private ContainerDescriptor _container;
+        private AttachedContainer _container;
 
-        public ContainerDescriptor Container
+        public AttachedContainer Container
         {
             get => _container;
             set => UpdateContainer(value);
@@ -71,7 +71,7 @@ namespace SS3D.Systems.Inventory.UI
         /// <summary>
         /// UpdateContainer modify the container that this slot display, replacing the old one with newContainer.
         /// </summary>
-        private void UpdateContainer(ContainerDescriptor newContainer)
+        private void UpdateContainer(AttachedContainer newContainer)
         {
             if (_container == newContainer)
             {
@@ -87,7 +87,7 @@ namespace SS3D.Systems.Inventory.UI
             _container = newContainer;
         }
 
-        private void ContainerContentsChanged(ContainerDescriptor _, IEnumerable<Item> items, IEnumerable<Item> newItems, ContainerChangeType type)
+        private void ContainerContentsChanged(AttachedContainer _, IEnumerable<Item> items, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             if (type != ContainerChangeType.Move)
             {

@@ -11,16 +11,16 @@ namespace SS3D.Systems.Inventory.Interactions
     // This Interaction takes the first available item inside a container
     public sealed class TakeFirstInteraction : Interaction
     {
-        private readonly ContainerDescriptor _containerDescriptor;
+        private readonly AttachedContainer _attachedContainer;
 
-        public TakeFirstInteraction(ContainerDescriptor containerDescriptor)
+        public TakeFirstInteraction(AttachedContainer attachedContainer)
         {
-            _containerDescriptor = containerDescriptor;
+            _attachedContainer = attachedContainer;
         }
 
         public override string GetName(InteractionEvent interactionEvent)
         {
-            return "Take in " + _containerDescriptor.ContainerName;
+            return "Take in " + _attachedContainer.ContainerName;
         }
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
@@ -36,9 +36,9 @@ namespace SS3D.Systems.Inventory.Interactions
             }
 
             // Will only appear if the current hand is empty and the container isn't empty
-            if (interactionEvent.Source is Hands hands && _containerDescriptor != null)
+            if (interactionEvent.Source is Hands hands && _attachedContainer != null)
             {
-                return hands.SelectedHandEmpty && !_containerDescriptor.Container.Empty;
+                return hands.SelectedHandEmpty && !_attachedContainer.Container.Empty;
             }
 
             return false;
@@ -47,8 +47,8 @@ namespace SS3D.Systems.Inventory.Interactions
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Hands hands = (Hands) interactionEvent.Source;
-            int index = _containerDescriptor.Container.StoredItems.Count - 1;
-            Item pickupItem = _containerDescriptor.Container.StoredItems[index].Item;
+            int index = _attachedContainer.Container.StoredItems.Count - 1;
+            Item pickupItem = _attachedContainer.Container.StoredItems[index].Item;
             if (pickupItem != null)
             {
                 hands.Pickup(pickupItem);

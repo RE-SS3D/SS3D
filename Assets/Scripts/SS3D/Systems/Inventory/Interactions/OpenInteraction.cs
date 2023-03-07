@@ -16,24 +16,24 @@ namespace SS3D.Systems.Inventory.Interactions
         public event EventHandler<bool> OnOpenStateChanged;
         protected static readonly int OpenId = Animator.StringToHash("Open");
 
-        private ContainerDescriptor _containerDescriptor;
+        private AttachedContainer _attachedContainer;
 
         public OpenInteraction() { }
 
-        public OpenInteraction(ContainerDescriptor containerDescriptor)
+        public OpenInteraction(AttachedContainer attachedContainer)
         {
-            _containerDescriptor = containerDescriptor;
+            _attachedContainer = attachedContainer;
         }
 
         public override string GetName(InteractionEvent interactionEvent)
         {
             Animator animator = ((IGameObjectProvider)interactionEvent.Target).GameObject.GetComponent<Animator>();
-            if (_containerDescriptor == null)
+            if (_attachedContainer == null)
             {
                 return animator.GetBool(OpenId) ? "Close" : "Open";
             }
 
-            string name = _containerDescriptor.ContainerName;
+            string name = _attachedContainer.ContainerName;
 
             return animator.GetBool(OpenId) ? "Close " + name : "Open " + name;
 
@@ -71,22 +71,22 @@ namespace SS3D.Systems.Inventory.Interactions
         }
 
         /// <summary>
-        /// Verifies if the containerDescriptor referenced by this script is the first one on the game object at the source of the interaction.
+        /// Verifies if the attachedContainer referenced by this script is the first one on the game object at the source of the interaction.
         /// </summary>
         private bool IsFirstContainerOpenable(IGameObjectProvider target)
         {
             // Only accept the first Openable container on the GameObject.
             // Note: if you want separately functioning doors etc, they must be on different GameObjects.
-            ContainerDescriptor[] containerDescriptors = target.GameObject.GetComponents<ContainerDescriptor>();
-            for (int i = 0; i < containerDescriptors.Length; i++)
+            AttachedContainer[] attachedContainers = target.GameObject.GetComponents<AttachedContainer>();
+            for (int i = 0; i < attachedContainers.Length; i++)
             {
 
-                if (_containerDescriptor != containerDescriptors[i] && containerDescriptors[i].IsOpenable)
+                if (_attachedContainer != attachedContainers[i] && attachedContainers[i].IsOpenable)
                 {
                     return false;
                 }
 
-                if (_containerDescriptor == containerDescriptors[i])
+                if (_attachedContainer == attachedContainers[i])
                 {
                     return true;
                 }

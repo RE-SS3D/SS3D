@@ -331,7 +331,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 7958861831329766982}
   _openState: 0
   OverrideOpenIcon: {fileID: 0}
-  containerDescriptor: {fileID: -3412952555245330052}
+  attachedContainer: {fileID: -3412952555245330052}
 --- !u!1 &8188033368034612119
 GameObject:
   m_ObjectHideFlags: 0

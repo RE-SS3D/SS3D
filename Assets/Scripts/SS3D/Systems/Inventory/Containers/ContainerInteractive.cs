@@ -15,37 +15,37 @@ namespace SS3D.Systems.Inventory.Containers
     /// </summary>
     public class ContainerInteractive : NetworkedOpenable
     {
-        public ContainerDescriptor containerDescriptor;
+        public AttachedContainer attachedContainer;
         private Sprite _viewContainerIcon;
 
         public override IInteraction[] CreateTargetInteractions(InteractionEvent interactionEvent)
         {
-            if (containerDescriptor.HasCustomInteraction)
+            if (attachedContainer.HasCustomInteraction)
             {
                 return Array.Empty<IInteraction>();
             }
 
             List<IInteraction> interactions = new();
 
-            StoreInteraction storeInteraction = new(containerDescriptor)
+            StoreInteraction storeInteraction = new(attachedContainer)
             {
-                Icon = containerDescriptor.StoreIcon
+                Icon = attachedContainer.StoreIcon
             };
-            TakeFirstInteraction takeFirstInteraction = new(containerDescriptor)
+            TakeFirstInteraction takeFirstInteraction = new(attachedContainer)
             {
-                Icon = containerDescriptor.TakeIcon
+                Icon = attachedContainer.TakeIcon
             };
-            ViewContainerInteraction view = new(containerDescriptor)
+            ViewContainerInteraction view = new(attachedContainer)
             {
-                MaxDistance = containerDescriptor.MaxDistance, Icon = _viewContainerIcon
+                MaxDistance = attachedContainer.MaxDistance, Icon = _viewContainerIcon
             };
 
-            view.Icon = containerDescriptor.ViewIcon;
+            view.Icon = attachedContainer.ViewIcon;
 
             // Pile or Normal the Store Interaction will always appear, but View only appears in Normal containers
-            if (IsOpen() | !containerDescriptor.OnlyStoreWhenOpen | !containerDescriptor.IsOpenable)
+            if (IsOpen() | !attachedContainer.OnlyStoreWhenOpen | !attachedContainer.IsOpenable)
             {
-                if (containerDescriptor.HasUi)
+                if (attachedContainer.HasUi)
                 {
                     interactions.Add(storeInteraction);
                     interactions.Add(view);
@@ -57,14 +57,14 @@ namespace SS3D.Systems.Inventory.Containers
                 }
             }
 
-            if (!containerDescriptor.IsOpenable)
+            if (!attachedContainer.IsOpenable)
             {
                 return interactions.ToArray();
             }
 
-            OpenInteraction openInteraction = new(containerDescriptor)
+            OpenInteraction openInteraction = new(attachedContainer)
             {
-                Icon = containerDescriptor.OpenIcon
+                Icon = attachedContainer.OpenIcon
             };
             openInteraction.OnOpenStateChanged += OpenStateChanged;
             interactions.Add(openInteraction);
@@ -86,13 +86,13 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         private void CloseUis()
         {
-            if (containerDescriptor.ContainerUi != null)
+            if (attachedContainer.ContainerUi != null)
             {
-                containerDescriptor.ContainerUi.Close();
+                attachedContainer.ContainerUi.Close();
             }
 
             // We check for each item if they are interactive containers.
-            foreach(Item item in containerDescriptor.Container.Items)
+            foreach(Item item in attachedContainer.Container.Items)
             {
                 ContainerInteractive[] containerInteractives = item.GameObject.GetComponents<ContainerInteractive>();
                 // If the item is an interactive container, we call this method again on it.

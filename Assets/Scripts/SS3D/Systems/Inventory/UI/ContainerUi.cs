@@ -11,7 +11,7 @@ namespace SS3D.Systems.Inventory.UI
         public ItemGrid Grid;
         public Text ContainerName;
 
-        private ContainerDescriptor _attachedContainer;
+        private AttachedContainer _attachedContainer;
 
         public Containers.Inventory Inventory
         {
@@ -19,7 +19,7 @@ namespace SS3D.Systems.Inventory.UI
             get => Grid.Inventory;
         }
 
-        public ContainerDescriptor AttachedContainer
+        public AttachedContainer AttachedContainer
         {
             set
             {
