@@ -238,7 +238,6 @@ public class ContainerDescriptorEditor : Editor
     {
         if (!containerDescriptor.Initialized)
         {
-            AddContainer();
 
             HandleIsInteractive(true);
             //AddSync();
@@ -252,13 +251,6 @@ public class ContainerDescriptorEditor : Editor
     {
         SerializedProperty sp = serializedObject.FindProperty("AutomaticContainerSetUp");
         sp.boolValue = automaticContainerSetUp;
-        serializedObject.ApplyModifiedProperties();
-    }
-
-    private void HandleContainer(Container container)
-    {
-        SerializedProperty sp = serializedObject.FindProperty("Container");
-        sp.objectReferenceValue = container;
         serializedObject.ApplyModifiedProperties();
     }
 
@@ -422,14 +414,6 @@ public class ContainerDescriptorEditor : Editor
     private void RemoveCustomDisplay()
     {
         DestroyImmediate(containerItemDisplay, true);
-    }
-
-
-    private void AddContainer()
-    {
-        SerializedProperty sp = serializedObject.FindProperty("Container");
-        sp.objectReferenceValue = containerDescriptor.gameObject.AddComponent<Container>();
-        serializedObject.ApplyModifiedProperties();
     }
 
     private GameObject GetParentNetworkIdentity(GameObject g)

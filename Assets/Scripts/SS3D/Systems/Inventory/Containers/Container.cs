@@ -11,14 +11,8 @@ namespace SS3D.Systems.Inventory.Containers
     /// <summary>
     /// Stores items in a 2 dimensional container
     /// </summary>
-    public sealed class Container : NetworkActor
+    public sealed class Container
     {
-        /// <summary>
-        /// Called when the contents of the container change
-        /// </summary>
-        public event ContainerContentsHandler OnContentsChanged;
-        public delegate void ContainerContentsHandler(Container container, IEnumerable<Item> oldItems,IEnumerable<Item> newItems, ContainerChangeType type);
-
         /// <summary>
         /// The size of this container
         /// </summary>
@@ -30,8 +24,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The items stored in this container, including information on how they are stored
         /// </summary>
-        [SyncObject]
-        private readonly SyncList<StoredItem> _storedItems = new();
+        private readonly List<StoredItem> _storedItems;
         /// <summary>
         /// Server sole purpose of locking code execution while an operation is outgoing
         /// </summary>
@@ -41,7 +34,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public float LastModification { get; private set; }
 
-        public SyncList<StoredItem> StoredItems => _storedItems;
+        public List<StoredItem> StoredItems => _storedItems;
         /// <summary>
         /// Is this container empty
         /// </summary>
@@ -55,51 +48,30 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
 
-        protected override void OnAwake()
+        public Container()
         {
-            base.OnAwake();
+            _storedItems = new List<StoredItem>();
+            Size = new Vector2Int(1, 1);
+        }
 
-            StoredItems.OnChange += HandleStoredItemsChanged;
+        public Container(Vector2Int size)
+        {
+            _storedItems = new List<StoredItem>();
+            Size = size;
+        }
+
+        public Container(ContainerDescriptor containerDescriptor)
+        {
+            AttachedTo= containerDescriptor;
+            Size = containerDescriptor.Size;
+            _storedItems = (List<StoredItem>) (containerDescriptor.StoredItems.Collection);
         }
 
         ~Container()
         {
-            StoredItems.OnChange -= HandleStoredItemsChanged;
+            
         }
 
-        /// <summary>
-        /// Runs when the container was changed, networked
-        /// </summary>
-        /// <param name="op">Type of change</param>
-        /// <param name="index">Which element was changed</param>
-        /// <param name="oldItem">Element before the change</param>
-        /// <param name="newItem">Element after the change</param>
-        private void HandleStoredItemsChanged(SyncListOperation op, int index, StoredItem oldItem, StoredItem newItem, bool asServer)
-        {
-            ContainerChangeType changeType;
-
-            switch (op)
-            {
-                case SyncListOperation.Add:
-                    changeType = ContainerChangeType.Add;
-                    break;
-                case SyncListOperation.Insert:
-                case SyncListOperation.Set:
-                    changeType = ContainerChangeType.Move;
-                    break;
-                case SyncListOperation.RemoveAt:
-                case SyncListOperation.Clear:
-                    changeType = ContainerChangeType.Remove;
-                    break;
-                case SyncListOperation.Complete:
-                    changeType = ContainerChangeType.Move;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(op), op, null);
-            }
-
-            OnContentsChanged?.Invoke(this, new []{oldItem.Item} ,new []{newItem.Item}, changeType);
-        }
 
         /// <summary>
         /// Places an item into this container in the first available position
@@ -162,8 +134,7 @@ namespace SS3D.Systems.Inventory.Containers
                 }
 
                 StoredItem storedItem = new(item, position);
-                StoredItems.Set(itemIndex, storedItem);
-
+                ReplaceStoredItems(storedItem, itemIndex);
                 return true;
 
                 // Item at same position, nothing to do
@@ -209,9 +180,47 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            StoredItems.Add(newItem);
+            AddToStoredItems(newItem);
             LastModification = Time.time;
         }
+
+        private void AddToStoredItems(StoredItem newItem)
+        {
+            if(AttachedTo != null)
+            {
+                AttachedTo.StoredItems.Add(newItem);
+            }
+            else
+            {
+                StoredItems.Add(newItem);
+            }
+        }
+
+        private void ReplaceStoredItems(StoredItem item, int index)
+        { 
+            if (AttachedTo != null)
+            {
+                AttachedTo.StoredItems.Set(index, item);
+            }
+            else
+            {
+                StoredItems[index] = item;
+            }
+        }
+
+        private void RemoveStoredItem(int index)
+        {
+            
+            if (AttachedTo != null)
+            {
+                AttachedTo.StoredItems.RemoveAt(index);
+            }
+            else
+            {
+                StoredItems.RemoveAt(index);
+            }
+        }
+
 
         /// <summary>
         /// Adds a stored item without checking any validity
@@ -329,25 +338,13 @@ namespace SS3D.Systems.Inventory.Containers
                     return true;
                 }
 
-                StoredItems[i] = item;
+                ReplaceStoredItems(item, i);
                 LastModification = Time.time;
 
                 return true;
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Moves multiple items without performing validation
-        /// </summary>
-        /// <param name="items">The items to move</param>
-        public void MoveItemsUnchecked(StoredItem[] items)
-        {
-            foreach (StoredItem storedItem in items)
-            {
-                MoveItemUnchecked(storedItem);
-            }
         }
 
         /// <summary>
@@ -392,7 +389,7 @@ namespace SS3D.Systems.Inventory.Containers
             StoredItem storedItem = StoredItems[index];
             lock (_modificationLock)
             {
-                StoredItems.RemoveAt(index);
+                RemoveStoredItem(index);   
             }
 
             LastModification = Time.time;
@@ -411,6 +408,11 @@ namespace SS3D.Systems.Inventory.Containers
             }
             StoredItems.Clear();
 
+            if(AttachedTo != null)
+            {
+                AttachedTo.StoredItems.Clear();
+            }
+
             LastModification = Time.time;
         }
 
@@ -424,6 +426,11 @@ namespace SS3D.Systems.Inventory.Containers
                 item.Item.Delete();
             }
             StoredItems.Clear();
+
+            if (AttachedTo != null)
+            {
+                AttachedTo.StoredItems.Clear();
+            }
 
             LastModification = Time.time;
         }

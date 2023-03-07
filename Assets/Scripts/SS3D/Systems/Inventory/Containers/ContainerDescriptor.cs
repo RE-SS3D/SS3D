@@ -13,6 +13,9 @@ using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 using SS3D.Systems.Inventory.Items;
 using JetBrains.Annotations;
+using FishNet.Object.Synchronizing;
+using static SS3D.Substances.SubstanceContainer;
+using static SS3D.Systems.Inventory.Containers.Container;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -30,6 +33,12 @@ namespace SS3D.Systems.Inventory.Containers
     {
         public bool AutomaticContainerSetUp = false;
         // References toward all container related scripts.
+
+        public delegate void ContainerContentsHandler(ContainerDescriptor container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
+        /// <summary>
+        /// Called when the contents of the container change
+        /// </summary>
+        public event ContainerContentsHandler OnContentsChanged;
 
 
         public ContainerInteractive ContainerInteractive;
@@ -107,6 +116,14 @@ namespace SS3D.Systems.Inventory.Containers
         public event ObserverHandler OnNewObserver;
 
         /// <summary>
+        /// The items stored in this container, including information on how they are stored
+        /// </summary>
+        [SyncObject]
+        private readonly SyncList<StoredItem> _storedItems = new();
+
+        public SyncList<StoredItem> StoredItems => _storedItems;
+
+        /// <summary>
         /// The container that is attached
         /// <remarks>Only set this right after creation, as event listener will not update</remarks>
         /// </summary>
@@ -125,6 +142,8 @@ namespace SS3D.Systems.Inventory.Containers
             StoreIcon = Assets.Get(InteractionIcons.Take);
             ViewIcon = Assets.Get(InteractionIcons.Open);
 
+            _container = new Container(this);
+            _storedItems.OnChange += HandleStoredItemsChanged;
             UpdateContainer(_container);
         }
         /// <summary>
@@ -196,7 +215,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
             if (_container != null)
             {
-                _container.OnContentsChanged -= HandleContainerContentsChanged;
+                OnContentsChanged -= HandleContainerContentsChanged;
                 _container.AttachedTo = null;
             }
 
@@ -206,56 +225,90 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             newContainer.Size = Size;
-            newContainer.OnContentsChanged += HandleContainerContentsChanged;
+            OnContentsChanged += HandleContainerContentsChanged;
             newContainer.AttachedTo = this;
             _container = newContainer;
         }
 
-        private void HandleContainerContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        /// <summary>
+        /// Runs when the container was changed, networked
+        /// </summary>
+        /// <param name="op">Type of change</param>
+        /// <param name="index">Which element was changed</param>
+        /// <param name="oldItem">Element before the change</param>
+        /// <param name="newItem">Element after the change</param>
+        private void HandleStoredItemsChanged(SyncListOperation op, int index, StoredItem oldItem, StoredItem newItem, bool asServer)
         {
-            void handleItemAdded(Item item)
+            ContainerChangeType changeType;
+
+            switch (op)
             {
-                item.Freeze();
-
-                // Make invisible
-                if (HideItems)
-                {
-                    item.SetVisibility(false);
-                }
-
-                // Attach to container
-                if (AttachItems)
-                {
-                    Transform itemTransform = item.transform;
-                    itemTransform.SetParent(transform, false);
-                    itemTransform.localPosition = AttachmentOffset;
-                    ProcessItemAttached(item);
-                }
+                case SyncListOperation.Add:
+                    changeType = ContainerChangeType.Add;
+                    break;
+                case SyncListOperation.Insert:
+                case SyncListOperation.Set:
+                    changeType = ContainerChangeType.Move;
+                    break;
+                case SyncListOperation.RemoveAt:
+                case SyncListOperation.Clear:
+                    changeType = ContainerChangeType.Remove;
+                    break;
+                case SyncListOperation.Complete:
+                    changeType = ContainerChangeType.Move;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
 
-            void handleItemRemoved(Item item)
+            OnContentsChanged?.Invoke(this, new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
+        }
+
+        private void handleItemRemoved(Item item)
+        {
+            // Only unfreeze the item if it was not just placed into another container
+            if (item.Container == null)
             {
-                // Only unfreeze the item if it was not just placed into another container
-                if (item.Container == null)
-                {
-                    item.Unfreeze();
-                }
-
-                // Restore visibility
-                if (HideItems)
-                {
-                    item.SetVisibility(true);
-                }
-
-                // Remove parent if child of this
-                if (item.transform.parent == transform)
-                {
-                    item.transform.SetParent(null, true);
-                }
-
-                ProcessItemDetached(item);
+                item.Unfreeze();
             }
 
+            // Restore visibility
+            if (HideItems)
+            {
+                item.SetVisibility(true);
+            }
+
+            // Remove parent if child of this
+            if (item.transform.parent == transform)
+            {
+                item.transform.SetParent(null, true);
+            }
+
+            ProcessItemDetached(item);
+        }
+
+        private void handleItemAdded(Item item)
+        {
+            item.Freeze();
+
+            // Make invisible
+            if (HideItems)
+            {
+                item.SetVisibility(false);
+            }
+
+            // Attach to container
+            if (AttachItems)
+            {
+                Transform itemTransform = item.transform;
+                itemTransform.SetParent(transform, false);
+                itemTransform.localPosition = AttachmentOffset;
+                ProcessItemAttached(item);
+            }
+        }
+
+        private void HandleContainerContentsChanged(ContainerDescriptor container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        {
             switch (type)
             {
                 case ContainerChangeType.Add:

@@ -98,7 +98,6 @@ GameObject:
   - component: {fileID: 3483542684610536844}
   - component: {fileID: -3713832641788638507}
   - component: {fileID: -3412952555245330052}
-  - component: {fileID: 827376844595278399}
   - component: {fileID: 8953388663960336043}
   - component: {fileID: 8691169782362177299}
   m_Layer: 10
@@ -143,7 +142,6 @@ MonoBehaviour:
   - {fileID: 8471215545886824119}
   - {fileID: -3713832641788638507}
   - {fileID: -3412952555245330052}
-  - {fileID: 827376844595278399}
   - {fileID: 8691169782362177299}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
@@ -296,23 +294,6 @@ MonoBehaviour:
   NumberDisplay: 0
   StartFilter: {fileID: 11400000, guid: 092a6d8cb786ce94fb359f11b0da6f29, type: 2}
   Type: 0
-  _container: {fileID: 827376844595278399}
---- !u!114 &827376844595278399
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5261116577612792016}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 3
-  _addedNetworkObject: {fileID: 7958861831329766982}
-  _networkObjectCache: {fileID: 7958861831329766982}
-  Size: {x: 1, y: 1}
 --- !u!95 &8953388663960336043
 Animator:
   serializedVersion: 4
@@ -345,7 +326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 4
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 7958861831329766982}
   _networkObjectCache: {fileID: 7958861831329766982}
   _openState: 0

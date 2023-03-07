@@ -57,12 +57,12 @@ namespace SS3D.Systems.Inventory.UI
                 StartCoroutine(DisplayInitialItems());
             }
 
-            container.OnContentsChanged += ContainerOnContentsChanged;
+            AttachedContainer.OnContentsChanged += ContainerOnContentsChanged;
         }
 
         private void OnDestroy()
         {
-            AttachedContainer.Container.OnContentsChanged -= ContainerOnContentsChanged;
+            AttachedContainer.OnContentsChanged -= ContainerOnContentsChanged;
         }
 
         /// <summary>
@@ -84,14 +84,14 @@ namespace SS3D.Systems.Inventory.UI
         /// When the container change, change the display of items inside it.
         /// Either add a display, remove a display or move a display to another slot.
         /// </summary>
-        private void ContainerOnContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        private void ContainerOnContentsChanged(ContainerDescriptor container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             switch (type)
             {
                 case ContainerChangeType.Add:
                     foreach (Item item in newItems)
                     {
-                        Vector2Int position = container.PositionOf(item);
+                        Vector2Int position = container.Container.PositionOf(item);
                         CreateItemDisplay(item, position);
                     }
                     break;
@@ -119,7 +119,7 @@ namespace SS3D.Systems.Inventory.UI
                         {
                             if (gridItem.Item == item)
                             {
-                                Vector2Int position = container.PositionOf(item);
+                                Vector2Int position = container.Container.PositionOf(item);
                                 MoveToSlot(gridItem.transform, position);
                                 break;
                             }

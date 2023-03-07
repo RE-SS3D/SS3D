@@ -36,17 +36,17 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The container that has the IDCard with permissions
         /// </summary>
-        public Container IDContainer;
+        public ContainerDescriptor IDContainer;
 
         /// <summary>
         /// The container of the left pocket
         /// </summary>
-        public Container LeftPocketContainer;
+        public ContainerDescriptor LeftPocketContainer;
 
         /// <summary>
         /// The container of the right pocket
         /// </summary>
-        public Container RightPocketContainer;
+        public ContainerDescriptor RightPocketContainer;
 
         /// <summary>
         /// The controllable body of the owning player
@@ -114,7 +114,7 @@ namespace SS3D.Systems.Inventory.Containers
 
         public bool HasPermission(IDPermission permission)
         {
-            IIdentification id = IDContainer.Items.FirstOrDefault() as IIdentification;
+            IIdentification id = IDContainer.Container.Items.FirstOrDefault() as IIdentification;
             if (id == null)
             {
                 return false;

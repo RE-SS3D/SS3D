@@ -241,7 +241,6 @@ GameObject:
   - component: {fileID: 3298710121668139635}
   - component: {fileID: 3258417366846669140}
   - component: {fileID: 9136074542965640709}
-  - component: {fileID: 7082293104205752709}
   - component: {fileID: 1094090079819989120}
   m_Layer: 10
   m_Name: ToolboxBlue
@@ -402,7 +401,6 @@ MonoBehaviour:
   - {fileID: 2884915648782529247}
   - {fileID: 3298710121668139635}
   - {fileID: 9136074542965640709}
-  - {fileID: 7082293104205752709}
   - {fileID: 1094090079819989120}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
@@ -456,23 +454,6 @@ MonoBehaviour:
   NumberDisplay: 0
   StartFilter: {fileID: 0}
   Type: -1
-  _container: {fileID: 7082293104205752709}
---- !u!114 &7082293104205752709
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533951594911835035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf2e1e93bb2b4f2eac8df7a07b518352, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 3
-  _addedNetworkObject: {fileID: 3258417366846669140}
-  _networkObjectCache: {fileID: 3258417366846669140}
-  Size: {x: 10, y: 10}
 --- !u!114 &1094090079819989120
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -485,7 +466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 4
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
   _openState: 0

@@ -195,8 +195,8 @@ namespace SS3D.Systems.Roles
             Hands hands = entity.GetComponent<Hands>();
             Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
 
-            SpawnItemInSlot(loadout.LeftHandItem, loadout.LeftHand, hands.HandContainers[0].Container);
-            SpawnItemInSlot(loadout.RightHandItem, loadout.RightHand, hands.HandContainers[1].Container);
+            SpawnItemInSlot(loadout.LeftHandItem, loadout.LeftHand, hands.HandContainers[0]);
+            SpawnItemInSlot(loadout.RightHandItem, loadout.RightHand, hands.HandContainers[1]);
             SpawnItemInSlot(loadout.LeftPocketItem, loadout.LeftPocket, inventory.LeftPocketContainer);
             SpawnItemInSlot(loadout.RightPocketItem, loadout.RightPocket, inventory.RightPocketContainer);
         }
@@ -207,7 +207,7 @@ namespace SS3D.Systems.Roles
         /// <param name="itemId">The id of the item to be spawned</param>
         /// <param name="shouldSpawn">Condition indicating if the item should be spawned</param>
         /// <param name="container">Container the item will be spawned in</param>
-        private void SpawnItemInSlot(ItemId itemId, bool shouldSpawn, Container container)
+        private void SpawnItemInSlot(ItemId itemId, bool shouldSpawn, ContainerDescriptor container)
         {
             if (!shouldSpawn)
             {
