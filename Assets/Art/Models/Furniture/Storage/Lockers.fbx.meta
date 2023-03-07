@@ -1,9 +1,19 @@
 fileFormatVersion: 2
 guid: a066555bf99280841b7924269129d0c2
 ModelImporter:
-  serializedVersion: 21202
+  serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Palette05
+    second: {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Palette05 Emission
+    second: {fileID: 2100000, guid: b35e5d5edbcc63442bf15e5482e4cfe4, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -99,6 +109,7 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 
