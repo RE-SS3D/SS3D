@@ -29,7 +29,7 @@ namespace SS3D.Systems.Gamemodes.UI
         {
             base.OnEnabled();
 
-            _gamemodeObjectiveItems = new Dictionary<int, GamemodeObjectiveItemView>();
+            _gamemodeObjectiveItems = new();
 
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
@@ -118,7 +118,7 @@ namespace SS3D.Systems.Gamemodes.UI
         {
             foreach (KeyValuePair<int,GamemodeObjectiveItemView> view in _gamemodeObjectiveItems)
             {
-                view.Value.GameObject.Destroy();
+                view.Value.GameObject.Dispose(true);
             }
 
             _gamemodeObjectiveItems.Clear();

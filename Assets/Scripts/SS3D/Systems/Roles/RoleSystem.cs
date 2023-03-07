@@ -17,11 +17,11 @@ using SS3D.Systems.Inventory.Items.Generic;
 
 namespace SS3D.Systems.Roles
 {
-    public class RoleSystem : NetworkSystem
+    public class RoleSystem : NetworkSubsystem
     {
         [SerializeField] private RolesAvailable _rolesAvailable;
-        private List<RoleCounter> _roleCounters = new List<RoleCounter>();
-        private Dictionary<Soul, RoleData> _rolePlayers = new Dictionary<Soul, RoleData>();
+        private List<RoleCounter> _roleCounters = new();
+        private Dictionary<Soul, RoleData> _rolePlayers = new();
 
         #region Setup
         protected override void OnStart()
@@ -163,7 +163,7 @@ namespace SS3D.Systems.Roles
         /// <param name="role"></param>
         private void SpawnIdentificationItems(Entity entity, RoleData role)
         {
-            ItemSystem itemSystem = SystemLocator.Get<ItemSystem>();
+            ItemSubsystem itemSystem = Subsystems.Get<ItemSubsystem>();
             Inventory.Containers.Inventory inventory = entity.GetComponent<Inventory.Containers.Inventory>();
 
             Item pdaItem = itemSystem.SpawnItemInContainer(role.PDAPrefab, inventory.IDContainer);
@@ -214,7 +214,7 @@ namespace SS3D.Systems.Roles
                 return;
             }
 
-            ItemSystem itemSystem = SystemLocator.Get<ItemSystem>();
+            ItemSubsystem itemSystem = Subsystems.Get<ItemSubsystem>();
             itemSystem.SpawnItemInContainer(itemId, container);
         }
     }

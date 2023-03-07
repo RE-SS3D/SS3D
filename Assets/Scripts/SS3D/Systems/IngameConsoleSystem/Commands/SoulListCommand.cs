@@ -18,7 +18,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 return checkArgsResponse.InvalidArgs;
             
             string ret = "";
-            IEnumerable<Soul> souls = SystemLocator.Get<PlayerSystem>().ServerSouls;
+            IEnumerable<Soul> souls = Subsystems.Get<PlayerSubsystem>().ServerSouls;
             foreach (Soul i in souls)
             {
                 ret += i.Ckey + "\t";
@@ -27,7 +27,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
         }
         protected override CheckArgsResponse CheckArgs(string[] args)
         {
-            CheckArgsResponse response = new CheckArgsResponse();
+            CheckArgsResponse response = new();
             if (args.Length != 0)
             {
                 response.IsValid = false;

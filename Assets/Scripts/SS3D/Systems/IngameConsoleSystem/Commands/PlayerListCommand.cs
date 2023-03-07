@@ -20,7 +20,7 @@ namespace SS3D.Systems.IngameConsoleSystem.Commands
                 return checkArgsResponse.InvalidArgs;
 
             string ret = "";
-            List<Soul> souls = SystemLocator.Get<PlayerSystem>().OnlineSouls.ToList();
+            List<Soul> souls = Subsystems.Get<PlayerSubsystem>().OnlineSouls.ToList();
             foreach (Soul i in souls)
             {
                 ret += i.Ckey + "\t";
