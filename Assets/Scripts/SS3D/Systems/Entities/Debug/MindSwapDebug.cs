@@ -1,24 +1,22 @@
-using Coimbra.Services.Events;
-using Coimbra.Services.PlayerLoopEvents;
-using System;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Inputs;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Entities.Debug
 {
-    public class MindSwapDebug : NetworkActor
+    public sealed class MindSwapDebug : NetworkActor
     {
         public Entity Origin;
         public Entity Target;
         private Controls.OtherActions _controls;
 
-        protected override void OnEnabled()
+        protected override void OnStart()
         {
-            base.OnEnabled();
+            base.OnStart();
 
-			_controls = Subsystems.Get<InputSubsystem>().Inputs.Other;
+            _controls = Subsystems.Get<InputSubsystem>().Inputs.Other;
             _controls.SwapMinds.performed += HandleMindSwap;
         }
         

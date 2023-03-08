@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using SS3D.Logging;
 using UnityEngine;
+using Object = System.Object;
 
 namespace SS3D.Core
 {
@@ -40,6 +41,14 @@ namespace SS3D.Core
             if (RegisteredSubsystems.TryGetValue(typeof(T), out object match))
             {
                 return (T)match;
+            }
+
+            Object subsystem = UnityEngine.Object.FindObjectOfType(typeof(T), true);
+
+            if (subsystem != null)
+            {
+                Register((MonoBehaviour)subsystem);
+                return (T)subsystem;
             }
 
             string message = $"Couldn't find subsystem of {typeof(T).Name} in the scene";

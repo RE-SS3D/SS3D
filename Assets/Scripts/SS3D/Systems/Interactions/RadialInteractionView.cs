@@ -7,6 +7,7 @@ using DG.Tweening;
 using SS3D.Core;
 using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
+using SS3D.Systems.Inputs;
 using SS3D.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -70,6 +71,7 @@ namespace SS3D.Systems.Interactions
             {
                 interactionButton.OnHovered += HandleInteractionButtonHovered;
             }
+
             _controls = Subsystems.Get<InputSubsystem>().Inputs.Other;
             _controls.SecondaryClick.performed += HandleDisappear;
         }

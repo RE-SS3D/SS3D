@@ -4,6 +4,7 @@ using Coimbra;
 using Coimbra.Services.Events;
 using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
+using SS3D.Systems.Inputs;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -56,12 +57,12 @@ namespace SS3D.Systems.IngameConsoleSystem
             AddHandle(UpdateEvent.AddListener(HandleUpdate));
         }
 
-        protected override void OnEnabled()
+        protected override void OnStart()
         {
-            base.OnEnabled();
+            base.OnStart();
 
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
-            _commandsController = new CommandsController();
+            _commandsController = new();
             _controls = Subsystems.Get<InputSubsystem>().Inputs;
             _consoleControls = _controls.Console;
             _consoleControls.Close.performed += HandleClose;

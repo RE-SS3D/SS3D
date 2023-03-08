@@ -1,8 +1,8 @@
 using Coimbra.Services.Events;
-using Coimbra.Services.PlayerLoopEvents;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Entities.Events;
+using SS3D.Systems.Inputs;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
@@ -22,7 +22,6 @@ namespace SS3D.Systems.Screens
         {
             base.OnEnabled();
 
-
             AddHandle(ChangeGameScreenEvent.AddListener(HandleChangeGameScreen));
             AddHandle(SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated));
             AddHandle(RoundStateUpdated.AddListener(HandleRoundStateUpdated));
@@ -30,7 +29,7 @@ namespace SS3D.Systems.Screens
 
         protected override void OnStart()
         {
-            base.OnAwake();
+            base.OnStart();
 
             _menuOpen = true;
             _blockNone = true;

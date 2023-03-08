@@ -4,6 +4,7 @@ using SS3D.Core.Behaviours;
 using UnityEngine;
 using System;
 using SS3D.Core;
+using SS3D.Systems.Inputs;
 using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Screens
