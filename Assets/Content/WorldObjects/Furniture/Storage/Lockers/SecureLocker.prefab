@@ -40,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2570544868114083117}
-  m_Mesh: {fileID: -732255324455319584, guid: a066555bf99280841b7924269129d0c2, type: 3}
+  m_Mesh: {fileID: 2414751425368093432, guid: a066555bf99280841b7924269129d0c2, type: 3}
 --- !u!23 &7791039897351842816
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -113,7 +113,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7114705292073184654}
+  - {fileID: 7284789395508700203}
   m_Father: {fileID: 8833760637642068360}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -124,7 +124,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4547560682629165049}
-  m_Mesh: {fileID: 3442740047994540459, guid: a066555bf99280841b7924269129d0c2, type: 3}
+  m_Mesh: {fileID: -8212642602513761415, guid: a066555bf99280841b7924269129d0c2, type: 3}
 --- !u!23 &3559843836793401105
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -182,7 +182,7 @@ GameObject:
   - component: {fileID: 3258417366846669140}
   - component: {fileID: 7727612398117917681}
   m_Layer: 10
-  m_Name: SecurityLocker
+  m_Name: SecureLocker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -237,7 +237,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
   Locked: 0
-  permissionToUnlock: {fileID: 11400000, guid: 6f6e80ff9f87f7e4d810b2e9dcb013df, type: 2}
+  permissionToUnlock: {fileID: 11400000, guid: 921240e0c27686d4eaf2ff761944c5eb, type: 2}
 --- !u!114 &3298710121668139635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -303,10 +303,10 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 57
+  <PrefabId>k__BackingField: 28
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 4002592125036026985
+  <AssetPathHash>k__BackingField: 16485852193539331067
   _sceneNetworkObjects: []
 --- !u!65 &7727612398117917681
 BoxCollider:
@@ -321,7 +321,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.6106937, y: 1.6506386, z: 0.58295006}
   m_Center: {x: 0.014206067, y: 0.88481665, z: 0.019465655}
---- !u!1001 &1434399234288422990
+--- !u!1001 &1462619981128899051
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -378,8 +378,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cbd7fa314cb0c48449ca0ca2e215d733, type: 3}
---- !u!4 &7114705292073184654 stripped
+--- !u!4 &7284789395508700203 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8166293055860096448, guid: cbd7fa314cb0c48449ca0ca2e215d733, type: 3}
-  m_PrefabInstance: {fileID: 1434399234288422990}
+  m_PrefabInstance: {fileID: 1462619981128899051}
   m_PrefabAsset: {fileID: 0}
