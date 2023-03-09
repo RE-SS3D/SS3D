@@ -182,7 +182,7 @@ GameObject:
   - component: {fileID: 3258417366846669140}
   - component: {fileID: 7727612398117917681}
   m_Layer: 10
-  m_Name: SecureLocker
+  m_Name: LockerSecure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -306,7 +306,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: 28
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 16485852193539331067
+  <AssetPathHash>k__BackingField: 3859398766965918155
   _sceneNetworkObjects: []
 --- !u!65 &7727612398117917681
 BoxCollider:
