@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
@@ -21,7 +22,11 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The size of this container
         /// </summary>
-        public Vector2Int Size;
+        private Vector2Int _size;
+
+        private string _containerName = "container";
+
+        private Filter _startFilter;
         /// <summary>
         /// An optional reference to an attached container
         /// </summary>
@@ -38,6 +43,16 @@ namespace SS3D.Systems.Inventory.Containers
         /// The last time the contents of this container were changed
         /// </summary>
         public float LastModification { get; private set; }
+
+        public string ContainerName => _containerName;
+
+        public Filter StartFilter => _startFilter;
+
+        public Vector2Int Size => _size;
+
+        public bool HideItems => _hideItems;
+
+        public ContainerType ContainerType => _type;
 
         public List<StoredItem> StoredItems => _storedItems;
         /// <summary>
@@ -62,7 +77,9 @@ namespace SS3D.Systems.Inventory.Containers
         /// Set visibility of objects inside the container (not in the UI, in the actual game object).
         /// If the container is Hidden, the visibility of items is always off.
         /// </summary>
-        private bool HideItems = true;
+        private bool _hideItems = true;
+
+        private ContainerType _type = ContainerType.None;
 
         public delegate void ContainerContentsHandler(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
         /// <summary>
@@ -78,13 +95,13 @@ namespace SS3D.Systems.Inventory.Containers
         public Container()
         {
             _storedItems = new List<StoredItem>();
-            Size = new Vector2Int(1, 1);
+            _size = new Vector2Int(1, 1);
         }
 
         public Container(Vector2Int size)
         {
             _storedItems = new List<StoredItem>();
-            Size = size;
+            _size = size;
             OnContentsChanged += HandleContainerContentsChanged;
         }
 
@@ -93,10 +110,14 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public Container(AttachedContainer attachedContainer)
         {
-            AttachedTo= attachedContainer;
-            Size = attachedContainer.Size;
-            HideItems = attachedContainer.HideItems;
+            AttachedTo = attachedContainer;
+            _size = attachedContainer.Size;
+            _type = attachedContainer.Type;
+            _hideItems = attachedContainer.HideItems;
             _storedItems = (List<StoredItem>) (attachedContainer.StoredItems.Collection);
+            _startFilter= attachedContainer.StartFilter;
+
+
             OnContentsChanged += HandleContainerContentsChanged;
         }
 

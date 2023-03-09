@@ -99,7 +99,7 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
-  _containerName: container
+  _containerName: left pocket
   _size: {x: 4, y: 4}
   _hideItems: 1
   _type: 1
@@ -334,8 +334,8 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
-  _containerName: container
-  _size: {x: 2, y: 2}
+  _containerName: identification
+  _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 4
   _startFilter: {fileID: 0}
@@ -786,8 +786,8 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
-  _containerName: container
-  _size: {x: 4, y: 4}
+  _containerName: right hand
+  _size: {x: 1, y: 1}
   _hideItems: 0
   _type: 2
   _startFilter: {fileID: 0}
@@ -984,8 +984,8 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
-  _containerName: container
-  _size: {x: 4, y: 4}
+  _containerName: left hand
+  _size: {x: 1, y: 1}
   _hideItems: 0
   _type: 2
   _startFilter: {fileID: 0}
@@ -3836,8 +3836,8 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
-  _containerName: container
-  _size: {x: 4, y: 4}
+  _containerName: right pocket
+  _size: {x: 1, y: 1}
   _hideItems: 1
   _type: 1
   _startFilter: {fileID: 0}

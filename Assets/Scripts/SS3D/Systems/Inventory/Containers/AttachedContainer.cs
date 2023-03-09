@@ -20,11 +20,6 @@ namespace SS3D.Systems.Inventory.Containers
     /// <summary>
     /// AttachedContainer manages the networking  aspect of a container attached to a gameObject, and allows the user to set up a container,
     /// including it's size, interaction with it, what it can store and other options.
-    ///
-    /// Warning: Many attributes should be private instead of public. They are currently public because AttachedContainerEditor
-    /// needs to access them directly, not through accessors or properties.
-    ///
-    /// AttachedContainerEditor should be declared as friend of AttachedContainer and most attributes should be private (but this is not a feature of C#).
     /// </summary>
     public class AttachedContainer : NetworkActor
     {
@@ -106,10 +101,9 @@ namespace SS3D.Systems.Inventory.Containers
 
         public int NumberDisplay => _numberDisplay;
 
-
         #endregion
 
-
+        // If you define setters for the properties of this region in the future, be careful and make sure they modify the related container fields as well in Container.cs.
         #region ContainerAndAttachedContainerFieldsAndProperties
 
         [Tooltip("Name of the container."), SerializeField]
@@ -138,7 +132,6 @@ namespace SS3D.Systems.Inventory.Containers
         public Filter StartFilter => _startFilter;
 
         #endregion
-
 
         private Container _container;
 
