@@ -434,7 +434,7 @@ MonoBehaviour:
   ContainerUi: {fileID: 0}
   _attachmentOffset: {x: 0, y: 0, z: 0}
   _onlyStoreWhenOpen: 1
-  _openWhenContainerViewed: 1
+  _openWhenContainerViewed: 0
   _attachItems: 1
   _initialized: 1
   _maxDistance: 5
@@ -446,7 +446,7 @@ MonoBehaviour:
   _displays: []
   _numberDisplay: 0
   _containerName: toolbox
-  _size: {x: 0, y: 0}
+  _size: {x: 6, y: 6}
   _hideItems: 1
   _type: -1
   _startFilter: {fileID: 0}
