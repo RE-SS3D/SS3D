@@ -99,11 +99,11 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
-  ContainerName: left pocket
-  Size: {x: 2, y: 2}
+  _containerName: container
+  _size: {x: 4, y: 4}
   _hideItems: 1
   _type: 1
-  StartFilter: {fileID: 0}
+  _startFilter: {fileID: 0}
 --- !u!1 &144817745137165922
 GameObject:
   m_ObjectHideFlags: 0
@@ -334,11 +334,11 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
-  ContainerName: identification
-  Size: {x: 2, y: 2}
+  _containerName: container
+  _size: {x: 2, y: 2}
   _hideItems: 1
   _type: 4
-  StartFilter: {fileID: 11400000, guid: 91b02707a12a4c546912f7432612d85f, type: 2}
+  _startFilter: {fileID: 0}
 --- !u!1 &745234630904659225
 GameObject:
   m_ObjectHideFlags: 0
@@ -786,11 +786,11 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
-  ContainerName: right hand
-  Size: {x: 5, y: 5}
+  _containerName: container
+  _size: {x: 4, y: 4}
   _hideItems: 0
   _type: 2
-  StartFilter: {fileID: 0}
+  _startFilter: {fileID: 0}
 --- !u!1 &2085819744154837467
 GameObject:
   m_ObjectHideFlags: 0
@@ -984,11 +984,11 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
-  ContainerName: left hand
-  Size: {x: 2, y: 2}
+  _containerName: container
+  _size: {x: 4, y: 4}
   _hideItems: 0
   _type: 2
-  StartFilter: {fileID: 0}
+  _startFilter: {fileID: 0}
 --- !u!1 &2840666209206779409
 GameObject:
   m_ObjectHideFlags: 0
@@ -3836,11 +3836,11 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
-  ContainerName: right pocket
-  Size: {x: 2, y: 2}
+  _containerName: container
+  _size: {x: 4, y: 4}
   _hideItems: 1
   _type: 1
-  StartFilter: {fileID: 0}
+  _startFilter: {fileID: 0}
 --- !u!1 &8192843437556473050
 GameObject:
   m_ObjectHideFlags: 0

@@ -258,13 +258,13 @@ public class AttachedContainerEditor : Editor
 
     private void HandleStartFilter(Filter startFilter)
     {
-        SerializedProperty sp = serializedObject.FindProperty("StartFilter");
+        SerializedProperty sp = serializedObject.FindProperty("_startFilter");
         sp.objectReferenceValue = startFilter;
         serializedObject.ApplyModifiedProperties();
     }
     private void HandleSize(Vector2Int size)
     {
-        SerializedProperty sp = serializedObject.FindProperty("Size");
+        SerializedProperty sp = serializedObject.FindProperty("_size");
         sp.vector2IntValue = size;
         serializedObject.ApplyModifiedProperties();
     }
@@ -311,7 +311,7 @@ public class AttachedContainerEditor : Editor
 
     private void HandleContainerName(string containerName)
     {
-        SerializedProperty sp = serializedObject.FindProperty("ContainerName");
+        SerializedProperty sp = serializedObject.FindProperty("_containerName");
         sp.stringValue = containerName;
         serializedObject.ApplyModifiedProperties();
     }

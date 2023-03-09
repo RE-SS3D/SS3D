@@ -445,11 +445,11 @@ MonoBehaviour:
   _hasCustomDisplay: 0
   _displays: []
   _numberDisplay: 0
-  ContainerName: toolbox
-  Size: {x: 6, y: 6}
+  _containerName: toolbox
+  _size: {x: 0, y: 0}
   _hideItems: 1
   _type: -1
-  StartFilter: {fileID: 0}
+  _startFilter: {fileID: 0}
 --- !u!114 &1094090079819989120
 MonoBehaviour:
   m_ObjectHideFlags: 0

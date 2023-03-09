@@ -112,11 +112,11 @@ namespace SS3D.Systems.Inventory.Containers
 
         #region ContainerAndAttachedContainerFieldsAndProperties
 
-        [Tooltip("Name of the container.")]
-        public string ContainerName = "container";
+        [Tooltip("Name of the container."), SerializeField]
+        private string _containerName = "container";
 
-        [Tooltip("Defines the size of the container, every item takes a defined place inside a container.")]
-        public Vector2Int Size = new(0, 0);
+        [Tooltip("Defines the size of the container, every item takes a defined place inside a container."), SerializeField]
+        private Vector2Int _size = new(0, 0);
 
         /// <summary>
         /// Set visibility of objects inside the container (not in the UI, in the actual game object).
@@ -128,10 +128,14 @@ namespace SS3D.Systems.Inventory.Containers
         [Tooltip("Container type mostly allow to discriminate between different containers on a single prefab."), SerializeField]
         private ContainerType _type;
 
-        [Tooltip("The filter on the container.")]
-        public Filter StartFilter;
+        [Tooltip("The filter on the container."), SerializeField]
+        private Filter _startFilter;
 
+        public string ContainerName => _containerName;
         public ContainerType Type => _type;
+        public Vector2Int Size => _size;
+        public bool HideItems => _hideItems;
+        public Filter StartFilter => _startFilter;
 
         #endregion
 
@@ -140,9 +144,6 @@ namespace SS3D.Systems.Inventory.Containers
 
         public event EventHandler<Item> OnItemAttached;
         public event EventHandler<Item> OnItemDetached;
-
-        public bool HideItems => _hideItems;
-        
 
         /// <summary>
         /// The items stored in this container, including information on how they are stored
