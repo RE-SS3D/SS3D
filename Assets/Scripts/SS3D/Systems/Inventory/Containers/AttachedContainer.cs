@@ -31,13 +31,6 @@ namespace SS3D.Systems.Inventory.Containers
         public bool AutomaticContainerSetUp = false;
         // References toward all container related scripts.
 
-        public delegate void ContainerContentsHandler(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
-        /// <summary>
-        /// Called when the contents of the container change
-        /// </summary>
-        public event ContainerContentsHandler OnContentsChanged;
-
-
         public ContainerInteractive ContainerInteractive;
         public ContainerItemDisplay ContainerItemDisplay;
 
@@ -45,17 +38,8 @@ namespace SS3D.Systems.Inventory.Containers
         [Tooltip("Reference towards the container UI linked to this container. Leave empty before run ! ")]
         public ContainerUi ContainerUi;
 
-        [Tooltip("Open interaction icon, visible when opening a container.")]
-        public Sprite OpenIcon;
-        [Tooltip("Take interaction icon, visible when taking something from a container.")]
-        public Sprite TakeIcon;
-        [Tooltip("Store interaction icon, visible when storing something in a container.")]
-        public Sprite StoreIcon;
-        [Tooltip("View interaction icon, visible when viewing a container.")]
-        public Sprite ViewIcon;
-
-        [Tooltip("The local position of attached items.")]
-        public Vector3 AttachmentOffset = Vector3.zero;
+        [Tooltip("The local position of attached items."), SerializeField]
+        private Vector3 _attachmentOffset = Vector3.zero;
         [Tooltip("Name of the container.")]
         public string ContainerName = "container";
         [Tooltip("If the container is openable, this defines if things can be stored in the container without opening it.")]
@@ -65,12 +49,14 @@ namespace SS3D.Systems.Inventory.Containers
         [Tooltip("Defines the size of the container, every item takes a defined place inside a container.")]
         public Vector2Int Size = new(0, 0);
 
+        public Vector3 AttachmentOffset => _attachmentOffset;
+
         /// <summary>
         /// Set visibility of objects inside the container (not in the UI, in the actual game object).
         /// If the container is Hidden, the visibility of items is always off.
         /// </summary>
-        [Tooltip("Set visibility of items in container.")]
-        public bool HideItems = true;
+        [Tooltip("Set visibility of items in container."), SerializeField]
+        private bool _hideItems = true;
         [Tooltip("If items should be attached as children of the container's game object.")]
         public bool AttachItems = true;
 
@@ -99,18 +85,14 @@ namespace SS3D.Systems.Inventory.Containers
         [Tooltip("Container type mostly allow to discriminate between different containers on a single prefab.")]
         public ContainerType Type;
 
-        /// <summary>
-        /// The creatures looking at this container
-        /// </summary>
-        public readonly HashSet<Entity> ObservingPlayers = new();
 
         [SerializeField] [NotNull] private Container _container;
 
-        public delegate void ObserverHandler(AttachedContainer container, Entity observer);
-
         public event EventHandler<Item> OnItemAttached;
         public event EventHandler<Item> OnItemDetached;
-        public event ObserverHandler OnNewObserver;
+
+        public bool HideItems => _hideItems;
+        
 
         /// <summary>
         /// The items stored in this container, including information on how they are stored
@@ -133,26 +115,10 @@ namespace SS3D.Systems.Inventory.Containers
         protected override void OnAwake()
         {
             base.OnAwake();
-            // If container interactions icon are not defined at start, load default icons.
-            OpenIcon = Assets.Get(InteractionIcons.Open);
-            TakeIcon = Assets.Get(InteractionIcons.Take);
-            StoreIcon = Assets.Get(InteractionIcons.Take);
-            ViewIcon = Assets.Get(InteractionIcons.Open);
 
             _container = new Container(this);
             _storedItems.OnChange += HandleStoredItemsChanged;
             UpdateContainer(_container);
-        }
-        /// <summary>
-        /// Return the name of the Object as defined by the Examine System. 
-        /// <remarks> If multiple classes implement the Interface IExaminable
-        /// and have an ExamineType equal to SIMPLE_TEXT, it returns the first name encountered. </remarks>
-        /// </summary>
-        public string GetName()
-        {
-            // TODO: Add back examine system
-
-            return string.Empty;
         }
 
         public void OnDestroy()
@@ -160,48 +126,19 @@ namespace SS3D.Systems.Inventory.Containers
             Container?.Purge();
         }
 
-        /// <summary>
-        /// Adds an observer to this container
-        /// </summary>
-        /// <param name="observer">The creature which observes</param>
-        /// <returns>True if the creature was not already observing this container</returns>
-        public bool AddObserver(Entity observer)
-        {
-            bool newObserver = ObservingPlayers.Add(observer);
-            if (newObserver)
-            {
-                ProcessNewObserver(observer);
-            }
-            return newObserver;
-        }
-
-        /// <summary>
-        /// Removes an observer
-        /// </summary>
-        /// <param name="observer">The observer to remove</param>
-        public void RemoveObserver(Entity observer)
-        {
-            ObservingPlayers.Remove(observer);
-        }
-
         public override string ToString()
         {
             return $"{name}({nameof(AttachedContainer)})[size: {_container.Size}, items: {_container.ItemCount}]";
         }
 
-        private void ProcessItemAttached(Item e)
+        public void ProcessItemAttached(Item e)
         {
             OnItemAttached?.Invoke(this, e);
         }
 
-        private void ProcessItemDetached(Item e)
+        public void ProcessItemDetached(Item e)
         {
             OnItemDetached?.Invoke(this, e);
-        }
-
-        private void ProcessNewObserver(Entity e)
-        {
-            OnNewObserver?.Invoke(this, e);
         }
 
         /// <summary>
@@ -212,7 +149,6 @@ namespace SS3D.Systems.Inventory.Containers
         {
             if (_container != null)
             {
-                OnContentsChanged -= HandleContainerContentsChanged;
                 _container.AttachedTo = null;
             }
 
@@ -221,8 +157,6 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            newContainer.Size = Size;
-            OnContentsChanged += HandleContainerContentsChanged;
             newContainer.AttachedTo = this;
             _container = newContainer;
         }
@@ -258,98 +192,7 @@ namespace SS3D.Systems.Inventory.Containers
                     throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
 
-            OnContentsChanged?.Invoke(this, new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
-        }
-
-        private void handleItemRemoved(Item item)
-        {
-            // Only unfreeze the item if it was not just placed into another container
-            if (item.Container == null)
-            {
-                item.Unfreeze();
-            }
-
-            // Restore visibility
-            if (HideItems)
-            {
-                item.SetVisibility(true);
-            }
-
-            // Remove parent if child of this
-            if (item.transform.parent == transform)
-            {
-                item.transform.SetParent(null, true);
-            }
-
-            ProcessItemDetached(item);
-        }
-
-        private void handleItemAdded(Item item)
-        {
-            item.Freeze();
-
-            // Make invisible
-            if (HideItems)
-            {
-                item.SetVisibility(false);
-            }
-
-            // Attach to container
-            if (AttachItems)
-            {
-                Transform itemTransform = item.transform;
-                itemTransform.SetParent(transform, false);
-                itemTransform.localPosition = AttachmentOffset;
-                ProcessItemAttached(item);
-            }
-        }
-
-        private void HandleContainerContentsChanged(AttachedContainer container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
-        {
-            switch (type)
-            {
-                case ContainerChangeType.Add:
-                    foreach (Item item in newItems)
-                    {
-                        if (item == null)
-                        {
-                            continue;
-                        }
-
-                        handleItemAdded(item);
-                    }
-
-                    break;
-                case ContainerChangeType.Move:
-                    {
-                        foreach (Item item in newItems)
-                        {
-                            if (item == null)
-                            {
-                                continue;
-                            }
-
-                            handleItemRemoved(item);
-                            handleItemAdded(item);
-                        }
-
-                        break;
-                    }
-                case ContainerChangeType.Remove:
-                    {
-                        foreach (Item item in oldItems)
-                        {
-                            if (item == null)
-                            {
-                                continue;
-                            }
-
-                            handleItemRemoved(item);
-                        }
-
-                        break;
-                    }
-            }
+            _container.InvokeOnContentChanged(new[] { oldItem.Item }, new[] { newItem.Item }, changeType);
         }
     }
 }

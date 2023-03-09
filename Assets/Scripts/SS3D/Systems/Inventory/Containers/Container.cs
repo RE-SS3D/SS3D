@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
+using static SS3D.Substances.SubstanceContainer;
+using static SS3D.Systems.Inventory.Containers.AttachedContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -50,6 +53,28 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
 
+        /// <summary>
+        /// The creatures looking at this container
+        /// </summary>
+        public readonly List<Entity> ObservingPlayers = new();
+
+        /// <summary>
+        /// Set visibility of objects inside the container (not in the UI, in the actual game object).
+        /// If the container is Hidden, the visibility of items is always off.
+        /// </summary>
+        private bool HideItems = true;
+
+        public delegate void ContainerContentsHandler(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
+        /// <summary>
+        /// Called when the contents of the container change
+        /// </summary>
+        public event ContainerContentsHandler OnContentsChanged;
+
+        public event ObserverHandler OnNewObserver;
+
+        public delegate void ObserverHandler(Container container, Entity observer);
+
+
         public Container()
         {
             _storedItems = new List<StoredItem>();
@@ -60,6 +85,7 @@ namespace SS3D.Systems.Inventory.Containers
         {
             _storedItems = new List<StoredItem>();
             Size = size;
+            OnContentsChanged += HandleContainerContentsChanged;
         }
 
         /// <summary>
@@ -69,12 +95,14 @@ namespace SS3D.Systems.Inventory.Containers
         {
             AttachedTo= attachedContainer;
             Size = attachedContainer.Size;
+            HideItems = attachedContainer.HideItems;
             _storedItems = (List<StoredItem>) (attachedContainer.StoredItems.Collection);
+            OnContentsChanged += HandleContainerContentsChanged;
         }
 
         ~Container()
         {
-            
+            OnContentsChanged -= HandleContainerContentsChanged;
         }
 
 
@@ -556,6 +584,129 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             return -1;
+        }
+
+        private void handleItemRemoved(Item item)
+        {
+            // Only unfreeze the item if it was not just placed into another container
+            if (item.Container == null)
+            {
+                item.Unfreeze();
+            }
+
+            // Restore visibility
+            if (HideItems)
+            {
+                item.SetVisibility(true);
+            }
+
+            // Remove parent if child of this
+            if (AttachedTo != null && item.transform.parent == AttachedTo.transform)
+            {
+                item.transform.SetParent(null, true);
+                AttachedTo.ProcessItemDetached(item);
+            }
+        }
+
+        private void handleItemAdded(Item item)
+        {
+            item.Freeze();
+
+            // Make invisible
+            if (HideItems)
+            {
+                item.SetVisibility(false);
+            }
+
+            if(AttachedTo != null && AttachedTo.AttachItems)
+            {
+                Transform itemTransform = item.transform;
+                itemTransform.SetParent(AttachedTo.transform, false);
+                itemTransform.localPosition = AttachedTo.AttachmentOffset;
+               AttachedTo.ProcessItemAttached(item);
+            }
+        }
+
+        private void HandleContainerContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        {
+            switch (type)
+            {
+                case ContainerChangeType.Add:
+                    foreach (Item item in newItems)
+                    {
+                        if (item == null)
+                        {
+                            continue;
+                        }
+
+                        handleItemAdded(item);
+                    }
+
+                    break;
+                case ContainerChangeType.Move:
+                    {
+                        foreach (Item item in newItems)
+                        {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+
+                            handleItemRemoved(item);
+                            handleItemAdded(item);
+                        }
+
+                        break;
+                    }
+                case ContainerChangeType.Remove:
+                    {
+                        foreach (Item item in oldItems)
+                        {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+
+                            handleItemRemoved(item);
+                        }
+
+                        break;
+                    }
+            }
+        }
+
+        public void InvokeOnContentChanged(Item[] oldItems, Item[] newItems, ContainerChangeType changeType)
+        {
+            OnContentsChanged?.Invoke(this, oldItems, newItems, changeType);
+        }
+
+        /// <summary>
+        /// Adds an observer to this container
+        /// </summary>
+        /// <param name="observer">The creature which observes</param>
+        /// <returns>True if the creature was not already observing this container</returns>
+        public bool AddObserver(Entity observer)
+        {
+            if (ObservingPlayers.Contains(observer)) return false;
+
+            ObservingPlayers.Add(observer);
+
+            ProcessNewObserver(observer);
+            return true;
+        }
+
+        /// <summary>
+        /// Removes an observer
+        /// </summary>
+        /// <param name="observer">The observer to remove</param>
+        public void RemoveObserver(Entity observer)
+        {
+            ObservingPlayers.Remove(observer);
+        }
+
+        private void ProcessNewObserver(Entity e)
+        {
+            OnNewObserver?.Invoke(this, e);
         }
     }
 }

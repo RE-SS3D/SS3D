@@ -80,14 +80,14 @@ namespace SS3D.Systems.Inventory.UI
             
             if (_container != null)
             {
-                _container.OnContentsChanged -= ContainerContentsChanged;
+                _container.Container.OnContentsChanged -= ContainerContentsChanged;
             }
             
-            newContainer.OnContentsChanged += ContainerContentsChanged;
+            newContainer.Container.OnContentsChanged += ContainerContentsChanged;
             _container = newContainer;
         }
 
-        private void ContainerContentsChanged(AttachedContainer _, IEnumerable<Item> items, IEnumerable<Item> newItems, ContainerChangeType type)
+        private void ContainerContentsChanged(Container _, IEnumerable<Item> items, IEnumerable<Item> newItems, ContainerChangeType type)
         {
             if (type != ContainerChangeType.Move)
             {

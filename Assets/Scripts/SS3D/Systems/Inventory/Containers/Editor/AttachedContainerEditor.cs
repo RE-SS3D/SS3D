@@ -135,9 +135,10 @@ public class AttachedContainerEditor : Editor
             attachedContainer.Size);
         HandleSize(size);
 
+        var hideItemField = serializedObject.FindProperty("_hideItem");
         bool hideItems = EditorGUILayout.Toggle(
             new GUIContent("Hide items", "Set if items should be attached as children of the container"),
-            attachedContainer.HideItems);
+            hideItemField.boolValue);
         HandleHideItems(hideItems);
 
         if (!hideItems)
@@ -184,51 +185,7 @@ public class AttachedContainerEditor : Editor
      attachedContainer.Type);
         HandleContainerType(containerType);
 
-        ShowIcons();
         serializedObject.ApplyModifiedProperties();
-    }
-
-    /// <summary>
-    /// Handles showing and setting icons in editor.
-    /// </summary>
-    public void ShowIcons()
-    {
-        showIcon = EditorGUILayout.Foldout(showIcon, "Show icons");
-
-        if (showIcon)
-        {
-            if (attachedContainer.IsOpenable)
-            {
-                Sprite openIcon = (Sprite)EditorGUILayout.ObjectField(
-                    "Open container icon", attachedContainer.OpenIcon, typeof(Sprite), true);
-                SerializedProperty sp = serializedObject.FindProperty("OpenIcon");
-                sp.objectReferenceValue = openIcon;
-            }
-
-            if (attachedContainer.IsInteractive)
-            {
-                Sprite storeIcon = (Sprite)EditorGUILayout.ObjectField(
-                    "Store container icon", attachedContainer.StoreIcon, typeof(Sprite), true);
-                SerializedProperty sp = serializedObject.FindProperty("StoreIcon");
-                sp.objectReferenceValue = storeIcon;
-            }
-
-            if (attachedContainer.HasUi)
-            {
-                Sprite viewIcon = (Sprite)EditorGUILayout.ObjectField(
-                    "View container icon", attachedContainer.ViewIcon, typeof(Sprite), true);
-                SerializedProperty sp = serializedObject.FindProperty("ViewIcon");
-                sp.objectReferenceValue = viewIcon;
-            }
-
-            if (attachedContainer.IsInteractive && !attachedContainer.HasUi)
-            {
-                Sprite takeIcon = (Sprite)EditorGUILayout.ObjectField(
-                    "Take container icon", attachedContainer.TakeIcon, typeof(Sprite), true);
-                SerializedProperty sp = serializedObject.FindProperty("TakeIcon");
-                sp.objectReferenceValue = takeIcon;
-            }
-        }
     }
 
     /// <summary>
