@@ -79,35 +79,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 10
+  _componentIndexCache: 13
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  AutomaticContainerSetUp: 0
+  _automaticContainerSetUp: 0
   ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   ContainerUi: {fileID: 0}
-  OpenIcon: {fileID: 0}
-  TakeIcon: {fileID: 0}
-  StoreIcon: {fileID: 0}
-  ViewIcon: {fileID: 0}
-  AttachmentOffset: {x: 0, y: 0, z: 0}
+  _attachmentOffset: {x: 0, y: 0, z: 0}
+  _onlyStoreWhenOpen: 0
+  _openWhenContainerViewed: 0
+  _attachItems: 1
+  _initialized: 0
+  _maxDistance: 5
+  _isOpenable: 0
+  _isInteractive: 0
+  _hasUi: 0
+  _hasCustomInteraction: 0
+  _hasCustomDisplay: 0
+  _displays: []
+  _numberDisplay: 0
   ContainerName: left pocket
-  OnlyStoreWhenOpen: 0
-  OpenWhenContainerViewed: 0
   Size: {x: 2, y: 2}
-  HideItems: 1
-  AttachItems: 1
-  Initialized: 1
-  MaxDistance: 5
-  IsOpenable: 0
-  IsInteractive: 0
-  HasUi: 0
-  HasCustomInteraction: 0
-  HasCustomDisplay: 0
-  Displays: []
-  NumberDisplay: 0
+  _hideItems: 1
+  _type: 1
   StartFilter: {fileID: 0}
-  Type: 1
 --- !u!1 &144817745137165922
 GameObject:
   m_ObjectHideFlags: 0
@@ -318,35 +314,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 9
+  _componentIndexCache: 12
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  AutomaticContainerSetUp: 0
-  ContainerInteractive: {fileID: 0}
+  _automaticContainerSetUp: 1
+  ContainerInteractive: {fileID: 3398448322784601453}
   ContainerItemDisplay: {fileID: 0}
   ContainerUi: {fileID: 0}
-  OpenIcon: {fileID: 0}
-  TakeIcon: {fileID: 0}
-  StoreIcon: {fileID: 0}
-  ViewIcon: {fileID: 0}
-  AttachmentOffset: {x: 0, y: 0, z: 0}
+  _attachmentOffset: {x: 0, y: 0, z: 0}
+  _onlyStoreWhenOpen: 0
+  _openWhenContainerViewed: 0
+  _attachItems: 1
+  _initialized: 1
+  _maxDistance: 5
+  _isOpenable: 0
+  _isInteractive: 1
+  _hasUi: 0
+  _hasCustomInteraction: 0
+  _hasCustomDisplay: 0
+  _displays: []
+  _numberDisplay: 0
   ContainerName: identification
-  OnlyStoreWhenOpen: 0
-  OpenWhenContainerViewed: 0
   Size: {x: 2, y: 2}
-  HideItems: 1
-  AttachItems: 1
-  Initialized: 1
-  MaxDistance: 5
-  IsOpenable: 0
-  IsInteractive: 0
-  HasUi: 0
-  HasCustomInteraction: 0
-  HasCustomDisplay: 0
-  Displays: []
-  NumberDisplay: 0
+  _hideItems: 1
+  _type: 4
   StartFilter: {fileID: 11400000, guid: 91b02707a12a4c546912f7432612d85f, type: 2}
-  Type: 4
 --- !u!1 &745234630904659225
 GameObject:
   m_ObjectHideFlags: 0
@@ -774,35 +766,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 13
+  _componentIndexCache: 16
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  AutomaticContainerSetUp: 0
-  ContainerInteractive: {fileID: 0}
+  _automaticContainerSetUp: 0
+  ContainerInteractive: {fileID: 3043704831697070745}
   ContainerItemDisplay: {fileID: 0}
   ContainerUi: {fileID: 0}
-  OpenIcon: {fileID: 0}
-  TakeIcon: {fileID: 0}
-  StoreIcon: {fileID: 0}
-  ViewIcon: {fileID: 0}
-  AttachmentOffset: {x: 0, y: 0, z: 0}
-  ContainerName: container
-  OnlyStoreWhenOpen: 0
-  OpenWhenContainerViewed: 0
+  _attachmentOffset: {x: 0, y: 0, z: 0}
+  _onlyStoreWhenOpen: 0
+  _openWhenContainerViewed: 0
+  _attachItems: 1
+  _initialized: 1
+  _maxDistance: 5
+  _isOpenable: 0
+  _isInteractive: 1
+  _hasUi: 0
+  _hasCustomInteraction: 0
+  _hasCustomDisplay: 0
+  _displays: []
+  _numberDisplay: 0
+  ContainerName: right hand
   Size: {x: 5, y: 5}
-  HideItems: 0
-  AttachItems: 1
-  Initialized: 0
-  MaxDistance: 5
-  IsOpenable: 0
-  IsInteractive: 0
-  HasUi: 0
-  HasCustomInteraction: 0
-  HasCustomDisplay: 0
-  Displays: []
-  NumberDisplay: 0
+  _hideItems: 0
+  _type: 2
   StartFilter: {fileID: 0}
-  Type: 0
 --- !u!1 &2085819744154837467
 GameObject:
   m_ObjectHideFlags: 0
@@ -976,35 +964,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 12
+  _componentIndexCache: 15
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  AutomaticContainerSetUp: 0
-  ContainerInteractive: {fileID: 0}
+  _automaticContainerSetUp: 0
+  ContainerInteractive: {fileID: 5770197026759263291}
   ContainerItemDisplay: {fileID: 0}
   ContainerUi: {fileID: 0}
-  OpenIcon: {fileID: 0}
-  TakeIcon: {fileID: 0}
-  StoreIcon: {fileID: 0}
-  ViewIcon: {fileID: 0}
-  AttachmentOffset: {x: 0, y: 0, z: 0}
-  ContainerName: container
-  OnlyStoreWhenOpen: 0
-  OpenWhenContainerViewed: 0
+  _attachmentOffset: {x: 0, y: 0, z: 0}
+  _onlyStoreWhenOpen: 0
+  _openWhenContainerViewed: 0
+  _attachItems: 1
+  _initialized: 1
+  _maxDistance: 5
+  _isOpenable: 0
+  _isInteractive: 1
+  _hasUi: 0
+  _hasCustomInteraction: 0
+  _hasCustomDisplay: 0
+  _displays: []
+  _numberDisplay: 0
+  ContainerName: left hand
   Size: {x: 2, y: 2}
-  HideItems: 0
-  AttachItems: 1
-  Initialized: 0
-  MaxDistance: 5
-  IsOpenable: 0
-  IsInteractive: 0
-  HasUi: 0
-  HasCustomInteraction: 0
-  HasCustomDisplay: 0
-  Displays: []
-  NumberDisplay: 0
+  _hideItems: 0
+  _type: 2
   StartFilter: {fileID: 0}
-  Type: 0
 --- !u!1 &2840666209206779409
 GameObject:
   m_ObjectHideFlags: 0
@@ -2901,6 +2885,9 @@ GameObject:
   - component: {fileID: 3788807725072305327}
   - component: {fileID: 571479044043330787}
   - component: {fileID: 5857269694861021747}
+  - component: {fileID: 3398448322784601453}
+  - component: {fileID: 5770197026759263291}
+  - component: {fileID: 3043704831697070745}
   m_Layer: 11
   m_Name: HumanTemporary
   m_TagString: Untagged
@@ -2959,6 +2946,9 @@ MonoBehaviour:
   - {fileID: 3788807725072305327}
   - {fileID: 571479044043330787}
   - {fileID: 5857269694861021747}
+  - {fileID: 3398448322784601453}
+  - {fileID: 5770197026759263291}
+  - {fileID: 3043704831697070745}
   - {fileID: 1269718494757663163}
   - {fileID: 8309405083333822009}
   - {fileID: 6195053383849332090}
@@ -3225,6 +3215,60 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
   Ghost: {fileID: 2798955099631966591, guid: 7bbb74a7ffc8cae44baa886de43c586b, type: 3}
+--- !u!114 &3398448322784601453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 9
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  _openState: 0
+  OverrideOpenIcon: {fileID: 0}
+  attachedContainer: {fileID: 1269718494757663163}
+--- !u!114 &5770197026759263291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 10
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  _openState: 0
+  OverrideOpenIcon: {fileID: 0}
+  attachedContainer: {fileID: 9043833080261862026}
+--- !u!114 &3043704831697070745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415765038646171405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c75d17834848bb4f83ee6e730a65519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 11
+  _addedNetworkObject: {fileID: 2930813178971533500}
+  _networkObjectCache: {fileID: 2930813178971533500}
+  _openState: 0
+  OverrideOpenIcon: {fileID: 0}
+  attachedContainer: {fileID: 6165860195545991716}
 --- !u!1 &6530700040387722453
 GameObject:
   m_ObjectHideFlags: 0
@@ -3772,35 +3816,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25696236470760b41b375e9b6939444c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 11
+  _componentIndexCache: 14
   _addedNetworkObject: {fileID: 2930813178971533500}
   _networkObjectCache: {fileID: 2930813178971533500}
-  AutomaticContainerSetUp: 0
+  _automaticContainerSetUp: 0
   ContainerInteractive: {fileID: 0}
   ContainerItemDisplay: {fileID: 0}
   ContainerUi: {fileID: 0}
-  OpenIcon: {fileID: 0}
-  TakeIcon: {fileID: 0}
-  StoreIcon: {fileID: 0}
-  ViewIcon: {fileID: 0}
-  AttachmentOffset: {x: 0, y: 0, z: 0}
+  _attachmentOffset: {x: 0, y: 0, z: 0}
+  _onlyStoreWhenOpen: 0
+  _openWhenContainerViewed: 0
+  _attachItems: 1
+  _initialized: 0
+  _maxDistance: 5
+  _isOpenable: 0
+  _isInteractive: 0
+  _hasUi: 0
+  _hasCustomInteraction: 0
+  _hasCustomDisplay: 0
+  _displays: []
+  _numberDisplay: 0
   ContainerName: right pocket
-  OnlyStoreWhenOpen: 0
-  OpenWhenContainerViewed: 0
   Size: {x: 2, y: 2}
-  HideItems: 1
-  AttachItems: 1
-  Initialized: 1
-  MaxDistance: 5
-  IsOpenable: 0
-  IsInteractive: 0
-  HasUi: 0
-  HasCustomInteraction: 0
-  HasCustomDisplay: 0
-  Displays: []
-  NumberDisplay: 0
+  _hideItems: 1
+  _type: 1
   StartFilter: {fileID: 0}
-  Type: 1
 --- !u!1 &8192843437556473050
 GameObject:
   m_ObjectHideFlags: 0
