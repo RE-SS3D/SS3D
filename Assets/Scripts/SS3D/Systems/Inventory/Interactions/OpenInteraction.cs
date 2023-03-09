@@ -77,16 +77,16 @@ namespace SS3D.Systems.Inventory.Interactions
         {
             // Only accept the first Openable container on the GameObject.
             // Note: if you want separately functioning doors etc, they must be on different GameObjects.
-            AttachedContainer[] attachedContainers = target.GameObject.GetComponents<AttachedContainer>();
+            var attachedContainers = target.GameObject.GetComponents<ContainerInteractive>();
             for (int i = 0; i < attachedContainers.Length; i++)
             {
 
-                if (_attachedContainer != attachedContainers[i] && attachedContainers[i].IsOpenable)
+                if (_attachedContainer != attachedContainers[i].attachedContainer && attachedContainers[i].attachedContainer.IsOpenable)
                 {
                     return false;
                 }
 
-                if (_attachedContainer == attachedContainers[i])
+                if (_attachedContainer == attachedContainers[i].attachedContainer)
                 {
                     return true;
                 }

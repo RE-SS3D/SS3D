@@ -249,6 +249,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public void RemoveContainer(AttachedContainer container)
         {
+            container.Container.RemoveObserver(GetComponent<Entity>());
             if (_openedContainers.Remove(container))
             {
                 Debug.Log("client call remove");
