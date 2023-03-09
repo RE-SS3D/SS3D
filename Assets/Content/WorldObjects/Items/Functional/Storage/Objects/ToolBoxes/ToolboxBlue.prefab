@@ -428,32 +428,28 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 3258417366846669140}
   _networkObjectCache: {fileID: 3258417366846669140}
-  AutomaticContainerSetUp: 0
+  _automaticContainerSetUp: 1
   ContainerInteractive: {fileID: 1094090079819989120}
   ContainerItemDisplay: {fileID: 0}
   ContainerUi: {fileID: 0}
-  OpenIcon: {fileID: 0}
-  TakeIcon: {fileID: 0}
-  StoreIcon: {fileID: 0}
-  ViewIcon: {fileID: 0}
-  AttachmentOffset: {x: 0, y: 0, z: 0}
-  ContainerName: container
-  OnlyStoreWhenOpen: 1
-  OpenWhenContainerViewed: 0
-  Size: {x: 10, y: 10}
-  HideItems: 1
-  AttachItems: 1
-  Initialized: 1
-  MaxDistance: 5
-  IsOpenable: 1
-  IsInteractive: 1
-  HasUi: 1
-  HasCustomInteraction: 0
-  HasCustomDisplay: 0
-  Displays: []
-  NumberDisplay: 0
+  _attachmentOffset: {x: 0, y: 0, z: 0}
+  _onlyStoreWhenOpen: 1
+  _openWhenContainerViewed: 1
+  _attachItems: 1
+  _initialized: 1
+  _maxDistance: 5
+  _isOpenable: 1
+  _isInteractive: 1
+  _hasUi: 1
+  _hasCustomInteraction: 0
+  _hasCustomDisplay: 0
+  _displays: []
+  _numberDisplay: 0
+  ContainerName: toolbox
+  Size: {x: 6, y: 6}
+  _hideItems: 1
+  _type: -1
   StartFilter: {fileID: 0}
-  Type: -1
 --- !u!114 &1094090079819989120
 MonoBehaviour:
   m_ObjectHideFlags: 0

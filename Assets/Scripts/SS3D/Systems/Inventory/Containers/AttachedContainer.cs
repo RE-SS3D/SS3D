@@ -28,7 +28,10 @@ namespace SS3D.Systems.Inventory.Containers
     /// </summary>
     public class AttachedContainer : NetworkActor
     {
-        public bool AutomaticContainerSetUp = false;
+        #region AttachedContainerOnlyFieldsAndProperties
+
+        [SerializeField]
+        private bool _automaticContainerSetUp = false;
         // References toward all container related scripts.
 
         public ContainerInteractive ContainerInteractive;
@@ -40,16 +43,80 @@ namespace SS3D.Systems.Inventory.Containers
 
         [Tooltip("The local position of attached items."), SerializeField]
         private Vector3 _attachmentOffset = Vector3.zero;
-        [Tooltip("Name of the container.")]
-        public string ContainerName = "container";
-        [Tooltip("If the container is openable, this defines if things can be stored in the container without opening it.")]
-        public bool OnlyStoreWhenOpen;
-        [Tooltip("When the container UI is opened, if set true, the animation on the object is triggered.")]
-        public bool OpenWhenContainerViewed;
-        [Tooltip("Defines the size of the container, every item takes a defined place inside a container.")]
-        public Vector2Int Size = new(0, 0);
+
+        [Tooltip("If the container is openable, this defines if things can be stored in the container without opening it."), SerializeField]
+        private bool _onlyStoreWhenOpen;
+
+        [Tooltip("When the container UI is opened, if set true, the animation on the object is triggered."), SerializeField]
+        private bool _openWhenContainerViewed;
+
+        [Tooltip("If items should be attached as children of the container's game object."), SerializeField]
+        private bool _attachItems = true;
+
+        // Initialized should not be displayed, it's only useful for setting up the container in editor.
+        [HideInInspector, SerializeField]
+        private bool _initialized;
+
+        [Tooltip("Max distance at which the container is visible if not hidden."), SerializeField]
+        private float _maxDistance = 5f;
+
+        [Tooltip("If the container can be opened/closed, in the sense of having a close/open animation."), SerializeField]
+        private bool _isOpenable;
+
+        [Tooltip("If the container should have the container's default interactions setting script."), SerializeField]
+        private bool _isInteractive;
+
+        [Tooltip("If stuff inside the container can be seen using an UI."), SerializeField]
+        private bool _hasUi;
+
+        [Tooltip("If true, interactions in containerInteractive are ignored, instead, a script on the container's game object should implement IInteractionTarget."), SerializeField]
+        private bool _hasCustomInteraction;
+
+        [Tooltip("If the container renders items in custom position on the container."), SerializeField]
+        private bool _hasCustomDisplay;
+
+        [Tooltip(" The list of transforms defining where the items are displayed."), SerializeField]
+        private Transform[] _displays;
+
+        [Tooltip(" The number of custom displays."), SerializeField]
+        private int _numberDisplay;
+
 
         public Vector3 AttachmentOffset => _attachmentOffset;
+
+        public bool OnlyStoreWhenOpen => _onlyStoreWhenOpen;
+
+        public bool OpenWhenContainerViewed => _openWhenContainerViewed;
+
+        public bool AttachItems => _attachItems;
+
+        public float MaxDistance => _maxDistance;
+
+        public bool IsOpenable => _isOpenable;
+
+        public bool IsInteractive => _isInteractive;
+
+        public bool HasUi => _hasUi;
+
+        public bool HasCustomInteraction => _hasCustomInteraction;
+
+        public bool HasCustomDisplay => _hasCustomDisplay;
+
+        public Transform[] Displays => _displays;
+
+        public int NumberDisplay => _numberDisplay;
+
+
+        #endregion
+
+
+        #region ContainerAndAttachedContainerFieldsAndProperties
+
+        [Tooltip("Name of the container.")]
+        public string ContainerName = "container";
+
+        [Tooltip("Defines the size of the container, every item takes a defined place inside a container.")]
+        public Vector2Int Size = new(0, 0);
 
         /// <summary>
         /// Set visibility of objects inside the container (not in the UI, in the actual game object).
@@ -57,36 +124,19 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         [Tooltip("Set visibility of items in container."), SerializeField]
         private bool _hideItems = true;
-        [Tooltip("If items should be attached as children of the container's game object.")]
-        public bool AttachItems = true;
 
-        // Initialized should not be displayed, it's only useful for setting up the container in editor.
-        [HideInInspector]
-        public bool Initialized;
-        [Tooltip("Max distance at which the container is visible if not hidden.")]
-        public float MaxDistance = 5f;
-        [Tooltip("If the container can be opened/closed, in the sense of having a close/open animation.")]
-        public bool IsOpenable;
-        [Tooltip("If the container should have the container's default interactions setting script.")]
-        public bool IsInteractive;
-        [Tooltip("If stuff inside the container can be seen using an UI.")]
-        public bool HasUi;
-        [Tooltip("If true, interactions in containerInteractive are ignored, instead, a script on the container's game object should implement IInteractionTarget.")]
-        public bool HasCustomInteraction;
-        [Tooltip("If the container renders items in custom position on the container.")]
-        public bool HasCustomDisplay;
-        [Tooltip(" The list of transforms defining where the items are displayed.")]
-        public Transform[] Displays;
-        [Tooltip(" The number of custom displays.")]
-        public int NumberDisplay;
+        [Tooltip("Container type mostly allow to discriminate between different containers on a single prefab."), SerializeField]
+        private ContainerType _type;
+
         [Tooltip("The filter on the container.")]
         public Filter StartFilter;
-        [FormerlySerializedAs("ContainerType")]
-        [Tooltip("Container type mostly allow to discriminate between different containers on a single prefab.")]
-        public ContainerType Type;
+
+        public ContainerType Type => _type;
+
+        #endregion
 
 
-        [SerializeField] [NotNull] private Container _container;
+        private Container _container;
 
         public event EventHandler<Item> OnItemAttached;
         public event EventHandler<Item> OnItemDetached;

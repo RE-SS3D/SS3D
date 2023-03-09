@@ -31,7 +31,8 @@ public class AttachedContainerEditor : Editor
         TitleStyle.normal.textColor = Color.white;
 
         attachedContainer = (AttachedContainer)target;
-        if (attachedContainer.AutomaticContainerSetUp)
+        var SerializedAutomaticContainerSetUp = serializedObject.FindProperty("_automaticContainerSetUp");
+        if (SerializedAutomaticContainerSetUp.boolValue)
         {
             AddBase();
             containerInteractive = attachedContainer.ContainerInteractive;
@@ -48,8 +49,9 @@ public class AttachedContainerEditor : Editor
         EditorGUILayout.LabelField(attachedContainer.ContainerName, TitleStyle);
         serializedObject.Update();
 
+        var SerializedAutomaticContainerSetUp = serializedObject.FindProperty("_automaticContainerSetUp");
         // If automatic set up is off, just display every container related parameters.
-        if (!attachedContainer.AutomaticContainerSetUp)
+        if (!SerializedAutomaticContainerSetUp.boolValue)
         {
             DrawDefaultInspector();
             return;
@@ -63,7 +65,7 @@ public class AttachedContainerEditor : Editor
 
         bool automaticContainerSetUp = EditorGUILayout.Toggle(
             new GUIContent("Automatic container setup", ""),
-            attachedContainer.AutomaticContainerSetUp);
+            SerializedAutomaticContainerSetUp.boolValue);
         HandleAutomaticContainerSetUp(automaticContainerSetUp);
 
         string containerName = EditorGUILayout.TextField(
@@ -135,10 +137,10 @@ public class AttachedContainerEditor : Editor
             attachedContainer.Size);
         HandleSize(size);
 
-        var hideItemField = serializedObject.FindProperty("_hideItem");
+        var serializedHideItem = serializedObject.FindProperty("_hideItems");
         bool hideItems = EditorGUILayout.Toggle(
             new GUIContent("Hide items", "Set if items should be attached as children of the container"),
-            hideItemField.boolValue);
+            serializedHideItem.boolValue);
         HandleHideItems(hideItems);
 
         if (!hideItems)
@@ -193,34 +195,34 @@ public class AttachedContainerEditor : Editor
     /// </summary>
     public void AddBase()
     {
-        if (!attachedContainer.Initialized)
+        var SerializedInitialized = serializedObject.FindProperty("_initialized");
+        if (!SerializedInitialized.boolValue)
         {
 
             HandleIsInteractive(true);
             //AddSync();
-            SerializedProperty sp = serializedObject.FindProperty("Initialized");
-            sp.boolValue = true;
+            SerializedInitialized.boolValue = true;
             serializedObject.ApplyModifiedProperties();
         }
     }
 
     private void HandleAutomaticContainerSetUp(bool automaticContainerSetUp)
     {
-        SerializedProperty sp = serializedObject.FindProperty("AutomaticContainerSetUp");
+        SerializedProperty sp = serializedObject.FindProperty("_automaticContainerSetUp");
         sp.boolValue = automaticContainerSetUp;
         serializedObject.ApplyModifiedProperties();
     }
 
     private void HandleNumberDisplay(int numberDisplay)
     {
-        SerializedProperty sp = serializedObject.FindProperty("NumberDisplay");
+        SerializedProperty sp = serializedObject.FindProperty("_numberDisplay");
         sp.intValue = numberDisplay;
         serializedObject.ApplyModifiedProperties();
     }
 
     private void HandleHasCustomDisplay(bool hasCustomDisplay)
     {
-        SerializedProperty sp = serializedObject.FindProperty("HasCustomDisplay");
+        SerializedProperty sp = serializedObject.FindProperty("_hasCustomDisplay");
         sp.boolValue = hasCustomDisplay;
         serializedObject.ApplyModifiedProperties();
         if(hasCustomDisplay && attachedContainer.ContainerItemDisplay == null)
@@ -235,21 +237,21 @@ public class AttachedContainerEditor : Editor
 
     private void HandleHasUi(bool hasUi)
     {
-        SerializedProperty sp = serializedObject.FindProperty("HasUi");
+        SerializedProperty sp = serializedObject.FindProperty("_hasUi");
         sp.boolValue = hasUi;
         serializedObject.ApplyModifiedProperties();
     }
 
     private void HandleOpenWhenContainerViewed(bool openWhenContainerViewed)
     {
-        SerializedProperty sp = serializedObject.FindProperty("OpenWhenContainerViewed");
+        SerializedProperty sp = serializedObject.FindProperty("_openWhenContainerViewed");
         sp.boolValue = openWhenContainerViewed;
         serializedObject.ApplyModifiedProperties();
     }
 
     private void HandleContainerType(ContainerType containerType)
     {
-        SerializedProperty sp = serializedObject.FindProperty("Type");
+        SerializedProperty sp = serializedObject.FindProperty("_type");
         sp.enumValueFlag = (int) containerType;
         serializedObject.ApplyModifiedProperties();
     }
@@ -268,26 +270,26 @@ public class AttachedContainerEditor : Editor
     }
     private void HandleAttachmentOffset(Vector3 attachmentOffset)
     {
-        SerializedProperty sp = serializedObject.FindProperty("AttachmentOffset");
+        SerializedProperty sp = serializedObject.FindProperty("_attachmentOffset");
         sp.vector3Value = attachmentOffset;
         serializedObject.ApplyModifiedProperties();
     }
     private void HandleAttachItems(bool attachItems)
     {
-        SerializedProperty sp = serializedObject.FindProperty("AttachItems");
+        SerializedProperty sp = serializedObject.FindProperty("_attachItems");
         sp.boolValue = attachItems;
         serializedObject.ApplyModifiedProperties();
     }
 
     private void HandleMaxDistance(float maxDistance)
     {
-        SerializedProperty sp = serializedObject.FindProperty("MaxDistance");
+        SerializedProperty sp = serializedObject.FindProperty("_maxDistance");
         sp.floatValue = maxDistance;
         serializedObject.ApplyModifiedProperties();
     }
     private void HandleIsInteractive(bool isInteractive)
     {
-        SerializedProperty sp = serializedObject.FindProperty("IsInteractive");
+        SerializedProperty sp = serializedObject.FindProperty("_isInteractive");
         sp.boolValue = isInteractive;
         serializedObject.ApplyModifiedProperties();
         if (isInteractive && attachedContainer.ContainerInteractive == null)
@@ -302,7 +304,7 @@ public class AttachedContainerEditor : Editor
 
     private void HandleCustomInteraction(bool hasCustomInteraction)
     {
-        SerializedProperty sp = serializedObject.FindProperty("HasCustomInteraction");
+        SerializedProperty sp = serializedObject.FindProperty("_hasCustomInteraction");
         sp.boolValue = hasCustomInteraction;
         serializedObject.ApplyModifiedProperties();
     }
@@ -316,7 +318,7 @@ public class AttachedContainerEditor : Editor
     private void HandleIsOpenable(bool isOpenable)
     {
 
-        SerializedProperty sp = serializedObject.FindProperty("IsOpenable");
+        SerializedProperty sp = serializedObject.FindProperty("_isOpenable");
         sp.boolValue = isOpenable;
         serializedObject.ApplyModifiedProperties();
 
@@ -329,13 +331,13 @@ public class AttachedContainerEditor : Editor
 
     private void HandleOnlyStoreWhenOpen(bool onlyStoreWhenOpen)
     {
-        SerializedProperty sp = serializedObject.FindProperty("OnlyStoreWhenOpen");
+        SerializedProperty sp = serializedObject.FindProperty("_onlyStoreWhenOpen");
         sp.boolValue = onlyStoreWhenOpen;
         serializedObject.ApplyModifiedProperties();
     }
     private void HandleHideItems(bool hideItems)
     {
-        SerializedProperty sp = serializedObject.FindProperty("HideItems");
+        SerializedProperty sp = serializedObject.FindProperty("_hideItems");
         sp.boolValue = hideItems;
         serializedObject.ApplyModifiedProperties();
     }
