@@ -56,6 +56,12 @@ namespace SS3D.Systems.Entities
             return null;
         }
 
+        public bool TryGetSpawnedEntity(NetworkConnection conn, out Entity entity)
+        {
+            entity = _spawnedPlayers.Find(entity => entity.Mind?.Soul?.Owner == conn);
+            return entity != null;
+        }
+
         /// <summary>
         /// Returns true if the player is controlling an entity.
         /// </summary>
