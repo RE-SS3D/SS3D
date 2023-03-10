@@ -114,7 +114,7 @@ namespace SS3D.Systems.Inventory.Containers
 
         public bool HasPermission(IDPermission permission)
         {
-            IIdentification id = IDContainer.Container.Items.FirstOrDefault() as IIdentification;
+            IIdentification id = IDContainer.Items.FirstOrDefault() as IIdentification;
             if (id == null)
             {
                 return false;
@@ -232,15 +232,15 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// Make this inventory open an container.
         /// </summary>
-        public void OpenContainer(AttachedContainer container)
+        public void OpenContainer(AttachedContainer attachedContainer)
         {
-            container.Container.AddObserver(GetComponent<Entity>());
-            _openedContainers.Add(container);
-            SetOpenState(container.gameObject, true);
+            attachedContainer.Container.AddObserver(GetComponent<Entity>());
+            _openedContainers.Add(attachedContainer);
+            SetOpenState(attachedContainer.gameObject, true);
             NetworkConnection client = Owner;
             if (client != null)
             {
-                TargetOpenContainer(client, container);
+                TargetOpenContainer(client, attachedContainer);
             }
         }
 

@@ -93,7 +93,7 @@ namespace SS3D.Systems.Inventory.Items
         /// <param name="id">The item ID to spawn.</param>
         /// <param name="container">The container to spawn into.</param>
         [Server]
-        public Item SpawnItemInContainer(ItemId id, AttachedContainer container)
+        public Item SpawnItemInContainer(ItemId id, AttachedContainer attachedContainer)
         {
             bool hasValue = _itemPrefabs.TryGetValue(id, out Item itemPrefab);
 
@@ -103,7 +103,7 @@ namespace SS3D.Systems.Inventory.Items
                 return null;
             }
 
-            if (container is null)
+            if (attachedContainer is null)
             {
                 Punpun.Panic(this, "Container does not found!", Logs.ServerOnly);
                 return null;
@@ -111,10 +111,10 @@ namespace SS3D.Systems.Inventory.Items
 
             Item itemInstance = Instantiate(itemPrefab, Vector3.zero, Quaternion.identity);
             ServerManager.Spawn(itemInstance.GameObject);
-            container.Container.AddItem(itemInstance);
+            attachedContainer.Container.AddItem(itemInstance);
 
             Punpun.Say(this, $"Item {itemInstance.name} spawned in container " +
-                $"{container.Container.AttachedTo.ContainerName}", Logs.ServerOnly);
+                $"{attachedContainer.Container.AttachedTo.ContainerName}", Logs.ServerOnly);
             return itemInstance;
         }
     }

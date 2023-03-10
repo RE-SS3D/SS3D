@@ -14,6 +14,7 @@ using UnityEngine.Serialization;
 using SS3D.Systems.Inventory.Items;
 using JetBrains.Annotations;
 using FishNet.Object.Synchronizing;
+using System.Linq;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -143,6 +144,11 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         [SyncObject]
         private readonly SyncList<StoredItem> _storedItems = new();
+
+        /// <summary>
+        /// The items stored in this container
+        /// </summary>
+        public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
 
         public SyncList<StoredItem> StoredItems => _storedItems;
 
