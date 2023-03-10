@@ -4,10 +4,11 @@ using UnityEngine;
 
 namespace SS3D.Interactions
 {
+    /// <summary>
+    /// Represents an interaction that can be performed
+    /// </summary>
     public class Interaction : IInteraction
     {
-        public virtual event Action OnInteractionInvalid;
-
         public Sprite Icon;
 
         /// <summary>

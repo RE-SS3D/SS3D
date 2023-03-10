@@ -53,7 +53,7 @@ namespace SS3D.Systems.Permissions
 
             foreach (GameObject o in _objectsToDisable.Where(o => o != null))
             {
-                o.Destroy();
+                o.Dispose(true);
             }
         }
     }

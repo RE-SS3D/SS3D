@@ -52,7 +52,7 @@ namespace SS3D.Core
         /// </summary>
         private void InitializeAssetData()
         {
-            AssetData.InitializeAssetDatabases();
+            Assets.LoadAssetDatabases();
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace SS3D.Core
             }
             else
             {
-                FindObjectOfType<DiscordManager>().Destroy();
+                Destroy(FindObjectOfType<DiscordManager>());
             }
         }
 

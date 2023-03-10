@@ -11,7 +11,6 @@ using SS3D.Systems.Entities;
 using SS3D.Systems.PlayerControl.Events;
 using SS3D.Systems.PlayerControl.Messages;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace SS3D.Systems.PlayerControl
 {
@@ -78,6 +77,11 @@ namespace SS3D.Systems.PlayerControl
         {
             ChangeType changeType;
 
+            if (key == null)
+            {
+                return;
+            }
+
             switch (op)
             {
                 case SyncDictionaryOperation.Add:
@@ -91,7 +95,7 @@ namespace SS3D.Systems.PlayerControl
                     break;
             }
 
-            OnlineSoulsChanged serverSoulsChanged = new(_onlineSouls.Values.ToList(), changeType, value, key);
+            OnlineSoulsChanged serverSoulsChanged = new(_onlineSouls.Values.ToList(), changeType, value, key, asServer);
             serverSoulsChanged.Invoke(this);
         }
 

@@ -1,11 +1,11 @@
 using Coimbra.Services.Events;
 using SS3D.Core;
 using SS3D.Core.Behaviours;
-using SS3D.Systems.Entities;
 using SS3D.Systems.Entities.Events;
-using SS3D.Systems.PlayerControl;
+using SS3D.Systems.Rounds.Events;
 using SS3D.Systems.Screens.Events;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Screens
 {
@@ -14,28 +14,70 @@ namespace SS3D.Systems.Screens
         [SerializeField] private bool _blockNone;
         [SerializeField] private bool _menuOpen;
 
-        protected override void OnStart()
+        private PlayerSpawnedState _spawnedState;
+        private Controls.OtherActions _controls;
+
+        protected override void OnAwake()
         {
-            base.OnStart();
+            base.OnAwake();
 
             _menuOpen = true;
             _blockNone = true;
+            _spawnedState = PlayerSpawnedState.IsNotSpawned;
 
             ChangeGameScreenEvent.AddListener(HandleChangeGameScreen);
             SpawnedPlayersUpdated.AddListener(HandleSpawnedPlayersUpdated);
+            RoundStateUpdated.AddListener(HandleRoundStateUpdated);
+
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls.ToggleMenu.performed += HandleToggleMenu;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+
+            _controls.ToggleMenu.performed -= HandleToggleMenu;
+        }
+
+        private void HandleToggleMenu(InputAction.CallbackContext context)
+        {
+            if (!_blockNone)
+            {
+                _menuOpen = !_menuOpen;
+                UpdateScreen();
+            }
         }
 
         private void HandleSpawnedPlayersUpdated(ref EventContext context, in SpawnedPlayersUpdated e)
         {
             bool isPlayerSpawned = e.SpawnedPlayers.Find(controllable => controllable.Owner == LocalConnection);
 
-            if (!isPlayerSpawned)
+            if (!isPlayerSpawned && _spawnedState == PlayerSpawnedState.ConfirmedSpawned)
             {
-                _menuOpen = true;
+                LockToMenuScreen();
             }
 
-            _blockNone = !isPlayerSpawned;
+            if (isPlayerSpawned)
+            {
+                GivePlayerAccessToGame();
+            }
+
             UpdateScreen();
+        }
+
+        private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
+        {
+            switch (e.RoundState)
+            {
+                case Rounds.RoundState.Ongoing:
+                case Rounds.RoundState.Ending:
+                    break;
+                default:
+                    LockToMenuScreen();
+                    UpdateScreen();
+                    break;
+            }
         }
 
         private void HandleChangeGameScreen(ref EventContext context, in ChangeGameScreenEvent e)
@@ -45,6 +87,7 @@ namespace SS3D.Systems.Screens
             if (screenType == ScreenType.None)
             {
                 _menuOpen = false;
+                MarkNewlySpawnedPlayerAsAwaitingConfirmation();
             }
 
             if (screenType == ScreenType.Lobby)
@@ -53,22 +96,6 @@ namespace SS3D.Systems.Screens
             }
         }
 
-        protected override void HandleUpdate(in float deltaTime)
-        {
-            base.HandleUpdate(in deltaTime);
-
-            ProcessInput();
-        }
-
-        private void ProcessInput()
-        {
-            if (Input.GetKeyDown(KeyCode.Escape) && !_blockNone)
-            {
-                _menuOpen = !_menuOpen;
-
-                UpdateScreen();
-            }
-        }
 
         private void UpdateScreen()
         {
@@ -76,6 +103,49 @@ namespace SS3D.Systems.Screens
             ChangeGameScreenEvent changeGameScreenEvent = new(newScreen);
 
             changeGameScreenEvent.Invoke(this);
+        }
+
+        /// <summary>
+        /// Prevents the player from leaving the menu screen.
+        /// </summary>
+        private void LockToMenuScreen()
+        {
+            _blockNone = true;
+            _menuOpen = true;
+            _spawnedState = PlayerSpawnedState.IsNotSpawned;
+        }
+
+        /// <summary>
+        /// Gives the player the ability to toggle in and out of the
+        /// menu, and records that they have been added to the Spawned
+        /// Players list.
+        /// </summary>
+        private void GivePlayerAccessToGame()
+        {
+            _blockNone = false;
+            _spawnedState = PlayerSpawnedState.ConfirmedSpawned;
+        }
+
+        /// <summary>
+        /// Identifies that the entity may have spawned recently, and
+        /// may not yet been reflected in the Spawned Players list.
+        /// </summary>
+        private void MarkNewlySpawnedPlayerAsAwaitingConfirmation()
+        {
+            if (_spawnedState == PlayerSpawnedState.IsNotSpawned)
+            {
+                _spawnedState = PlayerSpawnedState.AwaitingConfirmationOfSpawn;
+            }
+        }
+
+        /// <summary>
+        /// Internal enum to describe player spawn state.
+        /// </summary>
+        private enum PlayerSpawnedState
+        {
+            IsNotSpawned,
+            AwaitingConfirmationOfSpawn,
+            ConfirmedSpawned
         }
     }
 }

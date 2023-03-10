@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Coimbra;
-using SS3D.Core.Behaviours;
+using SS3D.Core;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Systems.IngameConsoleSystem
@@ -21,8 +22,8 @@ namespace SS3D.Systems.IngameConsoleSystem
         [SerializeField] private float _movingSpeed = 2500f;
         [SerializeField] private TMP_InputField _inputField;
         // Used for opening/closing
-        private bool _isSliding = false;
-        private bool _isShowed = false;
+        private bool _isSliding;
+        private bool _isShowed;
         private Vector2 _targetPointMax;
         private Vector2 _targetPointMin;
         /// <summary>
@@ -32,67 +33,107 @@ namespace SS3D.Systems.IngameConsoleSystem
         private CommandsController _commandsController;
         // Used for choosing command via arrows
         [SerializeField] private List<string> _allPrevCommands = new() {""};
-        private int _chosenPrevCommand = 0;
+        private int _chosenPrevCommand;
+        private Controls _controls;
+        /// <summary>
+        /// Contains actions enabled states before opening the console
+        /// </summary>
+        private Dictionary<InputAction, bool> _actionsStates;
+
+        private Controls.ConsoleActions _consoleControls;
 
         protected override void OnStart()
         {
             base.OnStart();
             _textField = _contentContainer.GetComponent<TextMeshProUGUI>();
-            //_inputField.resetOnDeActivation = true;
             _commandsController = new CommandsController();
+            _controls = SystemLocator.Get<InputSystem>().Inputs;
+            _consoleControls = _controls.Console;
+            _consoleControls.Close.performed += HandleClose;
+            _consoleControls.Open.performed += HandleOpen;
+            _consoleControls.SwitchCommand.performed += HandleSwitchCommand;
+            _consoleControls.Submit.performed += HandleSubmit;
+            _consoleControls.Open.Enable();
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            _consoleControls.Close.performed -= HandleClose;
+            _consoleControls.Open.performed -= HandleOpen;
+            _consoleControls.SwitchCommand.performed -= HandleSwitchCommand;
+            _consoleControls.Submit.performed -= HandleSubmit;
         }
 
         protected override void HandleUpdate(in float deltaTime)
         {
             base.HandleUpdate(in deltaTime);
             
-            ProcessInput();
             if (_isSliding)
             {
                 Slide();
             }
         }
-    
-        private void ProcessInput()
+
+        /// <summary>
+        /// Move the console offscreen and disable all console controls, except of Open action
+        /// </summary>
+        private void HandleClose(InputAction.CallbackContext context)
         {
-            if (Input.GetKeyUp(KeyCode.F12))
-            {
-                _isSliding = true;
-                if (_isShowed)
-                {
-                    _targetPointMin = Vector2.zero;
-                    _inputField.ReleaseSelection();
-                    _inputField.DeactivateInputField();
-                }
-                else
-                {
-                    _targetPointMin = new Vector2(0, -_consolePanel.rect.height);
-                    _inputField.Select();
-                    _inputField.ActivateInputField();
-                }
-                _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
-            }
+            _isSliding = true;
+            _targetPointMin = Vector2.zero;
+            _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
+            _inputField.DeactivateInputField();
 
-            if ((GetArrowVertical() != 0) && _isShowed)
+            foreach (KeyValuePair<InputAction, bool> _actionState in _actionsStates)
             {
-                _chosenPrevCommand = Math.Clamp(_chosenPrevCommand - GetArrowVertical(), 0, _allPrevCommands.Count - 1);
-                _inputField.text = _allPrevCommands[_chosenPrevCommand];
+                if (_actionState.Value)
+                {
+                    _actionState.Key.Enable();
+                }
             }
+            _consoleControls.Disable();
+            _consoleControls.Open.Enable();
         }
-
-        private int GetArrowVertical()
+        /// <summary>
+        /// Move console to screen, enable all controls, disable Open action
+        /// </summary>
+        private void HandleOpen(InputAction.CallbackContext context)
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow))
+            _isSliding = true;
+            _targetPointMin = new Vector2(0, -_consolePanel.rect.height);
+            _targetPointMax = _targetPointMin + new Vector2(0, _consolePanel.rect.height);
+            _inputField.ActivateInputField();
+            // Save info for enabling when console is closing
+            _actionsStates = new();
+            foreach (InputAction action in _controls)
             {
-                return 1;
+                _actionsStates.Add(action, action.enabled);
             }
-            if (Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                return -1;
-            }
-            return 0;
+            _controls.Disable();
+            _consoleControls.Enable();
+            _consoleControls.Open.Disable();
         }
-
+        /// <summary>
+        /// Put previously used commands in input field
+        /// </summary>
+        private void HandleSwitchCommand(InputAction.CallbackContext context)
+        {
+            _chosenPrevCommand =
+                Math.Clamp(_chosenPrevCommand + (int)context.ReadValue<float>(), 0, _allPrevCommands.Count - 1);
+            _inputField.text = _allPrevCommands[_chosenPrevCommand];
+        }
+        /// <summary>
+        /// Process and remove command in input field
+        /// </summary>
+        private void HandleSubmit(InputAction.CallbackContext context)
+        {
+            ProcessCommand(_inputField.text);
+            _inputField.text = "";
+            _inputField.ActivateInputField();
+        }
+        
         private void Slide()
         {
             _consolePanel.offsetMax = Vector2.MoveTowards(_consolePanel.offsetMax, _targetPointMax, _movingSpeed * Time.deltaTime);
@@ -106,17 +147,13 @@ namespace SS3D.Systems.IngameConsoleSystem
         /// <summary>
         /// Handle command taking from input field and showing a response 
         /// </summary>
-        public void ProcessCommand()
+        public void ProcessCommand(string command)
         {
-            if (_isSliding)
-                return;
-            string command = _inputField.text;
             AddText("> <color=#742F27>" + command + "</color>");
             _allPrevCommands.RemoveLast();
             _allPrevCommands.Add(command);
             _allPrevCommands.Add("");
             _chosenPrevCommand = _allPrevCommands.Count;
-            _inputField.text = "";
             string answer = _commandsController.ProcessCommand(command);
             AddText(answer);
         }

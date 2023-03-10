@@ -114,13 +114,13 @@ namespace SS3D.Systems.Lobby.UI
             foreach (PlayerUsernameView playerUsernameUI in _playerUsernames.Where(playerUsernameUI => playerUsernameUI.Name.Equals(ckey)))
             {
                 removedUsername = playerUsernameUI;
-                playerUsernameUI.gameObject.Destroy();
+                playerUsernameUI.gameObject.Dispose(true);
             }
 
             if (removedUsername != null)
             {
                 _playerUsernames.Remove(removedUsername);
-                removedUsername.gameObject.Destroy();
+                removedUsername.gameObject.Dispose(true);
             }
         }
     }

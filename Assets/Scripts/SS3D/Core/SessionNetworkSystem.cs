@@ -31,21 +31,23 @@ namespace SS3D.Core
 
             string ckey = applicationSettings.Ckey;
             string serverAddress = applicationSettings.ServerAddress;
+            ushort port = Convert.ToUInt16(applicationSettings.ServerPort);
+
             NetworkType networkType = applicationSettings.NetworkType;
 
             switch (networkType)
             {
                 case NetworkType.ServerOnly:
-                    Punpun.Say(this, "Hosting a new headless server");
-                    networkManager.ServerManager.StartConnection();
+                    Punpun.Say(this, $"Hosting a new headless server on port {port}", Logs.Important);
+                    networkManager.ServerManager.StartConnection(port);
                     break;
                 case NetworkType.Client:
-                    Punpun.Say(this, $"Joining server {serverAddress} as {ckey}", Logs.Important);
-                    networkManager.ClientManager.StartConnection(serverAddress);
+                    Punpun.Say(this, $"Joining server {serverAddress}:{port} as {ckey}", Logs.Important);
+                    networkManager.ClientManager.StartConnection(serverAddress, port);
                     break;
                 case NetworkType.Host:
-                    Punpun.Say(this, "Hosting a new server");
-                    networkManager.ServerManager.StartConnection();
+                    Punpun.Say(this, $"Hosting a new server on port {port}", Logs.Important);
+                    networkManager.ServerManager.StartConnection(port);
                     networkManager.ClientManager.StartConnection();
                     break;
                 default:

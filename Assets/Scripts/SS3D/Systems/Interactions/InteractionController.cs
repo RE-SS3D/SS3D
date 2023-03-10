@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FishNet.Object;
 using SS3D.Core;
@@ -7,10 +8,10 @@ using SS3D.Interactions;
 using SS3D.Interactions.Interfaces;
 using SS3D.Logging;
 using SS3D.Systems.Screens;
-using SS3D.Systems.Storage.Containers;
-using SS3D.Systems.Storage.Items;
+using SS3D.Systems.Inventory.Containers;
+using SS3D.Systems.Inventory.Items;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Interactions
 {
@@ -25,48 +26,43 @@ namespace SS3D.Systems.Interactions
         [Tooltip("Mask for physics to use when finding targets")]
         [SerializeField] private LayerMask _selectionMask = 0;
 
+        private Controls.OtherActions _otherControls;
+        private Controls.HotkeysActions _hotkeysControls;
+
         private Camera _camera;
         private RadialInteractionView _radialView;
-
-        protected override void OnStart()
+        
+        public override void OnStartClient()
         {
-            base.OnStart();
+            base.OnStartClient();
 
             _radialView = SystemLocator.Get<RadialInteractionView>();
             _camera = SystemLocator.Get<CameraSystem>().PlayerCamera.GetComponent<Camera>();
+            Controls controls = SystemLocator.Get<InputSystem>().Inputs;
+            _otherControls = controls.Other;
+            _hotkeysControls = controls.Hotkeys;
+            _otherControls.PrimaryClick.performed += HandlePrimaryClick;
+            _otherControls.SecondaryClick.performed += HandleSecondaryClick;
+            _hotkeysControls.Use.performed += HandleUse;
         }
 
-        protected override void HandleUpdate(in float deltaTime)
+        public override void OnStopClient()
         {
-            base.HandleUpdate(in deltaTime);
-
-            if (!IsOwner || _camera == null || EventSystem.current.IsPointerOverGameObject())
-            {
-                return;
-            }
-
-            if (Input.GetButtonDown("Primary Click"))
-            {
-                ProcessPrimaryClick();
-            }
-
-            else if (Input.GetButtonDown("Secondary Click"))
-            {
-                ProcessSecondaryClick();
-            }
-
-            if (Input.GetButtonDown("Use"))
-            {
-                ProcessUse();
-            }
+            base.OnStopClient();
+            
+            _otherControls.PrimaryClick.performed -= HandlePrimaryClick;
+            _otherControls.SecondaryClick.performed -= HandleSecondaryClick;
+            _hotkeysControls.Use.performed -= HandleUse;
         }
 
-        private void ProcessPrimaryClick()
+        [Client]
+        private void HandlePrimaryClick(InputAction.CallbackContext callbackContext)
         {
             RunPrimaryInteraction();
         }
 
-        private void ProcessSecondaryClick()
+        [Client]
+        private void HandleSecondaryClick(InputAction.CallbackContext callbackContext)
         {
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
             List<InteractionEntry> viableInteractions = GetViableInteractions(ray, out InteractionEvent interactionEvent);
@@ -74,7 +70,8 @@ namespace SS3D.Systems.Interactions
             ViewTargetInteractions(viableInteractions, interactionEvent, ray);
         }
 
-        private void ProcessUse()
+        [Client]
+        private void HandleUse(InputAction.CallbackContext callbackContext)
         {
             // Activate item in selected hand
             Hands hands = GetComponent<Hands>();
@@ -93,6 +90,7 @@ namespace SS3D.Systems.Interactions
         /// <summary>
         /// Runs the most prioritised action
         /// </summary>
+        [Client]
         private void RunPrimaryInteraction()
         {
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
@@ -116,6 +114,7 @@ namespace SS3D.Systems.Interactions
         /// <param name="viableInteractions"></param>
         /// <param name="interactionEvent"></param>
         /// <param name="ray"></param>
+        [Client]
         private void ViewTargetInteractions(List<InteractionEntry> viableInteractions, InteractionEvent interactionEvent, Ray ray)
         {
             List<IInteraction> interactions = viableInteractions.Select(entry => entry.Interaction).ToList();
@@ -238,6 +237,7 @@ namespace SS3D.Systems.Interactions
         /// <param name="ray">The ray to use in ray casting</param>
         /// <param name="interactionEvent">The produced interaction event</param>
         /// <returns>A list of possible interactions</returns>
+        [ServerOrClient]
         private List<InteractionEntry> GetViableInteractions(Ray ray, out InteractionEvent interactionEvent)
         {
             // Get source that's currently interacting (eg. hand, tool)
@@ -272,6 +272,7 @@ namespace SS3D.Systems.Interactions
         /// <param name="source">The source of the interaction</param>
         /// <param name="targetGameObject">The game objects the interaction targets are on</param>
         /// <returns>A list of all valid interaction targets</returns>
+        [ServerOrClient]
         private List<IInteractionTarget> GetTargetsFromGameObject(IInteractionSource source, GameObject targetGameObject)
         {
             List<IInteractionTarget> targets = new();
@@ -293,6 +294,7 @@ namespace SS3D.Systems.Interactions
         /// <param name="targets">The interaction targets</param>
         /// <param name="interactionEvent">The interaction event data</param>
         /// <returns>A list of all possible interaction entries</returns>
+        [ServerOrClient]
         private List<InteractionEntry> GetInteractionsFromTargets(IInteractionSource source, List<IInteractionTarget> targets, InteractionEvent interactionEvent)
         {
             List<InteractionEntry> interactions = new();
@@ -329,6 +331,7 @@ namespace SS3D.Systems.Interactions
             return interactionsFromTargets;
         }
 
+        [ServerOrClient]
         private IInteractionSource GetActiveInteractionSource()
         {
             IToolHolder toolHolder = GetComponent<IToolHolder>();

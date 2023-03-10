@@ -2,21 +2,46 @@
 
 namespace SS3D.Systems
 {
-    [CreateAssetMenu(fileName = "Trait", menuName = "Inventory/Trait")]
+    /// <summary>
+    /// Used for checking certain characteristics in Items
+    /// </summary>
+    [CreateAssetMenu(fileName = "Trait", menuName = "Inventory/Traits/Trait")]
     public class Trait : ScriptableObject
     {
-        //Hash for identification
+        // Hash used for identification
         protected int hash;
-        [HideInInspector]
         public int Hash
         {
-            get => hash;
+            get
+            {
+                if (hash == 0)
+                {
+                    GenerateHash();
+                }
+
+                return hash;
+            }
             set => hash = value;
+        }
+
+        [HideInInspector]
+        public string Name
+        {
+            get => name;
+            set => name = value;
+        }
+
+        // Categories, used for checking specific types of Traits
+        protected TraitCategories _category;
+        public TraitCategories Category
+        {
+            get => _category;
         }
 
         protected bool Equals(Trait other)
         {
-            return hash == other.hash;
+            // Use Hash instead of hash to prevent uninitialized hashes in clients
+            return Hash == other.hash;
         }
 
         public override bool Equals(object obj)
@@ -34,6 +59,11 @@ namespace SS3D.Systems
 
         [ExecuteInEditMode]
         private void OnValidate()
+        {
+            GenerateHash();
+        }
+
+        private void GenerateHash()
         {
             hash = Animator.StringToHash(name.ToUpper());
         }

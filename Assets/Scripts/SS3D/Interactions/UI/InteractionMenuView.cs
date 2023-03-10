@@ -11,9 +11,9 @@ using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Interactions.UI
 {
-    /**
-     * Used for the context menu
-     */
+    /// <summary>
+    /// The radial interaction menu
+    /// </summary>
     public class InteractionMenuView : Actor
     {
         public event Action<IInteraction> OnSelect;
@@ -68,7 +68,7 @@ namespace SS3D.Interactions.UI
 
             if (!hasSelfAsParent)
             {
-                gameObject.Destroy();
+                gameObject.Dispose(true);
             }
         }
 
@@ -92,7 +92,7 @@ namespace SS3D.Interactions.UI
                 button.GetComponentInChildren<TextMeshProUGUI>().text = interaction.GetName(Event);
                 button.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    GameObjectCache.Destroy();
+                    GameObjectCache.Dispose(true);
                     OnSelect?.Invoke(interaction);
                 });
             }

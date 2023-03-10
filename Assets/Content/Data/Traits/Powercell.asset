@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 192f2453d05363c4bb6101f58fb7c844, type: 3}
+  m_Script: {fileID: 11500000, guid: b120a07bf55051644adda51d564ace97, type: 3}
   m_Name: Powercell
   m_EditorClassIdentifier: 

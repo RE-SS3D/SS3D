@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Coimbra;
 using Coimbra.Services.Events;
-using SS3D.Systems.Gamemodes;
-using SS3D.Systems.GameModes.Events;
+using SS3D.Core;
 using SS3D.Systems.Rounds;
 using SS3D.Systems.Rounds.Events;
 using SS3D.Utils;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Actor = SS3D.Core.Behaviours.Actor;
 
 namespace SS3D.Systems.Gamemodes.UI
@@ -17,9 +18,10 @@ namespace SS3D.Systems.Gamemodes.UI
 
         [SerializeField] private GamemodeObjectiveItemView _itemViewPrefab;
         [SerializeField] private GameObject _content;
+        private Controls.OtherActions _controls;
 
         private Dictionary<int, GamemodeObjectiveItemView> _gamemodeObjectiveItems;
-
+        
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -29,6 +31,34 @@ namespace SS3D.Systems.Gamemodes.UI
             RoundStateUpdated.AddListener(HandleRoundStateUpdated);
         }
 
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            _fade.SetFade(false);
+            _controls = SystemLocator.Get<InputSystem>().Inputs.Other;
+            _controls.Fade.performed += HandleFadePerformed;
+            _controls.Fade.canceled += HandleFadeCanceled;
+        }
+
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            
+            _controls.Fade.performed -= HandleFadePerformed;
+            _controls.Fade.canceled -= HandleFadeCanceled;
+        }
+
+        private void HandleFadePerformed(InputAction.CallbackContext context)
+        {
+            _fade.SetFade(true);
+        }
+
+        private void HandleFadeCanceled(InputAction.CallbackContext context)
+        {
+            _fade.SetFade(false);
+        }
+
         private void HandleRoundStateUpdated(ref EventContext context, in RoundStateUpdated e)
         {
             RoundState roundState = e.RoundState;
@@ -36,32 +66,6 @@ namespace SS3D.Systems.Gamemodes.UI
             if (roundState == RoundState.Stopped)
             {
                 ClearObjectivesList();
-            }
-        }
-
-        protected override void OnStart()
-        {
-            base.OnStart();
-
-            _fade.SetFade(false);
-        }
-
-        protected override void HandleUpdate(in float deltaTime)
-        {
-            base.HandleUpdate(in deltaTime);
-
-            ProcessInput();
-        }
-
-        private void ProcessInput()
-        {
-            if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                _fade.SetFade(true);
-            }
-            if (Input.GetKeyUp(KeyCode.Tab))
-            {
-                _fade.SetFade(false);
             }
         }
 
@@ -93,7 +97,7 @@ namespace SS3D.Systems.Gamemodes.UI
         {
             foreach (KeyValuePair<int,GamemodeObjectiveItemView> view in _gamemodeObjectiveItems)
             {
-                view.Value.GameObjectCache.Destroy();
+                view.Value.GameObjectCache.Dispose(true);
             }
 
             _gamemodeObjectiveItems.Clear();

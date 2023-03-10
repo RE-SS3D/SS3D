@@ -6,7 +6,7 @@ namespace SS3D.Core.Settings
     /// <summary>
     /// Used to define settings for the overall SS3D application in the Project Settings.
     /// </summary>
-    [ProjectSettings("Project/SS3D", "Application Settings")]
+    [ProjectSettings("SS3D", "Application Settings")]
     public class ApplicationSettings : ScriptableSettings
     {
         /// <summary>
@@ -29,6 +29,12 @@ namespace SS3D.Core.Settings
         /// Defined via command line args when in a built executable or the EditorServerAddress when in the Editor.
         /// </summary>
         public string ServerAddress = "127.0.0.1";
+
+        /// <summary>
+        /// The server port used when start connecting to a server.
+        /// Defined via command line args when in a built executable or the EditorServerAddress when in the Editor.
+        /// </summary>
+        public ushort ServerPort = 2222;
 
         /// <summary>
         /// Defined via command line args when in a built executable or the value in the Project Settings window.
@@ -54,6 +60,7 @@ namespace SS3D.Core.Settings
             NetworkType = NetworkType.Client;
             ServerAddress = string.Empty;
             Ckey = string.Empty;
+            ServerPort = ushort.MinValue;
         }
     }
 }

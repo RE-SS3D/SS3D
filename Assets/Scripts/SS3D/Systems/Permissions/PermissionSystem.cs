@@ -20,7 +20,7 @@ namespace SS3D.Systems.Permissions
     /// </summary>
     public sealed class PermissionSystem : NetworkSystem
     {
-        private const string EditorPermissionFilePath = "/Builds/Config/permissions.txt";
+        private const string EditorPermissionFilePath = "/Builds/Game/Config/permissions.txt";
         private const string PermissionFilePath = "/Config/permissions.txt";
 
         /// <summary>
