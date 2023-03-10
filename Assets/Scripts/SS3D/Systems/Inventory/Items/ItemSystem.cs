@@ -74,14 +74,14 @@ namespace SS3D.Systems.Inventory.Items
 
             if (!hasValue)
             {
-                Punpun.Panic(this, $"No item with ID {id.ToString()} was found", Logs.ServerOnly);
+                Punpun.Error(this, "No item with ID {id} was found", Logs.ServerOnly, id.ToString());
                 return null;
             }
 
             Item itemInstance = Instantiate(itemPrefab, position, rotation);
             ServerManager.Spawn(itemInstance.GameObject);
 
-            Punpun.Say(this, $"Item {itemInstance.name} spawned at {position}", Logs.ServerOnly);
+            Punpun.Information(this, "Item {itemInstance} spawned at {position}", Logs.ServerOnly, itemInstance.name, position);
             return itemInstance;
         }
 
@@ -99,13 +99,13 @@ namespace SS3D.Systems.Inventory.Items
 
             if (!hasValue)
             {
-                Punpun.Panic(this, $"No item with ID {id.ToString()} was found", Logs.ServerOnly);
+                Punpun.Error(this, "No item with ID {id} was found", Logs.ServerOnly, id.ToString());
                 return null;
             }
 
             if (attachedContainer is null)
             {
-                Punpun.Panic(this, "Container does not found!", Logs.ServerOnly);
+                Punpun.Error(this, "Container does not found!", Logs.ServerOnly);
                 return null;
             }
 

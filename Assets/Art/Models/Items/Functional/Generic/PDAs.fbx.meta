@@ -1,9 +1,19 @@
 fileFormatVersion: 2
 guid: fca31db1818708c40a396f6faa3ee993
 ModelImporter:
-  serializedVersion: 21202
+  serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Glass
+    second: {fileID: 2100000, guid: 74425a37eae99c946a92da0339e05c48, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Palette05
+    second: {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -99,6 +109,7 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

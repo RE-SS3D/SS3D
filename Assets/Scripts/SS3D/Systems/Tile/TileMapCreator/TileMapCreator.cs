@@ -1,10 +1,7 @@
 using Coimbra;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SS3D.Systems.Tile;
 using SS3D.Core;
-using UnityEngine.UIElements;
 using UnityEngine.EventSystems;
 using System.Linq;
 using TMPro;
@@ -13,6 +10,7 @@ using FishNet.Connection;
 using SS3D.Logging;
 using SS3D.Core.Behaviours;
 using SS3D.Systems.Tile.TileMapCreator;
+using UnityEngine.InputSystem;
 
 namespace SS3D.Systems.Tile.UI
 {
@@ -40,6 +38,7 @@ namespace SS3D.Systems.Tile.UI
         private Plane _plane;
 
         private List<GenericObjectSo> _objectDatabase;
+        private Controls.TileCreatorActions _controls;
 
         public bool IsDeleting
         {
@@ -58,6 +57,51 @@ namespace SS3D.Systems.Tile.UI
         private void Start()
         {
             ShowUI(false);
+            _controls = SystemLocator.Get<InputSystem>().Inputs.TileCreator;
+            _controls.ToggleMenu.Enable();
+            _controls.ToggleMenu.performed += HandleToggleMenu;
+            _controls.Replace.performed += HandleReplace;
+            _controls.Replace.canceled += HandleReplace;
+            _controls.Place.performed += HandlePlace;
+            _controls.Rotate.performed += HandleRotate;
+        }
+        private void HandleToggleMenu(InputAction.CallbackContext context)
+        {
+            if (_enabled)
+            {
+                _controls.Disable();
+                _controls.ToggleMenu.Enable();
+            }
+            else
+            {
+                _controls.Enable();
+            }
+            _enabled = !_enabled;
+            ShowUI(_enabled);
+            Initialize();
+        }
+
+        private void HandleRotate(InputAction.CallbackContext context)
+        {
+            _ghostManager.SetNextRotation();
+            RefreshGhost();
+        }
+
+        private void HandleReplace(InputAction.CallbackContext context)
+        {
+            RefreshGhost();
+        }
+
+        private void HandlePlace(InputAction.CallbackContext context)
+        {
+            if (_mouseOverUI)
+            {
+                return;
+            }
+            if (_controls.Replace.IsPressed())
+                HandleMouseClick(_lastSnappedPosition, true);
+            else
+                HandleMouseClick(_lastSnappedPosition, false);
         }
 
         [ServerOrClient]
@@ -78,14 +122,6 @@ namespace SS3D.Systems.Tile.UI
         [ServerOrClient]
         private void Update()
         {
-            // Check for enabling the construction menu
-            if (Input.GetKeyDown(KeyCode.B))
-            {
-                _enabled = !_enabled;
-                ShowUI(_enabled);
-                Initialize();
-            }
-
             if (!_initalized)
                 return;
 
@@ -99,13 +135,6 @@ namespace SS3D.Systems.Tile.UI
             {
                 _ghostManager.CreateGhost(_selectedObject.prefab);
             }
-
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                _ghostManager.SetNextRotation();
-                RefreshGhost();
-            }
-
 
             // Check if mouse moved
             Vector3 snappedPosition = TileHelper.GetClosestPosition(GetMousePosition());
@@ -123,26 +152,16 @@ namespace SS3D.Systems.Tile.UI
                 _lastSnappedPosition = newPosition;
             }
 
-            // Move ghost
             _ghostManager.MoveGhost();
-
-            // Check if Left Shift was pressed to replace an existing tile
-            if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyUp(KeyCode.LeftShift))
-                RefreshGhost();
-
-            // Check if we can want to place or delete an object
-            if (Input.GetKeyDown(KeyCode.Mouse0) && !_mouseOverUI)
-            {
-                if (Input.GetKey(KeyCode.LeftShift))
-                    HandleMouseClick(_lastSnappedPosition, true);
-                else
-                    HandleMouseClick(_lastSnappedPosition, false);
-            }
         }
 
         [ServerOrClient]
         private void HandleMouseClick(Vector3 snappedPosition, bool replaceExisting)
         {
+            if (_selectedObject == null)
+            {
+                return;
+            }
             if (_isDeleting)
             {
                 if (_itemPlacement)
@@ -283,7 +302,7 @@ namespace SS3D.Systems.Tile.UI
             }
             else if (!_itemPlacement)
             {
-                if (Input.GetKey(KeyCode.LeftShift))
+                if (_controls.Replace.phase == InputActionPhase.Performed)
                     CheckBuildValidity(_lastSnappedPosition, true);
                 else
                     CheckBuildValidity(_lastSnappedPosition, false);
@@ -310,7 +329,7 @@ namespace SS3D.Systems.Tile.UI
             if (IsServer)
                 _tileSystem.Load();
             else
-                Punpun.Say(this, "Cannot load the map on a client");
+                Punpun.Information(this, "Cannot load the map on a client");
         }
 
         [Server]
@@ -319,7 +338,7 @@ namespace SS3D.Systems.Tile.UI
             if (IsServer)
                 _tileSystem.Save();
             else
-                Punpun.Say(this, "Cannot save the map on a client");
+                Punpun.Information(this, "Cannot save the map on a client");
         }
 
         
@@ -364,12 +383,14 @@ namespace SS3D.Systems.Tile.UI
         public void OnPointerEnter(PointerEventData eventData)
         {
             _mouseOverUI = true;
+            SystemLocator.Get<InputSystem>().Inputs.Camera.Zoom.Disable();
         }
 
         [ServerOrClient]
         public void OnPointerExit(PointerEventData eventData)
         {
             _mouseOverUI = false;
+            SystemLocator.Get<InputSystem>().Inputs.Camera.Zoom.Enable();
         }
     }
 }

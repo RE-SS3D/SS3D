@@ -603,6 +603,94 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Tile Creator"",
+            ""id"": ""f09dab6d-d07b-4287-8d9b-d0063c3232e3"",
+            ""actions"": [
+                {
+                    ""name"": ""Toggle Menu"",
+                    ""type"": ""Button"",
+                    ""id"": ""33c0c58f-fde8-4c73-ac8f-b8bfb2d98356"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Place"",
+                    ""type"": ""Button"",
+                    ""id"": ""fb428f7f-c99e-4c81-b825-65cea417ee0d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Replace"",
+                    ""type"": ""Button"",
+                    ""id"": ""f49d6ece-3eb7-4e55-9e29-a95eadff8a64"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Rotate"",
+                    ""type"": ""Button"",
+                    ""id"": ""3d66fa43-e646-40a5-9c1c-a7cd6fbf765b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""9da0c76e-68b2-4fec-a5d3-fcd559c221bf"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Place"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""78cc14e5-d0e3-4503-949c-e1a9a26f70db"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Replace"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""90e9bf7e-63bd-45ae-8d5f-8bf929ac9883"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""25bca2ed-74c2-46ad-bc12-12738567e0e8"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Toggle Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -638,6 +726,12 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_Other_SecondaryClick = m_Other.FindAction("Secondary Click", throwIfNotFound: true);
         m_Other_ToggleMenu = m_Other.FindAction("Toggle Menu", throwIfNotFound: true);
         m_Other_SpawnCans = m_Other.FindAction("Spawn Cans", throwIfNotFound: true);
+        // Tile Creator
+        m_TileCreator = asset.FindActionMap("Tile Creator", throwIfNotFound: true);
+        m_TileCreator_ToggleMenu = m_TileCreator.FindAction("Toggle Menu", throwIfNotFound: true);
+        m_TileCreator_Place = m_TileCreator.FindAction("Place", throwIfNotFound: true);
+        m_TileCreator_Replace = m_TileCreator.FindAction("Replace", throwIfNotFound: true);
+        m_TileCreator_Rotate = m_TileCreator.FindAction("Rotate", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -986,6 +1080,63 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         }
     }
     public OtherActions @Other => new OtherActions(this);
+
+    // Tile Creator
+    private readonly InputActionMap m_TileCreator;
+    private ITileCreatorActions m_TileCreatorActionsCallbackInterface;
+    private readonly InputAction m_TileCreator_ToggleMenu;
+    private readonly InputAction m_TileCreator_Place;
+    private readonly InputAction m_TileCreator_Replace;
+    private readonly InputAction m_TileCreator_Rotate;
+    public struct TileCreatorActions
+    {
+        private @Controls m_Wrapper;
+        public TileCreatorActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @ToggleMenu => m_Wrapper.m_TileCreator_ToggleMenu;
+        public InputAction @Place => m_Wrapper.m_TileCreator_Place;
+        public InputAction @Replace => m_Wrapper.m_TileCreator_Replace;
+        public InputAction @Rotate => m_Wrapper.m_TileCreator_Rotate;
+        public InputActionMap Get() { return m_Wrapper.m_TileCreator; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(TileCreatorActions set) { return set.Get(); }
+        public void SetCallbacks(ITileCreatorActions instance)
+        {
+            if (m_Wrapper.m_TileCreatorActionsCallbackInterface != null)
+            {
+                @ToggleMenu.started -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnToggleMenu;
+                @ToggleMenu.performed -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnToggleMenu;
+                @ToggleMenu.canceled -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnToggleMenu;
+                @Place.started -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnPlace;
+                @Place.performed -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnPlace;
+                @Place.canceled -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnPlace;
+                @Replace.started -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnReplace;
+                @Replace.performed -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnReplace;
+                @Replace.canceled -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnReplace;
+                @Rotate.started -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnRotate;
+                @Rotate.performed -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnRotate;
+                @Rotate.canceled -= m_Wrapper.m_TileCreatorActionsCallbackInterface.OnRotate;
+            }
+            m_Wrapper.m_TileCreatorActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @ToggleMenu.started += instance.OnToggleMenu;
+                @ToggleMenu.performed += instance.OnToggleMenu;
+                @ToggleMenu.canceled += instance.OnToggleMenu;
+                @Place.started += instance.OnPlace;
+                @Place.performed += instance.OnPlace;
+                @Place.canceled += instance.OnPlace;
+                @Replace.started += instance.OnReplace;
+                @Replace.performed += instance.OnReplace;
+                @Replace.canceled += instance.OnReplace;
+                @Rotate.started += instance.OnRotate;
+                @Rotate.performed += instance.OnRotate;
+                @Rotate.canceled += instance.OnRotate;
+            }
+        }
+    }
+    public TileCreatorActions @TileCreator => new TileCreatorActions(this);
     public interface ICameraActions
     {
         void OnZoom(InputAction.CallbackContext context);
@@ -1021,5 +1172,12 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnSecondaryClick(InputAction.CallbackContext context);
         void OnToggleMenu(InputAction.CallbackContext context);
         void OnSpawnCans(InputAction.CallbackContext context);
+    }
+    public interface ITileCreatorActions
+    {
+        void OnToggleMenu(InputAction.CallbackContext context);
+        void OnPlace(InputAction.CallbackContext context);
+        void OnReplace(InputAction.CallbackContext context);
+        void OnRotate(InputAction.CallbackContext context);
     }
 }

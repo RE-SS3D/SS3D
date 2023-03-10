@@ -1,0 +1,148 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff3f0ffef787c464d8f721719a55afa8, type: 3}
+  m_Name: LogSettings
+  m_EditorClassIdentifier: 
+  SS3DNameSpaces:
+  - _name: SS3D.Attributes
+    _level: 0
+  - _name: SS3D.CodeGeneration
+    _level: 0
+  - _name: SS3D.Content.Furniture.Generic
+    _level: 0
+  - _name: SS3D.Core
+    _level: 0
+  - _name: SS3D.Core
+    _level: 0
+  - _name: SS3D.Core.Behaviours
+    _level: 0
+  - _name: SS3D.Core.Events
+    _level: 0
+  - _name: SS3D.Core.Intro
+    _level: 0
+  - _name: SS3D.Core.Settings
+    _level: 0
+  - _name: SS3D.Core.Utils
+    _level: 0
+  - _name: SS3D.Data
+    _level: 0
+  - _name: SS3D.Data.AssetDatabases
+    _level: 0
+  - _name: SS3D.Data.AssetDatabases.InspectorEditor
+    _level: 0
+  - _name: SS3D.Data.Enums
+    _level: 0
+  - _name: SS3D.Data.LogSettings
+    _level: 0
+  - _name: SS3D.Data.LogSettings.InspectorEditor
+    _level: 0
+  - _name: SS3D.Data.Messages
+    _level: 0
+  - _name: SS3D.Interactions
+    _level: 0
+  - _name: SS3D.Interactions.Extensions
+    _level: 0
+  - _name: SS3D.Interactions.Interfaces
+    _level: 0
+  - _name: SS3D.Interactions.UI
+    _level: 0
+  - _name: SS3D.Logging
+    _level: 0
+  - _name: SS3D.Networking
+    _level: 0
+  - _name: SS3D.Rendering
+    _level: 0
+  - _name: SS3D.Substances
+    _level: 0
+  - _name: SS3D.Systems
+    _level: 0
+  - _name: SS3D.Systems.Entities
+    _level: 0
+  - _name: SS3D.Systems.Entities.Data
+    _level: 0
+  - _name: SS3D.Systems.Entities.Debug
+    _level: 0
+  - _name: SS3D.Systems.Entities.Events
+    _level: 0
+  - _name: SS3D.Systems.Entities.Humanoid
+    _level: 0
+  - _name: SS3D.Systems.Entities.Silicon
+    _level: 0
+  - _name: SS3D.Systems.Furniture
+    _level: 0
+  - _name: SS3D.Systems.Gamemodes
+    _level: 0
+  - _name: SS3D.Systems.GameModes.Events
+    _level: 0
+  - _name: SS3D.Systems.GameModes.Modes
+    _level: 0
+  - _name: SS3D.Systems.Gamemodes.Objectives
+    _level: 0
+  - _name: SS3D.Systems.Gamemodes.UI
+    _level: 0
+  - _name: SS3D.Systems.Health
+    _level: 0
+  - _name: SS3D.Systems.IngameConsoleSystem
+    _level: 0
+  - _name: SS3D.Systems.Interactions
+    _level: 0
+  - _name: SS3D.Systems.Inventory.Containers
+    _level: 0
+  - _name: SS3D.Systems.Inventory.Interactions
+    _level: 0
+  - _name: SS3D.Systems.Inventory.Interfaces
+    _level: 0
+  - _name: SS3D.Systems.Inventory.Items
+    _level: 0
+  - _name: SS3D.Systems.Inventory.Items.Generic
+    _level: 0
+  - _name: SS3D.Systems.Inventory.UI
+    _level: 0
+  - _name: SS3D.Systems.Lobby.UI
+    _level: 0
+  - _name: SS3D.Systems.Permissions
+    _level: 0
+  - _name: SS3D.Systems.Permissions.Events
+    _level: 0
+  - _name: SS3D.Systems.PlayerControl
+    _level: 0
+  - _name: SS3D.Systems.PlayerControl.Events
+    _level: 0
+  - _name: SS3D.Systems.PlayerControl.Messages
+    _level: 0
+  - _name: SS3D.Systems.Rounds
+    _level: 0
+  - _name: SS3D.Systems.Rounds.Events
+    _level: 0
+  - _name: SS3D.Systems.Rounds.Messages
+    _level: 0
+  - _name: SS3D.Systems.Screens
+    _level: 0
+  - _name: SS3D.Systems.Screens.Events
+    _level: 0
+  - _name: SS3D.Systems.Tile
+    _level: 0
+  - _name: SS3D.Systems.Tile.Connections
+    _level: 0
+  - _name: SS3D.Systems.Tile.Connections.AdjacencyTypes
+    _level: 0
+  - _name: SS3D.Systems.Tile.UI
+    _level: 0
+  - _name: SS3D.UI
+    _level: 0
+  - _name: SS3D.UI.Buttons
+    _level: 0
+  - _name: SS3D.Utils
+    _level: 0
+  - _name: SS3D.Utils.Editor
+    _level: 0
+  defaultLogLevel: 0

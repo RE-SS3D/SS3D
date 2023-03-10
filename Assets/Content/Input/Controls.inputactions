@@ -581,6 +581,94 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Tile Creator",
+            "id": "f09dab6d-d07b-4287-8d9b-d0063c3232e3",
+            "actions": [
+                {
+                    "name": "Toggle Menu",
+                    "type": "Button",
+                    "id": "33c0c58f-fde8-4c73-ac8f-b8bfb2d98356",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Place",
+                    "type": "Button",
+                    "id": "fb428f7f-c99e-4c81-b825-65cea417ee0d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Replace",
+                    "type": "Button",
+                    "id": "f49d6ece-3eb7-4e55-9e29-a95eadff8a64",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Rotate",
+                    "type": "Button",
+                    "id": "3d66fa43-e646-40a5-9c1c-a7cd6fbf765b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9da0c76e-68b2-4fec-a5d3-fcd559c221bf",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Place",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "78cc14e5-d0e3-4503-949c-e1a9a26f70db",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Replace",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "90e9bf7e-63bd-45ae-8d5f-8bf929ac9883",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "25bca2ed-74c2-46ad-bc12-12738567e0e8",
+                    "path": "<Keyboard>/b",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Toggle Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []
