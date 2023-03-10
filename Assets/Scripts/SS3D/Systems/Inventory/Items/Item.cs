@@ -101,7 +101,8 @@ namespace SS3D.Systems.Inventory.Items
             // Not really needed any more because of the RequiredLayer attribute.
             if (gameObject.layer != 10)
             {
-                Punpun.Yell(this, $"Item {_name} is on {LayerMask.LayerToName(gameObject.layer)} layer. Should be on Items layer.");
+                Punpun.Warning(this, "Item {item} is on {layer} layer. Should be on Items layer.",
+                    Logs.Generic, _name, LayerMask.LayerToName(gameObject.layer));
             }
         }
 

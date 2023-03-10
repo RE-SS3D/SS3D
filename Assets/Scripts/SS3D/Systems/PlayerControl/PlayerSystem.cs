@@ -144,7 +144,8 @@ namespace SS3D.Systems.PlayerControl
         private void ProcessPlayerJoin(NetworkConnection conn)
         {
             string message = $"Player joined the server - {conn.ClientId} {conn.GetAddress()}";
-            Punpun.Say(this, message, Logs.ServerOnly);
+            Punpun.Information(this, "Player joined the server - {clientId} {connectionAddress}",
+                Logs.ServerOnly, conn.ClientId, conn.GetAddress());
 
             NetworkObject unauthorizedUser = Instantiate(_unauthorizedUserPrefab, Vector3.zero, Quaternion.identity);
             ServerManager.Spawn(unauthorizedUser, conn);
@@ -164,7 +165,7 @@ namespace SS3D.Systems.PlayerControl
 
             if (!hasSoul)
             {
-                Punpun.Say(this, $"No Soul match for {ckey} found, creating a new one", Logs.ServerOnly);
+                Punpun.Information(this, "No Soul match for {ckey} found, creating a new one", Logs.ServerOnly, ckey);
 
                 soul = Instantiate(_soulPrefab);
                 ServerManager.Spawn(soul.gameObject);
@@ -175,7 +176,7 @@ namespace SS3D.Systems.PlayerControl
             }
             else
             {
-                Punpun.Say(this, $"Soul match for {ckey} found, reassigning to client", Logs.ServerOnly);
+                Punpun.Information(this, "Soul match for {ckey} found, reassigning to client", Logs.ServerOnly, ckey);
             }
 
             soul.GiveOwnership(conn);
@@ -186,25 +187,26 @@ namespace SS3D.Systems.PlayerControl
         private void ProcessPlayerDisconnect(NetworkConnection conn)
         {
             string message = $"Client {conn.ClientId} {conn.GetAddress()} disconnected";
-            Punpun.Say(this, message, Logs.ServerOnly);
+            Punpun.Information(this, "Client {clientId} {connectionAddress} disconnected", Logs.ServerOnly, conn.ClientId, conn.GetAddress());
 
             NetworkObject[] ownedObjects = conn.Objects.ToArray();
             if (ownedObjects.Length == 0)
             {
-                Punpun.Yell(this, "No clientOwnedObjects were found", Logs.ServerOnly);
+                Punpun.Warning(this, "No clientOwnedObjects were found", Logs.ServerOnly);
                 return;
             }
 
             foreach (NetworkObject networkIdentity in ownedObjects)
             {
-                Punpun.Say(this, $"Client {conn.GetAddress()}'s owned object: {networkIdentity.name}", Logs.ServerOnly);
+                Punpun.Information(this, "Client {connectionAddress}'s owned object: {networkIdentity}",
+                    Logs.ServerOnly, conn.GetAddress(), networkIdentity.name);
 
                 Soul soul = networkIdentity.GetComponent<Soul>();
                 if (soul != null)
                 {
                     _onlineSouls.Remove(soul.Ckey);
                     soul.RemoveOwnership();
-                    Punpun.Say(this, $"Invoking the player server left event: {soul.Ckey}", Logs.ServerOnly);
+                    Punpun.Information(this, "Invoking the player server left event: {ckey}", Logs.ServerOnly, soul.Ckey);
 
                     return;
                 }

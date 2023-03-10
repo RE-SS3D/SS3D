@@ -2,8 +2,8 @@
 using Coimbra;
 using SS3D.Data.AssetDatabases;
 using SS3D.Data.Enums;
-using SS3D.Logging;
 using UnityEngine;
+using SS3D.Logging;
 using Object = UnityEngine.Object;
 
 namespace SS3D.Data
@@ -89,7 +89,7 @@ namespace SS3D.Data
                 Databases.Add(index, database);
             }
 
-            Punpun.Say(typeof(Assets), $"{assetDatabases.Count} Asset Databases initialized", Logs.Important);
+            Punpun.Information(typeof(Assets), "{assetDatabasesCount} Asset Databases initialized", Logs.Important, assetDatabases.Count);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace SS3D.Data
 
             if (!databaseExists)
             {
-                Punpun.Yell(typeof(Assets), $"Database of type {key} not found", Logs.Important);
+                Punpun.Warning(typeof(Assets), "Database of type {key} not found", Logs.Important, key);
             }
 
             return database;
@@ -120,7 +120,7 @@ namespace SS3D.Data
 
             if (!databaseExists)
             {
-                Punpun.Yell(typeof(Assets), $"Database of type {key} not found", Logs.Important);
+                Punpun.Warning(typeof(Assets), "Database of type {key} not found", Logs.Important, key);
             }
 
             return database;

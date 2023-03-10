@@ -329,7 +329,7 @@ namespace SS3D.Systems.Tile.UI
             if (IsServer)
                 _tileSystem.Load();
             else
-                Punpun.Say(this, "Cannot load the map on a client");
+                Punpun.Information(this, "Cannot load the map on a client");
         }
 
         [Server]
@@ -338,7 +338,7 @@ namespace SS3D.Systems.Tile.UI
             if (IsServer)
                 _tileSystem.Save();
             else
-                Punpun.Say(this, "Cannot save the map on a client");
+                Punpun.Information(this, "Cannot save the map on a client");
         }
 
         
