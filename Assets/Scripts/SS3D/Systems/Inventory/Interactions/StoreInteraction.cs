@@ -11,16 +11,16 @@ namespace SS3D.Systems.Inventory.Interactions
 {
     public sealed class StoreInteraction : Interaction
     {
-        private readonly ContainerDescriptor _containerDescriptor;
+        private readonly AttachedContainer _attachedContainer;
 
-        public StoreInteraction(ContainerDescriptor containerDescriptor)
+        public StoreInteraction(AttachedContainer attachedContainer)
         {
-            _containerDescriptor = containerDescriptor;
+            _attachedContainer = attachedContainer;
         }
 
         public override string GetName(InteractionEvent interactionEvent)
         {
-            return "Store in " + _containerDescriptor.ContainerName;
+            return "Store in " + _attachedContainer.ContainerName;
         }
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
@@ -35,15 +35,14 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
-            AttachedContainer target = _containerDescriptor.AttachedContainer;
             IInteractionSource source = interactionEvent.Source;
 
             if(source is IGameObjectProvider sourceGameObjectProvider)
             {
                 var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
-                if (hands != null && target != null)
+                if (hands != null && _attachedContainer != null)
                 {
-                    return !hands.SelectedHandEmpty && CanStore(interactionEvent.Source.GetComponent<Item>(), target);
+                    return !hands.SelectedHandEmpty && CanStore(interactionEvent.Source.GetComponent<Item>(), _attachedContainer);
                 }
             }
 
@@ -62,7 +61,7 @@ namespace SS3D.Systems.Inventory.Interactions
             if (source is IGameObjectProvider sourceGameObjectProvider)
             {
                 var hands = sourceGameObjectProvider.GameObject.GetComponentInParent<Hands>();
-                _containerDescriptor.AttachedContainer.Container.AddItem(hands.ItemInHand);
+                _attachedContainer.Container.AddItem(hands.ItemInHand);
                 return true;
             }
             return false;
