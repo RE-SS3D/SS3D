@@ -268,32 +268,28 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 7958861831329766982}
   _networkObjectCache: {fileID: 7958861831329766982}
-  AutomaticContainerSetUp: 0
+  _automaticContainerSetUp: 0
   ContainerInteractive: {fileID: 8691169782362177299}
   ContainerItemDisplay: {fileID: 0}
   ContainerUi: {fileID: 0}
-  OpenIcon: {fileID: 0}
-  TakeIcon: {fileID: 0}
-  StoreIcon: {fileID: 0}
-  ViewIcon: {fileID: 0}
-  AttachmentOffset: {x: 0, y: 0, z: 0}
-  ContainerName: container
-  OnlyStoreWhenOpen: 0
-  OpenWhenContainerViewed: 0
-  Size: {x: 1, y: 1}
-  HideItems: 1
-  AttachItems: 1
-  Initialized: 1
-  MaxDistance: 5
-  IsOpenable: 0
-  IsInteractive: 1
-  HasUi: 0
-  HasCustomInteraction: 0
-  HasCustomDisplay: 0
-  Displays: []
-  NumberDisplay: 0
-  StartFilter: {fileID: 11400000, guid: 092a6d8cb786ce94fb359f11b0da6f29, type: 2}
-  Type: 0
+  _attachmentOffset: {x: 0, y: 0, z: 0}
+  _onlyStoreWhenOpen: 0
+  _openWhenContainerViewed: 0
+  _attachItems: 1
+  _initialized: 0
+  _maxDistance: 5
+  _isOpenable: 0
+  _isInteractive: 1
+  _hasUi: 0
+  _hasCustomInteraction: 0
+  _hasCustomDisplay: 0
+  _displays: []
+  _numberDisplay: 0
+  _containerName: container
+  _size: {x: 2, y: 2}
+  _hideItems: 1
+  _type: 0
+  _startFilter: {fileID: 11400000, guid: 092a6d8cb786ce94fb359f11b0da6f29, type: 2}
 --- !u!95 &8953388663960336043
 Animator:
   serializedVersion: 4
