@@ -19,63 +19,43 @@ namespace SS3D.Tests
         protected const string ReadyButtonName = "Ready";
         protected const string ServerSettingsTabName = "Server Settings";
         protected const string StartRoundButtonName = "Start Round";
-        protected const string StartServerCommand = "Start SS3D Server.bat";
 
         protected Process cmdLineProcess;
         protected HumanoidController controller;
 
-        [OneTimeSetUp]
-        public virtual void OneTimeSetUp()
+        public override IEnumerator UnitySetUp()
         {
             LoadFileHelpers.OpenCompiledBuild();
 
             // Force wait for 10 seconds - this should be long enough for the server to load
-            System.Threading.Thread.Sleep(10000);
+            yield return new WaitForSeconds(10f);
 
             // Set to run as client
             SetApplicationSettings(NetworkType.Client);
 
             // Load the startup scene (which will subsequently load the lobby once connected)
             LoadStartupScene();
+
+            // We need to do the base method call last because it needs to wait until StartUp scene loaded.
+            base.UnitySetUp();
         }
 
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
+        public override void TearDown()
         {
+            base.TearDown();
             KillAllBuiltExecutables();
         }
 
-        [UnitySetUp]
-        public override IEnumerator UnitySetUp()
-        {
-            yield return base.UnitySetUp();
-
-            // TODO: Create our fake input and assign it to the player
-
-            // We need to wait until the lobby scene is loaded before anything can be done.
-            while (!lobbySceneLoaded) yield return new WaitForSeconds(1f);
-        }
 
 
-
-        [UnityTearDown]
-        public override IEnumerator UnityTearDown()
-        {
-            // Wait for a bit, to get some temporal separation.
-            yield return new WaitForSeconds(1f);
-
-            yield return base.UnityTearDown();
-        }
-
+        //TODO: Add timeout
         public IEnumerator GetController()
         {
-            const string characterName = "HumanTemporary(Clone)";
             controller = null;
-
             while (controller == null)
             {
                 yield return null;
-                controller = GameObject.Find(characterName)?.GetComponent<HumanoidController>();
+                controller = GameObject.FindWithTag("Player")?.GetComponent<HumanoidController>();
             }
         }
 

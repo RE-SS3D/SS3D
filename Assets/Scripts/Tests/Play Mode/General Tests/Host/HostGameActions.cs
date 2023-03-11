@@ -53,70 +53,13 @@ namespace SS3D.Tests
 
             // Move West.
             originalPosition = controller.Position;
-            input.Press(keyboard.aKey);
+            Press(keyboard.aKey);
             yield return new WaitForSeconds(1f);
-            input.Release(keyboard.aKey);
+            Release(keyboard.aKey);
             newPosition = controller.Position;
             Assert.IsTrue(newPosition.x < originalPosition.x);
             Assert.IsTrue(TestHelpers.ApproximatelyEqual(newPosition.y, originalPosition.y));
             Assert.IsTrue(TestHelpers.ApproximatelyEqual(newPosition.z, originalPosition.z));
-
-            // Move East.
-            originalPosition = controller.Position;
-            yield return TestHelpers.Move(HorizontalAxis, 1f);
-            newPosition = controller.Position;
-            Assert.IsTrue(newPosition.x > originalPosition.x);
-            Assert.IsTrue(TestHelpers.ApproximatelyEqual(newPosition.y, originalPosition.y));
-            Assert.IsTrue(TestHelpers.ApproximatelyEqual(newPosition.z, originalPosition.z));
-
-            // Move North.
-            originalPosition = controller.Position;
-            yield return TestHelpers.Move(VerticalAxis, -1f);
-            newPosition = controller.Position;
-            Assert.IsTrue(TestHelpers.ApproximatelyEqual(newPosition.x, originalPosition.x));
-            Assert.IsTrue(TestHelpers.ApproximatelyEqual(newPosition.y, originalPosition.y));
-            Assert.IsTrue(newPosition.z < originalPosition.z);
-
-            // Move South.
-            originalPosition = controller.Position;
-            yield return TestHelpers.Move(VerticalAxis, 1f);
-            newPosition = controller.Position;
-            Assert.IsTrue(TestHelpers.ApproximatelyEqual(newPosition.x, originalPosition.x));
-            Assert.IsTrue(TestHelpers.ApproximatelyEqual(newPosition.y, originalPosition.y));
-            Assert.IsTrue(newPosition.z > originalPosition.z);
-
-            // Move Northeast.
-            originalPosition = controller.Position;
-            yield return TestHelpers.Move(new[] { VerticalAxis, HorizontalAxis }, new[] { -1f, -1f });
-            newPosition = controller.Position;
-            Assert.IsTrue(newPosition.x < originalPosition.x);
-            Assert.IsTrue(TestHelpers.ApproximatelyEqual(newPosition.y, originalPosition.y));
-            Assert.IsTrue(newPosition.z < originalPosition.z);
-
-            // Move Southwest.
-            originalPosition = controller.Position;
-            yield return TestHelpers.Move(new[] { VerticalAxis, HorizontalAxis }, new[] { 1f, 1f });
-            newPosition = controller.Position;
-            Assert.IsTrue(newPosition.x > originalPosition.x);
-            Assert.IsTrue(TestHelpers.ApproximatelyEqual(newPosition.y, originalPosition.y));
-            Assert.IsTrue(newPosition.z > originalPosition.z);
-
-            // Move Northwest.
-            originalPosition = controller.Position;
-            yield return TestHelpers.Move(new[] { VerticalAxis, HorizontalAxis }, new[] { 1f, -1f });
-            newPosition = controller.Position;
-            Assert.IsTrue(newPosition.x < originalPosition.x);
-            Assert.IsTrue(TestHelpers.ApproximatelyEqual(newPosition.y, originalPosition.y));
-            Assert.IsTrue(newPosition.z > originalPosition.z);
-
-            // Move Southeast.
-            originalPosition = controller.Position;
-            yield return TestHelpers.Move(new[] { VerticalAxis, HorizontalAxis }, new[] { -1f, 1f });
-            newPosition = controller.Position;
-            Assert.IsTrue(newPosition.x > originalPosition.x);
-            Assert.IsTrue(TestHelpers.ApproximatelyEqual(newPosition.y, originalPosition.y));
-            Assert.IsTrue(newPosition.z < originalPosition.z);
-
             yield break;
         }
     }

@@ -13,40 +13,43 @@ using UnityEngine.TestTools;
 namespace SS3D.Tests
 {
     [TestFixture]
-    public abstract class SpessPlayModeTest : SpessTest
+    public abstract class SpessPlayModeTest : InputTestFixture
     {
         protected const string ExecutableName = "SS3D";
-
 
         // Whether the lobby scene has been loaded
         protected bool lobbySceneLoaded = false;
         protected bool emptySceneLoaded = false;
 
         // Used to simulate input
-        protected InputTestFixture input = new InputTestFixture();
         protected Keyboard keyboard;
         protected Mouse mouse;
 
-        // When overriding, use:
-        //     yield return base.UnitySetUp();
+        public override void Setup()
+        {
+            UnityEngine.Debug.Log("Calling InputTestFixture.Setup");
+            base.Setup();
+            keyboard = UnityEngine.InputSystem.InputSystem.AddDevice<Keyboard>();
+            mouse = UnityEngine.InputSystem.InputSystem.AddDevice<Mouse>();
+        }
+
+        public override void TearDown()
+        {
+            base.TearDown();
+        }
+
         [UnitySetUp]
         public virtual IEnumerator UnitySetUp()
         {
-            base.SetUp();
-            input.Setup();
-            keyboard = UnityEngine.InputSystem.InputSystem.AddDevice<Keyboard>();
-            mouse = UnityEngine.InputSystem.InputSystem.AddDevice<Mouse>();
-            yield return null;
+            // We need to wait until the lobby scene is loaded before anything can be done.
+            while (!lobbySceneLoaded) yield return new WaitForSeconds(1f);
         }
 
-        // When overriding, use:
-        //     yield return base.UnityTearDown();
         [UnityTearDown]
         public virtual IEnumerator UnityTearDown()
         {
-            input.TearDown();
-            base.TearDown();
-            yield return null;
+            // Wait for a bit, to get some temporal separation.
+            yield return new WaitForSeconds(1f);
         }
 
         protected void SetApplicationSettings(NetworkType type)

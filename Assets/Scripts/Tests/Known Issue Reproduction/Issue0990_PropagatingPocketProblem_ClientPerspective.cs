@@ -5,11 +5,6 @@ namespace SS3D.Tests
 {
     public class Issue0990_PropagatingPocketProblem_ClientPerspective : SpessClientPlayModeTest
     {
-        public override void OneTimeSetUp()
-        {
-            base.OneTimeSetUp();
-
-        }
 
         [UnitySetUp]
         public override IEnumerator UnitySetUp()

@@ -67,7 +67,7 @@ namespace SS3D.Tests
 
         public static IEnumerator StartAndEnterRound()
         {
-            yield return ClickButton(ReadyButtonName);
+            yield return PressButtonWhenAvailable(ReadyButtonName);
             yield return StartRound();
         }
 
@@ -149,10 +149,22 @@ namespace SS3D.Tests
             GetButton(buttonName).Press();
         }
 
+        public static IEnumerator PressButtonWhenAvailable(string buttonName, float timeout = 15f)
+        {
+            LabelButton button = GetButton(buttonName);
+            float startTime = Time.time;
+            while (button == null)
+            {
+                Assert.IsTrue(Time.time < startTime + timeout, $"Timeout of {timeout} reached when trying to press {buttonName} button");
+                yield return new WaitForSeconds(1f);
+                button = GetButton(buttonName);
+            }
+            button.Press();
+        }
+
         public static LabelButton GetButton(string buttonName)
         {
             LabelButton button = GameObject.Find(buttonName)?.GetComponent<LabelButton>();
-            Assert.IsNotNull(button, $"Did not find a button in the scene called {buttonName}");
             return button;
         }
 

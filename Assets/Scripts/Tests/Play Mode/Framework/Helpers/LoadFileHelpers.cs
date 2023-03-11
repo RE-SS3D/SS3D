@@ -41,6 +41,8 @@ namespace SS3D.Tests
             process.StartInfo.FileName = ExecutableName;
             process.StartInfo.WorkingDirectory = GetFilePath();
 
+            UnityEngine.Debug.Log($"Attempting to load {ExecutableName} {arguments}" );
+
             // Execute the process
             process.Start();
 

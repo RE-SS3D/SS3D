@@ -34,33 +34,6 @@ namespace SS3D.Tests
             LoadStartupScene();
         }
 
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
-        }
-
-        [UnitySetUp]
-        public override IEnumerator UnitySetUp()
-        {
-            yield return base.UnitySetUp();
-
-            // TODO: Create our fake input and assign it to the player
-
-            // We need to wait until the lobby scene is loaded before anything can be done.
-            while (!lobbySceneLoaded) yield return new WaitForSeconds(1f);
-        }
-
-
-
-        [UnityTearDown]
-        public override IEnumerator UnityTearDown()
-        {
-            // Wait for a bit, to get some temporal separation.
-            yield return new WaitForSeconds(1f);
-
-            yield return base.UnityTearDown();
-        }
-
         public IEnumerator GetController()
         {
             const string characterName = "HumanTemporary(Clone)";
