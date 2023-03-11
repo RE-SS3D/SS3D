@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1871071288925904272}
   - component: {fileID: 8905492951320375787}
   m_Layer: 0
-  m_Name: VendorHotDrinks
+  m_Name: VendorYouTool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2658310835758749969}
-  m_Mesh: {fileID: 4150681116119138116, guid: c4d23e1208d91484c948684da1e09cce, type: 3}
+  m_Mesh: {fileID: -217983506401915496, guid: c4d23e1208d91484c948684da1e09cce, type: 3}
 --- !u!23 &2658310835758749971
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -68,7 +68,6 @@ MeshRenderer:
   m_Materials:
   - {fileID: 2100000, guid: 695c4de41b9578049a93f19b1eef7213, type: 2}
   - {fileID: 2100000, guid: b35e5d5edbcc63442bf15e5482e4cfe4, type: 2}
-  - {fileID: 2100000, guid: 6430227ac2f6b734f89160acf9727ee9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -103,7 +102,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 4150681116119138116, guid: c4d23e1208d91484c948684da1e09cce, type: 3}
+  m_Mesh: {fileID: -217983506401915496, guid: c4d23e1208d91484c948684da1e09cce, type: 3}
 --- !u!114 &1871071288925904272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -129,7 +128,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: 2
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 2097375067128656164
+  <AssetPathHash>k__BackingField: 4588470926171662596
   _sceneNetworkObjects:
   - {fileID: 0}
   - {fileID: 0}
@@ -167,7 +166,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1871071288925904272}
   _networkObjectCache: {fileID: 1871071288925904272}
-  _productToDispense: 5
+  _productToDispense: 2
   _dispensingTransform: {fileID: 5160227759105755511}
 --- !u!1 &3671711954327816294
 GameObject:
@@ -193,7 +192,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671711954327816294}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.458, z: 0.334}
+  m_LocalPosition: {x: 0.136, y: 0.426, z: 0.329}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -240,7 +239,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5223262861450433750}
-  m_Mesh: {fileID: 3572507922611461713, guid: c4d23e1208d91484c948684da1e09cce, type: 3}
+  m_Mesh: {fileID: 305330943901416337, guid: c4d23e1208d91484c948684da1e09cce, type: 3}
 --- !u!23 &3621050871186841336
 MeshRenderer:
   m_ObjectHideFlags: 0
