@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 using System.Diagnostics;
-using SS3D.Systems.InputHandling;
 using SS3D.Systems.Entities.Humanoid;
 using System;
 using SS3D.Systems.PlayerControl;
@@ -17,7 +16,6 @@ namespace SS3D.Tests
 {
     public class Issue1002_LateJoinFails_HostPerspective : SpessPlayModeTest
     {
-        protected ScriptedInput input;
         protected HumanoidController controller;
 
         protected Process clientProcess;
@@ -148,9 +146,7 @@ namespace SS3D.Tests
             // Load the startup scene (which will subsequently load the lobby once connected)
             LoadStartupScene();
 
-            // Create our fake input
-            input = new ScriptedInput();
-            UserInput.SetInputService(input);
+            // TODO: Create our fake input
 
             // Wait until Lobby is fully loaded.
             yield return WaitForLobbyLoaded();

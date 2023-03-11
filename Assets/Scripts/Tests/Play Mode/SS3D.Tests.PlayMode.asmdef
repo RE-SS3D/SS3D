@@ -10,8 +10,9 @@
         "SS3D.UI",
         "Coimbra",
         "Coimbra.Editor",
-        "",
-        "SS3D.Tests.Common"
+        "SS3D.Tests.Common",
+        "Unity.InputSystem",
+        "Unity.InputSystem.TestFramework"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,29 +1,16 @@
 using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
-using SS3D.Core;
 using SS3D.Core.Settings;
-using SS3D.Systems.Rounds;
 using SS3D.UI.Buttons;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
-using Coimbra;
-using System.Diagnostics;
-using FishNet.Managing;
-using FishNet;
-using SS3D.Systems.InputHandling;
 using SS3D.Systems.Entities.Humanoid;
-using System.Runtime.InteropServices;
-using System;
 
 namespace SS3D.Tests
 {
     public abstract class SpessHostPlayModeTest : SpessPlayModeTest
     {
-        protected ScriptedInput input;
         protected HumanoidController controller;
 
         [OneTimeSetUp]
@@ -60,9 +47,7 @@ namespace SS3D.Tests
         {
             yield return base.UnitySetUp();
 
-            // Create our fake input and assign it to the player
-            input = new ScriptedInput();
-            UserInput.SetInputService(input);
+            // TODO: Create our fake input and assign it to the player
 
             // We need to wait until the lobby scene is loaded before anything can be done.
             while (!lobbySceneLoaded) yield return new WaitForSeconds(1f);
@@ -79,7 +64,7 @@ namespace SS3D.Tests
 
         public IEnumerator GetController()
         {
-            const string characterName = "Human_Temporary(Clone)";
+            const string characterName = "HumanTemporary(Clone)";
             controller = null;
 
             while (controller == null)
@@ -108,7 +93,8 @@ namespace SS3D.Tests
             // Start holding down the appropriate keys.
             for (int i = 0; i < axis.Length; i++)
             {
-                input.SetAxisRaw(axis[i], value[i]);
+                // TODO: Set up fake input
+                //input.SetAxisRaw(axis[i], value[i]);
             }
 
             // Wait for a little, then release the key.
@@ -117,7 +103,7 @@ namespace SS3D.Tests
             // Release the keys.
             for (int i = 0; i < axis.Length; i++)
             {
-                input.SetAxisRaw(axis[i], 0);
+                //input.SetAxisRaw(axis[i], 0);
             }
 
             // Wait for a little more, to add clear separation from the next move command.

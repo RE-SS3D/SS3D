@@ -6,12 +6,13 @@ using Coimbra;
 using NUnit.Framework;
 using SS3D.Core.Settings;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace SS3D.Tests
 {
-
+    [TestFixture]
     public abstract class SpessPlayModeTest : SpessTest
     {
         protected const string ExecutableName = "SS3D";
@@ -21,12 +22,20 @@ namespace SS3D.Tests
         protected bool lobbySceneLoaded = false;
         protected bool emptySceneLoaded = false;
 
+        // Used to simulate input
+        protected InputTestFixture input = new InputTestFixture();
+        protected Keyboard keyboard;
+        protected Mouse mouse;
+
         // When overriding, use:
         //     yield return base.UnitySetUp();
         [UnitySetUp]
         public virtual IEnumerator UnitySetUp()
         {
             base.SetUp();
+            input.Setup();
+            keyboard = UnityEngine.InputSystem.InputSystem.AddDevice<Keyboard>();
+            mouse = UnityEngine.InputSystem.InputSystem.AddDevice<Mouse>();
             yield return null;
         }
 
@@ -35,6 +44,7 @@ namespace SS3D.Tests
         [UnityTearDown]
         public virtual IEnumerator UnityTearDown()
         {
+            input.TearDown();
             base.TearDown();
             yield return null;
         }

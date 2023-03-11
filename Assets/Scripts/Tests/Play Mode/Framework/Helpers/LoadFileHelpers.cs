@@ -1,22 +1,5 @@
-using FishNet.Managing.Server;
-using FishNet.Broadcast;
-using FishNet.Connection;
-using NUnit.Framework;
-using SS3D.Core;
-using SS3D.Systems.Entities;
-using SS3D.Systems.Entities.Humanoid;
-using SS3D.Systems.InputHandling;
-using SS3D.Systems.PlayerControl;
-using SS3D.Systems.Rounds;
-using SS3D.Systems.Rounds.Messages;
-using SS3D.UI.Buttons;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
-using FishNet;
 using SS3D.Core.Settings;
 using SS3D.Core.Utils;
 using System.Runtime.InteropServices;
@@ -110,6 +93,11 @@ namespace SS3D.Tests
             string filePath = Application.dataPath;
             filePath = filePath.Substring(0, filePath.Length - 6);     // Needed to remove the "Assets" folder.
             filePath += "Builds";                                      // Needed to add the "Builds" folder.
+#if UNITY_STANDALONE_LINUX
+            filePath += "/StandaloneWindows";
+#elif UNITY_EDITOR
+            filePath += "/Game";
+#endif
             return filePath;
         }
         #endregion

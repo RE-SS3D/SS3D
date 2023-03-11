@@ -1,11 +1,6 @@
 using NUnit.Framework;
-using SS3D.Systems.Entities;
-using SS3D.Systems.Entities.Humanoid;
-using SS3D.Systems.InputHandling;
 using SS3D.UI.Buttons;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,7 +29,7 @@ namespace SS3D.Tests
 
         public static IEnumerator Move(string[] axis, float[] value, float duration = 1f)
         {
-            ScriptedInput input = UserInput.GetInputService() as ScriptedInput; 
+            // TODO: replace: ScriptedInput input = UserInput.GetInputService() as ScriptedInput; 
 
             // Initial minor delay to enforce separation of commands
             yield return new WaitForSeconds(0.25f);
@@ -42,7 +37,7 @@ namespace SS3D.Tests
             // Start holding down the appropriate keys.
             for (int i = 0; i < axis.Length; i++)
             {
-                input.SetAxisRaw(axis[i], value[i]);
+                //TODO: input.SetAxisRaw(axis[i], value[i]);
             }
 
             // Wait for a little, then release the key.
@@ -51,7 +46,7 @@ namespace SS3D.Tests
             // Release the keys.
             for (int i = 0; i < axis.Length; i++)
             {
-                input.SetAxisRaw(axis[i], 0);
+                // TODO: input.SetAxisRaw(axis[i], 0);
             }
 
             // Wait for a little more, to add clear separation from the next move command.
@@ -136,10 +131,10 @@ namespace SS3D.Tests
         public static IEnumerator FinishAndExitRound()
         {
             // Press and release the Escape key
-            ScriptedInput input = UserInput.GetInputService() as ScriptedInput;
-            input.HandleButton(CancelButton, true);
+            //TODO: ScriptedInput input = UserInput.GetInputService() as ScriptedInput;
+            //input.HandleButton(CancelButton, true);
             yield return null;
-            input.HandleButton(CancelButton, false);
+            //input.HandleButton(CancelButton, false);
 
             // Change to the server settings tab, and cancel the round
             SetTabActive(ServerSettingsTabName); yield return new WaitForSeconds(1f);

@@ -1,25 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
-using SS3D.Core;
 using SS3D.Core.Settings;
-using SS3D.Systems.Rounds;
 using SS3D.UI.Buttons;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
-using Coimbra;
 using System.Diagnostics;
-using FishNet.Managing;
-using FishNet;
-using SS3D.Systems.InputHandling;
 using SS3D.Systems.Entities.Humanoid;
-using System.Runtime.InteropServices;
-using System;
-using SS3D.Systems.Entities;
-using SS3D.Systems.PlayerControl;
 
 namespace SS3D.Tests
 {
@@ -33,7 +20,6 @@ namespace SS3D.Tests
         protected const string StartRoundButtonName = "Start Round";
         protected const string StartClientCommand = "Start SS3D Server.bat";
 
-        protected ScriptedInput input;
         protected HumanoidController controller;
         protected Process[] clientProcess;
 
@@ -58,9 +44,7 @@ namespace SS3D.Tests
         {
             yield return base.UnitySetUp();
 
-            // Create our fake input and assign it to the player
-            input = new ScriptedInput();
-            UserInput.SetInputService(input);
+            // TODO: Create our fake input and assign it to the player
 
             // We need to wait until the lobby scene is loaded before anything can be done.
             while (!lobbySceneLoaded) yield return new WaitForSeconds(1f);
@@ -79,7 +63,7 @@ namespace SS3D.Tests
 
         public IEnumerator GetController()
         {
-            const string characterName = "Human_Temporary(Clone)";
+            const string characterName = "HumanTemporary(Clone)";
             controller = null;
 
             while (controller == null)

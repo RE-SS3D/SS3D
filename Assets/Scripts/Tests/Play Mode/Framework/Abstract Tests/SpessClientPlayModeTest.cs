@@ -1,23 +1,13 @@
 using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
-using SS3D.Core;
 using SS3D.Core.Settings;
-using SS3D.Systems.Rounds;
 using SS3D.UI.Buttons;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
-using Coimbra;
 using System.Diagnostics;
-using FishNet.Managing;
-using FishNet;
-using SS3D.Systems.InputHandling;
 using SS3D.Systems.Entities.Humanoid;
-using System.Runtime.InteropServices;
-using System;
 
 namespace SS3D.Tests
 {
@@ -32,27 +22,12 @@ namespace SS3D.Tests
         protected const string StartServerCommand = "Start SS3D Server.bat";
 
         protected Process cmdLineProcess;
-
-        protected ScriptedInput input;
         protected HumanoidController controller;
 
         [OneTimeSetUp]
         public virtual void OneTimeSetUp()
         {
-            // Get relevant batch file path
-            string batPath = Application.dataPath;
-            batPath = batPath.Substring(0, batPath.Length - 6);     // Needed to remove the "Assets" folder.
-            batPath += "Builds";                                    // Needed to add the "Builds" folder.
-
-            // Fire up the server.
-            cmdLineProcess = new Process();
-            cmdLineProcess.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
-            cmdLineProcess.StartInfo.FileName = StartServerCommand;
-            cmdLineProcess.StartInfo.WorkingDirectory = batPath;
-            cmdLineProcess.Start();
-            cmdLineProcess.WaitForExit();
-
-            UnityEngine.Debug.Log(SceneManager.GetActiveScene().name);
+            LoadFileHelpers.OpenCompiledBuild();
 
             // Force wait for 10 seconds - this should be long enough for the server to load
             System.Threading.Thread.Sleep(10000);
@@ -75,9 +50,7 @@ namespace SS3D.Tests
         {
             yield return base.UnitySetUp();
 
-            // Create our fake input and assign it to the player
-            input = new ScriptedInput();
-            UserInput.SetInputService(input);
+            // TODO: Create our fake input and assign it to the player
 
             // We need to wait until the lobby scene is loaded before anything can be done.
             while (!lobbySceneLoaded) yield return new WaitForSeconds(1f);
@@ -96,7 +69,7 @@ namespace SS3D.Tests
 
         public IEnumerator GetController()
         {
-            const string characterName = "Human_Temporary(Clone)";
+            const string characterName = "HumanTemporary(Clone)";
             controller = null;
 
             while (controller == null)
