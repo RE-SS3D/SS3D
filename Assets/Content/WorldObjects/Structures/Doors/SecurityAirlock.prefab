@@ -42,7 +42,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 549108894503474672}
-  m_Mesh: {fileID: -6191635592145199087, guid: c0a75c4aa53de4048bd3a58af0c35210, type: 3}
+  m_Mesh: {fileID: -7481012962273786178, guid: c0a75c4aa53de4048bd3a58af0c35210, type: 3}
 --- !u!23 &6060823761219191581
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -205,7 +205,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3446163593857738128}
-  m_Mesh: {fileID: 2966274859586044063, guid: c0a75c4aa53de4048bd3a58af0c35210, type: 3}
+  m_Mesh: {fileID: 7934132773479796240, guid: c0a75c4aa53de4048bd3a58af0c35210, type: 3}
 --- !u!23 &7941901518868879156
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -274,7 +274,7 @@ GameObject:
   - component: {fileID: 7942135432533076774}
   - component: {fileID: -6616120420594439688}
   m_Layer: 0
-  m_Name: CivillianAirlock
+  m_Name: SecurityAirlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -322,7 +322,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: -1
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 7168612627150811407
+  <AssetPathHash>k__BackingField: 15463664499869166627
   _sceneNetworkObjects: []
 --- !u!114 &-6616120420594439688
 MonoBehaviour:

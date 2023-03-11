@@ -42,7 +42,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 549108894503474672}
-  m_Mesh: {fileID: -6191635592145199087, guid: c0a75c4aa53de4048bd3a58af0c35210, type: 3}
+  m_Mesh: {fileID: 5733138985458157735, guid: c0a75c4aa53de4048bd3a58af0c35210, type: 3}
 --- !u!23 &6060823761219191581
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -97,8 +97,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.5465079, y: 1.9270786, z: 0.8}
-  m_Center: {x: 0.22674605, y: 0.9635393, z: 0.00000017136335}
+  m_Size: {x: 1.0469275, y: 1.9270786, z: 0.8}
+  m_Center: {x: 0.4769559, y: 0.9635393, z: 0.00000017881393}
 --- !u!1 &2197720509337837362
 GameObject:
   m_ObjectHideFlags: 0
@@ -123,7 +123,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2197720509337837362}
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: 0.270524, y: 0.96369, z: -0.139483}
+  m_LocalPosition: {x: 0.77, y: 0.96369, z: -0.139483}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -155,7 +155,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2338292899846041280}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.270524, y: 0.96369, z: 0.139483}
+  m_LocalPosition: {x: -0.77, y: 0.96369, z: 0.139483}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -205,7 +205,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3446163593857738128}
-  m_Mesh: {fileID: 2966274859586044063, guid: c0a75c4aa53de4048bd3a58af0c35210, type: 3}
+  m_Mesh: {fileID: -7539340834732462538, guid: c0a75c4aa53de4048bd3a58af0c35210, type: 3}
 --- !u!23 &7941901518868879156
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -260,8 +260,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.5465079, y: 1.9270786, z: 0.8}
-  m_Center: {x: -0.22674605, y: 0.9635393, z: 0.00000011920929}
+  m_Size: {x: 1.0503317, y: 1.9270786, z: 0.8}
+  m_Center: {x: -0.4786579, y: 0.9635393, z: 0.00000011920929}
 --- !u!1 &7133738675197207439
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,7 +274,7 @@ GameObject:
   - component: {fileID: 7942135432533076774}
   - component: {fileID: -6616120420594439688}
   m_Layer: 0
-  m_Name: CivillianAirlock
+  m_Name: CivillianAirlockDouble
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -322,7 +322,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: -1
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 7168612627150811407
+  <AssetPathHash>k__BackingField: 6743793680324271905
   _sceneNetworkObjects: []
 --- !u!114 &-6616120420594439688
 MonoBehaviour:
