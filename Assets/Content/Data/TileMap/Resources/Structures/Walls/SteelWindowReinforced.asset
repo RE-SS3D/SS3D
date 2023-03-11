@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4584c35d672b8a74797cc5efa123ce16, type: 3}
-  m_Name: WallSteel
+  m_Name: SteelWindowReinforced
   m_EditorClassIdentifier: 
-  nameString: wall_steel
-  prefab: {fileID: 3591147544166670882, guid: 45d13347efae0f54882e0e56dd770bb1, type: 3}
+  nameString: window_steelreinforced
+  prefab: {fileID: 3591147544166670882, guid: f2493b5478dd8e946ba98861f533362e, type: 3}
   icon: {fileID: 0}
   layer: 1
   genericType: 3
