@@ -629,6 +629,11 @@ namespace SS3D.Systems.Inventory.Containers
 
         private void handleItemAdded(Item item)
         {
+            if (item.gameObject == item.Prefab)
+            {
+                return;
+            }
+
             item.Freeze();
 
             // Make invisible
@@ -637,12 +642,12 @@ namespace SS3D.Systems.Inventory.Containers
                 item.SetVisibility(false);
             }
 
-            if(AttachedTo != null && AttachedTo.AttachItems)
+            if (AttachedTo != null && AttachedTo.AttachItems)
             {
                 Transform itemTransform = item.transform;
                 itemTransform.SetParent(AttachedTo.transform, false);
                 itemTransform.localPosition = AttachedTo.AttachmentOffset;
-               AttachedTo.ProcessItemAttached(item);
+                AttachedTo.ProcessItemAttached(item);
             }
         }
 
