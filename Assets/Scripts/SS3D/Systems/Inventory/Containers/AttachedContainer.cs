@@ -162,9 +162,9 @@ namespace SS3D.Systems.Inventory.Containers
             set => UpdateContainer(value);
         }
 
-        protected override void OnAwake()
+        protected override void OnStart()
         {
-            base.OnAwake();
+            base.OnStart();
 
             _container = new Container(this);
             _storedItems.OnChange += HandleStoredItemsChanged;

@@ -61,6 +61,13 @@ namespace SS3D.Systems.Inventory.Containers
 
         public InventoryView InventoryView { get; private set; }
 
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            Hands.Inventory = this;
+            AddHandle(UpdateEvent.AddListener(HandleUpdate));
+        }
 
         public override void OnStartClient()
         {

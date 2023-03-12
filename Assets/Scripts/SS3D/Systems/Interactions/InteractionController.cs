@@ -38,18 +38,38 @@ namespace SS3D.Systems.Interactions
 
             _radialView = Subsystems.Get<RadialInteractionView>();
             _camera = Subsystems.Get<CameraSubsystem>().PlayerCamera.GetComponent<Camera>();
+
+            AddEventListeners();
+        }
+
+        private void AddEventListeners()
+        {
             Controls controls = Subsystems.Get<InputSubsystem>().Inputs;
+
             _otherControls = controls.Other;
             _hotkeysControls = controls.Hotkeys;
+
             _otherControls.PrimaryClick.performed += HandlePrimaryClick;
             _otherControls.SecondaryClick.performed += HandleSecondaryClick;
             _hotkeysControls.Use.performed += HandleUse;
         }
 
+        protected override void OnDestroyed()
+        {
+            base.OnDestroyed();
+
+            RemoveEventListeners();
+        }
+
         public override void OnStopClient()
         {
             base.OnStopClient();
-            
+
+            RemoveEventListeners();
+        }
+
+        private void RemoveEventListeners()
+        {
             _otherControls.PrimaryClick.performed -= HandlePrimaryClick;
             _otherControls.SecondaryClick.performed -= HandleSecondaryClick;
             _hotkeysControls.Use.performed -= HandleUse;

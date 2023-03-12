@@ -55862,6 +55862,10 @@ PrefabInstance:
       value: <sprite name="approve"> start round
       objectReference: {fileID: 0}
     - target: {fileID: 55875278, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
+      propertyPath: _buttonStyle
+      value: 
+      objectReference: {fileID: 11400000, guid: cd09e47264022fe43ab74024f8d74ce9, type: 2}
+    - target: {fileID: 55875278, guid: 8c378d8ec3d1cda4389f92d2d8703b6a, type: 3}
       propertyPath: _pressedText
       value: <sprite name="deny"> stop round
       objectReference: {fileID: 0}

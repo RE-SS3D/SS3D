@@ -13,20 +13,22 @@ namespace SS3D.Systems.Lobby.UI
     /// <summary>
     /// Controls a button that starts or stops a round
     /// </summary>
-    public class ChangeRoundStateView : Actor
+    public sealed class ChangeRoundStateView : Actor
     {
-        [NotNull] [SerializeField] private ToggleLabelButton _startRoundButton;
+        [NotNull] 
+        [SerializeField] 
+        private ToggleLabelButton _startRoundButton;
 
-        protected override void OnAwake()
+        protected override void OnEnabled()
         {
-            base.OnAwake();
+            base.OnEnabled();
 
             AddEventListeners();
         }
 
-        protected override void OnDestroyed()
+        protected override void OnDisabled()
         {
-            base.OnDestroyed();
+            base.OnDisabled();
 
             _startRoundButton.OnPressedDown -= HandleEmbarkButtonPress;
         }
