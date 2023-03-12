@@ -138,18 +138,12 @@ namespace SS3D.Systems.Roles
         [ServerRpc(RequireOwnership = false)]
         public void GiveRoleLoadoutToPlayer(Entity entity)
         {
-            KeyValuePair<Soul, RoleData>? rolePlayer =
-                _rolePlayers.FirstOrDefault(rp => rp.Key == entity.Mind.Soul);
+            KeyValuePair<Soul, RoleData>? rolePlayer = _rolePlayers.FirstOrDefault(rp => rp.Key == entity.Mind.Soul);
 
             RoleData roleData = rolePlayer.Value.Value;
 
-            Punpun.Say(this, entity.Ckey + " embarked with role " + roleData.Name);
-            SpawnIdentificationItems(entity, roleData);
-
             if (roleData.Loadout != null)
             {
-                RoleData roleData = rolePlayer.Value.Value;
-
                 Punpun.Information(this, entity.Ckey + " embarked with role " + roleData.Name);
                 SpawnIdentificationItems(entity, roleData);
 
