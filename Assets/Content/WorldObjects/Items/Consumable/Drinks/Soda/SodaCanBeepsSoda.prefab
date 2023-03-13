@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3255413025537369247
+--- !u!1 &1380392153802612802
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,7 +8,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5804924099384967953}
+  - component: {fileID: 6123520057549092640}
   m_Layer: 10
   m_Name: AttachmentPoint
   m_TagString: Untagged
@@ -16,13 +16,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5804924099384967953
+--- !u!4 &6123520057549092640
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3255413025537369247}
+  m_GameObject: {fileID: 1380392153802612802}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -44,11 +44,12 @@ GameObject:
   - component: {fileID: 3507921286519835225}
   - component: {fileID: 5441329365645844375}
   - component: {fileID: 751568336328987408}
-  - component: {fileID: 2059096515567311232}
-  - component: {fileID: 8365938227602917669}
-  - component: {fileID: -2859110866841891739}
+  - component: {fileID: 9188285980790976355}
+  - component: {fileID: 5958074810027370513}
+  - component: {fileID: 6588399484719437217}
+  - component: {fileID: -6509701768596653782}
   m_Layer: 10
-  m_Name: SodaCanCannedLaughter
+  m_Name: SodaCanBeepsSoda
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66,7 +67,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5804924099384967953}
+  - {fileID: 6123520057549092640}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -77,7 +78,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8423412686940963211}
-  m_Mesh: {fileID: -2423680911938410841, guid: c1169b60804c0aa41bb17b72ba87985b, type: 3}
+  m_Mesh: {fileID: 2504721749124789882, guid: c1169b60804c0aa41bb17b72ba87985b, type: 3}
 --- !u!23 &3507921286519835225
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -150,7 +151,7 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 3
---- !u!114 &2059096515567311232
+--- !u!114 &9188285980790976355
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -163,8 +164,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 0
-  _addedNetworkObject: {fileID: 8365938227602917669}
-  _networkObjectCache: {fileID: 8365938227602917669}
+  _addedNetworkObject: {fileID: 5958074810027370513}
+  _networkObjectCache: {fileID: 5958074810027370513}
   _synchronizeParent: 0
   _packing:
     Position: 0
@@ -192,7 +193,7 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
---- !u!114 &8365938227602917669
+--- !u!114 &5958074810027370513
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -207,20 +208,37 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
-  - {fileID: 2059096515567311232}
-  - {fileID: -2859110866841891739}
+  - {fileID: 9188285980790976355}
+  - {fileID: 6588399484719437217}
+  - {fileID: -6509701768596653782}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 5
+  <PrefabId>k__BackingField: 9
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 1434592048148557819
+  <AssetPathHash>k__BackingField: 16447123462401280169
   _sceneNetworkObjects: []
---- !u!114 &-2859110866841891739
+--- !u!114 &6588399484719437217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8423412686940963211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e2052e142b9974091c0f7c2fa60489, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: 5958074810027370513}
+  _networkObjectCache: {fileID: 5958074810027370513}
+  ObjectToScale: {fileID: 0}
+--- !u!114 &-6509701768596653782
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -232,15 +250,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8e907cf58c0ce0439d34cd7cf644216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 1
-  _addedNetworkObject: {fileID: 8365938227602917669}
-  _networkObjectCache: {fileID: 8365938227602917669}
-  _itemId: 7
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: 5958074810027370513}
+  _networkObjectCache: {fileID: 5958074810027370513}
+  _itemId: 6
   _name: 
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 751568336328987408}
   _weight: 1
   Prefab: {fileID: 8423412686940963211}
-  AttachmentPoint: {fileID: 5804924099384967953}
-  AttachmentPointAlt: {fileID: 5804924099384967953}
+  AttachmentPoint: {fileID: 6123520057549092640}
+  AttachmentPointAlt: {fileID: 6123520057549092640}
   traits: []

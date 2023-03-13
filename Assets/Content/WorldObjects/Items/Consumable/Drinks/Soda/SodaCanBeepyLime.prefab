@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &524964330185912327
+--- !u!1 &7799416907214201609
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,7 +8,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8184554023770655363}
+  - component: {fileID: 7328085894945459903}
   m_Layer: 10
   m_Name: AttachmentPoint
   m_TagString: Untagged
@@ -16,14 +16,14 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8184554023770655363
+--- !u!4 &7328085894945459903
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 524964330185912327}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_GameObject: {fileID: 7799416907214201609}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -44,11 +44,11 @@ GameObject:
   - component: {fileID: 3507921286519835225}
   - component: {fileID: 5441329365645844375}
   - component: {fileID: 751568336328987408}
-  - component: {fileID: 2441311491254607865}
-  - component: {fileID: -5714630671653109526}
-  - component: {fileID: 3779329553275467966}
+  - component: {fileID: 1767385633625151865}
+  - component: {fileID: 564570081198347949}
+  - component: {fileID: 1284732585315456183}
   m_Layer: 10
-  m_Name: SodaCanDukePurpleTea
+  m_Name: SodaCanBeepyLime
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66,7 +66,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8184554023770655363}
+  - {fileID: 7328085894945459903}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -77,7 +77,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8423412686940963211}
-  m_Mesh: {fileID: 8420070316573550880, guid: c1169b60804c0aa41bb17b72ba87985b, type: 3}
+  m_Mesh: {fileID: 1392182379186180254, guid: c1169b60804c0aa41bb17b72ba87985b, type: 3}
 --- !u!23 &3507921286519835225
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -150,7 +150,7 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 3
---- !u!114 &2441311491254607865
+--- !u!114 &1767385633625151865
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -163,8 +163,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 0
-  _addedNetworkObject: {fileID: -5714630671653109526}
-  _networkObjectCache: {fileID: -5714630671653109526}
+  _addedNetworkObject: {fileID: 564570081198347949}
+  _networkObjectCache: {fileID: 564570081198347949}
   _synchronizeParent: 0
   _packing:
     Position: 0
@@ -192,7 +192,7 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
---- !u!114 &-5714630671653109526
+--- !u!114 &564570081198347949
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -207,20 +207,20 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
-  - {fileID: 2441311491254607865}
-  - {fileID: 3779329553275467966}
+  - {fileID: 1767385633625151865}
+  - {fileID: 1284732585315456183}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 60
+  <PrefabId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 16745979986684758555
+  <AssetPathHash>k__BackingField: 13580306935981934161
   _sceneNetworkObjects: []
---- !u!114 &3779329553275467966
+--- !u!114 &1284732585315456183
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -233,14 +233,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 1
-  _addedNetworkObject: {fileID: -5714630671653109526}
-  _networkObjectCache: {fileID: -5714630671653109526}
-  _itemId: 5
+  _addedNetworkObject: {fileID: 564570081198347949}
+  _networkObjectCache: {fileID: 564570081198347949}
+  _itemId: 9
   _name: 
   _sprite: {fileID: 0}
   _rigidbody: {fileID: 751568336328987408}
   _weight: 1
   Prefab: {fileID: 8423412686940963211}
-  AttachmentPoint: {fileID: 8184554023770655363}
-  AttachmentPointAlt: {fileID: 8184554023770655363}
+  AttachmentPoint: {fileID: 7328085894945459903}
+  AttachmentPointAlt: {fileID: 7328085894945459903}
   traits: []
