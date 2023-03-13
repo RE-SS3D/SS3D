@@ -69,8 +69,8 @@ namespace SS3D.Systems.Permissions
             string userCkey = playerSystem.GetCkey(conn);
             if (TryGetUserRole(userCkey, out ServerRoleTypes role) && role != requiredRole)
             {
-                string message = $"User {userCkey} doesn't have {requiredRole} permission";
-                Punpun.Say(this, message, Logs.ServerOnly);
+                string message = "User {userCkey} doesn't have {requiredRole} permission";
+                Punpun.Information(this, message, Logs.ServerOnly, userCkey, requiredRole);
                 return false;
             }
 
