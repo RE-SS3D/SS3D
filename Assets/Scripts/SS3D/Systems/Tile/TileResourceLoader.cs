@@ -78,7 +78,7 @@ namespace SS3D.Systems.Tile
         {
             GenericObjectSo genericObjectSo = _assets.FirstOrDefault(tileObject => tileObject.nameString == assetName);
             if (genericObjectSo == null)
-                Punpun.Yell(this, $"Requested tile asset {assetName} was not found.");
+                Punpun.Warning(this, "Requested tile asset {assetName} was not found.", Logs.Generic, assetName);
 
             return genericObjectSo;
         }

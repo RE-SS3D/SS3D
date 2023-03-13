@@ -1,69 +1,197 @@
 ﻿using System;
-using SS3D.Utils;
-using UnityEngine;
+using System.Linq;
+using Serilog;
+using Serilog.Events;
 
 namespace SS3D.Logging
 {
     /// <summary>
-    /// Custom debugger
+    /// Wrapper class for Serilog Logger. Makes mandatory adding a sender object.
+    /// Makes mandatory adding additionnal log context with the Logs enum.
+    /// Takes care of adding infoLog and sender properties to Serilog Logger.
     /// </summary>
     public static class Punpun
     {
         /// <summary>
-        /// A refined Debug.Log
+        /// Write a log event with the <see cref="LogEventLevel.Verbose"/> level and associated exception.
         /// </summary>
-        /// <param name="sender">who sends the message</param>
-        /// <param name="message">message</param>
-        /// <param name="logs">type of log</param>
-        public static void Say(object sender, string message, Logs logs = Logs.Generic, bool colorizeEverything = false)
+        /// <param name="messageTemplate">Message template describing the event.</param>
+        /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
+        /// <example>
+        /// Punpun.Verbose(this, "Starting up at {StartedAt} for client {ClientId}.", Logs.ServerOnly, DateTime.Now, connection.ClientId);
+        /// Punpun.Verbose(this, "Player set up.");
+        /// </example>
+        public static void Verbose(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            string debug = ProcessDebug(sender, message, logs, colorizeEverything);
-
-            Debug.Log(debug);
+            var properties = new object[]{infoLog}.Concat(propertyValues).ToArray();
+            Log.ForContext(sender.GetType()).Verbose("{InfoLog}" + messageTemplate, properties);
         }
 
         /// <summary>
-        /// A refined Debug.LogWarning
+        /// Write a log event with the <see cref="LogEventLevel.Verbose"/> level and associated exception.
         /// </summary>
-        /// <param name="sender">who sends the message</param>
-        /// <param name="message">message</param>
-        /// <param name="logs">type of log</param>
-        public static void Yell(object sender, string message, Logs logs = Logs.Generic, bool colorizeEverything = false)
+        /// <param name="exception">Exception related to the event.</param>
+        /// <param name="messageTemplate">Message template describing the event.</param>
+        /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
+        /// <example>
+        /// Punpun.Verbose(this, "Starting up at {StartedAt} for client {ClientId}.", Logs.ServerOnly, DateTime.Now, connection.ClientId);
+        /// Punpun.Verbose(this, "Player set up.");
+        /// </example>
+        public static void Verbose(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            string debug = ProcessDebug(sender, message, logs, colorizeEverything);
-
-            Debug.LogWarning(debug);
+            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            Log.ForContext(sender.GetType()).Verbose(exception,"{InfoLog}" + messageTemplate, properties);
         }
 
         /// <summary>
-        /// A refined Debug.LogError
+        /// Write a log event with the <see cref="LogEventLevel.Debug"/> level.
         /// </summary>
-        /// <param name="sender">who sends the message</param>
-        /// <param name="message">message</param>
-        /// <param name="logs">type of log</param>
-        public static void Panic(object sender, string message, Logs logs = Logs.Generic, bool colorizeEverything = false)
+        /// <param name="messageTemplate">Message template describing the event.</param>
+        /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
+        /// <example>
+        /// Punpun.Debug(this, "Starting up at {StartedAt} for client {ClientId}.", Logs.ServerOnly, DateTime.Now, connection.ClientId);
+        /// Punpun.Debug(this, "Player set up.");
+        /// </example>
+        public static void Debug(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            string debug = ProcessDebug(sender, message, logs, colorizeEverything);
-
-            Debug.LogError(debug);
+            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            Log.ForContext(sender.GetType()).Debug("{InfoLog}" + messageTemplate, properties);
         }
 
-        private static string ProcessDebug(object sender, string message, Logs logs = Logs.Generic, bool colorizeEverything = false)
+        /// <summary>
+        /// Write a log event with the <see cref="LogEventLevel.Debug"/> level and associated exception.
+        /// </summary>
+        /// <param name="exception">Exception related to the event.</param>
+        /// <param name="messageTemplate">Message template describing the event.</param>
+        /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
+        /// <example>
+        /// Log.Debug(ex, "Swallowing a mundane exception.");
+        /// </example>
+        public static void Debug(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
         {
-            string color = LogColors.GetLogColor(logs);
-
-            string name = sender.GetType().Name;
-            string author = name == "RuntimeType" ? $"{sender}" : $"{name}";
-            author = $"[{author}]".Colorize(color);
-
-            if (colorizeEverything)
-            {
-                message.Colorize(color);
-            }
-
-            string log = $"{author} {message}";
-
-            return log;
+            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            Log.ForContext(sender.GetType()).Debug(exception, "{InfoLog}" + messageTemplate, properties);
         }
+
+        /// <summary>
+        /// Write a log event with the <see cref="LogEventLevel.Information"/> level and associated exception.
+        /// </summary>
+        /// <param name="messageTemplate">Message template describing the event.</param>
+        /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
+        /// <example>
+        /// Punpun.Verbose(this, "Starting up at {StartedAt} for client {ClientId}.", Logs.ServerOnly, DateTime.Now, connection.ClientId);
+        /// Punpun.Verbose(this, "Player set up.");
+        /// </example>
+        public static void Information(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
+        {
+            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            Log.ForContext(sender.GetType()).Information("{InfoLog}" + messageTemplate, properties);
+        }
+
+        /// <summary>
+        /// Write a log event with the <see cref="LogEventLevel.Information"/> level and associated exception.
+        /// </summary>
+        /// <param name="exception">Exception related to the event.</param>
+        /// <param name="messageTemplate">Message template describing the event.</param>
+        /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
+        /// <example>
+        /// Log.Information(this, new NullException(),  "Failed to load command line arguments in {TimeMs}.", Logs.Generic, sw.ElapsedMilliseconds);
+        /// </example>
+        public static void Information(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
+        {
+            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            Log.ForContext(sender.GetType()).Debug(exception, "{InfoLog}" + messageTemplate, properties);
+        }
+
+        /// <summary>
+        /// Write a log event with the <see cref="LogEventLevel.Warning"/> level and associated exception.
+        /// </summary>
+        /// <param name="messageTemplate">Message template describing the event.</param>
+        /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
+        /// <example>
+        /// Punpun.Verbose(this, "Starting up at {StartedAt} for client {ClientId}.", Logs.ServerOnly, DateTime.Now, connection.ClientId);
+        /// Punpun.Verbose(this, "Player set up.");
+        /// </example>
+        public static void Warning(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
+        {
+            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            Log.ForContext(sender.GetType()).Warning("{InfoLog}" + messageTemplate, properties);
+        }
+
+        /// <summary>
+        /// Write a log event with the <see cref="LogEventLevel.Warning"/> level and associated exception.
+        /// </summary>
+        /// <param name="exception">Exception related to the event.</param>
+        /// <param name="messageTemplate">Message template describing the event.</param>
+        /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
+        /// <example>
+        /// Log.Warning(this, new NullException(),  "Failed to load command line arguments in {TimeMs}.", Logs.Generic, sw.ElapsedMilliseconds);
+        /// </example>
+        public static void Warning(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
+        {
+            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            Log.ForContext(sender.GetType()).Debug(exception, "{InfoLog}" + messageTemplate, properties);
+        }
+
+        /// <summary>
+        /// Write a log event with the <see cref="LogEventLevel.Error"/> level and associated exception.
+        /// </summary>
+        /// <param name="messageTemplate">Message template describing the event.</param>
+        /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
+        /// <example>
+        /// Punpun.Verbose(this, "Starting up failed at {StartedAt} for client {ClientId}.", Logs.ServerOnly, DateTime.Now, connection.ClientId);
+        /// Punpun.Verbose(this, "Player set up.");
+        /// </example>
+        public static void Error(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
+        {
+            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            Log.ForContext(sender.GetType()).Error("{InfoLog}" + messageTemplate, properties);
+        }
+
+        /// <summary>
+        /// Write a log event with the <see cref="LogEventLevel.Error"/> level and associated exception.
+        /// </summary>
+        /// <param name="exception">Exception related to the event.</param>
+        /// <param name="messageTemplate">Message template describing the event.</param>
+        /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
+        /// <example>
+        /// Log.Error(this, new NullException(),  "Failed to load command line arguments in {TimeMs}.", Logs.Generic, sw.ElapsedMilliseconds);
+        /// </example>
+        public static void Error(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
+        {
+            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            Log.ForContext(sender.GetType()).Error(exception, "{InfoLog}" + messageTemplate, properties);
+        }
+
+        /// <summary>
+        /// Write a log event with the <see cref="LogEventLevel.Fatal"/> level and associated exception.
+        /// </summary>
+        /// <param name="messageTemplate">Message template describing the event.</param>
+        /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
+        /// <example>
+        /// Punpun.Verbose(this, "Starting up failed at {StartedAt} for client {ClientId}.", Logs.ServerOnly, DateTime.Now, connection.ClientId);
+        /// Punpun.Verbose(this, "Player set up.");
+        /// </example>
+        public static void Fatal(object sender, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
+        {
+            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            Log.ForContext(sender.GetType()).Fatal("{InfoLog}" + messageTemplate, properties);
+        }
+
+        /// <summary>
+        /// Write a log event with the <see cref="LogEventLevel.Fatal"/> level and associated exception.
+        /// </summary>
+        /// <param name="exception">Exception related to the event.</param>
+        /// <param name="messageTemplate">Message template describing the event.</param>
+        /// <param name="propertyValues">Objects positionally formatted into the message template.</param>
+        /// <example>
+        /// Log.Fatal(this, new NullException(),  "Failed to load command line arguments in {TimeMs}.", Logs.Generic, sw.ElapsedMilliseconds);
+        /// </example>
+        public static void Fatal(object sender, Exception exception, string messageTemplate, Logs infoLog = Logs.Generic, params object[] propertyValues)
+        {
+            var properties = new object[] { infoLog }.Concat(propertyValues).ToArray();
+            Log.ForContext(sender.GetType()).Fatal(exception, "{InfoLog}" + messageTemplate, properties);
+        }
+        
     }
 }

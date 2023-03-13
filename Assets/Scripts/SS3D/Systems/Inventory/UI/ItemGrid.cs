@@ -57,7 +57,7 @@ namespace SS3D.Systems.Inventory.UI
                 StartCoroutine(DisplayInitialItems());
             }
 
-            container.OnContentsChanged += ContainerOnContentsChanged;
+            AttachedContainer.Container.OnContentsChanged += ContainerOnContentsChanged;
         }
 
         private void OnDestroy()

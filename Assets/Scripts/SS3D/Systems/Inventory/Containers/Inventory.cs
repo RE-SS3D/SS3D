@@ -11,6 +11,7 @@ using SS3D.Systems.Inventory.Items;
 using SS3D.Systems.Inventory.UI;
 using SS3D.Systems.Roles;
 using UnityEngine;
+using System.Collections;
 
 namespace SS3D.Systems.Inventory.Containers
 {
@@ -35,17 +36,17 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The container that has the IDCard with permissions
         /// </summary>
-        public Container IDContainer;
+        public AttachedContainer IDContainer;
 
         /// <summary>
         /// The container of the left pocket
         /// </summary>
-        public Container LeftPocketContainer;
+        public AttachedContainer LeftPocketContainer;
 
         /// <summary>
         /// The container of the right pocket
         /// </summary>
-        public Container RightPocketContainer;
+        public AttachedContainer RightPocketContainer;
 
         /// <summary>
         /// The controllable body of the owning player
@@ -57,6 +58,7 @@ namespace SS3D.Systems.Inventory.Containers
         private float _nextAccessCheck;
 
         public InventoryView InventoryView { get; private set; }
+
 
         public override void OnStartClient()
         {
@@ -72,7 +74,7 @@ namespace SS3D.Systems.Inventory.Containers
 
             InventoryView.Setup();
             InventoryView.Enable(true);
-            
+
             SystemLocator.Get<RoleSystem>().GiveRoleLoadoutToPlayer(Body);
         }
 
@@ -230,15 +232,15 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// Make this inventory open an container.
         /// </summary>
-        public void OpenContainer(AttachedContainer container)
+        public void OpenContainer(AttachedContainer attachedContainer)
         {
-            container.AddObserver(GetComponent<Entity>());
-            _openedContainers.Add(container);
-            SetOpenState(container.gameObject, true);
+            attachedContainer.Container.AddObserver(GetComponent<Entity>());
+            _openedContainers.Add(attachedContainer);
+            SetOpenState(attachedContainer.gameObject, true);
             NetworkConnection client = Owner;
             if (client != null)
             {
-                TargetOpenContainer(client, container);
+                TargetOpenContainer(client, attachedContainer);
             }
         }
 
@@ -247,6 +249,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public void RemoveContainer(AttachedContainer container)
         {
+            container.Container.RemoveObserver(GetComponent<Entity>());
             if (_openedContainers.Remove(container))
             {
                 Debug.Log("client call remove");
@@ -303,7 +306,7 @@ namespace SS3D.Systems.Inventory.Containers
         }
 
         /// <summary>
-        /// On containers having OpenWhenContainerViewed set true in ContainerDescriptor, this set the containers state appropriately.
+        /// On containers having OpenWhenContainerViewed set true in AttachedContainer, this set the containers state appropriately.
         /// If the container belongs to another Inventory, it's already opened, and therefore it does nothing.
         /// If this Inventory is the first to have it, it triggers the open animation of the object.
         /// If this Inventory is the last to have it, it closes the container.
@@ -313,15 +316,15 @@ namespace SS3D.Systems.Inventory.Containers
         [Server]
         private void SetOpenState(GameObject containerObject, bool state)
         {
-            AttachedContainer container = containerObject.GetComponent<AttachedContainer>();
+            var container = containerObject.GetComponent<AttachedContainer>();
 
-            if (!container.ContainerDescriptor.OpenWhenContainerViewed)
+            if (!container.OpenWhenContainerViewed)
             {
                 return;
             }
 
             Hands hands = GetComponent<Hands>();
-            foreach (Entity observer in container.ObservingPlayers)
+            foreach (Entity observer in container.Container.ObservingPlayers)
             {
                 // checks if the container is already viewed by another entity
                 if (hands.Inventory.HasContainer(container) && observer != hands)
@@ -330,7 +333,7 @@ namespace SS3D.Systems.Inventory.Containers
                 }
             }
 
-            container.ContainerDescriptor.ContainerInteractive.SetOpenState(state);
+            container.ContainerInteractive.SetOpenState(state);
         }
 
 

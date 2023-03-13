@@ -32,10 +32,10 @@ namespace SS3D.Systems.Inventory.UI
             DestroyImmediate(RightPocketGameObject);
 
             // Find all containers with type Pocket on the Human prefab.
-            ContainerDescriptor[] inventoryContainers = Inventory.GetComponentsInChildren<ContainerDescriptor>(true);
+            AttachedContainer[] inventoryContainers = Inventory.GetComponentsInChildren<AttachedContainer>(true);
             
-            List<ContainerDescriptor> pocketContainers = inventoryContainers.Where(container => container.Type is ContainerType.Pocket).ToList();
-            ContainerDescriptor idSlotContainer = inventoryContainers.Where(container => container.Type is ContainerType.Identification).FirstOrDefault();
+            List<AttachedContainer> pocketContainers = inventoryContainers.Where(container => container.Type is ContainerType.Pocket).ToList();
+            AttachedContainer idSlotContainer = inventoryContainers.Where(container => container.Type is ContainerType.Identification).FirstOrDefault();
 
             if (pocketContainers.Count == 0)
             {
@@ -54,21 +54,19 @@ namespace SS3D.Systems.Inventory.UI
             idSlot.transform.SetSiblingIndex(0);
 
             // Set up the container that each pocket display.
-            foreach (ContainerDescriptor container in pocketContainers)
+            foreach (AttachedContainer container in pocketContainers)
             {
                 SetUpSlot(container, PocketPrefab);
             }
         }
 
-        private SingleItemContainerSlot SetUpSlot(ContainerDescriptor container, GameObject prefab)
+        private SingleItemContainerSlot SetUpSlot(AttachedContainer container, GameObject prefab)
         {
-            AttachedContainer attachedContainer = container.AttachedContainer;
             GameObject handElement = Instantiate(prefab, TransformParent, false);
 
             SingleItemContainerSlot slot = handElement.GetComponent<SingleItemContainerSlot>();
             slot.Inventory = Inventory;
-            slot.Container = attachedContainer;
-
+            slot.Container = container;
             return slot;
         }
     }

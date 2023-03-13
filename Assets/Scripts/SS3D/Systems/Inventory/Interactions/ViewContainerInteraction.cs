@@ -12,16 +12,16 @@ namespace SS3D.Systems.Inventory.Interactions
     {
         public float MaxDistance { get; set; }
 
-        public readonly ContainerDescriptor ContainerDescriptor;
+        public readonly AttachedContainer AttachedContainer;
 
-        public ViewContainerInteraction(ContainerDescriptor containerDescriptor)
+        public ViewContainerInteraction(AttachedContainer attachedContainer)
         {
-            ContainerDescriptor = containerDescriptor;
+            AttachedContainer = attachedContainer;
         }
 
         public override string GetName(InteractionEvent interactionEvent)
         {
-            return "View " + ContainerDescriptor.ContainerName;
+            return "View " + AttachedContainer.ContainerName;
         }
 
         public override Sprite GetIcon(InteractionEvent interactionEvent)
@@ -36,8 +36,7 @@ namespace SS3D.Systems.Inventory.Interactions
                 return false;
             }
 
-            AttachedContainer container = ContainerDescriptor.AttachedContainer;
-            if (container == null)
+            if (AttachedContainer == null)
             {
                 return false;
             }
@@ -53,15 +52,14 @@ namespace SS3D.Systems.Inventory.Interactions
             {
                 return false;
             }
-            return !inventory.HasContainer(container) && entity.GetComponent<Hands>().CanInteract(container.gameObject);
+            return !inventory.HasContainer(AttachedContainer) && entity.GetComponent<Hands>().CanInteract(AttachedContainer.gameObject);
         }
 
         public override bool Start(InteractionEvent interactionEvent, InteractionReference reference)
         {
             Containers.Inventory inventory = interactionEvent.Source.GetComponentInTree<Containers.Inventory>();
-            AttachedContainer attachedContainer = ContainerDescriptor.AttachedContainer;
 
-            inventory.OpenContainer(attachedContainer);
+            inventory.OpenContainer(AttachedContainer);
 
             return false;
         }

@@ -40,7 +40,7 @@ SkinnedMeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 362297111316997015}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -77,7 +77,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 1
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -938553588051960351, guid: c0a75c4aa53de4048bd3a58af0c35210, type: 3}
+  m_Mesh: {fileID: -911854352625490961, guid: c0a75c4aa53de4048bd3a58af0c35210, type: 3}
   m_Bones: []
   m_BlendShapeWeights:
   - 100

@@ -42,7 +42,7 @@ namespace SS3D.Systems.Inventory.UI
                 return;
             }
 
-            container.AttachedTo.ContainerDescriptor.ContainerUi = this;
+            container.AttachedTo.ContainerUi = this;
 
             RectTransform rectTransform = Grid.GetComponent<RectTransform>();
             Vector2 gridDimensions = Grid.GetGridDimensions();
@@ -52,7 +52,7 @@ namespace SS3D.Systems.Inventory.UI
             rect.sizeDelta = new Vector2(width, height);
 
             // Set the text inside the containerUI to be the name of the container
-            ContainerName.text = _attachedContainer.GetName();
+            ContainerName.text = _attachedContainer.ContainerName;
 
             // Position the text correctly inside the UI.
             Vector3[] v = new Vector3[4];

@@ -1,28 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using FishNet.Object.Synchronizing;
 using SS3D.Core.Behaviours;
+using SS3D.Systems.Entities;
 using SS3D.Systems.Inventory.Items;
 using UnityEngine;
+using static SS3D.Substances.SubstanceContainer;
+using static SS3D.Systems.Inventory.Containers.AttachedContainer;
 
 namespace SS3D.Systems.Inventory.Containers
 {
     /// <summary>
-    /// Stores items in a 2 dimensional container
+    /// Stores items in a 2 dimensional container. 
+    /// This class is handling the logic part of storing items. 
+    /// It checks if items can be added, removed, replace, and does it when possible. 
     /// </summary>
-    public sealed class Container : NetworkActor
+    public sealed class Container
     {
-        /// <summary>
-        /// Called when the contents of the container change
-        /// </summary>
-        public event ContainerContentsHandler OnContentsChanged;
-        public delegate void ContainerContentsHandler(Container container, IEnumerable<Item> oldItems,IEnumerable<Item> newItems, ContainerChangeType type);
-
         /// <summary>
         /// The size of this container
         /// </summary>
-        public Vector2Int Size;
+        private Vector2Int _size;
+
+        private string _containerName = "container";
+
+        private Filter _startFilter;
         /// <summary>
         /// An optional reference to an attached container
         /// </summary>
@@ -30,8 +34,7 @@ namespace SS3D.Systems.Inventory.Containers
         /// <summary>
         /// The items stored in this container, including information on how they are stored
         /// </summary>
-        [SyncObject]
-        private readonly SyncList<StoredItem> _storedItems = new();
+        private readonly List<StoredItem> _storedItems;
         /// <summary>
         /// Server sole purpose of locking code execution while an operation is outgoing
         /// </summary>
@@ -41,7 +44,17 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public float LastModification { get; private set; }
 
-        public SyncList<StoredItem> StoredItems => _storedItems;
+        public string ContainerName => _containerName;
+
+        public Filter StartFilter => _startFilter;
+
+        public Vector2Int Size => _size;
+
+        public bool HideItems => _hideItems;
+
+        public ContainerType ContainerType => _type;
+
+        public List<StoredItem> StoredItems => _storedItems;
         /// <summary>
         /// Is this container empty
         /// </summary>
@@ -55,51 +68,64 @@ namespace SS3D.Systems.Inventory.Containers
         /// </summary>
         public IEnumerable<Item> Items => StoredItems.Select(x => x.Item);
 
-        protected override void OnAwake()
-        {
-            base.OnAwake();
+        /// <summary>
+        /// The creatures looking at this container
+        /// </summary>
+        public readonly List<Entity> ObservingPlayers = new();
 
-            StoredItems.OnChange += HandleStoredItemsChanged;
+        /// <summary>
+        /// Set visibility of objects inside the container (not in the UI, in the actual game object).
+        /// If the container is Hidden, the visibility of items is always off.
+        /// </summary>
+        private bool _hideItems = true;
+
+        private ContainerType _type = ContainerType.None;
+
+        public delegate void ContainerContentsHandler(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type);
+        /// <summary>
+        /// Called when the contents of the container change
+        /// </summary>
+        public event ContainerContentsHandler OnContentsChanged;
+
+        public event ObserverHandler OnNewObserver;
+
+        public delegate void ObserverHandler(Container container, Entity observer);
+
+
+        public Container()
+        {
+            _storedItems = new List<StoredItem>();
+            _size = new Vector2Int(1, 1);
+        }
+
+        public Container(Vector2Int size)
+        {
+            _storedItems = new List<StoredItem>();
+            _size = size;
+            OnContentsChanged += HandleContainerContentsChanged;
+        }
+
+        /// <summary>
+        /// Set up the container with an attached container. 
+        /// </summary>
+        public Container(AttachedContainer attachedContainer)
+        {
+            AttachedTo = attachedContainer;
+            _size = attachedContainer.Size;
+            _type = attachedContainer.Type;
+            _hideItems = attachedContainer.HideItems;
+            _storedItems = (List<StoredItem>) (attachedContainer.StoredItems.Collection);
+            _startFilter= attachedContainer.StartFilter;
+
+
+            OnContentsChanged += HandleContainerContentsChanged;
         }
 
         ~Container()
         {
-            StoredItems.OnChange -= HandleStoredItemsChanged;
+            OnContentsChanged -= HandleContainerContentsChanged;
         }
 
-        /// <summary>
-        /// Runs when the container was changed, networked
-        /// </summary>
-        /// <param name="op">Type of change</param>
-        /// <param name="index">Which element was changed</param>
-        /// <param name="oldItem">Element before the change</param>
-        /// <param name="newItem">Element after the change</param>
-        private void HandleStoredItemsChanged(SyncListOperation op, int index, StoredItem oldItem, StoredItem newItem, bool asServer)
-        {
-            ContainerChangeType changeType;
-
-            switch (op)
-            {
-                case SyncListOperation.Add:
-                    changeType = ContainerChangeType.Add;
-                    break;
-                case SyncListOperation.Insert:
-                case SyncListOperation.Set:
-                    changeType = ContainerChangeType.Move;
-                    break;
-                case SyncListOperation.RemoveAt:
-                case SyncListOperation.Clear:
-                    changeType = ContainerChangeType.Remove;
-                    break;
-                case SyncListOperation.Complete:
-                    changeType = ContainerChangeType.Move;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(op), op, null);
-            }
-
-            OnContentsChanged?.Invoke(this, new []{oldItem.Item} ,new []{newItem.Item}, changeType);
-        }
 
         /// <summary>
         /// Places an item into this container in the first available position
@@ -162,8 +188,7 @@ namespace SS3D.Systems.Inventory.Containers
                 }
 
                 StoredItem storedItem = new(item, position);
-                StoredItems.Set(itemIndex, storedItem);
-
+                ReplaceStoredItems(storedItem, itemIndex);
                 return true;
 
                 // Item at same position, nothing to do
@@ -209,9 +234,70 @@ namespace SS3D.Systems.Inventory.Containers
                 return;
             }
 
-            StoredItems.Add(newItem);
+            AddToStoredItems(newItem);
             LastModification = Time.time;
         }
+
+        /// <summary>
+        /// Correctly add a storeItem to the container. All adding should use this method, never do it directly.
+        /// If an AttachedContainer is set up, add to AttachedContainer's syncList, 
+        /// this will update _storedItems automatically as _storedItems is set up as a reference to the list internal to AttachedContainer's syncList.
+        /// If no AttachedContainer is set up, add to the StoredItems list directly.
+        /// </summary>
+        /// <param name="newItem"> the item to store.</param>
+        private void AddToStoredItems(StoredItem newItem)
+        {
+            if(AttachedTo != null)
+            {
+                AttachedTo.StoredItems.Add(newItem);
+            }
+            else
+            {
+                StoredItems.Add(newItem);
+            }
+        }
+
+
+        /// <summary>
+        /// Correctly set a storeItem in the container at the given index. All replacing should use this method, never do it directly.
+        /// If an AttachedContainer is set up, set to AttachedContainer's syncList, 
+        /// this will update _storedItems automatically as _storedItems is set up as a reference to the list internal to AttachedContainer's syncList.
+        /// If no AttachedContainer is set up, set the StoredItems list directly.
+        /// </summary>
+        /// <param name="item">the item to store.</param>
+        /// <param name="index">the index in the list at which it should be stored.</param>
+        private void ReplaceStoredItems(StoredItem item, int index)
+        { 
+            if (AttachedTo != null)
+            {
+                AttachedTo.StoredItems.Set(index, item);
+            }
+            else
+            {
+                StoredItems[index] = item;
+            }
+        }
+
+        /// <summary>
+        /// Correctly remove a storeItem in the container at the given index. All removing should use this method, never do it directly.
+        /// If an AttachedContainer is set up, set to AttachedContainer's syncList, 
+        /// this will update _storedItems automatically as _storedItems is set up as a reference to the list internal to AttachedContainer's syncList.
+        /// If no AttachedContainer is set up, remove the item from the StoredItems list directly.
+        /// </summary>
+        /// <param name="index">the index in the list at which the storedItem should be removed.</param>
+        private void RemoveStoredItem(int index)
+        {
+            
+            if (AttachedTo != null)
+            {
+                AttachedTo.StoredItems.RemoveAt(index);
+            }
+            else
+            {
+                StoredItems.RemoveAt(index);
+            }
+        }
+
 
         /// <summary>
         /// Adds a stored item without checking any validity
@@ -329,25 +415,13 @@ namespace SS3D.Systems.Inventory.Containers
                     return true;
                 }
 
-                StoredItems[i] = item;
+                ReplaceStoredItems(item, i);
                 LastModification = Time.time;
 
                 return true;
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Moves multiple items without performing validation
-        /// </summary>
-        /// <param name="items">The items to move</param>
-        public void MoveItemsUnchecked(StoredItem[] items)
-        {
-            foreach (StoredItem storedItem in items)
-            {
-                MoveItemUnchecked(storedItem);
-            }
         }
 
         /// <summary>
@@ -392,7 +466,7 @@ namespace SS3D.Systems.Inventory.Containers
             StoredItem storedItem = StoredItems[index];
             lock (_modificationLock)
             {
-                StoredItems.RemoveAt(index);
+                RemoveStoredItem(index);   
             }
 
             LastModification = Time.time;
@@ -411,6 +485,11 @@ namespace SS3D.Systems.Inventory.Containers
             }
             StoredItems.Clear();
 
+            if(AttachedTo != null)
+            {
+                AttachedTo.StoredItems.Clear();
+            }
+
             LastModification = Time.time;
         }
 
@@ -424,6 +503,11 @@ namespace SS3D.Systems.Inventory.Containers
                 item.Item.Delete();
             }
             StoredItems.Clear();
+
+            if (AttachedTo != null)
+            {
+                AttachedTo.StoredItems.Clear();
+            }
 
             LastModification = Time.time;
         }
@@ -459,7 +543,7 @@ namespace SS3D.Systems.Inventory.Containers
                 return false;
             }
 
-            Filter filter = AttachedTo.ContainerDescriptor.StartFilter;
+            Filter filter = AttachedTo.StartFilter;
             if (filter != null)
             {
                 return filter.CanStore(item);
@@ -521,6 +605,129 @@ namespace SS3D.Systems.Inventory.Containers
             }
 
             return -1;
+        }
+
+        private void handleItemRemoved(Item item)
+        {
+            // Only unfreeze the item if it was not just placed into another container
+            if (item.Container == null)
+            {
+                item.Unfreeze();
+            }
+
+            // Restore visibility
+            if (HideItems)
+            {
+                item.SetVisibility(true);
+            }
+
+            // Remove parent if child of this
+            if (AttachedTo != null && item.transform.parent == AttachedTo.transform)
+            {
+                item.transform.SetParent(null, true);
+                AttachedTo.ProcessItemDetached(item);
+            }
+        }
+
+        private void handleItemAdded(Item item)
+        {
+            item.Freeze();
+
+            // Make invisible
+            if (HideItems)
+            {
+                item.SetVisibility(false);
+            }
+
+            if(AttachedTo != null && AttachedTo.AttachItems)
+            {
+                Transform itemTransform = item.transform;
+                itemTransform.SetParent(AttachedTo.transform, false);
+                itemTransform.localPosition = AttachedTo.AttachmentOffset;
+               AttachedTo.ProcessItemAttached(item);
+            }
+        }
+
+        private void HandleContainerContentsChanged(Container container, IEnumerable<Item> oldItems, IEnumerable<Item> newItems, ContainerChangeType type)
+        {
+            switch (type)
+            {
+                case ContainerChangeType.Add:
+                    foreach (Item item in newItems)
+                    {
+                        if (item == null)
+                        {
+                            continue;
+                        }
+
+                        handleItemAdded(item);
+                    }
+
+                    break;
+                case ContainerChangeType.Move:
+                    {
+                        foreach (Item item in newItems)
+                        {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+
+                            handleItemRemoved(item);
+                            handleItemAdded(item);
+                        }
+
+                        break;
+                    }
+                case ContainerChangeType.Remove:
+                    {
+                        foreach (Item item in oldItems)
+                        {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+
+                            handleItemRemoved(item);
+                        }
+
+                        break;
+                    }
+            }
+        }
+
+        public void InvokeOnContentChanged(Item[] oldItems, Item[] newItems, ContainerChangeType changeType)
+        {
+            OnContentsChanged?.Invoke(this, oldItems, newItems, changeType);
+        }
+
+        /// <summary>
+        /// Adds an observer to this container
+        /// </summary>
+        /// <param name="observer">The creature which observes</param>
+        /// <returns>True if the creature was not already observing this container</returns>
+        public bool AddObserver(Entity observer)
+        {
+            if (ObservingPlayers.Contains(observer)) return false;
+
+            ObservingPlayers.Add(observer);
+
+            ProcessNewObserver(observer);
+            return true;
+        }
+
+        /// <summary>
+        /// Removes an observer
+        /// </summary>
+        /// <param name="observer">The observer to remove</param>
+        public void RemoveObserver(Entity observer)
+        {
+            ObservingPlayers.Remove(observer);
+        }
+
+        private void ProcessNewObserver(Entity e)
+        {
+            OnNewObserver?.Invoke(this, e);
         }
     }
 }

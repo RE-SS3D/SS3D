@@ -92,7 +92,7 @@ namespace SS3D.Systems.Permissions
 
             if (string.IsNullOrEmpty(ckey))
             {
-                Punpun.Yell(this, "Ckey null while trying to get user role");
+                Punpun.Warning(this, "Ckey null while trying to get user role");
 
                 userPermission = ServerRoleTypes.None;
                 return false;
@@ -144,7 +144,7 @@ namespace SS3D.Systems.Permissions
 
                 _userPermissions.Add(ckey, role);
 
-                Punpun.Say(this, $"Found user permission {ckey} as {role}", Logs.ServerOnly);
+                Punpun.Information(this, "Found user permission {ckey} as {role}", Logs.ServerOnly, ckey, role);
             }
 
             HasLoadedPermissions = true;
@@ -158,7 +158,7 @@ namespace SS3D.Systems.Permissions
                 return;
             }
 
-            Punpun.Say(this, $"Permissions file not found, creating a new one", Logs.ServerOnly);
+            Punpun.Information(this, "Permissions file not found, creating a new one", Logs.ServerOnly);
             File.WriteAllText(FullPermissionFilePath, string.Empty);
         }
 
